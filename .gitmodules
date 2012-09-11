@@ -1,0 +1,27 @@
+[submodule "qtbase"]
+	path = qtbase
+	url = git://qt.gitorious.org/qt/qtbase.git
+[submodule "qtdeclarative"]
+	path = qtdeclarative
+	url = git://qt.gitorious.org/qt/qtdeclarative.git
+[submodule "qtscript"]
+	path = qtscript
+	url = git://qt.gitorious.org/qt/qtscript.git
+[submodule "qttools"]
+	path = qttools
+	url = git://gitorious.org/qt/qttools.git
+[submodule "qtxmlpatterns"]
+	path = qtxmlpatterns
+	url = git://qt.gitorious.org/qt/qtxmlpatterns.git
+[submodule "qtwebkit"]
+	path = qtwebkit
+	url = git://gitorious.org/qtwebkit/qt5-module.git
+[submodule "qtjsbackend"]
+	path = qtjsbackend
+	url = git://gitorious.org/qt/qtjsbackend.git
+[submodule "qtquick1"]
+	path = qtquick1
+	url = git://gitorious.org/qt/qtquick1.git
+[submodule "qt-creator"]
+	path = qt-creator
+	url = git://gitorious.org/qt-creator/qt-creator.git
