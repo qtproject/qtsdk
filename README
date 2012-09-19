@@ -1,0 +1,23 @@
+HOW TO BUILD QT5 SDK
+====================
+
+ Synopsis
+ ========
+
+   System requirements
+   ------------------
+
+    - Perl 5.8 or later
+    - Python 2.7 or later
+    - C++ compiler supporting the C++98 standard
+
+   Linux, Mac:
+   -----------
+
+     git submodule update --init
+     cd qtbase
+     ./configure -prefix $PWD -opensource -no-pch -silent -nomake tests
+     make -j 4
+     cd ..
+     ./qtbase/bin/qmake qtsdk.pro
+     make -j 4
