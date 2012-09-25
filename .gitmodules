@@ -25,3 +25,6 @@
 [submodule "qt-creator"]
 	path = qt-creator
 	url = git://gitorious.org/qt-creator/qt-creator.git
+[submodule "qtdoc"]
+	path = qtdoc
+	url = git://gitorious.org/qt/qtdoc.git
