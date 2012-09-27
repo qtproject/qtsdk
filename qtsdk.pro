@@ -30,6 +30,10 @@ module_qttools.subdir = qttools
 module_qttools.target = module-qttools
 module_qttools.depends = module_qtbase
 
+module_qtdoc.subdir = qtdoc
+module_qtdoc.target = module-qtdoc
+module_qtdoc.depends = module_qtbase module_qtdeclarative
+
 module_qtquick1.subdir = qtquick1
 module_qtquick1.target = module-qtquick1
 module_qtquick1.depends = module_qtbase module_qtscript
@@ -67,4 +71,5 @@ exists(qttools/qttools.pro) {
     module_qtquick1.depends += module_qttools
 }
 exists(qtquick1/qtquick1.pro): SUBDIRS += module_qtquick1
+exists(qtdoc/qtdoc.pro): SUBDIRS += module_qtdoc
 exists(qt-creator/qtcreator.pro): SUBDIRS += module_qtcreator
