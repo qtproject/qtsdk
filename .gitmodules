@@ -28,3 +28,27 @@
 [submodule "qtdoc"]
 	path = qtdoc
 	url = git://gitorious.org/qt/qtdoc.git
+[submodule "qtsvg"]
+	path = qtsvg
+	url = git://gitorious.org/qt/qtsvg.git
+[submodule "qtmultimedia"]
+	path = qtmultimedia
+	url = git://gitorious.org/qt/qtmultimedia.git
+[submodule "qttranslations"]
+	path = qttranslations
+	url = git://gitorious.org/qt/qttranslations.git
+[submodule "qtrepotools"]
+	path = qtrepotools
+	url = git://gitorious.org/qt/qtrepotools.git
+[submodule "qt3d"]
+	path = qt3d
+	url = git://gitorious.org/qt/qt3d.git
+[submodule "qtactiveqt"]
+	path = qtactiveqt
+	url = git://gitorious.org/qt/qtactiveqt.git
+[submodule "qtimageformats"]
+	path = qtimageformats
+	url = git://gitorious.org/qt/qtimageformats.git
+[submodule "qtgraphicaleffects"]
+	path = qtgraphicaleffects
+	url = git://gitorious.org/qt/qtgraphicaleffects.git
