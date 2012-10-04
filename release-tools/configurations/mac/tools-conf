@@ -1,0 +1,14 @@
+[qt.tools]
+
+[qt.tools.qtcreator]
+archives:               tools.qtcreator
+target_install_base:    /Qt Creator
+version:                2.6.0
+version_tag:            %QTCREATOR_VERSION%
+package_default:        true
+[tools.qtcreator]
+archive_uri:            http://origin.releases.qt-project.org/qtcreator/2.6.0-beta/qt-creator-mac-opensource-2.6.0-beta.7z
+package_strip_dirs:     1
+target_install_dir:     /
+rpath_target:
+archive_name:           qt-creator-opensource-2.6.0.7z

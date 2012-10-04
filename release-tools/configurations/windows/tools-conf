@@ -1,0 +1,28 @@
+[qt.tools]
+
+[qt.tools.vcredist]
+archives:               tools.vcredist
+target_install_base:    /vcredist
+version:                2010-12-4
+version_tag:            %VCREDIST_X86_VERSION%
+package_default:        false
+[tools.vcredist]
+archive_uri:            http://origin.releases.qt-project.org/prebuilt/vcredist_x86.7z
+package_strip_dirs:     0
+target_install_dir:     /
+rpath_target:
+archive_name:           vcredist_x86.7z
+
+
+[qt.tools.qtcreator]
+archives:               tools.qtcreator
+target_install_base:    /Tools/Qt Creator
+version:                2.6.0
+version_tag:            %QTCREATOR_VERSION%
+package_default:        true
+[tools.qtcreator]
+archive_uri:            http://origin.releases.qt-project.org/qtcreator/2.6.0-beta/qt-creator-windows-opensource-2.6.0-beta.7z
+package_strip_dirs:     1
+target_install_dir:     /
+rpath_target:
+archive_name:           qt-creator-opensource-2.6.0.7z

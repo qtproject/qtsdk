@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>gcc 64-bit</DisplayName>
+    <Description>Qt 5.0.0 Beta 2 (gcc 64-bit)</Description>
+    <Version>%QT_VERSION%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Name>qt.500_beta2.gcc_64</Name>
+    <!--<Dependencies></Dependencies>--> <!-- Comma-separated list of dependencies - optional -->
+    <Default>%PACKAGE_DEFAULT_TAG%</Default>
+    <!--<AutoSelectOn></AutoSelectOn>-->
+    <Script>installscript.qs</Script>   <!-- File name of a script being loaded - optional. -->
+    <!--<Forced></Forced>-->
+    <!--<Virtual></Virtual>--> <!-- Set to true if this is a virtual component not showing up in the installer -->
+    <!--<Important></Important>-->    <!-- The package is marked as important. This is relevant for updates found with UpdateAgent. -->
+    <!--<InstallPriority></InstallPriority>--> <!-- Priority of this component when getting installed. Lowest priority number is first. -->
+    <SortingPriority>10</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
+</Package>
+
+

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Documentation</DisplayName>
+    <Description>Documentation for various components included in the Qt SDK</Description>
+    <Version>1.0.0</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Name>qt.500_beta2.doc</Name>
+    <!--<Dependencies></Dependencies>--> <!-- Comma-separated list of dependencies - optional -->
+    <!--<Default></Default>-->
+    <!--<AutoSelectOn></AutoSelectOn>-->
+    <!--<Script>installscript.qs</Script>-->   <!-- File name of a script being loaded - optional. -->
+    <!--<Forced></Forced>-->
+    <!--<Virtual></Virtual>--> <!-- Set to true if this is a virtual component not showing up in the installer -->
+    <!--<Important></Important>-->    <!-- The package is marked as important. This is relevant for updates found with UpdateAgent. -->
+    <SortingPriority>90</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
+    <!--<InstallPriority>1</InstallPriority>--> <!-- Priority of this component when getting installed. Lowest priority number is first. -->
+</Package>
+
+

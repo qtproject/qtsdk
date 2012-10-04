@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt</DisplayName>
+    <Description>Qt 5.0.0 Beta 2 Installer</Description>
+    <Version>1.0.0</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Name>qt</Name>
+    <Script>installscript.qs</Script>
+    <Licenses>
+        <License name="Qt Installer Third Party Agreement" file="ThirdPartySoftware_Listing.txt" />
+    </Licenses>
+    <SortingPriority>0</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
+</Package>
+
+

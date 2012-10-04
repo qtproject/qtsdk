@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+    <DisplayName>VCRedist for VS2010 64bit</DisplayName>
+    <Description>Needed by all included Qt applications.</Description>
+    <Version>%VCREDIST_X64_VERSION%</Version>
+    <Name>qt.tools.vcredist_64</Name>
+    <ReleaseDate>2010-12-04</ReleaseDate>
+    <Script>installscript.qs</Script>
+    <!--<Virtual>true</Virtual>-->
+    <!--<ForcedInstallation>true</ForcedInstallation>-->
+    <RequiresAdminRights>true</RequiresAdminRights>
+    <Default>%PACKAGE_DEFAULT_TAG%</Default>
+</Package>

@@ -1,0 +1,83 @@
+[PackageNamespace]
+name:                   qt
+
+[PlatformIdentifier]
+identifier:             windows
+
+[ArchiveRemoteLocation.dl241]
+base_url:               http://it-dl241-hki.it.local/packages/
+base_path:
+
+# for testing purposes
+[PackageIgnoreList]
+packages:               foo.bar, foo.bar2, foo.bar3
+
+[ExtraPackageConfigurationFiles]
+file_list:              doc-conf, src-conf, tools-conf, tools_src-conf
+
+[OfflinePackageExcludeList]
+package_list:
+
+[SdkUpdateRepository]
+repository_url_release: http://../qt5repository/windows/x32/online_qt5sdk_repo
+repository_url_rnd:     http://../qt5repository/windows/x32/online_qt5sdk_repo
+
+[TargetArchitechture]
+instruction_set:        x86
+
+[ConfigDir]
+template_name:          config_qt5
+
+[ConfigXml]
+template_name:          config.xml.template.windows.qt5-beta
+
+[WorkingDirectories]
+packages_dir:           pkg
+
+[InstallerFrameworkTools]
+name:                   ifwt
+package_url:            http://it-dl241-hki.it.local/packages/sdk_packages_qt5_lgpl_release/ifw/1.2.0/installer-framework-build-win.7z
+version:                1.2.0
+
+
+[qt.readme]
+archives:               readme, qt_project_url
+target_install_base:    /
+version:                5.0.0
+version_tag:            %QT_VERSION%
+package_default:        true
+[readme]
+archive_uri:            http://qt.gitorious.org/qt/qtrepotools/blobs/raw/master/release-tools/dist/README.txt
+package_strip_dirs:     0
+target_install_dir:     /
+rpath_target:
+archive_name:           readme.7z
+[qt_project_url]
+archive_uri:            qt-project-url.7z
+package_strip_dirs:     0
+target_install_dir:     /
+rpath_target:
+archive_name:           qt-project-url.7z
+
+
+[qt.500_beta2.win32_msvc2010]
+archives:               500_beta2.msvc2010, icu_49.win_32
+target_install_base:    /5.0.0-beta2/msvc2010
+version:                5.0.0
+version_tag:            %QT_VERSION%
+package_default:        true
+[500_beta2.msvc2010]
+archive_uri:            /qt/5.0.0_opensource/windows_vs2010_32/qt5_all.7z
+package_strip_dirs:     5
+target_install_dir:     /
+rpath_target:
+archive_name:           msvc2010_all.7z
+[icu_49.win_32]
+archive_uri:            http://origin.releases.qt-project.org/prebuilt/icu_49_win_32.7z
+package_strip_dirs:     0
+target_install_dir:     /bin
+rpath_target:
+archive_name:           icu_49_win_32.7z
+
+
+

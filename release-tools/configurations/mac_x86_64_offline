@@ -1,0 +1,71 @@
+[PackageNamespace]
+name:                   qt
+
+[PlatformIdentifier]
+identifier:             mac
+
+[ArchiveRemoteLocation.dl241]
+base_url:               http://it-dl241-hki.it.local/packages/
+base_path:
+
+# for testing purposes
+[PackageIgnoreList]
+packages:               foo.bar, foo.bar2, foo.bar3
+
+[ExtraPackageConfigurationFiles]
+file_list:              doc-conf, src-conf, tools-conf, tools_src-conf
+
+[OfflinePackageExcludeList]
+package_list:
+
+[qtmenunib]
+package_url:            http://it-dl241-hki.it.local/packages/sdk_packages_qt5_lgpl_release/ifw/1.2.0/qt_menu.nib.7z
+
+[SdkUpdateRepository]
+repository_url_release: http://../qt5repository/macx/x64/online_qt5sdk_repo
+repository_url_rnd:     http://../qt5repository/macx/x64/online_qt5sdk_repo
+
+[TargetArchitechture]
+instruction_set:        x86_64
+
+[ConfigDir]
+template_name:          config_qt5
+
+[ConfigXml]
+template_name:          config.xml.template.mac.qt5-beta
+
+[WorkingDirectories]
+packages_dir:           pkg
+
+[InstallerFrameworkTools]
+name:                   ifwt
+package_url:            http://it-dl241-hki.it.local/packages/sdk_packages_qt5_lgpl_release/ifw/1.2.0/installer-framework-build-mac.7z
+version:                1.2.0
+
+
+[qt.readme]
+archives:               readme
+target_install_base:    /
+version:                5.0.0
+version_tag:            %QT_VERSION%
+package_default:        true
+[readme]
+archive_uri:            http://qt.gitorious.org/qt/qtrepotools/blobs/raw/master/release-tools/dist/README.txt
+package_strip_dirs:     0
+target_install_dir:     /
+rpath_target:
+archive_name:           readme.7z
+
+
+[qt.500_beta2.gcc_64]
+archives:               500_beta2.gcc_64
+target_install_base:    /5.0.0-beta2/gcc_64
+version:                5.0.0
+version_tag:            %QT_VERSION%
+package_default:        true
+[500_beta2.gcc_64]
+archive_uri:            /qt/5.0.0_opensource/mac_cocoa_10.7/qt5_all.7z
+package_strip_dirs:     12
+target_install_dir:     /
+rpath_target:
+archive_name:           gcc_64_mac_qt5_all.7z

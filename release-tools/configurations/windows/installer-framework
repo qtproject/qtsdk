@@ -1,0 +1,21 @@
+
+[make]
+make_cmd:                               nmake
+
+[QtForInstallerFramework]
+qt_src_package_url:                     http://origin.releases.qt-project.org/prebuilt/qt-everywhere-opensource-src-4.8.0-ifw-patch.zip
+qt_source_dir:                          qt-src
+qt_build_dir:                           qt-bld
+qt_installerfw_qt_configure_line:       -static -release -opensource -confirm-license -nomake examples -nomake demos -nomake tests -nomake docs -no-webkit -no-phonon -no-dbus -no-opengl -no-qt3support -no-xmlpatterns -no-multimedia -no-declarative -no-declarative-debug -qt-sql-sqlite -plugin-sql-sqlite -prefix
+
+[InstallerFramework]
+installer_framework_url:                git://gitorious.org/installer-framework/installer-framework.git
+installer_framework_source_dir:         ifw-src
+installer_framework_build_dir:          ifw-bld
+installer_framework_version_tag:        remotes/origin/qt5
+installer_framework_qmake_args:         -config release -config static -r
+
+[Output]
+installer_framework_archive_name:       installer-framework-build-win.7z
+installerbase_archive_name:             installerbase-win.7z
+qt_archive_name:                        qt-ifw-4.8.0-win.7z

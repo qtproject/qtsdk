@@ -1,0 +1,23 @@
+
+# for testing purposes
+[PackageIgnoreList]
+packages:               foo.bar, foo.bar2, foo.bar3
+
+[ExtraPackageConfigurationFiles]
+file_list:
+
+[qt.500_beta2.doc]
+
+[qt.500_beta2.doc.qt]
+archives:               doc.qt
+target_install_base:    /5.0.0-beta2/Documents/Qt
+version:                5.0.0
+version_tag:            %QT_VERSION%
+package_default:        true
+[doc.qt]
+archive_uri:            /qt/5.0.0_opensource/src/doc/qt.qch
+package_strip_dirs:
+target_install_dir:     /
+rpath_target:
+archive_name:           doc_qt5.7z
+

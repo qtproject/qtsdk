@@ -1,0 +1,545 @@
+1.  Introduction to installer scripts
+
+    The folder release-tools of Qt 5's qtrepotools module contains
+    scripts to generate desktop installers based on the Qt
+    Installer-Framework. Example configuration templates are provided
+    but actual content that is to be installed needs to be generated
+    separately.
+
+    For detailed usage of the Qt Installer-Framework itself please refer to the
+    Qt Installer-Framework documentation.
+
+    The scripts can be used to create offline installers or online installers.
+    For online installers you need a dedicated server to host the repositories.
+
+
+2.  General requirements
+
+    Make sure you have the following tools installed:
+    - Python 2.6 or 2.7
+    - Win: win32api python module
+    - 7z
+
+    Build requirements:
+    - Linux/Mac: gcc toolchain
+    - Windows: MinGW/Visual Studio toolchain
+
+3.  Quick start
+
+    The 'create_installer.py' only generates the installer itself and wraps the
+    content inside. The actual installable content must be built separately
+    and archived in 7z format for the installer.
+
+    Let's assume that you want to create Qt 5 Beta offline installer that
+    contains only Qt5 source and binary package.
+
+    You should have the following packages built separately:
+        - qt-everywhere-opensource-src-5.0.0.tar.gz i.e. the source pacakge
+        - qt5_all.7z                                i.e. the Qt5 binary package (e.g. msvc2010 64-bit)
+
+    Let's assume that you want to create the installer for Windows. Also let's
+    assume that you will put the qt-everywhere-opensource-src-5.0.0.tar.gz and
+    qt5_all.7z somewhere on your local file system.
+    E.g.
+        c:\my_qt5_builds\qt-everywhere-opensource-src-5.0.0.tar.gz
+        c:\my_qt5_builds\qt5_all.7z
+
+
+    Open '/configurations/win_x86_beta' and see the following items:
+
+    (1)
+
+        [src.qt.500_beta]
+        archive_uri:         # This is the uri where the script will try to download this package
+        package_strip_dirs:  # Strip this many unnecessary directories from the beginning of this package before creating the installer. See detailed explanation later in this document.
+        archive_name:        # Needed for online installers. Leave as it is.
+
+        -> So this part should look like this:
+
+        [src.qt.500_beta]
+        archive_uri:            c:\my_qt5_builds\qt-everywhere-opensource-src-5.0.0.tar.gz
+        package_strip_dirs:     1
+        target_install_dir:     /
+        rpath_target:
+        archive_name:           qt-everywhere-opensource-src-5.0.0.7z
+
+    (2)
+
+        [desktop.500_beta.msvc2010_64]
+        archive_uri:            # This is the uri where the script will try to download this package
+        package_strip_dirs:     # Strip this many unnecessary directories from the beginning of this package before creating the installer. See detailed explanation later in this document.
+        archive_name:           # Needed for online installers. Leave as it is.
+
+        -> So this part should look like this:
+
+        [desktop.500_beta.msvc2010_64]
+        archive_uri:            c:\my_qt5_builds\qt5_all.7z
+        package_strip_dirs:     5
+        archive_name:           msvc2010_64_all.7z
+
+
+        Note! This example assumes that you don't want to include
+        32-bit msvc2012 Qt binaries so delete the whole section:
+
+        [qt.sdk.desktop.500_beta.msvc2010]
+
+
+        Now you are ready the create the installer with the following command (on windows):
+
+        > python create_installer.py -f win_x86_beta --offline --devmode
+
+        Explanations:
+
+            - win_x86_beta  i.e. the main configuration file you just edited
+            - offline       creates offline installer
+            - devmode       builds Qt Installer-Framework and static Qt4.8 libraries for it on the fly
+
+        Depending on the speed of your computer the installer executable will
+        be generated on the scripts root directory (30-60 minutes).
+
+
+3.1 Offline installers for different platforms
+
+    To create a standalone offline installer use:
+
+    Linux:      python create_installer.py linux -f linux_x86_32_beta --offline --devmode
+                OR
+                python create_installer.py linux -f linux_x86_64_beta --offline --devmode
+
+    Mac:        python create_installer.py mac -f mac_x86_64_beta --offline --devmode
+
+    Windows:    python create_installer.py -f win_x86_beta --offline --devmode
+
+
+    output:
+        - SDK installer executable will be generated into the scripts root directory.
+        - "repositories" directory will be generated into the scripts root directory
+
+
+
+4   Detailed explanations about the internals
+
+    Definitions:
+
+        Component:  One component in install tree. E.g. 'qt.sdk.desktop'. Best
+                    example can be found from existing installers (Qt SDK) where
+                    you can see the "install-tree" where each 'node' represents
+                    one component.
+
+        Package:    In this context the 'package' refers to data content. Usually
+                    in 7z format. One 'component' can contain multiple packages.
+
+4.1 Configuration files
+
+    Main configuration files reside in the root of '/Configurations'.
+    Example main configuration files are:
+
+        '/Configurations/linux_x86_32_beta'
+        '/Configurations/linux_x86_64_beta'
+        '/Configurations/mac_x86_32_beta'
+        '/Configurations/win_x86_32_beta'
+
+    The main configuration files can include other configuration files.
+    This approach can be used if the number of installable components is large
+    and you want to modularize the configuration files.
+
+        '/Configurations/all-os'  directory can contain configuration files common for all platforms.
+        '/Configurations/linux'   directory contains linux platform specific configuration files
+        '/Configurations/mac'     directory contains mac platform specific configuration files
+        '/Configurations/windows' directory contains windows platform specific configuration files
+
+    Sub-configuration files contain only installable package releated information.
+    Main configuratio file contain all the rest required information required for installer creation.
+
+4.2 Package templates.
+
+    Directory '/Configurations/pkg' contain the package templates.
+    Example listing:
+
+        com.qt
+        com.qt.desktop
+        com.qt.desktop.qt
+        com.qt.desktop.qt.500
+        com.qt.desktop.qt.500.gcc
+        com.qt.src
+        com.qt.src.500
+
+    Each template has directory called 'meta'. This directory contains at least
+    'package.xml' file that contains metadata about specified component.
+    Other file commonly seen in the same directory is 'installscript.qs' yet
+    optional. E.g.
+
+    '/Configurations/pkg/com.qt.desktop.qt.500.gcc/meta/package.xml'
+    '/Configurations/pkg/com.qt.desktop.qt.500.gcc/meta/installscript.xml'
+
+    Note! For each item in the installer GUI 'install-tree' a template needs to exist.
+
+    package.xml contains metadata and description fields for the specific component.
+    installscript.qs can be used if the component installation requires some specific
+    steps. E.g. Qt binary patching operation is triggered from here during installation phase.
+    Please refer to Installer-Framework documentation for detailed instructions:  http://doc.qt.nokia.com/qtifw-1.2/index.html
+
+
+4.3 Main configuration file explained
+
+    The syntax complies to Python config file format.
+    See http://docs.python.org/library/configparser.html
+
+    Brief explanation about the syntax:
+
+        [Section_name]
+        key1: value
+        key2: value
+        keyx: value
+
+    The build script expects to find the following sections and values from the
+    main configuration file:
+
+
+        [PackageNamespace]
+        name:                   qt.sdk                                          # Sections starting with this name are identified as components to be installed. E.g. [qt.sdk.desktop.500_beta.msvc2010]
+                                                                                # The script will search through all included configuration files (main and sub) and check if the section starts with
+                                                                                # 'qt.sdk' (in this example). If the condition is met then parse the key/value pairs under that section and load the
+                                                                                # corresponding template from templates directory, e.g. '/configurations/pkg_beta/qt.sdk.desktop.500_beta.msvc2010'
+        [PlatformIdentifier]
+        identifier:             linux                                           # Check for sub-configuration files from '/configurations/linux'. E.g. on Windows replace this with 'windows'
+
+        [ArchiveRemoteLocation.some_server_nickname_here]
+        base_url:               http://<server_address_here>/packages/          # If you choose to put pre-build contents on some remote location (e.g. you have CI system that builds the
+                                                                                # packages regularly) you can define the 'base_url' part here.
+        base_path:                                                              # Will be deprecated. Do not use. Leave it empty.
+
+        # for testing purposes
+        [PackageIgnoreList]
+        packages:               foo.bar, foo.bar2, foo.bar3                     # E.g. if you choose to make test installer build and want to exclude one component put the component name here
+                                                                                # e.g. qt.sdk.desktop.500_beta.gcc_64
+
+        [ExtraPackageConfigurationFiles]
+        file_list:                                                              # if you have sub-configuration files e.g. in '/configurations/linux' directory, put the name of the file here.
+                                                                                # multiple files can be included when separated by comma
+
+        [OfflinePackageExcludeList]
+        package_list:                                                           # if you create offline installer but still want to drop out some components which should reside in online repository
+                                                                                # instead list them here, separated by comma. Only if you have server back end to support online repositories.
+
+        [SdkUpdateRepository]
+        repository_url_release: http://../qt5repository/linux/x64/online_qt5sdk_repo    # when creating online installer put the base url here where the installer expects to find the Updates.xml
+        repository_url_rnd:     http://../qt5repository/linux/x64/online_qt5sdk_repo    # same as above, use this if you have dedicated RnD server for internal testing. Then the installer script
+                                                                                        # must be started with additional 'testclient' command line argument
+
+        [TargetArchitechture]
+        instruction_set:        x86_64                                          # Currently used only for installer filename generation
+
+        [ConfigDir]
+        template_name:          config_qt5                                      # Script tries to locate config templates from directory '/configurations/config_qt5/'
+                                                                                # This directory contains bitmaps and general installer resources.
+
+        [ConfigXml]
+        template_name:          config.xml.template.linux.qt5-beta              # Filename for the chosen config.xml template to be used. E.g. if your [PlatformIdentifier] is linux then
+                                                                                # the script will try to locate the file from '/configurations/linux/'
+
+        [WorkingDirectories]
+        packages_dir:           pkg_beta                                        # The script needs the location where to load the templates. Now it points to:
+                                                                                # '/configurations/pkg_beta'
+
+        [InstallerFrameworkTools]                                               # If you choose to use pre-build Installer-Framework binaries & tools you can give the full package url here
+        name:                   ifwt                                            # but it is preferred to use the command line argument 'devmode' so the script will build the Installer-Framework
+        package_url:            http://<server_address_here>/packages/.../installer-framework-build-linux-64bit.7z
+        version:                1.2.0
+
+
+
+    Note! So far no installable components have been defined yet! In the example
+    Qt 5 Beta main configuration files the components are defined in the main
+    configuration file as well. This approach can be used but when the amount
+    of installable components grow it is recommended to split components in
+    specific sub-configuration files which you include in this main configuration
+    file. Put the sub-configuration files under directory defined in [PlatformIdentifier],
+    e.g '/configurations/linux'
+
+
+4.4 Defining components to be include in the installer
+
+    Example component 1:
+
+    [qt.sdk.desktop.500_beta.msvc2010_64]                                       # Name must start with 'qt.sdk' as defined in [PackageNamespace]
+    archives:               archive_1, archive_2, foobar                        # List of archives to be included in this component
+    target_install_base:    /Desktop/Qt/5.0.0-beta/msvc2010_64                  # The archives shall be extracted in this directory on user's computer (under <SDK_ROOT>)
+    version:                5.0.0                                               # This version will be put into corresponding package.xml <version> field
+    version_tag:            %QT_VERSION%                                        # If the package.xml contains <version>%QT_VERSION%</version> then the version number will get replaced automatically
+    package_default:        true                                                # Will make the component shown as 'default' component in installer. Values: 'true', 'false', 'script'
+    [archive_1]                                                                 # Defines one archive to be included for this component. This was included in the 'archives' list above
+    archive_uri:            c:\my_qt5_builds\qt5_all.7z                         # Where to download the package.
+    package_strip_dirs:     5                                                   # If your 'qt5_all.7z' containst dir structure you need to rip out e.g. '\temp\work\build\...' you can rip out
+                                                                                # these by telling how many directories to strip from the beginning
+    target_install_dir:     /                                                   # Normally leave as '/'. This path is appended into 'target_install_base' and the content is installed in this dir
+    rpath_target:                                                               # Only for Unix like systems where RPath needs to be patched. If used (not empty) the script will patch the RPath
+                                                                                # in executables and libraries found in the archive. E.g. on Linux the value here would be '/lib' where the
+                                                                                # Qt libraries reside. The script will patch the RPath value to use relative paths.
+    archive_name:           msvc2010_64_all.7z                                  # Only for online installers. This is the name for the package residing on online repositores (on server).
+    [archive_2]                                                                 # Another archive to be included in for the component
+    archive_uri:            c:\my_qt5_builds\cats.7z
+    package_strip_dirs:     3
+    target_install_dir:     /
+    rpath_target:
+    archive_name:           cats.7z
+    [foobar]                                                                    # Yet another archive to be included in for the component
+    archive_uri:            c:\my_qt5_builds\dogs.7z
+    package_strip_dirs:
+    target_install_dir:     /
+    rpath_target:
+    archive_name:           dogs.7z
+
+
+    So this arbitrary example described one installable component that included three different archives.
+    E.g. you might have component 'profiling tools' denoted as 'qt.sdk.misc.tools.profiling' and that installable
+    component could include e.g. two archives 'mem leak analyzer' and 'heap profiler' etc. etc.
+
+
+    Things to remember and notice!
+
+    1) Each used component [qt.sdk.XXXXXXXXXX] must have corresponding template under
+       'packages_dir' that was defined in the main configuration file.
+       E.g. for this arbitrary component you should have
+            '/configurations/pkg_beta/qt.sdk.XXXXXXXXXX'
+            '/configurations/pkg_beta/qt.sdk.XXXXXXXXXX/meta'
+            '/configurations/pkg_beta/qt.sdk.XXXXXXXXXX/meta/package.xml'
+            '/configurations/pkg_beta/qt.sdk.XXXXXXXXXX/meta/installscript.qs' (optional)
+
+    2) You can define 'empty' components without any data. You can just define
+       the section name:
+            [qt.sdk.YYYYYYYYYY]
+       and the YYYYYYYYYY will be shown as one 'node' in the installer's 'install tree'.
+       The corresponding template is always needed!
+            '/configurations/pkg_beta/qt.sdk.YYYYYYYYYY'
+            '/configurations/pkg_beta/qt.sdk.YYYYYYYYYY/meta'
+            '/configurations/pkg_beta/qt.sdk.YYYYYYYYYY/meta/package.xml'
+
+    3) The Qt Installer-Framework expects the packages to be in 7z format.
+       However the script can manage source packages in .zip or in .tar.gz format
+       (it will repackage those).
+
+
+4.5 Package look-up order
+
+    There are three possibilities where you can put the archives to be included in
+    the installer. The script will try to locate the archive in the following
+    order:
+
+    - local file system, absolute path
+    - archive under templates 'data' folder
+    - remote location
+
+    (1) Absolute file path usage:
+
+        [archive_2]
+        archive_uri:            c:\my_qt5_builds\cats.7z
+
+        TODO: In theory the script should be able to fetch packages from mapped
+              network drives but this is not tested.
+
+    (2) Put archive under templates directory. E.g.
+
+        '/configurations/pkg_beta/qt.sdk.YYYYYYYYYY/data/icons.7z
+
+        This can be handy if you have some small archive that can reside
+        in version controll as well. In this case the 'archive_uri' is:
+
+            [archive_2]
+            archive_uri:            icons.7z
+
+    (3) Archives on remote location
+
+        E.g. in win_x86_beta main configuration file first notice the following:
+
+            [ArchiveRemoteLocation.some_server_nickname_here]
+            base_url:               http://<server_address_here>/packages/
+
+        Then define the archive uri as follows:
+
+            [archive_2]
+            archive_uri:            /qt/5.0.0/cats.7z
+
+        -->
+
+        base_url + archive_uri = http://<server_address_here>/packages/qt/5.0.0/windows_vs2010_64/cats.7z
+
+        In the main configuration file you can define remote location. 'The base_url'
+        defines the base address under which it tries to locate packages.
+
+
+        Advanced:
+
+            You can define multiple remote locations as follows:
+
+                [ArchiveRemoteLocation.helsinki]
+                base_url:               http://<server_address_here>/packages/
+
+                [ArchiveRemoteLocation.oslo]
+                base_url:               http://<server_address_here>/packages/
+
+                [ArchiveRemoteLocation.berlin]
+                base_url:               http://<server_address_here>/packages/
+
+            Now you can define dedicated server for the specified component:
+
+                [qt.sdk.desktop.500_beta.foobar]
+                archives:               foobar
+                target_install_base:    /foobar
+                version:                1.2.3
+                version_tag:            %VERSION%
+                package_default:        true
+                [foobar]
+                archive_uri:            /foobar.7z
+                package_strip_dirs:     5
+                target_install_dir:     /
+                rpath_target:
+                archive_name:           foobar.7z
+
+
+5.  Building Installer-Framework itself
+
+    When you launch the 'create_installer.py' with command line argument
+    'devmode' the script will build the Qt Installer-Framework and static
+    Qt libraries for it on the fly.
+
+    For each platform (Linux, Windows, Mac) there is corresponding
+    'installer-framework' configuration file:
+
+        '/configurations/linux/installer-framework'
+        '/configurations/windows/installer-framework'
+        '/configurations/mac/installer-framework'
+
+    This configuration file describes:
+
+        - Where to download the sources for Installer-Framework and Qt
+        - What version of Installer-Framework and Qt
+        - How they are built
+
+    When using the 'devmode' the main script 'create_installer.py' uses
+    the 'bld_ifw_tools.py' script to build the Installer-Framework.
+
+    'create_installer.py'
+            |
+            --> 'bld_ifw_tools.py'
+                    |
+                    --> 'bld_ifw_tools_impl.py'
+                                |
+                                ==> [Installer-Framework libraries & tools]
+            |                                       ᶺ
+    (read configuration files)                      |
+            |                                       |
+    (build/package content for installer)           |
+            |                                       |
+    <create installer> <----------------------------
+            |
+            v
+    'installer executable'
+
+5.1 Generating pre-built Installer-Framework libraries
+
+    Note! The following information is useful only if you choose to use
+          pre-built Installer-Framework libraries. This approach can be
+          used if you wish to save installer creation time in the long run.
+
+          Otherwise it is recommended to use the 'devmode' command line option
+          to create the installer.
+
+    Usage:
+
+        > python bld_ifw_tools.py linux
+
+        or
+
+        > python bld_ifw_tools.py windows
+
+        or
+
+        > python bld_ifw_tools.py mac
+
+
+    Explanations:
+
+    'bld_ifw_tools.py' builds the Installer-Framework. It expects to find
+    file 'installer-framework' under '/configurations/<platform>' where the
+    platform is linux/windows/mac.
+
+    If you open the 'installer-framework' file you can find e.g.:
+
+        installer_framework_archive_name:       installer-framework-build-win.7z
+
+    When the build has completed you should find the above mentioned .7z archive
+    from the scripts root dir and that contains the IFW libraries and tools.
+
+
+    You can put this archive e.g. on server share and then define the following
+    in you main configuration file, e.g. in 'win_x86_beta'
+
+        [InstallerFrameworkTools]
+        package_url:            http://<server_address_here>/.../installer-framework-build-win.7z
+
+
+    Now you can run the 'create_installer.py' script without 'devmode' option
+    as now the script will download the pre-built libraries from the URL
+    you have defined and use them instead of building them from sources.
+    This will save installer creation time considerably if you start installer
+    creation from scratch every time.
+
+
+5.2 Windows installer-framework configuration explained
+
+    [make]
+    make_cmd:                               nmake                               # make command
+
+    [QtForInstallerFramework]                                                   # Configuration how the Qt for Installer-Framework is built
+                                                                                # Notice that the Qt is built statically (libraries for Installer-Framework)
+
+    qt_src_package_url:                     http://download.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.8.0.zip
+    qt_source_dir:                          qt-src                              # Source checkout directory name
+    qt_build_dir:                           qt-bld                              # Shadow build directory name
+    qt_installerfw_qt_configure_line:       -static -release -opensource -confirm-license -nomake examples -nomake demos -nomake tests -nomake docs -no-webkit -no-phonon -no-dbus -no-opengl -no-qt3support -no-xmlpatterns -no-multimedia -no-declarative -no-declarative-debug -qt-sql-sqlite -plugin-sql-sqlite -prefix
+
+    [InstallerFramework]                                                        # Configuration how the Installer-Framework is built
+
+    installer_framework_url:                git://gitorious.org/installer-framework/installer-framework.git
+    installer_framework_source_dir:         ifw-src                             # Source checkout directory name
+    installer_framework_build_dir:          ifw-bld                             # Shadow build directory name
+    installer_framework_version_tag:        remotes/origin/qt5                  # Branch or tag
+    installer_framework_qmake_args:         -config release -config static -r
+
+    [Output]
+    installer_framework_archive_name:       installer-framework-build-win.7z    # The script will archive the generated IFW libraries for later use if needed
+                                                                                # if you choose to use pre-built libraries afterwards. Otherwise you can ignore this.
+    installerbase_archive_name:             installerbase-win.7z                # The script wil archive generated maintenance tool. For online installer use only if needed.
+                                                                                # Otherwise you can ignore this.
+    qt_archive_name:                        qt-ifw-4.8.0-win.7z                 # The script will archive the generated Qt libraries as well for later use if needed.
+                                                                                # TODO! Is this functionality needed? Archiving Qt libraries functionality was added originally
+                                                                                # keep QtCreator builds in mind.
+
+
+5.  Files
+
+    /create_installer.py
+        - main build script
+        - creates installer binary based on Qt Installer-Framework
+    /bldinstallercommon.py
+        - common utility functions
+    /bld_ifw_tools.py
+    /bld_ifw_tools_impl.py
+        - utilities to build static Qt and Installer-Framework
+    /configurations
+        - contains all configuration files
+    /configurations/pkg_beta
+        - contains package templates that define the Qt 5 Beta installer structure
+    /configurations/config_qt5
+        - template files, e.g. icons, xml files
+    /configurations/linux
+        - contains Linux specific configuration files
+    /configurations/linux/common
+        - common configuration data for Linux installers
+    /configurations/linux/config.xml.template.linux
+        - config.xml template
+    /configurations/linux/installer-framework
+        - configuration file for building Qt Installer-Framework
+
+

@@ -37,9 +37,6 @@
 [submodule "qttranslations"]
 	path = qttranslations
 	url = git://gitorious.org/qt/qttranslations.git
-[submodule "qtrepotools"]
-	path = qtrepotools
-	url = git://gitorious.org/qt/qtrepotools.git
 [submodule "qt3d"]
 	path = qt3d
 	url = git://gitorious.org/qt/qt3d.git
