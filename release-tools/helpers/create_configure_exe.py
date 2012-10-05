@@ -166,7 +166,13 @@ def configure_qt():
     cmd_args = CONFIGURE_CMD + ' ' + CONFIGURE_OPTIONS
     gitignore = QT_SRC_DIR + os.sep + 'qtbase' + os.sep + '.gitignore'
     open(gitignore, 'w').close()
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SRC_DIR, True)
+
+    if os.path.exists(QT_SRC_DIR + os.sep + CONFIGURE_CMD):
+        print_wrap(' configure found from ' + QT_SRC_DIR )
+        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SRC_DIR, True)
+    else:
+        print_wrap(' configure found from ' + QT_SRC_DIR + os.sep + 'qtbase')
+        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SRC_DIR + os.sep + 'qtbase', True)
     print_wrap('--------------------------------------------------------------------')
 
 
