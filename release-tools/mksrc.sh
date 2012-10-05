@@ -173,6 +173,7 @@ while test $# -gt 0; do
     --exit-after-docs)
       shift
       EXIT_AFTER_DOCS=true
+    ;;
     -j|--jobs)
       shift
       MAKEARGS=$MAKEARGS+' -j'$1
