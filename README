@@ -15,8 +15,5 @@ HOW TO BUILD QT5 SDK
    -----------
 
      git submodule update --init
-     cd qtbase
-     ./configure -prefix $PWD -opensource -no-pch -silent -nomake tests
-     cd ..
-     ./qtbase/bin/qmake qtsdk.pro
+     ./configure -prefix $PWD/qtbase -opensource -no-pch -silent -nomake tests
      make -j 4
