@@ -98,8 +98,6 @@ exists(qtdeclarative/qtdeclarative.pro) {
 }
 exists(qt3d/qt3d.pro) {
     SUBDIRS += module_qt3d
-    # These modules do not require qt3d, but can use it if it is available
-    module_qtlocation.depends += module_qtdeclarative module_qt3d
 }
 exists(qtscript/qtscript.pro): SUBDIRS += module_qtscript
 exists(qtmultimedia/qtmultimedia.pro) {
