@@ -80,7 +80,6 @@ QT5_MODULES_LIST                    = [ 'qt3d', 'qlalr', 'qtactiveqt', 'qtbase',
                                         'qtwebkit-examples-and-demos', 'qtxmlpatterns']
 QT5_MODULES_IGNORE_LIST             = []
 CONFIGURE_OPTIONS                   = '-opensource -debug-and-release -release -nomake tests -confirm-license'
-DEVEL_MODE                          = False
 FORCE_MAKE                          = False
 ORIGINAL_QMAKE_QT_PRFXPATH          = ''
 SILENT_BUILD                        = False
@@ -484,7 +483,6 @@ def print_help():
 def parse_cmd_line():
     global CONFIGURE_OPTIONS
     global QT_SRC_PACKAGE_URL
-    global DEVEL_MODE
     global FORCE_MAKE
     global MAKE_CMD
     global MAKE_THREAD_COUNT
@@ -507,7 +505,6 @@ def parse_cmd_line():
             print_wrap('        Qt source dir set to: ' + QT_SRC_PACKAGE_URL)
         #is using development mode
         if item.find('devel_mode') >= 0:
-            DEVEL_MODE = True
             CONFIGURE_OPTIONS += ' -nomake examples'
             print_wrap('        devel mode set to true.')
         #prefix for configure
