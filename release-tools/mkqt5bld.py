@@ -230,7 +230,12 @@ def build_qt():
     print_wrap('---------------- Configuring Qt ------------------------------------')
     cmd_args = CONFIGURE_CMD + ' ' + CONFIGURE_OPTIONS
     print_wrap('    Configure line: ' + cmd_args)
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, True)
+    if os.path.exists(QT_SOURCE_DIR + os.sep + CONFIGURE_CMD):
+        print_wrap(' configure found from ' + QT_SOURCE_DIR)
+        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, True)
+    else:
+        print_wrap(' configure found from ' + QT_SOURCE_DIR + os.sep + 'qtbase')
+        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR + os.sep + 'qtbase', True)
 
     # build
     print_wrap('---------------- Building Qt ---------------------------------------')
