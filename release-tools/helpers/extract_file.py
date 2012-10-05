@@ -43,10 +43,11 @@
 import os
 import sys
 import urllib
-import bldinstallercommon
 import tarfile
 import shutil
-
+lib_path = os.path.abspath(os.path.dirname(sys.argv[0]) + os.sep + '..' + os.sep)
+sys.path.append(lib_path)
+import bldinstallercommon
 
 SCRIPT_ROOT_DIR                     = os.getcwd()
 WORK_DIR                            = SCRIPT_ROOT_DIR + os.sep + 'work'

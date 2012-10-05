@@ -43,8 +43,10 @@
 import os
 import sys
 import urllib
-import bldinstallercommon
 import zipfile
+lib_path = os.path.abspath(os.path.dirname(sys.argv[0]) + os.sep + '..' + os.sep)
+sys.path.append(lib_path)
+import bldinstallercommon
 
 SCRIPT_ROOT_DIR                     = os.getcwd()
 QT_SRC_URL                          = ''
@@ -53,7 +55,6 @@ QT_SRC_DIR                          = SCRIPT_ROOT_DIR
 QT_PKG_NAME                         = ''
 CONFIGURE_OPTIONS                   = '-opensource -debug-and-release -release -nomake tests -confirm-license'
 CONFIGURE_CMD                       = 'configure'
-
 
 
 ###############################
