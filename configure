@@ -85,7 +85,7 @@ $relpath =~ s,\\,/,g;
 my $outpath = getcwd();
 
 if (! -e "$relpath/qtbase/configure") {
-    die("$relpath/qtbase/configure not found. Did you forget to run \"git submodule update --init\"?");
+    die("$relpath/qtbase/configure not found. Did you forget to run \"init-repository\"?");
 }
 
 ensureDir("$outpath/qtbase");

@@ -486,7 +486,10 @@ sub git_clone_one_submodule
         }
     }
 
-    my $do_clone = (! -d "$submodule/.git");
+    my $do_clone = 1;
+    if (-d "$submodule/.git") {
+        $do_clone = 0;
+    }
     if ($do_clone) {
         $self->exe('git', 'clone', @reference_args, ($mirror ? $mirror : $url), $submodule);
     }
