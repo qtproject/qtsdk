@@ -16,6 +16,13 @@
 # and qt-everywhere-opensource-src-<version>.zip
 #
 
+# Gives an unbound variable error message at each attempt
+# to use an undeclared parameter.
+#
+# $ release-tools/mksrc.sh -v
+# release-tools/mksrc.sh: line 161: $1: unbound variable
+set -u
+
 CUR_DIR=$PWD
 REPO_DIR=$CUR_DIR
 REPO_NAME=''
@@ -27,6 +34,7 @@ DOCS=generate
 EXIT_AFTER_DOCS=false
 DO_TAG=false
 DO_FETCH=true
+MAKEARGS=''
 MULTIPACK=no
 IGNORE_LIST=
 LICENSE=opensource
