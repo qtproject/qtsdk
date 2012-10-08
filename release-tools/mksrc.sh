@@ -173,7 +173,6 @@ while test $# -gt 0; do
     --exit-after-docs)
       shift
       EXIT_AFTER_DOCS=true
-      shift
     ;;
     -j|--jobs)
       shift
@@ -183,12 +182,10 @@ while test $# -gt 0; do
     --strict)
       shift
       STRICT=1
-      shift
     ;;
     --silent)
       shift
       MAKEARGS=$MAKEARGS+' -s'
-      shift
     ;;
     *)
       echo "Error: Unknown option $1"
