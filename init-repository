@@ -49,13 +49,13 @@ package Qt::InitRepository;
 
 =head1 NAME
 
-init-repository - initialize the Qt5 repository and all submodules
+init-repository - initialize the QtSDK repository and all submodules
 
 =head1 SYNOPSIS
 
   ./init-repository [options]
 
-This script may be run after an initial `git clone' of Qt5 in order to check
+This script may be run after an initial `git clone' of QtSDK in order to check
 out all submodules.
 
 
@@ -83,9 +83,8 @@ B<Module options:>
 
 =item --no-webkit
 
-Skip webkit and webkit examples submodules.
-It may be desirable to skip these modules due to the large size of the webkit
-git repository.
+Skip webkit submodule. It may be desirable to skip this module due to the
+large size of the webkit git repository.
 
 =item --module-subset=<module1>,<module2>...
 
@@ -100,9 +99,7 @@ Skip the `git submodule update' command.
 =item --ignore-submodules
 
 Set git config to ignore submodules by default when doing operations on the
-qt5 repo, such as `pull', `fetch', `diff' etc.
-
-This option is default for --nokia-developer/--brisbane.
+qtsdk repo, such as `pull', `fetch', `diff' etc.
 
 After using this option, pass `--ignore-submodules=none' to git to override
 it as needed.
@@ -113,30 +110,6 @@ it as needed.
 B<Repository options:>
 
 =over
-
-=item --nokia-developer
-
-Switch to internal Nokia URLs.
-
-
-=item --brisbane
-
-Switch to internal Nokia URLs and make use of the Brisbane git mirrors.
-(Implies `--mirror' and `--mirror-webkit').
-
-=item --berlin
-
-Switch to internal Nokia URLs and make use of the Berlin git mirrors.
-(Implies `--mirror' and `--mirror-webkit').
-
-
-=item --ssh
-
-Use the SSH protocol for git operations.  This may be useful if the git
-protocol is blocked by a firewall. Note that this requires a user account
-with an uploaded SSH key on all servers used.  (Implies `--nokia-developer').
-
-The `--ssh' option does not affect the gerrit remotes.
 
 
 =item --http
@@ -157,10 +130,10 @@ If this option is omitted, the gerrit remote is created without a username
 and port number, and thus relies on a correct SSH configuration.
 
 
-=item --alternates <path to other Qt5 repo>
+=item --alternates <path to other QtSDK repo>
 
-Adds alternates for each submodule to another full qt5 checkout. This makes
-this qt5 checkout very small, as it will use the object store of the
+Adds alternates for each submodule to another full qtsdk checkout. This makes
+this qtsdk checkout very small, as it will use the object store of the
 alternates before unique objects are stored in its own object store.
 
 This option has no effect when using `--no-update'.
@@ -216,8 +189,6 @@ use Pod::Usage   qw( pod2usage           );
 use Cwd          qw( getcwd              );
 
 my %PROTOCOLS = (
-    'internal'  => 'git://scm.dev.nokia.troll.no/' ,
-    'ssh'       => 'git@scm.dev.nokia.troll.no:'   ,
     'http'      => 'http://git.gitorious.org/'     ,
 );
 
@@ -238,28 +209,10 @@ my %GERRIT_REPOS = map { $_ => "qt/$_" } qw(
     qttranslations
     qtxmlpatterns
 );
+$GERRIT_REPOS{qtsdk} = "qtsdk/qtsdk";
 
 my $GERRIT_SSH_BASE
     = 'ssh://@USER@codereview.qt-project.org@PORT@/';
-
-my $BNE_MIRROR_URL_BASE
-    = 'git://bq-git.apac.nokia.com/qtsoftware/';
-
-my $BNE_MIRROR_WEBKIT_URL
-    = 'git://bq-git.apac.nokia.com/gitorious/qtwebkit/qt5-module.git';
-
-my $BNE_MIRROR_CREATOR_URL
-    = 'git://bq-git.apac.nokia.com/gitorious/qt-creator/qt-creator.git';
-
-my $BER_MIRROR_URL_BASE
-    = 'git://ber-git.europe.nokia.com/';
-
-my $BER_MIRROR_WEBKIT_URL
-    = 'git://ber-git.europe.nokia.com/qtwebkit/qtwebkit.git';
-
-my $BER_MIRROR_CREATOR_URL
-    = 'git://ber-git.europe.nokia.com/qt-creator/qt-creator.git';
-
 
 sub new
 {
@@ -301,7 +254,6 @@ sub parse_arguments
         'mirror-url'          => "",
         'mirror-webkit-url'   => "",
         'mirror-creator-url'  => "",
-        'nokia-developer'     => 0 ,
         'protocol'            => "",
         'update'              => 1 ,
         'webkit'              => 1 ,
@@ -317,7 +269,6 @@ sub parse_arguments
         'mirror-webkit=s'   =>  \$self->{qw{ mirror-webkit-url }},
         'mirror-creator=s'  =>  \$self->{qw{ mirror-creator-url }},
         'mirror=s'          =>  \$self->{qw{ mirror-url        }},
-        'nokia-developer'   =>  \$self->{qw{ nokia-developer   }},
         'quiet'             =>  \$self->{qw{ quiet             }},
         'update!'           =>  \$self->{qw{ update            }},
         'webkit!'           =>  \$self->{qw{ webkit            }},
@@ -325,36 +276,7 @@ sub parse_arguments
 
         'help|?'            =>  sub { pod2usage(1);               },
         'http'              =>  sub { $self->{protocol} = 'http'; },
-        'ssh|ssh-protocol'  =>  sub { $self->{protocol} = 'ssh';  },
-
-        'brisbane|brisbane-nokia-developer' => sub {
-            $self->{'nokia-developer'}    = 1;
-            $self->{'protocol'}           = 'internal';
-            $self->{'mirror-url'}         = $BNE_MIRROR_URL_BASE;
-            $self->{'mirror-webkit-url'}  = $BNE_MIRROR_WEBKIT_URL;
-            $self->{'mirror-creator-url'} = $BNE_MIRROR_CREATOR_URL;
-            $self->{'ignore-submodules'}  = 1;
-        },
-
-        'berlin|berlin-nokia-developer' => sub {
-            $self->{'nokia-developer'}    = 1;
-            $self->{'protocol'}           = 'internal';
-            $self->{'mirror-url'}         = $BER_MIRROR_URL_BASE;
-            $self->{'mirror-webkit-url'}  = $BER_MIRROR_WEBKIT_URL;
-            $self->{'mirror-creator-url'} = $BER_MIRROR_CREATOR_URL;
-        },
-
-        'nokia-developer' => sub {
-            $self->{'nokia-developer'}   = 1;
-            $self->{'protocol'}          = 'internal';
-            $self->{'ignore-submodules'} = 1;
-        },
     ) || pod2usage(2);
-
-    if ($self->{'nokia-developer'} && $self->{'protocol'} eq 'http') {
-        print "*** Ignoring use of HTTP protocol, as it's only usable with external server\n";
-        $self->{'protocol'} = '';
-    }
 
     # Replace any double trailing slashes from end of mirror
     $self->{'mirror-url'} =~ s{//+$}{/};
@@ -416,7 +338,6 @@ sub git_disable_webkit_submodule
     my ($self) = @_;
 
     $self->exe('git', 'config', '--remove', 'submodule.qtwebkit');
-    $self->exe('git', 'config', '--remove', 'submodule.qtwebkit-examples-and-demos');
 
     return;
 }
@@ -535,7 +456,7 @@ sub git_clone_one_submodule
     my @reference_args;
 
     if ($alternates) {
-        # alternates is a qt5 repo, so the submodule will be under that.
+        # alternates is a qtsdk repo, so the submodule will be under that.
         if (-d "$alternates/$submodule") {
             @reference_args = ('--reference', "$alternates/$submodule");
         }
@@ -622,7 +543,7 @@ sub run
 
     $self->git_clone_all_submodules;
 
-    $self->git_add_remotes('qt5');
+    $self->git_add_remotes('qtsdk');
 
     return;
 }
