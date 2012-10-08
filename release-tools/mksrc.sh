@@ -24,21 +24,20 @@
 set -u
 
 CUR_DIR=$PWD
-REPO_DIR=$CUR_DIR
-REPO_NAME=''
-QTVER=0.0.0
-QTSHORTVER=0.0
-QTGITTAG=.sha1s
-PACK_TIME=`date '+%Y-%m-%d'`
+DO_FETCH=true
+DO_TAG=false
 DOCS=generate
 EXIT_AFTER_DOCS=false
-DO_TAG=false
-DO_FETCH=true
-MAKEARGS=''
-MULTIPACK=no
 IGNORE_LIST=
 LICENSE=opensource
+MULTIPACK=no
+PACK_TIME=`date '+%Y-%m-%d'`
 PATCH_FILE=''
+QTGITTAG=.sha1s
+QTSHORTVER=0.0
+QTVER=0.0.0
+REPO_DIR=$CUR_DIR
+REPO_NAME=''
 REPO_TAG=HEAD
 STRICT=0
 
@@ -53,12 +52,10 @@ function usage()
   echo "--tag          also tag the repository"
   echo "-N             don't use git fetch to update submodules"
   echo "--strict       strict mode, execution will fail on any error"
-  echo "--silent       silent mode"
   echo "-i submodule   will exclude the submodule from final package "
   echo "-l license     license type, will default to 'opensource', if set to 'commercial' all the necessary patches will be applied for commercial build"
   echo "-p patch file  patch file (.sh) to execute, example: change_licenses.sh"
   echo "-t revision    committish to pack (tag name, branch name or SHA-1)"
-  echo "-j             make thread count"
 }
 
 function cleanup()
@@ -182,18 +179,9 @@ while test $# -gt 0; do
       shift
       EXIT_AFTER_DOCS=true
     ;;
-    -j|--jobs)
-      shift
-      MAKEARGS=$MAKEARGS+' -j'$1
-      shift
-    ;;
     --strict)
       shift
       STRICT=1
-    ;;
-    --silent)
-      shift
-      MAKEARGS=$MAKEARGS+' -s'
     ;;
     *)
       echo "Error: Unknown option $1"
