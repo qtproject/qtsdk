@@ -67,7 +67,7 @@ target_install_dir:     /
 rpath_target:           /lib
 archive_name:           gcc_qt5_all.7z
 [500_beta2.gcc.icu]
-archive_uri:            /qt/5.0.0_opensource/linux_gcc_32_ubuntu1204/libicu_x86_32_ubuntu1204.7z
+archive_uri:            /qt/5.0.0_opensource/linux_gcc_32_ubuntu1204/libicu_x86_ubuntu1204.7z
 package_strip_dirs:     0
 target_install_dir:     /lib
 rpath_target:
