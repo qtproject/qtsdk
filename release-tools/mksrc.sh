@@ -106,7 +106,9 @@ function create_and_delete_submodule()
     tar c $_file | tee \
         >(xz -9 > ../submodules_tar/$_file.tar.xz) | \
         gzip -9 > ../submodules_tar/$_file.tar.gz
-    echo "- zippinging $_file -"
+    echo " - 7zipping $_file - "
+    7z a ../submodules_zip/$_file.7z $_file/ > /dev/null
+    echo " - zippinging $_file -"
     find $_file > __files_to_zip
     # zip binfiles
     file -f __files_to_zip | fgrep -f ../_txtfiles -v | cut -d: -f1 | zip -9q ../submodules_zip/$_file.zip -@
