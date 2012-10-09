@@ -79,7 +79,7 @@ QT5_MODULES_LIST                    = [ 'qt3d', 'qlalr', 'qtactiveqt', 'qtbase',
                                         'qttranslations', 'qtwayland', 'webkit', \
                                         'qtwebkit-examples-and-demos', 'qtxmlpatterns']
 QT5_MODULES_IGNORE_LIST             = []
-CONFIGURE_OPTIONS                   = '-opensource -confirm-license -separate-debug-info -release -nomake tests -silent -no-pch'
+CONFIGURE_OPTIONS                   = '-opensource -confirm-license -debug-and-release -release -nomake tests -silent -no-pch'
 FORCE_MAKE                          = False
 ORIGINAL_QMAKE_QT_PRFXPATH          = ''
 SILENT_BUILD                        = False
