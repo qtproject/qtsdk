@@ -294,6 +294,11 @@ cat $CUR_DIR/_tmp_mod > $MODULES
 rm -f $CUR_DIR/$PACKAGE_NAME/$QTGITTAG
 cat $CUR_DIR/_tmp_shas > $CUR_DIR/$PACKAGE_NAME/$QTGITTAG
 
+# remove possible empty directories in case of some submodules ignored
+for IDIR in $IGNORE_LIST ; do
+  rm -rf $CUR_DIR/$PACKAGE_NAME/$IDIR
+done
+
 #------------------------------------------------------------------
 # Step 3,  replace version strings with correct version, and
 # patch Qt_PACKAGE_TAG and QT_PACKAGEDATE_STR defines
