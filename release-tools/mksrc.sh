@@ -425,11 +425,6 @@ if [ $MULTIPACK = yes ]; then
   mv $PACKAGE_NAME.* single/
   echo " -- Creating tar per submodule -- "
   create_and_delete_submodule
-  create_main_file
-  mv $PACKAGE_NAME.tar.xz submodules_tar/qt5-$LICENSE-src-$QTVER.tar.xz
-  mv $PACKAGE_NAME.tar.gz submodules_tar/qt5-$LICENSE-src-$QTVER.tar.gz
-  mv $PACKAGE_NAME.7z submodules_zip/qt5-$LICENSE-src-$QTVER.7z
-  mv $PACKAGE_NAME.zip submodules_zip/qt5-$LICENSE-src-$QTVER.zip
 fi
 cleanup
 
