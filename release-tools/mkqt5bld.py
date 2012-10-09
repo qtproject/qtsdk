@@ -50,20 +50,17 @@ import urllib
 import fileinput
 import bldinstallercommon
 import patch_qmake_qt_key
+from optparse import OptionParser, Option, OptionValueError
 
 SCRIPT_ROOT_DIR                     = os.getcwd()
 WORK_DIR_NAME                       = 'qt5_workdir'
 WORK_DIR                            = SCRIPT_ROOT_DIR + os.sep + WORK_DIR_NAME
-QT_SRC_PACKAGE_URL                  = ''
 QT_PACKAGE_SAVE_AS_TEMP             = ''
 QT_SOURCE_DIR                       = WORK_DIR + os.sep + 'w'
 MAKE_INSTALL_ROOT_DIR_NAME          = 'qt5_install_root'
 MAKE_INSTALL_ROOT_DIR               = WORK_DIR + os.sep + MAKE_INSTALL_ROOT_DIR_NAME #main dir for submodule installations
 MISSING_MODULES_FILE                = WORK_DIR + os.sep + 'missing_modules.txt'
 CONFIGURE_CMD                       = ''
-MAKE_CMD                            = ''
-MAKE_THREAD_COUNT                   = '8' # some initial default value
-MAKE_INSTALL_CMD                    = ''
 MODULE_ARCHIVE_DIR_NAME             = 'module_archives'
 MODULE_ARCHIVE_DIR                  = SCRIPT_ROOT_DIR + os.sep + MODULE_ARCHIVE_DIR_NAME
 MAIN_INSTALL_DIR_NAME               = 'main_install'
@@ -79,16 +76,38 @@ QT5_MODULES_LIST                    = [ 'qt3d', 'qlalr', 'qtactiveqt', 'qtbase',
                                         'qttranslations', 'qtwayland', 'webkit', \
                                         'qtwebkit-examples-and-demos', 'qtxmlpatterns']
 QT5_MODULES_IGNORE_LIST             = []
-CONFIGURE_OPTIONS                   = '-opensource -confirm-license -debug-and-release -release -nomake tests -silent -no-pch'
+CONFIGURE_OPTIONS                   = '-opensource -confirm-license -debug-and-release -release -nomake tests -no-pch'
 FORCE_MAKE                          = False
 ORIGINAL_QMAKE_QT_PRFXPATH          = ''
-SILENT_BUILD                        = False
-STRICT_MODE                         = True
 PADDING                             = "______________________________PADDING______________________________"
 FILES_TO_REMOVE_LIST                = ['Makefile', 'Makefile.Release', 'Makefile.Debug', \
                                        '.o', '.moc', '.init-repository', \
                                        '.gitignore', '.obj']
 IGNORE_PATCH_LIST                   = ['.png', '.jpg', '.gif', '.bmp', '.exe', '.dll', '.lib', '.pdb', '.qph']
+#Commandline options
+OPTION_PARSER                       = 0
+QT_SRC_PACKAGE_URL                  = ''
+SILENT_BUILD                        = False
+STRICT_MODE                         = True
+QT5_MODULES_IGNORE_LIST             = []
+MAKE_CMD                            = ''
+MAKE_THREAD_COUNT                   = '8' # some initial default value
+MAKE_INSTALL_CMD                    = ''
+CONFIGURE_OPTIONS                   = '-opensource -confirm-license -debug-and-release -release -nomake tests -no-pch'
+CONFIGURE_OVERRIDE                  = False
+
+
+class MultipleOption(Option):
+    ACTIONS = Option.ACTIONS + ("extend",)
+    STORE_ACTIONS = Option.STORE_ACTIONS + ("extend",)
+    TYPED_ACTIONS = Option.TYPED_ACTIONS + ("extend",)
+    ALWAYS_TYPED_ACTIONS = Option.ALWAYS_TYPED_ACTIONS + ("extend",)
+
+    def take_action(self, action, dest, opt, value, values, parser):
+        if action == "extend":
+            values.ensure_value(dest, []).append(value)
+        else:
+            Option.take_action(self, action, dest, opt, value, values, parser)
 
 
 ###############################
@@ -110,18 +129,23 @@ def init_mkqt5bld():
     global MAKE_INSTALL_ROOT_DIR
 
     print_wrap('---------------- Initializing build --------------------------------')
-    if bldinstallercommon.is_linux_platform():          #linux
-        CONFIGURE_CMD = './'
-        CONFIGURE_OPTIONS += ' -no-gtkstyle'
-    elif bldinstallercommon.is_mac_platform():          #mac
-        CONFIGURE_CMD = './'
-        #CONFIGURE_OPTIONS += ' -make libs -no-pch' <- not sure if these are needed,
-        #Added -developer-build to get the sources built, should be removed later..?
-        CONFIGURE_OPTIONS = '-developer-build -opensource -confirm-license -nomake tests -platform macx-clang -prefix $PWD/qtbase'
+    #do not edit configure options, if configure options are overridden from commandline options
+    if not CONFIGURE_OVERRIDE:
+        if bldinstallercommon.is_linux_platform():          #linux
+            CONFIGURE_CMD = './'
+            CONFIGURE_OPTIONS += ' -no-gtkstyle'
+        elif bldinstallercommon.is_mac_platform():          #mac
+            CONFIGURE_CMD = './'
+            #CONFIGURE_OPTIONS += ' -make libs -no-pch' <- not sure if these are needed,
+            #Added -developer-build to get the sources built, should be removed later..?
+            CONFIGURE_OPTIONS = '-developer-build -opensource -confirm-license -nomake tests -platform macx-clang -prefix $PWD/qtbase'
 
-    #Add padding to original rpaths to make sure that original rpath is longer than the new
-    if bldinstallercommon.is_linux_platform() or bldinstallercommon.is_solaris_platform():
-        CONFIGURE_OPTIONS += ' -R ' + PADDING
+        #Add padding to original rpaths to make sure that original rpath is longer than the new
+        if bldinstallercommon.is_linux_platform() or bldinstallercommon.is_solaris_platform():
+            CONFIGURE_OPTIONS += ' -R ' + PADDING
+
+        if SILENT_BUILD:
+            CONFIGURE_OPTIONS += ' -silent'
 
     CONFIGURE_CMD += 'configure'
 
@@ -133,9 +157,6 @@ def init_mkqt5bld():
             if SILENT_BUILD:
                 MAKE_CMD += ' /s'
                 MAKE_INSTALL_CMD += ' /s'
-            if FORCE_MAKE:
-                MAKE_CMD += ' /l'
-                MAKE_INSTALL_CMD += ' \l'
             MAKE_INSTALL_CMD += ' install'
         elif bldinstallercommon.is_linux_platform() or bldinstallercommon.is_mac_platform():    #linux & mac
             MAKE_CMD = 'make'
@@ -143,9 +164,6 @@ def init_mkqt5bld():
             if SILENT_BUILD:
                 MAKE_CMD += ' -s'
                 MAKE_INSTALL_CMD += ' -s'
-            if FORCE_MAKE:
-                MAKE_CMD += ' -i'
-                MAKE_INSTALL_CMD += ' -i'
             MAKE_INSTALL_CMD += ' install'
 
     #remove old working dirs
@@ -459,98 +477,71 @@ def archive_submodules():
 ###############################
 # function
 ###############################
-def print_help():
-    print_wrap('*** Error! Insufficient arguments given!')
-    print_wrap('')
-    print_wrap('Example: python -u mkqt5bld.py src_url=qt-everywhere-opensource-src-5.0.0.zip force_make [make_cmd=mingw32-make]')
-    print_wrap('')
-    print_wrap('Available options:')
-    print_wrap('')
-    print_wrap('  src_url=[url where to fetch src package]')
-    print_wrap('  devel_mode')
-    print_wrap('  use_prefix=[prefix used for configure options]')
-    print_wrap('  force_make')
-    print_wrap('  make_cmd=[custom make tool]')
-    print_wrap('  make_thread_count=[number of threads]')
-    print_wrap('  ignore=[module_to_ignore]')
-    print_wrap('  strict_mode=true/false')
-    print_wrap('')
-
-
-###############################
-# function
-###############################
 def parse_cmd_line():
-    global CONFIGURE_OPTIONS
+    print_wrap('---------------- Parsing commandline arguments ---------------------')
     global QT_SRC_PACKAGE_URL
-    global FORCE_MAKE
     global MAKE_CMD
     global MAKE_THREAD_COUNT
     global MAKE_INSTALL_CMD
     global SILENT_BUILD
     global QT5_MODULES_IGNORE_LIST
     global STRICT_MODE
+    global CONFIGURE_OPTIONS
+    global CONFIGURE_OVERRIDE
 
-    print_wrap('---------------- Parsing commandline arguments ---------------------')
+    setup_option_parser()
+
     arg_count = len(sys.argv)
     if arg_count < 2:
-        print_help()
+        OPTION_PARSER.print_help()
         sys.exit(-1)
-    #Parse command line options
-    for item in sys.argv[1:]:
-        #url for the sources
-        if item.find('src_url') >= 0:
-            values = item.split('=')
-            QT_SRC_PACKAGE_URL = values[1]
-            print_wrap('        Qt source dir set to: ' + QT_SRC_PACKAGE_URL)
-        #is using development mode
-        if item.find('devel_mode') >= 0:
-            CONFIGURE_OPTIONS += ' -nomake examples'
-            print_wrap('        devel mode set to true.')
-        #prefix for configure
-        if item.find('use_prefix') >= 0:
-            values = item.split('=')
-            CONFIGURE_OPTIONS += ' -prefix ' + values[1]
-            print_wrap('        -prefix added to configure line.')
-        #set force make (-i option for make)
-        if item.find('force_make') >= 0:
-            FORCE_MAKE = True
-            print_wrap('        using force make (ignoring errors).')
-        #set make command, if not set make/nmake is used
-        if item.find('make_cmd') >= 0:
-            values = item.split('=')
-            if values[1] != '':
-                MAKE_CMD = values[1]
-                MAKE_INSTALL_CMD = values[1] + ' install'
-            print_wrap('        using command: ' + MAKE_CMD + ' for making and ' + MAKE_INSTALL_CMD + ' for installing')
-        #how many threads to be used for building
-        if item.find('make_thread_count') >= 0:
-            values = item.split('=')
-            if values[1] != '':
-                MAKE_THREAD_COUNT = values[1]
-            print_wrap('        threads used for building: ' + MAKE_THREAD_COUNT)
-        #set SILENT_BUILD to true, defaults to false
-        if item.find('silent_build') >= 0:
-            SILENT_BUILD = True
-            print_wrap('        doing silent build.')
-        # add modules to ignore list
-        if item.find('ignore') >= 0:
-            values = item.split('=')
-            if values[1] != '':
-                QT5_MODULES_IGNORE_LIST.append(values[1])
-        # set strict mode on/off
-        if item.find('strict_mode') >= 0:
-            values = item.split('=')
-            if values[1] == 'false':
-                STRICT_MODE = False
 
-    if len(QT5_MODULES_IGNORE_LIST) > 0:
-        print_wrap('        ignoring modules:')
-        for ignore in QT5_MODULES_IGNORE_LIST:
-            print_wrap('        - ' + ignore)
+    (options, args) = OPTION_PARSER.parse_args()
 
+    QT_SRC_PACKAGE_URL      = options.src_url
+    MAKE_CMD                = options.make_cmd
+    MAKE_THREAD_COUNT       = options.make_thread_count
+    MAKE_INSTALL_CMD        = MAKE_CMD + ' install'
+    SILENT_BUILD            = options.silent_build
+    QT5_MODULES_IGNORE_LIST = options.module_ignore_list
+    STRICT_MODE             = options.strict_mode
+    if CONFIGURE_OPTIONS != options.configure_options and options.configure_options != "":
+        CONFIGURE_OVERRIDE = True
+        CONFIGURE_OPTIONS = options.configure_options
     print_wrap('---------------------------------------------------------------------')
     return True
+
+
+##############################################################
+# Setup Option Parser
+##############################################################
+def setup_option_parser():
+    print_wrap('------------------- Setup option parser -----------------------------')
+    global OPTION_PARSER
+    OPTION_PARSER = OptionParser(option_class=MultipleOption)
+
+    OPTION_PARSER.add_option("-u", "--src-url",
+                      action="store", type="string", dest="src_url", default="",
+                      help="the url where to fetch the source package")
+    OPTION_PARSER.add_option("-m", "--make_cmd",
+                      action="store", type="string", dest="make_cmd", default="make",
+                      help="make command (e.g. mingw32-make). On linux defaults to make and on win nmake.")
+    OPTION_PARSER.add_option("-j", "--jobs",
+                      action="store", type="int", dest="make_thread_count", default=8,
+                      help="make job count")
+    OPTION_PARSER.add_option("-q", "--silent-build",
+                      action="store_true", dest="silent_build", default=False,
+                      help="supress command output, show only errors")
+    OPTION_PARSER.add_option("-i", "--ignore",
+                      action="extend", type="string", dest="module_ignore_list",
+                      help="do not build module")
+    OPTION_PARSER.add_option("-S", "--non-strict-mode",
+                      action="store_false", dest="strict_mode", default=True,
+                      help="exit on error, defaults to true.")
+    OPTION_PARSER.add_option("-c", "--configure",
+                      action="store", type="string", dest="configure_options", default="",
+                      help="options for configure command, for overriding the defaults in script.")
+    print_wrap('---------------------------------------------------------------------')
 
 
 ###############################
