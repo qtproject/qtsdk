@@ -421,6 +421,7 @@ if [ $MULTIPACK = yes ]; then
   create_main_file
   mv $PACKAGE_NAME.tar.xz submodules_tar/qt5-$LICENSE-src-$QTVER.tar.xz
   mv $PACKAGE_NAME.tar.gz submodules_tar/qt5-$LICENSE-src-$QTVER.tar.gz
+  mv $PACKAGE_NAME.7z submodules_zip/qt5-$LICENSE-src-$QTVER.7z
   mv $PACKAGE_NAME.zip submodules_zip/qt5-$LICENSE-src-$QTVER.zip
 fi
 cleanup
