@@ -530,33 +530,23 @@ def is_text(s):
 def is_text_file(filename, blocksize = 512):
     return is_text(open(filename).read(blocksize))
 
+
 ###############################
 # Function
 ###############################
 def requires_rpath(file_path):
-    if IS_WIN_PLATFORM:
+    if IS_WIN_PLATFORM or IS_MAC_PLATFORM:
         return False
-    elif IS_LINUX_PLATFORM or IS_SOLARIS_PLATFORM:
-        base = os.path.basename(file_path)
-        filename, ext = os.path.splitext(base)
-        # filter out some commonly encountered files from search
-        m = re.match('\.o|\.h|\.png|\.htm|\.html|\.qml|\.qrc|\.jpg|\.svg|\
-                      \.pro|\.pri|\.desktop|\.sci|\.txt|\.qdoc|\.debug|\
-                      \.xml|\.wav|\.txt|\.ui|\.qrc|\.qml|\.js|\.mm', ext)
-        if m:
+    if IS_LINUX_PLATFORM or IS_SOLARIS_PLATFORM:
+        if not is_executable(file_path):
             return False
+        # exclude qmake executable
+        filename, ext = os.path.splitext(os.path.basename(file_path))
         if filename.lower() == 'qmake':
             return False
-        elif ext.lower() == '.so':
-            return True
-        else:
-            return is_executable(file_path)
-    elif IS_MAC_PLATFORM:
-        return False
-    else:
-        print '*** Unsupported platform!'
-        sys.exit(-1)
-
+        return (re.search(r':*.RPATH=',
+            subprocess.Popen(['chrpath', '-l', file_path],
+                stdout=subprocess.PIPE).stdout.read()) is not None)
     return False
 
 
