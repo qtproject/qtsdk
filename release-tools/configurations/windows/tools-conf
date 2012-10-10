@@ -14,7 +14,7 @@ rpath_target:
 archive_name:           vcredist_x86.7z
 
 
-[qt.tools.qtcreator]
+[qt.tools.qtcreator.desktop]
 archives:               tools.qtcreator
 target_install_base:    /Tools/Qt Creator
 version:                2.6.0

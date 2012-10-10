@@ -37,7 +37,7 @@ createShortcuts = function()
     contentString += "set QTDIR=" + component_root_path + "\r\n";
     contentString += "set PATH=%QTDIR%\\bin;%PATH%\r\n";
     contentString += "cd /D %QTDIR%\r\n";
-    contentString += "echo Remember to call vcvarsall.bat to complete environment setup!\r\n";
+    contentString += "echo Remember to call vcvarsall.bat amd64 to complete environment setup!\r\n";
     // Dump batch file
     component.addOperation("AppendFile", batchFileName, contentString);
 
@@ -50,66 +50,28 @@ createShortcuts = function()
     var cmdLocation = windir + "\\system32\\cmd.exe";
     component.addOperation( "CreateShortcut",
                             cmdLocation,
-                            "@StartMenuDir@/%QT_VERSION%/MSVC 2010/Qt " + qtStringVersion + " for Desktop (MSVC 2010).lnk",
+                            "@StartMenuDir@/%QT_VERSION%/MSVC 2010 (64-bit)/Qt " + qtStringVersion + " 64-bit for Desktop (MSVC 2010).lnk",
                             "/A /Q /K " + batchFileName);
     // Assistant
     component.addOperation( "CreateShortcut",
                             component_root_path + "/bin/assistant.exe",
-                            "@StartMenuDir@/%QT_VERSION%/MSVC 2010/Assistant.lnk");
+                            "@StartMenuDir@/%QT_VERSION%/MSVC 2010 (64-bit)/Assistant.lnk");
 
     // Designer
     component.addOperation( "CreateShortcut",
                             component_root_path + "/bin/designer.exe",
-                            "@StartMenuDir@/%QT_VERSION%/MSVC 2010/Designer.lnk");
+                            "@StartMenuDir@/%QT_VERSION%/MSVC 2010 (64-bit)/Designer.lnk");
 
     // Linguist
     component.addOperation( "CreateShortcut",
                             component_root_path + "/bin/linguist.exe",
-                            "@StartMenuDir@/%QT_VERSION%/MSVC 2010/Linguist.lnk");
-
-
-    // Examples & Demos
-    //component.addOperation( "CreateShortcut",
-    //                        component_root_path + "/bin/qtdemo.exe",
-    //                        "@StartMenuDir@/%QT_VERSION%/MSVC 2010/Examples & Demos.lnk");
+                            "@StartMenuDir@/%QT_VERSION%/MSVC 2010 (64-bit)/Linguist.lnk");
 }
 
 Component.prototype.createOperations = function()
 {
     component.createOperations();
 
-    if (installer.value("os") == "x11") {
-        try {
-            // patch Qt binaries
-            component.addOperation( "QtPatch", "linux", installer.value("TargetDir") + "%TARGET_INSTALL_DIR%" );
-        } catch( e ) {
-            print( e );
-        }
-
-        try {
-            // set assistant binary path
-            var assistantBinary = installer.value("TargetDir") + "/Desktop/Qt/5.0.0-beta2/gcc_64" + "/bin/assistant";
-            installer.setValue("AssistantBinary", assistantBinary);
-        } catch( e ) {
-            print( e );
-        }
-    }
-    if (installer.value("os") == "mac") {
-        try {
-            // patch Qt binaries
-            component.addOperation( "QtPatch", "mac", installer.value("TargetDir") + "%TARGET_INSTALL_DIR%" );
-        } catch( e ) {
-            print( e );
-        }
-
-        try {
-            // set assistant binary path
-            var assistantBinary = installer.value("TargetDir") + "%TARGET_INSTALL_DIR%" + "/bin/Assistant.app/Contents/MacOS/Assistant";
-            installer.setValue("AssistantBinary", assistantBinary);
-        } catch( e ) {
-            print( e );
-        }
-    }
     if (installer.value("os") == "win") {
         try {
             // patch Qt binaries

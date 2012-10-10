@@ -4,8 +4,8 @@ name:                   qt
 [PlatformIdentifier]
 identifier:             windows
 
-[ArchiveRemoteLocation.dl241]
-base_url:               http://it-dl241-hki.it.local/packages/
+[ArchiveRemoteLocation.default]
+base_url:               http://add.your.archive.url
 base_path:
 
 # for testing purposes
@@ -58,17 +58,19 @@ archive_name:           qt-project-url.7z
 
 
 [qt.500_beta2.win64_msvc2010_64]
-archives:               500_beta2.msvc2010_64, icu_49.win_64
+
+[qt.500_beta2.win64_msvc2010_64.essentials]
+archives:               500_beta2.msvc2010_64.essentials, icu_49.win_64
 target_install_base:    /5.0.0-beta2/msvc2010_64
 version:                5.0.0
 version_tag:            %QT_VERSION%
 package_default:        true
-[500_beta2.msvc2010_64]
-archive_uri:            /qt/5.0.0_opensource/windows_vs2010_64/qt5_all.7z
+[500_beta2.msvc2010_64.essentials]
+archive_uri:            /qt/5.0.0_opensource/windows_vs2010_64/qt5_essentials.7z
 package_strip_dirs:     5
 target_install_dir:     /
 rpath_target:
-archive_name:           msvc2010_64_all.7z
+archive_name:           msvc2010_64_essentials.7z
 [icu_49.win_64]
 archive_uri:            http://origin.releases.qt-project.org/prebuilt/icu_49_win_64.7z
 package_strip_dirs:     0
@@ -76,4 +78,17 @@ target_install_dir:     /bin
 rpath_target:
 archive_name:           icu_49_win_64.7z
 
+
+[qt.500_beta2.win64_msvc2010_64.addons]
+archives:               500_beta2.msvc2010_64.addons, icu_49.win_64
+target_install_base:    /5.0.0-beta2/msvc2010_64
+version:                5.0.0
+version_tag:            %QT_VERSION%
+package_default:        true
+[500_beta2.msvc2010_64.addons]
+archive_uri:            /qt/5.0.0_opensource/windows_vs2010_64/qt5_addons.7z
+package_strip_dirs:     5
+target_install_dir:     /
+rpath_target:
+archive_name:           msvc2010_64_addons.7z
 

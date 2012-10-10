@@ -1,6 +1,6 @@
 [qt.tools]
 
-[qt.tools.qtcreator]
+[qt.tools.qtcreator.desktop]
 archives:               tools.qtcreator
 target_install_base:    /Qt Creator
 version:                2.6.0

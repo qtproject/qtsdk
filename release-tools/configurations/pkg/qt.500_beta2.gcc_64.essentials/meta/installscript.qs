@@ -29,19 +29,11 @@ Component.prototype.createOperations = function()
         } catch( e ) {
             print( e );
         }
-    }
-    if (installer.value("os") == "mac") {
+
         try {
-            // patch Qt binaries
-            component.addOperation( "QtPatch", "mac", installer.value("TargetDir") + "%TARGET_INSTALL_DIR%" );
-        } catch( e ) {
-            print( e );
-        }
-    }
-    if (installer.value("os") == "win") {
-        try {
-            // patch Qt binaries
-            component.addOperation( "QtPatch", "windows", installer.value("TargetDir") + "%TARGET_INSTALL_DIR%" );
+            // set assistant binary path
+            var assistantBinary = installer.value("TargetDir") + "/Desktop/Qt/5.0.0-beta2/gcc_64" + "/bin/assistant";
+            installer.setValue("AssistantBinary", assistantBinary);
         } catch( e ) {
             print( e );
         }
