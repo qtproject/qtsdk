@@ -127,13 +127,13 @@ def init_mkqt5bld():
 
     print_wrap('---------------- Initializing build --------------------------------')
     #do not edit configure options, if configure options are overridden from commandline options
+    if bldinstallercommon.is_linux_platform() or bldinstallercommon.is_mac_platform():
+        CONFIGURE_CMD = './'
+
     if not CONFIGURE_OVERRIDE:
         if bldinstallercommon.is_linux_platform():          #linux
-            CONFIGURE_CMD = './'
             CONFIGURE_OPTIONS += ' -no-gtkstyle'
         elif bldinstallercommon.is_mac_platform():          #mac
-            CONFIGURE_CMD = './'
-            #CONFIGURE_OPTIONS += ' -make libs -no-pch' <- not sure if these are needed,
             #Added -developer-build to get the sources built, should be removed later..?
             CONFIGURE_OPTIONS = '-developer-build -opensource -confirm-license -nomake tests -platform macx-clang -prefix $PWD/qtbase'
 
@@ -496,14 +496,15 @@ def parse_cmd_line():
     (options, args) = OPTION_PARSER.parse_args()
 
     QT_SRC_PACKAGE_URL      = options.src_url
-    MAKE_CMD                = options.make_cmd
+    if options.make_cmd:
+        MAKE_CMD                = options.make_cmd
     MAKE_THREAD_COUNT       = options.make_thread_count
     MAKE_INSTALL_CMD        = MAKE_CMD + ' install'
     SILENT_BUILD            = options.silent_build
     if options.module_ignore_list:
         QT5_MODULES_IGNORE_LIST = options.module_ignore_list
     STRICT_MODE             = options.strict_mode
-    if CONFIGURE_OPTIONS != options.configure_options and options.configure_options != "":
+    if CONFIGURE_OPTIONS != options.configure_options and options.configure_options:
         CONFIGURE_OVERRIDE = True
         CONFIGURE_OPTIONS = options.configure_options
     print_wrap('---------------------------------------------------------------------')
@@ -522,7 +523,7 @@ def setup_option_parser():
                       action="store", type="string", dest="src_url", default="",
                       help="the url where to fetch the source package")
     OPTION_PARSER.add_option("-m", "--make_cmd",
-                      action="store", type="string", dest="make_cmd", default="make",
+                      action="store", type="string", dest="make_cmd", default="",
                       help="make command (e.g. mingw32-make). On linux defaults to make and on win nmake.")
     OPTION_PARSER.add_option("-j", "--jobs",
                       action="store", type="int", dest="make_thread_count", default=8,
