@@ -53,15 +53,15 @@ rpath_target:
 archive_name:           readme.7z
 
 
-[qt.500_beta2.gcc_64]
-archives:               500_beta2.gcc_64
-target_install_base:    /5.0.0-beta2/gcc_64
+[qt.500_beta2.clang_64]
+archives:               500_beta2.clang_64
+target_install_base:    /5.0.0-beta2/clang_64
 version:                5.0.0
 version_tag:            %QT_VERSION%
 package_default:        true
-[500_beta2.gcc_64]
+[500_beta2.clang_64]
 archive_uri:            /qt/5.0.0_opensource/mac_cocoa_10.7/qt5_all.7z
 package_strip_dirs:     12
 target_install_dir:     /
 rpath_target:
-archive_name:           gcc_64_mac_qt5_all.7z
+archive_name:           clang_64_mac_qt5_all.7z
