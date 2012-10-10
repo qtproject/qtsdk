@@ -25,9 +25,6 @@ package_url:            http://it-dl241-hki.it.local/packages/sdk_packages_qt5_l
 repository_url_release: http://../qt5repository/macx/x64/online_qt5sdk_repo
 repository_url_rnd:     http://../qt5repository/macx/x64/online_qt5sdk_repo
 
-[TargetArchitechture]
-instruction_set:        x86_64
-
 [ConfigDir]
 template_name:          config_qt5
 
@@ -39,8 +36,7 @@ packages_dir:           pkg
 
 [InstallerFrameworkTools]
 name:                   ifwt
-package_url:            http://it-dl241-hki.it.local/packages/sdk_packages_qt5_lgpl_release/ifw/1.2.0/installer-framework-build-mac.7z
-version:                1.2.0
+package_url:            http://origin.releases.qt-project.org/digia/ifw_prebuilt/installer-framework-build-mac.7z
 
 
 [qt.readme]
