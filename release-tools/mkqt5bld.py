@@ -299,7 +299,7 @@ def build_qt():
         print_wrap('    Building module ' + module_name)
         cmd_args = MAKE_CMD
         if bldinstallercommon.is_linux_platform():
-            cmd_args += ' -j' + MAKE_THREAD_COUNT
+            cmd_args += ' -j' + str(MAKE_THREAD_COUNT)
         cmd_args += ' module-' + module_name
         bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, STRICT_MODE)
 
