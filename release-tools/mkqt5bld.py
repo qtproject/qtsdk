@@ -63,8 +63,9 @@ MISSING_MODULES_FILE                = WORK_DIR + os.sep + 'missing_modules.txt'
 CONFIGURE_CMD                       = ''
 MODULE_ARCHIVE_DIR_NAME             = 'module_archives'
 MODULE_ARCHIVE_DIR                  = SCRIPT_ROOT_DIR + os.sep + MODULE_ARCHIVE_DIR_NAME
-MAIN_INSTALL_DIR_NAME               = 'main_install'
 SUBMODULE_INSTALL_BASE_DIR_NAME     = "submodule_install_"
+ESSENTIALS_INSTALL_DIR_NAME         = SUBMODULE_INSTALL_BASE_DIR_NAME + 'essentials'
+ADDONS_INSTALL_DIR_NAME             = SUBMODULE_INSTALL_BASE_DIR_NAME + 'addons'
 #list of modules, only a backup list, this list will be updated during script execution
 QT5_MODULES_LIST                    = [ 'qt3d', 'qlalr', 'qtactiveqt', 'qtbase',     \
                                         'qtconnectivity', 'qtdeclarative', 'qtdoc', \
@@ -73,8 +74,11 @@ QT5_MODULES_LIST                    = [ 'qt3d', 'qlalr', 'qtactiveqt', 'qtbase',
                                         'qtlocation', 'qtmultimedia', 'qtpim', \
                                         'qtqa', 'qtquick1', 'qtrepotools', 'qtscript', \
                                         'qtsensors', 'qtsvg', 'qtsystems', 'qttools', \
-                                        'qttranslations', 'qtwayland', 'webkit', \
+                                        'qttranslations', 'qtwayland', 'qtwebkit', \
                                         'qtwebkit-examples-and-demos', 'qtxmlpatterns']
+QT5_ESSENTIALS                      = [ 'qtbase', 'qtdeclarative', 'qtdoc', \
+                                        'qtjsbackend', 'qtquick1', 'qtscript', \
+                                        'qttools', 'qtwebkit', 'qtxmlpatterns']
 ORIGINAL_QMAKE_QT_PRFXPATH          = ''
 PADDING                             = "______________________________PADDING______________________________"
 FILES_TO_REMOVE_LIST                = ['Makefile', 'Makefile.Release', 'Makefile.Debug', \
@@ -251,8 +255,6 @@ def build_qt():
         print_wrap(' configure found from ' + QT_SOURCE_DIR + os.sep + 'qtbase')
         bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR + os.sep + 'qtbase', True)
 
-    # build
-    print_wrap('---------------- Building Qt ---------------------------------------')
     #create list of modules in default make order
     regex = re.compile('^make_first:.*') #search line starting with 'make_default:'
     submodule_list = []
@@ -288,6 +290,8 @@ def build_qt():
         print_wrap('*** Error! Main Makefile not found. Build failed!')
         sys.exit(-1)
 
+    # build
+    print_wrap('---------------- Building Qt ---------------------------------------')
     #remove if old dir exists
     if os.path.exists(MAKE_INSTALL_ROOT_DIR):
         shutil.rmtree(MAKE_INSTALL_ROOT_DIR)
@@ -301,7 +305,11 @@ def build_qt():
         if bldinstallercommon.is_linux_platform():
             cmd_args += ' -j' + str(MAKE_THREAD_COUNT)
         cmd_args += ' module-' + module_name
-        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, STRICT_MODE)
+        out = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, STRICT_MODE)
+        if out != 0:
+            file_handle = open(MISSING_MODULES_FILE, 'a')
+            file_handle.write('\nFailed to build ' + module_name)
+            file_handle.close()
 
     print_wrap('--------------------------------------------------------------------')
 
@@ -311,35 +319,20 @@ def build_qt():
 ###############################
 def install_qt():
     print_wrap('---------------- Installing Qt -------------------------------------')
-    #make install to single install root
-    cmd_args = ''
-    install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + MAIN_INSTALL_DIR_NAME
-    #TODO: there probably is a better way to fix the delimeters, but this is working atm
-    if 'mingw' in MAKE_CMD:
-        install_root_path = WORK_DIR + '/' + MAKE_INSTALL_ROOT_DIR_NAME + '/' + MAIN_INSTALL_DIR_NAME
-    if bldinstallercommon.is_win_platform():
-        install_root_path = install_root_path[3:]
-        print_wrap('    On Windows, use install root path: ' + install_root_path)
-
-    print_wrap('    Install modules to single INSTALL_ROOT')
-    for module_name in QT5_MODULES_LIST:
-        submodule_dir_name = QT_SOURCE_DIR + os.sep + module_name
-        make_i_cmd = MAKE_INSTALL_CMD
-        if module_name == 'qtwebkit':
-            make_i_cmd = make_i_cmd + ' -f Makefile.WebKit install'
-        cmd_args = ''
-        cmd_args += make_i_cmd + ' ' + 'INSTALL_ROOT=' + install_root_path
-        print_wrap('    Installing module: ' + module_name)
-        print_wrap('          -> cmd args: ' + cmd_args)
-        print_wrap('                -> in: ' + submodule_dir_name)
-        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), submodule_dir_name, STRICT_MODE)
 
     #make install for each module with INSTALL_ROOT
     print_wrap('    Install modules to separate INSTALL_ROOT')
     for module_name in QT5_MODULES_LIST:
-        install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + SUBMODULE_INSTALL_BASE_DIR_NAME + module_name
+        install_dir = ''
+        if module_name in QT5_ESSENTIALS:
+            install_dir = ESSENTIALS_INSTALL_DIR_NAME
+        else:
+            install_dir = ADDONS_INSTALL_DIR_NAME
+        install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + install_dir
+        #TODO: there probably is a better way to fix the delimeters for mingw,
+        # but this is working atm
         if 'mingw' in MAKE_CMD:
-            install_root_path = WORK_DIR + '/' + MAKE_INSTALL_ROOT_DIR_NAME + '/' + SUBMODULE_INSTALL_BASE_DIR_NAME + module_name
+            install_root_path = WORK_DIR + '/' + MAKE_INSTALL_ROOT_DIR_NAME + '/' + install_dir
         if bldinstallercommon.is_win_platform():
             install_root_path = install_root_path[3:]
             print_wrap('    Using install root path: ' + install_root_path)
@@ -435,14 +428,7 @@ def clean_up(install_dir):
                 bldinstallercommon.delete_files_by_type_recursive(lib_path, '\\.dll')
             else:
                 print_wrap('*** Warning! Unable to locate \\lib directory under: ' + base_path)
-        # then the full install
-        base_path_full_install = MAKE_INSTALL_ROOT_DIR + os.sep + MAIN_INSTALL_DIR_NAME
-        if os.path.exists(base_path_full_install):
-            full_install_lib_path = bldinstallercommon.locate_directory(base_path_full_install, 'lib')
-            if full_install_lib_path:
-                bldinstallercommon.delete_files_by_type_recursive(full_install_lib_path, '\\.dll')
-            else:
-                print_wrap('*** Warning! Unable to locate \\lib directory under: ' + full_install_lib_path)
+
     print_wrap('--------------------------------------------------------------------')
 
 ###############################
@@ -451,22 +437,22 @@ def clean_up(install_dir):
 def archive_submodules():
     print_wrap('---------------- Archiving submodules ------------------------------')
     bldinstallercommon.create_dirs(MODULE_ARCHIVE_DIR)
-    # submodules
-    for sub_dir in QT5_MODULES_LIST:
-        print_wrap('---------- Archiving ' + sub_dir)
-        if os.path.exists(MAKE_INSTALL_ROOT_DIR + os.sep + SUBMODULE_INSTALL_BASE_DIR_NAME + sub_dir):
-            cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + sub_dir + '.7z ' + SUBMODULE_INSTALL_BASE_DIR_NAME + sub_dir
-            bldinstallercommon.do_execute_sub_process_get_std_out(cmd_args.split(' '), MAKE_INSTALL_ROOT_DIR, True, True)
-        else:
-            print_wrap(MAKE_INSTALL_ROOT_DIR + os.sep + SUBMODULE_INSTALL_BASE_DIR_NAME + sub_dir + ' DIRECTORY NOT FOUND\n      -> ' + sub_dir + ' not archived!')
-            file_handle = open(MISSING_MODULES_FILE, 'a')
-            file_handle.write('\nFailed to build ' + sub_dir)
-            file_handle.close()
-    # one chunk
-    if os.path.exists(MAKE_INSTALL_ROOT_DIR + os.sep + MAIN_INSTALL_DIR_NAME):
-        print_wrap('    Archiving all modules to archive qt5_all.7z')
-        cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_all' + '.7z ' + MAIN_INSTALL_DIR_NAME
+
+    # Essentials
+    print_wrap('---------- Archiving essential modules')
+    if os.path.exists(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME):
+        cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_essentials' + '.7z ' + ESSENTIALS_INSTALL_DIR_NAME
         bldinstallercommon.do_execute_sub_process_get_std_out(cmd_args.split(' '), MAKE_INSTALL_ROOT_DIR, True, True)
+    else:
+        print_wrap(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> essentials not archived!')
+
+    # Add-ons
+    print_wrap('---------- Archiving add-on modules')
+    if os.path.exists(MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME):
+        cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_addons' + '.7z ' + ADDONS_INSTALL_DIR_NAME
+        bldinstallercommon.do_execute_sub_process_get_std_out(cmd_args.split(' '), MAKE_INSTALL_ROOT_DIR, True, True)
+    else:
+        print_wrap(MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> add-ons not archived!')
 
     print_wrap('---------------------------------------------------------------------')
 
