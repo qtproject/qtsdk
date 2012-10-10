@@ -75,7 +75,6 @@ QT5_MODULES_LIST                    = [ 'qt3d', 'qlalr', 'qtactiveqt', 'qtbase',
                                         'qtsensors', 'qtsvg', 'qtsystems', 'qttools', \
                                         'qttranslations', 'qtwayland', 'webkit', \
                                         'qtwebkit-examples-and-demos', 'qtxmlpatterns']
-QT5_MODULES_IGNORE_LIST             = []
 CONFIGURE_OPTIONS                   = '-opensource -confirm-license -debug-and-release -release -nomake tests -no-pch'
 FORCE_MAKE                          = False
 ORIGINAL_QMAKE_QT_PRFXPATH          = ''
@@ -503,7 +502,8 @@ def parse_cmd_line():
     MAKE_THREAD_COUNT       = options.make_thread_count
     MAKE_INSTALL_CMD        = MAKE_CMD + ' install'
     SILENT_BUILD            = options.silent_build
-    QT5_MODULES_IGNORE_LIST = options.module_ignore_list
+    if options.module_ignore_list:
+        QT5_MODULES_IGNORE_LIST = options.module_ignore_list
     STRICT_MODE             = options.strict_mode
     if CONFIGURE_OPTIONS != options.configure_options and options.configure_options != "":
         CONFIGURE_OVERRIDE = True
