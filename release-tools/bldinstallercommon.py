@@ -539,8 +539,10 @@ def requires_rpath(file_path):
     elif IS_LINUX_PLATFORM or IS_SOLARIS_PLATFORM:
         base = os.path.basename(file_path)
         filename, ext = os.path.splitext(base)
-        # filter out some files from search, TODO
-        m = re.match('\.o|\.h|\.png|\.htm|\.html|\.qml|\.qrc|\.jpg|\.svg|\.pro|\.pri|\.desktop|\.sci|\.txt|\.qdoc', ext)
+        # filter out some commonly encountered files from search
+        m = re.match('\.o|\.h|\.png|\.htm|\.html|\.qml|\.qrc|\.jpg|\.svg|\
+                      \.pro|\.pri|\.desktop|\.sci|\.txt|\.qdoc|\.debug|\
+                      \.xml|\.wav|\.txt|\.ui|\.qrc|\.qml|\.js|\.mm', ext)
         if m:
             return False
         if filename.lower() == 'qmake':
