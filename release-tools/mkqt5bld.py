@@ -75,8 +75,6 @@ QT5_MODULES_LIST                    = [ 'qt3d', 'qlalr', 'qtactiveqt', 'qtbase',
                                         'qtsensors', 'qtsvg', 'qtsystems', 'qttools', \
                                         'qttranslations', 'qtwayland', 'webkit', \
                                         'qtwebkit-examples-and-demos', 'qtxmlpatterns']
-CONFIGURE_OPTIONS                   = '-opensource -confirm-license -debug-and-release -release -nomake tests -no-pch'
-FORCE_MAKE                          = False
 ORIGINAL_QMAKE_QT_PRFXPATH          = ''
 PADDING                             = "______________________________PADDING______________________________"
 FILES_TO_REMOVE_LIST                = ['Makefile', 'Makefile.Release', 'Makefile.Debug', \
@@ -92,7 +90,7 @@ QT5_MODULES_IGNORE_LIST             = []
 MAKE_CMD                            = ''
 MAKE_THREAD_COUNT                   = '8' # some initial default value
 MAKE_INSTALL_CMD                    = ''
-CONFIGURE_OPTIONS                   = '-opensource -confirm-license -debug-and-release -release -nomake tests -no-pch'
+CONFIGURE_OPTIONS                   = '-opensource -confirm-license -debug-and-release -release -nomake tests'
 CONFIGURE_OVERRIDE                  = False
 
 
