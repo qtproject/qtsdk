@@ -4,8 +4,8 @@ name:                   qt
 [PlatformIdentifier]
 identifier:             mac
 
-[ArchiveRemoteLocation.dl241]
-base_url:               http://it-dl241-hki.it.local/packages/
+[ArchiveRemoteLocation.default]
+base_url:               http://add.your.archive.url
 base_path:
 
 # for testing purposes

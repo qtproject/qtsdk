@@ -52,12 +52,12 @@ archive_name:           readme.7z
 
 [qt.500_beta2.gcc_64]
 [qt.500_beta2.gcc_64.essentials]
-archives:               500_beta2.gcc_64, 500_beta2.gcc_64.icu
+archives:               500_beta2.gcc_64.essentials, 500_beta2.gcc_64.icu
 target_install_base:    /5.0.0-beta2/gcc_64
 version:                5.0.0
 version_tag:            %QT_VERSION%
 package_default:        true
-[500_beta2.gcc_64]
+[500_beta2.gcc_64.essentials]
 archive_uri:            /qt/5.0.0_opensource/linux_gcc_64_ubuntu1110/qt5_essentials.7z
 package_strip_dirs:     4
 target_install_dir:     /
@@ -71,12 +71,12 @@ rpath_target:
 archive_name:           libicu_x86_64_ubuntu1110.7z
 
 [qt.500_beta2.gcc_64.addons]
-archives:               500_beta2.gcc_64
+archives:               500_beta2.gcc_64.addons
 target_install_base:    /5.0.0-beta2/gcc
 version:                5.0.0
 version_tag:            %QT_VERSION%
 package_default:        true
-[500_beta2.gcc_64]
+[500_beta2.gcc_64.addons]
 archive_uri:            /qt/5.0.0_opensource/linux_gcc_64_ubuntu1110/qt5_addons.7z
 package_strip_dirs:     4
 target_install_dir:     /
