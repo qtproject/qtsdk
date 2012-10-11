@@ -51,7 +51,7 @@ import bldinstallercommon
 DEVELOPMENT_MODE                    = False
 INCREMENTAL_MODE                    = False
 CONFIG_IFW                          = ''
-SCRIPT_ROOT_DIR                     = os.getcwd()
+SCRIPT_ROOT_DIR                     = os.path.dirname(os.path.realpath(__file__)
 PLATFORM_IDENTIFIER                 = ''
 MAKE_CMD                            = ''
 QT_QMAKE_BIN                        = ''
