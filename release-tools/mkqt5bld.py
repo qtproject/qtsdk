@@ -131,7 +131,7 @@ def init_mkqt5bld():
 
     print_wrap('---------------- Initializing build --------------------------------')
     #do not edit configure options, if configure options are overridden from commandline options
-    if bldinstallercommon.is_linux_platform() or bldinstallercommon.is_mac_platform():
+    if bldinstallercommon.is_unix_platform():
         CONFIGURE_CMD = './'
 
     if not CONFIGURE_OVERRIDE:
@@ -159,7 +159,7 @@ def init_mkqt5bld():
                 MAKE_CMD += ' /s'
                 MAKE_INSTALL_CMD += ' /s'
             MAKE_INSTALL_CMD += ' install'
-        elif bldinstallercommon.is_linux_platform() or bldinstallercommon.is_mac_platform():    #linux & mac
+        elif bldinstallercommon.is_unix_platform():    #linux & mac
             MAKE_CMD = 'make'
             MAKE_INSTALL_CMD = 'make'
             if SILENT_BUILD:
@@ -302,7 +302,7 @@ def build_qt():
     for module_name in QT5_MODULES_LIST:
         print_wrap('    Building module ' + module_name)
         cmd_args = MAKE_CMD
-        if bldinstallercommon.is_linux_platform():
+        if bldinstallercommon.is_unix_platform():
             cmd_args += ' -j' + str(MAKE_THREAD_COUNT)
         cmd_args += ' module-' + module_name
         out = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, STRICT_MODE)
