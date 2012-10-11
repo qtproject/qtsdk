@@ -72,7 +72,7 @@ archive_name:           libicu_x86_64_ubuntu1110.7z
 
 [qt.500_beta2.gcc_64.addons]
 archives:               500_beta2.gcc_64.addons
-target_install_base:    /5.0.0-beta2/gcc
+target_install_base:    /5.0.0-beta2/gcc_64
 version:                5.0.0
 version_tag:            %QT_VERSION%
 package_default:        true
