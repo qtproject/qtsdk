@@ -483,7 +483,7 @@ def parse_cmd_line():
 
     QT_SRC_PACKAGE_URL      = options.src_url
     if options.make_cmd:
-        MAKE_CMD                = options.make_cmd
+        MAKE_CMD            = options.make_cmd
     MAKE_THREAD_COUNT       = options.make_thread_count
     MAKE_INSTALL_CMD        = MAKE_CMD + ' install'
     SILENT_BUILD            = options.silent_build
@@ -493,6 +493,8 @@ def parse_cmd_line():
     if CONFIGURE_OPTIONS != options.configure_options and options.configure_options:
         CONFIGURE_OVERRIDE = True
         CONFIGURE_OPTIONS = options.configure_options
+    if options.add_configure_option:
+        CONFIGURE_OPTIONS += ' ' + options.add_configure_option
     print_wrap('---------------------------------------------------------------------')
     return True
 
@@ -526,6 +528,9 @@ def setup_option_parser():
     OPTION_PARSER.add_option("-c", "--configure",
                       action="store", type="string", dest="configure_options", default="",
                       help="options for configure command, for overriding the defaults in script.")
+    OPTION_PARSER.add_option("-a", "--add-configure-option",
+                      action="store", type="string", dest="add_configure_option", default="",
+                      help="options to be added to default configure options.")
     print_wrap('---------------------------------------------------------------------')
 
 
