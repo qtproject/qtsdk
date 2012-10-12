@@ -44,7 +44,7 @@ STRICT=0
 function usage()
 {
   echo "Usage:"
-  echo "./mksrc.sh -u <file_url_to_git_repo> -v <version> [-m][-d][-i sub][-l lic][-p patch][-t revision][--strict][--silent]"
+  echo "./mksrc.sh -u <file_url_to_git_repo> -v <version> [-m][-d][-i sub][-l lic][-p patch][-r revision][--strict][--silent]"
   echo "where -u is path to git repo and -v is version"
   echo "Optional parameters:"
   echo "-m             one is able to tar each sub module separately"
@@ -55,7 +55,7 @@ function usage()
   echo "-i submodule   will exclude the submodule from final package "
   echo "-l license     license type, will default to 'opensource', if set to 'commercial' all the necessary patches will be applied for commercial build"
   echo "-p patch file  patch file (.sh) to execute, example: change_licenses.sh"
-  echo "-t revision    committish to pack (tag name, branch name or SHA-1)"
+  echo "-r revision    committish to pack (tag name, branch name or SHA-1)"
 }
 
 function cleanup()
@@ -138,7 +138,7 @@ while test $# -gt 0; do
       shift
       DOCS=skip
     ;;
-    --tag)
+    -t|--tag)
       shift
       DO_TAG=true
     ;;
@@ -172,7 +172,7 @@ while test $# -gt 0; do
       PATCH_FILE=$1
       shift
     ;;
-    -t|--tag)
+    -r|--revision)
       shift
       REPO_TAG=$1
       shift
