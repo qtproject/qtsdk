@@ -50,10 +50,6 @@ module_qtmultimedia.subdir = qtmultimedia
 module_qtmultimedia.target = module-qtmultimedia
 module_qtmultimedia.depends = module_qtbase
 
-module_qt3d.subdir = qt3d
-module_qt3d.target = module-qt3d
-module_qt3d.depends = module_qtbase module_qtdeclarative
-
 module_qtimageformats.subdir = qtimageformats
 module_qtimageformats.target = module-qtimageformats
 module_qtimageformats.depends = module_qtbase
@@ -95,9 +91,6 @@ exists(qtdeclarative/qtdeclarative.pro) {
     # These modules do not require qtdeclarative, but can use it if it is available
     module_qttools.depends += module_qtdeclarative
     module_qtmultimedia.depends += module_qtdeclarative
-}
-exists(qt3d/qt3d.pro) {
-    SUBDIRS += module_qt3d
 }
 exists(qtscript/qtscript.pro): SUBDIRS += module_qtscript
 exists(qtmultimedia/qtmultimedia.pro) {
