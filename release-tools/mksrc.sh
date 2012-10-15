@@ -44,18 +44,18 @@ STRICT=0
 function usage()
 {
   echo "Usage:"
-  echo "./mksrc.sh -u <file_url_to_git_repo> -v <version> [-m][-d][-i sub][-l lic][-p patch][-r revision][--strict][--silent]"
+  echo "./mksrc.sh -u <file_url_to_git_repo> -v <version> [-m][-N][--no-docs][--tag][-i sub][-l lic][-p patch][-r revision][--strict]"
   echo "where -u is path to git repo and -v is version"
   echo "Optional parameters:"
   echo "-m             one is able to tar each sub module separately"
+  echo "-N             don't use git fetch to update submodules"
   echo "--no-docs      skip generating documentation"
   echo "--tag          also tag the repository"
-  echo "-N             don't use git fetch to update submodules"
-  echo "--strict       strict mode, execution will fail on any error"
   echo "-i submodule   will exclude the submodule from final package "
   echo "-l license     license type, will default to 'opensource', if set to 'commercial' all the necessary patches will be applied for commercial build"
   echo "-p patch file  patch file (.sh) to execute, example: change_licenses.sh"
   echo "-r revision    committish to pack (tag name, branch name or SHA-1)"
+  echo "--strict       strict mode, execution will fail on any error"
 }
 
 function cleanup()
