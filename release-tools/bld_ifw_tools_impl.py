@@ -91,7 +91,11 @@ def init_config(configurations_dir):
     global INSTALLER_FRAMEWORK_ARCHIVE_NAME
     global INSTALLERBASE_ARCHIVE_NAME
 
-    conf_path = SCRIPT_ROOT_DIR + os.sep + configurations_dir + os.sep + PLATFORM_IDENTIFIER + os.sep + 'installer-framework'
+    # check first if absolute directory path given
+    if os.path.isdir(configurations_dir):
+        conf_path = configurations_dir + os.sep + PLATFORM_IDENTIFIER + os.sep + 'installer-framework'
+    else:
+        SCRIPT_ROOT_DIR + os.sep + configurations_dir + os.sep + PLATFORM_IDENTIFIER + os.sep + 'installer-framework'
     CONFIG_IFW = ConfigParser.ConfigParser()
     CONFIG_IFW.readfp(open(conf_path))
 

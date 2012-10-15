@@ -149,7 +149,7 @@ def check_required_tools():
 ##############################################################
 def check_platform_identifier(platform_identifier):
     """Check if given platform identifier is valid."""
-    path_to_be_checked = SCRIPT_ROOT_DIR + os.sep + CONFIGURATIONS_DIR + os.sep + platform_identifier
+    path_to_be_checked = CONFIGURATIONS_DIR + os.sep + platform_identifier
     if os.path.exists(path_to_be_checked):
         return
     print '*** Unsupported platform identifier given: ' + platform_identifier
@@ -162,7 +162,13 @@ def check_platform_identifier(platform_identifier):
 ##############################################################
 def check_configuration_file(configuration_name):
     """ Check if valid configuration file """
-    path_to_be_checked = SCRIPT_ROOT_DIR + os.sep + CONFIGURATIONS_DIR + os.sep + configuration_name
+    global CONFIGURATIONS_DIR
+    # check first if absolute directory path
+    if os.path.isfile(CONFIGURATIONS_DIR + os.sep + configuration_name):
+        return
+    # if not then it must be under default location
+    CONFIGURATIONS_DIR = SCRIPT_ROOT_DIR + os.sep + CONFIGURATIONS_DIR
+    path_to_be_checked = CONFIGURATIONS_DIR + os.sep + configuration_name
     if os.path.isfile(path_to_be_checked):
         return
     print '*** Unable to find given configuration file: ' + path_to_be_checked
@@ -335,8 +341,8 @@ def init_data():
         print ' [Development mode enabled]'
         print ' --------------------------'
 
-    common_conf_path = SCRIPT_ROOT_DIR + os.sep + CONFIGURATIONS_DIR + os.sep + COMMON_CONFIG_DIR_NAME + os.sep + COMMON_CONFIG_NAME
-    target_conf_path = SCRIPT_ROOT_DIR + os.sep + CONFIGURATIONS_DIR + os.sep + MAIN_CONFIG_NAME
+    common_conf_path = CONFIGURATIONS_DIR + os.sep + COMMON_CONFIG_DIR_NAME + os.sep + COMMON_CONFIG_NAME
+    target_conf_path = CONFIGURATIONS_DIR + os.sep + MAIN_CONFIG_NAME
     CONFIG_PARSER_COMMON = ConfigParser.ConfigParser()
     print ' Parsing: ' + common_conf_path
     CONFIG_PARSER_COMMON.readfp(open(common_conf_path))
@@ -369,7 +375,7 @@ def init_data():
         if os.path.isabs(package_template_dir):
             PACKAGES_DIR_NAME_LIST.append(package_template_dir)
         else:
-            PACKAGES_DIR_NAME_LIST.append(os.path.normpath(SCRIPT_ROOT_DIR + os.sep + CONFIGURATIONS_DIR + os.sep + package_template_dir))
+            PACKAGES_DIR_NAME_LIST.append(os.path.normpath(CONFIGURATIONS_DIR + os.sep + package_template_dir))
 
     if not DEVELOPMENT_MODE:
         tools_dir_name = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'InstallerFrameworkTools')['name']
@@ -377,7 +383,7 @@ def init_data():
         IFW_TOOLS_DIR = os.path.normpath(IFW_TOOLS_DIR)
 
     # init data for archive locator
-    ARCHIVE_LOCATION_RESOLVER = ArchiveLocationResolver(CONFIG_PARSER_TARGET, ARCHIVE_SERVER_BASE_URL, SCRIPT_ROOT_DIR + os.sep + CONFIGURATIONS_DIR)
+    ARCHIVE_LOCATION_RESOLVER = ArchiveLocationResolver(CONFIG_PARSER_TARGET, ARCHIVE_SERVER_BASE_URL, CONFIGURATIONS_DIR)
     ARCHIVE_LOCATION_RESOLVER.print_server_list()
 
     if DUMP_CONFIG:
@@ -419,7 +425,7 @@ def set_config_directory():
     print '----------------------------------------'
     print ' Set config directory'
     config_dir_template = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'ConfigDir')['template_name']
-    config_dir_template = os.path.normpath(SCRIPT_ROOT_DIR + os.sep + CONFIGURATIONS_DIR + os.sep + config_dir_template)
+    config_dir_template = os.path.normpath(CONFIGURATIONS_DIR + os.sep + config_dir_template)
 
     if not os.path.exists(CONFIG_DIR_DST):
         bldinstallercommon.create_dirs(CONFIG_DIR_DST)
@@ -436,7 +442,7 @@ def set_config_xml():
     print ' Set config.xml'
 
     configxml_filename = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'ConfigXml')['template_name']
-    config_template_source = SCRIPT_ROOT_DIR + os.sep + CONFIGURATIONS_DIR + os.sep + PLATFORM_IDENTIFIER + os.sep + configxml_filename
+    config_template_source = CONFIGURATIONS_DIR + os.sep + PLATFORM_IDENTIFIER + os.sep + configxml_filename
     # if no config.xml template, we assume the "config" template dir already contains it
     if not os.path.exists(config_template_source):
         print '*** Error!'
@@ -766,8 +772,8 @@ def parse_components(target_config):
     """Parse SDK all components"""
     print '----------------------------------------'
     print ' Parse target configuration files'
-    conf_base_path = SCRIPT_ROOT_DIR + os.sep + CONFIGURATIONS_DIR + os.sep + PLATFORM_IDENTIFIER + os.sep
-    main_conf_file = SCRIPT_ROOT_DIR + os.sep + CONFIGURATIONS_DIR + os.sep + MAIN_CONFIG_NAME
+    conf_base_path = CONFIGURATIONS_DIR + os.sep + PLATFORM_IDENTIFIER + os.sep
+    main_conf_file = CONFIGURATIONS_DIR + os.sep + MAIN_CONFIG_NAME
     parse_component_data(main_conf_file, conf_base_path)
     return
 
