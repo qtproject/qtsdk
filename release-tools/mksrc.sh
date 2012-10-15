@@ -30,6 +30,7 @@ DOCS=generate
 EXIT_AFTER_DOCS=false
 IGNORE_LIST=
 LICENSE=opensource
+MAKEARGS=''
 MULTIPACK=no
 PACK_TIME=`date '+%Y-%m-%d'`
 PATCH_FILE=''
@@ -44,11 +45,12 @@ STRICT=0
 function usage()
 {
   echo "Usage:"
-  echo "./mksrc.sh -u <file_url_to_git_repo> -v <version> [-m][-N][--no-docs][--tag][-i sub][-l lic][-p patch][-r revision][--strict]"
+  echo "./mksrc.sh -u <file_url_to_git_repo> -v <version> [-m][-N][--make-args][--no-docs][--tag][-i sub][-l lic][-p patch][-r revision][--strict]"
   echo "where -u is path to git repo and -v is version"
   echo "Optional parameters:"
   echo "-m             one is able to tar each sub module separately"
   echo "-N             don't use git fetch to update submodules"
+  echo "--make-args    extra arguments passed to 'make' command (e.g. --make-args '-j4 -s')"
   echo "--no-docs      skip generating documentation"
   echo "--tag          also tag the repository"
   echo "-i submodule   will exclude the submodule from final package "
@@ -133,6 +135,11 @@ while test $# -gt 0; do
     -m|--modules)
       shift
       MULTIPACK=yes
+    ;;
+    --make-args)
+      shift
+      MAKEARGS=$1
+      shift
     ;;
     --no-docs)
       shift
@@ -323,25 +330,25 @@ if [ $DOCS = generate ]; then
   # Build bootstrapped qdoc
   echo "DOC: configuring build"
   if [ $REPO_NAME = qtsdk ]; then
-    ( cd qtbase ; ./configure -developer-build -opensource -confirm-license -nomake examples -nomake tests -release -fast -no-pch -no-qpa-platform-guard)
+    ( cd qtbase ; ./configure -developer-build -opensource -confirm-license -nomake examples -nomake tests -release -fast -no-pch -no-qpa-platform-guard -silent)
   else
-    ./configure -developer-build -opensource -confirm-license -nomake examples -nomake tests -release -fast -no-pch -no-qpa-platform-guard
+    ./configure -developer-build -opensource -confirm-license -nomake examples -nomake tests -release -fast -no-pch -no-qpa-platform-guard -silent
   fi
   # Run qmake in each module, as this generates the .pri files that tell qdoc what docs to generate
   QMAKE=$PWD/qtbase/bin/qmake
   echo "DOC: running $QMAKE and qmake_all for submodules"
-  for i in `cat $MODULES` ; do if [ -d $i -a -e $i/*.pro ] ; then (cd $i ; $QMAKE ; make qmake_all ) ; fi ; done
+  for i in `cat $MODULES` ; do if [ -d $i -a -e $i/*.pro ] ; then (cd $i ; $QMAKE ; make $MAKEARGS qmake_all ) ; fi ; done
   # Build libQtHelp.so and qhelpgenerator
   echo "DOC: Build libQtHelp.so and qhelpgenerator"
-  (cd qtbase && make)
-  (cd qtxmlpatterns ; make)
-  (cd qttools ; make)
-  (cd qttools/src/assistant/help ; make)
-  (cd qttools/src/assistant/qhelpgenerator ; make)
+  (cd qtbase && make $MAKEARGS)
+  (cd qtxmlpatterns ; make $MAKEARGS)
+  (cd qttools ; make $MAKEARGS)
+  (cd qttools/src/assistant/help ; make $MAKEARGS)
+  (cd qttools/src/assistant/qhelpgenerator ; make $MAKEARGS)
   # Generate the offline docs and qt.qch
   echo "DOC: Generate the offline docs and qt.qch"
-  (cd qtdoc ; $QMAKE ; make qmake_all ; LD_LIBRARY_PATH=$PWD/../qttools/lib make qch_docs)
-  (cd qtdoc ; $QMAKE ; LD_LIBRARY_PATH=$PWD/../qttools/lib make online_docs)
+  (cd qtdoc ; $QMAKE ; make $MAKEARGS qmake_all ; LD_LIBRARY_PATH=$PWD/../qttools/lib make $MAKEARGS qch_docs)
+  (cd qtdoc ; $QMAKE ; LD_LIBRARY_PATH=$PWD/../qttools/lib make $MAKEARGS online_docs)
 
   # exit if so wanted, to speed up
   if [ $EXIT_AFTER_DOCS = true ]; then
