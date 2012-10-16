@@ -94,7 +94,7 @@ QT5_MODULES_IGNORE_LIST             = []
 MAKE_CMD                            = ''
 MAKE_THREAD_COUNT                   = '8' # some initial default value
 MAKE_INSTALL_CMD                    = ''
-CONFIGURE_OPTIONS                   = '-opensource -confirm-license -debug-and-release -release -nomake tests'
+CONFIGURE_OPTIONS                   = '-opensource -confirm-license -debug-and-release -release -nomake tests -qt-zlib -qt-libjpeg -qt-libpng'
 CONFIGURE_OVERRIDE                  = False
 
 
