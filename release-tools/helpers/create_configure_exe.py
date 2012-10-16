@@ -53,7 +53,7 @@ QT_SRC_URL                          = ''
 QT_SRC_ZIP                          = ''
 QT_SRC_DIR                          = SCRIPT_ROOT_DIR
 QT_PKG_NAME                         = ''
-CONFIGURE_OPTIONS                   = '-opensource -debug-and-release -release -nomake tests -confirm-license'
+CONFIGURE_OPTIONS                   = '-help'
 CONFIGURE_CMD                       = 'configure'
 
 
