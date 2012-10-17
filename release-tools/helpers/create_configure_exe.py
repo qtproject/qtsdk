@@ -169,10 +169,10 @@ def configure_qt():
 
     if os.path.exists(QT_SRC_DIR + os.sep + CONFIGURE_CMD):
         print_wrap(' configure found from ' + QT_SRC_DIR )
-        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SRC_DIR, True)
+        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SRC_DIR, False)
     else:
         print_wrap(' configure found from ' + QT_SRC_DIR + os.sep + 'qtbase')
-        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SRC_DIR + os.sep + 'qtbase', True)
+        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SRC_DIR + os.sep + 'qtbase', False)
     print_wrap('--------------------------------------------------------------------')
 
 
