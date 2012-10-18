@@ -307,7 +307,7 @@ def build_qt():
             cmd_args += ' -j' + str(MAKE_THREAD_COUNT)
         cmd_args += ' module-' + module_name
         out = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, STRICT_MODE)
-        if out != 0:
+        if out >= 0:
             file_handle = open(MISSING_MODULES_FILE, 'a')
             file_handle.write('\nFailed to build ' + module_name)
             file_handle.close()
