@@ -63,6 +63,18 @@ CONFIGURE_CMD                       = 'configure'
 def print_wrap(text):
     print 'QT5CONF_EXE: ' + text
 
+###############################
+# function
+###############################
+def print_help():
+    print_wrap('*** Error! Insufficient arguments given!')
+    print_wrap('')
+    print_wrap('Example: python -u create_configure_exe.py src_url=qt-everywhere-opensource-src-5.0.0.tar.gz')
+    print_wrap('')
+    print_wrap('Available options:')
+    print_wrap('')
+    print_wrap('  src_url = [url where to fetch src package]')
+    print_wrap('')
 
 ###############################
 # function
