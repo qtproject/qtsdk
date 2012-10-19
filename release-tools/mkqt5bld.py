@@ -139,8 +139,8 @@ def init_mkqt5bld():
         if bldinstallercommon.is_linux_platform():          #linux
             CONFIGURE_OPTIONS += ' -no-gtkstyle'
         elif bldinstallercommon.is_mac_platform():          #mac
-            #Added -developer-build to get the sources built, should be removed later..?
-            CONFIGURE_OPTIONS = '-developer-build -opensource -confirm-license -nomake tests -platform macx-clang -prefix $PWD/qtbase'
+            #doing insource build because make install fails
+            CONFIGURE_OPTIONS += ' -platform macx-clang -prefix $PWD/qtbase'
 
         #Add padding to original rpaths to make sure that original rpath is longer than the new
         if bldinstallercommon.is_linux_platform() or bldinstallercommon.is_solaris_platform():
