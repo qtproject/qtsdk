@@ -13,7 +13,7 @@ base_path:
 packages:               foo.bar, foo.bar2, foo.bar3
 
 [ExtraPackageConfigurationFiles]
-file_list:              doc-conf, src-conf, tools_64-conf, tools_src-conf
+file_list:              doc-conf, src-conf, tools_64-conf
 
 [OfflinePackageExcludeList]
 package_list:
@@ -91,4 +91,20 @@ package_strip_dirs:     5
 target_install_dir:     /
 rpath_target:
 archive_name:           msvc2010_64_addons.7z
+
+
+[qt.tools.qtcreator]
+
+[qt.tools.qtcreator.desktop]
+archives:               tools.qtcreator.desktop
+target_install_base:    /Tools/Qt Creator
+version:                2.6.0
+version_tag:            %QTCREATOR_VERSION%
+package_default:        true
+[tools.qtcreator.desktop]
+archive_uri:            sdk_packages_qt5_lgpl_release/qtcreator/qtcreator_windows_vs2010_64.7z
+package_strip_dirs:     1
+target_install_dir:     /
+rpath_target:
+archive_name:           qt-creator-opensource-2.6.0-vs2010-64.7z
 

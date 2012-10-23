@@ -13,7 +13,7 @@ base_path:
 packages:               foo.bar, foo.bar2, foo.bar3
 
 [ExtraPackageConfigurationFiles]
-file_list:              doc-conf, src-conf, tools-conf, tools_src-conf
+file_list:              doc-conf, src-conf, tools-conf
 
 [OfflinePackageExcludeList]
 package_list:
@@ -79,4 +79,21 @@ package_strip_dirs:     12
 target_install_dir:     /
 rpath_target:
 archive_name:           clang_64_mac_qt5_addons.7z
+
+[qt.tools]
+
+[qt.tools.qtcreator]
+
+[qt.tools.qtcreator.desktop]
+archives:               tools.qtcreator
+target_install_base:    /Qt Creator
+version:                2.6.0
+version_tag:            %QTCREATOR_VERSION%
+package_default:        true
+[tools.qtcreator]
+archive_uri:            sdk_packages_qt5_lgpl_release/qtcreator/qtcreator_mac_cocoa_10_7.7z
+package_strip_dirs:     1
+target_install_dir:     /
+rpath_target:
+archive_name:           qt-creator-opensource-2.6.0.7z
 

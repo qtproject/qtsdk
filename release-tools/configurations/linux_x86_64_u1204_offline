@@ -13,7 +13,7 @@ base_path:
 packages:               foo.bar, foo.bar2, foo.bar3
 
 [ExtraPackageConfigurationFiles]
-file_list:              doc-conf, src-conf, tools_64-conf, tools_src-conf
+file_list:              doc-conf, src-conf
 
 [OfflinePackageExcludeList]
 package_list:
@@ -82,3 +82,20 @@ package_strip_dirs:     4
 target_install_dir:     /
 rpath_target:           /lib
 archive_name:           gcc_64_qt5_addons.7z
+
+[qt.tools]
+
+[qt.tools.qtcreator]
+
+[qt.tools.qtcreator.desktop]
+archives:               tools.qtcreator.desktop
+target_install_base:    /Tools/Qt Creator
+version:                2.6.0
+version_tag:            %QTCREATOR_VERSION%
+package_default:        true
+[tools.qtcreator.desktop]
+archive_uri:            sdk_packages_qt5_lgpl_release/qtcreator/qtcreator_linux_gcc_64_ubuntu1204.7z
+package_strip_dirs:     1
+target_install_dir:     /
+rpath_target:
+archive_name:           qt-creator-opensource-2.6.0-ubuntu1204-64.7z
