@@ -94,7 +94,7 @@ archive_name:           qtmultimedia-opensource-src-5.0.0-beta2.7z
 
 [qt.500_beta2.src.addons.qtactiveqt]
 archives:               src.addons.qtactiveqt
-target_install_base:    /5.0.0-beta2/Src/
+target_install_base:    /5.0.0-beta2/Src/qtactiveqt
 version:                5.0.0
 version_tag:            %QT_VERSION%
 package_default:        true
@@ -107,7 +107,7 @@ archive_name:           qtactiveqt-opensource-src-5.0.0-beta2.7z
 
 [qt.500_beta2.src.addons.qtgraphicaleffects]
 archives:               src.addons.qtgraphicaleffects
-target_install_base:    /5.0.0-beta2/Src/
+target_install_base:    /5.0.0-beta2/Src/qtgraphicaleffects
 version:                5.0.0
 version_tag:            %QT_VERSION%
 package_default:        true
@@ -120,7 +120,7 @@ archive_name:           qtgraphicaleffects-opensource-src-5.0.0-beta2.7z
 
 [qt.500_beta2.src.addons.qtimageformats]
 archives:               src.addons.qtimageformats
-target_install_base:    /5.0.0-beta2/Src/
+target_install_base:    /5.0.0-beta2/Src/qtimageformats
 version:                5.0.0
 version_tag:            %QT_VERSION%
 package_default:        true
@@ -133,7 +133,7 @@ archive_name:           qtimageformats-opensource-src-5.0.0-beta2.7z
 
 [qt.500_beta2.src.addons.qtsvg]
 archives:               src.addons.qtsvg
-target_install_base:    /5.0.0-beta2/Src/
+target_install_base:    /5.0.0-beta2/Src/qtsvg
 version:                5.0.0
 version_tag:            %QT_VERSION%
 package_default:        true
@@ -146,7 +146,7 @@ archive_name:           qtsvg-opensource-src-5.0.0-beta2.7z
 
 [qt.500_beta2.src.addons.qttranslations]
 archives:               src.addons.qttranslations
-target_install_base:    /5.0.0-beta2/Src/
+target_install_base:    /5.0.0-beta2/Src/qttranslations
 version:                5.0.0
 version_tag:            %QT_VERSION%
 package_default:        true
