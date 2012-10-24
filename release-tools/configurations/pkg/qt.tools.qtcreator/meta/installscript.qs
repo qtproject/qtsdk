@@ -185,11 +185,11 @@ Component.prototype.installationFinished = function()
         var path = component_root_path + native_path_separator;
         if (installer.value("os") == "win")
         {
-            installer.setValue("RunProgram", path + "bin" + native_path_separator + "qtcreator.exe");
+            installer.setValue("RunProgram", "\"" + path + "bin" + native_path_separator + "qtcreator.exe\"");
         }
         else if (installer.value("os") == "x11")
         {
-            installer.setValue("RunProgram", path + "bin" + native_path_separator + "qtcreator");
+            installer.setValue("RunProgram", "\"" + path + "bin" + native_path_separator + "qtcreator\"");
         }
         else if (installer.value("os") == "mac")
         {

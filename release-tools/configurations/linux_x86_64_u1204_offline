@@ -86,14 +86,12 @@ archive_name:           gcc_64_qt5_addons.7z
 [qt.tools]
 
 [qt.tools.qtcreator]
-
-[qt.tools.qtcreator.desktop]
-archives:               tools.qtcreator.desktop
+archives:               tools.qtcreator
 target_install_base:    /Tools/Qt Creator
 version:                2.6.0
 version_tag:            %QTCREATOR_VERSION%
 package_default:        true
-[tools.qtcreator.desktop]
+[tools.qtcreator]
 archive_uri:            sdk_packages_qt5_lgpl_release/qtcreator/qtcreator_linux_gcc_64_ubuntu1204.7z
 package_strip_dirs:     1
 target_install_dir:     /

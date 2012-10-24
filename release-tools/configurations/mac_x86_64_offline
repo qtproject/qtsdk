@@ -83,8 +83,6 @@ archive_name:           clang_64_mac_qt5_addons.7z
 [qt.tools]
 
 [qt.tools.qtcreator]
-
-[qt.tools.qtcreator.desktop]
 archives:               tools.qtcreator
 target_install_base:    /Qt Creator
 version:                2.6.0
