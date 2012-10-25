@@ -50,9 +50,12 @@ import bldinstallercommon
 
 SCRIPT_ROOT_DIR                     = os.getcwd()
 QT_SRC_URL                          = ''
+QT_MODULE_URL                       = ''
 QT_SRC_ZIP                          = ''
+QT_MODULE_ZIP                       = ''
 QT_SRC_DIR                          = SCRIPT_ROOT_DIR
 QT_PKG_NAME                         = ''
+QT_MODULE_PKG_NAME                  = ''
 CONFIGURE_OPTIONS                   = '-help'
 CONFIGURE_CMD                       = 'configure'
 
@@ -69,11 +72,12 @@ def print_wrap(text):
 def print_help():
     print_wrap('*** Error! Insufficient arguments given!')
     print_wrap('')
-    print_wrap('Example: python -u create_configure_exe.py src_url=qt-everywhere-opensource-src-5.0.0.tar.gz')
+    print_wrap('Example: python -u create_configure_exe.py src_url=qt-everywhere-opensource-src-5.0.0.tar.gz mdl_url=qtbase-src.tar.gz')
     print_wrap('')
     print_wrap('Available options:')
     print_wrap('')
     print_wrap('  src_url = [url where to fetch src package]')
+    print_wrap('  mdl_url = [url where to fetch module src package]')
     print_wrap('')
 
 ###############################
@@ -102,10 +106,11 @@ def init():
 ###############################
 def parse_cmd_line():
     global QT_SRC_URL
+    global QT_MODULE_URL
 
     print_wrap('---------------- Parsing commandline arguments ---------------------')
     arg_count = len(sys.argv)
-    if arg_count < 2:
+    if arg_count < 3:
         print_help()
         sys.exit(-1)
     #Parse command line options
@@ -115,8 +120,13 @@ def parse_cmd_line():
             values = item.split('=')
             QT_SRC_URL = values[1]
             print_wrap('        Qt source dir set to: ' + QT_SRC_URL)
+        #url for the module sources
+        if item.find('mdl_url') >= 0:
+            values = item.split('=')
+            QT_MODULE_URL = values[1]
+            print_wrap('        Qt module source dir set to: ' + QT_MODULE_URL)
 
-    print_wrap('---------------------------------------------------------------------')
+    print_wrap('--------------------------------------------------------------------')
     return True
 
 
@@ -125,8 +135,11 @@ def parse_cmd_line():
 ###############################
 def fetch_src_package():
     global QT_SRC_ZIP
+    global QT_MODULE_ZIP
+
+    print_wrap('------------------- Fetching packages ------------------------------')
     QT_SRC_ZIP = os.path.normpath(SCRIPT_ROOT_DIR + os.sep + os.path.basename(QT_SRC_URL))
-    print_wrap('---------------- Fetching Qt src package ---------------------------')
+    print_wrap('    Fetching Qt source package')
     # check first if package on local file system
     if not os.path.isfile(QT_SRC_ZIP):
         if not bldinstallercommon.is_content_url_valid(QT_SRC_URL):
@@ -138,6 +151,20 @@ def fetch_src_package():
         urllib.urlretrieve(QT_SRC_URL, QT_SRC_ZIP, reporthook=bldinstallercommon.dlProgress)
     else:
         print_wrap('Found local package, using that: ' + QT_SRC_ZIP)
+
+    print_wrap('    Fetching module ' + QT_MODULE_ZIP)
+    QT_MODULE_ZIP = os.path.normpath(SCRIPT_ROOT_DIR + os.sep + os.path.basename(QT_MODULE_URL))
+    # check first if package on local file system
+    if not os.path.isfile(QT_MODULE_ZIP):
+        if not bldinstallercommon.is_content_url_valid(QT_MODULE_URL):
+            print_wrap('*** Module src package url: [' + QT_MODULE_URL + '] is invalid! Abort!')
+            sys.exit(-1)
+        print_wrap('     Downloading:        ' + QT_MODULE_URL)
+        print_wrap('            into:        ' + QT_MODULE_ZIP)
+        # start download
+        urllib.urlretrieve(QT_MODULE_URL, QT_MODULE_ZIP, reporthook=bldinstallercommon.dlProgress)
+    else:
+        print_wrap('Found local module package, using that: ' + QT_MODULE_ZIP)
     print_wrap('--------------------------------------------------------------------')
 
 
@@ -147,6 +174,7 @@ def fetch_src_package():
 def extract_src_package():
     global QT_SRC_DIR
     global QT_PKG_NAME
+    global QT_MODULE_PKG_NAME
 
     print_wrap('---------------- Extracting source package -------------------------')
 
@@ -163,6 +191,25 @@ def extract_src_package():
                 QT_SRC_DIR = QT_SRC_DIR + os.sep + item
                 QT_PKG_NAME = item
         print_wrap('    Source dir: ' + QT_SRC_DIR)
+    else:
+        print_wrap('*** Unsupported directory structure!!!')
+        sys.exit(-1)
+    print_wrap('------------')
+    print_wrap('    Extracting module zip')
+    module_dir = SCRIPT_ROOT_DIR + os.sep + "module"
+    bldinstallercommon.create_dirs(module_dir)
+    before = os.listdir(module_dir)
+    bldinstallercommon.extract_file(QT_MODULE_ZIP, module_dir)
+
+    after = os.listdir(module_dir)
+    items_b = len(before)
+    items_a = len(after)
+    if items_b < items_a:
+        print_wrap('    Module package extracted.')
+        for item in after:
+            if os.path.isdir(module_dir + os.sep + item):
+                QT_MODULE_PKG_NAME = item
+        print_wrap('    Module pkg name: ' + QT_MODULE_PKG_NAME)
     else:
         print_wrap('*** Unsupported directory structure!!!')
         sys.exit(-1)
@@ -193,12 +240,20 @@ def configure_qt():
 ###############################
 def archive_configure_exe():
     print_wrap('------------- Adding configure.exe to the archive -------------------')
+    print_wrap('    Adding to ' + QT_SRC_ZIP)
     archive = os.path.basename(QT_SRC_ZIP)
     zip_archive_file = zipfile.ZipFile(archive, "a" )
     exe_location = QT_SRC_DIR + os.sep + 'qtbase' + os.sep + 'configure.exe'
     exe_in_zip = QT_PKG_NAME + '\\qtbase\\configure.exe'
     zip_archive_file.write(exe_location, exe_in_zip, zipfile.ZIP_DEFLATED )
     zip_archive_file.close()
+
+    print_wrap('    Adding to ' + QT_MODULE_ZIP)
+    archive2 = os.path.basename(QT_MODULE_ZIP)
+    zip_archive_file2 = zipfile.ZipFile(archive2, "a" )
+    exe_in_zip2 = QT_MODULE_PKG_NAME + '\\configure.exe'
+    zip_archive_file2.write(exe_location, exe_in_zip2, zipfile.ZIP_DEFLATED )
+    zip_archive_file2.close()
     print_wrap('--------------------------------------------------------------------')
 
 
