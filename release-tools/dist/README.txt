@@ -1,6 +1,6 @@
 
-Welcome to Qt!
-==============
+Welcome to Qt 5
+===============
 
 Qt is a cross-platform application and user interface framework. It
 consists of a number of software libraries and development tools.
@@ -16,101 +16,141 @@ problems or limitations of this version:
 http://qt-project.org/wiki/Category:Release
 
 
-Understanding the Qt packages: Have you installed the right one?
-----------------------------------------------------------------
+Overview
+--------
 
-The Qt source package ("qt-everywhere-opensource-src-<version>.xxx")
-contains Qt in source code form. It is the right choice if you want to
-build the framework and tools yourself.
+You can use the Qt 5 installation program to install the following components:
 
-The binary Qt packages ("qt-<operatingsystem>-opensource-<version>.xxx")
-contain a binary distribution of Qt. It contains the the Qt libraries
-and basic development tools, prebuilt for a certain platform
-(operating system and compiler). The binary package also contains a
-copy of the source package, as an optional install.
+- Qt libraries, prebuilt for a particular development platform (operating system
+  and compiler)
+- Qt Creator integrated development environment (IDE)
+- Basic development tools, prebuilt for a particular development platform
+- Documentation
+- Qt in source code form (needed only if you want to build the framework and
+  tools yourself)
 
-Note that the Qt packages do NOT contain Qt Creator, i.e. Qt's IDE
-(Integrated Development Environment) application. If you are a
-developer and you find yourself asking "How do I start Qt?", then you
-should install Qt Creator, which comes in a separate package.
+Install Qt libraries to develop or run applications that need the Qt runtimes or
+to try out example applications built with Qt.
 
-Finally, there are also the Qt SDK (Software Development Kit)
-packages, which combine Qt Creator and a binary Qt distribution in a
-single handy install.
-
-The binary package is the right choice if you either
-- Just need the Qt runtimes in order to run another application that
-  needs them, or
-- Want to try out some example programs built with Qt, or
-- Intend to develop using a 3rd party IDE (e.g. MS Visual Studio), or
-  just an editor and command line, in addition to Qt's basic
-  development tools (Designer, Assistant, qmlscene, etc.), or
-- Already have installed, or are planning to install Qt Creator
+Qt Creator is designed to make Qt development easier, but you can also use a 3rd
+party IDE (such as MS Visual Studio), or just an editor and command line, in
+addition to basic Qt development tools (Qt Designer, Qt Assistant, qmlscene, and
+so on).
 
 
-Directory structure
+Installing Qt 5
+---------------
+
+You can download Qt 5 from http://qt-project.org/downloads. The site provides
+download links for all supported development platforms.
+
+Start the installation program like any executable on the development platform.
+On Linux, you might first have to make the installation program executable.
+
+Select the components that you want to install and follow the instructions of
+the installation program to complete the installation.
+
+You can use the Qt 5 installation program also to remove all installed
+components.
+
+
+Directory Structure
 -------------------
 
-The default top-level installation directory is the
-directory "Qt-[version]" in your home directory.
-
-The base directory of a particular binary distribution is something
-similar to [installdir]/Desktop/Qt/[version]/[compiler]. This basedir
-contains a number of subdirectories; "bin", "doc", "examples", etc.
-
-The source code, if installed, can be found under [installdir]/Src.
+The default top-level installation directory is the directory "Qt<version>" in
+your home directory, but you can specify another directory (<install_dir>). Each
+Qt version is installed in the <install_dir>/<version> directory. This
+directory contains subdirectories for the Qt libraries (<compiler>),
+documentation (doc), and sources (src). The <compiler> directory contains
+subdirectories for development tools (bin) and examples.
 
 
-Starting the development tools (binary package)
------------------------------------------------
+Starting Development Tools
+--------------------------
 
-The directory [basedir]/bin contains all the Qt development
-tools. Most are intended to be used from command line or an IDE, but
-some may be launched as standalone applications. For example:
-Assistant: The Qt documentation reader
-qmlscene: Viewer for Qt Quick2 declarative QML applications
-QMLViewer: Viewer for Qt Quick1 declarative QML applications
-Designer: GUI designer for Qt widgets-based applications.
+You can start Qt Creator directly after the installation by selecting the option
+on the last page of the installation program. You can start most of
+the development tools, such as GUI designers, compilers, and debuggers
+directly from Qt Creator. You can also access the installed documentation and
+example applications from Qt Creator.
 
+The development tools are located in the directory
+<install_dir>/<version>/<compiler>/bin. You can run them from Qt Creator or from
+the command line. You can also launch some of them as standalone applications.
+For example:
 
-Running the example programs (binary package)
----------------------------------------------
-
-Ready to run example programs can be found in [basedir]/examples. The
-C++ based examples can be launched directly either from command line or
-your file system browser.
-
-The QML based Quick 2 examples are in [basedir]/examples/qtdeclarative. They
-can be run with the qmlscene application (ref. above).
-
-The QML based Quick 1 examples are in [basedir]/examples/qtquick1. They
-can be run with the QMLViewer application (ref. above).
+- Qt Assistant, the Qt documentation reader
+- qmlscene, the viewer for Qt Quick2 declarative QML applications
+- QMLViewer, the viewer for Qt Quick1 declarative QML applications
+- Qt Designer, the GUI designer for Qt widgets-based applications
 
 
-Building Qt from source
------------------------
+Running Example Applications
+----------------------------
 
-See [installdir]/Src/Qt/[version]/README and
+You can open example applications in the Qt Creator Welcome mode to build and
+run them.
+
+Ready to run example applications are located in
+<install_dir>/<version>/<compiler>/examples. You can launch the C++ based
+examples directly either from command line or your file system browser.
+
+The QML based Quick 2 examples are located in
+<install_dir>/<version>/<compiler>/examples/qtdeclarative. You can load them
+using the qmlscene application.
+
+The QML based Quick 1 examples are located in
+<install_dir>/<version>/<compiler>/examples/qtquick1. You can view them with the
+QMLViewer application.
+
+
+Building Qt 5 from Source
+-------------------------
+
+See <install_dir>/<version>/src/README and
 http://qt-project.org/wiki/Building_Qt_5_from_Git
 for instructions on building Qt from source.
 
 
-Using it for developing software
---------------------------------
+Developing Qt Applications
+--------------------------
 
-With Qt Creator, you can use this Qt version by selecting
-Tools->Options->Build & Run->Add.., and point it to [basedir]/bin/qmake.
+To develop a Qt application, you need to set up a project. Qt Creator contains
+wizards that guide you step-by-step through the project creation process. The
+wizards prompt you to enter the settings needed for a particular type of project
+and create the necessary files for you. To start, select File > New File or
+Project.
 
-Otherwise, to compile C++ Qt applications, add [basedir]/include to
-your build tool's search path for include files, and [basedir]/lib to
-the search path for libraries.
+The wizards create projects that use the Qt build tool, qmake. It is a
+cross-platform system for build automation that helps simplify the build process
+for development projects across different platforms. You can modify the build
+and run settings for qmake projects in the Qt Creator Projects mode.
+
+Qt Creator provides support for building, running, and deploying Qt applications
+for different target platforms, or using different compilers, debuggers, or
+Qt versions. Kits define the tools, device type and other settings to use when
+building and running your project.
+
+The Qt 5 installation program adds the installed Qt version
+(<install_dir>/<version>/<compiler>/bin/qmake) to Qt Creator and creates a kit
+that specifies the installed Qt version and compiler. To use the kit, add it for
+your project in the Qt Creator Projects mode. Then select the kit in the Kit
+selector before you build or run the project.
+
+To compile C++ Qt applications by some other means, add
+<install_dir>/<version>/<compiler>/include to your build tool's search path
+for include files, and <install_dir>/<version>/<compiler>/lib to the search
+path for libraries.
 
 
-Much more information is available at
+Want to Know More?
+-------------------
 
-http://qt-project.org/resources/getting_started
-http://qt-project.org/doc/
-http://qt-project.org
+Much more information is available at:
+
+- http://qt-project.org/resources/getting_started
+- http://qt-project.org/doc/
+- http://qt-project.org
 
 
 We hope you will enjoy using Qt!
