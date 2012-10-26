@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python
 #############################################################################
 ##
@@ -141,6 +142,8 @@ def init_mkqt5bld():
         elif bldinstallercommon.is_mac_platform():          #mac
             #doing insource build because make install fails
             CONFIGURE_OPTIONS += ' -platform macx-clang -prefix $PWD/qtbase'
+        elif bldinstallercommon.is_win_platform():          #win
+            CONFIGURE_OPTIONS += ' -opengl desktop'
 
         #Add padding to original rpaths to make sure that original rpath is longer than the new
         if bldinstallercommon.is_linux_platform() or bldinstallercommon.is_solaris_platform():
@@ -306,11 +309,7 @@ def build_qt():
         if bldinstallercommon.is_unix_platform():
             cmd_args += ' -j' + str(MAKE_THREAD_COUNT)
         cmd_args += ' module-' + module_name
-        out = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, STRICT_MODE)
-        if out >= 0:
-            file_handle = open(MISSING_MODULES_FILE, 'a')
-            file_handle.write('\nFailed to build ' + module_name)
-            file_handle.close()
+        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, STRICT_MODE)
 
     print_wrap('--------------------------------------------------------------------')
 
@@ -342,7 +341,11 @@ def install_qt():
         print_wrap('    Installing module: ' + module_name)
         print_wrap('          -> cmd args: ' + cmd_args)
         print_wrap('                -> in: ' + submodule_dir_name)
-        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), submodule_dir_name, STRICT_MODE)
+        out = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), submodule_dir_name, STRICT_MODE)
+        if out >= 0:
+            file_handle = open(MISSING_MODULES_FILE, 'a')
+            file_handle.write('\nFailed to build ' + module_name)
+            file_handle.close()
 
     print_wrap('--------------------------------------------------------------------')
 
