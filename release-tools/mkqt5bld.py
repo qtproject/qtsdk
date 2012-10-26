@@ -338,11 +338,7 @@ def install_qt():
             install_root_path = install_root_path[3:]
             print_wrap('    Using install root path: ' + install_root_path)
         submodule_dir_name = QT_SOURCE_DIR + os.sep + module_name
-        make_i_cmd = MAKE_INSTALL_CMD
-        if module_name == 'qtwebkit':
-            make_i_cmd = make_i_cmd + ' -f Makefile.WebKit install'
-        cmd_args = ''
-        cmd_args += make_i_cmd + ' ' + 'INSTALL_ROOT=' + install_root_path
+        cmd_args = MAKE_INSTALL_CMD + ' ' + 'INSTALL_ROOT=' + install_root_path
         print_wrap('    Installing module: ' + module_name)
         print_wrap('          -> cmd args: ' + cmd_args)
         print_wrap('                -> in: ' + submodule_dir_name)
