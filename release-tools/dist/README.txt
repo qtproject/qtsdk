@@ -50,7 +50,7 @@ On Linux, you might first have to make the installation program executable.
 Select the components that you want to install and follow the instructions of
 the installation program to complete the installation.
 
-You can use the Qt 5 installation program also to remove all installed
+Use the Maintenance Tool under <install_dir> to remove all installed
 components.
 
 
