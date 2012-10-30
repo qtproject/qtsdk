@@ -55,7 +55,6 @@ target_install_dir:     /
 rpath_target:
 archive_name:           qt-project-url.7z
 
-
 [qt.500_beta2.win32_msvc2010]
 
 [qt.500_beta2.win32_msvc2010.essentials]
@@ -90,6 +89,7 @@ target_install_dir:     /
 rpath_target:
 archive_name:           msvc2010_addons.7z
 
+[qt.tools]
 
 [qt.tools.qtcreator]
 archives:               tools.qtcreator
@@ -98,7 +98,7 @@ version:                2.6.0
 version_tag:            %QTCREATOR_VERSION%
 package_default:        true
 [tools.qtcreator]
-archive_uri:            sdk_packages_qt5_lgpl_release/qtcreator/qtcreator_windows_vs2010_32.7z
+archive_uri:            /sdk_packages_qt5_lgpl_release/qtcreator/qtcreator_windows_vs2010_32.7z
 package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:

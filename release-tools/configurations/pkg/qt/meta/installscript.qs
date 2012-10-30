@@ -29,9 +29,3 @@ Component.prototype.createOperations = function()
         }
     }
 }
-
-
-Component.prototype.installationFinished = function()
-{
-}
-

@@ -56,7 +56,6 @@ rpath_target:
 archive_name:           qt-project-url.7z
 
 
-
 [qt.500_beta2.win64_msvc2010_64]
 
 [qt.500_beta2.win64_msvc2010_64.essentials]
@@ -78,7 +77,6 @@ target_install_dir:     /bin
 rpath_target:
 archive_name:           icu_49_win_64.7z
 
-
 [qt.500_beta2.win64_msvc2010_64.addons]
 archives:               500_beta2.msvc2010_64.addons, icu_49.win_64
 target_install_base:    /5.0.0-beta2/msvc2010_64
@@ -92,6 +90,7 @@ target_install_dir:     /
 rpath_target:
 archive_name:           msvc2010_64_addons.7z
 
+[qt.tools]
 
 [qt.tools.qtcreator]
 archives:               tools.qtcreator

@@ -51,6 +51,7 @@ archive_name:           readme.7z
 
 
 [qt.500_beta2.gcc_64]
+
 [qt.500_beta2.gcc_64.essentials]
 archives:               500_beta2.gcc_64.essentials, 500_beta2.gcc_64.icu
 target_install_base:    /5.0.0-beta2/gcc_64
@@ -92,7 +93,7 @@ version:                2.6.0
 version_tag:            %QTCREATOR_VERSION%
 package_default:        true
 [tools.qtcreator]
-archive_uri:            sdk_packages_qt5_lgpl_release/qtcreator/qtcreator_linux_gcc_64_ubuntu1110.7z
+archive_uri:            /sdk_packages_qt5_lgpl_release/qtcreator/qtcreator_linux_gcc_64_ubuntu1110.7z
 package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:
