@@ -16,5 +16,5 @@ Component.prototype.createOperations = function()
     component.createOperations();
 
     //return value 3010 means it need a reboot, but in most cases it is not needed for run Qt application
-    component.addElevatedOperation("Execute", "{0,3010}", "@TargetDir@\\vcredist\\vcredist_x86.exe", "/norestart", "/q");
+    component.addElevatedOperation("Execute", "{0,3010,1638}", "@TargetDir@\\vcredist\\vcredist_x86.exe", "/norestart", "/q");
 }
