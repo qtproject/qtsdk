@@ -1050,10 +1050,12 @@ def create_mac_disk_image():
     bldinstallercommon.extract_file(package_save_as_temp, package_save_as_folder)
 
     # create disk image
-    cmd_args = ['hdiutil', 'create', '-fs', 'HFS+', '-srcfolder', \
+    cmd_args = ['hdiutil', 'create', '-srcfolder', \
                 os.path.join(SCRIPT_ROOT_DIR, SDK_NAME + '.app'), \
                 '-volname', SDK_NAME, \
-                os.path.join(SCRIPT_ROOT_DIR, SDK_NAME + '.dmg')]
+                '-format', 'UDBZ', \
+                os.path.join(SCRIPT_ROOT_DIR, SDK_NAME + '.dmg'), \
+                '-ov', '-scrub']
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
 
