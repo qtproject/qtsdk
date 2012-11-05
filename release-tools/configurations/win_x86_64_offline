@@ -13,7 +13,7 @@ base_path:
 packages:               foo.bar, foo.bar2, foo.bar3
 
 [ExtraPackageConfigurationFiles]
-file_list:              doc-conf, src-conf, tools_64-conf
+file_list:              doc-conf, src-conf, tools_64-conf, tools-conf
 
 [OfflinePackageExcludeList]
 package_list:
