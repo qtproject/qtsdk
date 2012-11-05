@@ -46,3 +46,6 @@
 [submodule "qtgraphicaleffects"]
 	path = qtgraphicaleffects
 	url = git://gitorious.org/qt/qtgraphicaleffects.git
+[submodule "qtwebkit-examples-and-demos"]
+	path = qtwebkit-examples-and-demos
+	url = git://gitorious.org/qt/qtwebkit-examples-and-demos.git
