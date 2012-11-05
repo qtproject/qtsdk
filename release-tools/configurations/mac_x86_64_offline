@@ -90,7 +90,7 @@ version:                2.6.0
 version_tag:            %QTCREATOR_VERSION%
 package_default:        true
 [tools.qtcreator]
-archive_uri:            /sdk_packages_qt5_lgpl_release/qtcreator/qtcreator_mac_cocoa_10_7.7z
+archive_uri:            /sdk_packages_qt5_lgpl_release/qtcreator/latest/qtcreator_mac_cocoa_10_7.7z
 package_strip_dirs:
 target_install_dir:     /
 rpath_target:
