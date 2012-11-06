@@ -14,6 +14,9 @@ function Component()
     installer.installationFinished.connect( this, Component.prototype.installationFinished );
     if (installer.value("os") == "win")
     {
+        // Creator needs vcredist 32bit on windows
+        component.addDependency("qt.tools.vcredist")
+
         component.selectedChanged.connect( this, checkWhetherStopProcessIsNeeded );
         //it can't be unselected so we need to check it manually
         checkWhetherStopProcessIsNeeded();
