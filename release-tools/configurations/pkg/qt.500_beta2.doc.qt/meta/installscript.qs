@@ -28,6 +28,7 @@ Component.prototype.createOperations = function()
 Component.prototype.installationFinished = function()
 {
     // If assistant binary exists, register documentation
+    /* Removed for now, needs to be refactored after beta2
     if (installer.value("AssistantBinary")) {
         try {
             print("Registering documentation..")
@@ -41,4 +42,5 @@ Component.prototype.installationFinished = function()
     else {
         print("No assistant binary available -> not registering the documentation.")
     }
+    */
 }
