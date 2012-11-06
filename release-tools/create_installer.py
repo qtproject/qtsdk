@@ -1109,11 +1109,11 @@ def create_installer():
     # create the installer binary
     if CREATE_ONLINE_INSTALLER or CREATE_OFFLINE_INSTALLER:
         create_installer_binary()
+        # for mac we need some extra work
+        if bldinstallercommon.is_mac_platform():
+            create_mac_disk_image()
     if CREATE_REPOSITORY:
         create_offline_repository()
-    # for mac we need some extra work
-    if bldinstallercommon.is_mac_platform():
-        create_mac_disk_image()
     # print warning messages if encountered any problems
     print_warnings()
 
