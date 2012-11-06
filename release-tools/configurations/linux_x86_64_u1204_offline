@@ -52,7 +52,7 @@ archive_name:           readme.7z
 [qt.500_beta2.gcc_64]
 
 [qt.500_beta2.gcc_64.essentials]
-archives:               500_beta2.gcc_64.essentials, 500_beta2.gcc_64.icu
+archives:               500_beta2.gcc_64.essentials, 500_beta2.gcc_64.icu, 500_beta2.gcc_64.essentials.icu_path_patcher
 target_install_base:    /5.0.0-beta2/gcc_64
 version:                5.0.0
 version_tag:            %QT_VERSION%
@@ -69,9 +69,14 @@ package_strip_dirs:     0
 target_install_dir:     /lib
 rpath_target:
 archive_name:           libicu_x86_64_ubuntu1204.7z
+[500_beta2.gcc_64.essentials.icu_path_patcher]
+archive_uri:            patcher.sh
+package_strip_dirs:     0
+target_install_dir:     /
+archive_name:           icu_path_patcher.sh.7z
 
 [qt.500_beta2.gcc_64.addons]
-archives:               500_beta2.gcc_64.addons
+archives:               500_beta2.gcc_64.addons, 500_beta2.gcc_64.addons.icu_path_patcher
 target_install_base:    /5.0.0-beta2/gcc_64
 version:                5.0.0
 version_tag:            %QT_VERSION%
@@ -82,6 +87,11 @@ package_strip_dirs:     4
 target_install_dir:     /
 rpath_target:           /lib
 archive_name:           gcc_64_qt5_addons.7z
+[500_beta2.gcc_64.addons.icu_path_patcher]
+archive_uri:            patcher.sh
+package_strip_dirs:     0
+target_install_dir:     /
+archive_name:           icu_path_patcher.sh.7z
 
 [qt.tools]
 

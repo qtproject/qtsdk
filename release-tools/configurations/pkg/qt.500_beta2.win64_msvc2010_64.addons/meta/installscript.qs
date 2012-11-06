@@ -13,6 +13,14 @@ function Component()
 }
 
 
+Component.prototype.isDefault = function()
+{
+    if (installer.environmentVariable("VS100COMNTOOLS")) {
+        return true;
+    }
+    return false;
+}
+
 
 Component.prototype.createOperations = function()
 {

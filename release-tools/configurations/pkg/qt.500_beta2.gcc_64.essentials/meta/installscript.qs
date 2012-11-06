@@ -13,11 +13,6 @@ function Component()
 }
 
 
-checkWhetherStopProcessIsNeeded = function()
-{
-}
-
-
 Component.prototype.createOperations = function()
 {
     component.createOperations();
@@ -32,16 +27,22 @@ Component.prototype.createOperations = function()
 
         try {
             // set assistant binary path
-            var assistantBinary = installer.value("TargetDir") + "/Desktop/Qt/5.0.0-beta2/gcc_64" + "/bin/assistant";
+            var assistantBinary = installer.value("TargetDir") + "%TARGET_INSTALL_DIR%" + "/bin/assistant";
             installer.setValue("AssistantBinary", assistantBinary);
+        } catch( e ) {
+            print( e );
+        }
+
+        try {
+            // patch Qt binaries
+            var path = installer.value("TargetDir") + "%TARGET_INSTALL_DIR%";
+            var script = path + "/patcher.sh";
+            component.addOperation("Execute", "{0}", "/bin/bash", script, path);
+            component.addOperation("Execute", "{0}", "/bin/rm", script);
         } catch( e ) {
             print( e );
         }
     }
 }
 
-
-Component.prototype.installationFinished = function()
-{
-}
 

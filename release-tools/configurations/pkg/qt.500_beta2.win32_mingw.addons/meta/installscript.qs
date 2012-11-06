@@ -13,6 +13,10 @@ function Component()
 }
 
 
+checkWhetherStopProcessIsNeeded = function()
+{
+}
+
 
 Component.prototype.createOperations = function()
 {
@@ -28,4 +32,8 @@ Component.prototype.createOperations = function()
     }
 }
 
+
+Component.prototype.installationFinished = function()
+{
+}
 
