@@ -280,9 +280,9 @@ def build_qt():
                         submodule_list.append(submodule_name[:index])
                         modules_found = 1
                     #webkit is listed with different syntax: sub-webkit-pri-make_first
-                    elif item.startswith('sub-'):
-                        submodule_name = item[4:]   #4 <- sub-
-                        index = submodule_name.index('-pri-make_first')
+                    elif item.startswith('sub-module-'):
+                        submodule_name = item[11:]   #11 <- sub-module-
+                        index = submodule_name.index('-make_first')
                         submodule_list.append(submodule_name[:index])
 
         if modules_found == 1:
