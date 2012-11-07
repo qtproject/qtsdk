@@ -10,10 +10,10 @@ var native_path_separator = "/";
 // constructor
 function Component()
 {
+    installer.valueChanged.connect( this, Component.prototype.reactOnTargetDirChange );
     installer.installationFinished.connect( this, Component.prototype.installationFinished );
     if (installer.value("os") == "win")
     {
-        installer.setValue("QtCreatorInstallDir", "%TARGET_INSTALL_DIR%");
         component.selectedChanged.connect( this, checkWhetherStopProcessIsNeeded );
         //it can't be unselected so we need to check it manually
         checkWhetherStopProcessIsNeeded();
@@ -24,17 +24,19 @@ function Component()
         // set installation directory
         installer.setValue( "EmbeddedInstallationRootDir", "/usr/local/Trolltech" );
         installer.setValue( "EmbeddedToolchainDir", "/usr/local/angstrom/arm" );
-        installer.setValue("QtCreatorInstallDir", "%TARGET_INSTALL_DIR%");
-    }
-
-    if ( installer.value("os") == "mac" )
-    {
-        installer.setValue("QtCreatorInstallDir", "%TARGET_INSTALL_DIR%");
     }
 
     if ( component.fromOnlineRepository )
     {
         //%IFW_DOWNLOADABLE_ARCHIVE_NAMES%
+    }
+}
+
+Component.prototype.reactOnTargetDirChange = function(key, value)
+{
+    if (key == "TargetDir") {
+        installer.setValue("QtCreatorInstallerSettingsFile", value + "/%TARGET_INSTALL_DIR%/share/qtcreator/QtProject/QtCreator.ini");
+        print("set QtCreatorInstallerSettingsFile to: " + value + "/%TARGET_INSTALL_DIR%/share/qtcreator/QtProject/QtCreator.ini");
     }
 }
 

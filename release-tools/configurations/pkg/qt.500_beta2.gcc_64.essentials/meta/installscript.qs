@@ -5,6 +5,7 @@
 // constructor
 function Component()
 {
+    installer.installationFinished.connect(this, Component.prototype.installationFinished);
     if (component.fromOnlineRepository)
     {
         // Commented line below used by the packaging scripts
@@ -20,15 +21,7 @@ Component.prototype.createOperations = function()
     if (installer.value("os") == "x11") {
         try {
             // patch Qt binaries
-            component.addOperation( "QtPatch", "linux", installer.value("TargetDir") + "%TARGET_INSTALL_DIR%" );
-        } catch( e ) {
-            print( e );
-        }
-
-        try {
-            // set assistant binary path
-            var assistantBinary = installer.value("TargetDir") + "%TARGET_INSTALL_DIR%" + "/bin/assistant";
-            installer.setValue("AssistantBinary", assistantBinary);
+            component.addOperation("QtPatch", "linux", "@TargetDir@/%TARGET_INSTALL_DIR%");
         } catch( e ) {
             print( e );
         }
@@ -45,4 +38,17 @@ Component.prototype.createOperations = function()
     }
 }
 
+Component.prototype.installationFinished = function()
+{
+    if (!component.installed)
+        return;
+    var assistantBinary = "@TargetDir@/%TARGET_INSTALL_DIR%/bin/assistant";
+    try {
+        var myArray = installer.value("help_files").split(";");
+        for (var i = 0; i < myArray.length; i++)
+            installer.executeDetached(assistantBinary, new Array("-quiet", "-register", myArray[i]));
+    } catch(e) {
+        print(e);
+    }
+}
 

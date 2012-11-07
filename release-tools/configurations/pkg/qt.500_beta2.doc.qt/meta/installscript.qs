@@ -5,7 +5,6 @@
 // constructor
 function Component()
 {
-    installer.installationFinished.connect( this, Component.prototype.installationFinished );
     if (component.fromOnlineRepository)
     {
         // Commented line below used by the packaging scripts
@@ -13,34 +12,18 @@ function Component()
     }
 }
 
-
-checkWhetherStopProcessIsNeeded = function()
+Component.prototype.beginInstallation = function()
 {
-}
+    var value = "";
+    if (installer.value("help_files") != "")
+        value = installer.value("help_files") + ";";
 
+    installer.setValue("help_files", value + "@TargetDir@/%TARGET_INSTALL_DIR%/qt.qch");
+}
 
 Component.prototype.createOperations = function()
 {
     component.createOperations();
-}
-
-
-Component.prototype.installationFinished = function()
-{
-    // If assistant binary exists, register documentation
-    /* Removed for now, needs to be refactored after beta2
-    if (installer.value("AssistantBinary")) {
-        try {
-            print("Registering documentation..")
-            var operation = "-quiet -register ";
-            var qchFile = installer.value("TargetDir") + "%TARGET_INSTALL_DIR%" + "/qt.qch";
-            installer.execute(installer.value("AssistantBinary"), new Array(operation + installer.value(qchFile)));
-        } catch( e ) {
-            print( e );
-        }
-    }
-    else {
-        print("No assistant binary available -> not registering the documentation.")
-    }
-    */
+    // this will be changed to a general settings operation in the near future
+    component.addOperation("SetQtCreatorValue", "", "Help", "InstalledDocumentation", "@TargetDir@/%TARGET_INSTALL_DIR%/");
 }
