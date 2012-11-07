@@ -143,7 +143,7 @@ def init_mkqt5bld():
             #doing insource build because make install fails
             CONFIGURE_OPTIONS += ' -platform macx-clang -prefix $PWD/qtbase'
         elif bldinstallercommon.is_win_platform():          #win
-            CONFIGURE_OPTIONS += ' -angle'
+            CONFIGURE_OPTIONS += ' -opengl desktop'
 
         #Add padding to original rpaths to make sure that original rpath is longer than the new
         if bldinstallercommon.is_linux_platform() or bldinstallercommon.is_solaris_platform():
