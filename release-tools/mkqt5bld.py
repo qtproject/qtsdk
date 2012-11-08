@@ -138,7 +138,7 @@ def init_mkqt5bld():
 
     if not CONFIGURE_OVERRIDE:
         if bldinstallercommon.is_linux_platform():          #linux
-            CONFIGURE_OPTIONS += ' -no-gtkstyle'
+            CONFIGURE_OPTIONS += ' -no-gtkstyle -qt-xcb'
         elif bldinstallercommon.is_mac_platform():          #mac
             #doing insource build because make install fails
             CONFIGURE_OPTIONS += ' -platform macx-clang -prefix $PWD/qtbase'
