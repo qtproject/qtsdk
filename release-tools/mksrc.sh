@@ -40,12 +40,12 @@ QTVER=0.0.0
 REPO_DIR=$CUR_DIR
 REPO_NAME=''
 REPO_TAG=HEAD
-STRICT=0
+STRICT=1
 
 function usage()
 {
   echo "Usage:"
-  echo "./mksrc.sh -u <file_url_to_git_repo> -v <version> [-m][-N][--make-args][--no-docs][--tag][-i sub][-l lic][-p patch][-r revision][--strict]"
+  echo "./mksrc.sh -u <file_url_to_git_repo> -v <version> [-m][-N][--make-args][--no-docs][--tag][-i sub][-l lic][-p patch][-r revision][-S]"
   echo "where -u is path to git repo and -v is version"
   echo "Optional parameters:"
   echo "-m             one is able to tar each sub module separately"
@@ -57,7 +57,7 @@ function usage()
   echo "-l license     license type, will default to 'opensource', if set to 'commercial' all the necessary patches will be applied for commercial build"
   echo "-p patch file  patch file (.sh) to execute, example: change_licenses.sh"
   echo "-r revision    committish to pack (tag name, branch name or SHA-1)"
-  echo "--strict       strict mode, execution will fail on any error"
+  echo "-S             don't run in strict mode"
 }
 
 function cleanup()
@@ -110,7 +110,7 @@ function create_and_delete_submodule()
         gzip -9 > ../submodules_tar/$_file.tar.gz
     echo " - 7zipping $_file - "
     7z a ../submodules_zip/$_file.7z $_file/ > /dev/null
-    echo " - zippinging $_file -"
+    echo " - zipping $_file -"
     find $_file > __files_to_zip
     # zip binfiles
     file -f __files_to_zip | fgrep -f ../_txtfiles -v | cut -d: -f1 | zip -9q ../submodules_zip/$_file.zip -@
@@ -188,9 +188,9 @@ while test $# -gt 0; do
       shift
       EXIT_AFTER_DOCS=true
     ;;
-    --strict)
+    -S|--no-strict)
       shift
-      STRICT=1
+      STRICT=0
     ;;
     *)
       echo "Error: Unknown option $1"
@@ -416,14 +416,14 @@ POSIX
 html
 text" > _txtfiles
 
-echo " -- Create B I G tars -- "
+echo " -- Create B I G archives -- "
 create_main_file
 
 # Create tar/submodule
 if [ $MULTIPACK = yes ]; then
   mkdir single
   mv $PACKAGE_NAME.* single/
-  echo " -- Creating tar per submodule -- "
+  echo " -- Creating archives per submodule -- "
   create_and_delete_submodule
 fi
 cleanup
