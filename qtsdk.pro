@@ -31,6 +31,10 @@ module_qtwebkit.makefile = Makefile
 module_qtwebkit.depends = module_qtbase module_qtdeclarative
 module_qtwebkit.target = module-qtwebkit
 
+module_qtwebkit_examples_and_demos.subdir = qtwebkit-examples-and-demos
+module_qtwebkit_examples_and_demos.target = module-qtwebkit-examples-and-demos
+module_qtwebkit_examples_and_demos.depends = module_qtwebkit module_qttools
+
 module_qttools.subdir = qttools
 module_qttools.target = module-qttools
 module_qttools.depends = module_qtbase
