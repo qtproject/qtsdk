@@ -80,7 +80,7 @@ QT5_MODULES_LIST                    = [ 'qt3d', 'qlalr', 'qtactiveqt', 'qtbase',
 QT5_ESSENTIALS                      = [ 'qtbase', 'qtdeclarative', 'qtdoc', \
                                         'qtjsbackend', 'qtquick1', 'qtscript', \
                                         'qttools', 'qtwebkit', 'qtxmlpatterns', \
-                                        'qtmultimedia']
+                                        'qtmultimedia', 'qtwebkit-examples-and-demos']
 ORIGINAL_QMAKE_QT_PRFXPATH          = ''
 PADDING                             = "______________________________PADDING______________________________"
 FILES_TO_REMOVE_LIST                = ['Makefile', 'Makefile.Release', 'Makefile.Debug', \
@@ -279,9 +279,9 @@ def build_qt():
                         index = submodule_name.index('-make_first')
                         submodule_list.append(submodule_name[:index])
                         modules_found = 1
-                    #webkit is listed with different syntax: sub-webkit-pri-make_first
-                    elif item.startswith('sub-module-'):
-                        submodule_name = item[11:]   #11 <- sub-module-
+                    #qtwebkit_examples_and_demos is listed with different syntax: sub-module_qtwebkit_examples_and_demos-make_first
+                    elif item.startswith('sub-module_'):
+                        submodule_name = item[11:]   #11 <- sub-module_
                         index = submodule_name.index('-make_first')
                         submodule_list.append(submodule_name[:index])
 
