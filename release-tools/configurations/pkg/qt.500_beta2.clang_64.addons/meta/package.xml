@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>Add-ons</DisplayName>
+    <DisplayName>Add-Ons</DisplayName>
     <Description>Qt 5.0.0 Beta 2(clang 64-bit) Add-on modules</Description>
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
