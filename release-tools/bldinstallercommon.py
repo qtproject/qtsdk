@@ -394,6 +394,28 @@ def replace_in_text_files(root_directory, match_string, replacement_string, file
 ###############################
 # function
 ###############################
+def ensure_text_file_endings(filename):
+    print '------------ ensure_text_file_endings ----------------'
+    if os.path.isdir(filename):
+        print '*** Warning, given file is directory? Did nothing for: ' + filename
+        return
+    data = open(filename, "rb").read()
+    if '\0' in data:
+        print '*** Warning, given file is binary? Did nothing for: ' + filename
+        return
+    if IS_WIN_PLATFORM:
+        newdata = re.sub("\r?\n", "\r\n", data)
+        if newdata != data:
+            print 'File endings changed for: ' + filename
+            f = open(filename, "wb")
+            f.write(newdata)
+            f.close()
+    print '--------------------------------------------------------------------'
+
+
+###############################
+# function
+###############################
 def safe_config_key_fetch(conf, section, key):
     if not conf.has_section(section):
         return ''

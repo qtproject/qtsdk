@@ -548,6 +548,12 @@ def repackage_content_for_installation(install_dir, package_raw_name, target_ins
     # remove old package
     if extracted:
         os.remove(install_dir + os.sep + package_raw_name)
+    else:
+        # ok we could not extract the file, so propably not even archived file,
+        # check the case if we downloaded a text file, must ensure proper file endings
+        if bldinstallercommon.is_text_file(install_dir + os.sep + package_raw_name):
+            bldinstallercommon.ensure_text_file_endings(install_dir + os.sep + package_raw_name)
+
     # strip out unnecessary folder structure based on the configuration
     count = 0
     iterations = int(package_strip_dirs)
