@@ -79,6 +79,17 @@ Component.prototype.createOperations = function()
             component.addOperation("QtPatch", "windows", "@TargetDir@/%TARGET_INSTALL_DIR%");
             // Create a batch file and shortcuts with the development environment
             createShortcuts();
+
+            if (installer.value("SDKToolBinary") == "")
+                return;
+            var qmakeBinary = "@TargetDir@/%TARGET_INSTALL_DIR%/bin/qmake.exe";
+
+            component.addOperation("Execute",
+                new Array("{1}", "@SDKToolBinary@", "addQt", "--id", component.name, "--name", "Qt %QT_VERSION% beta2 MSVC2010 32bit (SDK)", "--type", "Qt4ProjectManager.QtVersion.Desktop", "--qmake", qmakeBinary));
+
+            component.addOperation("Execute",
+                new Array("{1}", "@SDKToolBinary@", "addKit", "--id", component.name + "_kit", "--name", "Desktop Qt %QT_VERSION% beta2 MSVC2010 32bit (SDK)", "--toolchain", "x86-windows-msvc2010-pe-32bit", "--qt", component.name, "--debuggerengine", "4", "--devicetype", "Desktop"));
+
         } catch( e ) {
             print( e );
         }

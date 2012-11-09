@@ -30,13 +30,18 @@ function Component()
     {
         //%IFW_DOWNLOADABLE_ARCHIVE_NAMES%
     }
+    // set the default values to SDKToolBinary and QtCreatorInstallerSettingsFile
+    Component.prototype.reactOnTargetDirChange("TargetDir", installer.value("TargetDir"));
 }
 
 Component.prototype.reactOnTargetDirChange = function(key, value)
 {
     if (key == "TargetDir") {
         installer.setValue("QtCreatorInstallerSettingsFile", value + "/%TARGET_INSTALL_DIR%/share/qtcreator/QtProject/QtCreator.ini");
-        print("set QtCreatorInstallerSettingsFile to: " + value + "/%TARGET_INSTALL_DIR%/share/qtcreator/QtProject/QtCreator.ini");
+        if (installer.value("os") == "win")
+            installer.setValue("SDKToolBinary", value + "\\%TARGET_INSTALL_DIR%\\bin\\sdktool.exe");
+        else
+            installer.setValue("SDKToolBinary", value + "/%TARGET_INSTALL_DIR%/bin/sdktool");
     }
 }
 
@@ -182,7 +187,10 @@ Component.prototype.createOperations = function()
 
 Component.prototype.installationFinished = function()
 {
-    if (installer.isInstaller() && component.selected)
+    if (!component.installed)
+        return;
+
+    if (component.installed && installer.isInstaller() && installer.status == QInstaller.Success)
     {
         var path = component_root_path + native_path_separator;
         if (installer.value("os") == "win")
