@@ -59,7 +59,7 @@ archive_name:           qt-project-url.7z
 [qt.500_beta2.win64_msvc2010_64]
 
 [qt.500_beta2.win64_msvc2010_64.essentials]
-archives:               500_beta2.msvc2010_64.essentials, icu_49.win_64
+archives:               500_beta2.msvc2010_64.essentials, icu_49.win_64, msvc2010_64.essentials.d3d_compiler_43.x64
 target_install_base:    /5.0.0-beta2/msvc2010_64
 version:                5.0.0
 version_tag:            %QT_VERSION%
@@ -76,6 +76,12 @@ package_strip_dirs:     0
 target_install_dir:     /bin
 rpath_target:
 archive_name:           icu_49_win_64.7z
+[msvc2010_64.essentials.d3d_compiler_43.x64]
+archive_uri:            http://origin.releases.qt-project.org/prebuilt/D3DCompiler_43-x64.dll.7z
+package_strip_dirs:     0
+target_install_dir:     /bin
+rpath_target:
+archive_name:           D3DCompiler_43-x64.7z
 
 [qt.500_beta2.win64_msvc2010_64.addons]
 archives:               500_beta2.msvc2010_64.addons, icu_49.win_64
@@ -93,7 +99,7 @@ archive_name:           msvc2010_64_addons.7z
 [qt.tools]
 
 [qt.tools.qtcreator]
-archives:               tools.qtcreator
+archives:               tools.qtcreator, tools.qtcreator.d3d_compiler_43.x86
 target_install_base:    /Tools/Qt Creator
 version:                2.6.0
 version_tag:            %QTCREATOR_VERSION%
@@ -104,4 +110,10 @@ package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:
 archive_name:           qt-creator-opensource-2.6.0-vs2010-32.7z
+[tools.qtcreator.d3d_compiler_43.x86]
+archive_uri:            http://origin.releases.qt-project.org/prebuilt/D3DCompiler_43-x86.dll.7z
+package_strip_dirs:     0
+target_install_dir:     /Tools/Qt Creator/qtcreator/bin
+rpath_target:
+archive_name:           D3DCompiler_43-x86.7z
 
