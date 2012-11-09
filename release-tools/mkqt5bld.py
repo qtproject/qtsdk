@@ -260,7 +260,7 @@ def build_qt():
         bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR + os.sep + 'qtbase', True)
 
     #create list of modules in default make order
-    regex = re.compile('^make_first:.*') #search line starting with 'make_default:'
+    regex = re.compile('^make_first:.*') #search line starting with 'make_first:'
     submodule_list = []
     modules_found = 0
     if os.path.exists(QT_SOURCE_DIR + os.sep + 'Makefile'):
@@ -279,11 +279,6 @@ def build_qt():
                         index = submodule_name.index('-make_first')
                         submodule_list.append(submodule_name[:index])
                         modules_found = 1
-                    #qtwebkit_examples_and_demos is listed with different syntax: sub-module_qtwebkit_examples_and_demos-make_first
-                    elif item.startswith('sub-module_'):
-                        submodule_name = item[11:]   #11 <- sub-module_
-                        index = submodule_name.index('-make_first')
-                        submodule_list.append(submodule_name[:index])
 
         if modules_found == 1:
             QT5_MODULES_LIST = submodule_list
