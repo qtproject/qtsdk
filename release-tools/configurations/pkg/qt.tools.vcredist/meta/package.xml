@@ -6,7 +6,7 @@
     <Name>qt.tools.vcredist</Name>
     <ReleaseDate>2010-12-04</ReleaseDate>
     <Script>installscript.qs</Script>
-    <!--<Virtual>true</Virtual>-->
+    <Virtual>true</Virtual>
     <!--<ForcedInstallation>true</ForcedInstallation>-->
     <RequiresAdminRights>true</RequiresAdminRights>
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
