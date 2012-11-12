@@ -103,6 +103,10 @@ The QML based Quick 1 examples are located in
 <install_dir>/<version>/<compiler>/examples/qtquick1. You can view them with the
 QMLViewer application.
 
+Note for Windows users: the examples cannot be launched directly from Windows
+Explorer. You can use the Qt command prompt which has the correct environment
+variables setup.
+
 
 Building Qt 5 from Source
 -------------------------
