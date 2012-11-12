@@ -11,6 +11,11 @@ function Component()
         // Commented line below used by the packaging scripts
         //%IFW_DOWNLOADABLE_ARCHIVE_NAMES%
     }
+
+    if (installer.value("os") == "win")
+    {
+        component.addDependency("qt.tools.vcredist_64")
+    }
 }
 
 Component.prototype.isDefault = function()
