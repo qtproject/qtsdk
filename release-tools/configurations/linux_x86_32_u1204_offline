@@ -49,45 +49,45 @@ target_install_dir:     /
 rpath_target:
 archive_name:           readme.7z
 
-[qt.500_beta2.gcc]
+[qt.500.gcc]
 
-[qt.500_beta2.gcc.essentials]
-archives:               500_beta2.gcc.essentials, 500_beta2.gcc.icu, 500_beta2.gcc.essentials.icu_path_patcher
+[qt.500.gcc.essentials]
+archives:               500.gcc.essentials, 500.gcc.icu, 500.gcc.essentials.icu_path_patcher
 target_install_base:    /5.0.0-beta2/gcc
 version:                5.0.0
 version_tag:            %QT_VERSION%
 package_default:        true
-[500_beta2.gcc.essentials]
+[500.gcc.essentials]
 archive_uri:            /qt/5.0.0_opensource/linux_gcc_32_ubuntu1204/qt5_essentials.7z
 package_strip_dirs:     4
 target_install_dir:     /
 rpath_target:           /lib
 archive_name:           gcc_qt5_essentials.7z
-[500_beta2.gcc.icu]
+[500.gcc.icu]
 archive_uri:            /qt/5.0.0_opensource/linux_gcc_32_ubuntu1204/libicu_x86_ubuntu1204.7z
 package_strip_dirs:     0
 target_install_dir:     /lib
 rpath_target:
 archive_name:           libicu_x86_32_ubuntu1204.7z
-[500_beta2.gcc.essentials.icu_path_patcher]
+[500.gcc.essentials.icu_path_patcher]
 archive_uri:            patcher.sh
 package_strip_dirs:     0
 target_install_dir:     /
 archive_name:           icu_path_patcher.sh.7z
 
-[qt.500_beta2.gcc.addons]
-archives:               500_beta2.gcc.addons, 500_beta2.gcc.addons.icu_path_patcher
+[qt.500.gcc.addons]
+archives:               500.gcc.addons, 500.gcc.addons.icu_path_patcher
 target_install_base:    /5.0.0-beta2/gcc
 version:                5.0.0
 version_tag:            %QT_VERSION%
 package_default:        true
-[500_beta2.gcc.addons]
+[500.gcc.addons]
 archive_uri:            /qt/5.0.0_opensource/linux_gcc_32_ubuntu1204/qt5_addons.7z
 package_strip_dirs:     4
 target_install_dir:     /
 rpath_target:           /lib
 archive_name:           gcc_qt5_addons.7z
-[500_beta2.gcc.addons.icu_path_patcher]
+[500.gcc.addons.icu_path_patcher]
 archive_uri:            patcher.sh
 package_strip_dirs:     0
 target_install_dir:     /

@@ -10,15 +10,15 @@ file_list:
 [qt]
 root_component:         yes
 
-[qt.500_beta2]
-[qt.500_beta2.src]
+[qt.500]
+[qt.500.src]
 
 
 #################################
 ## Essentials
 #################################
 
-[qt.500_beta2.src.essentials]
+[qt.500.src.essentials]
 archives:               src.essentials.qtbase, src.essentials.qtdeclarative, src.essentials.qtdoc, src.essentials.qtjsbackend, src.essentials.qtquick1, src.essentials.qtscript, src.essentials.qttools, src.essentials.qtwebkit, src.essentials.qtwebkitexamplesanddemos, src.essentials.qtxmlpatterns, src.essentials.qtmultimedia
 target_install_base:    /5.0.0-beta2/Src/
 version:                5.0.0
@@ -96,9 +96,9 @@ archive_name:           qtmultimedia-opensource-src-5.0.0-beta2.7z
 ## Add-Ons
 #################################
 
-[qt.500_beta2.src.addons]
+[qt.500.src.addons]
 
-[qt.500_beta2.src.addons.qtactiveqt]
+[qt.500.src.addons.qtactiveqt]
 archives:               src.addons.qtactiveqt
 target_install_base:    /5.0.0-beta2/Src/qtactiveqt
 version:                5.0.0
@@ -111,7 +111,7 @@ target_install_dir:     /
 rpath_target:
 archive_name:           qtactiveqt-opensource-src-5.0.0-beta2.7z
 
-[qt.500_beta2.src.addons.qtgraphicaleffects]
+[qt.500.src.addons.qtgraphicaleffects]
 archives:               src.addons.qtgraphicaleffects
 target_install_base:    /5.0.0-beta2/Src/qtgraphicaleffects
 version:                5.0.0
@@ -124,7 +124,7 @@ target_install_dir:     /
 rpath_target:
 archive_name:           qtgraphicaleffects-opensource-src-5.0.0-beta2.7z
 
-[qt.500_beta2.src.addons.qtimageformats]
+[qt.500.src.addons.qtimageformats]
 archives:               src.addons.qtimageformats
 target_install_base:    /5.0.0-beta2/Src/qtimageformats
 version:                5.0.0
@@ -137,7 +137,7 @@ target_install_dir:     /
 rpath_target:
 archive_name:           qtimageformats-opensource-src-5.0.0-beta2.7z
 
-[qt.500_beta2.src.addons.qtsvg]
+[qt.500.src.addons.qtsvg]
 archives:               src.addons.qtsvg
 target_install_base:    /5.0.0-beta2/Src/qtsvg
 version:                5.0.0
@@ -150,7 +150,7 @@ target_install_dir:     /
 rpath_target:
 archive_name:           qtsvg-opensource-src-5.0.0-beta2.7z
 
-[qt.500_beta2.src.addons.qttranslations]
+[qt.500.src.addons.qttranslations]
 archives:               src.addons.qttranslations
 target_install_base:    /5.0.0-beta2/Src/qttranslations
 version:                5.0.0
