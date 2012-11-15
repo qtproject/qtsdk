@@ -59,7 +59,7 @@ version_tag:            %QT_VERSION%
 package_default:        true
 [500.gcc_64.essentials]
 archive_uri:            /qt/5.0.0_opensource/linux_gcc_64_ubuntu1204/qt5_essentials.7z
-package_strip_dirs:     4
+package_strip_dirs:
 target_install_dir:     /
 rpath_target:           /lib
 archive_name:           gcc_64_qt5_essentials.7z
@@ -83,7 +83,7 @@ version_tag:            %QT_VERSION%
 package_default:        true
 [500.gcc_64.addons]
 archive_uri:            /qt/5.0.0_opensource/linux_gcc_64_ubuntu1204/qt5_addons.7z
-package_strip_dirs:     4
+package_strip_dirs:
 target_install_dir:     /
 rpath_target:           /lib
 archive_name:           gcc_64_qt5_addons.7z

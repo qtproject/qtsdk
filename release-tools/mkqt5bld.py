@@ -57,7 +57,9 @@ SCRIPT_ROOT_DIR                     = os.getcwd()
 WORK_DIR_NAME                       = 'qt5_workdir'
 WORK_DIR                            = SCRIPT_ROOT_DIR + os.sep + WORK_DIR_NAME
 QT_PACKAGE_SAVE_AS_TEMP             = ''
-QT_SOURCE_DIR                       = WORK_DIR + os.sep + 'w'
+QT_SOURCE_DIR_NAME                  = 'w'
+QT_SOURCE_DIR                       = WORK_DIR + os.sep + QT_SOURCE_DIR_NAME
+QT_PACKAGE_SHORT_NAME               = 's'
 MAKE_INSTALL_ROOT_DIR_NAME          = 'qt5_install_root'
 MAKE_INSTALL_ROOT_DIR               = WORK_DIR + os.sep + MAKE_INSTALL_ROOT_DIR_NAME #main dir for submodule installations
 MISSING_MODULES_FILE                = WORK_DIR + os.sep + 'missing_modules.txt'
@@ -82,11 +84,12 @@ QT5_ESSENTIALS                      = [ 'qtbase', 'qtdeclarative', 'qtdoc', \
                                         'qttools', 'qtwebkit', 'qtxmlpatterns', \
                                         'qtmultimedia', 'qtwebkit-examples-and-demos']
 ORIGINAL_QMAKE_QT_PRFXPATH          = ''
-PADDING                             = "______________________________PADDING______________________________"
+PADDING                             = '______________________________PADDING______________________________'
 FILES_TO_REMOVE_LIST                = ['Makefile', 'Makefile.Release', 'Makefile.Debug', \
                                        '.o', '.moc', '.init-repository', \
                                        '.gitignore', '.obj']
 IGNORE_PATCH_LIST                   = ['.png', '.jpg', '.gif', '.bmp', '.exe', '.dll', '.lib', '.pdb', '.qph']
+INSTALL_PREFIX                      = ''
 #Commandline options
 OPTION_PARSER                       = 0
 QT_SRC_PACKAGE_URL                  = ''
@@ -130,6 +133,7 @@ def init_mkqt5bld():
     global MAKE_INSTALL_CMD
     global SUBMODULE_INSTALL_BASE_DIR_NAME
     global MAKE_INSTALL_ROOT_DIR
+    global INSTALL_PREFIX
 
     print_wrap('---------------- Initializing build --------------------------------')
     #do not edit configure options, if configure options are overridden from commandline options
@@ -140,14 +144,18 @@ def init_mkqt5bld():
         if bldinstallercommon.is_linux_platform():          #linux
             CONFIGURE_OPTIONS += ' -no-gtkstyle -qt-xcb'
         elif bldinstallercommon.is_mac_platform():          #mac
-            #doing insource build because make install fails
-            CONFIGURE_OPTIONS += ' -platform macx-clang -prefix $PWD/qtbase'
+            INSTALL_PREFIX = os.environ['PWD'] + os.sep + PADDING
+            CONFIGURE_OPTIONS += ' -platform macx-clang -prefix ' + INSTALL_PREFIX
         elif bldinstallercommon.is_win_platform():          #win
             CONFIGURE_OPTIONS += ' -angle'
 
         #Add padding to original rpaths to make sure that original rpath is longer than the new
         if bldinstallercommon.is_linux_platform() or bldinstallercommon.is_solaris_platform():
-            CONFIGURE_OPTIONS += ' -R ' + PADDING
+            INSTALL_PREFIX = os.getcwd() + os.sep + PADDING
+            CONFIGURE_OPTIONS += ' -prefix ' + INSTALL_PREFIX
+        elif bldinstallercommon.is_win_platform():
+            src_dir = QT_SOURCE_DIR + os.sep + QT_PACKAGE_SHORT_NAME
+            INSTALL_PREFIX = src_dir[2:] + os.sep + 'qtbase'
 
         if SILENT_BUILD:
             CONFIGURE_OPTIONS += ' -silent'
@@ -224,7 +232,7 @@ def extract_src_package():
     items = len(l)
     if items == 1:
         print_wrap('    Replacing qt-everywhere-xxx-src-5.0.0 with shorter path names')
-        shorter_dir_path = QT_SOURCE_DIR + os.sep + 's'
+        shorter_dir_path = QT_SOURCE_DIR + os.sep + QT_PACKAGE_SHORT_NAME
         os.rename(QT_SOURCE_DIR + os.sep + l[0], shorter_dir_path)
         print_wrap('    Old source dir: ' + QT_SOURCE_DIR)
         QT_SOURCE_DIR = shorter_dir_path
@@ -329,7 +337,7 @@ def install_qt():
         if 'mingw' in MAKE_CMD:
             install_root_path = WORK_DIR + '/' + MAKE_INSTALL_ROOT_DIR_NAME + '/' + install_dir
         if bldinstallercommon.is_win_platform():
-            install_root_path = install_root_path[3:]
+            install_root_path = install_root_path[2:]
             print_wrap('    Using install root path: ' + install_root_path)
         submodule_dir_name = QT_SOURCE_DIR + os.sep + module_name
         cmd_args = MAKE_INSTALL_CMD + ' ' + 'INSTALL_ROOT=' + install_root_path
@@ -426,6 +434,7 @@ def clean_up(install_dir):
 
     print_wrap('--------------------------------------------------------------------')
 
+
 ###############################
 # function
 ###############################
@@ -436,18 +445,18 @@ def archive_submodules():
     # Essentials
     print_wrap('---------- Archiving essential modules')
     if os.path.exists(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME):
-        cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_essentials' + '.7z ' + ESSENTIALS_INSTALL_DIR_NAME
-        # eat subprocess stdout
-        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), MAKE_INSTALL_ROOT_DIR, True, True)
+        cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_essentials' + '.7z *'
+        run_in = MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX
+        bldinstallercommon.do_execute_sub_process_get_std_out(cmd_args.split(' '), run_in, True, True)
     else:
         print_wrap(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> essentials not archived!')
 
     # Add-ons
     print_wrap('---------- Archiving add-on modules')
     if os.path.exists(MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME):
-        cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_addons' + '.7z ' + ADDONS_INSTALL_DIR_NAME
-        # eat subprocess stdout
-        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), MAKE_INSTALL_ROOT_DIR, True, True)
+        cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_addons' + '.7z *'
+        run_in = MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX
+        bldinstallercommon.do_execute_sub_process_get_std_out(cmd_args.split(' '), run_in, True, True)
     else:
         print_wrap(MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> add-ons not archived!')
 
@@ -559,6 +568,7 @@ def main():
     replace_build_paths(MAKE_INSTALL_ROOT_DIR)
     # archive each submodule
     archive_submodules()
+
 
 ###############################
 # function
