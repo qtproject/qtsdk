@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<Installer>
+    <Name>Qt 5.0.0-rc1 Installer</Name>
+    <Version>5.0.0-rc1</Version>
+    <Title>Qt 5.0.0-rc1</Title>
+    <MaintenanceTitle>Maintain Qt 5.0.0-rc1</MaintenanceTitle>
+    <Publisher>Qt</Publisher>
+    <Logo>logo.png</Logo>
+    <LogoSmall>logo-small.png</LogoSmall>
+    <Icon>logo-small</Icon>
+    <License>license.txt</License>
+    <Watermark>watermark.png</Watermark>
+    <StartMenuDir>Qt 5.0.0-rc1</StartMenuDir>
+    <ProductUrl>http://qt-project.org/</ProductUrl>
+    <!--<Background>background.png</Background>-->
+    <UninstallerName>MaintenanceTool</UninstallerName>
+    <!--<RemoteRepositories>
+        <Repository>
+            <Url>%UPDATE_REPOSITORY_URL%</Url>
+            <Required>false</Required>
+        </Repository>
+    </RemoteRepositories>-->
+    <Pages>
+        <Page name="LicenseAgreementPage">
+            <AcceptLicenseLabel>I h&lt;u&gt;a&lt;/u&gt;ve read and agree to the following terms contained in the license agreements accompanying the Qt 5.0.0-rc1 installer and additional items. I agree that my use of the Qt 5.0.0-rc1 installer is governed by the terms and conditions contained in these license agreements.</AcceptLicenseLabel>
+            <RejectLicenseLabel>I &lt;u&gt;d&lt;/u&gt;o not accept the terms and conditions of the above listed license agreements. Please note by checking the box, you must cancel the installation or downloading the Qt 5.0.0-rc1 and must destroy all copies, or portions thereof, of the Qt 5.0.0-rc1 in your possessions.</RejectLicenseLabel>
+        </Page>
+    </Pages>
+    <!-- @homeDir@ and @rootDir@ are some of the supported vars -->
+    <TargetDir>@homeDir@/Qt5.0.0-rc1</TargetDir>
+</Installer>

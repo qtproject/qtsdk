@@ -26,7 +26,7 @@ repository_url_rnd:     http://../qt5repository/linux/x64/online_qt5sdk_repo
 template_name:          config_qt5
 
 [ConfigXml]
-template_name:          config.xml.template.linux.qt5-beta
+template_name:          config.xml.template.linux.qt5
 
 [WorkingDirectories]
 packages_dir:           pkg
@@ -53,7 +53,7 @@ archive_name:           readme.7z
 
 [qt.500.gcc_64.essentials]
 archives:               500.gcc_64.essentials, 500.gcc_64.icu, 500.gcc_64.essentials.icu_path_patcher
-target_install_base:    /5.0.0-beta2/gcc_64
+target_install_base:    /5.0.0-rc1/gcc_64
 version:                5.0.0
 version_tag:            %QT_VERSION%
 package_default:        true
@@ -77,7 +77,7 @@ archive_name:           icu_path_patcher.sh.7z
 
 [qt.500.gcc_64.addons]
 archives:               500.gcc_64.addons, 500.gcc_64.addons.icu_path_patcher
-target_install_base:    /5.0.0-beta2/gcc_64
+target_install_base:    /5.0.0-rc1/gcc_64
 version:                5.0.0
 version_tag:            %QT_VERSION%
 package_default:        true

@@ -26,7 +26,7 @@ repository_url_rnd:     http://../qt5repository/windows/x32/online_qt5sdk_repo
 template_name:          config_qt5
 
 [ConfigXml]
-template_name:          config.xml.template.windows.qt5-beta
+template_name:          config.xml.template.windows.qt5
 
 [WorkingDirectories]
 packages_dir:           pkg
@@ -59,7 +59,7 @@ archive_name:           qt-project-url.7z
 
 [qt.500.win32_msvc2010.essentials]
 archives:               500.msvc2010.essentials, icu_49.win_32, win32_msvc2010.essentials.d3d_compiler_43.x86
-target_install_base:    /5.0.0-beta2/msvc2010
+target_install_base:    /5.0.0-rc1/msvc2010
 version:                5.0.0
 version_tag:            %QT_VERSION%
 package_default:        true
@@ -84,7 +84,7 @@ archive_name:           D3DCompiler_43-x86.7z
 
 [qt.500.win32_msvc2010.addons]
 archives:               500.msvc2010.addons, icu_49.win_32
-target_install_base:    /5.0.0-beta2/msvc2010
+target_install_base:    /5.0.0-rc1/msvc2010
 version:                5.0.0
 version_tag:            %QT_VERSION%
 package_default:        true
