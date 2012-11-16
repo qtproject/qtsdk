@@ -646,111 +646,50 @@ def handle_component_rpath(component_root_path, destination_lib_path):
                     #print '        RPath value: [' + rp + '] for file: [' + file_full_path + ']'
                     cmd_args = ['chrpath', '-r', rp, file_full_path]
                     #force silent operation
-                    do_execute_sub_process_get_std_out(cmd_args, SCRIPT_ROOT_DIR, True, False)
+                    do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True, False)
 
 
 ###############################
 # function
 ###############################
-def do_execute_sub_process(args, execution_path, abort_on_fail):
+def do_execute_sub_process(args, execution_path, abort_on_fail, get_output=False):
     print '      --------------------------------------------------------------------'
     print '      Executing:      [' + list_as_string(args) + ']'
     print '      Execution path: [' + execution_path + ']'
     print '      Abort on fail:  [' + str(abort_on_fail) + ']'
-    return_code = -1
-    try:
-        os.chdir(execution_path)
-        if IS_WIN_PLATFORM:
-            theproc = subprocess.Popen(args, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=False)
-        else:
-            theproc = subprocess.Popen(args)
-        output = theproc.communicate()[0]
-        if theproc.returncode:
-            return_code = theproc.returncode
-            if output:
-                output = output[len(output) - MAX_DEBUG_PRINT_LENGTH:] if len(output) > MAX_DEBUG_PRINT_LENGTH else output
-                print output
-            else:
-                print '    Note, no output from the sub process!'
-            print '*** Execution failed with code: %s' % str(theproc.returncode)
-            if abort_on_fail:
-                sys.exit(-1)
-        print '      --------------------------------------------------------------------'
-    except Exception:
-        print sys.exc_info()
-        if abort_on_fail:
-            sys.exit(-1)
-        else:
-            pass
-
-    os.chdir(SCRIPT_ROOT_DIR)
-    return return_code
-
-
-###############################
-# function
-###############################
-def do_execute_sub_process_2(args, execution_path, abort_on_fail):
-    print '      --------------------------------------------------------------------'
-    print '      Executing:      [' + args + ']'
-    print '      Execution path: [' + execution_path + ']'
-    print '      Abort on fail:  [' + str(abort_on_fail) + ']'
-    return_code = -1
-    try:
-        os.chdir(execution_path)
-        theproc = subprocess.Popen(args, shell=True)
-        output = theproc.communicate()[0]
-        if theproc.returncode:
-            return_code = theproc.returncode
-            if output:
-                output = output[len(output) - MAX_DEBUG_PRINT_LENGTH:] if len(output) > MAX_DEBUG_PRINT_LENGTH else output
-                print output
-            else:
-                print '    Note, no output from the sub process!'
-            print '*** Execution failed with code: %s' % str(theproc.returncode)
-            if abort_on_fail:
-                sys.exit(-1)
-        print '      --------------------------------------------------------------------'
-    except Exception:
-        print sys.exc_info()
-        if abort_on_fail:
-            sys.exit(-1)
-        else:
-            pass
-
-    os.chdir(SCRIPT_ROOT_DIR)
-    return return_code
-
-
-###############################
-# function
-###############################
-def do_execute_sub_process_get_std_out(args, execution_path, abort_on_fail, print_debug=True):
-    if print_debug:
-        print '      --------------------------------------------------------------------'
-        print '      Executing:      [' + list_as_string(args) + ']'
-        print '      Execution path: [' + execution_path + ']'
-        print '      Abort on fail:  [' + str(abort_on_fail) + ']'
     theproc = None
-    output = ''
+    return_code = -1
+    output      = ''
+
     try:
         os.chdir(execution_path)
         if IS_WIN_PLATFORM:
-            theproc = subprocess.Popen(args, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=False)
+            if get_output:
+                theproc = subprocess.Popen(args, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=False)
+                output = theproc.communicate()[0]
+            else:
+                theproc = subprocess.Popen(args, shell=True, close_fds=False)
+                theproc.communicate()
+
         else:
-            theproc = subprocess.Popen(args, shell=False, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
-        output = theproc.communicate()[0]
+            if get_output:
+                theproc = subprocess.Popen(args, shell=False, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
+                output = theproc.communicate()[0]
+            else:
+                theproc = subprocess.Popen(args)
+                theproc.communicate()
+
         if theproc.returncode:
+            return_code = theproc.returncode
             if output:
                 output = output[len(output) - MAX_DEBUG_PRINT_LENGTH:] if len(output) > MAX_DEBUG_PRINT_LENGTH else output
                 print output
             else:
-                print '    Note, no output from the sub process!'
+                print 'Note, no output from the sub process!'
             print '*** Execution failed with code: %s' % str(theproc.returncode)
             if abort_on_fail:
                 sys.exit(-1)
-        if print_debug:
-            print '      --------------------------------------------------------------------'
+        print '      --------------------------------------------------------------------'
     except Exception:
         print sys.exc_info()
         if abort_on_fail:
@@ -759,7 +698,7 @@ def do_execute_sub_process_get_std_out(args, execution_path, abort_on_fail, prin
             pass
 
     os.chdir(SCRIPT_ROOT_DIR)
-    return output
+    return return_code, output
 
 
 ###############################
@@ -794,8 +733,8 @@ def extract_file(path, to_directory='.'):
         cmd_args = ['tar', '-xjf', path]
     elif path.endswith('.7z'):
         cmd_args = ['7z', 'x', path]
-        # 7z does not have silent operation so we do it the hard way....
-        do_execute_sub_process_get_std_out(cmd_args, to_directory, False)
+        # 7z does not have silent operation so eat the subprocess output
+        do_execute_sub_process(cmd_args, to_directory, True, True)
         return True
     else:
         print 'Did not extract the file! Not archived or no appropriate extractor was found: ' + path

@@ -608,8 +608,8 @@ def archive_component(package, package_archive_name):
     print '      Final archive:   ' + package_path
 
     saveas = os.path.normpath(PACKAGES_FULL_PATH_DST + os.sep + package + os.sep + package_archive_name)
-    cmd_args = ARCHIVEGEN_TOOL + ' ' + saveas + ' .'
-    bldinstallercommon.do_execute_sub_process_2(cmd_args, full_path, True)
+    cmd_args = [ ARCHIVEGEN_TOOL, saveas, '.']
+    bldinstallercommon.do_execute_sub_process(cmd_args, full_path, True)
     shutil.copy(saveas, full_path + os.sep + package_archive_name)
     os.remove(saveas)
 

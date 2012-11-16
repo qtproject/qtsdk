@@ -336,8 +336,8 @@ def install_qt():
         print_wrap('    Installing module: ' + module_name)
         print_wrap('          -> cmd args: ' + cmd_args)
         print_wrap('                -> in: ' + submodule_dir_name)
-        out = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), submodule_dir_name, STRICT_MODE)
-        if out >= 0:
+        return_code, output = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), submodule_dir_name, STRICT_MODE)
+        if return_core >= 0:
             file_handle = open(MISSING_MODULES_FILE, 'a')
             file_handle.write('\nFailed to build ' + module_name)
             file_handle.close()
@@ -437,7 +437,8 @@ def archive_submodules():
     print_wrap('---------- Archiving essential modules')
     if os.path.exists(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME):
         cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_essentials' + '.7z ' + ESSENTIALS_INSTALL_DIR_NAME
-        bldinstallercommon.do_execute_sub_process_get_std_out(cmd_args.split(' '), MAKE_INSTALL_ROOT_DIR, True, True)
+        # eat subprocess stdout
+        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), MAKE_INSTALL_ROOT_DIR, True, True)
     else:
         print_wrap(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> essentials not archived!')
 
@@ -445,7 +446,8 @@ def archive_submodules():
     print_wrap('---------- Archiving add-on modules')
     if os.path.exists(MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME):
         cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_addons' + '.7z ' + ADDONS_INSTALL_DIR_NAME
-        bldinstallercommon.do_execute_sub_process_get_std_out(cmd_args.split(' '), MAKE_INSTALL_ROOT_DIR, True, True)
+        # eat subprocess stdout
+        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), MAKE_INSTALL_ROOT_DIR, True, True)
     else:
         print_wrap(MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> add-ons not archived!')
 
