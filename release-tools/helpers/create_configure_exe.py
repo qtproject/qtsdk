@@ -78,11 +78,14 @@ def print_wrap(text):
 def print_help():
     print_wrap('*** Error! Insufficient arguments given!')
     print_wrap('')
-    print_wrap('Example: python -u create_configure_exe.py src_url=qt-everywhere-opensource-src-5.0.0.zip mdl_url=qtbase-src.tar.zip')
+    print_wrap('Example: python -u create_configure_exe.py src_url=qt-everywhere-opensource-src-5.0.0.zip mdl_url=qtbase-src.tar.zip do_7z')
     print_wrap('')
-    print_wrap('Available options:')
+    print_wrap('Mandatory options:')
     print_wrap('')
     print_wrap('  src_url = [url where to fetch src package]')
+    print_wrap('')
+    print_wrap('Other options:')
+    print_wrap('')
     print_wrap('  mdl_url = [url where to fetch module src package]')
     print_wrap('  do_7z   = [add also to .7z archives, assumes the basename to be as in src_url and mdl_url]')
     print_wrap('')
@@ -118,7 +121,7 @@ def parse_cmd_line():
 
     print_wrap('---------------- Parsing commandline arguments ---------------------')
     arg_count = len(sys.argv)
-    if sys.argv.find('src_url') == 0:
+    if not any('src_url' in s for s in sys.argv):
         print_help()
         sys.exit(-1)
     #Parse command line options
