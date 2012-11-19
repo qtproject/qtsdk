@@ -98,7 +98,7 @@ archive_name:           icu_path_patcher.sh.7z
 
 [qt.tools.qtcreator]
 archives:               tools.qtcreator
-target_install_base:    /Tools/Qt Creator
+target_install_base:    /Tools/QtCreator
 version:                2.6.0
 version_tag:            %QTCREATOR_VERSION%
 package_default:        true

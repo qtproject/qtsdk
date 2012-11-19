@@ -99,7 +99,7 @@ archive_name:           msvc2010_addons.7z
 
 [qt.tools.qtcreator]
 archives:               tools.qtcreator, tools.qtcreator.d3d_compiler_43.x86
-target_install_base:    /Tools/Qt Creator
+target_install_base:    /Tools/QtCreator
 version:                2.6.0
 version_tag:            %QTCREATOR_VERSION%
 package_default:        true
