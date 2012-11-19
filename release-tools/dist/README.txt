@@ -84,6 +84,10 @@ For example:
 - QMLViewer, the viewer for Qt Quick1 declarative QML applications
 - Qt Designer, the GUI designer for Qt widgets-based applications
 
+You can use Qt Creator to develop with other Qt versions as well:
+
+   http://qt-project.org/doc/qtcreator-2.6/creator-project-qmake.html
+
 
 Running Example Applications
 ----------------------------
