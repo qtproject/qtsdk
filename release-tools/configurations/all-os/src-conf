@@ -25,71 +25,71 @@ version:                5.0.0
 version_tag:            %QT_VERSION%
 package_default:        true
 [src.essentials.qtbase]
-archive_uri:            /qt/5.0.0_opensource/src/submodules/qtbase-opensource-src-5.0.0-beta2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.0_opensource/src/submodules/qtbase-opensource-src-5.0.0-rc1.ARCHIVE_TAG
 package_strip_dirs:     1
 target_install_dir:     /qtbase
 rpath_target:
-archive_name:           qtbase-opensource-src-5.0.0-beta2.7z
+archive_name:           qtbase-opensource-src-5.0.0-rc1.7z
 [src.essentials.qtdeclarative]
-archive_uri:            /qt/5.0.0_opensource/src/submodules/qtdeclarative-opensource-src-5.0.0-beta2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.0_opensource/src/submodules/qtdeclarative-opensource-src-5.0.0-rc1.ARCHIVE_TAG
 package_strip_dirs:     1
 target_install_dir:     /qtdeclarative
 rpath_target:
-archive_name:           qtdeclarative-opensource-src-5.0.0-beta2.7z
+archive_name:           qtdeclarative-opensource-src-5.0.0-rc1.7z
 [src.essentials.qtdoc]
-archive_uri:            /qt/5.0.0_opensource/src/submodules/qtdoc-opensource-src-5.0.0-beta2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.0_opensource/src/submodules/qtdoc-opensource-src-5.0.0-rc1.ARCHIVE_TAG
 package_strip_dirs:     1
 target_install_dir:     /qtdoc
 rpath_target:
-archive_name:           qtdoc-opensource-src-5.0.0-beta2.7z
+archive_name:           qtdoc-opensource-src-5.0.0-rc1.7z
 [src.essentials.qtjsbackend]
-archive_uri:            /qt/5.0.0_opensource/src/submodules/qtjsbackend-opensource-src-5.0.0-beta2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.0_opensource/src/submodules/qtjsbackend-opensource-src-5.0.0-rc1.ARCHIVE_TAG
 package_strip_dirs:     1
 target_install_dir:     /qtjsbackend
 rpath_target:
-archive_name:           qtjsbackend-opensource-src-5.0.0-beta2.7z
+archive_name:           qtjsbackend-opensource-src-5.0.0-rc1.7z
 [src.essentials.qtquick1]
-archive_uri:            /qt/5.0.0_opensource/src/submodules/qtquick1-opensource-src-5.0.0-beta2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.0_opensource/src/submodules/qtquick1-opensource-src-5.0.0-rc1.ARCHIVE_TAG
 package_strip_dirs:     1
 target_install_dir:     /qtquick1
 rpath_target:
-archive_name:           qtquick1-opensource-src-5.0.0-beta2.7z
+archive_name:           qtquick1-opensource-src-5.0.0-rc1.7z
 [src.essentials.qtscript]
-archive_uri:            /qt/5.0.0_opensource/src/submodules/qtscript-opensource-src-5.0.0-beta2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.0_opensource/src/submodules/qtscript-opensource-src-5.0.0-rc1.ARCHIVE_TAG
 package_strip_dirs:     1
 target_install_dir:     /qtscript
 rpath_target:
-archive_name:           qtscript-opensource-src-5.0.0-beta2.7z
+archive_name:           qtscript-opensource-src-5.0.0-rc1.7z
 [src.essentials.qttools]
-archive_uri:            /qt/5.0.0_opensource/src/submodules/qttools-opensource-src-5.0.0-beta2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.0_opensource/src/submodules/qttools-opensource-src-5.0.0-rc1.ARCHIVE_TAG
 package_strip_dirs:     1
 target_install_dir:     /qttools
 rpath_target:
-archive_name:           qttools-opensource-src-5.0.0-beta2.7z
+archive_name:           qttools-opensource-src-5.0.0-rc1.7z
 [src.essentials.qtwebkit]
-archive_uri:            /qt/5.0.0_opensource/src/submodules/qtwebkit-opensource-src-5.0.0-beta2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.0_opensource/src/submodules/qtwebkit-opensource-src-5.0.0-rc1.ARCHIVE_TAG
 package_strip_dirs:     1
 target_install_dir:     /qtwebkit
 rpath_target:
-archive_name:           qtwebkit-opensource-src-5.0.0-beta2.7z
+archive_name:           qtwebkit-opensource-src-5.0.0-rc1.7z
 [src.essentials.qtwebkitexamplesanddemos]
-archive_uri:            /qt/5.0.0_opensource/src/submodules/qtwebkit-examples-and-demos-opensource-src-5.0.0-beta2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.0_opensource/src/submodules/qtwebkit-examples-and-demos-opensource-src-5.0.0-rc1.ARCHIVE_TAG
 package_strip_dirs:     1
 target_install_dir:     /qtwebkit-examples-and-demos
 rpath_target:
-archive_name:           qtwebkit-examples-and-demos-opensource-src-5.0.0-beta2.7z
+archive_name:           qtwebkit-examples-and-demos-opensource-src-5.0.0-rc1.7z
 [src.essentials.qtxmlpatterns]
-archive_uri:            /qt/5.0.0_opensource/src/submodules/qtxmlpatterns-opensource-src-5.0.0-beta2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.0_opensource/src/submodules/qtxmlpatterns-opensource-src-5.0.0-rc1.ARCHIVE_TAG
 package_strip_dirs:     1
 target_install_dir:     /qtxmlpatterns
 rpath_target:
-archive_name:           qtxmlpatterns-opensource-src-5.0.0-beta2.7z
+archive_name:           qtxmlpatterns-opensource-src-5.0.0-rc1.7z
 [src.essentials.qtmultimedia]
-archive_uri:            /qt/5.0.0_opensource/src/submodules/qtmultimedia-opensource-src-5.0.0-beta2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.0_opensource/src/submodules/qtmultimedia-opensource-src-5.0.0-rc1.ARCHIVE_TAG
 package_strip_dirs:     1
 target_install_dir:     /qtmultimedia
 rpath_target:
-archive_name:           qtmultimedia-opensource-src-5.0.0-beta2.7z
+archive_name:           qtmultimedia-opensource-src-5.0.0-rc1.7z
 
 
 #################################
@@ -105,11 +105,11 @@ version:                5.0.0
 version_tag:            %QT_VERSION%
 package_default:        true
 [src.addons.qtactiveqt]
-archive_uri:            /qt/5.0.0_opensource/src/submodules/qtactiveqt-opensource-src-5.0.0-beta2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.0_opensource/src/submodules/qtactiveqt-opensource-src-5.0.0-rc1.ARCHIVE_TAG
 package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:
-archive_name:           qtactiveqt-opensource-src-5.0.0-beta2.7z
+archive_name:           qtactiveqt-opensource-src-5.0.0-rc1.7z
 
 [qt.500.src.addons.qtgraphicaleffects]
 archives:               src.addons.qtgraphicaleffects
@@ -118,11 +118,11 @@ version:                5.0.0
 version_tag:            %QT_VERSION%
 package_default:        true
 [src.addons.qtgraphicaleffects]
-archive_uri:            /qt/5.0.0_opensource/src/submodules/qtgraphicaleffects-opensource-src-5.0.0-beta2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.0_opensource/src/submodules/qtgraphicaleffects-opensource-src-5.0.0-rc1.ARCHIVE_TAG
 package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:
-archive_name:           qtgraphicaleffects-opensource-src-5.0.0-beta2.7z
+archive_name:           qtgraphicaleffects-opensource-src-5.0.0-rc1.7z
 
 [qt.500.src.addons.qtimageformats]
 archives:               src.addons.qtimageformats
@@ -131,11 +131,11 @@ version:                5.0.0
 version_tag:            %QT_VERSION%
 package_default:        true
 [src.addons.qtimageformats]
-archive_uri:            /qt/5.0.0_opensource/src/submodules/qtimageformats-opensource-src-5.0.0-beta2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.0_opensource/src/submodules/qtimageformats-opensource-src-5.0.0-rc1.ARCHIVE_TAG
 package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:
-archive_name:           qtimageformats-opensource-src-5.0.0-beta2.7z
+archive_name:           qtimageformats-opensource-src-5.0.0-rc1.7z
 
 [qt.500.src.addons.qtsvg]
 archives:               src.addons.qtsvg
@@ -144,11 +144,11 @@ version:                5.0.0
 version_tag:            %QT_VERSION%
 package_default:        true
 [src.addons.qtsvg]
-archive_uri:            /qt/5.0.0_opensource/src/submodules/qtsvg-opensource-src-5.0.0-beta2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.0_opensource/src/submodules/qtsvg-opensource-src-5.0.0-rc1.ARCHIVE_TAG
 package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:
-archive_name:           qtsvg-opensource-src-5.0.0-beta2.7z
+archive_name:           qtsvg-opensource-src-5.0.0-rc1.7z
 
 [qt.500.src.addons.qttranslations]
 archives:               src.addons.qttranslations
@@ -157,11 +157,11 @@ version:                5.0.0
 version_tag:            %QT_VERSION%
 package_default:        true
 [src.addons.qttranslations]
-archive_uri:            /qt/5.0.0_opensource/src/submodules/qttranslations-opensource-src-5.0.0-beta2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.0_opensource/src/submodules/qttranslations-opensource-src-5.0.0-rc1.ARCHIVE_TAG
 package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:
-archive_name:           qttranslations-opensource-src-5.0.0-beta2.7z
+archive_name:           qttranslations-opensource-src-5.0.0-rc1.7z
 
 
 
