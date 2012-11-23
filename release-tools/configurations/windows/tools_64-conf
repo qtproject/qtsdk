@@ -6,8 +6,8 @@ version:                2010-12-4
 version_tag:            %VCREDIST_X64_VERSION%
 package_default:        false
 [tools.vcredist_64]
-archive_uri:            http://origin.releases.qt-project.org/prebuilt/vcredist_x64.7z
+archive_uri:            http://origin.releases.qt-project.org/prebuilt/vcredist_sp1_x64.7z
 package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:
-archive_name:           vcredist_x64.7z
+archive_name:           vcredist_sp1_x64.7z
