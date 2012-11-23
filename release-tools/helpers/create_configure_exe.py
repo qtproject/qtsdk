@@ -332,11 +332,11 @@ def archive_configure_exe():
     if DO_7Z:
         print_wrap('    Adding to ' + QT_SRC_7Z)
         cmd_args = ['7z', 'u', QT_SRC_7Z, exe_in_zip]
-        bldinstallercommon.do_execute_sub_process_get_std_out(cmd_args, SCRIPT_ROOT_DIR, True, False)
+        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True, False)
 
         print_wrap('    Adding to ' + QT_MODULE_7Z)
         cmd_args = ['7z', 'u', QT_MODULE_7Z, QT_MODULE_PKG_NAME + os.sep + 'configure.exe']
-        bldinstallercommon.do_execute_sub_process_get_std_out(cmd_args, MODULE_DIR, True, False)
+        bldinstallercommon.do_execute_sub_process(cmd_args, MODULE_DIR, True, False)
 
     print_wrap('--------------------------------------------------------------------')
 
