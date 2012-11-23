@@ -26,11 +26,8 @@ set -u
 CUR_DIR=$PWD
 DO_FETCH=true
 DO_TAG=false
-DOCS=generate
-EXIT_AFTER_DOCS=false
 IGNORE_LIST=
 LICENSE=opensource
-MAKEARGS=''
 MULTIPACK=no
 PACK_TIME=`date '+%Y-%m-%d'`
 PATCH_FILE=''
@@ -45,13 +42,11 @@ STRICT=1
 function usage()
 {
   echo "Usage:"
-  echo "./mksrc.sh -u <file_url_to_git_repo> -v <version> [-m][-N][--make-args][--no-docs][--tag][-i sub][-l lic][-p patch][-r revision][-S]"
+  echo "./mksrc.sh -u <file_url_to_git_repo> -v <version> [-m][-N][--tag][-i sub][-l lic][-p patch][-r revision][-S]"
   echo "where -u is path to git repo and -v is version"
   echo "Optional parameters:"
   echo "-m             one is able to tar each sub module separately"
   echo "-N             don't use git fetch to update submodules"
-  echo "--make-args    extra arguments passed to 'make' command (e.g. --make-args '-j4 -s')"
-  echo "--no-docs      skip generating documentation"
   echo "--tag          also tag the repository"
   echo "-i submodule   will exclude the submodule from final package "
   echo "-l license     license type, will default to 'opensource', if set to 'commercial' all the necessary patches will be applied for commercial build"
@@ -138,12 +133,18 @@ while test $# -gt 0; do
     ;;
     --make-args)
       shift
-      MAKEARGS=$1
+      echo "************************************************"
+      echo " --make-args switch has been depracated.        "
+      echo " Doc creation was removed from mksrc.sh         "
+      echo "************************************************"
       shift
     ;;
     --no-docs)
       shift
-      DOCS=skip
+      echo "****************************************"
+      echo " --no-docs switch has been depracated.  "
+      echo " Doc creation was removed from mksrc.sh "
+      echo "****************************************"
     ;;
     -t|--tag)
       shift
@@ -186,7 +187,10 @@ while test $# -gt 0; do
     ;;
     --exit-after-docs)
       shift
-      EXIT_AFTER_DOCS=true
+      echo "************************************************"
+      echo " --exit-after-docs switch has been depracated.  "
+      echo " Doc creation was removed from mksrc.sh         "
+      echo "************************************************"
     ;;
     -S|--no-strict)
       shift
@@ -317,82 +321,7 @@ cd $CUR_DIR/$PACKAGE_NAME/
 find . -type f -print0 | xargs -0 sed -i -e "s/%VERSION%/$QTVER/g" -e "s/%SHORTVERSION%/$QTSHORTVER/g"
 
 #------------------------------------------------------------------
-# Step 4,  generate docs
-#------------------------------------------------------------------
-if [ $DOCS = generate ]; then
-  echo "DOC: Starting documentation generation.."
-  # Make a copy of the source tree
-  DOC_BUILD=$CUR_DIR/doc-build
-  mkdir -p $DOC_BUILD
-  echo "DOC: copying sources to $DOC_BUILD"
-  cp -R $CUR_DIR/$PACKAGE_NAME $DOC_BUILD
-  cd $DOC_BUILD/$PACKAGE_NAME
-  # Build bootstrapped qdoc
-  echo "DOC: configuring build"
-  if [ $REPO_NAME = qtsdk ]; then
-    ( cd qtbase ; ./configure -developer-build -opensource -confirm-license -nomake examples -nomake tests -release -fast -no-pch -no-qpa-platform-guard -silent)
-  else
-    ./configure -developer-build -opensource -confirm-license -nomake examples -nomake tests -release -fast -no-pch -no-qpa-platform-guard -silent
-  fi
-  # Run qmake in each module, as this generates the .pri files that tell qdoc what docs to generate
-  QMAKE=$PWD/qtbase/bin/qmake
-  echo "DOC: running $QMAKE and qmake_all for submodules"
-  for i in `cat $MODULES` ; do if [ -d $i -a -e $i/*.pro ] ; then (cd $i ; $QMAKE ; make $MAKEARGS qmake_all ) ; fi ; done
-  # Build libQtHelp.so and qhelpgenerator
-  echo "DOC: Build libQtHelp.so and qhelpgenerator"
-  (cd qtbase && make $MAKEARGS)
-  (cd qtxmlpatterns ; make $MAKEARGS)
-  (cd qttools ; make $MAKEARGS)
-  (cd qttools/src/assistant/help ; make $MAKEARGS)
-  (cd qttools/src/assistant/qhelpgenerator ; make $MAKEARGS)
-  # Generate the offline docs and qt.qch
-  echo "DOC: Generate the offline docs and qt.qch"
-  (cd qtdoc ; $QMAKE ; make $MAKEARGS qmake_all ; LD_LIBRARY_PATH=$PWD/../qttools/lib make $MAKEARGS qch_docs)
-  (cd qtdoc ; $QMAKE ; LD_LIBRARY_PATH=$PWD/../qttools/lib make $MAKEARGS online_docs)
-
-  # exit if so wanted, to speed up
-  if [ $EXIT_AFTER_DOCS = true ]; then
-    cd $DOC_BUILD/$PACKAGE_NAME/qtdoc/doc
-    # store the sha1 file into tar files
-    cp $CUR_DIR/$PACKAGE_NAME/$QTGITTAG html/
-    cp $CUR_DIR/$PACKAGE_NAME/$QTGITTAG qch/
-    tar cJf $CUR_DIR/online_doc.tar.xz html/
-    tar cJf $CUR_DIR/offline_doc.tar.xz qch/
-    cd $CUR_DIR
-    rm -rf $DOC_BUILD
-    cleanup
-    exit
-  fi # $EXIT_AFTER_DOCS
-
-# Put the generated docs back into the clean source directory
-  echo "DOC: Put the generated docs back into the clean source directory"
-  if [ ! -d $DOC_BUILD/$PACKAGE_NAME/qtdoc/doc/html ]; then
-    echo "DOC: *** Error: $DOC_BUILD/$PACKAGE_NAME/qtdoc/doc/html not found!"
-    if [ $STRICT -eq 1 ]; then
-      echo "  -> exiting.."
-      exit 2
-    fi
-  else
-    mv $DOC_BUILD/$PACKAGE_NAME/qtdoc/doc/html $CUR_DIR/$PACKAGE_NAME/qtdoc/doc
-  fi
-  if [ ! -d $DOC_BUILD/$PACKAGE_NAME/qtdoc/doc/qch ]; then
-    echo "DOC: *** Error: $DOC_BUILD/$PACKAGE_NAME/qtdoc/doc/qch not found"
-    if [ $STRICT -eq 1 ]; then
-      echo "  -> exiting.."
-      exit 2
-    fi
-  else
-    mv $DOC_BUILD/$PACKAGE_NAME/qtdoc/doc/qch $CUR_DIR/$PACKAGE_NAME/qtdoc/qch
-  fi
-  # Cleanup
-  cd $CUR_DIR/$PACKAGE_NAME/
-  #rm -rf $DOC_BUILD
-else
-  echo " -- Creating src files without generated offline documentation --"
-fi
-
-#------------------------------------------------------------------
-# Step 5,  check which license type is selected, and run patches
+# Step 4,  check which license type is selected, and run patches
 # if needed
 #------------------------------------------------------------------
 if [ $PATCH_FILE ]; then
@@ -405,7 +334,7 @@ if [ $PATCH_FILE ]; then
 fi
 
 #------------------------------------------------------------------
-# Step 6,  create zip file and tar files
+# Step 5,  create zip file and tar files
 #------------------------------------------------------------------
 # list text file regexp keywords, if you find something obvious missing, feel free to add
 cd $CUR_DIR
