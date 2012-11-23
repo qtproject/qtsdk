@@ -345,7 +345,7 @@ def install_qt():
         print_wrap('          -> cmd args: ' + cmd_args)
         print_wrap('                -> in: ' + submodule_dir_name)
         return_code, output = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), submodule_dir_name, STRICT_MODE)
-        if return_core >= 0:
+        if return_code >= 0:
             file_handle = open(MISSING_MODULES_FILE, 'a')
             file_handle.write('\nFailed to build ' + module_name)
             file_handle.close()
