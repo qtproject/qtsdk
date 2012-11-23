@@ -447,7 +447,7 @@ def archive_submodules():
     if os.path.exists(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME):
         cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_essentials' + '.7z *'
         run_in = MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX
-        bldinstallercommon.do_execute_sub_process_get_std_out(cmd_args.split(' '), run_in, True, True)
+        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), run_in, True, True)
     else:
         print_wrap(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> essentials not archived!')
 
@@ -456,7 +456,7 @@ def archive_submodules():
     if os.path.exists(MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME):
         cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_addons' + '.7z *'
         run_in = MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX
-        bldinstallercommon.do_execute_sub_process_get_std_out(cmd_args.split(' '), run_in, True, True)
+        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), run_in, True, True)
     else:
         print_wrap(MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> add-ons not archived!')
 
