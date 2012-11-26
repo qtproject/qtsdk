@@ -1061,7 +1061,7 @@ def create_mac_disk_image():
                 '-volname', SDK_NAME, \
                 '-format', 'UDBZ', \
                 os.path.join(SCRIPT_ROOT_DIR, SDK_NAME + '.dmg'), \
-                '-ov', '-scrub']
+                '-ov', '-scrub', '-size', '2g']
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
 
