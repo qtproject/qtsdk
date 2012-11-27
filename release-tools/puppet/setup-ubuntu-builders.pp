@@ -1,5 +1,5 @@
-# Copyright (C) 2012 Nokia Corporation and/or its subsidiary(-ies).
-# Contact: http://www.qt-project.org/
+# Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
+# Contact: http://www.qt-project.org/legal
 #
 # You may use this file under the terms of the 3-clause BSD license.
 # See the file LICENSE from this package for details.

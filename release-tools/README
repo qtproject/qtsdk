@@ -177,7 +177,7 @@
     package.xml contains metadata and description fields for the specific component.
     installscript.qs can be used if the component installation requires some specific
     steps. E.g. Qt binary patching operation is triggered from here during installation phase.
-    Please refer to Installer-Framework documentation for detailed instructions:  http://doc.qt.nokia.com/qtifw-1.2/index.html
+    Please refer to Installer-Framework documentation for detailed instructions:  http://doc-snapshot.qt-project.org/qtifw-1.2/index.html
 
 
 4.3 Main configuration file explained
@@ -494,7 +494,7 @@
     [QtForInstallerFramework]                                                   # Configuration how the Qt for Installer-Framework is built
                                                                                 # Notice that the Qt is built statically (libraries for Installer-Framework)
 
-    qt_src_package_url:                     http://download.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.8.0.zip
+    qt_src_package_url:                     http://releases.qt-project.org/qt5.0/beta2/single/qt-everywhere-opensource-src-5.0.0-beta2.zip
     qt_source_dir:                          qt-src                              # Source checkout directory name
     qt_build_dir:                           qt-bld                              # Shadow build directory name
     qt_installerfw_qt_configure_line:       -static -release -opensource -confirm-license -nomake examples -nomake demos -nomake tests -nomake docs -no-webkit -no-phonon -no-dbus -no-opengl -no-qt3support -no-xmlpatterns -no-multimedia -no-declarative -no-declarative-debug -qt-sql-sqlite -plugin-sql-sqlite -prefix
