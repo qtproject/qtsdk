@@ -153,6 +153,7 @@ def init_mkqt5bld():
         if bldinstallercommon.is_linux_platform() or bldinstallercommon.is_solaris_platform():
             INSTALL_PREFIX = os.getcwd() + os.sep + PADDING
             CONFIGURE_OPTIONS += ' -prefix ' + INSTALL_PREFIX
+            CONFIGURE_OPTIONS += ' -R ' + INSTALL_PREFIX
         elif bldinstallercommon.is_win_platform():
             src_dir = QT_SOURCE_DIR + os.sep + QT_PACKAGE_SHORT_NAME
             INSTALL_PREFIX = src_dir[2:] + os.sep + 'qtbase'
