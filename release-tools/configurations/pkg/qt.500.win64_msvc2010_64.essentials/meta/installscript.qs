@@ -63,14 +63,17 @@ createShortcuts = function()
                             "@StartMenuDir@/%QT_VERSION%/MSVC 2010 (64-bit)/Linguist.lnk");
 }
 
+Component.prototype.beginInstallation = function()
+{
+    installer.setValue(component.name + "_qtpath", "@TargetDir@/%TARGET_INSTALL_DIR%");
+}
+
 Component.prototype.createOperations = function()
 {
     component.createOperations();
 
     if (installer.value("os") == "win") {
         try {
-            // patch Qt binaries
-            component.addOperation( "QtPatch", "windows", installer.value("TargetDir") + "%TARGET_INSTALL_DIR%" );
             // Create a batch file and shortcuts with the development environment
             createShortcuts();
 

@@ -17,10 +17,6 @@ Component.prototype.createOperations = function()
 {
     component.createOperations();
     try {
-        if (installer.value("os") == "mac") {
-            // patch Qt binaries
-            component.addOperation( "QtPatch", "mac", "@TargetDir@/%TARGET_INSTALL_DIR%" );
-        }
         if (installer.value("SDKToolBinary") == "")
             return;
         var qmakeBinary = "@TargetDir@/%TARGET_INSTALL_DIR%/bin/qmake";

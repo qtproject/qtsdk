@@ -49,6 +49,9 @@ target_install_dir:     /
 rpath_target:
 archive_name:           readme.7z
 
+
+[qt.500.patcher]
+
 [qt.500.gcc_64]
 
 [qt.500.gcc_64.essentials]

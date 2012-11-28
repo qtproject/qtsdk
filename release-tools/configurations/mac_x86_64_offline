@@ -53,6 +53,8 @@ rpath_target:
 archive_name:           readme.7z
 
 
+[qt.500.patcher]
+
 [qt.500.clang_64]
 
 [qt.500.clang_64.essentials]

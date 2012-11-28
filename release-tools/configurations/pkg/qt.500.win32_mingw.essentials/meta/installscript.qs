@@ -13,15 +13,17 @@ function Component()
     }
 }
 
+Component.prototype.beginInstallation = function()
+{
+    installer.setValue(component.name + "_qtpath", "@TargetDir@/%TARGET_INSTALL_DIR%");
+}
+
 Component.prototype.createOperations = function()
 {
     component.createOperations();
 
     if (installer.value("os") == "win") {
         try {
-            // patch Qt binaries
-            component.addOperation("QtPatch", "windows", "@TargetDir@/%TARGET_INSTALL_DIR%");
-
             if (installer.value("SDKToolBinary") == "")
                 return;
             var qmakeBinary = "@TargetDir@/%TARGET_INSTALL_DIR%/bin/qmake.exe";

@@ -26,15 +26,6 @@ Component.prototype.isDefault = function()
 Component.prototype.createOperations = function()
 {
     component.createOperations();
-
-    if (installer.value("os") == "win") {
-        try {
-            // patch Qt binaries
-            component.addOperation( "QtPatch", "windows", installer.value("TargetDir") + "%TARGET_INSTALL_DIR%" );
-        } catch( e ) {
-            print( e );
-        }
-    }
 }
 
 

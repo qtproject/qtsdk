@@ -55,6 +55,9 @@ target_install_dir:     /
 rpath_target:
 archive_name:           qt-project-url.7z
 
+
+[qt.500.patcher]
+
 [qt.500.win32_msvc2010]
 
 [qt.500.win32_msvc2010.essentials]

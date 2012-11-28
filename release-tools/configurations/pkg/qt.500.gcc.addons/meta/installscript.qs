@@ -20,13 +20,6 @@ Component.prototype.createOperations = function()
     if (installer.value("os") == "x11") {
         try {
             // patch Qt binaries
-            component.addOperation( "QtPatch", "linux", installer.value("TargetDir") + "%TARGET_INSTALL_DIR%" );
-        } catch( e ) {
-            print( e );
-        }
-
-        try {
-            // patch Qt binaries
             var path = installer.value("TargetDir") + "%TARGET_INSTALL_DIR%";
             var script = path + "/patcher.sh";
             component.addOperation("Execute", "{0}", "/bin/bash", script, path);

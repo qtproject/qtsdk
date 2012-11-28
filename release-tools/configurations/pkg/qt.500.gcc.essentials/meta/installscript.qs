@@ -13,18 +13,16 @@ function Component()
     }
 }
 
+Component.prototype.beginInstallation = function()
+{
+    installer.setValue(component.name + "_qtpath", "@TargetDir@/%TARGET_INSTALL_DIR%");
+}
+
 Component.prototype.createOperations = function()
 {
     component.createOperations();
 
     if (installer.value("os") == "x11") {
-        try {
-            // patch Qt binaries
-            component.addOperation( "QtPatch", "linux", installer.value("TargetDir") + "%TARGET_INSTALL_DIR%" );
-        } catch( e ) {
-            print( e );
-        }
-
         try {
             // patch Qt binaries
             var path = installer.value("TargetDir") + "%TARGET_INSTALL_DIR%";
