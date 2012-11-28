@@ -27,5 +27,5 @@
         </Page>
     </Pages>
     <!-- @homeDir@ and @rootDir@ are some of the supported vars -->
-    <TargetDir>@rootDir@/qt/Qt5.0.0-rc1</TargetDir>
+    <TargetDir>@rootDir@/Qt/Qt5.0.0-rc1</TargetDir>
 </Installer>
