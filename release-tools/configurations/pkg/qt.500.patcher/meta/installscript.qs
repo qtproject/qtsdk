@@ -63,11 +63,11 @@ Component.prototype.createOperations = function()
     if (installer.value("os") == "win") {
         try {
             // patch Qt binaries
-            if (installer.value("qt.500.win32_mingw_qtpath"))
+            if (installer.value("qt.500.win32_mingw.essentials_qtpath"))
                 component.addOperation("QtPatch", "windows", installer.value("qt.500.win32_mingw.essentials_qtpath"));
-            if (installer.value("qt.500.win32_msvc2010_qtpath"))
+            if (installer.value("qt.500.win32_msvc2010.essentials_qtpath"))
                 component.addOperation("QtPatch", "windows", installer.value("qt.500.win32_msvc2010.essentials_qtpath"));
-            if (installer.value("qt.500.win32_msvc2010_64_qtpath"))
+            if (installer.value("qt.500.win32_msvc2010_64.essentials_qtpath"))
                 component.addOperation("QtPatch", "windows", installer.value("qt.500.win32_msvc2010_64.essentials_qtpath"));
         } catch( e ) {
             print( e );
