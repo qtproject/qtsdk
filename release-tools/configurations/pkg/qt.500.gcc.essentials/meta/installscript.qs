@@ -15,7 +15,7 @@ function Component()
 
 Component.prototype.beginInstallation = function()
 {
-    installer.setValue(component.name + "_qtpath", "@TargetDir@/%TARGET_INSTALL_DIR%");
+    installer.setValue(component.name + "_qtpath", "@TargetDir@" + "%TARGET_INSTALL_DIR%");
 }
 
 Component.prototype.createOperations = function()
