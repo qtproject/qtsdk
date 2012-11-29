@@ -83,8 +83,9 @@ B<Module options:>
 
 =item --no-webkit
 
-Skip webkit submodule. It may be desirable to skip this module due to the
-large size of the webkit git repository.
+Skip webkit and webkit examples submodules.
+It may be desirable to skip this module due to the large size of the webkit
+git repository.
 
 =item --module-subset=<module1>,<module2>...
 
@@ -170,10 +171,6 @@ For example:
 The mirror is permitted to contain a subset of the submodules; any
 missing modules will fall back to the canonical URLs.
 
-=item --mirror-webkit <url>
-
-Uses <url> as the URL for the webkit git mirror.
-
 =item --mirror-creator <url>
 
 Uses <url> as the URL for the Qt Creator git mirror.
@@ -206,6 +203,8 @@ my %GERRIT_REPOS = map { $_ => "qt/$_" } qw(
     qtsvg
     qttools
     qttranslations
+    qtwebkit
+    qtwebkit-examples-and-demos
     qtxmlpatterns
 );
 $GERRIT_REPOS{qtsdk} = "qtsdk/qtsdk";
@@ -251,7 +250,6 @@ sub parse_arguments
         'force'               => 0 ,
         'ignore-submodules'   => 0 ,
         'mirror-url'          => "",
-        'mirror-webkit-url'   => "",
         'mirror-creator-url'  => "",
         'protocol'            => "",
         'update'              => 1 ,
@@ -265,7 +263,6 @@ sub parse_arguments
         'copy-objects'      =>  \$self->{qw{ detach-alternates }},
         'force'             =>  \$self->{qw{ force             }},
         'ignore-submodules' =>  \$self->{qw{ ignore-submodules }},
-        'mirror-webkit=s'   =>  \$self->{qw{ mirror-webkit-url }},
         'mirror-creator=s'  =>  \$self->{qw{ mirror-creator-url }},
         'mirror=s'          =>  \$self->{qw{ mirror-url        }},
         'quiet'             =>  \$self->{qw{ quiet             }},
@@ -337,6 +334,7 @@ sub git_disable_webkit_submodule
     my ($self) = @_;
 
     $self->exe('git', 'config', '--remove', 'submodule.qtwebkit');
+    $self->exe('git', 'config', '--remove', 'submodule.qtwebkit-examples-and-demos');
 
     return;
 }
@@ -372,16 +370,13 @@ sub git_set_submodule_config
         my $value = $2;
 
         if ($protocol) {
-            # WebKit is special, and has only external link.
-            if (!($key eq 'qtwebkit' && $protocol eq 'internal')) {
-                # qt-labs projects are still hosted under qt internally.
-                if ($protocol ne 'http') {
-                    $value =~ s,^git://gitorious\.org/qt-labs/,${url_base_for_protocol}qt/,;
-                }
-
-                # assume all other projects hosted under gitorious publicly.
-                $value =~ s,^git://gitorious\.org/,$url_base_for_protocol,;
+            # qt-labs projects are still hosted under qt internally.
+            if ($protocol ne 'http') {
+                $value =~ s,^git://gitorious\.org/qt-labs/,${url_base_for_protocol}qt/,;
             }
+
+            # assume all other projects hosted under gitorious publicly.
+            $value =~ s,^git://gitorious\.org/,$url_base_for_protocol,;
         }
 
         $self->exe('git', 'config', "submodule.$key.url", $value);
@@ -447,7 +442,6 @@ sub git_clone_one_submodule
 
     my $alternates            = $self->{ 'alternates'        };
     my $mirror_url            = $self->{ 'mirror-url'        };
-    my $mirror_webkit_url     = $self->{ 'mirror-webkit-url' };
     my $mirror_creator_url    = $self->{ 'mirror-creator-url' };
     my $protocol              = $self->{ 'protocol'          };
 
@@ -465,12 +459,9 @@ sub git_clone_one_submodule
     }
 
     my $mirror;
-    if ($mirror_url && ($submodule ne 'qtwebkit' && $submodule ne 'qt-creator')) {
+    if ($mirror_url && ($submodule ne 'qt-creator')) {
         $mirror = $mirror_url."qt/$submodule";
         $mirror .= ".git" unless (-d $mirror); # Support local disk mirror
-    }
-    elsif ($mirror_webkit_url && ($submodule eq 'qtwebkit')) {
-        $mirror = $mirror_webkit_url;
     }
     elsif ($mirror_creator_url && ($submodule eq 'qt-creator')) {
         $mirror = $mirror_creator_url;

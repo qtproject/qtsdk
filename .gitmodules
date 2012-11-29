@@ -15,7 +15,7 @@
 	url = git://qt.gitorious.org/qt/qtxmlpatterns.git
 [submodule "qtwebkit"]
 	path = qtwebkit
-	url = git://gitorious.org/qtwebkit/qt5-module.git
+	url = git://gitorious.org/qt/qtwebkit.git
 [submodule "qtjsbackend"]
 	path = qtjsbackend
 	url = git://gitorious.org/qt/qtjsbackend.git
