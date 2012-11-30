@@ -439,6 +439,38 @@ def clean_up(install_dir):
 ###############################
 # function
 ###############################
+def build_docs():
+    print_wrap('------------------------- Building documentation -------------------')
+
+    #first we need to do make install for the sources
+    print_wrap('    Running make install...')
+    install_args = MAKE_INSTALL_CMD
+    bldinstallercommon.do_execute_sub_process(install_args.split(' '), QT_SOURCE_DIR, False, False)
+
+    cmd_args = MAKE_CMD + ' docs'
+    print_wrap('    Running make docs in ' + QT_SOURCE_DIR)
+    #do not abort on fail, if the doc build fails, we still want to get the binary package
+    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, False)
+    #building from top level should be enough, but untill all fixes are done we need to build from qtbase
+    print_wrap('    Running make docs in ' + QT_SOURCE_DIR + os.sep + 'qtbase')
+    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR + os.sep + 'qtbase', False)
+
+    print_wrap('    Searching for qch files in ' + QT_SOURCE_DIR + os.sep + 'qtbase' + os.sep + 'doc')
+    qch_location = QT_SOURCE_DIR + os.sep + 'qtbase' + os.sep + 'doc'
+    match_qch = '\\.qch'
+    doc_files = bldinstallercommon.make_files_list(qch_location, match_qch)
+
+    print_wrap('    copy qch files to archived binaries')
+    print doc_files
+    for doc_file in doc_files:
+        print_wrap('    copying ' + doc_file)
+        shutil.copy(doc_file, MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX + os.sep + 'doc')
+    print_wrap('--------------------------------------------------------------------')
+
+
+###############################
+# function
+###############################
 def archive_submodules():
     print_wrap('---------------- Archiving submodules ------------------------------')
     bldinstallercommon.create_dirs(MODULE_ARCHIVE_DIR)
@@ -565,6 +597,8 @@ def main():
     install_qt()
     #cleanup files that are not needed in binary packages
     clean_up(MAKE_INSTALL_ROOT_DIR)
+    # build docs and copy to essentials install dir
+    build_docs()
     # replace build directory paths in install_root locations
     replace_build_paths(MAKE_INSTALL_ROOT_DIR)
     # archive each submodule
