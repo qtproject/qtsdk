@@ -87,8 +87,8 @@ ORIGINAL_QMAKE_QT_PRFXPATH          = ''
 PADDING                             = '______________________________PADDING______________________________'
 FILES_TO_REMOVE_LIST                = ['Makefile', 'Makefile.Release', 'Makefile.Debug', \
                                        '.o', '.moc', '.init-repository', \
-                                       '.gitignore', '.obj']
-IGNORE_PATCH_LIST                   = ['.png', '.jpg', '.gif', '.bmp', '.exe', '.dll', '.lib', '.pdb', '.qph']
+                                       '.gitignore', '.obj', '.pdb']
+IGNORE_PATCH_LIST                   = ['.png', '.jpg', '.gif', '.bmp', '.exe', '.dll', '.lib', '.qph']
 INSTALL_PREFIX                      = ''
 #Commandline options
 OPTION_PARSER                       = 0
@@ -179,6 +179,13 @@ def init_mkqt5bld():
                 MAKE_CMD += ' -s'
                 MAKE_INSTALL_CMD += ' -s'
             MAKE_INSTALL_CMD += ' install'
+    else:
+        if MAKE_CMD == 'jom':
+            #jom can't be used for install, forcing nmake as install command
+            MAKE_INSTALL_CMD = 'nmake'
+            if SILENT_BUILD:
+                MAKE_INSTALL_CMD += ' /s'
+
 
     #remove old working dirs
     if os.path.exists(WORK_DIR):
