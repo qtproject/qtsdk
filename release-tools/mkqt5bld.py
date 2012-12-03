@@ -458,20 +458,12 @@ def build_docs():
     print_wrap('    Running make docs in ' + QT_SOURCE_DIR)
     #do not abort on fail, if the doc build fails, we still want to get the binary package
     bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, False)
-    #building from top level should be enough, but untill all fixes are done we need to build from qtbase
-    print_wrap('    Running make docs in ' + QT_SOURCE_DIR + os.sep + 'qtbase')
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR + os.sep + 'qtbase', False)
 
-    print_wrap('    Searching for qch files in ' + QT_SOURCE_DIR + os.sep + 'qtbase' + os.sep + 'doc')
-    qch_location = QT_SOURCE_DIR + os.sep + 'qtbase' + os.sep + 'doc'
-    match_qch = '\\.qch'
-    doc_files = bldinstallercommon.make_files_list(qch_location, match_qch)
+    print_wrap('    Running make install_docs in ' + QT_SOURCE_DIR)
+    doc_install_args = MAKE_CMD + ' install_docs INSTALL_ROOT=' + MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME
+    #do not abort on fail, if the doc build fails, we still want to get the binary package
+    bldinstallercommon.do_execute_sub_process(doc_install_args.split(' '), QT_SOURCE_DIR, False)
 
-    print_wrap('    copy qch files to archived binaries')
-    print doc_files
-    for doc_file in doc_files:
-        print_wrap('    copying ' + doc_file)
-        shutil.copy(doc_file, MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX + os.sep + 'doc')
     print_wrap('--------------------------------------------------------------------')
 
 
