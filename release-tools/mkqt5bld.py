@@ -158,7 +158,7 @@ def init_mkqt5bld():
             src_dir = QT_SOURCE_DIR + os.sep + QT_PACKAGE_SHORT_NAME
             INSTALL_PREFIX = src_dir[2:] + os.sep + 'qtbase'
 
-        if SILENT_BUILD:
+        if SILENT_BUILD and not bldinstallercommon.is_win_platform():
             CONFIGURE_OPTIONS += ' -silent'
 
     CONFIGURE_CMD += 'configure'
@@ -182,7 +182,7 @@ def init_mkqt5bld():
     else:
         if MAKE_CMD == 'jom':
             #jom can't be used for install, forcing nmake as install command
-            MAKE_INSTALL_CMD = 'nmake'
+            MAKE_INSTALL_CMD = 'nmake install'
             if SILENT_BUILD:
                 MAKE_INSTALL_CMD += ' /s'
 
@@ -313,14 +313,10 @@ def build_qt():
     #create install dirs
     bldinstallercommon.create_dirs(MAKE_INSTALL_ROOT_DIR)
 
-    #make each submodule
-    for module_name in QT5_MODULES_LIST:
-        print_wrap('    Building module ' + module_name)
-        cmd_args = MAKE_CMD
-        if bldinstallercommon.is_unix_platform():
-            cmd_args += ' -j' + str(MAKE_THREAD_COUNT)
-        cmd_args += ' module-' + module_name
-        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, STRICT_MODE)
+    cmd_args = MAKE_CMD
+    if bldinstallercommon.is_unix_platform():
+        cmd_args += ' -j' + str(MAKE_THREAD_COUNT)
+    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, STRICT_MODE)
 
     print_wrap('--------------------------------------------------------------------')
 
@@ -460,7 +456,13 @@ def build_docs():
     bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, False)
 
     print_wrap('    Running make install_docs in ' + QT_SOURCE_DIR)
-    doc_install_args = MAKE_CMD + ' install_docs INSTALL_ROOT=' + MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME
+    make_cmd = MAKE_CMD
+    install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME
+    if bldinstallercommon.is_win_platform():
+        if MAKE_CMD == 'jom':
+            make_cmd = 'nmake'
+        install_root_path = install_root_path[2:]
+    doc_install_args = make_cmd + ' install_docs INSTALL_ROOT=' + install_root_path
     #do not abort on fail, if the doc build fails, we still want to get the binary package
     bldinstallercommon.do_execute_sub_process(doc_install_args.split(' '), QT_SOURCE_DIR, False)
 
