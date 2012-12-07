@@ -10,7 +10,7 @@ file_list:
 
 [qt.500.doc.qt]
 archives:               doc.qt
-target_install_base:    /5.0.0-rc1/Documents/Qt
+target_install_base:    /5.0.0/Documents/Qt
 version:                5.0.0
 version_tag:            %QT_VERSION%
 package_default:        true

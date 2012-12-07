@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>Essentials</DisplayName>
-    <Description>Qt 5.0.0-rc1 (msvc2010 64-bit) Essential modules</Description>
+    <DisplayName>Essential modules</DisplayName>
+    <Description>Qt 5.0.0 Prebuilt Essential modules for msvc2010 64-bit</Description>
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Name>qt.500.win64_msvc2010_64.essentials</Name>

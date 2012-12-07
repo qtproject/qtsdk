@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>Add-Ons</DisplayName>
-    <Description>Qt 5.0.0-rc1(gcc) Add-on modules</Description>
+    <DisplayName>Add-On modules</DisplayName>
+    <Description>Qt 5.0.0 Prebuilt Add-on modules for gcc</Description>
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Name>qt.500.gcc.addons</Name>

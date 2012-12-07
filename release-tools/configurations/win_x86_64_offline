@@ -62,7 +62,7 @@ archive_name:           qt-project-url.7z
 
 [qt.500.win64_msvc2010_64.essentials]
 archives:               500.msvc2010_64.essentials, icu_49.win_64, msvc2010_64.essentials.d3d_compiler_43.x64
-target_install_base:    /5.0.0-rc1/msvc2010_64
+target_install_base:    /5.0.0/msvc2010_64
 version:                5.0.0
 version_tag:            %QT_VERSION%
 package_default:        true
@@ -87,7 +87,7 @@ archive_name:           D3DCompiler_43-x64.7z
 
 [qt.500.win64_msvc2010_64.addons]
 archives:               500.msvc2010_64.addons, icu_49.win_64
-target_install_base:    /5.0.0-rc1/msvc2010_64
+target_install_base:    /5.0.0/msvc2010_64
 version:                5.0.0
 version_tag:            %QT_VERSION%
 package_default:        true
