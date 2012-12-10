@@ -562,10 +562,6 @@ def requires_rpath(file_path):
     if IS_LINUX_PLATFORM or IS_SOLARIS_PLATFORM:
         if not is_executable(file_path):
             return False
-        # exclude qmake executable
-        filename, ext = os.path.splitext(os.path.basename(file_path))
-        if filename.lower() == 'qmake':
-            return False
         return (re.search(r':*.RPATH=',
             subprocess.Popen(['chrpath', '-l', file_path],
                 stdout=subprocess.PIPE).stdout.read()) is not None)
