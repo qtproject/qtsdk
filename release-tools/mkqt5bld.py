@@ -142,7 +142,7 @@ def init_mkqt5bld():
 
     if not CONFIGURE_OVERRIDE:
         if bldinstallercommon.is_linux_platform():          #linux
-            CONFIGURE_OPTIONS += ' -no-gtkstyle -qt-xcb'
+            CONFIGURE_OPTIONS += ' -qt-xcb'
         elif bldinstallercommon.is_mac_platform():          #mac
             INSTALL_PREFIX = os.environ['PWD'] + os.sep + PADDING
             CONFIGURE_OPTIONS += ' -platform macx-clang -prefix ' + INSTALL_PREFIX
