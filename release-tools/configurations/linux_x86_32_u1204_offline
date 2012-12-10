@@ -55,7 +55,7 @@ archive_name:           readme.7z
 
 [qt.500.gcc.essentials]
 archives:               500.gcc.essentials, 500.gcc.icu, 500.gcc.essentials.icu_path_patcher
-target_install_base:    /5.0.0/gcc
+target_install_base:    /5.0.0-rc2/gcc
 version:                5.0.0
 version_tag:            %QT_VERSION%
 package_default:        true
@@ -79,7 +79,7 @@ archive_name:           icu_path_patcher.sh.7z
 
 [qt.500.gcc.addons]
 archives:               500.gcc.addons, 500.gcc.addons.icu_path_patcher
-target_install_base:    /5.0.0/gcc
+target_install_base:    /5.0.0-rc2/gcc
 version:                5.0.0
 version_tag:            %QT_VERSION%
 package_default:        true

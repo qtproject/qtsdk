@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>Qt 5.0.0</DisplayName>
-    <Description>Qt 5.0.0</Description>
+    <DisplayName>Qt 5.0.0-rc2</DisplayName>
+    <Description>Qt 5.0.0-rc2</Description>
     <Version>1.0.0</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Name>qt.500</Name>
