@@ -11,7 +11,12 @@ file_list:
 root_component:         yes
 
 [qt.500]
+version:                5.0.0
+version_tag:            %QT_VERSION%
+
 [qt.500.src]
+version:                5.0.0
+version_tag:            %QT_VERSION%
 
 
 #################################
@@ -97,6 +102,8 @@ archive_name:           qtmultimedia-opensource-src-5.0.0.7z
 #################################
 
 [qt.500.src.addons]
+version:                5.0.0
+version_tag:            %QT_VERSION%
 
 [qt.500.src.addons.qtactiveqt]
 archives:               src.addons.qtactiveqt
