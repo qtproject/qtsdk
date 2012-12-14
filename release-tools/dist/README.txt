@@ -80,9 +80,9 @@ the command line. You can also launch some of them as standalone applications.
 For example:
 
 - Qt Assistant, the Qt documentation reader
-- qmlscene, the viewer for Qt Quick2 declarative QML applications
-- QMLViewer, the viewer for Qt Quick1 declarative QML applications
-- Qt Designer, the GUI designer for Qt widgets-based applications
+- Qt QML Scene, the viewer for Qt Quick 2 files
+- Qt QML Viewer, the viewer for Qt Quick 1 files
+and - Qt Designer, the GUI designer for Qt widgets-based applications
 
 You can use Qt Creator to develop with other Qt versions as well:
 
