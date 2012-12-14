@@ -99,8 +99,9 @@ QT5_MODULES_IGNORE_LIST             = []
 MAKE_CMD                            = ''
 MAKE_THREAD_COUNT                   = '8' # some initial default value
 MAKE_INSTALL_CMD                    = ''
-CONFIGURE_OPTIONS                   = '-opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng'
+CONFIGURE_OPTIONS                   = '-confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng'
 CONFIGURE_OVERRIDE                  = False
+CONFIGURE_LICENSE                   = ' -opensource'
 
 
 class MultipleOption(Option):
@@ -161,6 +162,8 @@ def init_mkqt5bld():
         if SILENT_BUILD and not bldinstallercommon.is_win_platform():
             CONFIGURE_OPTIONS += ' -silent'
 
+        CONFIGURE_OPTIONS += CONFIGURE_LICENSE
+
     CONFIGURE_CMD += 'configure'
 
     # make cmd
@@ -195,8 +198,10 @@ def init_mkqt5bld():
         print_wrap('    Removing old module archive dir ' + MODULE_ARCHIVE_DIR)
         bldinstallercommon.remove_tree(MODULE_ARCHIVE_DIR)
 
-    print_wrap('    Using ' + MAKE_CMD + ' for making and ' + MAKE_INSTALL_CMD + ' for installing')
-    print_wrap('    Qt configure command set to: ' + CONFIGURE_CMD + ' ' + CONFIGURE_OPTIONS)
+    print_wrap('  Build    : ' + MAKE_CMD)
+    print_wrap('  Install  : ' + MAKE_INSTALL_CMD)
+    print_wrap('  Configure: ' + CONFIGURE_OPTIONS)
+
     print_wrap('--------------------------------------------------------------------')
 
 
@@ -511,6 +516,7 @@ def parse_cmd_line():
     global STRICT_MODE
     global CONFIGURE_OPTIONS
     global CONFIGURE_OVERRIDE
+    global CONFIGURE_LICENSE
 
     setup_option_parser()
 
@@ -535,6 +541,8 @@ def parse_cmd_line():
         CONFIGURE_OPTIONS = options.configure_options
     if options.add_configure_option:
         CONFIGURE_OPTIONS += ' ' + options.add_configure_option
+    if options.set_licensetype:
+        CONFIGURE_LICENSE = ' -' + options.set_licensetype
     print_wrap('---------------------------------------------------------------------')
     return True
 
@@ -571,6 +579,9 @@ def setup_option_parser():
     OPTION_PARSER.add_option("-a", "--add-configure-option",
                       action="store", type="string", dest="add_configure_option", default="",
                       help="options to be added to default configure options.")
+    OPTION_PARSER.add_option("-l", "--license",
+                      action="store", type="string", dest="set_licensetype", default="",
+                      help="set licensetype (opensource/commercial).")
     print_wrap('---------------------------------------------------------------------')
 
 
