@@ -4,7 +4,7 @@
     <Description>Needed by all included Qt applications.</Description>
     <Version>%VCREDIST_X64_VERSION%</Version>
     <Name>qt.tools.vcredist_64</Name>
-    <ReleaseDate>2010-12-04</ReleaseDate>
+    <ReleaseDate>%VCREDIST_X64_VERSION%</ReleaseDate>
     <Script>installscript.qs</Script>
     <Virtual>true</Virtual>
     <!--<ForcedInstallation>true</ForcedInstallation>-->

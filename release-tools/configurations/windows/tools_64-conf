@@ -2,7 +2,7 @@
 [qt.tools.vcredist_64]
 archives:               tools.vcredist_64
 target_install_base:    /vcredist
-version:                2010-12-4
+version:                2011-03-03
 version_tag:            %VCREDIST_X64_VERSION%
 package_default:        false
 [tools.vcredist_64]
