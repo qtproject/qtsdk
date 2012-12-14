@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
     <DisplayName>qtsvg</DisplayName>
-    <Description>Qt 5.0.0-rc2 Add-Ons Qt Svg Source Component</Description>
+    <Description>Qt 5.0.0 Add-Ons Qt Svg Source Component</Description>
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Name>qt.500.src.addons.qtsvg</Name>

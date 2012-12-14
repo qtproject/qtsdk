@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
     <DisplayName>mingw</DisplayName>
-    <Description>Qt 5.0.0-rc2 Prebuilt Components for mingw</Description>
+    <Description>Qt 5.0.0 Prebuilt Components for mingw</Description>
     <Version>1.0.0</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Name>qt.500.win32_mingw</Name>

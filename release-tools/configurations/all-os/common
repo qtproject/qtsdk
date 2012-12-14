@@ -1,6 +1,6 @@
 [SdkCommon]
 version:                            5.0.0
-tag:                                rc2
+tag:
 name:                               qt
 license:                            opensource
 

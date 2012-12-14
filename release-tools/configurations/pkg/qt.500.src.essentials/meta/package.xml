@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
     <DisplayName>Essentials</DisplayName>
-    <Description>Qt 5.0.0-rc2 Essentials Source Components</Description>
+    <Description>Qt 5.0.0 Essentials Source Components</Description>
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Name>qt.500.src.essentials</Name>

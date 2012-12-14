@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
     <DisplayName>Essential modules</DisplayName>
-    <Description>Qt 5.0.0-rc2 Prebuilt Essential modules for gcc 64-bit </Description>
+    <Description>Qt 5.0.0 Prebuilt Essential modules for gcc 64-bit </Description>
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Name>qt.500.gcc_64.essentials</Name>

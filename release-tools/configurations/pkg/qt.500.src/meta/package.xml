@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
     <DisplayName>Source Components</DisplayName>
-    <Description>Qt 5.0.0-rc2 Source Components</Description>
+    <Description>Qt 5.0.0 Source Components</Description>
     <Version>1.0.0</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Name>qt.500.src</Name>

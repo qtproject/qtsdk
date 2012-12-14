@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
     <DisplayName>Add-On modules</DisplayName>
-    <Description>Qt 5.0.0-rc2 Prebuilt Add-on modules for mingw</Description>
+    <Description>Qt 5.0.0 Prebuilt Add-on modules for mingw</Description>
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Name>qt.500.win32_mingw.addons</Name>
