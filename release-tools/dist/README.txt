@@ -92,25 +92,9 @@ You can use Qt Creator to develop with other Qt versions as well:
 Running Example Applications
 ----------------------------
 
-You can open example applications in the Qt Creator Welcome mode to build and
-run them.
-
-Ready to run example applications are located in
-<install_dir>/<version>/<compiler>/examples. You can launch the C++ based
-examples directly either from command line or your file system browser.
-
-The QML based Quick 2 examples are located in
-<install_dir>/<version>/<compiler>/examples/qtdeclarative. You can load them
-using the qmlscene application.
-
-The QML based Quick 1 examples are located in
-<install_dir>/<version>/<compiler>/examples/qtquick1. You can view them with the
-QMLViewer application.
-
-Note for Windows users: the examples cannot be launched directly from Windows
-Explorer. You can use the Qt command prompt which has the correct environment
-variables setup.
-
+You can open most example applications in the Qt Creator Welcome mode to build
+and run them. Additional examples can be opened by browsing
+<install_dir>/<version>/<compiler>/examples.
 
 Building Qt 5 from Source
 -------------------------
