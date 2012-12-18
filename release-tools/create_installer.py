@@ -86,6 +86,7 @@ DEBUG_RPATH                 = False
 DUMP_CONFIG                 = False
 DEVELOPMENT_MODE            = False
 INCREMENTAL_MODE            = False
+ARCHIVE_DOWNLOAD_SKIP       = False
 CREATE_ONLINE_INSTALLER     = False
 CREATE_OFFLINE_INSTALLER    = False
 CREATE_REPOSITORY           = False
@@ -213,6 +214,9 @@ def setup_option_parser():
     OPTION_PARSER.add_option("-S", "--non-strict",
                       action="store_false", dest="strict_mode", default=True,
                       help="non strict mode, try to keep on going despite of errors")
+    OPTION_PARSER.add_option("--archive-skip",
+                      action="store_true", dest="archive_skip", default=False,
+                      help="for testing purposes (faster testing), skip downloading archives")
     # optional override
     OPTION_PARSER.add_option("-u", "--archive-base-url",
                       action="store", dest="archive_base_url", default="",
@@ -247,6 +251,7 @@ def print_options():
     print "Create repository:           %r" % (CREATE_REPOSITORY)
     print "Development mode:            %r" % (DEVELOPMENT_MODE)
     print "Incremental mode:            %r" % (INCREMENTAL_MODE)
+    print "Archive skip:                %r" % (ARCHIVE_DOWNLOAD_SKIP)
     print "Legacy IFW:                  %r" % (USE_LEGACY_IFW)
     print "Strict mode:                 %r" % (STRICT_MODE)
     print
@@ -270,6 +275,7 @@ def parse_cmd_line():
     global MAIN_CONFIG_NAME
     global DEVELOPMENT_MODE
     global INCREMENTAL_MODE
+    global ARCHIVE_DOWNLOAD_SKIP
     global CREATE_ONLINE_INSTALLER
     global CREATE_OFFLINE_INSTALLER
     global CREATE_REPOSITORY
@@ -287,6 +293,7 @@ def parse_cmd_line():
     LICENSE_TYPE                        = options.license_type
     DEVELOPMENT_MODE                    = options.devmode
     INCREMENTAL_MODE                    = options.incremental
+    ARCHIVE_DOWNLOAD_SKIP               = options.archive_skip
     CREATE_ONLINE_INSTALLER             = options.online_installer
     CREATE_OFFLINE_INSTALLER            = options.offline_installer
     CREATE_REPOSITORY                   = options.create_repository
@@ -745,16 +752,17 @@ def parse_component_data(configuration_file, configurations_base_path):
                     continue
 
                 # validate component
-                sdk_component.validate()
-                if sdk_component.is_valid():
-                    SDK_COMPONENT_LIST.append(sdk_component)
-                else:
-                    if STRICT_MODE:
-                        print sdk_component.error_msg()
-                        sys.exit(-1)
+                if not ARCHIVE_DOWNLOAD_SKIP:
+                    sdk_component.validate()
+                    if sdk_component.is_valid():
+                        SDK_COMPONENT_LIST.append(sdk_component)
                     else:
-                        print '!!! Ignored component in non-strict mode (missing archive data or metadata?): ' + section
-                        SDK_COMPONENT_LIST_SKIPPED.append(sdk_component)
+                        if STRICT_MODE:
+                            print sdk_component.error_msg()
+                            sys.exit(-1)
+                        else:
+                            print '!!! Ignored component in non-strict mode (missing archive data or metadata?): ' + section
+                            SDK_COMPONENT_LIST_SKIPPED.append(sdk_component)
     # check for extra configuration files if defined
     extra_conf_list = bldinstallercommon.safe_config_key_fetch(configuration, 'ExtraPackageConfigurationFiles', 'file_list')
     if extra_conf_list:
@@ -845,7 +853,8 @@ def create_target_components(target_config):
             for archive in sdk_component.downloadable_archive_list:
                 downloadable_archive_list.append(archive.archive_name)
                 # fetch packages only if offline installer or repo creation, for online installer just handle the metadata
-                if CREATE_OFFLINE_INSTALLER or CREATE_REPOSITORY:
+                # if ARCHIVE_DOWNLOAD_SKIP is used for testing purposes, skip downloading archives as well
+                if CREATE_OFFLINE_INSTALLER or CREATE_REPOSITORY and not ARCHIVE_DOWNLOAD_SKIP:
                     handle_archive(sdk_component, archive)
             # finalize archives
             finalize_package_archives(sdk_component)
