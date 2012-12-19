@@ -10,6 +10,15 @@ function Component()
         // Commented line below used by the packaging scripts
         //%IFW_DOWNLOADABLE_ARCHIVE_NAMES%
     }
+    if (installer.value("os") == "mac") {
+        var otoolCheck = installer.execute("/usr/bin/which", new Array("otool"))[0];
+        if (!otoolCheck) {
+            QMessageBox["warning"]("otoolCheckError",
+                                   qsTr("No otool found!"),
+                                   qsTr("You need the Xcode command line tools installed.\n" +
+                                   "Download the Xcode command line tools from https://developer.apple.com/downloads\n"));
+        }
+    }
 }
 
 Component.prototype.createOperations = function()
