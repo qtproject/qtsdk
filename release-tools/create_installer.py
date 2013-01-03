@@ -767,6 +767,7 @@ def parse_component_data(configuration_file, configurations_base_path):
     extra_conf_list = bldinstallercommon.safe_config_key_fetch(configuration, 'ExtraPackageConfigurationFiles', 'file_list')
     if extra_conf_list:
         extra_conf_list = extra_conf_list.replace(' ', '')
+        extra_conf_list = extra_conf_list.rstrip(',\n')
         file_list = extra_conf_list.split(',')
         for extra_conf_file in file_list:
             extra_conf_file_path = os.path.normpath(configurations_base_path + os.sep + extra_conf_file)

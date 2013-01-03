@@ -81,11 +81,12 @@ class ArchiveLocationResolver:
     def __init__(self, target_config, server_base_url_override, configurations_root_dir):
         """Init data based on the target configuration"""
         self.server_list = []
-        self.pkg_templates_dir = ''
+        self.pkg_templates_dir_list = []
         self.default_server = None
         self.configurations_root_dir = configurations_root_dir
         # get packages tempalates src dir first
-        self.pkg_templates_dir = os.path.normpath(bldinstallercommon.config_section_map(target_config,'WorkingDirectories')['packages_dir'])
+        pkg_templates_dir = os.path.normpath(bldinstallercommon.config_section_map(target_config,'WorkingDirectories')['packages_dir'])
+        self.pkg_templates_dir_list = pkg_templates_dir.replace(' ', '').rstrip(',\n').split(',')
         server_namespace = os.path.normpath(bldinstallercommon.config_section_map(target_config,'WorkingDirectories')['packages_dir'])
         # next read server list
         if server_base_url_override:
@@ -146,9 +147,15 @@ class ArchiveLocationResolver:
         if os.path.isfile(archive_uri):
             return archive_uri
         # 2. check if given archive_uri denotes a package under package templates directory
-        temp = os.path.normpath(self.configurations_root_dir + os.sep + self.pkg_templates_dir + os.sep + package_name + os.sep + 'data' + os.sep + archive_uri)
-        if os.path.isfile(temp):
-            return temp
+        base_path = self.configurations_root_dir + os.sep
+        package_path = os.sep + package_name + os.sep + 'data' + os.sep + archive_uri
+        # find the correct template subdirectory
+        for subdir in self.pkg_templates_dir_list:
+            if os.path.isdir(base_path + subdir):
+                base_path = base_path + subdir + package_path
+                break
+        if os.path.isfile(base_path):
+            return base_path
         # 3. check if given URI is valid full URL
         res = bldinstallercommon.is_content_url_valid(archive_uri)
         if res:
