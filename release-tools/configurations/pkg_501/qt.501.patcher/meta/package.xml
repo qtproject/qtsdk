@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt patcher</DisplayName>
+    <Description>Qt patcher</Description>
+    <Version>1.0.0</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Name>qt.501.patcher</Name>
+    <Script>installscript.qs</Script>   <!-- File name of a script being loaded - optional. -->
+    <Virtual>true</Virtual>
+    <AutoDependOn>qt.501</AutoDependOn>
+    <SortingPriority>0</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
+</Package>
+
+

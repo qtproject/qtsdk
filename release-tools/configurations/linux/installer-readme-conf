@@ -1,0 +1,12 @@
+[qt.readme]
+archives:               readme
+target_install_base:    /
+version:                5.0.0
+version_tag:            %QT_VERSION%
+package_default:        true
+[readme]
+archive_uri:            http://qt.gitorious.org/qtsdk/qtsdk/blobs/raw/master/release-tools/dist/README.txt
+package_strip_dirs:     0
+target_install_dir:     /
+rpath_target:
+archive_name:           readme.7z

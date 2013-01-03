@@ -1,0 +1,46 @@
+
+[qt.501.patcher]
+
+[qt.501.gcc_64]
+
+[qt.501.gcc_64.essentials]
+archives:               501.gcc_64.essentials, 501.gcc_64.icu, 501.gcc_64.essentials.icu_path_patcher
+target_install_base:    /5.0.1/gcc_64
+version:                5.0.1
+version_tag:            %QT_VERSION%
+package_default:        true
+[501.gcc_64.essentials]
+archive_uri:            /qt/5.0.1_opensource/linux_gcc_64_ubuntu1110/qt5_essentials.7z
+package_strip_dirs:
+target_install_dir:     /
+rpath_target:           /lib
+archive_name:           gcc_64_qt5_essentials.7z
+[501.gcc_64.icu]
+archive_uri:            http://origin.releases.qt-project.org/prebuilt/libicu_x86_64_ubuntu1110.7z
+package_strip_dirs:     0
+target_install_dir:     /lib
+rpath_target:
+archive_name:           libicu_x86_64_ubuntu1110.7z
+[501.gcc_64.essentials.icu_path_patcher]
+archive_uri:            patcher.sh
+package_strip_dirs:     0
+target_install_dir:     /
+archive_name:           icu_path_patcher.sh.7z
+
+[qt.501.gcc_64.addons]
+archives:               501.gcc_64.addons, 501.gcc_64.addons.icu_path_patcher
+target_install_base:    /5.0.1/gcc_64
+version:                5.0.1
+version_tag:            %QT_VERSION%
+package_default:        true
+[501.gcc_64.addons]
+archive_uri:            /qt/5.0.1_opensource/linux_gcc_64_ubuntu1110/qt5_addons.7z
+package_strip_dirs:
+target_install_dir:     /
+rpath_target:           /lib
+archive_name:           gcc_64_qt5_addons.7z
+[501.gcc_64.addons.icu_path_patcher]
+archive_uri:            patcher.sh
+package_strip_dirs:     0
+target_install_dir:     /
+archive_name:           icu_path_patcher.sh.7z

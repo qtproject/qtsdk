@@ -1,0 +1,14 @@
+[qt.tools]
+
+[qt.tools.vcredist_64]
+archives:               tools.vcredist_64
+target_install_base:    /vcredist
+version:                2011-03-03
+version_tag:            %VCREDIST_X64_VERSION%
+package_default:        false
+[tools.vcredist_64]
+archive_uri:            http://origin.releases.qt-project.org/prebuilt/vcredist_sp1_x64.7z
+package_strip_dirs:     0
+target_install_dir:     /
+rpath_target:
+archive_name:           vcredist_sp1_x64.7z

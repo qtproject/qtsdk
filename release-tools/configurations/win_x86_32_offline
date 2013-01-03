@@ -13,7 +13,7 @@ base_path:
 packages:               foo.bar, foo.bar2, foo.bar3
 
 [ExtraPackageConfigurationFiles]
-file_list:              src-conf, tools-conf
+file_list:              qt501-src-conf, x86-qt501-msvc2010_32-conf, x86-tools-conf, installer-readme-conf
 
 [OfflinePackageExcludeList]
 package_list:
@@ -29,94 +29,9 @@ template_name:          config_qt5
 template_name:          config.xml.template.windows.qt5
 
 [WorkingDirectories]
-packages_dir:           pkg
+packages_dir:           pkg_501, pkg_tools
 
 [InstallerFrameworkTools]
 name:                   ifwt
 package_url:            http://origin.releases.qt-project.org/digia/ifw_prebuilt/installer-framework-build-win.7z
-
-
-[qt.readme]
-archives:               readme, qt_project_url
-target_install_base:    /
-version:                5.0.0
-version_tag:            %QT_VERSION%
-package_default:        true
-[readme]
-archive_uri:            http://qt.gitorious.org/qtsdk/qtsdk/blobs/raw/master/release-tools/dist/README.txt
-package_strip_dirs:     0
-target_install_dir:     /
-rpath_target:
-archive_name:           readme.7z
-[qt_project_url]
-archive_uri:            qt-project-url.7z
-package_strip_dirs:     0
-target_install_dir:     /
-rpath_target:
-archive_name:           qt-project-url.7z
-
-
-[qt.500.patcher]
-
-[qt.500.win32_msvc2010]
-
-[qt.500.win32_msvc2010.essentials]
-archives:               500.msvc2010.essentials, icu_49.win_32, win32_msvc2010.essentials.d3d_compiler_43.x86
-target_install_base:    /5.0.0/msvc2010
-version:                5.0.0
-version_tag:            %QT_VERSION%
-package_default:        true
-[500.msvc2010.essentials]
-archive_uri:            /qt/5.0.0_opensource/windows_vs2010_32/qt5_essentials.7z
-package_strip_dirs:
-target_install_dir:     /
-rpath_target:
-archive_name:           msvc2010_essentials.7z
-[icu_49.win_32]
-archive_uri:            http://origin.releases.qt-project.org/prebuilt/icu_49_win_32.7z
-package_strip_dirs:     0
-target_install_dir:     /bin
-rpath_target:
-archive_name:           icu_49_win_32.7z
-[win32_msvc2010.essentials.d3d_compiler_43.x86]
-archive_uri:            http://origin.releases.qt-project.org/prebuilt/D3DCompiler_43-x86.dll.7z
-package_strip_dirs:     0
-target_install_dir:     /bin
-rpath_target:
-archive_name:           D3DCompiler_43-x86.7z
-
-[qt.500.win32_msvc2010.addons]
-archives:               500.msvc2010.addons, icu_49.win_32
-target_install_base:    /5.0.0/msvc2010
-version:                5.0.0
-version_tag:            %QT_VERSION%
-package_default:        true
-[500.msvc2010.addons]
-archive_uri:            /qt/5.0.0_opensource/windows_vs2010_32/qt5_addons.7z
-package_strip_dirs:
-target_install_dir:     /
-rpath_target:
-archive_name:           msvc2010_addons.7z
-
-[qt.tools]
-
-[qt.tools.qtcreator]
-archives:               tools.qtcreator, tools.qtcreator.d3d_compiler_43.x86
-target_install_base:    /Tools/QtCreator
-version:                2.6.0
-version_tag:            %QTCREATOR_VERSION%
-package_default:        true
-[tools.qtcreator]
-archive_uri:            /sdk_packages_qt5_lgpl_release/qtcreator/latest/qtcreator_windows_vs2010_32.7z
-package_strip_dirs:     1
-target_install_dir:     /
-rpath_target:
-archive_name:           qt-creator-opensource-2.6.0-vs2010-32.7z
-[tools.qtcreator.d3d_compiler_43.x86]
-archive_uri:            http://origin.releases.qt-project.org/prebuilt/D3DCompiler_43-x86.dll.7z
-package_strip_dirs:     0
-target_install_dir:     /bin
-rpath_target:
-archive_name:           D3DCompiler_43-x86.7z
-
 

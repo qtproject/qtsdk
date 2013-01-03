@@ -13,7 +13,7 @@ base_path:
 packages:               foo.bar, foo.bar2, foo.bar3
 
 [ExtraPackageConfigurationFiles]
-file_list:              src-conf
+file_list:              qt501-src-conf, x86_64-qt501-clang-conf, x86_64-tools-conf, installer-readme-conf
 
 [OfflinePackageExcludeList]
 package_list:
@@ -32,69 +32,12 @@ template_name:          config_qt5
 template_name:          config.xml.template.mac.qt5
 
 [WorkingDirectories]
-packages_dir:           pkg
+packages_dir:           pkg_501, pkg_tools
 
 [InstallerFrameworkTools]
 name:                   ifwt
 package_url:            http://origin.releases.qt-project.org/digia/ifw_prebuilt/installer-framework-build-mac.7z
 
 
-[qt.readme]
-archives:               readme
-target_install_base:    /
-version:                5.0.0
-version_tag:            %QT_VERSION%
-package_default:        true
-[readme]
-archive_uri:            http://qt.gitorious.org/qtsdk/qtsdk/blobs/raw/master/release-tools/dist/README.txt
-package_strip_dirs:     0
-target_install_dir:     /
-rpath_target:
-archive_name:           readme.7z
 
-
-[qt.500.patcher]
-
-[qt.500.clang_64]
-
-[qt.500.clang_64.essentials]
-archives:               500.clang_64.essentials
-target_install_base:    /5.0.0/clang_64
-version:                5.0.0
-version_tag:            %QT_VERSION%
-package_default:        true
-[500.clang_64.essentials]
-archive_uri:            /qt/5.0.0_opensource/mac_cocoa_10.7/qt5_essentials.7z
-package_strip_dirs:
-target_install_dir:     /
-rpath_target:
-archive_name:           clang_64_mac_qt5_essentials.7z
-
-[qt.500.clang_64.addons]
-archives:               500.clang_64.addons
-target_install_base:    /5.0.0/clang_64
-version:                5.0.0
-version_tag:            %QT_VERSION%
-package_default:        true
-[500.clang_64.addons]
-archive_uri:            /qt/5.0.0_opensource/mac_cocoa_10.7/qt5_addons.7z
-package_strip_dirs:
-target_install_dir:     /
-rpath_target:
-archive_name:           clang_64_mac_qt5_addons.7z
-
-[qt.tools]
-
-[qt.tools.qtcreator]
-archives:               tools.qtcreator
-target_install_base:    /
-version:                2.6.0
-version_tag:            %QTCREATOR_VERSION%
-package_default:        true
-[tools.qtcreator]
-archive_uri:            /sdk_packages_qt5_lgpl_release/qtcreator/latest/qtcreator_mac_cocoa_10_7.7z
-package_strip_dirs:
-target_install_dir:     /
-rpath_target:
-archive_name:           qt-creator-opensource-2.6.0.7z
 

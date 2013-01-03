@@ -1,0 +1,16 @@
+
+[qt.tools]
+
+[qt.tools.qtcreator]
+archives:               tools.qtcreator
+target_install_base:    /
+version:                2.6.0
+version_tag:            %QTCREATOR_VERSION%
+package_default:        true
+[tools.qtcreator]
+archive_uri:            /sdk_packages_qt5_lgpl_release/qtcreator/latest/qtcreator_mac_cocoa_10_7.7z
+package_strip_dirs:
+target_install_dir:     /
+rpath_target:
+archive_name:           qt-creator-opensource-2.6.0.7z
+
