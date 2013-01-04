@@ -67,15 +67,20 @@ def replace_key(qmake_file_name, key, new_value):
         print '*** Length for the given new value was: ' + str(len(new_value))
         return False
 
-    f = open(qmake_file_name, 'r+')
-    text = f.read()
+    f = open(qmake_file_name, 'rb+')
+    text = ''
+    while True:
+        temp = f.read()
+        if not temp or len(temp) == 0:
+            break
+        text = text + temp
     full_length = len(text)
     m = re.search(key + '=', text)
-    end_index = m.end()
-    if not end_index:
+    if not m:
         print '*** Given key not found: ' + key
         print '*** Abort!'
         return False
+    end_index = m.end()
     remaining_max_length = full_length - end_index
     read_reamaining_offset = end_index + len(new_value) + 1
     replacement_text = text[0:end_index] + new_value + '\0' + text[read_reamaining_offset:]
