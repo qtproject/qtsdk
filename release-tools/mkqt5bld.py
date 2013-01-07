@@ -100,8 +100,6 @@ MAKE_CMD                            = ''
 MAKE_THREAD_COUNT                   = '8' # some initial default value
 MAKE_INSTALL_CMD                    = ''
 CONFIGURE_OPTIONS                   = '-confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng'
-CONFIGURE_OVERRIDE                  = False
-CONFIGURE_LICENSE                   = ' -opensource'
 
 
 class MultipleOption(Option):
@@ -124,6 +122,14 @@ def print_wrap(text):
     print 'QT5BLD: ' + text
 
 
+
+###############################
+# function
+###############################
+def exit_script():
+    print_wrap(' *** Exiting...')
+    sys.exit(-1)
+
 ###############################
 # function
 ###############################
@@ -141,28 +147,9 @@ def init_mkqt5bld():
     if bldinstallercommon.is_unix_platform():
         CONFIGURE_CMD = './'
 
-    if not CONFIGURE_OVERRIDE:
-        if bldinstallercommon.is_linux_platform():          #linux
-            CONFIGURE_OPTIONS += ' -qt-xcb'
-        elif bldinstallercommon.is_mac_platform():          #mac
-            INSTALL_PREFIX = os.environ['PWD'] + os.sep + PADDING
-            CONFIGURE_OPTIONS += ' -platform macx-clang -prefix ' + INSTALL_PREFIX
-        elif bldinstallercommon.is_win_platform():          #win
-            CONFIGURE_OPTIONS += ' -angle'
+    if SILENT_BUILD and not bldinstallercommon.is_win_platform():
+        CONFIGURE_OPTIONS += ' -silent'
 
-        #Add padding to original rpaths to make sure that original rpath is longer than the new
-        if bldinstallercommon.is_linux_platform() or bldinstallercommon.is_solaris_platform():
-            INSTALL_PREFIX = os.getcwd() + os.sep + PADDING
-            CONFIGURE_OPTIONS += ' -prefix ' + INSTALL_PREFIX
-            CONFIGURE_OPTIONS += ' -R ' + INSTALL_PREFIX
-        elif bldinstallercommon.is_win_platform():
-            src_dir = QT_SOURCE_DIR + os.sep + QT_PACKAGE_SHORT_NAME
-            INSTALL_PREFIX = src_dir[2:] + os.sep + 'qtbase'
-
-        if SILENT_BUILD and not bldinstallercommon.is_win_platform():
-            CONFIGURE_OPTIONS += ' -silent'
-
-        CONFIGURE_OPTIONS += CONFIGURE_LICENSE
 
     CONFIGURE_CMD += 'configure'
 
@@ -265,9 +252,7 @@ def extract_src_package():
 ###############################
 # function
 ###############################
-def build_qt():
-    global QT5_MODULES_LIST
-    # configure
+def configure_qt():
     print_wrap('---------------- Configuring Qt ------------------------------------')
     cmd_args = CONFIGURE_CMD + ' ' + CONFIGURE_OPTIONS
     print_wrap('    Configure line: ' + cmd_args)
@@ -278,12 +263,47 @@ def build_qt():
         print_wrap(' configure found from ' + QT_SOURCE_DIR + os.sep + 'qtbase')
         bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR + os.sep + 'qtbase', True)
 
+    print_wrap('--------------------------------------------------------------------')
+
+
+###############################
+# function
+###############################
+def save_install_prefix():
+    print_wrap('---------------- Saving install prefix -----------------------------')
+    global INSTALL_PREFIX
+
+    qmake_executable_path = bldinstallercommon.locate_executable(QT_SOURCE_DIR, 'qmake' + bldinstallercommon.get_executable_suffix())
+    if not qmake_executable_path:
+        print_wrap('*** Error! qmake executable not found? Looks like the build has failed in previous step?')
+        exit_script()
+
+    query_args = qmake_executable_path + ' -query'
+    return_code, output = bldinstallercommon.do_execute_sub_process(query_args.split(' '), '.', True, True)
+    data = output.split('\n')
+
+    for line in data:
+        if 'QT_INSTALL_PREFIX' in line:
+            splitted = line.split(':')
+            INSTALL_PREFIX = splitted[1]
+            print_wrap('INSTALL_PREFIX = ' + INSTALL_PREFIX)
+            break
+
+    print_wrap('--------------------------------------------------------------------')
+
+
+###############################
+# function
+###############################
+def create_submodule_list():
+    global QT5_MODULES_LIST
+    print_wrap('-------- Creating ordered list of submodules -----------------------')
+
     #create list of modules in default make order
     regex = re.compile('^make_first:.*') #search line starting with 'make_first:'
     submodule_list = []
     modules_found = 0
     if os.path.exists(QT_SOURCE_DIR + os.sep + 'Makefile'):
-        print_wrap('    Generating ordered list of submodules from main Makefile')
         makefile = open(QT_SOURCE_DIR + os.sep + 'Makefile', 'r')
         for line in makefile:
             lines = regex.findall(line)
@@ -301,14 +321,20 @@ def build_qt():
 
         if modules_found == 1:
             QT5_MODULES_LIST = submodule_list
-            print_wrap('    Modules list updated, modules list is now in default build order.')
+            print_wrap('    Modules list updated, modules are now in default build order.')
         else:
             print_wrap('    Warning! Could not extract module build order from ' + QT_SOURCE_DIR + os.sep + 'Makefile. Using default (non-ordered) list.')
     else:
         print_wrap('*** Error! Main Makefile not found. Build failed!')
         sys.exit(-1)
 
-    # build
+    print_wrap('--------------------------------------------------------------------')
+
+
+###############################
+# function
+###############################
+def build_qt():
     print_wrap('---------------- Building Qt ---------------------------------------')
     #remove if old dir exists
     if os.path.exists(MAKE_INSTALL_ROOT_DIR):
@@ -510,7 +536,6 @@ def parse_cmd_line():
     global STRICT_MODE
     global CONFIGURE_OPTIONS
     global CONFIGURE_OVERRIDE
-    global CONFIGURE_LICENSE
 
     setup_option_parser()
 
@@ -530,13 +555,22 @@ def parse_cmd_line():
     if options.module_ignore_list:
         QT5_MODULES_IGNORE_LIST = options.module_ignore_list
     STRICT_MODE             = options.strict_mode
-    if CONFIGURE_OPTIONS != options.configure_options and options.configure_options:
-        CONFIGURE_OVERRIDE = True
-        CONFIGURE_OPTIONS = options.configure_options
+
+    if options.configure_options:
+        if os.path.isfile(options.configure_options):
+            configure_file = open(options.configure_options, 'r')
+            CONFIGURE_OPTIONS = configure_file.readline().rstrip('\r\n')
+            configure_file.close()
+        else:
+            print_wrap(' *** Error! Could not find file ' + options.configure_options)
+            exit_script()
+    else:
+        print_wrap(' *** Error! No configure options given!')
+        exit_script()
+
     if options.add_configure_option:
         CONFIGURE_OPTIONS += ' ' + options.add_configure_option
-    if options.set_licensetype:
-        CONFIGURE_LICENSE = ' -' + options.set_licensetype
+
     print_wrap('---------------------------------------------------------------------')
     return True
 
@@ -573,9 +607,6 @@ def setup_option_parser():
     OPTION_PARSER.add_option("-a", "--add-configure-option",
                       action="store", type="string", dest="add_configure_option", default="",
                       help="options to be added to default configure options.")
-    OPTION_PARSER.add_option("-l", "--license",
-                      action="store", type="string", dest="set_licensetype", default="",
-                      help="set licensetype (opensource/commercial).")
     print_wrap('---------------------------------------------------------------------')
 
 
@@ -595,6 +626,12 @@ def main():
     fetch_src_package()
     # extract src package
     extract_src_package()
+    # configure
+    configure_qt()
+    # save used install prefix
+    save_install_prefix()
+    # create submodule list
+    create_submodule_list()
     # build
     build_qt()
     # save original qt_prfxpath in qmake executable
