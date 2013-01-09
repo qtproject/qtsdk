@@ -1,0 +1,1 @@
+-commercial -confirm-license -developer-build -xplatform android-g++ -android-arch armeabi -nomake tests -nomake examples -nomake demos -DQT_EVAL
