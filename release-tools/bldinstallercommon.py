@@ -662,7 +662,7 @@ def handle_component_rpath(component_root_path, destination_lib_path):
 ###############################
 # function
 ###############################
-def do_execute_sub_process(args, execution_path, abort_on_fail, get_output=False):
+def do_execute_sub_process(args, execution_path, abort_on_fail, get_output=False, extra_env=dict(os.environ)):
     print '      --------------------------------------------------------------------'
     print '      Executing:      [' + list_as_string(args) + ']'
     print '      Execution path: [' + execution_path + ']'
@@ -675,18 +675,18 @@ def do_execute_sub_process(args, execution_path, abort_on_fail, get_output=False
         os.chdir(execution_path)
         if IS_WIN_PLATFORM:
             if get_output:
-                theproc = subprocess.Popen(args, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=False)
+                theproc = subprocess.Popen(args, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=False, env=extra_env)
                 output = theproc.communicate()[0]
             else:
-                theproc = subprocess.Popen(args, shell=True, close_fds=False)
+                theproc = subprocess.Popen(args, shell=True, close_fds=False, env=extra_env)
                 theproc.communicate()
 
         else:
             if get_output:
-                theproc = subprocess.Popen(args, shell=False, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
+                theproc = subprocess.Popen(args, shell=False, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True, env=extra_env)
                 output = theproc.communicate()[0]
             else:
-                theproc = subprocess.Popen(args)
+                theproc = subprocess.Popen(args, env=extra_env)
                 theproc.communicate()
 
         if theproc.returncode:

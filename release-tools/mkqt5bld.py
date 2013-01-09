@@ -100,6 +100,12 @@ MAKE_CMD                            = ''
 MAKE_THREAD_COUNT                   = '8' # some initial default value
 MAKE_INSTALL_CMD                    = ''
 CONFIGURE_OPTIONS                   = '-confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng'
+ANDROID_NDK_HOST                    =''
+ANDROID_API_VERSION                 ='android-10'
+ANDROID_SDK_HOME                    =''
+ANDROID_NDK_HOME                    =''
+ANDROID_BUILD                       = False
+EXTRA_ENV                           = dict(os.environ)
 
 
 class MultipleOption(Option):
@@ -141,6 +147,7 @@ def init_mkqt5bld():
     global SUBMODULE_INSTALL_BASE_DIR_NAME
     global MAKE_INSTALL_ROOT_DIR
     global INSTALL_PREFIX
+    global EXTRA_ENV
 
     print_wrap('---------------- Initializing build --------------------------------')
     #do not edit configure options, if configure options are overridden from commandline options
@@ -149,7 +156,12 @@ def init_mkqt5bld():
 
     if SILENT_BUILD and not bldinstallercommon.is_win_platform():
         CONFIGURE_OPTIONS += ' -silent'
-
+    # add required configuration arguments if Android build
+    if ANDROID_BUILD:
+        CONFIGURE_OPTIONS += ' -android-ndk ' + ANDROID_NDK_HOME
+        CONFIGURE_OPTIONS += ' -android-sdk ' + ANDROID_SDK_HOME
+        EXTRA_ENV['ANDROID_NDK_HOST'] = ANDROID_NDK_HOST
+        EXTRA_ENV['ANDROID_API_VERSION'] = ANDROID_API_VERSION
 
     CONFIGURE_CMD += 'configure'
 
@@ -258,10 +270,10 @@ def configure_qt():
     print_wrap('    Configure line: ' + cmd_args)
     if os.path.exists(QT_SOURCE_DIR + os.sep + CONFIGURE_CMD):
         print_wrap(' configure found from ' + QT_SOURCE_DIR)
-        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, True)
+        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, True, False, EXTRA_ENV)
     else:
         print_wrap(' configure found from ' + QT_SOURCE_DIR + os.sep + 'qtbase')
-        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR + os.sep + 'qtbase', True)
+        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR + os.sep + 'qtbase', True, False, EXTRA_ENV)
 
     print_wrap('--------------------------------------------------------------------')
 
@@ -350,9 +362,10 @@ def build_qt():
     cmd_args = MAKE_CMD
     if bldinstallercommon.is_unix_platform():
         cmd_args += ' -j' + str(MAKE_THREAD_COUNT)
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, STRICT_MODE)
+    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, STRICT_MODE, False, EXTRA_ENV)
 
     print_wrap('--------------------------------------------------------------------')
+
 
 ###############################
 # function
@@ -616,6 +629,11 @@ def parse_cmd_line():
     global CONFIGURE_OPTIONS
     global CONFIGURE_OVERRIDE
     global QT_CREATOR_SRC_DIR
+    global ANDROID_NDK_HOST
+    global ANDROID_API_VERSION
+    global ANDROID_SDK_HOME
+    global ANDROID_NDK_HOME
+    global ANDROID_BUILD
 
     setup_option_parser()
 
@@ -656,6 +674,22 @@ def parse_cmd_line():
         print_wrap(' *** Error! Could not find directory ' + QTCREATOR_SRC_DIR)
         exit_script()
 
+    #TODO: android options to global variables (all). Check that paths exists, also other values
+    if options.android_ndk_host:
+        ANDROID_NDK_HOST     = options.android_ndk_host
+        ANDROID_BUILD        = True
+    if options.android_api_version:
+        ANDROID_API_VERSION  = options.android_api_version
+    if options.android_sdk_home and os.path.isdir(options.android_sdk_home):
+        ANDROID_SDK_HOME     = options.android_sdk_home
+        ANDROID_BUILD        = True
+    if options.android_ndk_home and os.path.isdir(options.android_ndk_home):
+        ANDROID_NDK_HOME     = options.android_ndk_home
+        ANDROID_BUILD        = True
+    # All or none Android specific arguments must be preset
+    if ANDROID_BUILD and '' in [ANDROID_NDK_HOST, ANDROID_SDK_HOME, ANDROID_NDK_HOME]:
+        print_wrap('*** Invalid arguments for Android build. Please check them.')
+        sys.exit(-1)
 
     print_wrap('---------------------------------------------------------------------')
     return True
@@ -696,6 +730,19 @@ def setup_option_parser():
     OPTION_PARSER.add_option("--creator-dir",
                       action="store", type="string", dest="qt_creator_src_dir", default="",
                       help="path to Qt Creator sources. If given, the Qt Quick Designer processes (qmlpuppet, qml2puppet) will be built and packaged.")
+    # for Android cross compilations
+    OPTION_PARSER.add_option("--android-ndk-host",
+                      action="store", type="string", dest="android_ndk_host", default="",
+                      help="E.g. linux-x86")
+    OPTION_PARSER.add_option("--android-api-version",
+                      action="store", type="string", dest="android_api_version", default="android-10",
+                      help="API version for the Android.")
+    OPTION_PARSER.add_option("--android-sdk-home",
+                      action="store", type="string", dest="android_sdk_home", default="",
+                      help="Path to Android SDK home.")
+    OPTION_PARSER.add_option("--android-ndk-home",
+                      action="store", type="string", dest="android_ndk_home", default="",
+                      help="Path to Android NDK home.")
     print_wrap('---------------------------------------------------------------------')
 
 
@@ -724,17 +771,20 @@ def main():
     # build
     build_qt()
     # build qmlpuppets
-    build_qmlpuppets()
+    if not ANDROID_BUILD:
+        build_qmlpuppets()
     # save original qt_prfxpath in qmake executable
     save_original_qt_prfxpath()
     # install
     install_qt()
     # install qmlpuppets
-    install_qmlpuppets()
+    if not ANDROID_BUILD:
+        install_qmlpuppets()
     #cleanup files that are not needed in binary packages
     clean_up(MAKE_INSTALL_ROOT_DIR)
     # build docs and copy to essentials install dir
-    build_docs()
+    if not ANDROID_BUILD:
+        build_docs()
     # replace build directory paths in install_root locations
     replace_build_paths(MAKE_INSTALL_ROOT_DIR)
     # archive each submodule
