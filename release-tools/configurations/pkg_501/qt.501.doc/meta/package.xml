@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
     <DisplayName>Documentation</DisplayName>
-    <Description>Documentation for various components included in the Qt SDK</Description>
+    <Description>Documentation for various components included in the Qt Toolkit</Description>
     <Version>1.0.0</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Name>qt.501.doc</Name>

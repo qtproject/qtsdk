@@ -37,10 +37,10 @@ Component.prototype.createOperations = function()
         var qmakeBinary = "@TargetDir@/%TARGET_INSTALL_DIR%/bin/qmake";
 
         component.addOperation("Execute",
-            new Array("{1}", "@SDKToolBinary@", "addQt", "--id", component.name, "--name", "Qt %QT_VERSION% GCC 64bit (SDK)", "--type", "Qt4ProjectManager.QtVersion.Desktop", "--qmake", qmakeBinary));
+            new Array("{1}", "@SDKToolBinary@", "addQt", "--id", component.name, "--name", "Qt %QT_VERSION% GCC 64bit", "--type", "Qt4ProjectManager.QtVersion.Desktop", "--qmake", qmakeBinary));
 
         component.addOperation("Execute",
-            new Array("{1}", "@SDKToolBinary@", "addKit", "--id", component.name + "_kit", "--name", "Desktop Qt %QT_VERSION% GCC 64bit (SDK)", "--toolchain", "x86-linux-generic-elf-64bit", "--qt", component.name, "--debuggerengine", "1", "--devicetype", "Desktop"));
+            new Array("{1}", "@SDKToolBinary@", "addKit", "--id", component.name + "_kit", "--name", "Desktop Qt %QT_VERSION% GCC 64bit", "--toolchain", "x86-linux-generic-elf-64bit", "--qt", component.name, "--debuggerengine", "1", "--devicetype", "Desktop"));
 
     }
 }

@@ -7,8 +7,8 @@ version:                2.6.0
 version_tag:            %QTCREATOR_VERSION%
 package_default:        true
 [tools.qtcreator]
-archive_uri:            /sdk_packages_qt5_lgpl_release/qtcreator/latest/qtcreator_linux_gcc_32_ubuntu1110.7z
+archive_uri:            /sdk_packages_qt5_lgpl_release/qtcreator/latest/qtcreator_linux_gcc_64_ubuntu1110.7z
 package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:
-archive_name:           qt-creator-opensource-2.6.0-ubuntu1110-32.7z
+archive_name:           qt-creator-opensource-2.6.0-ubuntu1110-64.7z

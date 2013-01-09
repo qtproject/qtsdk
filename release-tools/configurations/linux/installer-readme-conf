@@ -1,7 +1,7 @@
 [qt.readme]
 archives:               readme
 target_install_base:    /
-version:                5.0.0
+version:                5.0.1
 version_tag:            %QT_VERSION%
 package_default:        true
 [readme]
