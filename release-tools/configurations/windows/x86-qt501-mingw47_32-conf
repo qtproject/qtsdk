@@ -1,0 +1,35 @@
+[qt.501.patcher]
+
+[qt.501.win32_mingw47]
+
+[qt.501.win32_mingw47.essentials]
+archives:               501.mingw47.essentials, icu_49.mingw_32
+target_install_base:    /5.0.1/mingw47_32
+version:                5.0.1
+version_tag:            %QT_VERSION%
+package_default:        true
+[501.mingw47.essentials]
+archive_uri:            /qt/5.0.1_opensource/windows_mingw/qt5_essentials.7z
+package_strip_dirs:
+target_install_dir:     /
+rpath_target:
+archive_name:           mingw47_essentials.7z
+[icu_49.mingw_32]
+archive_uri:            http://origin.releases.qt-project.org/prebuilt/icu-mingw-builds-runtime.7z
+package_strip_dirs:     0
+target_install_dir:     /bin
+rpath_target:
+archive_name:           icu-mingw-builds-runtime.7z
+
+[qt.501.win32_mingw47.addons]
+archives:               501.mingw47.addons
+target_install_base:    /5.0.1/mingw47_32
+version:                5.0.1
+version_tag:            %QT_VERSION%
+package_default:        true
+[501.mingw47.addons]
+archive_uri:            /qt/5.0.1_opensource/windows_mingw/qt5_addons.7z
+package_strip_dirs:
+target_install_dir:     /
+rpath_target:
+archive_name:           mingw47_addons.7z

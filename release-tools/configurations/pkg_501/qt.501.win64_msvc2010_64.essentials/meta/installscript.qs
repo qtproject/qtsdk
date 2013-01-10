@@ -25,12 +25,14 @@ createShortcuts = function()
     var qtStringVersion = "%QT_VERSION%";
     // Create a batch file with the development environment
     var component_root_path = installer.value("TargetDir") + "%TARGET_INSTALL_DIR%";
+    component_root_path = component_root_path.replace(/\\/g, "\\\\");
+    component_root_path = component_root_path.replace(/\//g, "\\\\");
+
     var batchFileName = component_root_path + "/" + "bin" + "/" + "qtenv2.bat";
     var contentString = "echo off\r\n";
     contentString += "echo Setting up environment for Qt usage...\r\n";
-    contentString += "set QTDIR=" + component_root_path + "\r\n";
-    contentString += "set PATH=%QTDIR%\\bin;%PATH%\r\n";
-    contentString += "cd /D %QTDIR%\r\n";
+    contentString += "set PATH="  + component_root_path + "\\bin;%PATH%\r\n";
+    contentString += "cd /D " + component_root_path + "\r\n";
     contentString += "echo Remember to call vcvarsall.bat amd64 to complete environment setup!\r\n";
     // Dump batch file
     component.addOperation("AppendFile", batchFileName, contentString);
