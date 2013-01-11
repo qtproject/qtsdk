@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
+# Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
 # Contact: http://www.qt-project.org/legal
 #
 # You may use this file under the terms of the 3-clause BSD license.
