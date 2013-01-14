@@ -184,11 +184,9 @@ def init_mkqt5bld():
             MAKE_INSTALL_CMD += ' install'
     else:
         if MAKE_CMD == 'jom':
-            #jom can't be used for install, forcing nmake as install command
-            MAKE_INSTALL_CMD = 'nmake install'
+            MAKE_INSTALL_CMD = 'jom -j1 install'
             if SILENT_BUILD:
                 MAKE_INSTALL_CMD += ' /s'
-
 
     #remove old working dirs
     if os.path.exists(WORK_DIR):
@@ -319,7 +317,7 @@ def build_qt():
     bldinstallercommon.create_dirs(MAKE_INSTALL_ROOT_DIR)
 
     cmd_args = MAKE_CMD
-    if bldinstallercommon.is_unix_platform() or 'mingw' in MAKE_CMD:
+    if bldinstallercommon.is_unix_platform():
         cmd_args += ' -j' + str(MAKE_THREAD_COUNT)
     bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, STRICT_MODE)
 
