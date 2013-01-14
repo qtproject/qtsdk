@@ -319,7 +319,7 @@ def build_qt():
     bldinstallercommon.create_dirs(MAKE_INSTALL_ROOT_DIR)
 
     cmd_args = MAKE_CMD
-    if bldinstallercommon.is_unix_platform():
+    if bldinstallercommon.is_unix_platform() or 'mingw' in MAKE_CMD:
         cmd_args += ' -j' + str(MAKE_THREAD_COUNT)
     bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, STRICT_MODE)
 
@@ -341,10 +341,6 @@ def install_qt():
         else:
             install_dir = ADDONS_INSTALL_DIR_NAME
         install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + install_dir
-        #TODO: there probably is a better way to fix the delimeters for mingw,
-        # but this is working atm
-        if 'mingw' in MAKE_CMD:
-            install_root_path = WORK_DIR + '/' + MAKE_INSTALL_ROOT_DIR_NAME + '/' + install_dir
         if bldinstallercommon.is_win_platform():
             install_root_path = install_root_path[2:]
             print_wrap('    Using install root path: ' + install_root_path)
