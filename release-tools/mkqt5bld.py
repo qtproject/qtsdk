@@ -87,7 +87,7 @@ ORIGINAL_QMAKE_QT_PRFXPATH          = ''
 PADDING                             = '______________________________PADDING______________________________'
 FILES_TO_REMOVE_LIST                = ['Makefile', 'Makefile.Release', 'Makefile.Debug', \
                                        '.o', '.moc', '.init-repository', \
-                                       '.gitignore', '.obj', '.pdb']
+                                       '.gitignore', '.obj']
 IGNORE_PATCH_LIST                   = ['.png', '.jpg', '.gif', '.bmp', '.exe', '.dll', '.lib', '.qph']
 INSTALL_PREFIX                      = ''
 #Commandline options
