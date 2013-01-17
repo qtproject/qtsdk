@@ -6,4 +6,5 @@
     <Name>qt.tools.mingw47</Name>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
+    <Script>installscript.qs</Script>
 </Package>
