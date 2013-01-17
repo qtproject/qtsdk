@@ -44,7 +44,7 @@
 [qt.501.win64_msvc2012_64]
 
 [qt.501.win64_msvc2012_64.essentials]
-archives:               501.msvc2012_64.essentials, icu_49.win_64, msvc2012_64.essentials.d3d_compiler_43.x64
+archives:               501.msvc2012_64.essentials, icu_49_release.win_64, icu_49_debug.win_64, msvc2012_64.essentials.d3d_compiler_43.x64
 target_install_base:    /5.0.1/msvc2012_64
 version:                5.0.1
 version_tag:            %QT_VERSION%
@@ -55,12 +55,18 @@ package_strip_dirs:
 target_install_dir:     /
 rpath_target:
 archive_name:           msvc2012_64_essentials.7z
-[icu_49.win_64]
-archive_uri:            http://origin.releases.qt-project.org/prebuilt/icu_49_win_64.7z
+[icu_49_release.win_64]
+archive_uri:            http://origin.releases.qt-project.org/prebuilt/icu_49_win_32_release.7z
 package_strip_dirs:     0
 target_install_dir:     /bin
 rpath_target:
-archive_name:           icu_49_win_64.7z
+archive_name:           icu_49_win_32_release.7z
+[icu_49_debug.win_64]
+archive_uri:            http://origin.releases.qt-project.org/prebuilt/icu_49_win_32_debug.7z
+package_strip_dirs:     0
+target_install_dir:     /bin
+rpath_target:
+archive_name:           icu_49_win_32_debug.7z
 [msvc2012_64.essentials.d3d_compiler_43.x64]
 archive_uri:            http://origin.releases.qt-project.org/prebuilt/D3DCompiler_43-x64.dll.7z
 package_strip_dirs:     0

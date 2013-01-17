@@ -44,7 +44,7 @@
 [qt.501.win32_msvc2010]
 
 [qt.501.win32_msvc2010.essentials]
-archives:               501.msvc2010.essentials, icu_49.win_32, win32_msvc2010.essentials.d3d_compiler_43.x86
+archives:               501.msvc2010.essentials, icu_49_release.win_32, icu_49_debug.win_32, win32_msvc2010.essentials.d3d_compiler_43.x86
 target_install_base:    /5.0.1/msvc2010
 version:                5.0.1
 version_tag:            %QT_VERSION%
@@ -55,12 +55,18 @@ package_strip_dirs:
 target_install_dir:     /
 rpath_target:
 archive_name:           msvc2010_essentials.7z
-[icu_49.win_32]
-archive_uri:            http://origin.releases.qt-project.org/prebuilt/icu_49_win_32.7z
+[icu_49_release.win_32]
+archive_uri:            http://origin.releases.qt-project.org/prebuilt/icu_49_win_32_release.7z
 package_strip_dirs:     0
 target_install_dir:     /bin
 rpath_target:
-archive_name:           icu_49_win_32.7z
+archive_name:           icu_49_win_32_release.7z
+[icu_49_debug.win_32]
+archive_uri:            http://origin.releases.qt-project.org/prebuilt/icu_49_win_32_debug.7z
+package_strip_dirs:     0
+target_install_dir:     /bin
+rpath_target:
+archive_name:           icu_49_win_32_debug.7z
 [win32_msvc2010.essentials.d3d_compiler_43.x86]
 archive_uri:            http://origin.releases.qt-project.org/prebuilt/D3DCompiler_43-x86.dll.7z
 package_strip_dirs:     0
