@@ -39,40 +39,24 @@
 ##
 #############################################################################
 
-[PackageNamespace]
-name:                   qt
+[qt.tools]
 
-[PlatformIdentifier]
-identifier:             windows
-
-[ArchiveRemoteLocation.default]
-base_url:               http://add.your.archive.url
-base_path:
-
-# for testing purposes
-[PackageIgnoreList]
-packages:               foo.bar, foo.bar2, foo.bar3
-
-[ExtraPackageConfigurationFiles]
-file_list:              qt501-src-conf, x86_64-qt501-msvc2012_64-conf, x86-tools-qtcreator-conf, x86-tools-vcredist_32-conf, x86_64-tools-conf, installer-readme-conf
-
-[OfflinePackageExcludeList]
-package_list:
-
-[SdkUpdateRepository]
-repository_url_release: http://../qt5repository/windows/x32/online_qt5sdk_repo
-repository_url_rnd:     http://../qt5repository/windows/x32/online_qt5sdk_repo
-
-[ConfigDir]
-template_name:          config_qt5
-
-[ConfigXml]
-template_name:          config.xml.template.windows.qt5
-
-[WorkingDirectories]
-packages_dir:           pkg_501, pkg_tools
-
-[InstallerFrameworkTools]
-name:                   ifwt
-package_url:            http://origin.releases.qt-project.org/digia/ifw_prebuilt/installer-framework-build-win.7z
+[qt.tools.qtcreator]
+archives:               tools.qtcreator, tools.qtcreator.d3d_compiler_43.x86
+target_install_base:    /Tools/QtCreator
+version:                2.6.0
+version_tag:            %QTCREATOR_VERSION%
+package_default:        true
+[tools.qtcreator]
+archive_uri:            /sdk_packages_qt5_lgpl_release/qtcreator/latest/qtcreator_windows_vs2010_32.7z
+package_strip_dirs:     1
+target_install_dir:     /
+rpath_target:
+archive_name:           qt-creator-opensource-2.6.0-vs2010-32.7z
+[tools.qtcreator.d3d_compiler_43.x86]
+archive_uri:            http://origin.releases.qt-project.org/prebuilt/D3DCompiler_43-x86.dll.7z
+package_strip_dirs:     0
+target_install_dir:     /bin
+rpath_target:
+archive_name:           D3DCompiler_43-x86.7z
 
