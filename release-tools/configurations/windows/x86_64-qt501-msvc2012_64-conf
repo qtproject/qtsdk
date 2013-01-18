@@ -75,7 +75,7 @@ rpath_target:
 archive_name:           D3DCompiler_43-x64.7z
 
 [qt.501.win64_msvc2012_64.addons]
-archives:               501.msvc2012_64.addons, icu_49.win_64
+archives:               501.msvc2012_64.addons
 target_install_base:    /5.0.1/msvc2012_64
 version:                5.0.1
 version_tag:            %QT_VERSION%
