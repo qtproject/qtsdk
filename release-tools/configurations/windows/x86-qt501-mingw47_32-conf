@@ -62,11 +62,11 @@ target_install_dir:     /bin
 rpath_target:
 archive_name:           icu-mingw-builds-runtime.7z
 [501.mingw47.runtime]
-archive_uri:            http://origin.releases.qt-project.org/prebuilt/mingw_32/x32-4.7.2-release-posix-sjlj-rev1-runtime.7z
+archive_uri:            http://origin.releases.qt-project.org/prebuilt/mingw_32/x32-4.7.2-release-posix-sjlj-rev8-runtime.7z
 package_strip_dirs:     0
 target_install_dir:     /bin
 rpath_target:
-archive_name:           x32-4.7.2-release-posix-sjlj-rev1-runtime.7z
+archive_name:           x32-4.7.2-release-posix-sjlj-rev8-runtime.7z
 
 [qt.501.win32_mingw47.addons]
 archives:               501.mingw47.addons
