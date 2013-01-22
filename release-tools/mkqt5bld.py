@@ -484,8 +484,6 @@ def build_docs():
     make_cmd = MAKE_CMD
     install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME
     if bldinstallercommon.is_win_platform():
-        if MAKE_CMD == 'jom':
-            make_cmd = 'nmake'
         install_root_path = install_root_path[2:]
     doc_install_args = make_cmd + ' install_docs INSTALL_ROOT=' + install_root_path
     #do not abort on fail, if the doc build fails, we still want to get the binary package
