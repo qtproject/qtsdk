@@ -52,5 +52,6 @@ Component.prototype.reactOnTargetDirChange = function(key, value)
 {
     if (key == "TargetDir") {
         installer.setValue("MINGW47_GDB", value + "\\%TARGET_INSTALL_DIR%\\Tools\\MinGW\\bin\\gdb.exe");
+        installer.setValue("MINGW47_GCC", value + "\\%TARGET_INSTALL_DIR%\\Tools\\MinGW\\bin\\gcc.exe");
     }
 }
