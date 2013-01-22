@@ -1,1 +1,1 @@
--commercial -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -no-pkg-config -platform macx-clang -prefix $PWD/______________________________PADDING______________________________
+-commercial -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -no-pkg-config -platform macx-clang -sysconfdir /Library/Preferences/Qt -prefix $PWD/______________________________PADDING______________________________
