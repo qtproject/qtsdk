@@ -59,7 +59,7 @@ createShortcuts = function()
     var batchFileName = component_root_path + "\\" + "bin" + "\\" + "qtenv2.bat";
     var contentString = "echo off\r\n";
     contentString += "echo Setting up environment for Qt usage...\r\n";
-    contentString += "set PATH="  + component_root_path + "\\bin;%PATH%\r\n";
+    contentString += "set PATH=" + component_root_path + "\\bin;@MINGW47_DIR@\\bin;%PATH%\r\n";
     contentString += "cd /D " + component_root_path + "\r\n";
     //contentString += "echo Remember to call vcvarsall.bat to complete environment setup!\r\n";
     // Dump batch file
@@ -117,13 +117,13 @@ Component.prototype.createOperations = function()
             var qmakeBinary = "@TargetDir@/%TARGET_INSTALL_DIR%/bin/qmake.exe";
 
             component.addOperation("Execute",
-                new Array("{1}", "@SDKToolBinary@", "addTC", "--id", "ProjectExplorer.ToolChain.Mingw:" + component.name, "--name", "MinGW 4.7 32bit", "--path", "@MINGW47_GCC@", "--abi", "x86-windows-msys-pe-32bit", "--supportedAbis", "x86-windows-msys-pe-32bit"));
+                new Array("{1}", "@SDKToolBinary@", "addTC", "--id", "ProjectExplorer.ToolChain.Mingw:" + component.name, "--name", "MinGW 4.7 32bit", "--path", "@MINGW47_DIR@\\bin\\gcc.exe", "--abi", "x86-windows-msys-pe-32bit", "--supportedAbis", "x86-windows-msys-pe-32bit"));
 
             component.addOperation("Execute",
                 new Array("{1}", "@SDKToolBinary@", "addQt", "--id", component.name, "--name", "Qt %QT_VERSION% MinGW 32bit", "--type", "Qt4ProjectManager.QtVersion.Desktop", "--qmake", qmakeBinary));
 
             component.addOperation("Execute",
-                new Array("{1}", "@SDKToolBinary@", "addKit", "--id", component.name + "_kit", "--name", "Desktop Qt %QT_VERSION% MinGW 32bit", "--toolchain", "x86-windows-msys-pe-32bit", "--qt", component.name, "--debuggerengine", "1", "--debugger", "@MINGW47_GDB@", "--devicetype", "Desktop"));
+                new Array("{1}", "@SDKToolBinary@", "addKit", "--id", component.name + "_kit", "--name", "Desktop Qt %QT_VERSION% MinGW 32bit", "--toolchain", "x86-windows-msys-pe-32bit", "--qt", component.name, "--debuggerengine", "1", "--debugger", "@MINGW47_DIR@\\bin\\gdb.exe", "--devicetype", "Desktop"));
 
         } catch( e ) {
             print( e );

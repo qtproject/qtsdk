@@ -44,14 +44,15 @@
 function Component()
 {
     installer.valueChanged.connect( this, Component.prototype.reactOnTargetDirChange );
-    // set the default values to MinGW47_Gdb
+    // set the default values to MINGW47_DIR
     Component.prototype.reactOnTargetDirChange("TargetDir", installer.value("TargetDir"));
 }
 
 Component.prototype.reactOnTargetDirChange = function(key, value)
 {
     if (key == "TargetDir") {
-        installer.setValue("MINGW47_GDB", value + "\\%TARGET_INSTALL_DIR%\\bin\\gdb.exe");
-        installer.setValue("MINGW47_GCC", value + "\\%TARGET_INSTALL_DIR%\\bin\\gcc.exe");
+        var path = value + "%TARGET_INSTALL_DIR%";
+        path = path.replace("/\//g", "\\");
+        installer.setValue("MINGW47_DIR", path);
     }
 }
