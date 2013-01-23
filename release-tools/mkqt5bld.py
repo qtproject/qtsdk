@@ -285,7 +285,11 @@ def save_install_prefix():
     for line in data:
         if 'QT_INSTALL_PREFIX' in line:
             splitted = line.split(':')
-            INSTALL_PREFIX = splitted[1]
+            #windows has different syntax in qmake -query
+            if bldinstallercommon.is_win_platform():
+                INSTALL_PREFIX = splitted[2]
+            else:
+                INSTALL_PREFIX = splitted[1]
             print_wrap('INSTALL_PREFIX = ' + INSTALL_PREFIX)
             break
 
@@ -503,7 +507,7 @@ def archive_submodules():
     print_wrap('---------- Archiving essential modules')
     if os.path.exists(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME):
         cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_essentials' + '.7z *'
-        run_in = MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX
+        run_in = os.path.normpath(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX)
         bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), run_in, True, True)
     else:
         print_wrap(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> essentials not archived!')
@@ -512,7 +516,7 @@ def archive_submodules():
     print_wrap('---------- Archiving add-on modules')
     if os.path.exists(MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME):
         cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_addons' + '.7z *'
-        run_in = MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX
+        run_in = os.path.normpath(MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX)
         bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), run_in, True, True)
     else:
         print_wrap(MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> add-ons not archived!')
