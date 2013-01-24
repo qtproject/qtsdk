@@ -288,6 +288,7 @@ def save_install_prefix():
             #windows has different syntax in qmake -query
             if bldinstallercommon.is_win_platform():
                 INSTALL_PREFIX = splitted[2]
+                INSTALL_PREFIX = INSTALL_PREFIX.strip()
             else:
                 INSTALL_PREFIX = splitted[1]
             print_wrap('INSTALL_PREFIX = ' + INSTALL_PREFIX)
