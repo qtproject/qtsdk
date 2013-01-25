@@ -58,8 +58,9 @@ Directory Structure
 -------------------
 
 The default top-level installation directory is the directory "Qt<version>" in
-your home directory, but you can specify another directory (<install_dir>). Each
-Qt version is installed in the <install_dir>/<version> directory. This directory
+your home directory, but you can specify another directory (<install_dir>). On
+Windows, however, the default top-level installation directory is "C:\Qt\Qt<version>".
+Each Qt version is installed in the <install_dir>/<version> directory. This directory
 contains subdirectories for the Qt libraries (<compiler>) and sources (Src).
 The <compiler> directory contains subdirectories for development tools (bin) and
 examples.
