@@ -606,10 +606,10 @@ def setup_option_parser():
                       help="exit on error, defaults to true.")
     OPTION_PARSER.add_option("-c", "--configure",
                       action="store", type="string", dest="configure_options", default="",
-                      help="options for configure command, for overriding the defaults in script.")
+                      help="options for configure command. In addition option -a can be used to give extra parameters.")
     OPTION_PARSER.add_option("-a", "--add-configure-option",
                       action="store", type="string", dest="add_configure_option", default="",
-                      help="options to be added to default configure options.")
+                      help="options to be added to default configure options. For example, if -prefix or -R are needed but not defined in configure options file given with -c, those can be passed with this option, e.g. -a \"-prefix /home/user/my/path/here -R /home/user/my/path/here\"")
     print_wrap('---------------------------------------------------------------------')
 
 
