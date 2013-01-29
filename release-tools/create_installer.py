@@ -69,8 +69,6 @@ CONFIG_DIR_DST              = 'config'
 COMMON_CONFIG_NAME          = 'common'
 COMMON_CONFIG_DIR_NAME      = 'all-os'
 REPO_OUTPUT_DIR             = os.path.normpath(SCRIPT_ROOT_DIR + os.sep + 'repository')
-SDK_VERSION_NUMBER          = ''
-SDK_VERSION_TAG             = ''
 PACKAGES_DIR_NAME_LIST      = []
 PACKAGES_FULL_PATH_DST      = 'pkg'
 ROOT_COMPONENT_NAME         = ''
@@ -101,6 +99,8 @@ ARCHIVE_SERVER_BASE_URL     = ''
 
 INSTALLER_NAMING_SCHEME_COMPILER    = ''
 INSTALLER_NAMING_SCHEME_TARGET_ARCH = ''
+INSTALLER_NAMING_SCHEME_VERSION_NUM = ''
+INSTALLER_NAMING_SCHEME_VERSION_TAG = ''
 LICENSE_TYPE                = ''
 
 TARGET_INSTALL_DIR_NAME_TAG         = '%TARGET_INSTALL_DIR%'
@@ -232,6 +232,13 @@ def setup_option_parser():
                       action="store", type="string", dest="compiler_name", default="",
                       help="installer file name scheme: define compile name")
 
+    OPTION_PARSER.add_option("--version-number",
+                      action="store", type="string", dest="installer_version_number", default="",
+                      help="installer file name scheme: define installer version number")
+    OPTION_PARSER.add_option("--version-tag",
+                      action="store", type="string", dest="installer_version_tag", default="",
+                      help="installer file name scheme: define installer version tag (in addition to version number)")
+
 
 ##############################################################
 # Print options
@@ -259,6 +266,8 @@ def print_options():
     print "License type:                " + LICENSE_TYPE
     print "Compiler type:               " + INSTALLER_NAMING_SCHEME_COMPILER
     print "Target arch:                 " + INSTALLER_NAMING_SCHEME_TARGET_ARCH
+    print "Version number:              " + INSTALLER_NAMING_SCHEME_VERSION_NUM
+    print "Version tag:                 " + INSTALLER_NAMING_SCHEME_VERSION_TAG
 
 
 ##############################################################
@@ -287,6 +296,8 @@ def parse_cmd_line():
     global CONFIGURATIONS_DIR
     global STRICT_MODE
     global ARCHIVE_SERVER_BASE_URL
+    global INSTALLER_NAMING_SCHEME_VERSION_NUM
+    global INSTALLER_NAMING_SCHEME_VERSION_TAG
 
     CONFIGURATIONS_DIR                  = options.configurations_dir
     MAIN_CONFIG_NAME                    = options.configuration_file
@@ -301,6 +312,8 @@ def parse_cmd_line():
     STRICT_MODE                         = options.strict_mode
     INSTALLER_NAMING_SCHEME_TARGET_ARCH = options.target_architecture
     INSTALLER_NAMING_SCHEME_COMPILER    = options.compiler_name
+    INSTALLER_NAMING_SCHEME_VERSION_NUM = options.installer_version_number
+    INSTALLER_NAMING_SCHEME_VERSION_TAG = options.installer_version_tag
     ARCHIVE_SERVER_BASE_URL             = options.archive_base_url
 
     if INCREMENTAL_MODE:
@@ -331,8 +344,6 @@ def init_data():
     global CONFIG_PARSER_COMMON
     global CONFIG_PARSER_TARGET
     global PACKAGES_DIR_NAME_LIST
-    global SDK_VERSION_NUMBER
-    global SDK_VERSION_TAG
     global SDK_NAME
     global LICENSE_TYPE
     global SDK_NAME_ROOT
@@ -362,8 +373,6 @@ def init_data():
     CONFIG_DIR_DST      = os.path.normpath(SCRIPT_ROOT_DIR + os.sep + 'config')
     PACKAGES_DIR_NAME   = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'WorkingDirectories')['packages_dir']
     PACKAGES_DIR_NAME   = os.path.normpath(PACKAGES_DIR_NAME)
-    SDK_VERSION_NUMBER  = bldinstallercommon.config_section_map(CONFIG_PARSER_COMMON,'SdkCommon')['version']
-    SDK_VERSION_TAG     = bldinstallercommon.config_section_map(CONFIG_PARSER_COMMON,'SdkCommon')['tag']
     SDK_NAME            = bldinstallercommon.config_section_map(CONFIG_PARSER_COMMON,'SdkCommon')['name']
     if not LICENSE_TYPE:
         LICENSE_TYPE        = bldinstallercommon.config_section_map(CONFIG_PARSER_COMMON,'SdkCommon')['license']
@@ -472,7 +481,7 @@ def set_config_xml():
     update_repository_url = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'SdkUpdateRepository')['repository_url_release']
 
     fileslist = [config_template_dest]
-    bldinstallercommon.replace_in_files(fileslist, SDK_VERSION_NUM_TAG, SDK_VERSION_NUMBER)
+    bldinstallercommon.replace_in_files(fileslist, SDK_VERSION_NUM_TAG, INSTALLER_NAMING_SCHEME_VERSION_NUM)
     bldinstallercommon.replace_in_files(fileslist, UPDATE_REPOSITORY_URL_TAG, update_repository_url)
 
 
@@ -484,7 +493,7 @@ def substitute_global_tags():
     print ' ----------------------------------------'
     print ' Substituting global tags:'
     print '    %PACKAGE_CREATION_DATE% = ' + BUILD_TIMESTAMP
-    print '    %SDK_VERSION_NUM%       = ' + SDK_VERSION_NUMBER
+    print '    %SDK_VERSION_NUM%       = ' + INSTALLER_NAMING_SCHEME_VERSION_NUM
 
     # initialize the file list
     fileslist = []
@@ -494,7 +503,7 @@ def substitute_global_tags():
                 path = os.path.join(root, name)
                 fileslist.append(path)
 
-    bldinstallercommon.replace_in_files(fileslist, SDK_VERSION_NUM_TAG, SDK_VERSION_NUMBER)
+    bldinstallercommon.replace_in_files(fileslist, SDK_VERSION_NUM_TAG, INSTALLER_NAMING_SCHEME_VERSION_NUM)
     bldinstallercommon.replace_in_files(fileslist, PACKAGE_CREATION_DATE_TAG, BUILD_TIMESTAMP)
 
 
@@ -968,10 +977,13 @@ def create_installer_binary():
     installer_type  = 'offline' if CREATE_OFFLINE_INSTALLER else 'online'
     extension       = '.run' if bldinstallercommon.is_linux_platform() else ''
 
-    SDK_NAME = SDK_NAME + '-' + platform + '-' + LICENSE_TYPE + '-' + SDK_VERSION_NUMBER
+    SDK_NAME = SDK_NAME + '-' + platform + '-' + LICENSE_TYPE
     # optional
-    if SDK_VERSION_TAG:
-        SDK_NAME = SDK_NAME + '-' + SDK_VERSION_TAG
+    if INSTALLER_NAMING_SCHEME_VERSION_NUM:
+        SDK_NAME += '-' + INSTALLER_NAMING_SCHEME_VERSION_NUM
+    # optional
+    if INSTALLER_NAMING_SCHEME_VERSION_TAG:
+        SDK_NAME += '-' + INSTALLER_NAMING_SCHEME_VERSION_TAG
     # optional
     if INSTALLER_NAMING_SCHEME_COMPILER:
         SDK_NAME = SDK_NAME + '-' + INSTALLER_NAMING_SCHEME_COMPILER
