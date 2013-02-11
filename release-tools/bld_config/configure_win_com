@@ -1,1 +1,1 @@
--commercial -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -angle
+-commercial -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -angle -plugin-sql-sqlite -plugin-sql-odbc -openssl
