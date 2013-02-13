@@ -14,6 +14,7 @@
     <ProductUrl>http://qt-project.org/</ProductUrl>
     <!--<Background>background.png</Background>-->
     <UninstallerName>MaintenanceTool</UninstallerName>
+    <DependsOnLocalInstallerBinary>true</DependsOnLocalInstallerBinary>
     <!--<RemoteRepositories>
         <Repository>
             <Url>%UPDATE_REPOSITORY_URL%</Url>
