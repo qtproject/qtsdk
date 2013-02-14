@@ -51,6 +51,7 @@ from subprocess import PIPE, STDOUT
 import sys
 import stat
 import tarfile
+import traceback
 import urllib
 import urllib2
 import zipfile
@@ -682,12 +683,13 @@ def do_execute_sub_process(args, execution_path, abort_on_fail, get_output=False
                 print output
             else:
                 print 'Note, no output from the sub process!'
-            print '*** Execution failed with code: %s' % str(theproc.returncode)
-            if abort_on_fail:
-                sys.exit(-1)
+            raise Exception('*** Execution failed with code: {}'.format(theproc.returncode))
         print '      --------------------------------------------------------------------'
     except Exception:
-        print sys.exc_info()
+        sys.stderr.write('      ERROR - ERROR - ERROR - ERROR - ERROR - ERROR !!!' + os.linesep)
+        sys.stderr.write('      Executing:      [' + list_as_string(args) + ']' + os.linesep)
+        sys.stderr.write('      Execution path: [' + execution_path + ']' + os.linesep)
+        traceback.print_exc()
         if abort_on_fail:
             sys.exit(-1)
         else:
