@@ -54,7 +54,7 @@ base_path:
 packages:               foo.bar, foo.bar2, foo.bar3
 
 [ExtraPackageConfigurationFiles]
-file_list:              qt501-src-conf, x86_64-qt501-gcc-conf, x86_64-tools-conf, installer-readme-conf
+file_list:              qt502-src-conf, x86_64-qt502-gcc-conf, x86_64-tools-conf, installer-readme-conf
 
 [OfflinePackageExcludeList]
 package_list:
@@ -70,7 +70,7 @@ template_name:          config_qt5
 template_name:          config.xml.template.linux.qt5
 
 [WorkingDirectories]
-packages_dir:           pkg_501, pkg_tools
+packages_dir:           pkg_502, pkg_tools
 
 [InstallerFrameworkTools]
 name:                   ifwt
