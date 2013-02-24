@@ -45,7 +45,7 @@ import sys
 import bldinstallercommon
 from archiveresolver import ArchiveLocationResolver
 
-IFW_DOWNLOADABLE_ARCHIVE_NAMES_TAG  = '//%IFW_DOWNLOADABLE_ARCHIVE_NAMES%'
+ONLINE_ARCHIVE_LIST_TAG  = '<!--ONLINE_ARCHIVE_LIST-->'
 
 
 class SdkComponent:
@@ -184,15 +184,16 @@ class SdkComponent:
 
 
     def generate_downloadable_archive_list(self, downloadable_archive_list):
-        """Generate java script code that is embedded into installscript.qs"""
-
-        if self.downloadable_archive_list:
-            output = ''
-            for item in self.downloadable_archive_list:
-                output = output + 'component.addDownloadableArchive(\"' + item.archive_name + '\");'
+        """Generate list that is embedded into package.xml"""
+        output = ''
+        for item in self.downloadable_archive_list:
+            if not output:
+                output = item.archive_name
+            else:
+                output = output + ', ' + item.archive_name
 
         temp_list = []
-        temp_list.append([IFW_DOWNLOADABLE_ARCHIVE_NAMES_TAG, output])
+        temp_list.append([ONLINE_ARCHIVE_LIST_TAG, output])
         return temp_list
 
 
