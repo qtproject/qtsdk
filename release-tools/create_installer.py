@@ -56,7 +56,7 @@ from archiveresolver import ArchiveLocationResolver
 from sdkcomponent import SdkComponent
 
 # ----------------------------------------------------------------------
-BUILD_TIMESTAMP             = strftime('%d-%b-%Y', gmtime())
+BUILD_TIMESTAMP             = strftime('%d-%m-%Y', gmtime())
 CONFIG_PARSER_COMMON        = 0
 CONFIG_PARSER_TARGET        = 0
 OPTION_PARSER               = 0
