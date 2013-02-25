@@ -50,7 +50,7 @@ version:                5.0.2
 version_tag:            %QT_VERSION%
 package_default:        true
 [502.mingw47.essentials]
-archive_uri:            /qt/5.0.2_opensource/windows_mingw/qt5_essentials.7z
+archive_uri:            /qt/5.0.2/latest/windows_mingw/qt5_essentials.7z
 package_strip_dirs:
 target_install_dir:     /
 rpath_target:
@@ -81,7 +81,7 @@ version:                5.0.2
 version_tag:            %QT_VERSION%
 package_default:        true
 [502.mingw47.addons]
-archive_uri:            /qt/5.0.2_opensource/windows_mingw/qt5_addons.7z
+archive_uri:            /qt/5.0.2/latest/windows_mingw/qt5_addons.7z
 package_strip_dirs:
 target_install_dir:     /
 rpath_target:
