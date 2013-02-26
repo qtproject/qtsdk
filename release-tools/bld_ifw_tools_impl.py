@@ -66,8 +66,11 @@ INSTALLER_FRAMEWORK_SOURCE_DIR      = ''
 INSTALLER_FRAMEWORK_BUILD_DIR       = ''
 INSTALLER_FRAMEWORK_VERSION_TAG     = ''
 INSTALLER_FRAMEWORK_QMAKE_ARGS      = ''
-INSTALLER_FRAMEWORK_ARCHIVE_NAME    = ''
-INSTALLERBASE_ARCHIVE_NAME          = ''
+INSTALLER_FRAMEWORK_ARCHIVE_NAME    = 'installer-framework-build'
+INSTALLERBASE_ARCHIVE_NAME          = 'installerbase'
+MAC_DEPLOY_QT_ARCHIVE_NAME          = 'macdeployqt.7z'
+MAC_QT_MENU_NIB_ARCHIVE_NAME        = 'qt_menu.nib.7z'
+BUILD_ARTEFACTS_DIR                 = SCRIPT_ROOT_DIR + os.sep + 'build_artefacts'
 
 
 ###############################
@@ -90,6 +93,12 @@ def init_config(configurations_dir):
     global INSTALLER_FRAMEWORK_QMAKE_ARGS
     global INSTALLER_FRAMEWORK_ARCHIVE_NAME
     global INSTALLERBASE_ARCHIVE_NAME
+
+    # determine filenames used later on
+    architecture = bldinstallercommon.get_architecture()
+    plat_suffix  = bldinstallercommon.get_platform_suffix()
+    INSTALLER_FRAMEWORK_ARCHIVE_NAME += '-' + plat_suffix + '-' + architecture + '.7z'
+    INSTALLERBASE_ARCHIVE_NAME += '-' + plat_suffix + '-' + architecture + '.7z'
 
     # check first if absolute directory path given
     if os.path.isdir(configurations_dir):
@@ -128,8 +137,6 @@ def init_config(configurations_dir):
     QT_BUILD_DIR                        = os.path.normpath(QT_BUILD_DIR)
     INSTALLER_FRAMEWORK_SOURCE_DIR      = os.path.normpath(INSTALLER_FRAMEWORK_SOURCE_DIR)
     INSTALLER_FRAMEWORK_BUILD_DIR       = os.path.normpath(INSTALLER_FRAMEWORK_BUILD_DIR)
-    INSTALLER_FRAMEWORK_ARCHIVE_NAME    = bldinstallercommon.config_section_map(CONFIG_IFW,'Output')['installer_framework_archive_name']
-    INSTALLERBASE_ARCHIVE_NAME          = bldinstallercommon.config_section_map(CONFIG_IFW,'Output')['installerbase_archive_name']
 
     print 'make:                                ' + MAKE_CMD
     print ''
@@ -147,8 +154,8 @@ def init_config(configurations_dir):
     print 'INSTALLER_FRAMEWORK_VERSION_TAG:     ' + INSTALLER_FRAMEWORK_VERSION_TAG
     print 'INSTALLER_FRAMEWORK_QMAKE_ARGS:      [' + INSTALLER_FRAMEWORK_QMAKE_ARGS + ']'
     print ''
-    print 'Installer-Framework Output: ' + INSTALLER_FRAMEWORK_ARCHIVE_NAME
-    print 'Installerbase Output: ' + INSTALLERBASE_ARCHIVE_NAME
+    print 'Installer-Framework Output:          ' + INSTALLER_FRAMEWORK_ARCHIVE_NAME
+    print 'Installerbase Output:                ' + INSTALLERBASE_ARCHIVE_NAME
     print '----------------------------------------'
 
 
@@ -284,6 +291,10 @@ def clean_build_environment():
         os.remove(INSTALLER_FRAMEWORK_ARCHIVE_NAME)
     if os.path.isfile(QT_SRC_PACKAGE_URL_SAVE_AS):
         os.remove(QT_SRC_PACKAGE_URL_SAVE_AS)
+    if os.path.exists(BUILD_ARTEFACTS_DIR):
+        bldinstallercommon.remove_tree(BUILD_ARTEFACTS_DIR)
+    # create build artefacts directory
+    bldinstallercommon.create_dirs(BUILD_ARTEFACTS_DIR)
 
 
 ###############################
@@ -306,6 +317,7 @@ def archive_installer_framework():
 
     cmd_args = ['7z', 'a', INSTALLER_FRAMEWORK_ARCHIVE_NAME, os.path.basename(INSTALLER_FRAMEWORK_BUILD_DIR)]
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+    shutil.move(INSTALLER_FRAMEWORK_ARCHIVE_NAME, BUILD_ARTEFACTS_DIR)
 
 
 ###############################
@@ -340,10 +352,10 @@ def archive_installerbase():
 
     bldinstallercommon.do_execute_sub_process(cmd_args_archive, SCRIPT_ROOT_DIR, True)
     bldinstallercommon.do_execute_sub_process(cmd_args_clean, SCRIPT_ROOT_DIR, True)
-
     if not os.path.isfile(INSTALLERBASE_ARCHIVE_NAME):
         print '*** Failed to generate archive: ' + INSTALLERBASE_ARCHIVE_NAME
         sys.exit(-1)
+    shutil.move(INSTALLERBASE_ARCHIVE_NAME, BUILD_ARTEFACTS_DIR)
 
 
 ###############################
@@ -358,14 +370,13 @@ def archive_nib():
 
     content_parent_path = os.path.normpath(content_parent_path)
     content_root_path = os.path.normpath(content_root_path)
-    archive_name = 'qt_menu.nib.7z'
 
-    cmd_args = ['7z', 'a', archive_name, content_root_path]
+    cmd_args = ['7z', 'a', MAC_QT_MENU_NIB_ARCHIVE_NAME, content_root_path]
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
-
-    if not os.path.isfile(archive_name):
-        print '*** Failed to generate archive: ' + archive_name
+    if not os.path.isfile(MAC_QT_MENU_NIB_ARCHIVE_NAME):
+        print '*** Failed to generate archive: ' + MAC_QT_MENU_NIB_ARCHIVE_NAME
         sys.exit(-1)
+    shutil.move(MAC_QT_MENU_NIB_ARCHIVE_NAME, BUILD_ARTEFACTS_DIR)
 
 
 ###############################
@@ -376,54 +387,12 @@ def archive_macdeployqt():
     print 'Archive macdeployqt'
 
     content_path = QT_BUILD_DIR + os.sep + 'tools/macdeployqt/macchangeqt/macchangeqt'
-    archive_name = bldinstallercommon.config_section_map(CONFIG_IFW,'Output')['macdeployqt_archive_name']
-    if not archive_name:
-        print '*** Error! macdeployqt_archive_name not defined?!'
-        sys.exit(-1)
-    cmd_args_archive = ['7z', 'a', archive_name, content_path]
+    cmd_args_archive = ['7z', 'a', MAC_DEPLOY_QT_ARCHIVE_NAME, content_path]
     bldinstallercommon.do_execute_sub_process(cmd_args_archive, SCRIPT_ROOT_DIR, True)
-
-    if not os.path.isfile(archive_name):
-        print '*** Failed to generate archive: ' + archive_name
+    if not os.path.isfile(MAC_DEPLOY_QT_ARCHIVE_NAME):
+        print '*** Failed to generate archive: ' + MAC_DEPLOY_QT_ARCHIVE_NAME
         sys.exit(-1)
-
-
-###############################
-# function
-###############################
-def archive_qt():
-    archive_name = bldinstallercommon.config_section_map(CONFIG_IFW,'Output')['qt_archive_name']
-    if INCREMENTAL_MODE and os.path.exists(archive_name):
-        return
-
-    print '--------------------------------------------------------------------'
-    print 'Archive static Qt build'
-
-    content_path = QT_BUILD_DIR
-    if not archive_name:
-        print '*** Error! macdeployqt_archive_name not defined?!'
-        sys.exit(-1)
-    # these directories can be deleted from the Qt binary package (built for SDK purposes only)
-    directories_to_delete = ['config.tests', 'src', 'qmake', 'doc', 'imports', 'lib' + os.sep + 'pkgconfig', 'tools']
-    for item in directories_to_delete:
-        full_path = content_path + os.sep + item
-        if os.path.exists(full_path) and not os.path.islink(full_path):
-            print 'Deleting: ' + item
-            shutil.rmtree(full_path)
-    # then strip out all remaining unnecessary files
-    for root, dirs, files in os.walk(content_path + os.sep + 'bin'):
-        for filename in files:
-            if filename.endswith(('.moc', 'Makefile', '.cpp', '.h', '.o')) or filename == 'Makefile':
-                os.remove(os.path.join(root, filename))
-            if filename.startswith(('designer', 'assistant', 'qcollectiongenerator', 'linguist', 'qhelpconverter', 'qhelpgenerator', 'pixeltool', 'qdoc3', 'qt3to4')):
-                os.remove(os.path.join(root, filename))
-    # archive libraries
-    cmd_args_archive = ['7z', 'a', archive_name, content_path]
-    bldinstallercommon.do_execute_sub_process(cmd_args_archive, SCRIPT_ROOT_DIR, True)
-    # check archive was generated successfully
-    if not os.path.isfile(archive_name):
-        print '*** Failed to generate archive: ' + archive_name
-        sys.exit(-1)
+    shutil.move(MAC_DEPLOY_QT_ARCHIVE_NAME, BUILD_ARTEFACTS_DIR)
 
 
 ###############################
@@ -457,8 +426,6 @@ def build_ifw(development_mode, incremental_mode, configurations_dir, platform):
     if bldinstallercommon.is_mac_platform():
         archive_nib()
         archive_macdeployqt()
-    # archive static qt package
-    archive_qt()
     if DEVELOPMENT_MODE:
         #TODO, the returned values should be in config file, not return it here!
         return os.path.basename(INSTALLER_FRAMEWORK_BUILD_DIR)

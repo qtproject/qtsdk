@@ -55,9 +55,4 @@ installer_framework_build_dir:          ifw-bld
 installer_framework_version_tag:        remotes/origin/qt5
 installer_framework_qmake_args:         -config release -config static -r
 
-[Output]
-installer_framework_archive_name:       installer-framework-build-mac.7z
-installerbase_archive_name:             installerbase-mac.7z
-qt_archive_name:                        qt-ifw-4.8.0-mac.7z
-macdeployqt_archive_name:               macdeployqt.7z
-qtmenunib_archive_name:                 qtmenunib.7z
+

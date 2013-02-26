@@ -58,6 +58,7 @@ import zipfile
 import string
 import fileinput
 
+
 # need to include this for win platforms as long path names
 # cause problems
 if platform.system().lower().startswith('win'):
@@ -176,6 +177,18 @@ def set_platform_specific_data():
 ###############################
 def get_platform_suffix():
     return PLATFORM_SUFFIX
+
+
+###############################
+# function
+###############################
+def get_architecture():
+    temp = platform.architecture()
+    if temp[0] and '32' in temp[0]:
+        return 'x86'
+    if temp[0] and '64' in temp[0]:
+        return 'x64'
+    return ''
 
 
 ###############################

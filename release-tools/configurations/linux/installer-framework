@@ -55,7 +55,4 @@ installer_framework_build_dir:          ifw-bld
 installer_framework_version_tag:        remotes/origin/qt5
 installer_framework_qmake_args:         -config release -config static -r
 
-[Output]
-installer_framework_archive_name:       installer-framework-build-linux.7z
-installerbase_archive_name:             installerbase-linux.7z
-qt_archive_name:                        qt-ifw-4.8.0-linux.7z
+
