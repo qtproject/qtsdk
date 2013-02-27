@@ -6,6 +6,10 @@
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Name>qt.tools.qtcreator</Name>
     <Script>installscript.qs</Script>
+    <UserInterfaces>
+        <UserInterface>qtfileassociationcheckboxform.ui</UserInterface>
+        <UserInterface>cppfileassociationcheckboxform.ui</UserInterface>
+    </UserInterfaces>
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
     <SortingPriority>0</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
     <ForcedInstallation>true</ForcedInstallation> <!-- this means that this component will be installed at first and is not unselectable -->

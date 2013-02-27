@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CppFileAssociationCheckBoxForm</class>
+ <widget class="QWidget" name="CppFileAssociationCheckBoxForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>412</width>
+    <height>179</height>
+   </rect>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="margin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QCheckBox" name="readMeCheckBox">
+     <property name="text">
+      <string>Associate C/C++ file types with Qt Creator.</string>
+     </property>
+    <property name="toolTip">
+        <string>&lt;html&gt;&lt;body&gt;Associate C/C++ file types with Qt Creator.&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+     <property name="tristate">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

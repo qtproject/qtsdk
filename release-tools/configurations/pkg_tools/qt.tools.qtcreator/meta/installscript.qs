@@ -1,8 +1,43 @@
-/* This file is part of the Qt SDK
-
-Copyright (c) 2011 Digia Plc and/or its subsidiary(-ies).
-
-*/
+/****************************************************************************
+**
+** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Contact: http://www.qt-project.org/legal
+**
+** This file is part of the tools applications of the Qt Toolkit.
+**
+** $QT_BEGIN_LICENSE:LGPL$
+** Commercial License Usage
+** Licensees holding valid commercial Qt licenses may use this file in
+** accordance with the commercial license agreement provided with the
+** Software or, alternatively, in accordance with the terms contained in
+** a written agreement between you and Digia.  For licensing terms and
+** conditions see http://qt.digia.com/licensing.  For further information
+** use the contact form at http://qt.digia.com/contact-us.
+**
+** GNU Lesser General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU Lesser
+** General Public License version 2.1 as published by the Free Software
+** Foundation and appearing in the file LICENSE.LGPL included in the
+** packaging of this file.  Please review the following information to
+** ensure the GNU Lesser General Public License version 2.1 requirements
+** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+**
+** In addition, as a special exception, Digia gives you certain additional
+** rights.  These rights are described in the Digia Qt LGPL Exception
+** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
+**
+** GNU General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU
+** General Public License version 3.0 as published by the Free Software
+** Foundation and appearing in the file LICENSE.GPL included in the
+** packaging of this file.  Please review the following information to
+** ensure the GNU General Public License version 3.0 requirements will be
+** met: http://www.gnu.org/copyleft/gpl.html.
+**
+**
+** $QT_END_LICENSE$
+**
+****************************************************************************/
 
 var component_root_path = "/";
 var native_path_separator = "/";
@@ -12,6 +47,8 @@ function Component()
 {
     installer.valueChanged.connect( this, Component.prototype.reactOnTargetDirChange );
     installer.installationFinished.connect( this, Component.prototype.installationFinished );
+    installer.installationFinished.connect(this, Component.prototype.installationFinishedPageIsShown);
+
     if (installer.value("os") == "win")
     {
         // Creator needs vcredist 32bit on windows
@@ -89,37 +126,10 @@ checkWhetherStopProcessIsNeeded = function()
     }
 }
 
-registerWindowsFileTypeExtensions = function()
+
+registerWindowsFileTypeExtensionsQt = function()
 {
-    var headerExtensions = new Array("h", "hh", "hxx", "h++", "hpp", "hpp");
     var path = component_root_path + native_path_separator + "bin" + native_path_separator;
-
-    for (var i = 0; i < headerExtensions.length; ++i) {
-        component.addOperation( "RegisterFileType",
-                                headerExtensions[i],
-                                path + "qtcreator.exe -client '%1'",
-                                "C++ Header file",
-                                "",
-                                path + "qtcreator.exe,3");
-    }
-
-    var cppExtensions = new Array("cc", "cxx", "c++", "cp", "cpp");
-
-    for (var i = 0; i < cppExtensions.length; ++i) {
-        component.addOperation( "RegisterFileType",
-                                cppExtensions[i],
-                                path + "qtcreator.exe -client '%1'",
-                                "C++ Source file",
-                                "",
-                                path + "qtcreator.exe,2");
-    }
-
-    component.addOperation( "RegisterFileType",
-                            "c",
-                            path + "qtcreator.exe -client '%1'",
-                            "C Source file",
-                            "",
-                            path + "qtcreator.exe,1");
     component.addOperation( "RegisterFileType",
                             "ui",
                             path + "qtcreator.exe -client '%1'",
@@ -150,6 +160,41 @@ registerWindowsFileTypeExtensions = function()
                             "Qt Quick Markup language file",
                             "",
                             path + "qtcreator.exe,0");
+}
+
+
+registerWindowsFileTypeExtensionsCpp = function()
+{
+    var headerExtensions = new Array("h", "hh", "hxx", "h++", "hpp");
+    var path = component_root_path + native_path_separator + "bin" + native_path_separator;
+
+    for (var i = 0; i < headerExtensions.length; ++i) {
+        component.addOperation( "RegisterFileType",
+                                headerExtensions[i],
+                                path + "qtcreator.exe -client '%1'",
+                                "C/C++ Header file",
+                                "",
+                                path + "qtcreator.exe,3");
+    }
+
+    var cppExtensions = new Array("cc", "cxx", "c++", "cp", "cpp");
+
+    for (var i = 0; i < cppExtensions.length; ++i) {
+        component.addOperation( "RegisterFileType",
+                                cppExtensions[i],
+                                path + "qtcreator.exe -client '%1'",
+                                "C++ Source file",
+                                "",
+                                path + "qtcreator.exe,2");
+    }
+
+    component.addOperation( "RegisterFileType",
+                            "c",
+                            path + "qtcreator.exe -client '%1'",
+                            "C Source file",
+                            "",
+                            path + "qtcreator.exe,1");
+
 }
 
 Component.prototype.createOperations = function()
@@ -214,6 +259,30 @@ Component.prototype.installationFinished = function()
             installer.setValue("RunProgram", "\"" + installer.value("TargetDir") + "/Qt Creator.app/Contents/MacOS/Qt Creator\"");
         }
         installer.setValue("RunProgramDescription", "Launch Qt Creator");
+    }
+
+    // check if the user wants to register file types with QtCreator
+    if (installer.value("os") == "win" && installer.isInstaller() && installer.status == QInstaller.Success) {
+        var isQtFileAssociationCheckBoxForm = component.userInterface( "QtFileAssociationCheckBoxForm" ).readMeCheckBox.checked;
+        if (isQtFileAssociationCheckBoxForm) {
+            registerWindowsFileTypeExtensionsQt();
+        }
+        var isCppFileAssociationCheckBoxForm = component.userInterface( "CppFileAssociationCheckBoxForm" ).readMeCheckBox.checked;
+        if (isCppFileAssociationCheckBoxForm) {
+            registerWindowsFileTypeExtensionsCpp();
+        }
+    }
+}
+
+Component.prototype.installationFinishedPageIsShown = function()
+{
+    try {
+        if (installer.isInstaller() && installer.status == QInstaller.Success) {
+            installer.addWizardPageItem( component, "QtFileAssociationCheckBoxForm", QInstaller.InstallationFinished );
+            installer.addWizardPageItem( component, "CppFileAssociationCheckBoxForm", QInstaller.InstallationFinished );
+        }
+    } catch(e) {
+        print(e);
     }
 }
 
