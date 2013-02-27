@@ -457,14 +457,19 @@ def clean_up(install_dir):
                 os.remove(path)
     # on windows remove redundant .dll files from \lib
     if bldinstallercommon.is_win_platform():
-        # each submodule first
-        for sub_dir in QT5_MODULES_LIST:
-            base_path = MAKE_INSTALL_ROOT_DIR + os.sep + SUBMODULE_INSTALL_BASE_DIR_NAME + sub_dir
-            lib_path = bldinstallercommon.locate_directory(base_path, 'lib')
-            if lib_path:
-                bldinstallercommon.delete_files_by_type_recursive(lib_path, '\\.dll')
-            else:
-                print_wrap('*** Warning! Unable to locate \\lib directory under: ' + base_path)
+        base_path_essentials = MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX
+        lib_path_essentials = bldinstallercommon.locate_directory(base_path_essentials, 'lib')
+        if lib_path_essentials:
+            bldinstallercommon.delete_files_by_type_recursive(lib_path_essentials, '\\.dll')
+        else:
+            print_wrap('*** Warning! Unable to locate \\lib directory under: ' + base_path_essentials)
+
+        base_path_addon = MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX
+        lib_path_addon = bldinstallercommon.locate_directory(base_path_addon, 'lib')
+        if lib_path_addon:
+            bldinstallercommon.delete_files_by_type_recursive(lib_path_addon, '\\.dll')
+        else:
+            print_wrap('*** Warning! Unable to locate \\lib directory under: ' + base_path_addon)
 
     print_wrap('--------------------------------------------------------------------')
 
@@ -490,7 +495,7 @@ def build_docs():
     install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME
     if bldinstallercommon.is_win_platform():
         install_root_path = install_root_path[2:]
-    doc_install_args = make_cmd + ' install_docs INSTALL_ROOT=' + install_root_path
+    doc_install_args = make_cmd + ' -j1 install_docs INSTALL_ROOT=' + install_root_path
     #do not abort on fail, if the doc build fails, we still want to get the binary package
     bldinstallercommon.do_execute_sub_process(doc_install_args.split(' '), QT_SOURCE_DIR, False)
 
