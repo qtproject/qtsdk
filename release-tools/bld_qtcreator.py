@@ -101,7 +101,8 @@ parser.add_argument('--debug', help="use debug builds", action='store_true', def
 parser.add_argument('--clean', help="clean up everything from old builds", action='store_true', default=False)
 parser.add_argument('--qt5_essentials7z', help="a file or url where it get the built qt5 essential content as 7z")
 parser.add_argument('--qt5_addons7z', help="a file or url where it get the built qt5 essential content as 7z")
-parser.add_argument('--icu7z', help="a file or url where it get icu libs as 7z")
+if (sys.platform != "darwin"):
+    parser.add_argument('--icu7z', help="a file or url where it get icu libs as 7z", required=True)
 
 # if we are on windows, maybe we want some other arguments
 if os.name == 'nt':
