@@ -180,15 +180,15 @@ if not os.path.lexists(callerArguments.qt5path):
     myGetQtBinaryWork.run()
 
     print("##### {} #####".format("patch Qt"))
-    qtConfFile = open(os.path.join(callerArguments.qt5path, 'bin', 'qt.conf'), "w")
-    qtConfFile.write("[Paths]" + os.linesep)
-    qtConfFile.write("Prefix=.." + os.linesep)
-    qtConfFile.close()
     if sys.platform == "darwin":
         installerbasePath = os.path.join(tempPath, 'installerbase.app/Contents/MacOS/installerbase')
         os.chmod(installerbasePath, 0777)
         runCommand(installerbasePath + " -v --runoperation QtPatch mac " + callerArguments.qt5path  + " 5",
             qtCreatorBuildDirectory, callerArguments)
+    qtConfFile = open(os.path.join(callerArguments.qt5path, 'bin', 'qt.conf'), "w")
+    qtConfFile.write("[Paths]" + os.linesep)
+    qtConfFile.write("Prefix=.." + os.linesep)
+    qtConfFile.close()
     print("##### {} ##### ... done".format("patch Qt"))
     runCommand(qmakeBinary + " -query", qtCreatorBuildDirectory, callerArguments)
 ### lets start building
