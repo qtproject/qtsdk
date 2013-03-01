@@ -60,7 +60,7 @@ file_list:              qt502-src-conf, x86_64-qt502-clang-conf, x86_64-tools-co
 package_list:
 
 [qtmenunib]
-package_url:            http://it-dl241-hki.it.local/packages/sdk_packages_qt5_lgpl_release/ifw/1.2.0/qt_menu.nib.7z
+package_url:            http://origin.releases.qt-project.org/digia/ifw_prebuilt/qt_menu.nib.7z
 
 [SdkUpdateRepository]
 repository_url_release: http://../qt5repository/macx/x64/online_qt5sdk_repo
