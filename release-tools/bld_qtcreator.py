@@ -186,7 +186,7 @@ if not os.path.lexists(callerArguments.qt5path):
         os.chmod(installerbasePath, 0777)
         runCommand(installerbasePath + " -v --runoperation QtPatch mac " + callerArguments.qt5path  + " 5",
             qtCreatorBuildDirectory, callerArguments)
-    else # don't use qt.conf file, it has a bug on macos QTBUG-29979
+    else: # don't use qt.conf file, it has a bug on macos QTBUG-29979
         qtConfFile = open(os.path.join(callerArguments.qt5path, 'bin', 'qt.conf'), "w")
         qtConfFile.write("[Paths]" + os.linesep)
         qtConfFile.write("Prefix=.." + os.linesep)
