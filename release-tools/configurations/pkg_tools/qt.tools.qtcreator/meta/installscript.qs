@@ -217,7 +217,6 @@ Component.prototype.createOperations = function()
                                 "@StartMenuDir@\\Qt Creator.lnk",
                                 "workingDirectory=" + path + "bin");
 
-        registerWindowsFileTypeExtensions();
     }
     if ( installer.value("os") == "x11" )
     {
