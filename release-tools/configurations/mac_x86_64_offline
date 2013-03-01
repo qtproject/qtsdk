@@ -77,7 +77,7 @@ packages_dir:           pkg_502, pkg_tools
 
 [InstallerFrameworkTools]
 name:                   ifwt
-package_url:            http://origin.releases.qt-project.org/digia/ifw_prebuilt/installer-framework-build-mac.7z
+package_url:            http://origin.releases.qt-project.org/digia/ifw_prebuilt/installer-framework-build-mac-x64.7z
 
 
 

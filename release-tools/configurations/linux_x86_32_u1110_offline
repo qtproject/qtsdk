@@ -74,5 +74,5 @@ packages_dir:           pkg_502, pkg_tools
 
 [InstallerFrameworkTools]
 name:                   ifwt
-package_url:            http://origin.releases.qt-project.org/digia/ifw_prebuilt/linux_gcc_32_ubuntu1110/installer-framework-build-linux-32bit.7z
+package_url:            http://origin.releases.qt-project.org/digia/ifw_prebuilt/installer-framework-build-linux-x86.7z
 
