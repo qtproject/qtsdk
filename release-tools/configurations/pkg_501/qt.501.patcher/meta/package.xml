@@ -9,6 +9,7 @@
     <Virtual>true</Virtual>
     <AutoDependOn>qt.501</AutoDependOn>
     <SortingPriority>0</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
 
 

@@ -5,11 +5,6 @@
 // constructor
 function Component()
 {
-    if (component.fromOnlineRepository)
-    {
-        // Commented line below used by the packaging scripts
-        //%IFW_DOWNLOADABLE_ARCHIVE_NAMES%
-    }
     if (installer.value("os") == "mac") {
         var otoolCheck = installer.execute("/usr/bin/which", new Array("otool"))[0];
         if (!otoolCheck) {

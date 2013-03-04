@@ -7,4 +7,5 @@
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
     <Script>installscript.qs</Script>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>

@@ -42,11 +42,6 @@
 // constructor
 function Component()
 {
-    if (component.fromOnlineRepository)
-    {
-        // Commented line below used by the packaging scripts
-        //%IFW_DOWNLOADABLE_ARCHIVE_NAMES%
-    }
 }
 
 createShortcuts = function()

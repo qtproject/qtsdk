@@ -13,6 +13,7 @@
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
     <SortingPriority>0</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
     <ForcedInstallation>true</ForcedInstallation> <!-- this means that this component will be installed at first and is not unselectable -->
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
 
 

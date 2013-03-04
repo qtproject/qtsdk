@@ -10,4 +10,5 @@
     <!--<ForcedInstallation>true</ForcedInstallation>-->
     <RequiresAdminRights>true</RequiresAdminRights>
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>

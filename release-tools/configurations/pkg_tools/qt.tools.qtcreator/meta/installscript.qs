@@ -66,10 +66,6 @@ function Component()
         installer.setValue( "EmbeddedToolchainDir", "/usr/local/angstrom/arm" );
     }
 
-    if ( component.fromOnlineRepository )
-    {
-        //%IFW_DOWNLOADABLE_ARCHIVE_NAMES%
-    }
     // set the default values to SDKToolBinary and QtCreatorInstallerSettingsFile
     Component.prototype.reactOnTargetDirChange("TargetDir", installer.value("TargetDir"));
 }

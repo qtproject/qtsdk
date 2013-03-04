@@ -5,12 +5,6 @@
 // constructor
 function Component()
 {
-    if (component.fromOnlineRepository)
-    {
-        // Commented line below used by the packaging scripts
-        //%IFW_DOWNLOADABLE_ARCHIVE_NAMES%
-    }
-
     installer.installationFinished.connect(this, Component.prototype.installationFinishedPageIsShown);
     installer.finishButtonClicked.connect(this, Component.prototype.installationFinished);
 }
