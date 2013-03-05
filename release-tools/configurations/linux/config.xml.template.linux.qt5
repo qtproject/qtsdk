@@ -3,12 +3,10 @@
     <Name>Qt 5.0.2</Name>
     <Version>5.0.2</Version>
     <Title>Qt 5.0.2</Title>
-    <MaintenanceTitle>Maintain Qt 5.0.2</MaintenanceTitle>
     <Publisher>Qt</Publisher>
     <Logo>logo.png</Logo>
     <LogoSmall>logo-small.png</LogoSmall>
     <Icon>logo-small</Icon>
-    <License>license.txt</License>
     <Watermark>watermark.png</Watermark>
     <StartMenuDir>Qt 5.0.2</StartMenuDir>
     <ProductUrl>http://qt-project.org/</ProductUrl>

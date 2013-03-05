@@ -51,7 +51,8 @@ import urllib
 from optparse import OptionParser
 
 import bldinstallercommon
-import bld_ifw_tools_impl
+import bld_ifw_tools
+from bld_ifw_tools import IfwOptions
 from archiveresolver import ArchiveLocationResolver
 from sdkcomponent import SdkComponent
 
@@ -101,7 +102,7 @@ INSTALLER_NAMING_SCHEME_COMPILER    = ''
 INSTALLER_NAMING_SCHEME_TARGET_ARCH = ''
 INSTALLER_NAMING_SCHEME_VERSION_NUM = ''
 INSTALLER_NAMING_SCHEME_VERSION_TAG = ''
-LICENSE_TYPE                = ''
+LICENSE_TYPE                        = ''
 
 TARGET_INSTALL_DIR_NAME_TAG         = '%TARGET_INSTALL_DIR%'
 PACKAGE_DEFAULT_TAG                 = '%PACKAGE_DEFAULT_TAG%'
@@ -111,7 +112,14 @@ PACKAGE_CREATION_DATE_TAG           = '%PACKAGE_CREATION_DATE%'
 INSTALL_PRIORITY_TAG                = '%INSTALL_PRIORITY%'
 SORTING_PRIORITY_TAG                = '%SORTING_PRIORITY%'
 # ----------------------------------------------------------------------
-
+INSTALLER_FRAMEWORK_QT_ARCHIVE_URI              = ''
+INSTALLER_FRAMEWORK_QT_CONFIGURE_OPTIONS        = ''
+INSTALLER_FRAMEWORK_URL                         = ''
+INSTALLER_FRAMEWORK_BRANCH                      = ''
+INSTALLER_FRAMEWORK_QMAKE_ARGS                  = ''
+INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_URL     = ''
+INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_BRANCH  = ''
+# ----------------------------------------------------------------------
 
 ##############################################################
 # Start
@@ -238,6 +246,28 @@ def setup_option_parser():
     OPTION_PARSER.add_option("--version-tag",
                       action="store", type="string", dest="installer_version_tag", default="",
                       help="installer file name scheme: define installer version tag (in addition to version number)")
+    # dev mode i.e. building installer-framework
+    OPTION_PARSER.add_option("--installer-framework-qt-archive-uri",
+                      action="store", type="string", dest="installer_framework_qt_archive_uri", default=IfwOptions.default_qt_source_package_uri,
+                      help="If you wish to build ifw: qt source package uri for that")
+    OPTION_PARSER.add_option("--installer-framework-qt-configure_options",
+                      action="store", type="string", dest="installer_framework_qt_configure_options", default=bld_ifw_tools.get_default_qt_configure_options(),
+                      help="If you wish to build ifw: qt configure optionss for static build")
+    OPTION_PARSER.add_option("--installer-framework-url",
+                      action="store", type="string", dest="installer_framework_url", default=IfwOptions.default_qt_installer_framework_url,
+                      help="If you wish to build ifw: Qt Installer-Framework URL")
+    OPTION_PARSER.add_option("--installer-framework-branch",
+                      action="store", type="string", dest="installer_framework_branch", default=IfwOptions.default_qt_installer_framework_branch,
+                      help="If you wish to build ifw: Qt Installer-Framework branch")
+    OPTION_PARSER.add_option("--installer-framework-qmake-args",
+                      action="store", type="string", dest="installer_framework_qmake_args", default=IfwOptions.default_qt_installer_framework_qmake_args,
+                      help="If you wish to build ifw: qmake arguments for Qt Installer-Framework build")
+    OPTION_PARSER.add_option("--installer-framework-product-key-checker-url",
+                      action="store", type="string", dest="installer_framework_product_key_checker_url", default="",
+                      help="If you wish to build ifw with commercial product key checker: URL for product key checker")
+    OPTION_PARSER.add_option("--installer-framework-product-key-checker-branch",
+                      action="store", type="string", dest="installer_framework_product_key_checker_branch", default="",
+                      help="If you wish to build ifw with commercial product key checker: branch for product key checker")
 
 
 ##############################################################
@@ -299,6 +329,14 @@ def parse_cmd_line():
     global INSTALLER_NAMING_SCHEME_VERSION_NUM
     global INSTALLER_NAMING_SCHEME_VERSION_TAG
 
+    global INSTALLER_FRAMEWORK_QT_ARCHIVE_URI
+    global INSTALLER_FRAMEWORK_QT_CONFIGURE_OPTIONS
+    global INSTALLER_FRAMEWORK_URL
+    global INSTALLER_FRAMEWORK_BRANCH
+    global INSTALLER_FRAMEWORK_QMAKE_ARGS
+    global INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_URL
+    global INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_BRANCH
+
     CONFIGURATIONS_DIR                  = options.configurations_dir
     MAIN_CONFIG_NAME                    = options.configuration_file
     LICENSE_TYPE                        = options.license_type
@@ -315,6 +353,14 @@ def parse_cmd_line():
     INSTALLER_NAMING_SCHEME_VERSION_NUM = options.installer_version_number
     INSTALLER_NAMING_SCHEME_VERSION_TAG = options.installer_version_tag
     ARCHIVE_SERVER_BASE_URL             = options.archive_base_url
+
+    INSTALLER_FRAMEWORK_QT_ARCHIVE_URI              = options.installer_framework_qt_archive_uri
+    INSTALLER_FRAMEWORK_QT_CONFIGURE_OPTIONS        = options.installer_framework_qt_configure_options
+    INSTALLER_FRAMEWORK_URL                         = options.installer_framework_url
+    INSTALLER_FRAMEWORK_BRANCH                      = options.installer_framework_branch
+    INSTALLER_FRAMEWORK_QMAKE_ARGS                  = options.installer_framework_qmake_args
+    INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_URL     = options.installer_framework_product_key_checker_url
+    INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_BRANCH  = options.installer_framework_product_key_checker_branch
 
     if INCREMENTAL_MODE:
         DEVELOPMENT_MODE = True
@@ -891,7 +937,20 @@ def install_ifw_tools():
 
     # if "devmode" mode used, then build IFW from sources
     if DEVELOPMENT_MODE:
-        tools_dir_temp = bld_ifw_tools_impl.build_ifw(True, INCREMENTAL_MODE, CONFIGURATIONS_DIR, PLATFORM_IDENTIFIER)
+        # create options object
+        options=IfwOptions(LICENSE_TYPE,
+                           INSTALLER_FRAMEWORK_QT_ARCHIVE_URI,
+                           INSTALLER_FRAMEWORK_QT_CONFIGURE_OPTIONS,
+                           INSTALLER_FRAMEWORK_URL,
+                           INSTALLER_FRAMEWORK_BRANCH,
+                           INSTALLER_FRAMEWORK_QMAKE_ARGS,
+                           INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_URL,
+                           INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_BRANCH
+                           )
+
+        options.development_mode = True
+        options.incremental_mode = INCREMENTAL_MODE
+        tools_dir_temp = bld_ifw_tools.build_ifw(options)
         tools_bin_path = SCRIPT_ROOT_DIR + os.sep + tools_dir_temp
     else:
         tools_dir_name = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'InstallerFrameworkTools')['name']
