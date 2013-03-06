@@ -67,8 +67,8 @@ def createDownloadExtract7zTask(url, targetPath, tempPath, callerArguments):
 parser = argparse.ArgumentParser(prog = os.path.basename(sys.argv[0]),
     add_help=True, description="build Qt 5 based Qt Creator", formatter_class=argparse.RawTextHelpFormatter)
 if os.name == 'nt':
-    parser.epilog = "example on windows: " + os.linesep + "\tpython {} " \
-        "--buildcommand C:\\bin\\ibjom.cmd --installcommand nmake --qt5path ..\\..\\creator_qt5 --clean " \
+    parser.epilog = "example on windows: " + os.linesep + "\tpython {} --clean " \
+        "--buildcommand C:\\bin\\ibjom.cmd --installcommand nmake --qt5path ..\\..\\creator_qt5 " \
         "--qt5_essentials7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/windows_vs2010_32/qt5_essentials.7z " \
         "--qt5_addons7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/windows_vs2010_32/qt5_addons.7z " \
         "--sevenzippath \"C:\\Program Files\\7-Zip\" " \
@@ -79,26 +79,26 @@ if os.name == 'nt':
         "--environment_batch_argument x86 " \
         "".format(os.path.basename(sys.argv[0]))
 elif sys.platform == "darwin":
-    parser.epilog = "example: " + os.linesep + "\tpython {} " \
-        "--qt5path ../../qtcreator_qt5 --clean " \
+    parser.epilog = "example: " + os.linesep + "\tpython {} --clean " \
+        "--qt5path ../../qtcreator_qt5 " \
         "--qt5_essentials7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/mac_cocoa_10.7/qt5_essentials.7z " \
         "--qt5_addons7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/mac_cocoa_10.7/qt5_addons.7z " \
         "--installerbase7z http://hegel.it.local/projects/installerbase.7z " \
         "".format(os.path.basename(sys.argv[0]))
 else:
-    parser.epilog = "example: " + os.linesep + "\tpython {} " \
-        "--qt5path ../../qtcreator_qt5 --clean " \
+    parser.epilog = "example: " + os.linesep + "\tpython {} --clean " \
+        "--qt5path ../../qtcreator_qt5 " \
         "--qt5_essentials7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/linux_gcc_64_ubuntu1110/qt5_essentials.7z " \
         "--qt5_addons7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/linux_gcc_64_ubuntu1110/qt5_addons.7z " \
         "--icu7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/linux_gcc_64_ubuntu1110/libicu_x86_64_ubuntu1110.7z " \
         "".format(os.path.basename(sys.argv[0]))
 
 # general arguments
+parser.add_argument('--clean', help="clean up everything from old builds", action='store_true', default=False)
 parser.add_argument('--qt5path', help="here it expects a compiled Qt5", required=True)
 parser.add_argument('--buildcommand', help="this means usually make", default="make")
 parser.add_argument('--installcommand', help="this means usually make", default="make")
 parser.add_argument('--debug', help="use debug builds", action='store_true', default=False)
-parser.add_argument('--clean', help="clean up everything from old builds", action='store_true', default=False)
 parser.add_argument('--qt5_essentials7z', help="a file or url where it get the built qt5 essential content as 7z")
 parser.add_argument('--qt5_addons7z', help="a file or url where it get the built qt5 essential content as 7z")
 if (sys.platform != "darwin"):
