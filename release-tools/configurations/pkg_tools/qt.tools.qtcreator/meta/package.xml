@@ -7,8 +7,8 @@
     <Name>qt.tools.qtcreator</Name>
     <Script>installscript.qs</Script>
     <UserInterfaces>
-        <UserInterface>qtfileassociationcheckboxform.ui</UserInterface>
-        <UserInterface>cppfileassociationcheckboxform.ui</UserInterface>
+        <UserInterface>associatecommonfiletypesform.ui</UserInterface>
+        <UserInterface>launchqtcreatorcheckboxform.ui</UserInterface>
     </UserInterfaces>
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
     <SortingPriority>0</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
