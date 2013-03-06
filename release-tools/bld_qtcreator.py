@@ -211,6 +211,9 @@ if hasattr(callerArguments, 'gitpath') and callerArguments.gitpath:
     pathKeyList.append(callerArguments.gitpath)
 
 environment = {pathKey: os.pathsep.join(pathKeyList)}
+
+environment["INSTALLER_ARCHIVE"] = "qtcreator.7z"
+
 if sys.platform.startswith('linux'):
     environment["LD_LIBRARY_PATH"] = os.path.join(callerArguments.qt5path, 'lib')
     environment["QMAKESPEC"] = "linux-g++"
@@ -241,15 +244,13 @@ runBuildCommand(currentWorkingDirectory = qtCreatorBuildDirectory, callerArgumen
 runInstallCommand("docs", currentWorkingDirectory = qtCreatorBuildDirectory, callerArguments = callerArguments,
     init_environment = environment)
 
-runInstallCommand('install install_docs deployqt', currentWorkingDirectory = qtCreatorBuildDirectory,
-    callerArguments = callerArguments, init_environment = environment)
+if sys.platform != "darwin":
+    runInstallCommand('install install_docs', currentWorkingDirectory = qtCreatorBuildDirectory,
+        callerArguments = callerArguments, init_environment = environment)
 
 if os.name == 'nt':
     runInstallCommand('deployartifacts', qtCreatorBuildDirectory,
         callerArguments = callerArguments, init_environment = environment)
 
-# instead of using bindist which compress it in a creator_install directory we are using something different
-#runInstallCommand('bindist', qtCreatorBuildDirectory, callerArguments = callerArguments,
-#    init_environment = environment)
-
-compress(qtCreatorInstallDirectory, "QtCreator", "qtcreator.7z", callerArguments)
+runInstallCommand('bindist_installer', qtCreatorBuildDirectory, callerArguments = callerArguments,
+    init_environment = environment)
