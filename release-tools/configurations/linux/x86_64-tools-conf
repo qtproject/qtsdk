@@ -44,12 +44,12 @@
 [qt.tools.qtcreator]
 archives:               tools.qtcreator
 target_install_base:    /Tools/QtCreator
-version:                2.6.0
+version:                2.7.0
 version_tag:            %QTCREATOR_VERSION%
 package_default:        true
 [tools.qtcreator]
 archive_uri:            /qtcreator/latest/qtcreator_linux_gcc_64_ubuntu1110.7z
-package_strip_dirs:     1
+package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:
-archive_name:           qt-creator-opensource-2.6.0-ubuntu1110-64.7z
+archive_name:           qt-creator-opensource-ubuntu1110-64.7z
