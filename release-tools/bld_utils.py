@@ -155,12 +155,19 @@ def download(url, savefile):
             pass
 
 def setValueOnEnvironmentDict(environment, key, value):
+    # if the data already contains the value stop here
+    if value in environment[key].split(os.pathsep):
+        return
+
     if key in environment:
         environment[key] = os.pathsep.join((value, environment[key]))
     else:
         environment[key] = value
 
 def getEnvironment(init_environment = {}, callerArguments = None):
+    pathKey='PATH'
+    if os.name == 'nt':
+        pathKey='Path'
 
     # first take the one from the system and use the plain dictionary data for that
     environment = os.environ.__dict__["data"]
@@ -171,29 +178,30 @@ def getEnvironment(init_environment = {}, callerArguments = None):
 
     if (hasattr(callerArguments, 'gnuwin32binpath') and callerArguments.gnuwin32binpath and
         os.path.lexists(callerArguments.gnuwin32binpath)):
-        setValueOnEnvironmentDict(environment, 'Path', callerArguments.gnuwin32binpath)
+        setValueOnEnvironmentDict(environment, pathKey, callerArguments.gnuwin32binpath)
 
     if hasattr(callerArguments, 'pythonpath') and callerArguments.pythonpath:
-        setValueOnEnvironmentDict(environment, 'Path', callerArguments.pythonpath)
+        setValueOnEnvironmentDict(environment, pathKey, callerArguments.pythonpath)
     if hasattr(callerArguments, 'perlpath') and callerArguments.perlpath:
-        setValueOnEnvironmentDict(environment, 'Path', callerArguments.perlpath)
+        setValueOnEnvironmentDict(environment, pathKey, callerArguments.perlpath)
     if hasattr(callerArguments, 'icupath') and callerArguments.icupath:
-        setValueOnEnvironmentDict(environment, 'Path', os.path.join(callerArguments.icupath, 'bin'))
+        setValueOnEnvironmentDict(environment, pathKey, os.path.join(callerArguments.icupath, 'bin'))
         setValueOnEnvironmentDict(environment, 'INCLUDE', os.path.join(callerArguments.icupath, 'include'))
         setValueOnEnvironmentDict(environment, 'LIB', os.path.join(callerArguments.icupath, 'lib'))
     if hasattr(callerArguments, 'opensslpath') and callerArguments.opensslpath:
-        setValueOnEnvironmentDict(environment, 'Path', os.path.join(callerArguments.opensslpath, 'bin'))
+        setValueOnEnvironmentDict(environment, pathKey, os.path.join(callerArguments.opensslpath, 'bin'))
         setValueOnEnvironmentDict(environment, 'INCLUDE', os.path.join(callerArguments.opensslpath, 'include'))
         setValueOnEnvironmentDict(environment, 'LIB', os.path.join(callerArguments.opensslpath, 'lib'))
 
-    # just merge the added environment with the generated one
-    if not environment:
-        return init_environment
-    elif environment and init_environment:
+    # just merge the environment dicts
+    if environment and init_environment:
         for key in environment.viewkeys() & init_environment.viewkeys():
             # merge most of they values, but exclude some of it
-            if not any((key == "QMAKESPEC", key == "MAKEFLAGS")):
-                environment[key] = os.pathsep.join((init_environment[key], environment[key]))
+            keyUpper = key.upper()
+            if any((keyUpper == 'PATH', keyUpper == 'INCLUDE', keyUpper == 'LIB')):
+                setValueOnEnvironmentDict(environment, key, init_environment[key])
+            else:
+                environment[key] = init_environment[key]
         for key in init_environment.viewkeys() - environment.viewkeys():
              environment[key] = init_environment[key]
     return environment
@@ -262,7 +270,7 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None,
             traceback.print_exc()
             # lets keep that for debugging
             #if environment:
-            #    for key in environment:
+            #    for key in sorted(environment):
             #        sys.stderr.write("set " + key + "=" + environment[key] + os.linesep)
             sys.stderr.write(os.linesep + '======================= error =======================' + os.linesep)
             sys.exit(1)
