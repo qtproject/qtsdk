@@ -354,6 +354,32 @@ def build_qt():
 
     print_wrap('--------------------------------------------------------------------')
 
+###############################
+# function
+###############################
+def build_qmlpuppets():
+    if not QT_CREATOR_SRC_DIR:
+        return
+    print_wrap('---------------- Building QML Puppets -------------------------------')
+
+    qmake_executable_path = bldinstallercommon.locate_executable(QT_SOURCE_DIR, 'qmake' + bldinstallercommon.get_executable_suffix())
+    if not qmake_executable_path:
+        print_wrap('*** Error! qmake executable not found? Looks like the build has failed in previous step?')
+        exit_script()
+
+    cmd_args = MAKE_CMD
+    if bldinstallercommon.is_unix_platform():
+        cmd_args += ' -j' + str(MAKE_THREAD_COUNT)
+
+    shutil.copy(os.path.join(QT_SOURCE_DIR, ".qmake.super"),
+                QT_CREATOR_SRC_DIR)
+
+    qmlpuppet_dir = os.path.join(QT_CREATOR_SRC_DIR, 'share', 'qtcreator', 'qml', 'qmlpuppet', 'qml2puppet')
+    bldinstallercommon.do_execute_sub_process(qmake_executable_path, qmlpuppet_dir, STRICT_MODE)
+    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), qmlpuppet_dir, STRICT_MODE)
+
+    print_wrap('--------------------------------------------------------------------')
+
 
 ###############################
 # function
@@ -383,6 +409,34 @@ def install_qt():
             file_handle = open(MISSING_MODULES_FILE, 'a')
             file_handle.write('\nFailed to build ' + module_name)
             file_handle.close()
+
+    print_wrap('--------------------------------------------------------------------')
+
+###############################
+# function
+###############################
+def install_qmlpuppets():
+    if not QT_CREATOR_SRC_DIR:
+        return
+    print_wrap('---------------- Installing qmlpuppets------------------------------')
+
+    #make install for each module with INSTALL_ROOT
+    install_dir = ESSENTIALS_INSTALL_DIR_NAME
+    install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + install_dir + ORIGINAL_QMAKE_QT_PRFXPATH
+    if bldinstallercommon.is_win_platform():
+        install_root_path = install_root_path[2:]
+    print_wrap('    Using install root path: ' + install_root_path)
+    qmlpuppet_dir = os.path.join(QT_CREATOR_SRC_DIR, 'share', 'qtcreator', 'qml', 'qmlpuppet', 'qml2puppet')
+
+    cmd_args = MAKE_INSTALL_CMD + ' ' + 'INSTALL_ROOT=' + install_root_path
+    print_wrap('    Installing qmlpuppet')
+    print_wrap('          -> cmd args: ' + cmd_args)
+    print_wrap('                -> in: ' + qmlpuppet_dir)
+    return_code, output = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), qmlpuppet_dir, STRICT_MODE)
+    if return_code >= 0:
+        file_handle = open(MISSING_MODULES_FILE, 'a')
+        file_handle.write('\nFailed to build qmlpuppet')
+        file_handle.close()
 
     print_wrap('--------------------------------------------------------------------')
 
@@ -544,6 +598,7 @@ def parse_cmd_line():
     global STRICT_MODE
     global CONFIGURE_OPTIONS
     global CONFIGURE_OVERRIDE
+    global QT_CREATOR_SRC_DIR
 
     setup_option_parser()
 
@@ -563,6 +618,7 @@ def parse_cmd_line():
     if options.module_ignore_list:
         QT5_MODULES_IGNORE_LIST = options.module_ignore_list
     STRICT_MODE             = options.strict_mode
+    QT_CREATOR_SRC_DIR      = options.qt_creator_src_dir
 
     if options.configure_options:
         if os.path.isfile(options.configure_options):
@@ -578,6 +634,11 @@ def parse_cmd_line():
 
     if options.add_configure_option:
         CONFIGURE_OPTIONS += ' ' + options.add_configure_option
+
+    if QT_CREATOR_SRC_DIR and not os.path.isdir(QT_CREATOR_SRC_DIR):
+        print_wrap(' *** Error! Could not find directory ' + QTCREATOR_SRC_DIR)
+        exit_script()
+
 
     print_wrap('---------------------------------------------------------------------')
     return True
@@ -615,6 +676,9 @@ def setup_option_parser():
     OPTION_PARSER.add_option("-a", "--add-configure-option",
                       action="store", type="string", dest="add_configure_option", default="",
                       help="options to be added to default configure options. For example, if -prefix or -R are needed but not defined in configure options file given with -c, those can be passed with this option, e.g. -a \"-prefix /home/user/my/path/here -R /home/user/my/path/here\"")
+    OPTION_PARSER.add_option("--creator-dir",
+                      action="store", type="string", dest="qt_creator_src_dir", default="",
+                      help="path to Qt Creator sources. If given, the Qt Quick Designer processes (qmlpuppet, qml2puppet) will be built and packaged.")
     print_wrap('---------------------------------------------------------------------')
 
 
@@ -642,10 +706,14 @@ def main():
     create_submodule_list()
     # build
     build_qt()
+    # build qmlpuppets
+    build_qmlpuppets()
     # save original qt_prfxpath in qmake executable
     save_original_qt_prfxpath()
     # install
     install_qt()
+    # install qmlpuppets
+    install_qmlpuppets()
     #cleanup files that are not needed in binary packages
     clean_up(MAKE_INSTALL_ROOT_DIR)
     # build docs and copy to essentials install dir
