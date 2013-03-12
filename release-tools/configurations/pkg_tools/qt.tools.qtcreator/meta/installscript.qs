@@ -47,7 +47,7 @@ function Component()
 {
     component.loaded.connect(this, Component.prototype.loaded);
     installer.installationFinished.connect(this, Component.prototype.installationFinishedPageIsShown);
-    installer.installationFinished.connect(this, Component.prototype.installationFinished);
+    installer.finishButtonClicked.connect(this, Component.prototype.installationFinished);
     installer.valueChanged.connect(this, Component.prototype.reactOnTargetDirChange);
 
     if (installer.value("os") == "win")
