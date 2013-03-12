@@ -112,13 +112,13 @@ Component.prototype.createOperations = function()
             var qmakeBinary = "@TargetDir@/%TARGET_INSTALL_DIR%/bin/qmake.exe";
 
             component.addOperation("Execute",
-                new Array("{1}", "@SDKToolBinary@", "addTC", "--id", "ProjectExplorer.ToolChain.Mingw:" + component.name, "--name", "MinGW 4.7 32bit", "--path", "@MINGW47_DIR@\\bin\\gcc.exe", "--abi", "x86-windows-msys-pe-32bit", "--supportedAbis", "x86-windows-msys-pe-32bit"));
+                new Array("{0}", "@SDKToolBinary@", "addTC", "--id", "ProjectExplorer.ToolChain.Mingw:" + component.name, "--name", "MinGW 4.7 32bit", "--path", "@MINGW47_DIR@\\bin\\gcc.exe", "--abi", "x86-windows-msys-pe-32bit", "--supportedAbis", "x86-windows-msys-pe-32bit"));
 
             component.addOperation("Execute",
-                new Array("{1}", "@SDKToolBinary@", "addQt", "--id", component.name, "--name", "Qt %QT_VERSION% MinGW 32bit", "--type", "Qt4ProjectManager.QtVersion.Desktop", "--qmake", qmakeBinary));
+                new Array("{0}", "@SDKToolBinary@", "addQt", "--id", component.name, "--name", "Qt %QT_VERSION% MinGW 32bit", "--type", "Qt4ProjectManager.QtVersion.Desktop", "--qmake", qmakeBinary));
 
             component.addOperation("Execute",
-                new Array("{1}", "@SDKToolBinary@", "addKit", "--id", component.name + "_kit", "--name", "Desktop Qt %QT_VERSION% MinGW 32bit", "--toolchain", "x86-windows-msys-pe-32bit", "--qt", component.name, "--debuggerengine", "1", "--debugger", "@MINGW47_DIR@\\bin\\gdb.exe", "--devicetype", "Desktop"));
+                new Array("{0}", "@SDKToolBinary@", "addKit", "--id", component.name + "_kit", "--name", "Desktop Qt %QT_VERSION% MinGW 32bit", "--toolchain", "x86-windows-msys-pe-32bit", "--qt", component.name, "--debuggerengine", "1", "--debugger", "@MINGW47_DIR@\\bin\\gdb.exe", "--devicetype", "Desktop"));
 
         } catch( e ) {
             print( e );
