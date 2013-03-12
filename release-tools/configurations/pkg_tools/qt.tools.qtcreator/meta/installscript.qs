@@ -228,8 +228,7 @@ Component.prototype.createOperations = function()
         component.addOperation( "InstallIcons", path + "share" + native_path_separator + "icons" );
         component.addOperation( "CreateDesktopEntry",
                                 "qtcreator.desktop",
-                                "Type=Application\nExec=" component.qtCreatorBinaryPath + "\nPath=@homeDir@\nName=Qt Creator\nGenericName=The IDE of choice for Qt development.\nIcon=QtProject-qtcreator\nTerminal=false\nCategories=Development;IDE;Qt;\nMimeType=text/x-c++src;text/x-c++hdr;text/x-xsrc;application/x-designer;application/vnd.nokia.qt.qmakeprofile;application/vnd.nokia.xml.qt.resource;"
-                                );
+                                "Type=Application\nExec=" + component.qtCreatorBinaryPath + "\nPath=@homeDir@\nName=Qt Creator\nGenericName=The IDE of choice for Qt development.\nIcon=QtProject-qtcreator\nTerminal=false\nCategories=Development;IDE;Qt;\nMimeType=text/x-c++src;text/x-c++hdr;text/x-xsrc;application/x-designer;application/vnd.nokia.qt.qmakeprofile;application/vnd.nokia.xml.qt.resource;");
     }
     if (installer.value("os") == "mac")
     {
