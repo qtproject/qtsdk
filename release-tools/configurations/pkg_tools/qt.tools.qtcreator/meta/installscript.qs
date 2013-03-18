@@ -100,10 +100,14 @@ Component.prototype.reactOnTargetDirChange = function(key, value)
             installer.setValue("QtCreatorInstallerSettingsFile", value + "/%TARGET_INSTALL_DIR%/Qt Creator.app/Contents/Resources/QtProject/QtCreator.ini");
             installer.setValue("SDKToolBinary", value + "/%TARGET_INSTALL_DIR%/Qt Creator.app/Contents/Resources/sdktool");
             component.qtCreatorBinaryPath = "\"" + value + "/%TARGET_INSTALL_DIR%/Qt Creator.app/Contents/MacOS/Qt Creator\"";
+            // fix duplicate forward slashes in path
+            component.qtCreatorBinaryPath = component.qtCreatorBinaryPath.replace(/\/+/g, "/");
         } else {
             installer.setValue("QtCreatorInstallerSettingsFile", value + "/%TARGET_INSTALL_DIR%/share/qtcreator/QtProject/QtCreator.ini");
             installer.setValue("SDKToolBinary", value + "/%TARGET_INSTALL_DIR%/bin/sdktool");
             component.qtCreatorBinaryPath = value + "/%TARGET_INSTALL_DIR%/bin/qtcreator";
+            // fix duplicate forward slashes in path
+            component.qtCreatorBinaryPath = component.qtCreatorBinaryPath.replace(/\/+/g, "/");
         }
     }
 }
