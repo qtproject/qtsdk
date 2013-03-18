@@ -424,10 +424,10 @@ def install_qmlpuppets():
     install_dir = ESSENTIALS_INSTALL_DIR_NAME
     prfx_path = ORIGINAL_QMAKE_QT_PRFXPATH
     if bldinstallercommon.is_win_platform():
-        prfx_path = prfx_path[3:].replace('\\', '/')
+        prfx_path = prfx_path[2:].replace('/', '\\')
     install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + install_dir + prfx_path
     if bldinstallercommon.is_win_platform():
-        install_root_path = install_root_path[2:]
+        install_root_path = install_root_path[3:]
     print_wrap('    Using install root path: ' + install_root_path)
     qmlpuppet_dir = os.path.join(QT_CREATOR_SRC_DIR, 'share', 'qtcreator', 'qml', 'qmlpuppet', 'qml2puppet')
 
