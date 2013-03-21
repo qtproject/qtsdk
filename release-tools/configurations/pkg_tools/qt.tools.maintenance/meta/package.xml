@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Maintenance Tool</DisplayName>
+    <Description>Maintenance Tool</Description>
+    <Version>%MAINTENANCE_TOOL_VERSION%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Name>qt.tools.maintenance</Name>
+    <Script>installscript.qs</Script>
+    <Essential>true</Essential>
+    <ForcedInstallation>true</ForcedInstallation>
+    <Virtual>true</Virtual> <!-- Set to true if this is a virtual component not showing up in the installer -->
+    <!--<Default>%PACKAGE_DEFAULT_TAG%</Default>-->
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+

@@ -39,44 +39,39 @@
 ##
 #############################################################################
 
-[qt.502.patcher]
+[PackageNamespace]
+name:                   qt
 
-[qt.502.win32_msvc2010_opengl]
+[PlatformIdentifier]
+identifier:             windows
 
-[qt.502.win32_msvc2010_opengl.essentials]
-archives:               502.msvc2010_opengl.essentials, icu_49_release.win_32, icu_49_debug.win_32
-target_install_base:    /5.0.2/msvc2010_opengl
-version:                5.0.2
-version_tag:            %QT_VERSION%
-package_default:        true
-[502.msvc2010_opengl.essentials]
-archive_uri:            /qt/5.0.2/latest/windows_vs2010_32_opengl/qt5_essentials.7z
-package_strip_dirs:
-target_install_dir:     /
-rpath_target:
-archive_name:           msvc2010_opengl_essentials.7z
-[icu_49_release.win_32]
-archive_uri:            http://origin.releases.qt-project.org/prebuilt/icu_49_win_32_release.7z
-package_strip_dirs:     0
-target_install_dir:     /bin
-rpath_target:
-archive_name:           icu_49_win_32_release.7z
-[icu_49_debug.win_32]
-archive_uri:            http://origin.releases.qt-project.org/prebuilt/icu_49_win_32_debug.7z
-package_strip_dirs:     0
-target_install_dir:     /bin
-rpath_target:
-archive_name:           icu_49_win_32_debug.7z
+[ArchiveRemoteLocation.default]
+base_url:               http://add.your.archive.url
+base_path:
 
-[qt.502.win32_msvc2010_opengl.addons]
-archives:               502.msvc2010_opengl.addons
-target_install_base:    /5.0.2/msvc2010_opengl
-version:                5.0.2
-version_tag:            %QT_VERSION%
-package_default:        true
-[502.msvc2010_opengl.addons]
-archive_uri:            /qt/5.0.2/latest/windows_vs2010_32_opengl/qt5_addons.7z
-package_strip_dirs:
-target_install_dir:     /
-rpath_target:
-archive_name:           msvc2010_opengl_addons.7z
+# for testing purposes
+[PackageIgnoreList]
+packages:               foo.bar, foo.bar2, foo.bar3
+
+[ExtraPackageConfigurationFiles]
+file_list:              qt502-src-conf, x86-qt502-msvc2010_32-conf, x86-qt502-mingw47_32-conf, x86-qt502-msvc2010_32-opengl-conf, x86_64-qt502-msvc2012_64-conf, x86-tools-qtcreator-conf, x86-tools-mingw-conf, x86-tools-vcredist_32-conf, x86_64-tools-vcredist_64-conf, x86-tools-maintenancetool-conf, installer-readme-conf
+
+[OfflinePackageExcludeList]
+package_list:
+
+[SdkUpdateRepository]
+repository_url_release: http://../qt5repository/windows/x32/online_qt5sdk_repo
+
+[ConfigDir]
+template_name:          config_qt5
+
+[ConfigXml]
+template_name:          config.xml.template.windows.qt5
+
+[WorkingDirectories]
+packages_dir:           pkg_502, pkg_tools
+
+[InstallerFrameworkTools]
+name:                   ifwt
+package_url:            http://origin.releases.qt-project.org/digia/ifw_prebuilt/installer-framework-build-win-x86.7z
+
