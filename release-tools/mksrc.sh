@@ -32,6 +32,7 @@ IGNORE_LIST=
 LICENSE=opensource
 MULTIPACK=no
 PACK_TIME=`date '+%Y-%m-%d'`
+PACK_FILE=.release-timestamp
 PATCH_FILE=''
 QTGITTAG=.sha1s
 QTSHORTVER=0.0
@@ -276,6 +277,11 @@ while read submodule _SHA; do
       tar -x -C $_TMP_DIR
   #store the sha1
   echo "$(echo $(echo $submodule|sed 's/-/_/g') | cut -d/ -f1)=$_SHA" >>$_TMP_DIR/$QTGITTAG
+  #add QT_PACKAGEDATE_STR for commercial license key check
+  if [ $LICENSE = commercial -a $submodule = qtbase ]; then
+      rm -f $_TMP_DIR/$submodule/$PACK_FILE
+      echo "QT_PACKAGEDATE_STR=$PACK_TIME">$_TMP_DIR/$submodule/$PACK_FILE
+  fi
   cd $REPO_DIR
 done < $MODULES
 #mv $MODULES $CUR_DIR
