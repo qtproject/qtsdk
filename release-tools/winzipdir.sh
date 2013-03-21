@@ -20,21 +20,25 @@ fi
 zipfile=$1
 dir=$2
 
+tmp_txtpattern=$(mktemp)
+tmp_filelist=$(mktemp)
+tmp_filetypes=$(mktemp)
+
 # Make sure intermediate files are removed on exit
-trap "rm -f __txtpattern __packagedfiles __filetypes >/dev/null 2>&1" 0
-trap "exit 2" 1 2  3 13 15
+trap "rm -f $tmp_txtpattern $tmp_filelist $tmp_filetypes >/dev/null 2>&1" 0
+trap "exit 2" 1 2 3 13 15
 
 echo ".*:.*ASCII
 .*:.*directory
 .*:.*empty
 .*:.*POSIX
 .*:.*html
-.*:.*text" > __txtpattern || exit 1
+.*:.*text" > $tmp_txtpattern || exit 1
 
 # list all files
-find $dir > __packagedfiles || exit 1
+find $dir > $tmp_filelist || exit 1
 # record file types
-file -f __packagedfiles > __filetypes || exit 1
+file -f $tmp_filelist > $tmp_filetypes || exit 1
 # zip text files and binary files separately
-cat __filetypes | grep -f __txtpattern -v | cut -d: -f1 | zip -9 -q $zipfile -@ || exit 1
-cat __filetypes | grep -f __txtpattern | cut -d: -f1 | zip -9 -q --to-crlf $zipfile -@ || exit 1
+cat $tmp_filetypes | grep -f $tmp_txtpattern -v | cut -d: -f1 | zip -9 -q $zipfile -@ || exit 1
+cat $tmp_filetypes | grep -f $tmp_txtpattern | cut -d: -f1 | zip -9 -q --to-crlf $zipfile -@ || exit 1
