@@ -512,22 +512,36 @@ def clean_up(install_dir):
                 path = os.path.join(root, name)
                 print_wrap('    ---> Deleting file: ' + name)
                 os.remove(path)
+
+    base_path_essentials = MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX
+    base_path_addon = MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX
     # on windows remove redundant .dll files from \lib
     if bldinstallercommon.is_win_platform():
-        base_path_essentials = MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX
         lib_path_essentials = bldinstallercommon.locate_directory(base_path_essentials, 'lib')
         if lib_path_essentials:
             bldinstallercommon.delete_files_by_type_recursive(lib_path_essentials, '\\.dll')
         else:
             print_wrap('*** Warning! Unable to locate \\lib directory under: ' + base_path_essentials)
 
-        base_path_addon = MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX
         lib_path_addon = bldinstallercommon.locate_directory(base_path_addon, 'lib')
         if lib_path_addon:
             bldinstallercommon.delete_files_by_type_recursive(lib_path_addon, '\\.dll')
         else:
             print_wrap('*** Warning! Unable to locate \\lib directory under: ' + base_path_addon)
 
+    # ensure that we do not ship prebuilt examples in binary packages
+    # essentials install
+    examples_path_essentials = bldinstallercommon.locate_directory(base_path_essentials, 'examples')
+    if examples_path_essentials:
+        bldinstallercommon.remove_tree(examples_path_essentials)
+    else:
+        print_wrap('*** Warning! Unable to locate examples directory under: ' + examples_path_essentials)
+    # addons install
+    examples_path_addons = bldinstallercommon.locate_directory(base_path_addon, 'examples')
+    if examples_path_addons:
+        bldinstallercommon.remove_tree(examples_path_addons)
+    else:
+        print_wrap('*** Warning! Unable to locate examples directory under: ' + examples_path_addons)
     print_wrap('--------------------------------------------------------------------')
 
 
