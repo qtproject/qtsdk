@@ -24,6 +24,8 @@
 set -u
 
 CUR_DIR=$PWD
+SCRIPT=$(readlink -f $0)
+SCRIPT_DIR=$(dirname $SCRIPT)
 DO_FETCH=true
 DO_TAG=false
 IGNORE_LIST=
@@ -83,12 +85,7 @@ function create_main_file()
   7z a $PACKAGE_NAME.7z $PACKAGE_NAME/ > /dev/null
 
   echo " - Creating single win zip - "
-  # ZIP
-  find $PACKAGE_NAME/ > __files_to_zip
-  # zip binfiles
-  file -f __files_to_zip | fgrep -f _txtfiles -v | cut -d: -f1 | zip -9q $PACKAGE_NAME.zip -@
-  #zip ascii files with win line endings
-  file -f __files_to_zip | fgrep -f _txtfiles | cut -d: -f1 | zip -l9q $PACKAGE_NAME.zip -@
+  $SCRIPT_DIR/winzipdir.sh $PACKAGE_NAME.zip $PACKAGE_NAME
 }
 
 function create_and_delete_submodule()
@@ -106,13 +103,7 @@ function create_and_delete_submodule()
     echo " - 7zipping $_file - "
     7z a ../submodules_zip/$_file.7z $_file/ > /dev/null
     echo " - zipping $_file -"
-    find $_file > __files_to_zip
-    # zip binfiles
-    file -f __files_to_zip | fgrep -f ../_txtfiles -v | cut -d: -f1 | zip -9q ../submodules_zip/$_file.zip -@
-    #zip ascii files with win line endings
-    file -f __files_to_zip | fgrep -f ../_txtfiles | cut -d: -f1 | zip -l9q ../submodules_zip/$_file.zip -@
-    rm -rf $_file
-    rm -rf __files_to_zip
+    $SCRIPT_DIR/winzipdir.sh ../submodules_zip/$_file.zip $_file
   done < $MODULES
   cd ..
 }
@@ -336,14 +327,8 @@ fi
 #------------------------------------------------------------------
 # Step 5,  create zip file and tar files
 #------------------------------------------------------------------
-# list text file regexp keywords, if you find something obvious missing, feel free to add
+
 cd $CUR_DIR
-echo "ASCII
-directory
-empty
-POSIX
-html
-text" > _txtfiles
 
 echo " -- Create B I G archives -- "
 create_main_file
