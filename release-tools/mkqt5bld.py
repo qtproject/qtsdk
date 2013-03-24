@@ -533,13 +533,13 @@ def clean_up(install_dir):
     # essentials install
     examples_path_essentials = bldinstallercommon.locate_directory(base_path_essentials, 'examples')
     if examples_path_essentials:
-        bldinstallercommon.remove_tree(examples_path_essentials)
+        bldinstallercommon.remove_tree(os.path.normpath(examples_path_essentials))
     else:
         print_wrap('*** Warning! Unable to locate examples directory under: ' + examples_path_essentials)
     # addons install
     examples_path_addons = bldinstallercommon.locate_directory(base_path_addon, 'examples')
     if examples_path_addons:
-        bldinstallercommon.remove_tree(examples_path_addons)
+        bldinstallercommon.remove_tree(os.path.normpathexamples_path_addons))
     else:
         print_wrap('*** Warning! Unable to locate examples directory under: ' + examples_path_addons)
     print_wrap('--------------------------------------------------------------------')
