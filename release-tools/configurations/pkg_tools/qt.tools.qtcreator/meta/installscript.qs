@@ -220,6 +220,11 @@ Component.prototype.createOperations = function()
                                 "@StartMenuDir@\\Qt Creator.lnk",
                                 "workingDirectory=" + path + "bin");
 
+        registerWindowsFileTypeExtensions();
+
+        if (component.userInterface("AssociateCommonFiletypesForm").AssociateCommonFiletypesCheckBox.checked) {
+            registerCommonWindowsFileTypeExtensions();
+        }
     }
     if ( installer.value("os") == "x11" )
     {
