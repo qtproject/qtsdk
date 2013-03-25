@@ -40,5 +40,5 @@ find $dir > $tmp_filelist || exit 1
 # record file types
 file -f $tmp_filelist > $tmp_filetypes || exit 1
 # zip text files and binary files separately
-cat $tmp_filetypes | grep -f $tmp_txtpattern -v | cut -d: -f1 | zip -9 -q $zipfile -@ || exit 1
+cat $tmp_filetypes | grep -f $tmp_txtpattern -v | cut -d: -f1 | zip -9 -q $zipfile -@
 cat $tmp_filetypes | grep -f $tmp_txtpattern | cut -d: -f1 | zip -9 -q --to-crlf $zipfile -@ || exit 1
