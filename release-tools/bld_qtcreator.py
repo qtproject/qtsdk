@@ -233,6 +233,10 @@ qtCreatorProFile = os.path.join(qtCreatorSourceDirectory, 'qtcreator.pro')
 
 qmakeCommandArguments = "-r {} QTC_PREFIX={} DEFINES+=IDE_REVISION={} CONFIG+={}".format(
     qtCreatorProFile, qtCreatorInstallDirectory, buildGitSHA, buildType)
+
+# hack to ensure plugins depending on declarative are also compiled with 2.7.0/5.0.1
+qmakeCommandArguments += " QT_CONFIG+=declarative"
+
 runCommand("{} {}".format(qmakeBinary, qmakeCommandArguments), qtCreatorBuildDirectory,
     callerArguments = callerArguments, init_environment = environment)
 
