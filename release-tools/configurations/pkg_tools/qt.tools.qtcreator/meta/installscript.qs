@@ -99,7 +99,7 @@ Component.prototype.reactOnTargetDirChange = function(key, value)
         } else if (installer.value("os") == "mac") {
             installer.setValue("QtCreatorInstallerSettingsFile", value + "/%TARGET_INSTALL_DIR%/Qt Creator.app/Contents/Resources/QtProject/QtCreator.ini");
             installer.setValue("SDKToolBinary", value + "/%TARGET_INSTALL_DIR%/Qt Creator.app/Contents/Resources/sdktool");
-            component.qtCreatorBinaryPath = "\"" + value + "/%TARGET_INSTALL_DIR%/Qt Creator.app/Contents/MacOS/Qt Creator\"";
+            component.qtCreatorBinaryPath = value + "/%TARGET_INSTALL_DIR%/Qt Creator.app/Contents/MacOS/Qt Creator";
             // fix duplicate forward slashes in path
             component.qtCreatorBinaryPath = component.qtCreatorBinaryPath.replace(/\/+/g, "/");
         } else {
