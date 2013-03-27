@@ -82,8 +82,9 @@ def fetch_repogen_tools(tools_uri):
     executable_suffix = bldinstallercommon.get_executable_suffix()
     # first check if we have existing copy of the tool
     if os.path.exists(REPOGEN_TOOLS_DIR):
-        REPOGEN_TOOL = bldinstallercommon.locate_executable(REPOGEN_TOOLS_DIR, REPOGEN_TOOL + executable_suffix)
-        if os.path.isfile(REPOGEN_TOOL):
+        tool = bldinstallercommon.locate_executable(REPOGEN_TOOLS_DIR, REPOGEN_TOOL + executable_suffix)
+        if os.path.isfile(tool):
+            REPOGEN_TOOL = tool
             print('Found existing repogen tool: {}'.format(REPOGEN_TOOL))
             return
         else:
@@ -99,11 +100,13 @@ def fetch_repogen_tools(tools_uri):
         bldinstallercommon.retrieve_url(tools_uri, package_save_as_temp)
         bldinstallercommon.extract_file(package_save_as_temp, REPOGEN_TOOLS_DIR)
         print('Trying to locate repogen tool: {}'.format(REPOGEN_TOOL))
-        REPOGEN_TOOL = bldinstallercommon.locate_executable(REPOGEN_TOOLS_DIR, REPOGEN_TOOL + executable_suffix)
-        if not os.path.isfile(REPOGEN_TOOL):
+        tool = bldinstallercommon.locate_executable(REPOGEN_TOOLS_DIR, REPOGEN_TOOL + executable_suffix)
+        if not os.path.isfile(tool):
             print('Unable to locate repogen tool [{}] under directory: {}'.format(REPOGEN_TOOL, REPOGEN_TOOLS_DIR))
             print('*** Abort!')
             sys.exit(-1)
+        else:
+            REPOGEN_TOOL = tool
     else:
         print('Invalid url: {}'.format(tools_uri))
         print('*** Abort!')
@@ -239,7 +242,7 @@ if __name__ == "__main__":
             print('*** The given source directory does not seem to be proper repository? Abort!')
             print('Given source repository: {}'.format(caller_arguments.source_repo))
             sys.exit(-1)
-        if os.path.isdir(caller_arguments.target_repo) or os.path.isfile(caller_arguments.target_repo + os.sep + 'Updates.xml'):
+        if os.path.isfile(caller_arguments.target_repo + os.sep + 'Updates.xml'):
             print('The given destination directory already contains a repository.')
             print('We just update the existing repository:')
             print('Given target repository: {}'.format(caller_arguments.target_repo))
