@@ -97,6 +97,7 @@ SDK_COMPONENT_IGNORE_LIST   = []
 USE_LEGACY_IFW              = False
 STRICT_MODE                 = True
 ARCHIVE_SERVER_BASE_URL     = ''
+INSTALLER_FRAMEWORK_TOOLS   = ''
 
 INSTALLER_NAMING_SCHEME_COMPILER    = ''
 INSTALLER_NAMING_SCHEME_TARGET_ARCH = ''
@@ -229,6 +230,9 @@ def setup_option_parser():
     OPTION_PARSER.add_option("-u", "--archive-base-url",
                       action="store", dest="archive_base_url", default="",
                       help="define alternative server base url where to look for archives (.7z)")
+    OPTION_PARSER.add_option("--ifw-tools",
+                      action="store", dest="ifw_tools_uri", default="",
+                      help="define alternative location where to fetch prebuilt Installer-Framework tools (.7z)")
     # installer naming scheme options, affects only the filename of the installer executable
     OPTION_PARSER.add_option("-l", "--license-type",
                       action="store", type="string", dest="license_type", default="opensource",
@@ -281,6 +285,8 @@ def print_options():
     print '----------------------------------------'
     if ARCHIVE_SERVER_BASE_URL:
         print "Archive URL override:        " + ARCHIVE_SERVER_BASE_URL
+    if INSTALLER_FRAMEWORK_TOOLS:
+        print "IFW tools override:          " + INSTALLER_FRAMEWORK_TOOLS
     print "Configurations directory:    " + CONFIGURATIONS_DIR
     print "Configuration file:          " + MAIN_CONFIG_NAME
     print "Create online installer:     %r" % (CREATE_ONLINE_INSTALLER)
@@ -326,6 +332,7 @@ def parse_cmd_line():
     global CONFIGURATIONS_DIR
     global STRICT_MODE
     global ARCHIVE_SERVER_BASE_URL
+    global INSTALLER_FRAMEWORK_TOOLS
     global INSTALLER_NAMING_SCHEME_VERSION_NUM
     global INSTALLER_NAMING_SCHEME_VERSION_TAG
 
@@ -353,6 +360,7 @@ def parse_cmd_line():
     INSTALLER_NAMING_SCHEME_VERSION_NUM = options.installer_version_number
     INSTALLER_NAMING_SCHEME_VERSION_TAG = options.installer_version_tag
     ARCHIVE_SERVER_BASE_URL             = options.archive_base_url
+    INSTALLER_FRAMEWORK_TOOLS           = options.ifw_tools_uri
 
     INSTALLER_FRAMEWORK_QT_ARCHIVE_URI              = options.installer_framework_qt_archive_uri
     INSTALLER_FRAMEWORK_QT_CONFIGURE_OPTIONS        = options.installer_framework_qt_configure_options
@@ -955,7 +963,10 @@ def install_ifw_tools():
     else:
         tools_dir_name = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'InstallerFrameworkTools')['name']
         tools_dir_name = os.path.normpath(tools_dir_name)
-        package_url = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'InstallerFrameworkTools')['package_url']
+        if INSTALLER_FRAMEWORK_TOOLS:
+            package_url = INSTALLER_FRAMEWORK_TOOLS
+        else:
+            package_url = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'InstallerFrameworkTools')['package_url']
         # create needed dirs
         bldinstallercommon.create_dirs(IFW_TOOLS_DIR)
         package_save_as_temp = IFW_TOOLS_DIR + os.sep + os.path.basename(package_url)
