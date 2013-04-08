@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>msvc2010 32-bit</DisplayName>
     <Description>Qt 5.0.2 Prebuilt Components for msvc2010 32-bit</Description>
-    <Version>1.0.0</Version>
+    <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Name>qt.502.win32_msvc2010</Name>
     <!--<Dependencies></Dependencies>-->

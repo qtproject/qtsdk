@@ -54,7 +54,7 @@ base_path:
 packages:               foo.bar, foo.bar2, foo.bar3
 
 [ExtraPackageConfigurationFiles]
-file_list:              qt502-src-conf, x86_64-qt502-msvc2010_64-conf, x86-tools-qtcreator-conf, x86-tools-vcredist_32-conf, x86_64-tools-vcredist_64-conf, installer-readme-conf
+file_list:              qt510-src-conf, x86_64-qt510-msvc2010_64-conf, x86-tools-qtcreator-conf, x86-tools-vcredist_32-conf, x86_64-tools-vcredist_64-conf, installer-readme-conf
 
 [OfflinePackageExcludeList]
 package_list:
@@ -69,9 +69,9 @@ template_name:          config_qt5
 template_name:          config.xml.template.windows.qt5
 
 [WorkingDirectories]
-packages_dir:           pkg_502, pkg_tools
+packages_dir:           pkg_510, pkg_tools
 
 [InstallerFrameworkTools]
 name:                   ifwt
-package_url:            http://origin.releases.qt-project.org/digia/ifw_prebuilt/installer-framework-build-win-x86.7z
+package_url:
 
