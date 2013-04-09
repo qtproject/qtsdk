@@ -64,7 +64,6 @@ package_url:            http://origin.releases.qt-project.org/digia/ifw_prebuilt
 
 [SdkUpdateRepository]
 repository_url_release: http://../qt5repository/macx/x64/online_qt5sdk_repo
-repository_url_rnd:     http://../qt5repository/macx/x64/online_qt5sdk_repo
 
 [ConfigDir]
 template_name:          config_qt5

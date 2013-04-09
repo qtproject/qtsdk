@@ -61,7 +61,6 @@ package_list:
 
 [SdkUpdateRepository]
 repository_url_release: http://../qt5repository/windows/x32/online_qt5sdk_repo
-repository_url_rnd:     http://../qt5repository/windows/x32/online_qt5sdk_repo
 
 [ConfigDir]
 template_name:          config_qt5
