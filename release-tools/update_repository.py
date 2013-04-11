@@ -99,10 +99,10 @@ def fetch_repogen_tools(tools_uri):
         package_save_as_temp = os.path.normpath(ROOT_DIR + os.sep + os.path.basename(tools_uri))
         bldinstallercommon.retrieve_url(tools_uri, package_save_as_temp)
         bldinstallercommon.extract_file(package_save_as_temp, REPOGEN_TOOLS_DIR)
-        print('Trying to locate repogen tool: {}'.format(REPOGEN_TOOL))
+        print('Trying to locate repogen tool: {}'.format(REPOGEN_TOOL + executable_suffix))
         tool = bldinstallercommon.locate_executable(REPOGEN_TOOLS_DIR, REPOGEN_TOOL + executable_suffix)
         if not os.path.isfile(tool):
-            print('Unable to locate repogen tool [{}] under directory: {}'.format(REPOGEN_TOOL, REPOGEN_TOOLS_DIR))
+            print('Unable to locate repogen tool [{}] under directory: {}'.format(REPOGEN_TOOL + executable_suffix, REPOGEN_TOOLS_DIR))
             print('*** Abort!')
             sys.exit(-1)
         else:
@@ -186,10 +186,16 @@ def ask_for_components(source_pkg):
                 marker = '+'
             print('{} {} {}'.format(counter, marker, item))
         print()
+        print('a: Select all')
         print('c: Continue')
         print()
         var = raw_input("Enter item number: ")
         if var in ['c', 'C']:
+            break
+        if var in ['a', 'A']:
+            for counter, item in enumerate(components):
+                selected_items.append(counter)
+                component_list.append(item)
             break
         if is_number(var) and int(var) not in selected_items and (0 <= int(var) < count):
             selected_items.append(int(var))
@@ -237,7 +243,6 @@ if __name__ == "__main__":
     # 1) target repository directory must be empty i.e. we initialize things for the first time
     # 2) copy the source repository as target repository 1:1 and nothing else
     if caller_arguments.source_repo:
-        print('Initialising the repository for the first time!')
         if not os.path.isdir(caller_arguments.source_repo) or not os.path.isfile(caller_arguments.source_repo + os.sep + 'Updates.xml'):
             print('*** The given source directory does not seem to be proper repository? Abort!')
             print('Given source repository: {}'.format(caller_arguments.source_repo))
@@ -247,6 +252,7 @@ if __name__ == "__main__":
             print('We just update the existing repository:')
             print('Given target repository: {}'.format(caller_arguments.target_repo))
         else:
+            print('Initializing the repository for the first time!')
             # create dirs
             bldinstallercommon.create_dirs(caller_arguments.target_repo)
             # copy repository
