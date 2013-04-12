@@ -69,7 +69,7 @@ repository_url_release: http://download.qt-project.org/online/mac/x64/online_rep
 template_name:          config_qt5
 
 [ConfigXml]
-template_name:          config.xml.template.mac.qt5
+template_name:          config.xml.template.mac.qt5-sdk
 
 [WorkingDirectories]
 packages_dir:           pkg_502, pkg_tools
