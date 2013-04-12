@@ -5,7 +5,7 @@
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Name>qt.502.win32_msvc2010_opengl.addons</Name>
-    <Dependencies>qt.502.win32_msvc2010_opengl.addons</Dependencies>
+    <Dependencies>qt.502.win32_msvc2010_opengl.essentials</Dependencies>
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
     <!--<AutoSelectOn></AutoSelectOn>-->
     <Script>installscript.qs</Script>   <!-- File name of a script being loaded - optional. -->
