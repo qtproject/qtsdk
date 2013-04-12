@@ -60,7 +60,7 @@ file_list:              qt502-src-conf, x86-qt502-msvc2010_32-conf, x86-qt502-mi
 package_list:
 
 [SdkUpdateRepository]
-repository_url_release: http://../qt5repository/windows/x32/online_qt5sdk_repo
+repository_url_release: http://download.qt-project.org/online/windows/x86/online_repository
 
 [ConfigDir]
 template_name:          config_qt5
