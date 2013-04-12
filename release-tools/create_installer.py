@@ -609,7 +609,11 @@ def repackage_content_for_installation(install_dir, package_raw_name, target_ins
         print '     Relocate RPath into:   ' + '(' + install_dir + ') '+ rpath_target
     print ''
 
-    if package_raw_name.endswith('.7z') and package_strip_dirs == '0' and not rpath_target and target_install_base == '/':
+    if package_raw_name.endswith('.7z') \
+       and package_strip_dirs == '0' \
+       and not rpath_target \
+       and target_install_base == '/' \
+       and package_raw_name == archive_name:
         print '     No repackaging actions requred for the package'
         return
 
