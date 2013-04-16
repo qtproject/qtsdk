@@ -132,7 +132,11 @@ def update_repository(source_pkg, target_repo, config_xml_file, components_to_up
     if not os.path.exists(target_repo):
         print('*** Target repository does not exist: {}'.format(target_repo))
         sys.exit(-1)
-    cmd_args = [REPOGEN_TOOL, '--update', '-p', source_pkg, '-c', config_xml_file, '--include', ','.join(components_to_update), target_repo]
+    cmd_args = [REPOGEN_TOOL, '--update', '-p', source_pkg, '-c', config_xml_file]
+    if components_to_update[0] and components_to_update[0] == '*':
+        cmd_args += [target_repo]
+    else:
+        cmd_args += ['--include', ','.join(components_to_update), target_repo]
     bldinstallercommon.do_execute_sub_process(cmd_args, source_pkg, True)
 
 
@@ -157,6 +161,8 @@ def sanity_check(component_list, source_pkg):
         if os.path.isdir(temp):
             source_packages.append(name)
     for item in component_list:
+        if item == '*':
+            break
         if item not in source_packages:
             print('*** Sanity check fail!')
             print('*** Can not update component: [{}] as it does not exist under: {}'.format(item, source_pkg))
