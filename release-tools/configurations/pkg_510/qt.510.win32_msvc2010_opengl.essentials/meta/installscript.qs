@@ -17,7 +17,7 @@ Component.prototype.isDefault = function()
 
 createShortcuts = function()
 {
-    var qtStringVersion = "%QT_VERSION%";
+    var qtStringVersion = "5.1.0";
     // Create a batch file with the development environment
     var component_root_path = installer.value("TargetDir") + "%TARGET_INSTALL_DIR%";
     component_root_path = component_root_path.replace(/\//g, "\\");
