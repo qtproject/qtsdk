@@ -89,52 +89,51 @@ Component.prototype.createOperations = function()
 
     if ( installer.value("os") == "win" )
     {
-        // TODO
-        //var win_maintenance_tool_bin = maintenance_tool_bin + ".exe"
-        ////component.addOperation( "SetQtCreatorValue",
-        //                        "@TargetDir@",
-        //                        "Updater",
-        //                        "Application",
-        //                        win_maintenance_tool_bin );
+        var win_maintenance_tool_bin = maintenance_tool_bin + ".exe"
+        component.addOperation( "SetQtCreatorValue",
+                                "@TargetDir@",
+                                "Updater",
+                                "Application",
+                                win_maintenance_tool_bin );
         // create shortcut
-        //component.addOperation( "CreateShortcut",
-        //                        win_maintenance_tool_bin,
-        //                        "@StartMenuDir@/Qt SDK Maintenance Tool.lnk",
-        //                        "workingDirectory=@TargetDir@" );
+        component.addOperation( "CreateShortcut",
+                                win_maintenance_tool_bin,
+                                "@StartMenuDir@/Qt SDK Maintenance Tool.lnk",
+                                "workingDirectory=@TargetDir@" );
     }
     if ( installer.value("os") == "x11" )
     {
-        //component.addOperation( "SetQtCreatorValue",
-        //                        "@TargetDir@",
-        //                        "Updater",
-        //                        "Application",
-        //                        maintenance_tool_bin );
+        component.addOperation( "SetQtCreatorValue",
+                                "@TargetDir@",
+                                "Updater",
+                                "Application",
+                                maintenance_tool_bin );
 
-        //component.addOperation( "CreateDesktopEntry",
-        //                        "Digia-SDKMaintenanceTool.desktop",
-        //                        "Type=Application\nExec=@TargetDir@/SDKMaintenanceTool\nPath=@TargetDir@\nName=Qt Commercial SDK Maintenance Tool\nGenericName=Install or uninstall components of the Qt Commercial SDK.\nIcon=Digia-QtIcon\nTerminal=false\nCategories=Development;Qt;"
-        //                       );
+        component.addOperation( "CreateDesktopEntry",
+                                "Digia-SDKMaintenanceTool.desktop",
+                                "Type=Application\nExec=@TargetDir@/SDKMaintenanceTool\nPath=@TargetDir@\nName=Qt SDK Maintenance Tool\nGenericName=Install or uninstall components of the Qt SDK.\nIcon=QtIcon\nTerminal=false\nCategories=Development;Qt;"
+                               );
     }
     if ( installer.value("os") == "mac" )
     {
-       // var mac_maintenance_tool_bin = maintenance_tool_bin + ".app/Contents/MacOS/SDKMaintenanceTool"
-       // component.addOperation( "SetQtCreatorValue",
-       //                         "@TargetDir@",
-       //                         "Updater",
-       //                         "Application",
-       //                         mac_maintenance_tool_bin );
+        var mac_maintenance_tool_bin = maintenance_tool_bin + ".app/Contents/MacOS/SDKMaintenanceTool"
+        component.addOperation( "SetQtCreatorValue",
+                                "@TargetDir@",
+                                "Updater",
+                                "Application",
+                                mac_maintenance_tool_bin );
     }
 
-    //component.addOperation( "SetQtCreatorValue",
-    //                        "@TargetDir@",
-    //                        "Updater",
-     //                       "CheckOnlyArgument",
-    //                        "--checkupdates" );
-    //component.addOperation( "SetQtCreatorValue",
-    //                        "@TargetDir@",
-    //                        "Updater",
-    //                        "RunUiArgument",
-    //                        "--updater" );
+    component.addOperation( "SetQtCreatorValue",
+                            "@TargetDir@",
+                            "Updater",
+                            "CheckOnlyArgument",
+                            "--checkupdates" );
+    component.addOperation( "SetQtCreatorValue",
+                            "@TargetDir@",
+                            "Updater",
+                            "RunUiArgument",
+                            "--updater" );
 
 }
 
