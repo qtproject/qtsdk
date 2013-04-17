@@ -17,7 +17,7 @@ Component.prototype.isDefault = function()
 
 createShortcuts = function()
 {
-    var qtStringVersion = "%QT_VERSION%";
+    var qtStringVersion = "5.0.2";
     // Create a batch file with the development environment
     var component_root_path = installer.value("TargetDir") + "%TARGET_INSTALL_DIR%";
     component_root_path = component_root_path.replace(/\//g, "\\");
@@ -40,28 +40,28 @@ createShortcuts = function()
     var cmdLocation = windir + "\\system32\\cmd.exe";
     component.addOperation( "CreateShortcut",
                             cmdLocation,
-                            "@StartMenuDir@/%QT_VERSION%/MSVC 2010/Qt " + qtStringVersion + " for Desktop (MSVC 2010).lnk",
+                            "@StartMenuDir@/5.0.2/MSVC 2010/Qt " + qtStringVersion + " for Desktop (MSVC 2010).lnk",
                             "/A /Q /K " + batchFileName);
     // Assistant
     component.addOperation( "CreateShortcut",
                             component_root_path + "/bin/assistant.exe",
-                            "@StartMenuDir@/%QT_VERSION%/MSVC 2010/Assistant.lnk");
+                            "@StartMenuDir@/5.0.2/MSVC 2010/Assistant.lnk");
 
     // Designer
     component.addOperation( "CreateShortcut",
                             component_root_path + "/bin/designer.exe",
-                            "@StartMenuDir@/%QT_VERSION%/MSVC 2010/Designer.lnk");
+                            "@StartMenuDir@/5.0.2/MSVC 2010/Designer.lnk");
 
     // Linguist
     component.addOperation( "CreateShortcut",
                             component_root_path + "/bin/linguist.exe",
-                            "@StartMenuDir@/%QT_VERSION%/MSVC 2010/Linguist.lnk");
+                            "@StartMenuDir@/5.0.2/MSVC 2010/Linguist.lnk");
 
 
     // Examples & Demos
     //component.addOperation( "CreateShortcut",
     //                        component_root_path + "/bin/qtdemo.exe",
-    //                        "@StartMenuDir@/%QT_VERSION%/MSVC 2010/Examples & Demos.lnk");
+    //                        "@StartMenuDir@/5.0.2/MSVC 2010/Examples & Demos.lnk");
 }
 
 Component.prototype.beginInstallation = function()
@@ -83,10 +83,10 @@ Component.prototype.createOperations = function()
             var qmakeBinary = "@TargetDir@/%TARGET_INSTALL_DIR%/bin/qmake.exe";
 
             component.addOperation("Execute",
-                new Array("{0}", "@SDKToolBinary@", "addQt", "--id", component.name, "--name", "Qt %QT_VERSION% MSVC2010 32bit", "--type", "Qt4ProjectManager.QtVersion.Desktop", "--qmake", qmakeBinary));
+                new Array("{0}", "@SDKToolBinary@", "addQt", "--id", component.name, "--name", "Qt 5.0.2 MSVC2010 32bit", "--type", "Qt4ProjectManager.QtVersion.Desktop", "--qmake", qmakeBinary));
 
             component.addOperation("Execute",
-                new Array("{0}", "@SDKToolBinary@", "addKit", "--id", component.name + "_kit", "--name", "Desktop Qt %QT_VERSION% MSVC2010 32bit", "--toolchain", "x86-windows-msvc2010-pe-32bit", "--qt", component.name, "--debuggerengine", "4", "--devicetype", "Desktop"));
+                new Array("{0}", "@SDKToolBinary@", "addKit", "--id", component.name + "_kit", "--name", "Desktop Qt 5.0.2 MSVC2010 32bit", "--toolchain", "x86-windows-msvc2010-pe-32bit", "--qt", component.name, "--debuggerengine", "4", "--devicetype", "Desktop"));
 
         } catch( e ) {
             print( e );

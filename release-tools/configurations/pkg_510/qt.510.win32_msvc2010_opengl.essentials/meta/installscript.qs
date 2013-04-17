@@ -61,7 +61,7 @@ createShortcuts = function()
     // Examples & Demos
     //component.addOperation( "CreateShortcut",
     //                        component_root_path + "/bin/qtdemo.exe",
-    //                        "@StartMenuDir@/%QT_VERSION%/MSVC 2010/Examples & Demos.lnk");
+    //                        "@StartMenuDir@/5.1.0/MSVC 2010/Examples & Demos.lnk");
 }
 
 Component.prototype.beginInstallation = function()
