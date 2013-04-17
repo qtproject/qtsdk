@@ -42,11 +42,11 @@
 [qt.readme]
 archives:               readme
 target_install_base:    /
-version:                5.0.2
-version_tag:            %QT_VERSION%
+version:
+version_tag:
 package_default:        true
 [readme]
-archive_uri:            http://qt.gitorious.org/qtsdk/qtsdk/blobs/raw/master/release-tools/dist/README.txt
+archive_uri:            http://qt.gitorious.org/qt/qt5/blobs/raw/stable/README
 package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:
