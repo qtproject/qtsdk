@@ -122,8 +122,11 @@ class IfwOptions:
         self.product_key_checker_branch                 = product_key_checker_branch
         self.product_key_checker_source_dir             = ''
         if product_key_checker_url:
-            self.product_key_checker_source_dir         = os.path.normpath(ROOT_DIR + os.sep + 'product_key_checker')
-            self.qt_installer_framework_qmake_args      += ' PRODUCTKEYCHECK_PRI_FILE=' + self.product_key_checker_source_dir + os.sep + 'qt_product_key_checker.pri'
+            if os.path.isfile(product_key_checker_url):
+                self.qt_installer_framework_qmake_args      += ' PRODUCTKEYCHECK_PRI_FILE=' + self.product_key_checker_url
+            else:
+                self.product_key_checker_source_dir         = os.path.normpath(ROOT_DIR + os.sep + 'product_key_checker')
+                self.qt_installer_framework_qmake_args      += ' PRODUCTKEYCHECK_PRI_FILE=' + self.product_key_checker_source_dir + os.sep + 'qt_product_key_checker.pri'
         # sanity check
         self.sanity_check()
 
@@ -134,6 +137,9 @@ class IfwOptions:
             print('*** Qt src package uri is invalid: {}'.format(self.qt_source_package_uri))
             sys.exit(-1)
         if (self.product_key_checker_url or self.product_key_checker_branch):
+            if os.path.isfile(self.product_key_checker_url):
+                print('Using product key checker: '.format(self.product_key_checker_url))
+                return
             if not (self.product_key_checker_url and self.product_key_checker_branch):
                 print('*** Product key checker has incomplete data: {} | {}'.format(self.product_key_checker_url, self.product_key_checker_branch))
                 sys.exit(-1)
