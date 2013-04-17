@@ -48,7 +48,7 @@ import shutil
 import sys
 from time import gmtime, strftime
 import urllib
-from optparse import OptionParser
+from optparse import OptionParser, Option, OptionValueError
 
 import bldinstallercommon
 import bld_ifw_tools
@@ -112,6 +112,8 @@ UPDATE_REPOSITORY_URL_TAG           = '%UPDATE_REPOSITORY_URL%'
 PACKAGE_CREATION_DATE_TAG           = '%PACKAGE_CREATION_DATE%'
 INSTALL_PRIORITY_TAG                = '%INSTALL_PRIORITY%'
 SORTING_PRIORITY_TAG                = '%SORTING_PRIORITY%'
+
+KEY_SUBSTITUTION_LIST               = []
 # ----------------------------------------------------------------------
 INSTALLER_FRAMEWORK_QT_ARCHIVE_URI              = ''
 INSTALLER_FRAMEWORK_QT_CONFIGURE_OPTIONS        = ''
@@ -121,6 +123,20 @@ INSTALLER_FRAMEWORK_QMAKE_ARGS                  = ''
 INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_URL     = ''
 INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_BRANCH  = ''
 # ----------------------------------------------------------------------
+
+
+class MultipleOption(Option):
+    ACTIONS = Option.ACTIONS + ("extend",)
+    STORE_ACTIONS = Option.STORE_ACTIONS + ("extend",)
+    TYPED_ACTIONS = Option.TYPED_ACTIONS + ("extend",)
+    ALWAYS_TYPED_ACTIONS = Option.ALWAYS_TYPED_ACTIONS + ("extend",)
+
+    def take_action(self, action, dest, opt, value, values, parser):
+        if action == "extend":
+            values.ensure_value(dest, []).append(value)
+        else:
+            Option.take_action(self, action, dest, opt, value, values, parser)
+
 
 ##############################################################
 # Start
@@ -191,7 +207,7 @@ def check_configuration_file(configuration_name):
 def setup_option_parser():
     """ Set up Option Parser """
     global OPTION_PARSER
-    OPTION_PARSER = OptionParser()
+    OPTION_PARSER = OptionParser(option_class=MultipleOption)
     OPTION_PARSER.add_option("-c", "--configurations-dir",
                       action="store", type="string", dest="configurations_dir", default="configurations",
                       help="define configurations directory where to read installer configuration files")
@@ -272,6 +288,10 @@ def setup_option_parser():
     OPTION_PARSER.add_option("--installer-framework-product-key-checker-branch",
                       action="store", type="string", dest="installer_framework_product_key_checker_branch", default="",
                       help="If you wish to build ifw with commercial product key checker: branch for product key checker")
+    # global key-value substitution
+    OPTION_PARSER.add_option("--add-substitution",
+                      action="extend", type="string", dest="global_key_value_substitution_list",
+                      help="E.g. $LICENSE$=opensource -> will replace all occurrences in configuration files.")
 
 
 ##############################################################
@@ -304,6 +324,8 @@ def print_options():
     print "Target arch:                 " + INSTALLER_NAMING_SCHEME_TARGET_ARCH
     print "Version number:              " + INSTALLER_NAMING_SCHEME_VERSION_NUM
     print "Version tag:                 " + INSTALLER_NAMING_SCHEME_VERSION_TAG
+    print "Key-Value substitution list: "
+    print KEY_SUBSTITUTION_LIST
 
 
 ##############################################################
@@ -344,6 +366,8 @@ def parse_cmd_line():
     global INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_URL
     global INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_BRANCH
 
+    global KEY_SUBSTITUTION_LIST
+
     CONFIGURATIONS_DIR                  = options.configurations_dir
     MAIN_CONFIG_NAME                    = options.configuration_file
     LICENSE_TYPE                        = options.license_type
@@ -369,6 +393,13 @@ def parse_cmd_line():
     INSTALLER_FRAMEWORK_QMAKE_ARGS                  = options.installer_framework_qmake_args
     INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_URL     = options.installer_framework_product_key_checker_url
     INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_BRANCH  = options.installer_framework_product_key_checker_branch
+
+    # key value substitution list init
+    if options.global_key_value_substitution_list:
+        for item in options.global_key_value_substitution_list:
+            key, value = item.split('=')
+            KEY_SUBSTITUTION_LIST.append([key, value])
+    KEY_SUBSTITUTION_LIST.append(['@LICENSE@', LICENSE_TYPE])
 
     if INCREMENTAL_MODE:
         DEVELOPMENT_MODE = True
@@ -453,7 +484,7 @@ def init_data():
         IFW_TOOLS_DIR = os.path.normpath(IFW_TOOLS_DIR)
 
     # init data for archive locator
-    ARCHIVE_LOCATION_RESOLVER = ArchiveLocationResolver(CONFIG_PARSER_TARGET, ARCHIVE_SERVER_BASE_URL, CONFIGURATIONS_DIR)
+    ARCHIVE_LOCATION_RESOLVER = ArchiveLocationResolver(CONFIG_PARSER_TARGET, ARCHIVE_SERVER_BASE_URL, CONFIGURATIONS_DIR, KEY_SUBSTITUTION_LIST)
     ARCHIVE_LOCATION_RESOLVER.print_server_list()
 
     if DUMP_CONFIG:
@@ -813,7 +844,7 @@ def parse_component_data(configuration_file, configurations_base_path):
     for section in configuration.sections():
         if section.startswith(PACKAGE_NAMESPACE + '.') or section == PACKAGE_NAMESPACE:
             if section not in SDK_COMPONENT_IGNORE_LIST:
-                sdk_component = SdkComponent(section, configuration, PACKAGES_DIR_NAME_LIST, ARCHIVE_LOCATION_RESOLVER)
+                sdk_component = SdkComponent(section, configuration, PACKAGES_DIR_NAME_LIST, ARCHIVE_LOCATION_RESOLVER, KEY_SUBSTITUTION_LIST)
                 # if online installer, we are interested only about the root component!
                 if CREATE_ONLINE_INSTALLER and not sdk_component.is_root_component():
                     continue

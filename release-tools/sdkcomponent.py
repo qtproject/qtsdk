@@ -52,14 +52,17 @@ class SdkComponent:
     """SdkComponent class contains all required info for one installable SDK component"""
     class DownloadableArchive:
         """DownloadableArchive subclass contains all required info about data packages for one SDK component"""
-        def __init__(self, archive, package_name, archive_server_name, target_config, archive_location_resolver):
+        def __init__(self, archive, package_name, archive_server_name, target_config, archive_location_resolver, key_value_substitution_list):
             self.archive_uri        = bldinstallercommon.config_section_map(target_config, archive)['archive_uri']
             self.package_strip_dirs = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'package_strip_dirs')
             self.target_install_dir = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'target_install_dir') # todo, is needed?
             self.rpath_target       = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'rpath_target')
             self.archive_name       = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'archive_name')
             self.nomalize_archive_uri(package_name, archive_server_name, archive_location_resolver)
-
+            # substitute key-value pairs if any
+            for item in key_value_substitution_list:
+                self.target_install_base = self.target_install_dir.replace(item[0], item[1])
+                self.version = self.archive_name.replace(item[0], item[1])
 
         def nomalize_archive_uri(self, package_name, archive_server_name, archive_location_resolver):
             self.archive_uri = archive_location_resolver.resolve_full_uri(package_name, archive_server_name, self.archive_uri)
@@ -74,26 +77,31 @@ class SdkComponent:
                 return '*** Archive check fail! ***\n*** Unable to locate archive: ' + self.archive_uri
 
 
-    def __init__(self, section_name, target_config, packages_full_path_list, archive_location_resolver):
-        self.static_component           = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'static_component')
-        self.root_component             = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'root_component')
-        self.package_name               = section_name
-        self.packages_full_path_list    = packages_full_path_list
-        self.archives                   = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'archives')
-        self.archives                   = self.archives.replace(' ', '')
-        self.archive_server_name        = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'archive_server_name')
-        self.downloadable_archive_list  = []
-        self.target_install_base        = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'target_install_base')
-        self.version                    = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'version')
-        self.version_tag                = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'version_tag')
-        self.package_default            = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'package_default')
-        self.install_priority           = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'install_priority')
-        self.sorting_priority           = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'sorting_priority')
-        self.downloadable_arch_list_qs  = []
-        self.pkg_template_dir           = ''
-        self.sanity_check_error_msg     = ''
-        self.target_config              = target_config
-        self.archive_location_resolver  = archive_location_resolver
+    def __init__(self, section_name, target_config, packages_full_path_list, archive_location_resolver, key_value_substitution_list):
+        self.static_component            = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'static_component')
+        self.root_component              = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'root_component')
+        self.package_name                = section_name
+        self.packages_full_path_list     = packages_full_path_list
+        self.archives                    = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'archives')
+        self.archives                    = self.archives.replace(' ', '')
+        self.archive_server_name         = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'archive_server_name')
+        self.downloadable_archive_list   = []
+        self.target_install_base         = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'target_install_base')
+        self.version                     = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'version')
+        self.version_tag                 = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'version_tag')
+        self.package_default             = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'package_default')
+        self.install_priority            = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'install_priority')
+        self.sorting_priority            = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'sorting_priority')
+        self.downloadable_arch_list_qs   = []
+        self.pkg_template_dir            = ''
+        self.sanity_check_error_msg      = ''
+        self.target_config               = target_config
+        self.archive_location_resolver   = archive_location_resolver
+        self.key_value_substitution_list = key_value_substitution_list
+        # substitute key-value pairs if any
+        for item in self.key_value_substitution_list:
+            self.target_install_base = self.target_install_base.replace(item[0], item[1])
+            self.version = self.version.replace(item[0], item[1])
 
 
     def is_root_component(self):
@@ -179,7 +187,9 @@ class SdkComponent:
                     print '*** Error! Given archive section does not exist in configuration file: ' + archive
                     print '*** Abort!'
                     sys.exit(-1)
-                archive_obj = SdkComponent.DownloadableArchive(archive, self.package_name, self.archive_server_name, target_config, archive_location_resolver)
+                archive_obj = SdkComponent.DownloadableArchive(archive, self.package_name, self.archive_server_name,
+                                                               target_config, archive_location_resolver,
+                                                               self.key_value_substitution_list)
                 self.downloadable_archive_list.append(archive_obj)
 
 

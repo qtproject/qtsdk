@@ -78,12 +78,13 @@ class ArchiveLocationResolver:
     ###############################
     # Constructor
     ###############################
-    def __init__(self, target_config, server_base_url_override, configurations_root_dir):
+    def __init__(self, target_config, server_base_url_override, configurations_root_dir, key_substitution_list):
         """Init data based on the target configuration"""
         self.server_list = []
         self.pkg_templates_dir_list = []
         self.default_server = None
         self.configurations_root_dir = configurations_root_dir
+        self.key_substitution_list = key_substitution_list
         # get packages tempalates src dir first
         pkg_templates_dir = os.path.normpath(bldinstallercommon.config_section_map(target_config,'WorkingDirectories')['packages_dir'])
         self.pkg_templates_dir_list = pkg_templates_dir.replace(' ', '').rstrip(',\n').split(',')
@@ -136,13 +137,13 @@ class ArchiveLocationResolver:
              4. try to compose full URL
             return the resolved URI
         """
-        # source package specific, if archive_uri contains special tag, it means
-        # that it's source package. Replace the suffix specified by the platform
-        if archive_uri.endswith(PACKAGE_ARCHIVE_TAG):
-            if bldinstallercommon.is_win_platform():
-                archive_uri = archive_uri.replace(PACKAGE_ARCHIVE_TAG, 'zip')
-            else:
-                archive_uri = archive_uri.replace(PACKAGE_ARCHIVE_TAG, "tar.gz")
+        # substitute key value pairs if any
+        for item in self.key_substitution_list:
+            temp = archive_uri.replace(item[0], item[1])
+            if temp != archive_uri:
+                #print 'Substituted: ' + archive_uri
+                archive_uri = temp
+                #print '       into: ' + archive_uri
         # 1. the file exists, uri points to valid path on file system (or network share)
         if os.path.isfile(archive_uri):
             return archive_uri
