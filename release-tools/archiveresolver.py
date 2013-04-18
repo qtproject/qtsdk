@@ -153,10 +153,9 @@ class ArchiveLocationResolver:
         # find the correct template subdirectory
         for subdir in self.pkg_templates_dir_list:
             if os.path.isdir(base_path + subdir):
-                base_path = base_path + subdir + package_path
-                break
-        if os.path.isfile(base_path):
-            return base_path
+                temp = base_path + subdir + package_path
+                if os.path.isfile(temp):
+                    return temp
         # 3. check if given URI is valid full URL
         res = bldinstallercommon.is_content_url_valid(archive_uri)
         if res:
