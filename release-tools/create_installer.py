@@ -184,24 +184,6 @@ def check_platform_identifier(platform_identifier):
 
 
 ##############################################################
-# Check if valid configuration file
-##############################################################
-def check_configuration_file(configuration_name):
-    """ Check if valid configuration file """
-    global CONFIGURATIONS_DIR
-    # check first if absolute directory path
-    if os.path.isfile(CONFIGURATIONS_DIR + os.sep + configuration_name):
-        return
-    # if not then it must be under default location
-    CONFIGURATIONS_DIR = SCRIPT_ROOT_DIR + os.sep + CONFIGURATIONS_DIR
-    path_to_be_checked = CONFIGURATIONS_DIR + os.sep + configuration_name
-    if os.path.isfile(path_to_be_checked):
-        return
-    print '*** Unable to find given configuration file: ' + path_to_be_checked
-    sys.exit(-1)
-
-
-##############################################################
 # Setup Option Parser
 ##############################################################
 def setup_option_parser():
@@ -412,8 +394,21 @@ def parse_cmd_line():
         print '*** Choose either online installer or repository creation!'
         sys.exit(-1)
 
-    # check that given configuration exits
-    check_configuration_file(MAIN_CONFIG_NAME)
+    # check that given main configuration root dir exists
+    if not os.path.isdir(CONFIGURATIONS_DIR):
+        temp = CONFIGURATIONS_DIR = SCRIPT_ROOT_DIR + os.sep + CONFIGURATIONS_DIR
+        if os.path.isdir(temp):
+            CONFIGURATIONS_DIR = temp
+        else:
+            print '*** Unable to find given configurations root dir: ' + CONFIGURATIONS_DIR
+    # check that given main configuration exits
+    if not os.path.isfile(MAIN_CONFIG_NAME):
+        temp = CONFIGURATIONS_DIR + os.sep + MAIN_CONFIG_NAME
+        if os.path.isfile(temp):
+            MAIN_CONFIG_NAME = temp
+        else:
+            print '*** Unable to find given main configuration file: ' + MAIN_CONFIG_NAME
+
     # print given options
     print_options()
     return True
@@ -445,7 +440,7 @@ def init_data():
         print ' --------------------------'
 
     common_conf_path = CONFIGURATIONS_DIR + os.sep + COMMON_CONFIG_DIR_NAME + os.sep + COMMON_CONFIG_NAME
-    target_conf_path = CONFIGURATIONS_DIR + os.sep + MAIN_CONFIG_NAME
+    target_conf_path = MAIN_CONFIG_NAME
     CONFIG_PARSER_COMMON = ConfigParser.ConfigParser()
     print ' Parsing: ' + common_conf_path
     CONFIG_PARSER_COMMON.readfp(open(common_conf_path))
@@ -886,7 +881,7 @@ def parse_components(target_config):
     print '----------------------------------------'
     print ' Parse target configuration files'
     conf_base_path = CONFIGURATIONS_DIR + os.sep + PLATFORM_IDENTIFIER + os.sep
-    main_conf_file = CONFIGURATIONS_DIR + os.sep + MAIN_CONFIG_NAME
+    main_conf_file = MAIN_CONFIG_NAME
     parse_component_data(main_conf_file, conf_base_path)
     return
 
