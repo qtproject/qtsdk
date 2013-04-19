@@ -126,6 +126,9 @@ def update_repository(source_pkg, target_repo, config_xml_file, components_to_up
     print('  Source config xml: {}'.format(config_xml_file))
     print('  Components:        {}'.format(components_to_update))
     print()
+    if not len(components_to_update):
+        print('*** You asked me to update nothing?')
+        sys.exit(-1)
     if not os.path.exists(source_pkg):
         print('*** Source pkg does not exist: {}'.format(source_pkg))
         sys.exit(-1)
@@ -161,12 +164,30 @@ def sanity_check(component_list, source_pkg):
         if os.path.isdir(temp):
             source_packages.append(name)
     for item in component_list:
+        orig_item = item
         if item == '*':
             break
+        if '*' in item:
+            left, right = item.split('*')
+            item = left.rstrip('.')
         if item not in source_packages:
             print('*** Sanity check fail!')
-            print('*** Can not update component: [{}] as it does not exist under: {}'.format(item, source_pkg))
+            print('*** Can not update component: [{}] as it does not exist under: {}'.format(orig_item, source_pkg))
             sys.exit(-1)
+
+
+###############################
+# Function
+###############################
+def expand_wildcard(selection, component_list):
+    expanded_list = []
+    left, right = selection.split('*')
+    component = left.rstrip('.')
+    for counter, item in enumerate(component_list):
+        # e.g. if 'qt.502.*' found in 'qt.502.gcc'
+        if component in item:
+            expanded_list.append(item)
+    return expanded_list
 
 
 ###############################
@@ -206,7 +227,10 @@ def ask_for_components(source_pkg):
         if is_number(var) and int(var) not in selected_items and (0 <= int(var) < count):
             selected_items.append(int(var))
             component_list.append(components[int(var)])
-
+        if '*' in var:
+            expanded_components = expand_wildcard(var, components)
+            component_list += expanded_components
+            break
     print()
     print('You are about to update the following components:')
     print()
@@ -234,6 +258,31 @@ def backup_repo(backup_base_dir, directory_to_be_backed_up):
     print('Created backup of repository:')
     print('Source:      {}'.format(directory_to_be_backed_up))
     print('Destination: {}'.format(backup_full_path))
+
+
+###############################
+# Function
+###############################
+def parse_components_from_argument(caller_arguments):
+    components_to_update_list = caller_arguments.components_to_update
+    components_to_update_list = components_to_update_list.replace(" ", "")
+    split_components = caller_arguments.components_to_update.split(',')
+    return_list = []
+    # parse all possible components in source repo
+    full_component_listing = []
+    for name in os.listdir(caller_arguments.source_pkg):
+        temp = os.path.join(caller_arguments.source_pkg, name)
+        if os.path.isdir(temp):
+            full_component_listing.append(name)
+    # figure out all components that should be updated
+    for item in split_components:
+        if '*' in item:
+            expanded_items = expand_wildcard(item, full_component_listing)
+            return_list += expanded_items
+        else:
+            return_list.append(item)
+    # return list should contain all single items and items with wild mark
+    return return_list
 
 
 ###############################
@@ -276,7 +325,7 @@ if __name__ == "__main__":
         # ask user which components to update
         components_to_update = ask_for_components(caller_arguments.source_pkg)
     else:
-        components_to_update = caller_arguments.components_to_update.split(',')
+        components_to_update = parse_components_from_argument(caller_arguments)
     # sanity check
     sanity_check(components_to_update, caller_arguments.source_pkg)
     # backup current repo
