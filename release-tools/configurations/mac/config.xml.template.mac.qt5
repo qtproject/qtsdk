@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <Installer>
-    <Name>Qt 5.0.2</Name>
-    <Version>5.0.2</Version>
-    <Title>Qt 5.0.2</Title>
+    <Name>Qt 5.1.0</Name>
+    <Version>5.1.0</Version>
+    <Title>Qt 5.1.0</Title>
     <Publisher>Qt</Publisher>
     <Logo>logo.png</Logo>
     <LogoSmall>logo-small.png</LogoSmall>
     <Icon>logo-small</Icon>
     <Watermark>watermark.png</Watermark>
-    <StartMenuDir>Qt 5.0.2</StartMenuDir>
+    <StartMenuDir>Qt 5.1.0</StartMenuDir>
     <ProductUrl>http://qt-project.org/</ProductUrl>
     <!--<Background>background.png</Background>-->
     <UninstallerName>MaintenanceTool</UninstallerName>
@@ -20,10 +20,10 @@
     </RemoteRepositories>-->
     <Pages>
         <Page name="LicenseAgreementPage">
-            <AcceptLicenseLabel>I h&lt;u&gt;a&lt;/u&gt;ve read and agree to the following terms contained in the license agreements accompanying the Qt 5.0.2 installer and additional items. I agree that my use of the Qt 5.0.2 installer is governed by the terms and conditions contained in these license agreements.</AcceptLicenseLabel>
-            <RejectLicenseLabel>I &lt;u&gt;d&lt;/u&gt;o not accept the terms and conditions of the above listed license agreements. Please note by checking the box, you must cancel the installation or downloading the Qt 5.0.2 and must destroy all copies, or portions thereof, of the Qt 5.0.2 in your possessions.</RejectLicenseLabel>
+            <AcceptLicenseLabel>I h&lt;u&gt;a&lt;/u&gt;ve read and agree to the following terms contained in the license agreements accompanying the Qt 5.1.0 installer and additional items. I agree that my use of the Qt 5.1.0 installer is governed by the terms and conditions contained in these license agreements.</AcceptLicenseLabel>
+            <RejectLicenseLabel>I &lt;u&gt;d&lt;/u&gt;o not accept the terms and conditions of the above listed license agreements. Please note by checking the box, you must cancel the installation or downloading the Qt 5.1.0 and must destroy all copies, or portions thereof, of the Qt 5.1.0 in your possessions.</RejectLicenseLabel>
         </Page>
     </Pages>
     <!-- @homeDir@ and @rootDir@ are some of the supported vars -->
-    <TargetDir>@homeDir@/Qt5.0.2</TargetDir>
+    <TargetDir>@homeDir@/Qt5.1.0</TargetDir>
 </Installer>

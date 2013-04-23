@@ -39,20 +39,39 @@
 ##
 #############################################################################
 
+[PackageNamespace]
+name:                   qt
 
-[qt.510.patcher]
+[PlatformIdentifier]
+identifier:             windows
 
-[qt.510.android_amrv5]
-archives:               510.android_armv5
-target_install_base:    /5.1.0/android_armv5
-version:                5.1.0
-version_tag:            %QT_VERSION%
-package_default:        false
-[510.android_armv5]
-archive_uri:            /qt/5.1.0/latest/android_armv5/qt5_essentials.7z
-package_strip_dirs:
-target_install_dir:     /
-rpath_target:           /lib
-archive_name:           android_armv5_qt5_essentials.7z
+[ArchiveRemoteLocation.default]
+base_url:               http://add.your.archive.url
+base_path:
 
+# for testing purposes
+[PackageIgnoreList]
+packages:               foo.bar, foo.bar2, foo.bar3
+
+[ExtraPackageConfigurationFiles]
+file_list:              x86-tools-qtcreator-conf, x86-tools-mingw-conf, x86-tools-vcredist_32-conf, x86_64-tools-vcredist_64-conf, x86-tools-maintenancetool-conf, installer-readme-conf
+
+[OfflinePackageExcludeList]
+package_list:
+
+[SdkUpdateRepository]
+repository_url_release: http://dist.qt.digia.com/qt5/windows/x86/online_repository
+
+[ConfigDir]
+template_name:          config_qt5
+
+[ConfigXml]
+template_name:          config.xml.template.windows.qt5-sdk
+
+[WorkingDirectories]
+packages_dir:           pkg_tools
+
+[InstallerFrameworkTools]
+name:                   ifwt
+package_url:
 

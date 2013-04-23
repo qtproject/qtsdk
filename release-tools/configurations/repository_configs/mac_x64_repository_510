@@ -39,20 +39,45 @@
 ##
 #############################################################################
 
+[PackageNamespace]
+name:                   qt
 
-[qt.510.patcher]
+[PlatformIdentifier]
+identifier:             mac
 
-[qt.510.android_amrv5]
-archives:               510.android_armv5
-target_install_base:    /5.1.0/android_armv5
-version:                5.1.0
-version_tag:            %QT_VERSION%
-package_default:        false
-[510.android_armv5]
-archive_uri:            /qt/5.1.0/latest/android_armv5/qt5_essentials.7z
-package_strip_dirs:
-target_install_dir:     /
-rpath_target:           /lib
-archive_name:           android_armv5_qt5_essentials.7z
+[ArchiveRemoteLocation.default]
+base_url:               http://add.your.archive.url
+base_path:
+
+# for testing purposes
+[PackageIgnoreList]
+packages:               foo.bar, foo.bar2, foo.bar3
+
+[ExtraPackageConfigurationFiles]
+file_list:              qt510-src-conf, x86_64-qt510-clang-conf
+
+[OfflinePackageExcludeList]
+package_list:
+
+[qtmenunib]
+package_url:            http://download.qt-project.org/development_releases/prebuilt/mac/qt_menu.nib.7z
+
+[SdkUpdateRepository]
+repository_url_release: http://dist.qt.digia.com/qt5/mac/x64/online_repository
+
+[ConfigDir]
+template_name:          config_qt5
+
+[ConfigXml]
+template_name:          config.xml.template.mac.qt5-sdk
+
+[WorkingDirectories]
+packages_dir:           pkg_tools, pkg_510
+
+[InstallerFrameworkTools]
+name:                   ifwt
+package_url:
+
+
 
 

@@ -56,12 +56,6 @@ createShortcuts = function()
     component.addOperation( "CreateShortcut",
                             component_root_path + "/bin/linguist.exe",
                             "@StartMenuDir@/5.1.0/MSVC 2010 OpenGL/Linguist.lnk");
-
-
-    // Examples & Demos
-    //component.addOperation( "CreateShortcut",
-    //                        component_root_path + "/bin/qtdemo.exe",
-    //                        "@StartMenuDir@/5.1.0/MSVC 2010/Examples & Demos.lnk");
 }
 
 Component.prototype.beginInstallation = function()
