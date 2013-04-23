@@ -42,6 +42,8 @@
 [qt.502.patcher]
 
 [qt.502.win32_mingw47]
+version:                5.0.2
+version_tag:            %QT_VERSION%
 
 [qt.502.win32_mingw47.essentials]
 archives:               502.mingw47.essentials, icu_49.mingw_32, d3d_compiler_43.x86, 502.mingw47.runtime
@@ -56,19 +58,19 @@ target_install_dir:     /
 rpath_target:
 archive_name:           mingw47_essentials.7z
 [icu_49.mingw_32]
-archive_uri:            http://origin.releases.qt-project.org/prebuilt/icu-mingw-builds-runtime.7z
+archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/mingw/icu-mingw-builds-runtime.7z
 package_strip_dirs:     0
 target_install_dir:     /bin
 rpath_target:
 archive_name:           icu-mingw-builds-runtime.7z
 [d3d_compiler_43.x86]
-archive_uri:            http://origin.releases.qt-project.org/prebuilt/D3DCompiler_43-x86.dll.7z
+archive_uri:            http://download.qt-project.org/development_releases/prebuilt/d3dcompiler/msvc2010/D3DCompiler_43-x86.dll.7z
 package_strip_dirs:     0
 target_install_dir:     /bin
 rpath_target:
 archive_name:           D3DCompiler_43-x86.7z
 [502.mingw47.runtime]
-archive_uri:            http://origin.releases.qt-project.org/prebuilt/mingw_32/x32-4.7.2-release-posix-sjlj-rev8-runtime.7z
+archive_uri:            http://download.qt-project.org/development_releases/prebuilt/mingw_32/x32-4.7.2-release-posix-sjlj-rev8-runtime.7z
 package_strip_dirs:     0
 target_install_dir:     /bin
 rpath_target:

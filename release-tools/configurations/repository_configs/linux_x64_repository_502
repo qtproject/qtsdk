@@ -39,51 +39,39 @@
 ##
 #############################################################################
 
+[PackageNamespace]
+name:                   qt
 
-[qt.502.patcher]
+[PlatformIdentifier]
+identifier:             linux
 
-[qt.502.gcc]
-version:                5.0.2
-version_tag:            %QT_VERSION%
+[ArchiveRemoteLocation.default]
+base_url:               http://add.your.archive.url
+base_path:
 
-[qt.502.gcc.essentials]
-archives:               502.gcc.essentials, 502.gcc.icu, 502.gcc.essentials.icu_path_patcher
-target_install_base:    /5.0.2/gcc
-version:                5.0.2
-version_tag:            %QT_VERSION%
-package_default:        true
-[502.gcc.essentials]
-archive_uri:            /qt/5.0.2/latest/linux_gcc_32_ubuntu1110/qt5_essentials.7z
-package_strip_dirs:
-target_install_dir:     /
-rpath_target:           /lib
-archive_name:           gcc_qt5_essentials.7z
-[502.gcc.icu]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/libicu_x86_ubuntu1110.7z
-package_strip_dirs:     0
-target_install_dir:     /lib
-rpath_target:
-archive_name:           libicu_x86_32_ubuntu1110.7z
-[502.gcc.essentials.icu_path_patcher]
-archive_uri:            patcher.sh
-package_strip_dirs:     0
-target_install_dir:     /
-archive_name:           icu_path_patcher.sh.7z
+# for testing purposes
+[PackageIgnoreList]
+packages:               foo.bar, foo.bar2, foo.bar3
 
-[qt.502.gcc.addons]
-archives:               502.gcc.addons, 502.gcc.addons.icu_path_patcher
-target_install_base:    /5.0.2/gcc
-version:                5.0.2
-version_tag:            %QT_VERSION%
-package_default:        true
-[502.gcc.addons]
-archive_uri:            /qt/5.0.2/latest/linux_gcc_32_ubuntu1110/qt5_addons.7z
-package_strip_dirs:
-target_install_dir:     /
-rpath_target:           /lib
-archive_name:           gcc_qt5_addons.7z
-[502.gcc.addons.icu_path_patcher]
-archive_uri:            patcher.sh
-package_strip_dirs:     0
-target_install_dir:     /
-archive_name:           icu_path_patcher.sh.7z
+[ExtraPackageConfigurationFiles]
+file_list:              qt502-src-conf, x86_64-qt502-gcc-conf
+
+[OfflinePackageExcludeList]
+package_list:
+
+[SdkUpdateRepository]
+repository_url_release:
+
+[ConfigDir]
+template_name:          config_qt5
+
+[ConfigXml]
+template_name:          config.xml.template.linux.qt5-sdk
+
+[WorkingDirectories]
+packages_dir:           pkg_tools, pkg_502
+
+[InstallerFrameworkTools]
+name:                   ifwt
+package_url:
+

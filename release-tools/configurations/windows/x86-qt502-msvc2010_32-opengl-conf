@@ -42,6 +42,8 @@
 [qt.502.patcher]
 
 [qt.502.win32_msvc2010_opengl]
+version:                5.0.2
+version_tag:            %QT_VERSION%
 
 [qt.502.win32_msvc2010_opengl.essentials]
 archives:               502.msvc2010_opengl.essentials, icu_49_release.win_32, icu_49_debug.win_32
@@ -56,13 +58,13 @@ target_install_dir:     /
 rpath_target:
 archive_name:           msvc2010_opengl_essentials.7z
 [icu_49_release.win_32]
-archive_uri:            http://origin.releases.qt-project.org/prebuilt/icu_49_win_32_release.7z
+archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/msvc2010/icu_49_win_32_release.7z
 package_strip_dirs:     0
 target_install_dir:     /bin
 rpath_target:
 archive_name:           icu_49_win_32_release.7z
 [icu_49_debug.win_32]
-archive_uri:            http://origin.releases.qt-project.org/prebuilt/icu_49_win_32_debug.7z
+archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/msvc2010/icu_49_win_32_debug.7z
 package_strip_dirs:     0
 target_install_dir:     /bin
 rpath_target:

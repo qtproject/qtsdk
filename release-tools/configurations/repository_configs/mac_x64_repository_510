@@ -63,7 +63,7 @@ package_list:
 package_url:            http://download.qt-project.org/development_releases/prebuilt/mac/qt_menu.nib.7z
 
 [SdkUpdateRepository]
-repository_url_release: http://dist.qt.digia.com/qt5/mac/x64/online_repository
+repository_url_release:
 
 [ConfigDir]
 template_name:          config_qt5

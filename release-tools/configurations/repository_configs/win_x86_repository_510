@@ -60,7 +60,7 @@ file_list:              qt510-src-conf, x86-qt510-msvc2010_32-conf, x86-qt510-mi
 package_list:
 
 [SdkUpdateRepository]
-repository_url_release: http://dist.qt.digia.com/qt5/windows/x86/online_repository
+repository_url_release:
 
 [ConfigDir]
 template_name:          config_qt5

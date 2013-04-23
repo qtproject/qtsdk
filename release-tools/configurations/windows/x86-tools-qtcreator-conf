@@ -54,7 +54,7 @@ target_install_dir:     /
 rpath_target:
 archive_name:           qt-creator-opensource-vs2010-32.7z
 [tools.qtcreator.d3d_compiler_43.x86]
-archive_uri:            http://origin.releases.qt-project.org/prebuilt/D3DCompiler_43-x86.dll.7z
+archive_uri:            http://download.qt-project.org/development_releases/prebuilt/d3dcompiler/msvc2010/D3DCompiler_43-x86.dll.7z
 package_strip_dirs:     0
 target_install_dir:     /bin
 rpath_target:

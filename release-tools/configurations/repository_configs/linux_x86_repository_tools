@@ -60,7 +60,7 @@ file_list:              x86-tools-conf, x86-tools-maintenancetool-conf, installe
 package_list:
 
 [SdkUpdateRepository]
-repository_url_release: http://dist.qt.digia.com/qt5/linux/x86/online_repository
+repository_url_release:
 
 [ConfigDir]
 template_name:          config_qt5

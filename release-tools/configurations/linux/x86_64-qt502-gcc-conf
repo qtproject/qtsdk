@@ -43,6 +43,8 @@
 [qt.502.patcher]
 
 [qt.502.gcc_64]
+version:                5.0.2
+version_tag:            %QT_VERSION%
 
 [qt.502.gcc_64.essentials]
 archives:               502.gcc_64.essentials, 502.gcc_64.icu, 502.gcc_64.essentials.icu_path_patcher
@@ -57,7 +59,7 @@ target_install_dir:     /
 rpath_target:           /lib
 archive_name:           gcc_64_qt5_essentials.7z
 [502.gcc_64.icu]
-archive_uri:            http://origin.releases.qt-project.org/prebuilt/libicu_x86_64_ubuntu1110.7z
+archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/libicu_x86_64_ubuntu1110.7z
 package_strip_dirs:     0
 target_install_dir:     /lib
 rpath_target:

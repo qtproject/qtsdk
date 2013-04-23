@@ -42,6 +42,8 @@
 [qt.502.patcher]
 
 [qt.502.clang_64]
+version:                5.0.2
+version_tag:            %QT_VERSION%
 
 [qt.502.clang_64.essentials]
 archives:               502.clang_64.essentials

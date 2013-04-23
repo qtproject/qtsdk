@@ -12,12 +12,12 @@
     <ProductUrl>http://qt-project.org/</ProductUrl>
     <!--<Background>background.png</Background>-->
     <UninstallerName>MaintenanceTool</UninstallerName>
-    <!--<RemoteRepositories>
+    <RemoteRepositories>
         <Repository>
             <Url>%UPDATE_REPOSITORY_URL%</Url>
-            <Required>false</Required>
+            <Enabled>1</Enabled>
         </Repository>
-    </RemoteRepositories>-->
+    </RemoteRepositories>
     <Pages>
         <Page name="LicenseAgreementPage">
             <AcceptLicenseLabel>I h&lt;u&gt;a&lt;/u&gt;ve read and agree to the following terms contained in the license agreements accompanying the Qt SDK installer and additional items. I agree that my use of the Qt SDK installer is governed by the terms and conditions contained in these license agreements.</AcceptLicenseLabel>

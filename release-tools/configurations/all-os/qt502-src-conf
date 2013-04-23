@@ -71,67 +71,67 @@ version:                5.0.2
 version_tag:            %QT_VERSION%
 package_default:        true
 [src.essentials.qtbase]
-archive_uri:            /qt/5.0.2/latest/src/submodules/qtbase-opensource-src-5.0.2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.2/latest/src/submodules/qtbase-@LICENSE@-src-5.0.2.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /qtbase
 rpath_target:
 archive_name:           qtbase-src.7z
 [src.essentials.qtdeclarative]
-archive_uri:            /qt/5.0.2/latest/src/submodules/qtdeclarative-opensource-src-5.0.2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.2/latest/src/submodules/qtdeclarative-@LICENSE@-src-5.0.2.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /qtdeclarative
 rpath_target:
 archive_name:           qtdeclarative-src.7z
 [src.essentials.qtdoc]
-archive_uri:            /qt/5.0.2/latest/src/submodules/qtdoc-opensource-src-5.0.2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.2/latest/src/submodules/qtdoc-@LICENSE@-src-5.0.2.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /qtdoc
 rpath_target:
 archive_name:           qtdoc-src.7z
 [src.essentials.qtjsbackend]
-archive_uri:            /qt/5.0.2/latest/src/submodules/qtjsbackend-opensource-src-5.0.2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.2/latest/src/submodules/qtjsbackend-@LICENSE@-src-5.0.2.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /qtjsbackend
 rpath_target:
 archive_name:           qtjsbackend-src.7z
 [src.essentials.qtquick1]
-archive_uri:            /qt/5.0.2/latest/src/submodules/qtquick1-opensource-src-5.0.2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.2/latest/src/submodules/qtquick1-@LICENSE@-src-5.0.2.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /qtquick1
 rpath_target:
 archive_name:           qtquick1-src.7z
 [src.essentials.qtscript]
-archive_uri:            /qt/5.0.2/latest/src/submodules/qtscript-opensource-src-5.0.2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.2/latest/src/submodules/qtscript-@LICENSE@-src-5.0.2.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /qtscript
 rpath_target:
 archive_name:           qtscript-src.7z
 [src.essentials.qttools]
-archive_uri:            /qt/5.0.2/latest/src/submodules/qttools-opensource-src-5.0.2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.2/latest/src/submodules/qttools-@LICENSE@-src-5.0.2.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /qttools
 rpath_target:
 archive_name:           qttools-src.7z
 [src.essentials.qtwebkit]
-archive_uri:            /qt/5.0.2/latest/src/submodules/qtwebkit-opensource-src-5.0.2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.2/latest/src/submodules/qtwebkit-@LICENSE@-src-5.0.2.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /qtwebkit
 rpath_target:
 archive_name:           qtwebkit-src.7z
 [src.essentials.qtwebkitexamplesanddemos]
-archive_uri:            /qt/5.0.2/latest/src/submodules/qtwebkit-examples-and-demos-opensource-src-5.0.2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.2/latest/src/submodules/qtwebkit-examples-and-demos-@LICENSE@-src-5.0.2.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /qtwebkit-examples-and-demos
 rpath_target:
 archive_name:           qtwebkit-examples-and-demos-src.7z
 [src.essentials.qtxmlpatterns]
-archive_uri:            /qt/5.0.2/latest/src/submodules/qtxmlpatterns-opensource-src-5.0.2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.2/latest/src/submodules/qtxmlpatterns-@LICENSE@-src-5.0.2.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /qtxmlpatterns
 rpath_target:
 archive_name:           qtxmlpatterns-src.7z
 [src.essentials.qtmultimedia]
-archive_uri:            /qt/5.0.2/latest/src/submodules/qtmultimedia-opensource-src-5.0.2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.2/latest/src/submodules/qtmultimedia-@LICENSE@-src-5.0.2.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /qtmultimedia
 rpath_target:
@@ -153,7 +153,7 @@ version:                5.0.2
 version_tag:            %QT_VERSION%
 package_default:        true
 [src.addons.qtactiveqt]
-archive_uri:            /qt/5.0.2/latest/src/submodules/qtactiveqt-opensource-src-5.0.2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.2/latest/src/submodules/qtactiveqt-@LICENSE@-src-5.0.2.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:
@@ -166,7 +166,7 @@ version:                5.0.2
 version_tag:            %QT_VERSION%
 package_default:        true
 [src.addons.qtgraphicaleffects]
-archive_uri:            /qt/5.0.2/latest/src/submodules/qtgraphicaleffects-opensource-src-5.0.2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.2/latest/src/submodules/qtgraphicaleffects-@LICENSE@-src-5.0.2.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:
@@ -179,7 +179,7 @@ version:                5.0.2
 version_tag:            %QT_VERSION%
 package_default:        true
 [src.addons.qtimageformats]
-archive_uri:            /qt/5.0.2/latest/src/submodules/qtimageformats-opensource-src-5.0.2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.2/latest/src/submodules/qtimageformats-@LICENSE@-src-5.0.2.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:
@@ -192,7 +192,7 @@ version:                5.0.2
 version_tag:            %QT_VERSION%
 package_default:        true
 [src.addons.qtsvg]
-archive_uri:            /qt/5.0.2/latest/src/submodules/qtsvg-opensource-src-5.0.2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.2/latest/src/submodules/qtsvg-@LICENSE@-src-5.0.2.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:
@@ -205,7 +205,7 @@ version:                5.0.2
 version_tag:            %QT_VERSION%
 package_default:        true
 [src.addons.qttranslations]
-archive_uri:            /qt/5.0.2/latest/src/submodules/qttranslations-opensource-src-5.0.2.ARCHIVE_TAG
+archive_uri:            /qt/5.0.2/latest/src/submodules/qttranslations-@LICENSE@-src-5.0.2.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:

@@ -60,7 +60,7 @@ file_list:              qt510-src-conf, x86_64-qt510-clang-conf, x86_64-tools-co
 package_list:
 
 [qtmenunib]
-package_url:            http://origin.releases.qt-project.org/digia/ifw_prebuilt/qt_menu.nib.7z
+package_url:            http://download.qt-project.org/development_releases/prebuilt/mac/qt_menu.nib.7z
 
 [SdkUpdateRepository]
 repository_url_release: http://../qt5repository/macx/x64/online_qt5sdk_repo
