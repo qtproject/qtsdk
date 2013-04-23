@@ -122,7 +122,7 @@ class SdkComponent:
                 else:
                     # sanity check, duplicate template should not exist to avoid
                     # problems!
-                    print '*** Found duplicate template for: ' + section_name
+                    print '*** Found duplicate template for: ' + self.package_name
                     print '*** Only one template for package should exist!'
                     print '*** Fix your configuration! Abort!'
                     sys.exit(-1)
