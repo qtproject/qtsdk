@@ -85,7 +85,7 @@ def fetch_repogen_tools(tools_uri):
         tool = bldinstallercommon.locate_executable(REPOGEN_TOOLS_DIR, REPOGEN_TOOL + executable_suffix)
         if os.path.isfile(tool):
             REPOGEN_TOOL = tool
-            print('Found existing repogen tool: {}'.format(REPOGEN_TOOL))
+            print('Found existing repogen tool: {0}'.format(REPOGEN_TOOL))
             return
         else:
             # remove the bogus directory
@@ -99,21 +99,21 @@ def fetch_repogen_tools(tools_uri):
         package_save_as_temp = os.path.normpath(ROOT_DIR + os.sep + os.path.basename(tools_uri))
         bldinstallercommon.retrieve_url(tools_uri, package_save_as_temp)
         bldinstallercommon.extract_file(package_save_as_temp, REPOGEN_TOOLS_DIR)
-        print('Trying to locate repogen tool: {}'.format(REPOGEN_TOOL + executable_suffix))
+        print('Trying to locate repogen tool: {0}'.format(REPOGEN_TOOL + executable_suffix))
         tool = bldinstallercommon.locate_executable(REPOGEN_TOOLS_DIR, REPOGEN_TOOL + executable_suffix)
         if not os.path.isfile(tool):
-            print('Unable to locate repogen tool [{}] under directory: {}'.format(REPOGEN_TOOL + executable_suffix, REPOGEN_TOOLS_DIR))
+            print('Unable to locate repogen tool [{0}] under directory: {1}'.format(REPOGEN_TOOL + executable_suffix, REPOGEN_TOOLS_DIR))
             print('*** Abort!')
             sys.exit(-1)
         else:
             REPOGEN_TOOL = tool
     else:
-        print('Invalid url: {}'.format(tools_uri))
+        print('Invalid url: {0}'.format(tools_uri))
         print('*** Abort!')
         sys.exit(-1)
 
     # found the tool
-    print('Using repogen tool: {}'.format(REPOGEN_TOOL))
+    print('Using repogen tool: {0}'.format(REPOGEN_TOOL))
 
 
 ###############################
@@ -121,19 +121,19 @@ def fetch_repogen_tools(tools_uri):
 ###############################
 def update_repository(source_pkg, target_repo, config_xml_file, components_to_update):
     print('Updating repository')
-    print('  Target repository: {}'.format(target_repo))
-    print('  Source pkg:        {}'.format(source_pkg))
-    print('  Source config xml: {}'.format(config_xml_file))
-    print('  Components:        {}'.format(components_to_update))
+    print('  Target repository: {0}'.format(target_repo))
+    print('  Source pkg:        {0}'.format(source_pkg))
+    print('  Source config xml: {0}'.format(config_xml_file))
+    print('  Components:        {0}'.format(components_to_update))
     print()
     if not len(components_to_update):
         print('*** You asked me to update nothing?')
         sys.exit(-1)
     if not os.path.exists(source_pkg):
-        print('*** Source pkg does not exist: {}'.format(source_pkg))
+        print('*** Source pkg does not exist: {0}'.format(source_pkg))
         sys.exit(-1)
     if not os.path.exists(target_repo):
-        print('*** Target repository does not exist: {}'.format(target_repo))
+        print('*** Target repository does not exist: {0}'.format(target_repo))
         sys.exit(-1)
     cmd_args = [REPOGEN_TOOL, '--update', '-p', source_pkg, '-c', config_xml_file]
     if components_to_update[0] and components_to_update[0] == '*':
@@ -172,7 +172,7 @@ def sanity_check(component_list, source_pkg):
             item = left.rstrip('.')
         if item not in source_packages:
             print('*** Sanity check fail!')
-            print('*** Can not update component: [{}] as it does not exist under: {}'.format(orig_item, source_pkg))
+            print('*** Can not update component: [{0}] as it does not exist under: {1}'.format(orig_item, source_pkg))
             sys.exit(-1)
 
 
@@ -211,7 +211,7 @@ def ask_for_components(source_pkg):
             marker = '-'
             if counter in selected_items:
                 marker = '+'
-            print('{} {} {}'.format(counter, marker, item))
+            print('{0} {1} {2}'.format(counter, marker, item))
         print()
         print('a: Select all')
         print('c: Continue')
@@ -235,7 +235,7 @@ def ask_for_components(source_pkg):
     print('You are about to update the following components:')
     print()
     for item in component_list:
-        print('  {}'.format(item))
+        print('  {0}'.format(item))
     print()
     var = raw_input("Is the above selection correct? y/n ")
     if var not in ['y', 'Y']:
@@ -256,8 +256,8 @@ def backup_repo(backup_base_dir, directory_to_be_backed_up):
     # backup
     bldinstallercommon.copy_tree(directory_to_be_backed_up, backup_full_path)
     print('Created backup of repository:')
-    print('Source:      {}'.format(directory_to_be_backed_up))
-    print('Destination: {}'.format(backup_full_path))
+    print('Source:      {0}'.format(directory_to_be_backed_up))
+    print('Destination: {0}'.format(backup_full_path))
 
 
 ###############################
@@ -300,12 +300,12 @@ if __name__ == "__main__":
     if caller_arguments.source_repo:
         if not os.path.isdir(caller_arguments.source_repo) or not os.path.isfile(caller_arguments.source_repo + os.sep + 'Updates.xml'):
             print('*** The given source directory does not seem to be proper repository? Abort!')
-            print('Given source repository: {}'.format(caller_arguments.source_repo))
+            print('Given source repository: {0}'.format(caller_arguments.source_repo))
             sys.exit(-1)
         if os.path.isfile(caller_arguments.target_repo + os.sep + 'Updates.xml'):
             print('The given destination directory already contains a repository.')
             print('We just update the existing repository:')
-            print('Given target repository: {}'.format(caller_arguments.target_repo))
+            print('Given target repository: {0}'.format(caller_arguments.target_repo))
         else:
             print('Initializing the repository for the first time!')
             # create dirs
@@ -314,8 +314,8 @@ if __name__ == "__main__":
             bldinstallercommon.copy_tree(caller_arguments.source_repo, caller_arguments.target_repo)
             # everything done now!
             print('Repository initialized:')
-            print('Source:      {}'.format(caller_arguments.source_repo))
-            print('Destination: {}'.format(caller_arguments.target_repo))
+            print('Source:      {0}'.format(caller_arguments.source_repo))
+            print('Destination: {0}'.format(caller_arguments.target_repo))
             sys.exit()
     # fetch tools
     fetch_repogen_tools(caller_arguments.repogen_tools)
