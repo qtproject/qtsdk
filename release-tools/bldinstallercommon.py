@@ -696,7 +696,7 @@ def do_execute_sub_process(args, execution_path, abort_on_fail, get_output=False
                 print output
             else:
                 print 'Note, no output from the sub process!'
-            raise Exception('*** Execution failed with code: {}'.format(theproc.returncode))
+            raise Exception('*** Execution failed with code: {0}'.format(theproc.returncode))
         print '      --------------------------------------------------------------------'
     except Exception:
         sys.stderr.write('      ERROR - ERROR - ERROR - ERROR - ERROR - ERROR !!!' + os.linesep)
