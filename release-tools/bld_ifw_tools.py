@@ -71,7 +71,7 @@ def get_default_qt_configure_options():
 ###############################
 class IfwOptions:
 
-    default_qt_source_package_uri               = 'http://origin.releases.qt-project.org/prebuilt/qt-everywhere-opensource-src-4.8.0-ifw-patch.tar.gz'
+    default_qt_source_package_uri               = 'http://download.qt-project.org/development_releases/prebuilt/qt-src-for-ifw/qt-everywhere-opensource-src-4.8.0-ifw-patch.tar.gz'
     default_qt_source_package_uri_saveas        = ROOT_DIR + os.sep + os.path.basename(default_qt_source_package_uri)
     default_qt_configure_options_linux          = '-static -release -opensource -confirm-license -silent -nomake examples -nomake demos -nomake tests -nomake docs -nomake plugins -qt-zlib -qt-libtiff -qt-libpng -qt-libmng -qt-libjpeg -no-webkit -no-phonon -no-dbus -no-opengl -no-qt3support -no-xmlpatterns -no-svg -no-nis -no-cups -no-multimedia -no-audio-backend -no-phonon -no-phonon-backend -no-webkit -no-declarative -no-declarative-debug -no-accessibility -no-glib -no-gtkstyle'
     default_qt_configure_options_mac            = '-static -release -opensource -confirm-license -silent -nomake examples -nomake demos -nomake tests -nomake docs -nomake plugins -qt-zlib -qt-libtiff -qt-libpng -qt-libmng -qt-libjpeg -no-webkit -no-phonon -no-dbus -no-opengl -no-qt3support -no-xmlpatterns -no-svg -no-nis -no-cups -no-multimedia -no-audio-backend -no-phonon -no-phonon-backend -no-webkit -no-declarative -no-declarative-debug -no-accessibility'
