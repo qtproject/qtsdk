@@ -33,7 +33,7 @@ Component.prototype.createOperations = function()
         component.addOperation( "CreateShortcut",
                                 notePadLocation,
                                 "@StartMenuDir@/README.lnk",
-                                component_root_path + "/README.txt");
+                                component_root_path + "/README");
 
         // shortcut to qt-project web page
         component.addOperation( "CreateShortcut",
@@ -61,7 +61,7 @@ Component.prototype.installationFinished = function()
         if (installer.isInstaller() && installer.status == QInstaller.Success) {
             var isReadMeCheckBoxChecked = component.userInterface( "ReadMeCheckBoxForm" ).readMeCheckBox.checked;
             if (isReadMeCheckBoxChecked) {
-                QDesktopServices.openUrl("file:///" + installer.value("TargetDir") + "/README.txt");
+                QDesktopServices.openUrl("file:///" + installer.value("TargetDir") + "/README");
             }
         }
     } catch(e) {
