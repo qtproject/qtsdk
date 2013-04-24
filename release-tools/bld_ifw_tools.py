@@ -107,7 +107,7 @@ class IfwOptions:
             self.make_cmd                               = 'nmake'
             self.qt_qmake_bin                           = self.qt_qmake_bin + '.exe'
             self.qt_configure_bin                       = self.qt_configure_bin + '.exe'
-        self.build_artefacts_dir                        = ROOT_DIR + os.sep + 'build_artefacts'
+        self.build_artifacts_dir                        = ROOT_DIR + os.sep + 'build_artifacts'
         self.mac_deploy_qt_archive_name                 = 'macdeployqt.7z'
         self.mac_qt_menu_nib_archive_name               = 'qt_menu.nib.7z'
         # determine filenames used later on
@@ -365,12 +365,12 @@ def clean_build_environment(options):
         os.remove(options.installer_framework_archive_name)
     if os.path.isfile(options.qt_source_package_uri_saveas):
         os.remove(options.qt_source_package_uri_saveas)
-    if os.path.exists(options.build_artefacts_dir):
-        bldinstallercommon.remove_tree(options.build_artefacts_dir)
+    if os.path.exists(options.build_artifacts_dir):
+        bldinstallercommon.remove_tree(options.build_artifacts_dir)
     if os.path.exists(options.product_key_checker_source_dir):
         bldinstallercommon.remove_tree(options.product_key_checker_source_dir)
-    # create build artefacts directory
-    bldinstallercommon.create_dirs(options.build_artefacts_dir)
+    # create build artifacts directory
+    bldinstallercommon.create_dirs(options.build_artifacts_dir)
 
 
 ###############################
@@ -390,7 +390,7 @@ def archive_installer_framework(options):
                 os.remove(os.path.join(root, filename))
     cmd_args = ['7z', 'a', options.installer_framework_archive_name, os.path.basename(options.installer_framework_build_dir)]
     bldinstallercommon.do_execute_sub_process(cmd_args, ROOT_DIR, True)
-    shutil.move(options.installer_framework_archive_name, options.build_artefacts_dir)
+    shutil.move(options.installer_framework_archive_name, options.build_artifacts_dir)
 
 
 ###############################
@@ -424,7 +424,7 @@ def archive_installerbase(options):
     if not os.path.isfile(options.installer_base_archive_name):
         print('*** Failed to generate archive: {0}'.format(options.installer_base_archive_name))
         sys.exit(-1)
-    shutil.move(options.installer_base_archive_name, options.build_artefacts_dir)
+    shutil.move(options.installer_base_archive_name, options.build_artifacts_dir)
 
 
 ###############################
@@ -442,7 +442,7 @@ def archive_nib(options):
     if not os.path.isfile(options.mac_qt_menu_nib_archive_name):
         print('*** Failed to generate archive: {0}'.format(options.mac_qt_menu_nib_archive_name))
         sys.exit(-1)
-    shutil.move(options.mac_qt_menu_nib_archive_name, options.build_artefacts_dir)
+    shutil.move(options.mac_qt_menu_nib_archive_name, options.build_artifacts_dir)
 
 
 ###############################
@@ -457,7 +457,7 @@ def archive_macdeployqt(options):
     if not os.path.isfile(options.mac_deploy_qt_archive_name):
         print('*** Failed to generate archive: {0}'.format( options.mac_deploy_qt_archive_name))
         sys.exit(-1)
-    shutil.move(options.mac_deploy_qt_archive_name, options.build_artefacts_dir)
+    shutil.move(options.mac_deploy_qt_archive_name, options.build_artifacts_dir)
 
 
 ###############################

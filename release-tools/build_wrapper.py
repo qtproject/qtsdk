@@ -82,6 +82,7 @@ SSH_COMMAND                 = ''
 SCP_COMMAND                 = ''
 PLATFORM                    = ''
 SRC_DEST_DIRS               = ['src', 'src/submodules', 'src/examples_injection', 'src/licheck']
+INSTALLER_BUILD_OUTPUT_DIR  = 'build_artifacts'
 # TODO: target directories hard coded, should be figured out from somewhere!
 BIN_TARGET_DIRS             = \
 {'linux-g++-Ubuntu11.10-x86_Android-armv5':'android_armv5/linux_x86'\
@@ -212,14 +213,14 @@ def handle_ifw_build():
     create_remote_dirs(PKG_SERVER_ADDR, PATH + '/' + LICENSE + '/ifw/' + ifw_branch)
 
     if bldinstallercommon.is_win_platform():
-        file_list = os.listdir(SCRIPT_ROOT_DIR+'/build_artefacts')
+        file_list = os.listdir(SCRIPT_ROOT_DIR+'/' + INSTALLER_BUILD_OUTPUT_DIR)
         for file_name in file_list:
             if file_name.endswith(".7z"):
                 cmd_args = [SCP_COMMAND, file_name, PKG_SERVER_ADDR + ':' + PATH + '/' + LICENSE + '/ifw/' + ifw_branch + '/']
-                bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + '/build_artefacts', True)
+                bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + '/' + INSTALLER_BUILD_OUTPUT_DIR, True)
     else:
         cmd_args = ['rsync', '-r', './', PKG_SERVER_ADDR + ':' + PATH + '/' + LICENSE + '/ifw/' + ifw_branch + '/']
-        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + '/build_artefacts', True)
+        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + '/' + INSTALLER_BUILD_OUTPUT_DIR, True)
 
 
 ###############################
