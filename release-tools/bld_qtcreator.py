@@ -56,10 +56,10 @@ from bld_utils import *
 
 def createDownloadExtract7zTask(url, targetPath, tempPath, callerArguments):
     sevenzipFile = os.path.join(tempPath, getFileNameFromUrl(url))
-    downloadExtract7zTask = Task("download {} to {} and extract it to {}".format(url, sevenzipFile, targetPath))
+    downloadExtract7zTask = Task("download {0} to {1} and extract it to {2}".format(url, sevenzipFile, targetPath))
 
     downloadExtract7zTask.addFunction(download, url, sevenzipFile)
-    downloadExtract7zTask.addFunction(runCommand, "7z x -y {} -o{}".format(
+    downloadExtract7zTask.addFunction(runCommand, "7z x -y {0} -o{1}".format(
         sevenzipFile, targetPath), tempPath, callerArguments)
     return downloadExtract7zTask
 
@@ -67,7 +67,7 @@ def createDownloadExtract7zTask(url, targetPath, tempPath, callerArguments):
 parser = argparse.ArgumentParser(prog = os.path.basename(sys.argv[0]),
     add_help=True, description="build Qt 5 based Qt Creator", formatter_class=argparse.RawTextHelpFormatter)
 if os.name == 'nt':
-    parser.epilog = "example on windows: " + os.linesep + "\tpython {} --clean " \
+    parser.epilog = "example on windows: " + os.linesep + "\tpython {0} --clean " \
         "--buildcommand C:\\bin\\ibjom.cmd --installcommand nmake --qt5path ..\\..\\creator_qt5 " \
         "--qt5_essentials7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/windows_vs2010_32/qt5_essentials.7z " \
         "--qt5_addons7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/windows_vs2010_32/qt5_addons.7z " \
@@ -79,14 +79,14 @@ if os.name == 'nt':
         "--environment_batch_argument x86 " \
         "".format(os.path.basename(sys.argv[0]))
 elif sys.platform == "darwin":
-    parser.epilog = "example: " + os.linesep + "\tpython {} --clean " \
+    parser.epilog = "example: " + os.linesep + "\tpython {0} --clean " \
         "--qt5path ../../qtcreator_qt5 " \
         "--qt5_essentials7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/mac_cocoa_10.7/qt5_essentials.7z " \
         "--qt5_addons7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/mac_cocoa_10.7/qt5_addons.7z " \
         "--installerbase7z http://hegel.it.local/projects/installerbase.7z " \
         "".format(os.path.basename(sys.argv[0]))
 else:
-    parser.epilog = "example: " + os.linesep + "\tpython {} --clean " \
+    parser.epilog = "example: " + os.linesep + "\tpython {0} --clean " \
         "--qt5path ../../qtcreator_qt5 " \
         "--qt5_essentials7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/linux_gcc_64_ubuntu1110/qt5_essentials.7z " \
         "--qt5_addons7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/linux_gcc_64_ubuntu1110/qt5_addons.7z " \
@@ -120,7 +120,7 @@ callerArguments = parser.parse_args()
 # cleanup some values inside the callerArguments object
 stripVars(callerArguments, "\"")
 if callerArguments.qt5path != os.path.abspath(callerArguments.qt5path):
-    print("changing the value of --qt5path from {} to {}".format(callerArguments.qt5path,
+    print("changing the value of --qt5path from {0} to {1}".format(callerArguments.qt5path,
         os.path.abspath(callerArguments.qt5path)))
     callerArguments.qt5path = os.path.abspath(callerArguments.qt5path)
 
@@ -134,7 +134,7 @@ tempPath = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '
 
 ### clean step
 if callerArguments.clean:
-    print("##### {} #####".format("clean old builds"))
+    print("##### {0} #####".format("clean old builds"))
     removeDir(callerArguments.qt5path, raiseNoException = True)
     removeDir(qtCreatorBuildDirectory, raiseNoException = True)
     removeDir(qtCreatorInstallDirectory, raiseNoException = True)
@@ -143,7 +143,7 @@ if callerArguments.clean:
 if not os.path.lexists(callerArguments.qt5path) and not all(
     (callerArguments.qt5_essentials7z, callerArguments.qt5_addons7z)):
     parser.print_help()
-    print(("error: Please add the missing qt5_essentials7z and qt5_addons7z arguments if the {} does not exist"
+    print(("error: Please add the missing qt5_essentials7z and qt5_addons7z arguments if the {0} does not exist"
         + os.linesep + os.linesep).format(callerArguments.qt5path))
     sys.exit(1)
 
@@ -180,7 +180,7 @@ if not os.path.lexists(callerArguments.qt5path):
 ### run get Qt 5 tasks
     myGetQtBinaryWork.run()
 
-    print("##### {} #####".format("patch Qt"))
+    print("##### {0} #####".format("patch Qt"))
     if sys.platform == "darwin":
         installerbasePath = os.path.join(tempPath, 'installerbase.app/Contents/MacOS/installerbase')
         os.chmod(installerbasePath, 0777)
@@ -191,7 +191,7 @@ if not os.path.lexists(callerArguments.qt5path):
         qtConfFile.write("[Paths]" + os.linesep)
         qtConfFile.write("Prefix=.." + os.linesep)
         qtConfFile.close()
-    print("##### {} ##### ... done".format("patch Qt"))
+    print("##### {0} ##### ... done".format("patch Qt"))
     runCommand(qmakeBinary + " -query", qtCreatorBuildDirectory, callerArguments)
 ### lets start building
 pathKey='PATH'
@@ -231,13 +231,13 @@ else:
 buildGitSHA = gitSHA(qtCreatorSourceDirectory, callerArguments)
 qtCreatorProFile = os.path.join(qtCreatorSourceDirectory, 'qtcreator.pro')
 
-qmakeCommandArguments = "-r {} QTC_PREFIX={} DEFINES+=IDE_REVISION={} CONFIG+={}".format(
+qmakeCommandArguments = "-r {0} QTC_PREFIX={1} DEFINES+=IDE_REVISION={2} CONFIG+={3}".format(
     qtCreatorProFile, qtCreatorInstallDirectory, buildGitSHA, buildType)
 
 # hack to ensure plugins depending on declarative are also compiled with 2.7.0/5.0.1
 qmakeCommandArguments += " QT_CONFIG+=declarative"
 
-runCommand("{} {}".format(qmakeBinary, qmakeCommandArguments), qtCreatorBuildDirectory,
+runCommand("{0} {1}".format(qmakeBinary, qmakeCommandArguments), qtCreatorBuildDirectory,
     callerArguments = callerArguments, init_environment = environment)
 
 runBuildCommand(currentWorkingDirectory = qtCreatorBuildDirectory, callerArguments = callerArguments,
