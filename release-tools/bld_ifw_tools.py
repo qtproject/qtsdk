@@ -134,36 +134,36 @@ class IfwOptions:
         # check qt src package url
         res = bldinstallercommon.is_content_url_valid(self.qt_source_package_uri)
         if not(res):
-            print('*** Qt src package uri is invalid: {}'.format(self.qt_source_package_uri))
+            print('*** Qt src package uri is invalid: {0}'.format(self.qt_source_package_uri))
             sys.exit(-1)
         if (self.product_key_checker_url or self.product_key_checker_branch):
             if os.path.isfile(self.product_key_checker_url):
                 print('Using product key checker: '.format(self.product_key_checker_url))
                 return
             if not (self.product_key_checker_url and self.product_key_checker_branch):
-                print('*** Product key checker has incomplete data: {} | {}'.format(self.product_key_checker_url, self.product_key_checker_branch))
+                print('*** Product key checker has incomplete data: {0} | {1}'.format(self.product_key_checker_url, self.product_key_checker_branch))
                 sys.exit(-1)
 
     def print_data(self):
         print('-----------------------------------------')
-        print('license_type:                            {}'.format(self.license_type))
-        print('make cmd:                                {}'.format(self.make_cmd))
-        print('qt_source_package_uri:                   {}'.format(self.qt_source_package_uri))
-        print('qt_source_package_uri_saveas:            {}'.format(self.qt_source_package_uri_saveas))
-        print('qt_source_dir:                           {}'.format(self.qt_source_dir))
-        print('qt_build_dir:                            {}'.format(self.qt_build_dir))
-        print('qt_configure_options:                    {}'.format(self.qt_configure_options))
-        print('qt_qmake_bin:                            {}'.format(self.qt_qmake_bin))
-        print('qt_configure_bin:                        {}'.format(self.qt_configure_bin))
-        print('qt_installer_framework_url:              {}'.format(self.qt_installer_framework_url))
-        print('qt_installer_framework_branch:           {}'.format(self.qt_installer_framework_branch))
-        print('qt_installer_framework_qmake_args:       {}'.format(self.qt_installer_framework_qmake_args))
-        print('installer_framework_source_dir:          {}'.format(self.installer_framework_source_dir))
-        print('installer_framework_build_dir:           {}'.format(self.installer_framework_build_dir))
-        print('installer_framework_archive_name:        {}'.format(self.installer_framework_archive_name))
-        print('installer_base_archive_name:             {}'.format(self.installer_base_archive_name))
-        print('product_key_checker_url:                 {}'.format(self.product_key_checker_url))
-        print('product_key_checker_branch:              {}'.format(self.product_key_checker_branch))
+        print('license_type:                            {0}'.format(self.license_type))
+        print('make cmd:                                {0}'.format(self.make_cmd))
+        print('qt_source_package_uri:                   {0}'.format(self.qt_source_package_uri))
+        print('qt_source_package_uri_saveas:            {0}'.format(self.qt_source_package_uri_saveas))
+        print('qt_source_dir:                           {0}'.format(self.qt_source_dir))
+        print('qt_build_dir:                            {0}'.format(self.qt_build_dir))
+        print('qt_configure_options:                    {0}'.format(self.qt_configure_options))
+        print('qt_qmake_bin:                            {0}'.format(self.qt_qmake_bin))
+        print('qt_configure_bin:                        {0}'.format(self.qt_configure_bin))
+        print('qt_installer_framework_url:              {0}'.format(self.qt_installer_framework_url))
+        print('qt_installer_framework_branch:           {0}'.format(self.qt_installer_framework_branch))
+        print('qt_installer_framework_qmake_args:       {0}'.format(self.qt_installer_framework_qmake_args))
+        print('installer_framework_source_dir:          {0}'.format(self.installer_framework_source_dir))
+        print('installer_framework_build_dir:           {0}'.format(self.installer_framework_build_dir))
+        print('installer_framework_archive_name:        {0}'.format(self.installer_framework_archive_name))
+        print('installer_base_archive_name:             {0}'.format(self.installer_base_archive_name))
+        print('product_key_checker_url:                 {0}'.format(self.product_key_checker_url))
+        print('product_key_checker_branch:              {0}'.format(self.product_key_checker_branch))
         print('-----------------------------------------')
 
 
@@ -227,14 +227,14 @@ def prepare_qt_sources(options):
     if options.incremental_mode and os.path.exists(options.qt_source_dir):
         return
     print('--------------------------------------------------------------------')
-    print('Fetching Qt src package from: {}'.format(options.qt_source_package_uri))
+    print('Fetching Qt src package from: {0}'.format(options.qt_source_package_uri))
     if not os.path.isfile(options.qt_source_package_uri_saveas):
         if not bldinstallercommon.is_content_url_valid(options.qt_source_package_uri):
             print('*** Qt src package url is invalid! Abort!')
             sys.exit(-1)
         bldinstallercommon.retrieve_url(options.qt_source_package_uri, options.qt_source_package_uri_saveas)
     else:
-        print('Found old local package, using that: {}'.format(options.qt_source_package_uri_saveas))
+        print('Found old local package, using that: {0}'.format(options.qt_source_package_uri_saveas))
     print('Done')
     print('--------------------------------------------------------------------')
     bldinstallercommon.create_dirs(options.qt_source_dir)
@@ -323,7 +323,7 @@ def build_installer_framework(options):
     qmake_bin = options.qt_build_dir + os.sep + 'bin' + os.sep + options.qt_qmake_bin
     if not os.path.isfile(qmake_bin):
         print('*** Unable to find qmake, aborting!')
-        print('qmake: {}'.format(qmake_bin))
+        print('qmake: {0}'.format(qmake_bin))
         sys.exit(-1)
     if not os.path.exists(options.installer_framework_build_dir):
         bldinstallercommon.create_dirs(options.installer_framework_build_dir)
@@ -409,7 +409,7 @@ def archive_installerbase(options):
     bldinstallercommon.do_execute_sub_process(cmd_args_archive, ROOT_DIR, True)
     bldinstallercommon.do_execute_sub_process(cmd_args_clean, ROOT_DIR, True)
     if not os.path.isfile(options.installer_base_archive_name):
-        print('*** Failed to generate archive: {}'.format(options.installer_base_archive_name))
+        print('*** Failed to generate archive: {0}'.format(options.installer_base_archive_name))
         sys.exit(-1)
     shutil.move(options.installer_base_archive_name, options.build_artefacts_dir)
 
@@ -427,7 +427,7 @@ def archive_nib(options):
     cmd_args = ['7z', 'a', options.mac_qt_menu_nib_archive_name, content_root_path]
     bldinstallercommon.do_execute_sub_process(cmd_args, ROOT_DIR, True)
     if not os.path.isfile(options.mac_qt_menu_nib_archive_name):
-        print('*** Failed to generate archive: {}'.format(options.mac_qt_menu_nib_archive_name))
+        print('*** Failed to generate archive: {0}'.format(options.mac_qt_menu_nib_archive_name))
         sys.exit(-1)
     shutil.move(options.mac_qt_menu_nib_archive_name, options.build_artefacts_dir)
 
@@ -442,7 +442,7 @@ def archive_macdeployqt(options):
     cmd_args_archive = ['7z', 'a', options.mac_deploy_qt_archive_name, content_path]
     bldinstallercommon.do_execute_sub_process(cmd_args_archive, ROOT_DIR, True)
     if not os.path.isfile(options.mac_deploy_qt_archive_name):
-        print('*** Failed to generate archive: {}'.format( options.mac_deploy_qt_archive_name))
+        print('*** Failed to generate archive: {0}'.format( options.mac_deploy_qt_archive_name))
         sys.exit(-1)
     shutil.move(options.mac_deploy_qt_archive_name, options.build_artefacts_dir)
 
