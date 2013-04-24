@@ -112,7 +112,7 @@ def download(url, savefile):
     # use an inner function to have one function for each download
     def my_reporthook(count, blocksize, totalsize):
         if my_reporthook.infoString is None:
-            my_reporthook.infoString = "Downloading a file with size {} bytes to {}".format(
+            my_reporthook.infoString = "Downloading a file with size {0} bytes to {1}".format(
                 totalsize, savefile)
             print(my_reporthook.infoString)
         fraction = min(1, float(count * blocksize) / totalsize)
@@ -136,7 +136,7 @@ def download(url, savefile):
         urllib.urlretrieve(url, savefile_tmp, reporthook = my_reporthook)
     except IOError:
         type_, value_, traceback_ = sys.exc_info()
-        sys.stderr.write((os.linesep + "{}: {}" + os.linesep).format(url, value_))
+        sys.stderr.write((os.linesep + "{0}: {1}" + os.linesep).format(url, value_))
         sys.exit(1)
     try:
         try:
