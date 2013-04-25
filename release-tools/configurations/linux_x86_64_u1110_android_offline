@@ -54,7 +54,7 @@ base_path:
 packages:               foo.bar, foo.bar2, foo.bar3
 
 [ExtraPackageConfigurationFiles]
-file_list:              qt510-src-conf, x86_64-qt510-gcc-conf, android-qt510-x86-conf, android-qt510-armv5-conf, android-qt510-armv7-conf, android-qt510-mips-conf, x86_64-tools-conf, installer-readme-conf
+file_list:              qt510-src-conf, x86_64-qt510-gcc-conf, android-qt510-armv7-conf, android-qt510-x86-conf, x86_64-tools-conf, installer-readme-conf
 
 [OfflinePackageExcludeList]
 package_list:
