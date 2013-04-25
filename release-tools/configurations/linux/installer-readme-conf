@@ -46,7 +46,7 @@ version:
 version_tag:
 package_default:        true
 [readme]
-archive_uri:            http://qt.gitorious.org/qt/qt5/blobs/raw/release/README
+archive_uri:            http://qt.gitorious.org/qt/qtbase/blobs/raw/release/dist/README
 package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:
