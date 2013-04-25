@@ -50,6 +50,7 @@ import sys
 import urllib
 import fileinput
 import bldinstallercommon
+import multiprocessing
 import patch_qmake_qt_key
 from optparse import OptionParser, Option, OptionValueError
 
@@ -97,7 +98,7 @@ SILENT_BUILD                        = False
 STRICT_MODE                         = True
 QT5_MODULES_IGNORE_LIST             = []
 MAKE_CMD                            = ''
-MAKE_THREAD_COUNT                   = '8' # some initial default value
+MAKE_THREAD_COUNT                   = ''
 MAKE_INSTALL_CMD                    = ''
 CONFIGURE_OPTIONS                   = '-confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng'
 ANDROID_NDK_HOST                    =''
@@ -710,8 +711,8 @@ def setup_option_parser():
                       action="store", type="string", dest="make_cmd", default="",
                       help="make command (e.g. mingw32-make). On linux defaults to make and on win nmake.")
     OPTION_PARSER.add_option("-j", "--jobs",
-                      action="store", type="int", dest="make_thread_count", default=8,
-                      help="make job count")
+                      action="store", type="int", dest="make_thread_count", default=multiprocessing.cpu_count()+1,
+                      help="make job count, uses the number of available processors plus one by default.")
     OPTION_PARSER.add_option("-q", "--silent-build",
                       action="store_true", dest="silent_build", default=False,
                       help="supress command output, show only errors")
