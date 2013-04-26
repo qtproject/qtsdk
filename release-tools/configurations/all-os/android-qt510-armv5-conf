@@ -42,17 +42,32 @@
 
 [qt.510.patcher]
 
-[qt.510.android_amrv5]
-archives:               510.android_armv5
-target_install_base:    /5.1.0/android_armv5
+[qt.510.android_armv5]
+version:                5.1.0
+version_tag:            %QT_VERSION%
+
+[qt.510.android_armv5.essentials]
+archives:               510.android_armv5.essentials
+target_install_base:    /@QT_VERSION@/android_armv5
 version:                5.1.0
 version_tag:            %QT_VERSION%
 package_default:        false
-[510.android_armv5]
+[510.android_armv5.essentials]
 archive_uri:            /qt/5.1.0/latest/android_armv5/qt5_essentials.7z
 package_strip_dirs:
 target_install_dir:     /
-rpath_target:           /lib
+rpath_target:
 archive_name:           android_armv5_qt5_essentials.7z
 
-
+[qt.510.android_armv5.addons]
+archives:               510.android_armv5.addons
+target_install_base:    /@QT_VERSION@/android_armv5
+version:                5.1.0
+version_tag:            %QT_VERSION%
+package_default:        false
+[510.android_armv5.addons]
+archive_uri:            /qt/5.1.0/latest/android_armv5/qt5_addons.7z
+package_strip_dirs:
+target_install_dir:     /
+rpath_target:
+archive_name:           android_armv5_qt5_addons.7z
