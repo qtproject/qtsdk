@@ -734,15 +734,13 @@ def clone_repository(repo_url, repo_branch_or_tag, destination_folder):
 ###############################
 def extract_file(path, to_directory='.'):
     cmd_args = []
-    if path.endswith('.zip'):
-        cmd_args = ['7z', 'x', path]
-    elif path.endswith('.tar'):
-        cmd_args = ['tar', '-xzf', path]
+    if path.endswith('.tar'):
+        cmd_args = ['tar', '-xf', path]
     elif path.endswith('.tar.gz') or path.endswith('.tgz'):
         cmd_args = ['tar', '-xzf', path]
     elif path.endswith('.tar.bz2') or path.endswith('.tbz'):
         cmd_args = ['tar', '-xjf', path]
-    elif path.endswith('.7z'):
+    elif path.endswith('.7z') or path.endswith('.zip'):
         cmd_args = ['7z', 'x', path]
         # 7z does not have silent operation so eat the subprocess output
         do_execute_sub_process(cmd_args, to_directory, True, True)
