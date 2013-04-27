@@ -186,7 +186,8 @@ def init_mkqt5bld():
         if MAKE_CMD == 'jom':
             MAKE_INSTALL_CMD = 'jom -j1 install'
             if SILENT_BUILD:
-                MAKE_INSTALL_CMD += ' /s'
+                MAKE_CMD += ' -s -nologo'
+                MAKE_INSTALL_CMD += ' -s -nologo'
 
     #remove old working dirs
     if os.path.exists(WORK_DIR):
