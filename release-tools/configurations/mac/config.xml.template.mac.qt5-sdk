@@ -10,7 +10,7 @@
     <Watermark>watermark.png</Watermark>
     <StartMenuDir>Qt SDK</StartMenuDir>
     <ProductUrl>http://qt-project.org/</ProductUrl>
-    <!--<Background>background.png</Background>-->
+    <Background>background.png</Background>
     <UninstallerName>MaintenanceTool</UninstallerName>
     <RemoteRepositories>
         <Repository>
