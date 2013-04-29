@@ -43,7 +43,7 @@
 name:                   qt
 
 [PlatformIdentifier]
-identifier:             linux
+identifier:             windows
 
 [ArchiveRemoteLocation.default]
 base_url:               http://add.your.archive.url
@@ -54,24 +54,27 @@ base_path:
 packages:               foo.bar, foo.bar2, foo.bar3
 
 [ExtraPackageConfigurationFiles]
-file_list:              qt502-src-conf, x86-qt502-gcc-conf, x86-tools-conf, x86-tools-maintenancetool-conf, installer-readme-conf
+file_list:
 
 [OfflinePackageExcludeList]
 package_list:
 
 [SdkUpdateRepository]
-repository_url_release: http://download.qt-project.org/online/linux/x86/online_repository
+repository_url_release:
 
 [ConfigDir]
 template_name:          config_qt5
 
 [ConfigXml]
-template_name:          config.xml.template.linux.qt5-sdk
+template_name:          config.xml.template.windows.qt5-sdk
 
 [WorkingDirectories]
-packages_dir:           pkg_502, pkg_tools
+packages_dir:           pkg_tools
 
 [InstallerFrameworkTools]
 name:                   ifwt
 package_url:
+
+[qt]
+root_component:         yes
 
