@@ -79,11 +79,11 @@ QT5_MODULES_LIST                    = [ 'qt3d', 'qlalr', 'qtactiveqt', 'qtbase',
                                         'qtqa', 'qtquick1', 'qtrepotools', 'qtscript', \
                                         'qtsensors', 'qtsvg', 'qtsystems', 'qttools', \
                                         'qttranslations', 'qtwayland', 'qtwebkit', \
-                                        'qtwebkit-examples-and-demos', 'qtxmlpatterns']
+                                        'qtwebkit-examples', 'qtxmlpatterns']
 QT5_ESSENTIALS                      = [ 'qtbase', 'qtdeclarative', 'qtdoc', \
                                         'qtjsbackend', 'qtquick1', 'qtscript', \
                                         'qttools', 'qtwebkit', 'qtxmlpatterns', \
-                                        'qtmultimedia', 'qtwebkit-examples-and-demos']
+                                        'qtmultimedia', 'qtwebkit-examples']
 ORIGINAL_QMAKE_QT_PRFXPATH          = ''
 PADDING                             = '______________________________PADDING______________________________'
 FILES_TO_REMOVE_LIST                = ['Makefile', 'Makefile.Release', 'Makefile.Debug', \

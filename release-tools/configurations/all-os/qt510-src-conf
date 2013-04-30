@@ -119,11 +119,11 @@ target_install_dir:     /qtwebkit
 rpath_target:
 archive_name:           qtwebkit-src.7z
 [src.essentials.qtwebkitexamplesanddemos]
-archive_uri:            /qt/5.1.0/latest/src/submodules/qtwebkit-examples-and-demos-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+archive_uri:            /qt/5.1.0/latest/src/submodules/qtwebkit-examples-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
-target_install_dir:     /qtwebkit-examples-and-demos
+target_install_dir:     /qtwebkit-examples
 rpath_target:
-archive_name:           qtwebkit-examples-and-demos-src.7z
+archive_name:           qtwebkit-examples-src.7z
 [src.essentials.qtxmlpatterns]
 archive_uri:            /qt/5.1.0/latest/src/submodules/qtxmlpatterns-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
