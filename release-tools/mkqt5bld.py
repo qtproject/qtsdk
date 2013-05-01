@@ -673,7 +673,7 @@ def parse_cmd_line():
         CONFIGURE_OPTIONS += ' ' + options.add_configure_option
 
     if QT_CREATOR_SRC_DIR and not os.path.isdir(QT_CREATOR_SRC_DIR):
-        print_wrap(' *** Error! Could not find directory ' + QTCREATOR_SRC_DIR)
+        print_wrap(' *** Error! Could not find directory ' + QT_CREATOR_SRC_DIR)
         exit_script()
 
     #TODO: android options to global variables (all). Check that paths exists, also other values
