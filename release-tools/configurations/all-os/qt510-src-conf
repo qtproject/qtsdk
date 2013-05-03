@@ -65,7 +65,7 @@ version_tag:            %QT_VERSION%
 #################################
 
 [qt.510.src.essentials]
-archives:               src.essentials.qtbase, src.essentials.qtdeclarative, src.essentials.qtdoc, src.essentials.qtjsbackend, src.essentials.qtquick1, src.essentials.qtscript, src.essentials.qttools, src.essentials.qtwebkit, src.essentials.qtwebkitexamplesanddemos, src.essentials.qtxmlpatterns, src.essentials.qtmultimedia, src.essentials.qtquickcontrols
+archives:               src.essentials.qtbase, src.essentials.qtdeclarative, src.essentials.qtdoc, src.essentials.qtjsbackend, src.essentials.qtquick1, src.essentials.qtscript, src.essentials.qttools, src.essentials.qtwebkit, src.essentials.qtwebkitexamples, src.essentials.qtxmlpatterns, src.essentials.qtmultimedia, src.essentials.qtquickcontrols
 target_install_base:    /@QT_VERSION@/Src/
 version:                5.1.0
 version_tag:            %QT_VERSION%
@@ -118,7 +118,7 @@ package_strip_dirs:     1
 target_install_dir:     /qtwebkit
 rpath_target:
 archive_name:           qtwebkit-src.7z
-[src.essentials.qtwebkitexamplesanddemos]
+[src.essentials.qtwebkitexamples]
 archive_uri:            /qt/5.1.0/latest/src/submodules/qtwebkit-examples-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /qtwebkit-examples
