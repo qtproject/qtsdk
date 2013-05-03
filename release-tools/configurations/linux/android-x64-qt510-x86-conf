@@ -39,39 +39,35 @@
 ##
 #############################################################################
 
-[PackageNamespace]
-name:                   qt
 
-[PlatformIdentifier]
-identifier:             linux
+[qt.510.patcher]
 
-[ArchiveRemoteLocation.default]
-base_url:               http://add.your.archive.url
-base_path:
+[qt.510.android_x86]
+version:                5.1.0
+version_tag:            %QT_VERSION%
 
-# for testing purposes
-[PackageIgnoreList]
-packages:               foo.bar, foo.bar2, foo.bar3
+[qt.510.android_x86.essentials]
+archives:               510.android_x86.essentials
+target_install_base:    /@QT_VERSION@/android_x86
+version:                5.1.0
+version_tag:            %QT_VERSION%
+package_default:        false
+[510.android_x86.essentials]
+archive_uri:            /qt/5.1.0/latest/android_x86/qt5_essentials_linux64_host.7z
+package_strip_dirs:
+target_install_dir:     /
+rpath_target:
+archive_name:           android_x86_qt5_essentials.7z
 
-[ExtraPackageConfigurationFiles]
-file_list:              qt510-src-conf, x86-qt510-gcc-conf, android-x86-qt510-armv7-conf, android-x86-qt510-x86-conf, x86-tools-conf, installer-readme-conf
-
-[OfflinePackageExcludeList]
-package_list:
-
-[SdkUpdateRepository]
-repository_url_release: http://../qt5repository/linux/x32/online_qt5sdk_repo
-
-[ConfigDir]
-template_name:          config_qt5
-
-[ConfigXml]
-template_name:          config.xml.template.linux.qt5
-
-[WorkingDirectories]
-packages_dir:           pkg_510, pkg_tools
-
-[InstallerFrameworkTools]
-name:                   ifwt
-package_url:
-
+[qt.510.android_x86.addons]
+archives:               510.android_x86.addons
+target_install_base:    /@QT_VERSION@/android_x86
+version:                5.1.0
+version_tag:            %QT_VERSION%
+package_default:        false
+[510.android_x86.addons]
+archive_uri:            /qt/5.1.0/latest/android_x86/qt5_addons.7z
+package_strip_dirs:
+target_install_dir:     /
+rpath_target:
+archive_name:           android_x86_qt5_addons.7z

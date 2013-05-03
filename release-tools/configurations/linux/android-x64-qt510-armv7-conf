@@ -42,32 +42,32 @@
 
 [qt.510.patcher]
 
-[qt.510.android_mips]
+[qt.510.android_armv7]
 version:                5.1.0
 version_tag:            %QT_VERSION%
 
-[qt.510.android_mips.essentials]
-archives:               510.android_mips.essentials
-target_install_base:    /@QT_VERSION@/android_mips
+[qt.510.android_armv7.essentials]
+archives:               510.android_armv7.essentials
+target_install_base:    /@QT_VERSION@/android_armv7
 version:                5.1.0
 version_tag:            %QT_VERSION%
 package_default:        false
-[510.android_mips.essentials]
-archive_uri:            /qt/5.1.0/latest/android_mips/qt5_essentials.7z
+[510.android_armv7.essentials]
+archive_uri:            /qt/5.1.0/latest/android_armv7/qt5_essentials_linux64_host.7z
 package_strip_dirs:
 target_install_dir:     /
 rpath_target:
-archive_name:           android_mips_qt5_essentials.7z
+archive_name:           android_armv7_qt5_essentials.7z
 
-[qt.510.android_mips.addons]
-archives:               510.android_mips.addons
-target_install_base:    /@QT_VERSION@/android_mips
+[qt.510.android_armv7.addons]
+archives:               510.android_armv7.addons
+target_install_base:    /@QT_VERSION@/android_armv7
 version:                5.1.0
 version_tag:            %QT_VERSION%
 package_default:        false
-[510.android_mips.addons]
-archive_uri:            /qt/5.1.0/latest/android_mips/qt5_addons.7z
+[510.android_armv7.addons]
+archive_uri:            /qt/5.1.0/latest/android_armv7/qt5_addons.7z
 package_strip_dirs:
 target_install_dir:     /
 rpath_target:
-archive_name:           android_mips_qt5_addons.7z
+archive_name:           android_armv7_qt5_addons.7z

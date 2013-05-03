@@ -107,6 +107,23 @@ Component.prototype.createOperations = function()
             if (installer.value("qt.510.gcc.essentials_qtpath")) {
                 component.addOperation("QtPatch", "linux", installer.value("qt.510.gcc.essentials_qtpath"));
             }
+
+            // patch Android Qt binaries
+            if (installer.value("qt.510.android_armv5.essentials_qtpath")) {
+                component.addOperation("QtPatch", "linux-emb-arm", installer.value("qt.510.android_armv5.essentials_qtpath"));
+            }
+            // patch Android Qt binaries
+            if (installer.value("qt.510.android_armv7.essentials_qtpath")) {
+                component.addOperation("QtPatch", "linux-emb-arm", installer.value("qt.510.android_armv7.essentials_qtpath"));
+            }
+            // patch Android Qt binaries
+            if (installer.value("qt.510.android_x86.essentials_qtpath")) {
+                component.addOperation("QtPatch", "linux-emb-arm", installer.value("qt.510.android_x86.essentials_qtpath"));
+            }
+            // patch Android Qt binaries
+            if (installer.value("qt.510.android_mips.essentials_qtpath")) {
+                component.addOperation("QtPatch", "linux-emb-arm", installer.value("qt.510.android_mips.essentials_qtpath"));
+            }
         } catch( e ) {
             print( e );
         }
@@ -133,6 +150,23 @@ Component.prototype.createOperations = function()
             if (installer.value("qt.510.win64_msvc2012_64_opengl.essentials_qtpath")) {
                 component.addOperation("QtPatch", "windows", installer.value("qt.510.win64_msvc2012_64_opengl.essentials_qtpath"));
             }
+
+            // patch Android Qt binaries
+            if (installer.value("qt.510.android_armv5.essentials_qtpath")) {
+                component.addOperation("QtPatch", "windows-emb-arm", installer.value("qt.510.android_armv5.essentials_qtpath"));
+            }
+            // patch Android Qt binaries
+            if (installer.value("qt.510.android_armv7.essentials_qtpath")) {
+                component.addOperation("QtPatch", "windows-emb-arm", installer.value("qt.510.android_armv7.essentials_qtpath"));
+            }
+            // patch Android Qt binaries
+            if (installer.value("qt.510.android_x86.essentials_qtpath")) {
+                component.addOperation("QtPatch", "windows-emb-arm", installer.value("qt.510.android_x86.essentials_qtpath"));
+            }
+            // patch Android Qt binaries
+            if (installer.value("qt.510.android_mips.essentials_qtpath")) {
+                component.addOperation("QtPatch", "windows-emb-arm", installer.value("qt.510.android_mips.essentials_qtpath"));
+            }
         } catch( e ) {
             print( e );
         }
@@ -147,25 +181,5 @@ Component.prototype.createOperations = function()
         }
     }
 
-    try {
-        // patch Android Qt binaries
-        if (installer.value("qt.510.android_armv5.essentials_qtpath")) {
-            component.addOperation("QtPatch", "linux-emb-arm", installer.value("qt.510.android_armv5.essentials_qtpath"));
-        }
-        // patch Android Qt binaries
-        if (installer.value("qt.510.android_armv7.essentials_qtpath")) {
-            component.addOperation("QtPatch", "linux-emb-arm", installer.value("qt.510.android_armv7.essentials_qtpath"));
-        }
-        // patch Android Qt binaries
-        if (installer.value("qt.510.android_x86.essentials_qtpath")) {
-            component.addOperation("QtPatch", "linux-emb-arm", installer.value("qt.510.android_x86.essentials_qtpath"));
-        }
-        // patch Android Qt binaries
-        if (installer.value("qt.510.android_mips.essentials_qtpath")) {
-            component.addOperation("QtPatch", "linux-emb-arm", installer.value("qt.510.android_mips.essentials_qtpath"));
-        }
-    } catch( e ) {
-        print( e );
-    }
 }
 
