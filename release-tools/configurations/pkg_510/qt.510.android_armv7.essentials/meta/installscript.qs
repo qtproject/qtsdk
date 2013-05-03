@@ -16,7 +16,7 @@ Component.prototype.createOperations = function()
 {
     component.createOperations();
 
-    if (installer.value("os") == "x11") {
+    if (installer.value("os") == "x11" || installer.value("os") == "win") {
         if (installer.value("SDKToolBinary") == "")
             return;
         var qmakeBinary = "@TargetDir@/%TARGET_INSTALL_DIR%/bin/qmake";
