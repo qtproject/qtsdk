@@ -390,6 +390,12 @@ def build_qmlpuppets():
                 QT_CREATOR_SRC_DIR)
 
     qmlpuppet_dir = os.path.join(QT_CREATOR_SRC_DIR, 'share', 'qtcreator', 'qml', 'qmlpuppet', 'qml2puppet')
+
+    if bldinstallercommon.is_mac_platform():
+        # make install INSTALL_ROOT= doesn't work on the mac, set DESTDIR instead
+        install_root_path = os.path.join(MAKE_INSTALL_ROOT_DIR, ESSENTIALS_INSTALL_DIR_NAME, ORIGINAL_QMAKE_QT_PRFXPATH)
+        qmake_executable_path = [qmake_executable_path, '-after', 'DESTDIR=' + os.path.join(install_root_path, 'bin')]
+
     bldinstallercommon.do_execute_sub_process(qmake_executable_path, qmlpuppet_dir, STRICT_MODE)
     bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), qmlpuppet_dir, STRICT_MODE)
 
