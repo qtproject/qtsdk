@@ -192,7 +192,7 @@ class SdkComponent:
                 self.downloadable_archive_list.append(archive_obj)
 
 
-    def generate_downloadable_archive_list(self, downloadable_archive_list):
+    def generate_downloadable_archive_list(self):
         """Generate list that is embedded into package.xml"""
         output = ''
         for item in self.downloadable_archive_list:

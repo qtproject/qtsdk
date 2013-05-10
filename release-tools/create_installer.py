@@ -613,87 +613,6 @@ def substitute_component_tags(tag_pair_list, meta_dir_dest):
         else:
             print '    Warning! Ignoring incomplete tag pair [ ' + tag + ' ] for [ ' + value + ' ] pair'
 
-
-##############################################################
-# Repackage content of the installable compoment
-##############################################################
-def repackage_content_for_installation(install_dir, package_raw_name, target_install_base, rpath_target, package_strip_dirs, package_name, archive_name):
-    """Repackage content into 7z archive."""
-    # if no data to be installed, then just return
-    if not package_raw_name:
-        return
-    if not package_strip_dirs:
-        package_strip_dirs = '0'
-
-    print '     +++++++++++++++++++++++++++++++++++++++++'
-    print '     Repackage:             ' + package_raw_name
-    print '     Location:              ' + install_dir
-    print '     Dirs to be stripped:   ' + package_strip_dirs
-    if not rpath_target:
-        print '     Relocate RPath:        No'
-    else:
-        print '     Relocate RPath into:   ' + '(' + install_dir + ') '+ rpath_target
-    print ''
-
-    if package_raw_name.endswith('.7z') \
-       and package_strip_dirs == '0' \
-       and not rpath_target \
-       and target_install_base == '/' \
-       and package_raw_name == archive_name:
-        print '     No repackaging actions requred for the package'
-        return
-
-    # extract contents
-    extracted = bldinstallercommon.extract_file(install_dir + os.sep + package_raw_name, install_dir)
-    # remove old package
-    if extracted:
-        os.remove(install_dir + os.sep + package_raw_name)
-    else:
-        # ok we could not extract the file, so propably not even archived file,
-        # check the case if we downloaded a text file, must ensure proper file endings
-        if bldinstallercommon.is_text_file(install_dir + os.sep + package_raw_name):
-            bldinstallercommon.ensure_text_file_endings(install_dir + os.sep + package_raw_name)
-
-    # strip out unnecessary folder structure based on the configuration
-    count = 0
-    iterations = int(package_strip_dirs)
-    while(count < iterations):
-        #print 'Strip iteration: ' + str(count)
-        count = count + 1
-        l = os.listdir(install_dir)
-        items = len(l)
-        if items == 1:
-            dir_name = l[0]
-            os.chdir(install_dir)
-            # TODO, windows hack, on windows path+filename > 255 causes error, so truncate temp path as much as possible
-            temp_path_name = 'a'
-            os.rename(dir_name, temp_path_name)
-            bldinstallercommon.move_tree(temp_path_name, '.')
-            bldinstallercommon.remove_tree(install_dir + os.sep + temp_path_name)
-            os.chdir(SCRIPT_ROOT_DIR)
-        else:
-            print '*** Error: unsupported folder structure encountered, abort!'
-            print '*** Found items: ' + str(items) + ' in directory: ' + install_dir
-            sys.exit(-1)
-
-    if rpath_target:
-        if not rpath_target.startswith( os.sep ):
-            rpath_target = os.sep + rpath_target
-        if bldinstallercommon.is_linux_platform() or bldinstallercommon.is_solaris_platform():
-            bldinstallercommon.handle_component_rpath(install_dir, rpath_target)
-
-    # lastly compress the component back to .7z archive
-    archive_component(package_name, archive_name)
-    # move archive in temporary path
-    tmp_path = os.path.normpath(PACKAGES_FULL_PATH_DST + os.sep + package_name + os.sep + 'tmp')
-    bldinstallercommon.create_dirs(tmp_path)
-    src_file = os.path.normpath(PACKAGES_FULL_PATH_DST + os.sep + package_name + os.sep + 'data' + os.sep + archive_name)
-    dst_file = os.path.normpath(PACKAGES_FULL_PATH_DST + os.sep + package_name + os.sep + 'tmp' + os.sep + archive_name)
-    print '     Moving: ' + src_file
-    print '       Into: ' + dst_file
-    shutil.move(src_file, dst_file)
-
-
 ##############################################################
 # Archive installable component
 ##############################################################
@@ -742,79 +661,6 @@ def create_offline_static_component(target_config, section, static_package_src):
     bldinstallercommon.copy_tree(static_package_src, package_dest_dir)
     print '      Copying static package: Done!'
     print '--------------------------------------------------------------------------------'
-
-
-##############################################################
-# Handle archive
-##############################################################
-def handle_archive(sdk_component, archive):
-    """Handle single archive."""
-    print '   --------------------------------------------------------------'
-    print '   Handle archive:        '   + archive.archive_name
-    print '     archive_uri:         '   + archive.archive_uri
-    print '     package_strip_dirs:  '   + archive.package_strip_dirs
-    print '     target_install_base: '   + sdk_component.target_install_base
-    print '     target_install_dir:  '   + archive.target_install_dir
-    print '     rpath_target:        '   + archive.rpath_target
-    print ''
-
-    # Create needed data dirs
-    data_dir_dest = os.path.normpath(PACKAGES_FULL_PATH_DST + os.sep + sdk_component.package_name + os.sep + 'data')
-    install_dir = os.path.normpath(data_dir_dest + os.sep + sdk_component.target_install_base + os.sep + archive.target_install_dir)
-
-    if INCREMENTAL_MODE and os.path.exists(os.path.join(data_dir_dest, archive.archive_name)):
-        return
-
-    bldinstallercommon.create_dirs(install_dir)
-    print '     -> Created:         ' + install_dir
-    # generate save as filename
-    package_raw_name     = os.path.basename(archive.archive_uri)
-    package_save_as_temp = os.path.normpath(install_dir + os.sep + os.path.basename(archive.archive_uri))
-    # if URI points to http location -> download it
-    if archive.archive_uri.startswith('http'):
-        print '     Downloading:        ' + archive.archive_uri
-        print '            into:        ' + package_save_as_temp
-        # start download
-        bldinstallercommon.retrieve_url(archive.archive_uri, package_save_as_temp)
-        print '     Downloading completed'
-    else:
-        print '     Copying:        ' + archive.archive_uri
-        print '        into:        ' + package_save_as_temp
-        # copy file on local file system or shared network drive
-        shutil.copy(archive.archive_uri, package_save_as_temp)
-        print '     Copying completed'
-
-    # repackage content so that correct dir structure will get into the package
-    repackage_content_for_installation(install_dir, package_raw_name,
-                                       sdk_component.target_install_base,
-                                       archive.rpath_target,
-                                       archive.package_strip_dirs,
-                                       sdk_component.package_name,
-                                       archive.archive_name)
-
-
-##############################################################
-# Finalize package archives
-##############################################################
-def finalize_package_archives(sdk_component):
-    """Finalize package archives"""
-    print '     Finalize package archives for: ' + sdk_component.package_name
-    # move arhives from tmp under data
-    src_path = os.path.normpath(PACKAGES_FULL_PATH_DST + os.sep + sdk_component.package_name + os.sep + 'tmp')
-    if not os.path.exists(src_path):
-        return
-
-    dst_path = os.path.normpath(PACKAGES_FULL_PATH_DST + os.sep + sdk_component.package_name + os.sep + 'data')
-    ldir = os.listdir(src_path)
-    for item in ldir:
-        src_file = src_path + os.sep + item
-        dst_file = dst_path + os.sep + item
-        print '     Moving: ' + src_file
-        print '       Into: ' + dst_file
-        shutil.move(src_file, dst_file)
-    # lastly remove tmp dir
-    bldinstallercommon.remove_tree(src_path)
-
 
 ##############################################################
 # Parse SDK components
@@ -885,6 +731,27 @@ def parse_components(target_config):
     parse_component_data(main_conf_file, conf_base_path)
     return
 
+def create_metadata_map(sdk_component):
+    """create lists for component specific tag substitutions"""
+    component_metadata_tag_pair_list = []
+    # version tag substitution if exists
+    if sdk_component.version_tag or sdk_component.version:
+        component_metadata_tag_pair_list.append([sdk_component.version_tag, sdk_component.version])
+    # default package info substitution if exists
+    if sdk_component.package_default:
+        component_metadata_tag_pair_list.append([PACKAGE_DEFAULT_TAG, sdk_component.package_default])
+    # install priority info substitution if exists
+    if sdk_component.install_priority:
+        component_metadata_tag_pair_list.append([INSTALL_PRIORITY_TAG, sdk_component.install_priority])
+    # install priority info substitution if exists
+    if sdk_component.sorting_priority:
+        component_metadata_tag_pair_list.append([SORTING_PRIORITY_TAG, sdk_component.sorting_priority])
+    # target install dir substitution
+    if sdk_component.target_install_base:
+        component_metadata_tag_pair_list.append([TARGET_INSTALL_DIR_NAME_TAG, sdk_component.target_install_base])
+
+    return component_metadata_tag_pair_list
+
 
 ##############################################################
 # Create target components
@@ -913,50 +780,123 @@ def create_target_components(target_config):
 
         # not a static component so "build" it
         sdk_component.print_component_data()
-        # create destination meta data folder
-        meta_dir_dest = os.path.normpath(PACKAGES_FULL_PATH_DST + os.sep + sdk_component.package_name + os.sep + 'meta')
+        dest_base = PACKAGES_FULL_PATH_DST + os.sep + sdk_component.package_name + os.sep
+        meta_dir_dest = os.path.normpath(dest_base + 'meta')
+        data_dir_dest = os.path.normpath(dest_base + 'data')
+        # create meta destination folder
         bldinstallercommon.create_dirs(meta_dir_dest)
-        print '   -> Created:                 ' + meta_dir_dest
         # Copy Meta data
         metadata_content_source_root = os.path.normpath(sdk_component.pkg_template_dir + os.sep + 'meta')
         bldinstallercommon.copy_tree(metadata_content_source_root, meta_dir_dest)
-        print '   -> Copied meta data from:   ' + metadata_content_source_root
         # add files into tag substitution
         GENERAL_TAG_SUBST_LIST.append(meta_dir_dest)
-        # create lists for component specific tag substitutions
-        component_metadata_tag_pair_list = []
-        # version tag substitution if exists
-        if sdk_component.version_tag or sdk_component.version:
-            component_metadata_tag_pair_list.append([sdk_component.version_tag, sdk_component.version])
-        # default package info substitution if exists
-        if sdk_component.package_default:
-            component_metadata_tag_pair_list.append([PACKAGE_DEFAULT_TAG, sdk_component.package_default])
-        # install priority info substitution if exists
-        if sdk_component.install_priority:
-            component_metadata_tag_pair_list.append([INSTALL_PRIORITY_TAG, sdk_component.install_priority])
-        # install priority info substitution if exists
-        if sdk_component.sorting_priority:
-            component_metadata_tag_pair_list.append([SORTING_PRIORITY_TAG, sdk_component.sorting_priority])
-        # target install dir substitution
-        if sdk_component.target_install_base:
-            component_metadata_tag_pair_list.append([TARGET_INSTALL_DIR_NAME_TAG, sdk_component.target_install_base])
         # handle archives
         if sdk_component.downloadable_archive_list:
-            downloadable_archive_list = []
             # Copy archives into temporary build directory if exists
             for archive in sdk_component.downloadable_archive_list:
-                downloadable_archive_list.append(archive.archive_name)
                 # fetch packages only if offline installer or repo creation, for online installer just handle the metadata
                 # if ARCHIVE_DOWNLOAD_SKIP is used for testing purposes, skip downloading archives as well
                 if CREATE_OFFLINE_INSTALLER or CREATE_REPOSITORY and not ARCHIVE_DOWNLOAD_SKIP:
-                    handle_archive(sdk_component, archive)
+                    # Create needed data dirs
+                    install_dir = os.path.normpath(data_dir_dest + os.sep + sdk_component.target_install_base + os.sep + archive.target_install_dir)
+
+                    if INCREMENTAL_MODE and os.path.exists(os.path.join(data_dir_dest, archive.archive_name)):
+                        continue
+
+                    bldinstallercommon.create_dirs(install_dir)
+                    # generate save as filename
+                    package_raw_name     = os.path.basename(archive.archive_uri)
+                    package_save_as_temp = os.path.normpath(install_dir + os.sep + os.path.basename(archive.archive_uri))
+                    # if URI points to http location -> download it
+                    if archive.archive_uri.startswith('http'):
+                        # start download
+                        bldinstallercommon.retrieve_url(archive.archive_uri, package_save_as_temp)
+                    else:
+                        # copy file on local file system or shared network drive
+                        shutil.copy(archive.archive_uri, package_save_as_temp)
+
+                    # repackage content so that correct dir structure will get into the package
+                    # if no data to be installed, then just continue
+                    if not package_raw_name:
+                        continue
+                    if not archive.package_strip_dirs:
+                        archive.package_strip_dirs = '0'
+
+                    if package_raw_name.endswith('.7z') \
+                       and archive.package_strip_dirs == '0' \
+                       and not archive.rpath_target \
+                       and sdk_component.target_install_base == '/' \
+                       and package_raw_name == archive.archive_name:
+                        print '     No repackaging actions required for the package'
+                        continue
+
+                    # extract contents
+                    extracted = bldinstallercommon.extract_file(install_dir + os.sep + package_raw_name, install_dir)
+                    # remove old package
+                    if extracted:
+                        os.remove(install_dir + os.sep + package_raw_name)
+                    else:
+                        # ok we could not extract the file, so propably not even archived file,
+                        # check the case if we downloaded a text file, must ensure proper file endings
+                        if bldinstallercommon.is_text_file(install_dir + os.sep + package_raw_name):
+                            bldinstallercommon.ensure_text_file_endings(install_dir + os.sep + package_raw_name)
+
+                    # strip out unnecessary folder structure based on the configuration
+                    count = 0
+                    iterations = int(archive.package_strip_dirs)
+                    while(count < iterations):
+                        #print 'Strip iteration: ' + str(count)
+                        count = count + 1
+                        l = os.listdir(install_dir)
+                        items = len(l)
+                        if items == 1:
+                            dir_name = l[0]
+                            os.chdir(install_dir)
+                            # TODO, windows hack, on windows path+filename > 255 causes error, so truncate temp path as much as possible
+                            temp_path_name = 'a'
+                            os.rename(dir_name, temp_path_name)
+                            bldinstallercommon.move_tree(temp_path_name, '.')
+                            bldinstallercommon.remove_tree(install_dir + os.sep + temp_path_name)
+                            os.chdir(SCRIPT_ROOT_DIR)
+                        else:
+                            print '*** Error: unsupported folder structure encountered, abort!'
+                            print '*** Found items: ' + str(items) + ' in directory: ' + install_dir
+                            sys.exit(-1)
+
+                    if archive.rpath_target:
+                        if not archive.rpath_target.startswith( os.sep ):
+                            archive.rpath_target = os.sep + archive.rpath_target
+                        if bldinstallercommon.is_linux_platform() or bldinstallercommon.is_solaris_platform():
+                            bldinstallercommon.handle_component_rpath(install_dir, archive.rpath_target)
+
+                    # lastly compress the component back to .7z archive
+                    archive_component(sdk_component.package_name, archive.archive_name)
+                    # move archive in temporary path
+                    tmp_path = os.path.normpath(PACKAGES_FULL_PATH_DST + os.sep + sdk_component.package_name + os.sep + 'tmp')
+                    bldinstallercommon.create_dirs(tmp_path)
+                    src_file = os.path.normpath(PACKAGES_FULL_PATH_DST + os.sep + sdk_component.package_name + os.sep + 'data' + os.sep + archive.archive_name)
+                    dst_file = os.path.normpath(PACKAGES_FULL_PATH_DST + os.sep + sdk_component.package_name + os.sep + 'tmp' + os.sep + archive.archive_name)
+                    shutil.move(src_file, dst_file)
+
             # finalize archives
-            finalize_package_archives(sdk_component)
+            # move archives from tmp under data
+            src_path = os.path.normpath(PACKAGES_FULL_PATH_DST + os.sep + sdk_component.package_name + os.sep + 'tmp')
+            if not os.path.exists(src_path):
+                continue
+
+            dst_path = os.path.normpath(PACKAGES_FULL_PATH_DST + os.sep + sdk_component.package_name + os.sep + 'data')
+            ldir = os.listdir(src_path)
+            for item in ldir:
+                src_file = src_path + os.sep + item
+                dst_file = dst_path + os.sep + item
+                shutil.move(src_file, dst_file)
+            # lastly remove tmp dir
+            bldinstallercommon.remove_tree(src_path)
+
             # substitute downloadable archive names in installscript.qs
-            downloadableArchives_list = sdk_component.generate_downloadable_archive_list(downloadable_archive_list)
-            substitute_component_tags(downloadableArchives_list, meta_dir_dest)
+            substitute_component_tags(sdk_component.generate_downloadable_archive_list(), meta_dir_dest)
         # substitute tags
-        substitute_component_tags(component_metadata_tag_pair_list, meta_dir_dest)
+        substitute_component_tags(create_metadata_map(sdk_component), meta_dir_dest)
 
 
 ##############################################################
