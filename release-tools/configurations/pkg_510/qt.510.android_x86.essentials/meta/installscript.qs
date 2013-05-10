@@ -31,5 +31,4 @@ Component.prototype.createOperations = function()
     component.addOperation("Execute",
         new Array("{0}", "@SDKToolBinary@", "addQt", "--id", component.name, "--name", "Qt 5.1.0 for Android x86", "--type",
         "Qt4ProjectManager.QtVersion.Android", "--qmake", qmakeBinary));
-    }
 }
