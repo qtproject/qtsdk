@@ -672,21 +672,20 @@ def do_execute_sub_process(args, execution_path, abort_on_fail, get_output=False
     output      = ''
 
     try:
-        os.chdir(execution_path)
         if IS_WIN_PLATFORM:
             if get_output:
-                theproc = subprocess.Popen(args, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=False, env=extra_env)
+                theproc = subprocess.Popen(args, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=False, env=extra_env, cwd=execution_path )
                 output = theproc.communicate()[0]
             else:
-                theproc = subprocess.Popen(args, shell=True, close_fds=False, env=extra_env)
+                theproc = subprocess.Popen(args, shell=True, close_fds=False, env=extra_env, cwd=execution_path)
                 theproc.communicate()
 
         else:
             if get_output:
-                theproc = subprocess.Popen(args, shell=False, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True, env=extra_env)
+                theproc = subprocess.Popen(args, shell=False, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True, env=extra_env, cwd=execution_path)
                 output = theproc.communicate()[0]
             else:
-                theproc = subprocess.Popen(args, env=extra_env)
+                theproc = subprocess.Popen(args, env=extra_env, cwd=execution_path)
                 theproc.communicate()
 
         if theproc.returncode:
@@ -708,7 +707,6 @@ def do_execute_sub_process(args, execution_path, abort_on_fail, get_output=False
         else:
             pass
 
-    os.chdir(SCRIPT_ROOT_DIR)
     return return_code, output
 
 
