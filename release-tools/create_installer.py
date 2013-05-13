@@ -49,7 +49,10 @@ import sys
 from time import gmtime, strftime
 import urllib
 from optparse import OptionParser, Option, OptionValueError
+import multiprocessing # to get the cpu core count
 
+from threadedwork import *
+import bld_utils
 import bldinstallercommon
 import bld_ifw_tools
 from bld_ifw_tools import IfwOptions
@@ -744,18 +747,78 @@ def move_directory_one_layer_up(directory):
         sys.exit(-1)
 
 
+
+def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compress_content_dir):
+    """download and create data for a component"""
+    # generate save as filename
+    package_raw_name = os.path.basename(archive.archive_uri)
+    downloadedArchive = os.path.normpath(install_dir + os.sep + package_raw_name)
+    # start download
+    bld_utils.download(archive.archive_uri, downloadedArchive)
+
+    # repackage content so that correct dir structure will get into the package
+    # if no data to be installed, then just continue
+    if not package_raw_name:
+        return
+    if not archive.package_strip_dirs:
+        archive.package_strip_dirs = '0'
+
+    if package_raw_name.endswith('.7z') \
+       and archive.package_strip_dirs == '0' \
+       and not archive.rpath_target \
+       and sdk_component.target_install_base == '/' \
+       and package_raw_name == archive.archive_name:
+        print '     No repackaging actions required for the package'
+        return
+
+    # extract contents
+    extracted = bldinstallercommon.extract_file(downloadedArchive, install_dir)
+    # remove old package
+    if extracted:
+        os.remove(downloadedArchive)
+    else:
+        # ok we could not extract the file, so propably not even archived file,
+        # check the case if we downloaded a text file, must ensure proper file endings
+        if bldinstallercommon.is_text_file(downloadedArchive):
+            bldinstallercommon.ensure_text_file_endings(downloadedArchive)
+
+    # strip out unnecessary folder structure based on the configuration
+    count = 0
+    iterations = int(archive.package_strip_dirs)
+    while(count < iterations):
+        count = count + 1
+        move_directory_one_layer_up(install_dir)
+
+    if archive.rpath_target:
+        if not archive.rpath_target.startswith(os.sep):
+            archive.rpath_target = os.sep + archive.rpath_target
+        if bldinstallercommon.is_linux_platform() or bldinstallercommon.is_solaris_platform():
+            bldinstallercommon.handle_component_rpath(install_dir, archive.rpath_target)
+
+    # lastly compress the component back to .7z archive
+    content_list = os.listdir(compress_content_dir)
+    #adding compress_content_dir in front of every item
+    content_list = [(compress_content_dir + os.sep + x) for x in content_list]
+
+    saveas = os.path.normpath(data_dir_dest + os.sep + archive.archive_name)
+    cmd_args = [ ARCHIVEGEN_TOOL, saveas] + content_list
+    bldinstallercommon.do_execute_sub_process(cmd_args, data_dir_dest, True)
+
+
 ##############################################################
 # Create target components
 ##############################################################
 def create_target_components(target_config):
     """Create target components."""
     global ROOT_COMPONENT_NAME
-    bldinstallercommon.create_dirs(PACKAGES_FULL_PATH_DST)
+    if not os.path.lexists(PACKAGES_FULL_PATH_DST):
+        bldinstallercommon.create_dirs(PACKAGES_FULL_PATH_DST)
 
     print '================================================================='
     print '= Creating SDK components'
     print '================================================================='
     print ''
+    getComponentDataWork = ThreadedWork("get components data")
     for sdk_component in SDK_COMPONENT_LIST:
         # check first for top level component
         if sdk_component.root_component == 'yes':
@@ -778,7 +841,8 @@ def create_target_components(target_config):
         # save path for later substitute_component_tags call
         sdk_component.meta_dir_dest = meta_dir_dest
         # create meta destination folder
-        bldinstallercommon.create_dirs(meta_dir_dest)
+        if not os.path.lexists(meta_dir_dest):
+            bldinstallercommon.create_dirs(meta_dir_dest)
         # Copy Meta data
         metadata_content_source_root = os.path.normpath(sdk_component.pkg_template_dir + os.sep + 'meta')
         bldinstallercommon.copy_tree(metadata_content_source_root, meta_dir_dest)
@@ -799,67 +863,17 @@ def create_target_components(target_config):
 
                     if INCREMENTAL_MODE and os.path.exists(os.path.join(data_dir_dest, archive.archive_name)):
                         continue
+                    # adding get_component_data task to our work queue
+                    # Create needed data dirs before the threads start to work
+                    if not os.path.lexists(install_dir):
+                        bldinstallercommon.create_dirs(install_dir)
+                    if not os.path.lexists(data_dir_dest):
+                        bldinstallercommon.create_dirs(data_dir_dest)
+                    getComponentDataWork.addTask("adding {0} to {1}".format(archive.archive_name, sdk_component.package_name),
+                        get_component_data, sdk_component, archive, install_dir, data_dir_dest, compress_content_dir)
 
-                    bldinstallercommon.create_dirs(install_dir)
-                    bldinstallercommon.create_dirs(data_dir_dest)
-                    # generate save as filename
-                    package_raw_name     = os.path.basename(archive.archive_uri)
-                    downloadedArchive = os.path.normpath(install_dir + os.sep + package_raw_name)
-                    # if URI points to http location -> download it
-                    if archive.archive_uri.startswith('http'):
-                        # start download
-                        bldinstallercommon.retrieve_url(archive.archive_uri, downloadedArchive)
-                    else:
-                        # copy file on local file system or shared network drive
-                        shutil.copy(archive.archive_uri, downloadedArchive)
-
-                    # repackage content so that correct dir structure will get into the package
-                    # if no data to be installed, then just continue
-                    if not package_raw_name:
-                        continue
-                    if not archive.package_strip_dirs:
-                        archive.package_strip_dirs = '0'
-
-                    if package_raw_name.endswith('.7z') \
-                       and archive.package_strip_dirs == '0' \
-                       and not archive.rpath_target \
-                       and sdk_component.target_install_base == '/' \
-                       and package_raw_name == archive.archive_name:
-                        print '     No repackaging actions required for the package'
-                        continue
-
-                    # extract contents
-                    extracted = bldinstallercommon.extract_file(downloadedArchive, install_dir)
-                    # remove old package
-                    if extracted:
-                        os.remove(downloadedArchive)
-                    else:
-                        # ok we could not extract the file, so propably not even archived file,
-                        # check the case if we downloaded a text file, must ensure proper file endings
-                        if bldinstallercommon.is_text_file(downloadedArchive):
-                            bldinstallercommon.ensure_text_file_endings(downloadedArchive)
-
-                    # strip out unnecessary folder structure based on the configuration
-                    count = 0
-                    iterations = int(archive.package_strip_dirs)
-                    while(count < iterations):
-                        count = count + 1
-                        move_directory_one_layer_up(install_dir)
-
-                    if archive.rpath_target:
-                        if not archive.rpath_target.startswith(os.sep):
-                            archive.rpath_target = os.sep + archive.rpath_target
-                        if bldinstallercommon.is_linux_platform() or bldinstallercommon.is_solaris_platform():
-                            bldinstallercommon.handle_component_rpath(install_dir, archive.rpath_target)
-
-                    # lastly compress the component back to .7z archive
-                    content_list = os.listdir(compress_content_dir)
-                    #adding compress_content_dir in front of every item
-                    content_list = [(compress_content_dir + os.sep + x) for x in content_list]
-
-                    saveas = os.path.normpath(data_dir_dest + os.sep + archive.archive_name)
-                    cmd_args = [ ARCHIVEGEN_TOOL, saveas] + content_list
-                    bldinstallercommon.do_execute_sub_process(cmd_args, data_dir_dest, True)
+    # start the work threaded, more then 8 parallel downloads are not so useful
+    getComponentDataWork.run(min([8, multiprocessing.cpu_count()]))
 
     for sdk_component in SDK_COMPONENT_LIST:
         # substitute tags
