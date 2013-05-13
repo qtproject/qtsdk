@@ -470,8 +470,8 @@ def install_qmlpuppets():
 ###############################
 def install_missing_android_files():
     # Note! This should not be here, should be fixed in qtbase instead?
-    file_path = QT_SOURCE_DIR + os.sep + 'qtbase' + os.sep + 'lib' + os.sep + 'libgnustl_shared.so'
-    dest_path = MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + os.sep + 'lib'
+    file_path = os.path.join(QT_SOURCE_DIR, 'qtbase', 'lib', 'libgnustl_shared.so')
+    dest_path = bldinstallercommon.locate_directory(os.path.join(MAKE_INSTALL_ROOT_DIR, ESSENTIALS_INSTALL_DIR_NAME), 'lib')
     print_wrap('          -> Copying missing file for Android:')
     print_wrap('          ->                           Source: ' + file_path)
     print_wrap('          ->                             Dest: ' + dest_path)
