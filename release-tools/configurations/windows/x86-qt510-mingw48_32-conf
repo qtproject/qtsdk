@@ -70,11 +70,11 @@ target_install_dir:     /bin
 rpath_target:
 archive_name:           D3DCompiler_43-x86.7z
 [510.mingw48.runtime]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/mingw_32/x32-4.7.2-release-posix-sjlj-rev8-runtime.7z
+archive_uri:            http://download.qt-project.org/development_releases/prebuilt/mingw_32/x32-4.8.0-release-posix-dwarf-rev2-runtime.7z
 package_strip_dirs:     0
 target_install_dir:     /bin
 rpath_target:
-archive_name:           x32-4.7.2-release-posix-sjlj-rev8-runtime.7z
+archive_name:           x32-4.8.0-release-posix-dwarf-rev2-runtime.7z
 
 [qt.510.win32_mingw48.addons]
 archives:               510.mingw48.addons

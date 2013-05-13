@@ -49,8 +49,8 @@ version:                4.8.0-1-1
 version_tag:            %MINGW48_VERSION%
 package_default:        true
 [tools.win32_mingw48]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/mingw_32/x32-4.8.0-release-posix-dwarf-rev1.7z
+archive_uri:            http://download.qt-project.org/development_releases/prebuilt/mingw_32/x32-4.8.0-release-posix-dwarf-rev2.7z
 package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:
-archive_name:           x32-4.8.0-release-posix-dwarf-rev1.7z
+archive_name:           x32-4.8.0-release-posix-dwarf-rev2.7z
