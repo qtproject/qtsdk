@@ -46,7 +46,7 @@ version:                5.1.0
 version_tag:            %QT_VERSION%
 
 [qt.510.win32_mingw48.essentials]
-archives:               510.mingw48.essentials, 510.mingw48.icu_51.mingw_32, d3d_compiler_43.x86, 510.mingw48.runtime
+archives:               510.mingw48.essentials, 510.mingw48.icu_51.mingw_32, 510.mingw48.runtime
 target_install_base:    /@QT_VERSION@/mingw48_32
 version:                5.1.0
 version_tag:            %QT_VERSION%
@@ -63,12 +63,6 @@ package_strip_dirs:     0
 target_install_dir:     /bin
 rpath_target:
 archive_name:           icu_51_1_mingw_builds_4_8_0_posix_dwarf_32.7z
-[d3d_compiler_43.x86]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/d3dcompiler/msvc2010/D3DCompiler_43-x86.dll.7z
-package_strip_dirs:     0
-target_install_dir:     /bin
-rpath_target:
-archive_name:           D3DCompiler_43-x86.7z
 [510.mingw48.runtime]
 archive_uri:            http://download.qt-project.org/development_releases/prebuilt/mingw_32/x32-4.8.0-release-posix-dwarf-rev2-runtime.7z
 package_strip_dirs:     0
