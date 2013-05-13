@@ -169,13 +169,13 @@ class ThreadedWork():
         self.queue.put(task)
         self.taskNumber = self.taskNumber + 1
 
-    def run(self):
+    def run(self, maxThreads = multiprocessing.cpu_count()):
         print(self.description)
         print(os.linesep.join(self.legend))
 
-        enableThreadedPrint(True, multiprocessing.cpu_count())
+        enableThreadedPrint(True, maxThreads)
         listOfConsumers = []
-        for i in range(multiprocessing.cpu_count()):
+        for i in range(maxThreads):
             # every Consumer needs a stop/none item
             self.queue.put(None)
             newConsumer = Consumer(self.queue, i)
