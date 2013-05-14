@@ -43,7 +43,7 @@
 [qt.tools]
 
 [qt.tools.win32_mingw48]
-archives:               tools.win32.mingw48
+archives:               tools.win32_mingw48
 target_install_base:    /Tools/mingw48_32
 version:                4.8.0-1-1
 version_tag:            %MINGW48_VERSION%

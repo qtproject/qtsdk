@@ -2,8 +2,8 @@
 <Package>
     <DisplayName>MinGW 4.8</DisplayName>
     <Description>MinGW-builds 4.8.0 32 bit toolchain.</Description>
-    <Version>%MINGW47_VERSION%</Version>
-    <Name>qt.tools.mingw47</Name>
+    <Version>%MINGW48_VERSION%</Version>
+    <Name>qt.tools.win32_mingw48</Name>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
     <Script>installscript.qs</Script>
