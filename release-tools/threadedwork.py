@@ -61,8 +61,6 @@ outputFormatString = ''
 # prepare our std output hooks
 class StdOutHook:
     def write(self, text):
-        #sys.__stdout__.write(text)
-        #return
         # general print method sends line break just ignore that
         strippedText = text.strip()
         if strippedText == "":
@@ -82,10 +80,11 @@ class StdOutHook:
                 outputStates[threadData.workerThreadId] = newValue
                 newOutput = "\r" + outputFormatString.format(*outputStates).strip()
                 # cleanup old output if the new line is shorter
+                cleanerString = ""
                 if len(oldOutput) > len(newOutput):
-                    sys.__stdout__.write("\r" + " " * len(oldOutput))
+                    cleanerString = " " * (len(oldOutput) - len(newOutput))
 
-                sys.__stdout__.write(newOutput)
+                sys.__stdout__.write(newOutput + cleanerString)
 
 class StdErrHook:
     def write(self, text):
