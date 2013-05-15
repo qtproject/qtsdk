@@ -51,7 +51,7 @@ import signal
 import sys
 import time
 import urllib
-from urlparse import urlparse
+import urllib2
 import shutil
 import subprocess
 import traceback
@@ -108,46 +108,76 @@ def removeDir(path, raiseNoException = False):
             else:
                 raise
 
-def download(url, savefile):
-    # use an inner function to have one function for each download
-    def my_reporthook(count, blocksize, totalsize):
-        if my_reporthook.infoString is None:
-            my_reporthook.infoString = "Downloading a file with size {0} bytes to {1}".format(
-                totalsize, savefile)
-            print(my_reporthook.infoString)
-        fraction = min(1, float(count * blocksize) / totalsize)
+def urllib2_response_read(response, file_path, block_size = 8192):
+    total_size = response.info().getheader('Content-Length').strip()
+    total_size = int(total_size)
+    bytes_count = 0
+
+    file = open(file_path, 'wb')
+    while 1:
+        block = response.read(block_size)
+        file.write(block)
+        bytes_count += len(block)
+
+        if not block:
+            break
+
+        fraction = min(1, float(bytes_count) / total_size)
         sys.stdout.write("\r{:.1%}".format(fraction))
-        #sys.stdout.flush() # it works without that, maybe because of the not blocked mainthread (?)
 
-    # now a download can be a local path
-    if os.path.lexists(url) and os.path.isfile(url):
-        shutil.copy2(url, savefile)
-        return
+    file.close()
+    return bytes_count
 
-    savefile_tmp = os.extsep.join((savefile, 'tmp'))
-
+def download(url, savefile):
     try:
-        os.makedirs(os.path.dirname(savefile_tmp))
-    except: pass
-    my_reporthook.infoString = None
+        if os.path.lexists(savefile):
+            raise Exception("Can not download '{0}' to '{1}' as target. The file already exists.".format(url, savefile))
 
-    urllib.urlcleanup()
-    try:
-        urllib.urlretrieve(url, savefile_tmp, reporthook = my_reporthook)
-    except IOError:
-        type_, value_, traceback_ = sys.exc_info()
-        sys.stderr.write((os.linesep + "{0}: {1}" + os.linesep).format(url, value_))
-        sys.exit(1)
-    try:
+        # now a download can be a local path
+        if os.path.lexists(url) and os.path.isfile(url):
+            print("copying file from '{0}' to {1}".format(url, savefile))
+            shutil.copy2(url, savefile)
+            print("Done" + os.linesep)
+            return
+
+        savefile_tmp = os.extsep.join((savefile, 'tmp'))
         try:
-            os.rename(savefile_tmp, savefile)
-        except WindowsError:
-            # if it still exists just try that after a microsleep
-            if os.path.lexists(savefile_tmp):
-                time.sleep(1)
+            os.makedirs(os.path.dirname(savefile_tmp))
+        except: pass
+
+        try:
+            # use urlopen which raise an error if that file is not existing
+            response = urllib2.urlopen(url)
+            total_size = response.info().getheader('Content-Length').strip()
+            print("Downloading a file with size {0} bytes to {1}".format(total_size, savefile))
+            # run the download
+            urllib2_response_read(response, savefile_tmp)
+        except urllib2.HTTPError, error:
+            raise Exception("Can not download '{0}' to '{1}' as target(error code: '{2}').".format(url, savefile, error.code))
+        renamed = False
+        tryRenameCounter = 0
+        while renamed is False :
+            tryRenameCounter = tryRenameCounter + 1
+            try:
+                if os.path.lexists(savefile):
+                    raise Exception("Please remove savefile first: {0}".format(savefile))
                 os.rename(savefile_tmp, savefile)
-    except:
-        raise
+                if os.path.lexists(savefile):
+                    renamed = True
+                    # make sure that another output starts in a new line
+                    sys.stdout.write(os.linesep)
+            except WindowsError:
+                # if it still exists just try that after a microsleep and stop this after 360 tries
+                if os.path.lexists(savefile_tmp) and tryRenameCounter < 360:
+                    time.sleep(1)
+                    continue
+                else:
+                    raise Exception("The savefile_tmp does not exist: {0}".format(savefile_tmp))
+    except Exception as e:
+        # in threadedwork we prevent std so we need to forward the traceback to stderr
+        sys.stderr.write(e.message)
+        # this will stop the complete application even in threaded mode
+        sys.exit(1)
     finally: # this is done before the except code is called
         try:
             os.remove(savefile_tmp)
@@ -267,7 +297,7 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None,
             sys.stderr.write(os.linesep + '======================= error =======================' + os.linesep)
             sys.stderr.write("Working Directory: " + currentWorkingDirectory + os.linesep)
             sys.stderr.write("Last command:      " + ' '.join(commandAsList) + os.linesep)
-            traceback.print_exc()
+            sys.stderr.write(traceback.format_exc())
             # lets keep that for debugging
             #if environment:
             #    for key in sorted(environment):
