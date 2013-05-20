@@ -107,6 +107,7 @@ ANDROID_SDK_HOME                    =''
 ANDROID_NDK_HOME                    =''
 ANDROID_BUILD                       = False
 EXTRA_ENV                           = dict(os.environ)
+REPLACE_RPATH                       = False
 
 
 class MultipleOption(Option):
@@ -597,6 +598,18 @@ def build_docs():
 ###############################
 # function
 ###############################
+def replace_rpath():
+    if not bldinstallercommon.is_linux_platform():
+        print_wrap('*** Warning! RPath patching enabled only for Linux platforms')
+        return
+    dest_path_lib = bldinstallercommon.locate_directory(os.path.join(MAKE_INSTALL_ROOT_DIR, ESSENTIALS_INSTALL_DIR_NAME), 'lib')
+    component_root_path = os.path.dirname(dest_path_lib)
+    bldinstallercommon.handle_component_rpath(component_root_path, '/lib')
+
+
+###############################
+# function
+###############################
 def archive_submodules():
     print_wrap('---------------- Archiving submodules ------------------------------')
     bldinstallercommon.create_dirs(MODULE_ARCHIVE_DIR)
@@ -642,6 +655,7 @@ def parse_cmd_line():
     global ANDROID_SDK_HOME
     global ANDROID_NDK_HOME
     global ANDROID_BUILD
+    global REPLACE_RPATH
 
     setup_option_parser()
 
@@ -662,6 +676,7 @@ def parse_cmd_line():
         QT5_MODULES_IGNORE_LIST = options.module_ignore_list
     STRICT_MODE             = options.strict_mode
     QT_CREATOR_SRC_DIR      = options.qt_creator_src_dir
+    REPLACE_RPATH           = options.replace_rpath
 
     if options.configure_options:
         if os.path.isfile(options.configure_options):
@@ -738,6 +753,9 @@ def setup_option_parser():
     OPTION_PARSER.add_option("--creator-dir",
                       action="store", type="string", dest="qt_creator_src_dir", default="",
                       help="path to Qt Creator sources. If given, the Qt Quick Designer processes (qmlpuppet, qml2puppet) will be built and packaged.")
+    OPTION_PARSER.add_option("--replace-rpath",
+                      action="store_true", dest="replace_rpath", default=False,
+                      help="patch RPath with relative paths pointing to /lib")
     # for Android cross compilations
     OPTION_PARSER.add_option("--android-ndk-host",
                       action="store", type="string", dest="android_ndk_host", default="",
@@ -795,6 +813,9 @@ def main():
         build_docs()
     # replace build directory paths in install_root locations
     replace_build_paths(MAKE_INSTALL_ROOT_DIR)
+    # patch RPath if requested
+    if REPLACE_RPATH:
+        replace_rpath()
     # archive each submodule
     archive_submodules()
 
