@@ -468,23 +468,6 @@ def install_qmlpuppets():
 ###############################
 # function
 ###############################
-def install_missing_android_files():
-    # Note! This should not be here, should be fixed in qtbase instead?
-    file_path = os.path.join(QT_SOURCE_DIR, 'qtbase', 'lib', 'libgnustl_shared.so')
-    dest_path = bldinstallercommon.locate_directory(os.path.join(MAKE_INSTALL_ROOT_DIR, ESSENTIALS_INSTALL_DIR_NAME), 'lib')
-    print_wrap('          -> Copying missing file for Android:')
-    print_wrap('          ->                           Source: ' + file_path)
-    print_wrap('          ->                             Dest: ' + dest_path)
-    if (os.path.isfile(file_path) and os.path.exists(dest_path)):
-        shutil.copy(file_path, dest_path)
-        print_wrap('          -> Copied missing file for Android:')
-        print_wrap('          ->                          Source: ' + file_path)
-        print_wrap('          ->                            Dest: ' + dest_path)
-
-
-###############################
-# function
-###############################
 def save_original_qt_prfxpath():
     print_wrap('---------------- Saving original qt_prfxpath -----------------------')
     global ORIGINAL_QMAKE_QT_PRFXPATH
@@ -739,7 +722,7 @@ def setup_option_parser():
                       help="make job count, uses the number of available processors plus one by default.")
     OPTION_PARSER.add_option("-q", "--silent-build",
                       action="store_true", dest="silent_build", default=False,
-                      help="supress command output, show only errors")
+                      help="suppress command output, show only errors")
     OPTION_PARSER.add_option("-i", "--ignore",
                       action="extend", type="string", dest="module_ignore_list",
                       help="do not build module")
@@ -802,9 +785,6 @@ def main():
     save_original_qt_prfxpath()
     # install
     install_qt()
-    # make install does not seem to export all required files? So copy the manually
-    if ANDROID_BUILD:
-        install_missing_android_files()
     # install qmlpuppets
     if not ANDROID_BUILD:
         install_qmlpuppets()
