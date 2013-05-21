@@ -47,7 +47,7 @@ version:                5.1.0
 version_tag:            %QT_VERSION%
 
 [qt.510.android_x86.essentials]
-archives:               510.android_x86.essentials
+archives:               510.android_x86.essentials, 510.android_x86.mingw48.runtime
 target_install_base:    /@QT_VERSION@/android_x86
 version:                5.1.0
 version_tag:            %QT_VERSION%
@@ -58,6 +58,12 @@ package_strip_dirs:
 target_install_dir:     /
 rpath_target:
 archive_name:           android_x86_essentials_mingw_host.7z
+[510.android_x86.mingw48.runtime]
+archive_uri:            http://download.qt-project.org/development_releases/prebuilt/mingw_32/x32-4.8.0-release-posix-dwarf-rev2-runtime.7z
+package_strip_dirs:     0
+target_install_dir:     /bin
+rpath_target:
+archive_name:           x32-4.8.0-release-posix-dwarf-rev2-runtime.7z
 
 [qt.510.android_x86.addons]
 archives:               510.android_x86.addons
