@@ -53,7 +53,7 @@ function Component()
     if (installer.value("os") == "win")
     {
         // Creator needs vcredist 32bit on windows
-        component.addDependency("qt.tools.vcredist")
+        component.addDependency("qt.tools.vcredist");
     }
 
     if (installer.value("os") == "x11")
