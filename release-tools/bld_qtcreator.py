@@ -49,13 +49,15 @@ import multiprocessing
 import os
 import stat
 import sys
+from urlparse import urlparse
 
 # own imports
 from threadedwork import *
 from bld_utils import *
 
 def createDownloadExtract7zTask(url, targetPath, tempPath, callerArguments):
-    sevenzipFile = os.path.join(tempPath, getFileNameFromUrl(url))
+    fileNameFromUrl = os.path.basename(urlparse(url).path)
+    sevenzipFile = os.path.join(tempPath, fileNameFromUrl)
     downloadExtract7zTask = Task("download {0} to {1} and extract it to {2}".format(url, sevenzipFile, targetPath))
 
     downloadExtract7zTask.addFunction(download, url, sevenzipFile)

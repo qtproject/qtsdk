@@ -89,9 +89,6 @@ def compress(path, directoryName, sevenZipTarget, callerArguments):
     if currentSevenZipPath != sevenZipTarget:
         shutil.move(currentSevenZipPath, sevenZipTarget)
 
-def getFileNameFromUrl(url):
-    return os.path.basename(urlparse(url).path)
-
 def stripVars(object, chars):
     for key, value in vars(object).items():
         if isinstance(value, str):
