@@ -102,27 +102,27 @@ Component.prototype.createOperations = function()
         try {
             // patch Qt binaries
             if (installer.value("qt.510.gcc_64.essentials_qtpath")) {
-                component.addOperation("QtPatch", "linux", installer.value("qt.510.gcc_64.essentials_qtpath"));
+                component.addOperation("QtPatch", "linux", installer.value("qt.510.gcc_64.essentials_qtpath"), "qt5");
             }
             if (installer.value("qt.510.gcc.essentials_qtpath")) {
-                component.addOperation("QtPatch", "linux", installer.value("qt.510.gcc.essentials_qtpath"));
+                component.addOperation("QtPatch", "linux", installer.value("qt.510.gcc.essentials_qtpath"), "qt5");
             }
 
             // patch Android Qt binaries
             if (installer.value("qt.510.android_armv5.essentials_qtpath")) {
-                component.addOperation("QtPatch", "linux-emb-arm", installer.value("qt.510.android_armv5.essentials_qtpath"));
+                component.addOperation("QtPatch", "linux", installer.value("qt.510.android_armv5.essentials_qtpath"), "emb-arm");
             }
             // patch Android Qt binaries
             if (installer.value("qt.510.android_armv7.essentials_qtpath")) {
-                component.addOperation("QtPatch", "linux-emb-arm", installer.value("qt.510.android_armv7.essentials_qtpath"));
+                component.addOperation("QtPatch", "linux", installer.value("qt.510.android_armv7.essentials_qtpath"), "emb-arm");
             }
             // patch Android Qt binaries
             if (installer.value("qt.510.android_x86.essentials_qtpath")) {
-                component.addOperation("QtPatch", "linux-emb-arm", installer.value("qt.510.android_x86.essentials_qtpath"));
+                component.addOperation("QtPatch", "linux", installer.value("qt.510.android_x86.essentials_qtpath"), "emb-arm");
             }
             // patch Android Qt binaries
             if (installer.value("qt.510.android_mips.essentials_qtpath")) {
-                component.addOperation("QtPatch", "linux-emb-arm", installer.value("qt.510.android_mips.essentials_qtpath"));
+                component.addOperation("QtPatch", "linux", installer.value("qt.510.android_mips.essentials_qtpath"), "emb-arm");
             }
         } catch( e ) {
             print( e );
@@ -133,39 +133,39 @@ Component.prototype.createOperations = function()
         try {
             // patch Qt binaries
             if (installer.value("qt.510.win32_mingw47.essentials_qtpath")) {
-                component.addOperation("QtPatch", "windows", installer.value("qt.510.win32_mingw47.essentials_qtpath"));
+                component.addOperation("QtPatch", "windows", installer.value("qt.510.win32_mingw47.essentials_qtpath"), "qt5");
             }
             if (installer.value("qt.510.win32_msvc2010.essentials_qtpath")) {
-                component.addOperation("QtPatch", "windows", installer.value("qt.510.win32_msvc2010.essentials_qtpath"));
+                component.addOperation("QtPatch", "windows", installer.value("qt.510.win32_msvc2010.essentials_qtpath"), "qt5");
             }
             if (installer.value("qt.510.win32_msvc2010_opengl.essentials_qtpath")) {
-                component.addOperation("QtPatch", "windows", installer.value("qt.510.win32_msvc2010_opengl.essentials_qtpath"));
+                component.addOperation("QtPatch", "windows", installer.value("qt.510.win32_msvc2010_opengl.essentials_qtpath"), "qt5");
             }
             if (installer.value("qt.510.win64_msvc2010_64.essentials_qtpath")) {
-                component.addOperation("QtPatch", "windows", installer.value("qt.510.win64_msvc2010_64.essentials_qtpath"));
+                component.addOperation("QtPatch", "windows", installer.value("qt.510.win64_msvc2010_64.essentials_qtpath"), "qt5");
             }
             if (installer.value("qt.510.win64_msvc2012_64.essentials_qtpath")) {
-                component.addOperation("QtPatch", "windows", installer.value("qt.510.win64_msvc2012_64.essentials_qtpath"));
+                component.addOperation("QtPatch", "windows", installer.value("qt.510.win64_msvc2012_64.essentials_qtpath"), "qt5");
             }
             if (installer.value("qt.510.win64_msvc2012_64_opengl.essentials_qtpath")) {
-                component.addOperation("QtPatch", "windows", installer.value("qt.510.win64_msvc2012_64_opengl.essentials_qtpath"));
+                component.addOperation("QtPatch", "windows", installer.value("qt.510.win64_msvc2012_64_opengl.essentials_qtpath"), "qt5");
             }
 
             // patch Android Qt binaries
             if (installer.value("qt.510.android_armv5.essentials_qtpath")) {
-                component.addOperation("QtPatch", "windows-emb-arm", installer.value("qt.510.android_armv5.essentials_qtpath"));
+                component.addOperation("QtPatch", "windows", installer.value("qt.510.android_armv5.essentials_qtpath"), "emb-arm");
             }
             // patch Android Qt binaries
             if (installer.value("qt.510.android_armv7.essentials_qtpath")) {
-                component.addOperation("QtPatch", "windows-emb-arm", installer.value("qt.510.android_armv7.essentials_qtpath"));
+                component.addOperation("QtPatch", "windows", installer.value("qt.510.android_armv7.essentials_qtpath"), "emb-arm");
             }
             // patch Android Qt binaries
             if (installer.value("qt.510.android_x86.essentials_qtpath")) {
-                component.addOperation("QtPatch", "windows-emb-arm", installer.value("qt.510.android_x86.essentials_qtpath"));
+                component.addOperation("QtPatch", "windows", installer.value("qt.510.android_x86.essentials_qtpath"), "emb-arm");
             }
             // patch Android Qt binaries
             if (installer.value("qt.510.android_mips.essentials_qtpath")) {
-                component.addOperation("QtPatch", "windows-emb-arm", installer.value("qt.510.android_mips.essentials_qtpath"));
+                component.addOperation("QtPatch", "windows", installer.value("qt.510.android_mips.essentials_qtpath"), "emb-arm");
             }
         } catch( e ) {
             print( e );
@@ -175,7 +175,7 @@ Component.prototype.createOperations = function()
     if (installer.value("os") == "mac") {
         try {
             // patch Qt binaries
-            component.addOperation("QtPatch", "mac", installer.value("qt.510.clang_64.essentials_qtpath"));
+            component.addOperation("QtPatch", "mac", installer.value("qt.510.clang_64.essentials_qtpath"), "qt5");
         } catch( e ) {
             print( e );
         }

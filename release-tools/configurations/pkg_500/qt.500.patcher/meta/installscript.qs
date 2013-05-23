@@ -52,9 +52,9 @@ Component.prototype.createOperations = function()
         try {
             // patch Qt binaries
             if (installer.value("qt.500.gcc_64.essentials_qtpath"))
-                component.addOperation("QtPatch", "linux", installer.value("qt.500.gcc_64.essentials_qtpath"));
+                component.addOperation("QtPatch", "linux", installer.value("qt.500.gcc_64.essentials_qtpath"), "qt5");
             if (installer.value("qt.500.gcc.essentials_qtpath"))
-                component.addOperation("QtPatch", "linux", installer.value("qt.500.gcc.essentials_qtpath"));
+                component.addOperation("QtPatch", "linux", installer.value("qt.500.gcc.essentials_qtpath"), "qt5");
         } catch( e ) {
             print( e );
         }
@@ -64,11 +64,11 @@ Component.prototype.createOperations = function()
         try {
             // patch Qt binaries
             if (installer.value("qt.500.win32_mingw.essentials_qtpath"))
-                component.addOperation("QtPatch", "windows", installer.value("qt.500.win32_mingw.essentials_qtpath"));
+                component.addOperation("QtPatch", "windows", installer.value("qt.500.win32_mingw.essentials_qtpath"), "qt5");
             if (installer.value("qt.500.win32_msvc2010.essentials_qtpath"))
-                component.addOperation("QtPatch", "windows", installer.value("qt.500.win32_msvc2010.essentials_qtpath"));
+                component.addOperation("QtPatch", "windows", installer.value("qt.500.win32_msvc2010.essentials_qtpath"), "qt5");
             if (installer.value("qt.500.win32_msvc2010_64.essentials_qtpath"))
-                component.addOperation("QtPatch", "windows", installer.value("qt.500.win32_msvc2010_64.essentials_qtpath"));
+                component.addOperation("QtPatch", "windows", installer.value("qt.500.win32_msvc2010_64.essentials_qtpath"), "qt5");
         } catch( e ) {
             print( e );
         }
@@ -77,7 +77,7 @@ Component.prototype.createOperations = function()
     if (installer.value("os") == "mac") {
         try {
             // patch Qt binaries
-            component.addOperation("QtPatch", "mac", installer.value("qt.500.clang_64.essentials_qtpath"));
+            component.addOperation("QtPatch", "mac", installer.value("qt.500.clang_64.essentials_qtpath"), "qt5");
         } catch( e ) {
             print( e );
         }
