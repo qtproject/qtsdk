@@ -14,6 +14,15 @@ function Component()
                                    "Download the Xcode command line tools from https://developer.apple.com/downloads\n"));
         }
     }
+
+    gui.pageWidgetByObjectName("LicenseAgreementPage").entered.connect(changeLicenseLabels);
+}
+
+changeLicenseLabels = function()
+{
+    page = gui.pageWidgetByObjectName("LicenseAgreementPage");
+    page.AcceptLicenseLabel.setText("I h<u>a</u>ve read and agree to the following terms contained in the license agreements accompanying the Qt 5.0.2 installer and additional items. I agree that my use of the Qt 5.0.2 installer is governed by the terms and conditions contained in these license agreements.");
+    page.RejectLicenseLabel.setText("I <u>d</u>o not accept the terms and conditions of the above listed license agreements. Please note by checking the box, you must cancel the installation or downloading the Qt 5.0.2 and must destroy all copies, or portions thereof, of the Qt 5.0.2 in your possessions.");
 }
 
 Component.prototype.createOperations = function()
