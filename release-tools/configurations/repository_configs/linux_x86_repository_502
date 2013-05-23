@@ -66,7 +66,7 @@ repository_url_release:
 template_name:          config_qt5
 
 [ConfigXml]
-template_name:          config.xml.template.linux.qt5-sdk
+template_name:          config.xml.template.linux-x86.qt5-sdk
 
 [WorkingDirectories]
 packages_dir:           pkg_tools, pkg_502

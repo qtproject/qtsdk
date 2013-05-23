@@ -60,7 +60,7 @@ file_list:              qt510-src-conf, x86-qt510-mingw48_32-conf, x86-tools-min
 package_list:
 
 [SdkUpdateRepository]
-repository_url_release: http://../qt5repository/windows/x32/online_qt5sdk_repo
+repository_url_release:
 
 [ConfigDir]
 template_name:          config_qt5

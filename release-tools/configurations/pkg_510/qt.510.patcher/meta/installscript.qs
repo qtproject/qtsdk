@@ -68,6 +68,8 @@ addDynamicDependencies = function(page)
     dynamicDependencies.push("qt.510.win32_msvc2010.addons");
     dynamicDependencies.push("qt.510.win32_msvc2010_opengl.essentials");
     dynamicDependencies.push("qt.510.win32_msvc2010_opengl.addons");
+    dynamicDependencies.push("qt.510.win32_msvc2012.essentials");
+    dynamicDependencies.push("qt.510.win32_msvc2012.addons");
     dynamicDependencies.push("qt.510.win64_msvc2010_64.essentials");
     dynamicDependencies.push("qt.510.win64_msvc2010_64.addons");
     dynamicDependencies.push("qt.510.win64_msvc2012_64.essentials");
@@ -148,6 +150,9 @@ Component.prototype.createOperations = function()
             }
             if (installer.value("qt.510.win64_msvc2010_64.essentials_qtpath")) {
                 component.addOperation("QtPatch", "windows", installer.value("qt.510.win64_msvc2010_64.essentials_qtpath"), "qt5");
+            }
+            if (installer.value("qt.510.win32_msvc2012.essentials_qtpath")) {
+                component.addOperation("QtPatch", "windows", installer.value("qt.510.win32_msvc2012.essentials_qtpath"), "qt5");
             }
             if (installer.value("qt.510.win64_msvc2012_64.essentials_qtpath")) {
                 component.addOperation("QtPatch", "windows", installer.value("qt.510.win64_msvc2012_64.essentials_qtpath"), "qt5");

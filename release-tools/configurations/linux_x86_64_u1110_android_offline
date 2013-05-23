@@ -60,7 +60,7 @@ file_list:              qt510-src-conf, x86_64-qt510-gcc-conf, android-x64-qt510
 package_list:
 
 [SdkUpdateRepository]
-repository_url_release: http://../qt5repository/linux/x64/online_qt5sdk_repo
+repository_url_release:
 
 [ConfigDir]
 template_name:          config_qt5

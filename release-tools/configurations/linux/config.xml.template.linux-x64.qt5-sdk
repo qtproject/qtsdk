@@ -9,20 +9,21 @@
     <Watermark>watermark.png</Watermark>
     <StartMenuDir>Qt SDK</StartMenuDir>
     <ProductUrl>http://qt-project.org/</ProductUrl>
+    <!--<Background>background.png</Background>-->
     <UninstallerName>MaintenanceTool</UninstallerName>
-    <DependsOnLocalInstallerBinary>true</DependsOnLocalInstallerBinary>
     <RemoteRepositories>
         <Repository>
-            <Url>http://download.qt-project.org/online/qt5/windows/x86/online_repository/</Url>
+            <Url>http://download.qt-project.org/online/qt5/linux/x64/online_repository/</Url>
             <Enabled>1</Enabled>
-            <DisplayName>Qt Windows online repository</DisplayName>
+            <DisplayName>Qt Linux-x86 online repository</DisplayName>
         </Repository>
         <Repository>
-            <Url>http://download.qt-project.org/online/qt5/windows/x86_android/online_repository/</Url>
+            <Url>http://download.qt-project.org/online/qt5/linux/x64_android/online_repository/</Url>
             <Enabled>1</Enabled>
-            <DisplayName>Qt Android for Windows-x86 host online repository</DisplayName>
+            <DisplayName>Qt Android for Linux-x64 host online repository</DisplayName>
         </Repository>
     </RemoteRepositories>
     <!-- @homeDir@ and @rootDir@ are some of the supported vars -->
-    <TargetDir>@rootDir@/QtSDK</TargetDir>
+    <TargetDir>@homeDir@/QtSDK</TargetDir>
+    <AdminTargetDir>/opt/QtSDK</AdminTargetDir>
 </Installer>
