@@ -79,5 +79,6 @@ name:                   ifwt
 package_url:
 
 
-
+[qt]
+root_component:         yes
 
