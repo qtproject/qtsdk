@@ -5,7 +5,7 @@
     <Title>Qt SDK</Title>
     <Publisher>Digia Plc</Publisher>
     <Logo>logo.png</Logo>
-    <Icon>logo-small</Icon>
+    <InstallerWindowIcon>logo-small</InstallerWindowIcon>
     <Watermark>watermark.png</Watermark>
     <StartMenuDir>Qt SDK</StartMenuDir>
     <ProductUrl>http://qt-project.org/</ProductUrl>

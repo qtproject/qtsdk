@@ -5,7 +5,7 @@
     <Title>Qt 5.1.0</Title>
     <Publisher>Digia Plc</Publisher>
     <Logo>logo.png</Logo>
-    <Icon>logo-small</Icon>
+    <InstallerWindowIcon>logo-small</InstallerWindowIcon>
     <Watermark>watermark.png</Watermark>
     <StartMenuDir>Qt 5.1.0</StartMenuDir>
     <ProductUrl>http://qt-project.org/</ProductUrl>
