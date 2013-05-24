@@ -308,6 +308,11 @@ def runInstallCommand(arguments = 'install', currentWorkingDirectory = None, cal
     installcommand = 'make'
     if hasattr(callerArguments, 'installcommand') and callerArguments.installcommand:
         installcommand = callerArguments.installcommand
+    else:
+        installcommand = ' '.join((installcommand, "-j1"))
+        # had the case that the -j1 on the make command was ignored if there is a MAKEFLAGS variable
+        if os.name != 'nt':
+            init_environment["MAKEFLAGS"] = "-j1"
 
     if arguments:
         installcommand = ' '.join((installcommand, arguments))
