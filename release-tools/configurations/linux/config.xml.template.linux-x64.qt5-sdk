@@ -6,6 +6,7 @@
     <Publisher>Digia Plc</Publisher>
     <Logo>logo.png</Logo>
     <InstallerWindowIcon>logo-small</InstallerWindowIcon>
+    <InstallerApplicationIcon>logo-small</InstallerApplicationIcon>
     <Watermark>watermark.png</Watermark>
     <StartMenuDir>Qt SDK</StartMenuDir>
     <ProductUrl>http://qt-project.org/</ProductUrl>
