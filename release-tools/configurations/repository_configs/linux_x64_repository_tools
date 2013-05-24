@@ -54,7 +54,7 @@ base_path:
 packages:               foo.bar, foo.bar2, foo.bar3
 
 [ExtraPackageConfigurationFiles]
-file_list:              x86_64-tools-conf, x86-tools-maintenancetool-conf, installer-readme-conf
+file_list:              x86_64-tools-conf, x64-tools-maintenancetool-conf, installer-readme-conf
 
 [OfflinePackageExcludeList]
 package_list:
