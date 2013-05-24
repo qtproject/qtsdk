@@ -4,11 +4,11 @@ file_list:
 [qt.tools.maintenance]
 archives:               tools.maintenance
 target_install_base:    /
-version:                1.2.0
+version:                1.4.0
 version_tag:            %MAINTENANCE_TOOL_VERSION%
 package_default:        true
 [tools.maintenance]
-archive_uri:            /ifw/qt5/installerbase-mac-x64.7z
+archive_uri:            /ifw/1.4/installerbase-mac-x64.7z
 package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:
