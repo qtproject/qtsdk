@@ -750,13 +750,8 @@ def move_directory_one_layer_up(directory):
 
 def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compress_content_dir):
     """download and create data for a component"""
-    # generate save as filename
     package_raw_name = os.path.basename(archive.archive_uri)
-    downloadedArchive = os.path.normpath(install_dir + os.sep + package_raw_name)
-    # start download
-    bld_utils.download(archive.archive_uri, downloadedArchive)
 
-    # repackage content so that correct dir structure will get into the package
     # if no data to be installed, then just continue
     if not package_raw_name:
         return
@@ -768,8 +763,17 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
        and not archive.rpath_target \
        and sdk_component.target_install_base == '/' \
        and package_raw_name == archive.archive_name:
-        print '     No repackaging actions required for the package'
+        print '     No repackaging actions required for the package, just download it directly to data directory'
+        downloadedArchive = os.path.normpath(data_dir_dest + os.sep + package_raw_name)
+        # start download
+        bld_utils.download(archive.archive_uri, downloadedArchive)
         return
+
+    downloadedArchive = os.path.normpath(install_dir + os.sep + package_raw_name)
+    # start download
+    bld_utils.download(archive.archive_uri, downloadedArchive)
+
+    # repackage content so that correct dir structure will get into the package
 
     # extract contents
     extracted = bldinstallercommon.extract_file(downloadedArchive, install_dir)
