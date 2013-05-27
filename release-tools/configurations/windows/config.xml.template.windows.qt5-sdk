@@ -20,7 +20,7 @@
         </Repository>
         <Repository>
             <Url>http://download.qt-project.org/online/qt5/windows/x86_android/online_repository/</Url>
-            <Enabled>1</Enabled>
+            <Enabled>0</Enabled>
             <DisplayName>Qt Android for Windows-x86 host online repository</DisplayName>
         </Repository>
     </RemoteRepositories>
