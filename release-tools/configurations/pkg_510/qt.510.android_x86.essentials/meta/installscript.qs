@@ -5,6 +5,14 @@
 // constructor
 function Component()
 {
+    // add dynamic dependency for mingw48 TC for Android packages on Windows
+    if (installer.value("os") == "win") {
+        var mingw_tc_component = "qt.tools.win32_mingw48";
+        if (installer.componentByName(mingw_tc_component) &&
+            installer.componentByName(mingw_tc_component).installationRequested()) {
+            component.addDependency(mingw_tc_component);
+        }
+    }
 }
 
 Component.prototype.beginInstallation = function()
@@ -25,6 +33,9 @@ Component.prototype.createOperations = function()
     }
     if (installer.value("os") == "win") {
         qmakeBinary = "@TargetDir@/%TARGET_INSTALL_DIR%/bin/qmake.exe";
+
+        component.addOperation("Execute",
+            new Array("{0}", "@SDKToolBinary@", "addKeys", "android", "MakeExtraSearchDirectory","QString:@MINGW48_DIR@\\bin"));
     }
 
     // add Qt into QtCreator
