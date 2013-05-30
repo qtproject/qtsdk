@@ -16,7 +16,7 @@
         <Repository>
             <Url>http://download.qt-project.org/online/qt5/linux/x64/online_repository/</Url>
             <Enabled>1</Enabled>
-            <DisplayName>Qt Linux-x86 online repository</DisplayName>
+            <DisplayName>Qt Linux-x64 online repository</DisplayName>
         </Repository>
         <Repository>
             <Url>http://download.qt-project.org/online/qt5/linux/x64_android/online_repository/</Url>
