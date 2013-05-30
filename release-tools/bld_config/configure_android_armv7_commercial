@@ -1,1 +1,1 @@
--commercial -confirm-license -release -xplatform android-g++ -opengl es2 -android-arch armeabi-v7a -nomake tests -nomake examples -nomake demos -skip qtserialport -skip qtwebkit -skip qtwebkit-examples -skip qtx11extras -sysconfdir /etc/xdg -no-neon
+-commercial -confirm-license -release -xplatform android-g++ -opengl es2 -android-arch armeabi-v7a -nomake tests -nomake examples -nomake demos -skip qtserialport -skip qtwebkit -skip qtwebkit-examples -skip qtx11extras -sysconfdir /etc/xdg -no-neon -no-icu -no-openssl
