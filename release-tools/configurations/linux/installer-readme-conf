@@ -40,7 +40,7 @@
 #############################################################################
 
 [qt.readme]
-archives:               readme
+archives:               readme, qtprojecturl
 target_install_base:    /
 version:
 version_tag:
@@ -51,3 +51,9 @@ package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:
 archive_name:           readme.7z
+[qtprojecturl]
+archive_uri:            qt-project-url.7z
+package_strip_dirs:     0
+target_install_dir:     /
+rpath_target:
+archive_name:           qt-project-url.7z
