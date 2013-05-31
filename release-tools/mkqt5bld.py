@@ -70,6 +70,7 @@ MODULE_ARCHIVE_DIR                  = SCRIPT_ROOT_DIR + os.sep + MODULE_ARCHIVE_
 SUBMODULE_INSTALL_BASE_DIR_NAME     = "submodule_install_"
 ESSENTIALS_INSTALL_DIR_NAME         = SUBMODULE_INSTALL_BASE_DIR_NAME + 'essentials'
 ADDONS_INSTALL_DIR_NAME             = SUBMODULE_INSTALL_BASE_DIR_NAME + 'addons'
+SINGLE_INSTALL_DIR_NAME             = SUBMODULE_INSTALL_BASE_DIR_NAME + 'single'
 #list of modules, only a backup list, this list will be updated during script execution
 QT5_MODULES_LIST                    = [ 'qt3d', 'qlalr', 'qtactiveqt', 'qtbase',     \
                                         'qtconnectivity', 'qtdeclarative', 'qtdoc', \
@@ -409,6 +410,16 @@ def build_qmlpuppets():
 def install_qt():
     print_wrap('---------------- Installing Qt -------------------------------------')
 
+    # temporary solution for installing cross compiled Qt for Android on Windows host
+    if ANDROID_BUILD and bldinstallercommon.is_win_platform():
+        install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
+        cmd_args = MAKE_INSTALL_CMD + ' ' + 'INSTALL_ROOT=' + install_root_path
+        print_wrap('    Installing module: Qt top level')
+        print_wrap('          -> cmd args: ' + cmd_args)
+        print_wrap('                -> in: ' + QT_SOURCE_DIR)
+        return_code, output = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, STRICT_MODE)
+        return
+
     #make install for each module with INSTALL_ROOT
     print_wrap('    Install modules to separate INSTALL_ROOT')
     for module_name in QT5_MODULES_LIST:
@@ -613,6 +624,17 @@ def replace_rpath():
 def archive_submodules():
     print_wrap('---------------- Archiving submodules ------------------------------')
     bldinstallercommon.create_dirs(MODULE_ARCHIVE_DIR)
+
+    # temporary solution for Android on Windows compilations
+    if ANDROID_BUILD and bldinstallercommon.is_win_platform():
+        print_wrap('---------- Archiving Qt modules')
+        if os.path.exists(MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME):
+            cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_essentials' + '.7z *'
+            run_in = os.path.normpath(MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX)
+            bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), run_in, True, True)
+        else:
+            print_wrap(MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> Qt not archived!')
+        return
 
     # Essentials
     print_wrap('---------- Archiving essential modules')
