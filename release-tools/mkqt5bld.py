@@ -413,6 +413,8 @@ def install_qt():
     # temporary solution for installing cross compiled Qt for Android on Windows host
     if ANDROID_BUILD and bldinstallercommon.is_win_platform():
         install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
+        # do not use drive letter when running make install
+        install_root_path = install_root_path[2:]
         cmd_args = MAKE_INSTALL_CMD + ' ' + 'INSTALL_ROOT=' + install_root_path
         print_wrap('    Installing module: Qt top level')
         print_wrap('          -> cmd args: ' + cmd_args)
@@ -628,12 +630,14 @@ def archive_submodules():
     # temporary solution for Android on Windows compilations
     if ANDROID_BUILD and bldinstallercommon.is_win_platform():
         print_wrap('---------- Archiving Qt modules')
-        if os.path.exists(MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME):
+        install_path = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
+        install_path = 'C' + install_path[1:]
+        if os.path.exists(install_path):
             cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_essentials' + '.7z *'
-            run_in = os.path.normpath(MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX)
+            run_in = os.path.normpath(install_path + os.sep + INSTALL_PREFIX)
             bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), run_in, True, True)
         else:
-            print_wrap(MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> Qt not archived!')
+            print_wrap(install_path + os.sep + SINGLE_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> Qt not archived!')
         return
 
     # Essentials
