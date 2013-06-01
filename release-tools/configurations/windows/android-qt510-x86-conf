@@ -71,15 +71,3 @@ target_install_dir:     /bin
 rpath_target:
 archive_name:           x32-4.8.0-release-posix-dwarf-rev2-runtime.7z
 
-[qt.510.android_x86.addons]
-archives:               510.android_x86.addons
-target_install_base:    /@QT_VERSION@/android_x86
-version:                5.1.0
-version_tag:            %QT_VERSION%
-package_default:        true
-[510.android_x86.addons]
-archive_uri:            /qt/5.1.0/latest/android_x86/mingw_x86/qt5_addons.7z
-package_strip_dirs:
-target_install_dir:     /
-rpath_target:
-archive_name:           android_x86_qt5_addons.7z
