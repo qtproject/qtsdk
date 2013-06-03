@@ -5,7 +5,7 @@
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Name>qt.510.android_armv5.essentials</Name>
-    <Dependencies>qt.tools.qtcreator</Dependencies>
+    <Dependencies>qt.tools.qtcreator, qt.510.android_qtcreator_settings</Dependencies>
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
     <!--<AutoSelectOn></AutoSelectOn>-->
     <Script>installscript.qs</Script>   <!-- File name of a script being loaded - optional. -->

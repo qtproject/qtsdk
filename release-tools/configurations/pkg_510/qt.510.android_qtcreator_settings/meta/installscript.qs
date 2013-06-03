@@ -3,7 +3,7 @@
 ** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
-** This file is part of the FOO module of the Qt Toolkit.
+** This file is part of the Release Tools module of the Qt Toolkit.
 **
 ** $QT_BEGIN_LICENSE:LGPL$
 ** Commercial License Usage
@@ -42,38 +42,29 @@
 // constructor
 function Component()
 {
-    // add dynamic dependency for mingw48 TC for Android packages on Windows
-    if (installer.value("os") == "win") {
-        var mingw_tc_component = "qt.tools.win32_mingw48";
-        if (installer.componentByName(mingw_tc_component) &&
-            installer.componentByName(mingw_tc_component).installationRequested()) {
-            component.addDependency(mingw_tc_component);
-        }
-    }
-}
-
-Component.prototype.beginInstallation = function()
-{
-    installer.setValue(component.name + "_qtpath", "@TargetDir@" + "%TARGET_INSTALL_DIR%");
 }
 
 Component.prototype.createOperations = function()
 {
+    if (installer.value("os") != "win")
+        return
     component.createOperations();
 
-    if (installer.value("SDKToolBinary") == "")
+    if (installer.value("SDKToolBinary") == "") {
+        QMessageBox["warning"]("SDKToolBinaryError",
+                               qsTr("No SDKToolBinary variable found!"),
+                               qsTr("Setting up Android target properly in QtCreator requires that SdkTool is set properly!.\n"));
         return;
-
-    var qmakeBinary = "";
-    if (installer.value("os") == "x11") {
-        qmakeBinary = "@TargetDir@/%TARGET_INSTALL_DIR%/bin/qmake";
     }
-    if (installer.value("os") == "win") {
-        qmakeBinary = "@TargetDir@/%TARGET_INSTALL_DIR%/bin/qmake.exe";
+    if (installer.value("MINGW48_DIR") == "") {
+        QMessageBox["warning"]("MINGW48_DIR_Error",
+                               qsTr("No MINGW48_DIR variable found!"),
+                               qsTr("Setting up Android target properly in QtCreator requires that MinGW 4.8 is installed properly first.\n"));
+        return;
     }
 
-    // add Qt into QtCreator
-    component.addOperation("Execute",
-        new Array("{0}", "@SDKToolBinary@", "addQt", "--id", component.name, "--name", "Qt 5.1.0 for Android armv5", "--type",
-        "Qt4ProjectManager.QtVersion.Android", "--qmake", qmakeBinary));
+    // this is only needed under windows
+    component.addOperation("Execute", new Array(
+        "{0}", "@SDKToolBinary@", "addKeys", "android", "MakeExtraSearchDirectory", "QString:@MINGW48_DIR@\\bin",
+        "UNDOEXECUTE", "{0}", "@SDKToolBinary@", "rmKeys", "android", "MakeExtraSearchDirectory"));
 }

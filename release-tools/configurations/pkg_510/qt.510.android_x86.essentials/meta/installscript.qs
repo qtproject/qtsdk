@@ -33,9 +33,6 @@ Component.prototype.createOperations = function()
     }
     if (installer.value("os") == "win") {
         qmakeBinary = "@TargetDir@/%TARGET_INSTALL_DIR%/bin/qmake.exe";
-
-        component.addOperation("Execute",
-            new Array("{0}", "@SDKToolBinary@", "addKeys", "android", "MakeExtraSearchDirectory","QString:@MINGW48_DIR@\\bin"));
     }
 
     // add Qt into QtCreator
