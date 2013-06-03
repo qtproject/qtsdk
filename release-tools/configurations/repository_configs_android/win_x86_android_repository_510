@@ -43,7 +43,7 @@
 name:                   qt
 
 [PlatformIdentifier]
-identifier:             linux
+identifier:             windows
 
 [ArchiveRemoteLocation.default]
 base_url:               http://add.your.archive.url
