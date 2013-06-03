@@ -54,7 +54,7 @@ base_path:
 packages:               foo.bar, foo.bar2, foo.bar3
 
 [ExtraPackageConfigurationFiles]
-file_list:
+file_list:              qt-conf
 
 [OfflinePackageExcludeList]
 package_list:
@@ -78,7 +78,5 @@ packages_dir:           pkg_tools
 name:                   ifwt
 package_url:
 
-[qt]
-root_component:         yes
 
 

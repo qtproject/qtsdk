@@ -48,9 +48,6 @@ packages:
 file_list:
 
 
-[qt]
-root_component:         yes
-
 [qt.510]
 version:                5.1.0
 version_tag:            %QT_VERSION%

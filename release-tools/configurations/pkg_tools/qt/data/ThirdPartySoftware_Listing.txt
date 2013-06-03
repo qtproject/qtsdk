@@ -1,4 +1,4 @@
-Qt SDK
+Qt 5.1.0
 
 The various components of the release include Open Source licensed software components.  These components, listed by the component where such Open Source licensed software appears, are described as follows:
 

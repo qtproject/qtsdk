@@ -54,7 +54,7 @@ base_path:
 packages:               foo.bar, foo.bar2, foo.bar3
 
 [ExtraPackageConfigurationFiles]
-file_list:              qt510-src-conf, x86-qt510-msvc2010_32-opengl-conf, x86-tools-qtcreator-conf, x86-tools-vcredist_32-conf, installer-readme-conf
+file_list:              qt-conf, qt510-src-conf, x86-qt510-msvc2010_32-opengl-conf, x86-tools-qtcreator-conf, x86-tools-vcredist_32-conf, installer-readme-conf
 
 [OfflinePackageExcludeList]
 package_list:

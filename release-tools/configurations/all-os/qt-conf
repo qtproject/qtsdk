@@ -39,39 +39,13 @@
 ##
 #############################################################################
 
-[PackageNamespace]
-name:                   qt
-
-[PlatformIdentifier]
-identifier:             windows
-
-[ArchiveRemoteLocation.default]
-base_url:               http://add.your.archive.url
-base_path:
-
-# for testing purposes
-[PackageIgnoreList]
-packages:               foo.bar, foo.bar2, foo.bar3
-
-[ExtraPackageConfigurationFiles]
-file_list:              qt-conf, qt510-src-conf, x86_64-qt510-msvc2010_64-conf, x86-tools-qtcreator-conf, x86-tools-vcredist_32-conf, x86_64-tools-vcredist_64-conf, installer-readme-conf
-
-[OfflinePackageExcludeList]
-package_list:
-
-[SdkUpdateRepository]
-repository_url_release:
-
-[ConfigDir]
-template_name:          config_qt5
-
-[ConfigXml]
-template_name:          config.xml.template.windows.qt5
-
-[WorkingDirectories]
-packages_dir:           pkg_510, pkg_tools
-
-[InstallerFrameworkTools]
-name:                   ifwt
-package_url:
-
+[qt]
+root_component:         yes
+archives:               softwarelisting3rdparty
+target_install_base:    /Licenses
+[softwarelisting3rdparty]
+archive_uri:            ThirdPartySoftware_Listing.txt
+package_strip_dirs:     0
+target_install_dir:     /
+rpath_target:
+archive_name:           ThirdPartySoftware_Listing.7z
