@@ -184,8 +184,10 @@ Component.prototype.createOperations = function()
 
     if (installer.value("os") == "mac") {
         try {
-            // patch Qt binaries
-            component.addOperation("QtPatch", "mac", installer.value("qt.510.clang_64.essentials_qtpath"), "qt5");
+            // patch mac Qt binaries
+            if (installer.value("qt.510.clang_64.essentials_qtpath")) {
+                component.addOperation("QtPatch", "mac", installer.value("qt.510.clang_64.essentials_qtpath"), "qt5");
+            }
         } catch( e ) {
             print( e );
         }
