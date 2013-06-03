@@ -36,16 +36,18 @@ PACK_FILE=.release-timestamp
 PATCH_FILE=''
 QTGITTAG=.sha1s
 QTSHORTVER=0.0
+QTSYNCQTVER=0.0.0
 QTVER=0.0.0
 REPO_DIR=$CUR_DIR
 REPO_NAME=''
 REPO_TAG=HEAD
+SKIPSYNCQT=no
 STRICT=1
 
 function usage()
 {
   echo "Usage:"
-  echo "./mksrc.sh -u <file_url_to_git_repo> -v <version> [-m][-N][--tag][-i sub][-l lic][-p patch][-r revision][-S]"
+  echo "./mksrc.sh -u <file_url_to_git_repo> -v <version> [-m][-N][--tag][-i sub][-l lic][-p patch][-r revision][--skip-syncqt][-S]"
   echo "where -u is path to git repo and -v is version"
   echo "Optional parameters:"
   echo "-m             one is able to tar each sub module separately"
@@ -55,6 +57,7 @@ function usage()
   echo "-l license     license type, will default to 'opensource', if set to 'commercial' all the necessary patches will be applied for commercial build"
   echo "-p patch file  patch file (.sh) to execute, example: change_licenses.sh"
   echo "-r revision    committish to pack (tag name, branch name or SHA-1)"
+  echo "--skip-syncqt  do not run syncqt by default"
   echo "-S             don't run in strict mode"
 }
 
@@ -160,6 +163,7 @@ while test $# -gt 0; do
       shift
         QTVER=$1
         QTSHORTVER=$(echo $QTVER | cut -d. -f1-2)
+        QTSYNCQTVER=$(echo $QTVER | cut -d- -f1)
       shift
     ;;
     -l|--license)
@@ -183,6 +187,10 @@ while test $# -gt 0; do
       echo " --exit-after-docs switch has been depracated.  "
       echo " Doc creation was removed from mksrc.sh         "
       echo "************************************************"
+    ;;
+    --skip-syncqt)
+      shift
+      SKIPSYNCQT=yes
     ;;
     -S|--no-strict)
       shift
@@ -308,6 +316,24 @@ cat $CUR_DIR/_tmp_shas > $CUR_DIR/$PACKAGE_NAME/$QTGITTAG
 for IDIR in $IGNORE_LIST ; do
   rm -rf $CUR_DIR/$PACKAGE_NAME/$IDIR
 done
+
+
+#------------------------------------------------------------------
+# Step 2, run syncqt
+#------------------------------------------------------------------
+if [ $SKIPSYNCQT = no ]; then
+  SYNCQT_PKG_DIR=$CUR_DIR/$PACKAGE_NAME
+  SYNCQT_COMMAND="$SYNCQT_PKG_DIR/qtbase/bin/syncqt.pl -version $QTSYNCQTVER"
+  echo "Running syncqt.pl"
+  while read submodule; do
+    echo " - Running syncqt.pl for $submodule with -version $QTSYNCQTVER"
+    if [ $submodule = qtwebkit ]; then
+      $SYNCQT_COMMAND -outdir $SYNCQT_PKG_DIR/$submodule $SYNCQT_PKG_DIR/$submodule/Source
+    else
+      $SYNCQT_COMMAND -outdir $SYNCQT_PKG_DIR/$submodule $SYNCQT_PKG_DIR/$submodule
+    fi
+  done < $MODULES
+fi
 
 #------------------------------------------------------------------
 # Step 3,  replace version strings with correct version, and
