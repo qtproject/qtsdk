@@ -322,16 +322,16 @@ done
 # Step 2, run syncqt
 #------------------------------------------------------------------
 if [ $SKIPSYNCQT = no ]; then
-  SYNCQT_PKG_DIR=$CUR_DIR/$PACKAGE_NAME
-  SYNCQT_COMMAND="$SYNCQT_PKG_DIR/qtbase/bin/syncqt.pl -version $QTSYNCQTVER"
+  PACKAGE_DIR=$CUR_DIR/$PACKAGE_NAME
   echo "Running syncqt.pl"
   while read submodule; do
     echo " - Running syncqt.pl for $submodule with -version $QTSYNCQTVER"
     if [ $submodule = qtwebkit ]; then
-      $SYNCQT_COMMAND -outdir $SYNCQT_PKG_DIR/$submodule $SYNCQT_PKG_DIR/$submodule/Source
+      SYNC_PROFILE_DIR=$PACKAGE_DIR/$submodule/Source
     else
-      $SYNCQT_COMMAND -outdir $SYNCQT_PKG_DIR/$submodule $SYNCQT_PKG_DIR/$submodule
+      SYNC_PROFILE_DIR=$PACKAGE_DIR/$submodule
     fi
+    $PACKAGE_DIR/qtbase/bin/syncqt.pl -version $QTSYNCQTVER -outdir $PACKAGE_DIR/$submodule $SYNC_PROFILE_DIR
   done < $MODULES
 fi
 
