@@ -103,6 +103,7 @@ parser.add_argument('--installcommand', help="this means usually make", default=
 parser.add_argument('--debug', help="use debug builds", action='store_true', default=False)
 parser.add_argument('--qt5_essentials7z', help="a file or url where it get the built qt5 essential content as 7z")
 parser.add_argument('--qt5_addons7z', help="a file or url where it get the built qt5 essential content as 7z")
+parser.add_argument('--versiondescription', help="version description to be shown in the about dialog, e.g. 'pre-2.7.2")
 if (sys.platform != "darwin"):
     parser.add_argument('--icu7z', help="a file or url where it get icu libs as 7z", required=True)
 
@@ -238,6 +239,9 @@ qmakeCommandArguments = "-r {0} QTC_PREFIX={1} DEFINES+=IDE_REVISION={2} CONFIG+
 
 # hack to ensure plugins depending on declarative are also compiled with 2.7.0/5.0.1
 qmakeCommandArguments += " QT_CONFIG+=declarative"
+
+if callerArguments.versiondescription:
+    qmakeCommandArguments += " DEFINES+=IDE_VERSION_DESCRIPTION={0}".format(callerArguments.versiondescription)
 
 runCommand("{0} {1}".format(qmakeBinary, qmakeCommandArguments), qtCreatorBuildDirectory,
     callerArguments = callerArguments, init_environment = environment)
