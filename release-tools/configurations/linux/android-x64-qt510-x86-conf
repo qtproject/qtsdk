@@ -54,7 +54,7 @@ archives:               510.android_x86.essentials
 target_install_base:    /@QT_VERSION@/android_x86
 version:                5.1.0
 version_tag:            %QT_VERSION%
-package_default:        false
+package_default:        true
 [510.android_x86.essentials]
 archive_uri:            /qt/5.1.0/latest/android_x86/linux_x64/qt5_essentials.7z
 package_strip_dirs:
@@ -67,7 +67,7 @@ archives:               510.android_x86.addons
 target_install_base:    /@QT_VERSION@/android_x86
 version:                5.1.0
 version_tag:            %QT_VERSION%
-package_default:        false
+package_default:        true
 [510.android_x86.addons]
 archive_uri:            /qt/5.1.0/latest/android_x86/linux_x64/qt5_addons.7z
 package_strip_dirs:
