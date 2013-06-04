@@ -39,6 +39,9 @@
 ##
 #############################################################################
 
+[qt.510.android_qtcreator_settings]
+version:                5.1
+version_tag:            %ANDROID_QTCREATOR_SETTINGS_VERSION%
 
 [qt.510.patcher]
 
