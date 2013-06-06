@@ -20,7 +20,7 @@
         </Repository>
         <Repository>
             <Url>http://download.qt-project.org/online/qt5/linux/x64_android/online_repository/</Url>
-            <Enabled>0</Enabled>
+            <Enabled>1</Enabled>
             <DisplayName>Qt Android for Linux-x64 host online repository</DisplayName>
         </Repository>
     </RemoteRepositories>
