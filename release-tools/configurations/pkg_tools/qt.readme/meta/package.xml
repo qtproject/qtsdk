@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>Qt SDK Readme</DisplayName>
-    <Description>Qt SDK Readme</Description>
+    <DisplayName>Qt Readme</DisplayName>
+    <Description>Qt Readme</Description>
     <Version>1.0.0</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Name>qt.readme</Name>

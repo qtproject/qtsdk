@@ -35,7 +35,7 @@ Component.prototype.createOperations = function()
 
             component.addOperation( "CreateShortcut",
                                     win_application,
-                                    "@StartMenuDir@/Uninstall Qt SDK.lnk",
+                                    "@StartMenuDir@/Uninstall Qt.lnk",
                                     " --uninstall");
         } catch( e ) {
             print( e );

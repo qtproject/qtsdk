@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <Installer>
-    <Name>Qt SDK</Name>
+    <Name>Qt</Name>
     <Version>1.0.0</Version>
-    <Title>Qt SDK</Title>
+    <Title>Qt</Title>
     <Publisher>Digia Plc</Publisher>
     <Logo>logo.png</Logo>
     <InstallerWindowIcon>logo-small</InstallerWindowIcon>
     <InstallerApplicationIcon>logo-small</InstallerApplicationIcon>
     <Watermark>watermark.png</Watermark>
-    <StartMenuDir>Qt SDK</StartMenuDir>
+    <StartMenuDir>Qt</StartMenuDir>
     <ProductUrl>http://qt-project.org/</ProductUrl>
     <Background>background.png</Background>
     <UninstallerName>MaintenanceTool</UninstallerName>
@@ -20,5 +20,5 @@
         </Repository>
     </RemoteRepositories>
     <!-- @homeDir@ and @rootDir@ are some of the supported vars -->
-    <TargetDir>@homeDir@/QtSDK</TargetDir>
+    <TargetDir>@homeDir@/Qt</TargetDir>
 </Installer>

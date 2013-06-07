@@ -85,7 +85,7 @@ Component.prototype.createOperations = function()
     // Call the base createOperations and afterwards set some registry settings (unpacking ...)
     component.createOperations();
     buildNativeComponentRootPath();
-    var maintenance_tool_bin = component_root_path + "SDKMaintenanceTool";
+    var maintenance_tool_bin = component_root_path + "MaintenanceTool";
 
     if ( installer.value("os") == "win" )
     {
@@ -98,7 +98,7 @@ Component.prototype.createOperations = function()
         // create shortcut
         component.addOperation( "CreateShortcut",
                                 win_maintenance_tool_bin,
-                                "@StartMenuDir@/Qt SDK Maintenance Tool.lnk",
+                                "@StartMenuDir@/Qt Maintenance Tool.lnk",
                                 "workingDirectory=@TargetDir@" );
     }
     if ( installer.value("os") == "x11" )
@@ -110,13 +110,13 @@ Component.prototype.createOperations = function()
                                 maintenance_tool_bin );
 
         component.addOperation( "CreateDesktopEntry",
-                                "Digia-SDKMaintenanceTool.desktop",
-                                "Type=Application\nExec=@TargetDir@/SDKMaintenanceTool\nPath=@TargetDir@\nName=Qt SDK Maintenance Tool\nGenericName=Install or uninstall components of the Qt SDK.\nIcon=QtIcon\nTerminal=false\nCategories=Development;Qt;"
+                                "Qt-MaintenanceTool.desktop",
+                                "Type=Application\nExec=@TargetDir@/MaintenanceTool\nPath=@TargetDir@\nName=Qt Maintenance Tool\nGenericName=Install or uninstall Qt components.\nIcon=QtIcon\nTerminal=false\nCategories=Development;Qt;"
                                );
     }
     if ( installer.value("os") == "mac" )
     {
-        var mac_maintenance_tool_bin = maintenance_tool_bin + ".app/Contents/MacOS/SDKMaintenanceTool"
+        var mac_maintenance_tool_bin = maintenance_tool_bin + ".app/Contents/MacOS/MaintenanceTool"
         component.addOperation( "SetQtCreatorValue",
                                 "@TargetDir@",
                                 "Updater",
