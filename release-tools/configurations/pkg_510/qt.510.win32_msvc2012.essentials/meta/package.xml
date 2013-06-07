@@ -5,7 +5,7 @@
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Name>qt.510.win32_msvc2012.essentials</Name>
-    <Dependencies>qt.tools.qtcreator, qt.tools.vcredist_32</Dependencies>
+    <Dependencies>qt.tools.qtcreator, qt.tools.vcredist</Dependencies>
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
     <!--<AutoSelectOn></AutoSelectOn>-->
     <Script>installscript.qs</Script>   <!-- File name of a script being loaded - optional. -->
