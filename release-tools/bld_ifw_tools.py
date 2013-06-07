@@ -64,7 +64,7 @@ def get_default_qt_configure_options():
         default_options = IfwOptions.default_qt_configure_options_windows
     elif plat.startswith('darwin'):
         default_options = IfwOptions.default_qt_configure_options_mac
-    default_options = '-static -release -opensource -confirm-license -nomake examples -nomake demos -nomake tests -nomake docs -no-webkit -no-phonon -no-qt3support -no-opengl -no-dbus -no-declarative -no-accessibility -no-xmlpatterns -no-phonon-backend -no-multimedia -no-declarative-debug  {0}'.format(default_options)
+    default_options = '-static -release -opensource -confirm-license -nomake examples -nomake demos -nomake tests -nomake docs -no-webkit -no-phonon -no-qt3support -no-opengl -no-dbus -no-declarative -no-accessibility -no-xmlpatterns -no-phonon-backend -no-multimedia -no-declarative-debug -openssl {0}'.format(default_options)
     return default_options
 
 ###############################
@@ -74,9 +74,9 @@ class IfwOptions:
 
     default_qt_source_package_uri               = 'http://download.qt-project.org/development_releases/prebuilt/qt-src-for-ifw/qt-everywhere-opensource-src-4.8.0-ifw-patch.tar.gz'
     default_qt_source_package_uri_saveas        = ROOT_DIR + os.sep + os.path.basename(default_qt_source_package_uri)
-    default_qt_configure_options_linux          = '-silent -nomake plugins -qt-zlib -qt-libtiff -qt-libpng -qt-libmng -qt-libjpeg -no-svg -no-nis -no-cups -no-audio-backend -no-glib -no-gtkstyle -openssl'
-    default_qt_configure_options_mac            = '-silent -nomake plugins -qt-zlib -qt-libtiff -qt-libpng -qt-libmng -qt-libjpeg -no-svg -no-nis -no-cups -no-audio-backend -openssl'
-    default_qt_configure_options_windows        = '-openssl'
+    default_qt_configure_options_linux          = '-silent -nomake plugins -qt-zlib -qt-libtiff -qt-libpng -qt-libmng -qt-libjpeg -no-svg -no-nis -no-cups -no-audio-backend -no-glib -no-gtkstyle'
+    default_qt_configure_options_mac            = '-silent -nomake plugins -qt-zlib -qt-libtiff -qt-libpng -qt-libmng -qt-libjpeg -no-svg -no-nis -no-cups -no-audio-backend'
+    default_qt_configure_options_windows        = ''
     default_qt_installer_framework_url          = 'git://gitorious.org/installer-framework/installer-framework.git'
     default_qt_installer_framework_branch       = 'remotes/origin/1.4'
     default_qt_installer_framework_qmake_args   = '-config release -config static -r'
@@ -89,7 +89,8 @@ class IfwOptions:
                  qt_installer_framework_branch,
                  qt_installer_framework_qmake_args,
                  product_key_checker_url,
-                 product_key_checker_branch):
+                 product_key_checker_branch,
+                 openssl_dir):
         self.license_type                               = license_type
         self.development_mode                           = False
         self.incremental_mode                           = False
@@ -116,11 +117,14 @@ class IfwOptions:
         self.qt_source_package_uri                      = qt_source_package_uri
         self.qt_source_package_uri_saveas               = ROOT_DIR + os.sep + os.path.basename(self.qt_source_package_uri)
         self.qt_configure_options                       = qt_configure_options + ' -prefix ' + self.qt_build_dir
+        if platform.system().lower().startswith('win'):
+            self.qt_configure_options = self.qt_configure_options + ' -I {0}\\include -L {1}\\lib\\VC\\static'.format(openssl_dir)
         self.qt_installer_framework_url                 = qt_installer_framework_url
         self.qt_installer_framework_branch              = qt_installer_framework_branch
         self.qt_installer_framework_qmake_args          = qt_installer_framework_qmake_args
         self.product_key_checker_url                    = product_key_checker_url
         self.product_key_checker_branch                 = product_key_checker_branch
+        self.openssl_dir                                = openssl_dir
         self.product_key_checker_source_dir             = ''
         if product_key_checker_url:
             if os.path.isfile(product_key_checker_url):
@@ -165,6 +169,8 @@ class IfwOptions:
         print('installer_base_archive_name:             {0}'.format(self.installer_base_archive_name))
         print('product_key_checker_url:                 {0}'.format(self.product_key_checker_url))
         print('product_key_checker_branch:              {0}'.format(self.product_key_checker_branch))
+        if platform.system().lower().startswith('win'):
+            print('openssl_dir:              {0}'.format(self.openssl_dir))
         print('-----------------------------------------')
 
 
@@ -184,6 +190,7 @@ def setup_argument_parser():
     parser.add_argument('--product_key_checker_url', help="Git URL for commercial product key checker", required=False)
     parser.add_argument('--product_key_checker_branch', help="Git branch for commercial product key checker", required=False)
     parser.add_argument('--license', help="License type, 'opensource' or 'commercial'", required=False, default='opensource')
+    parser.add_argument('--openssl_dir', help="Path where it can find the openssl installation(libs, includes) on windows.", required=False, default='C:\\OpenSSL')
     return parser
 
 
@@ -465,7 +472,8 @@ if __name__ == "__main__":
                        caller_arguments.ifw_branch,
                        caller_arguments.ifw_qmake_args,
                        caller_arguments.product_key_checker_url,
-                       caller_arguments.product_key_checker_branch
+                       caller_arguments.product_key_checker_branch,
+                       caller_arguments.openssl_dir
                        )
     # build ifw tools
     build_ifw(options)
