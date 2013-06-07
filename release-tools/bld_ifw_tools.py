@@ -64,6 +64,7 @@ def get_default_qt_configure_options():
         default_options = IfwOptions.default_qt_configure_options_windows
     elif plat.startswith('darwin'):
         default_options = IfwOptions.default_qt_configure_options_mac
+    default_options = '-static -release -opensource -confirm-license -nomake examples -nomake demos -nomake tests -nomake docs -no-webkit -no-phonon -no-qt3support -no-opengl -no-dbus -no-declarative -no-accessibility -no-xmlpatterns -no-phonon-backend -no-multimedia -no-declarative-debug  {0}'.format(default_options)
     return default_options
 
 ###############################
@@ -73,9 +74,9 @@ class IfwOptions:
 
     default_qt_source_package_uri               = 'http://download.qt-project.org/development_releases/prebuilt/qt-src-for-ifw/qt-everywhere-opensource-src-4.8.0-ifw-patch.tar.gz'
     default_qt_source_package_uri_saveas        = ROOT_DIR + os.sep + os.path.basename(default_qt_source_package_uri)
-    default_qt_configure_options_linux          = '-static -release -opensource -confirm-license -silent -nomake examples -nomake demos -nomake tests -nomake docs -nomake plugins -qt-zlib -qt-libtiff -qt-libpng -qt-libmng -qt-libjpeg -no-webkit -no-phonon -no-dbus -no-opengl -no-qt3support -no-xmlpatterns -no-svg -no-nis -no-cups -no-multimedia -no-audio-backend -no-phonon -no-phonon-backend -no-webkit -no-declarative -no-declarative-debug -no-accessibility -no-glib -no-gtkstyle -openssl'
-    default_qt_configure_options_mac            = '-static -release -opensource -confirm-license -silent -nomake examples -nomake demos -nomake tests -nomake docs -nomake plugins -qt-zlib -qt-libtiff -qt-libpng -qt-libmng -qt-libjpeg -no-webkit -no-phonon -no-dbus -no-opengl -no-qt3support -no-xmlpatterns -no-svg -no-nis -no-cups -no-multimedia -no-audio-backend -no-phonon -no-phonon-backend -no-webkit -no-declarative -no-declarative-debug -no-accessibility -openssl'
-    default_qt_configure_options_windows        = '-static -release -opensource -confirm-license -nomake examples -nomake demos -nomake tests -nomake docs -no-webkit -no-phonon -no-dbus -no-opengl -no-qt3support -no-xmlpatterns -no-multimedia -no-declarative -no-declarative-debug -qt-sql-sqlite -plugin-sql-sqlite -openssl'
+    default_qt_configure_options_linux          = '-silent -nomake plugins -qt-zlib -qt-libtiff -qt-libpng -qt-libmng -qt-libjpeg -no-svg -no-nis -no-cups -no-audio-backend -no-glib -no-gtkstyle -openssl'
+    default_qt_configure_options_mac            = '-silent -nomake plugins -qt-zlib -qt-libtiff -qt-libpng -qt-libmng -qt-libjpeg -no-svg -no-nis -no-cups -no-audio-backend -openssl'
+    default_qt_configure_options_windows        = '-qt-sql-sqlite -plugin-sql-sqlite -openssl'
     default_qt_installer_framework_url          = 'git://gitorious.org/installer-framework/installer-framework.git'
     default_qt_installer_framework_branch       = 'remotes/origin/1.4'
     default_qt_installer_framework_qmake_args   = '-config release -config static -r'
