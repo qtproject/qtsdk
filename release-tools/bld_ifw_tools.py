@@ -76,7 +76,7 @@ class IfwOptions:
     default_qt_source_package_uri_saveas        = ROOT_DIR + os.sep + os.path.basename(default_qt_source_package_uri)
     default_qt_configure_options_linux          = '-silent -nomake plugins -qt-zlib -qt-libtiff -qt-libpng -qt-libmng -qt-libjpeg -no-svg -no-nis -no-cups -no-audio-backend -no-glib -no-gtkstyle -openssl'
     default_qt_configure_options_mac            = '-silent -nomake plugins -qt-zlib -qt-libtiff -qt-libpng -qt-libmng -qt-libjpeg -no-svg -no-nis -no-cups -no-audio-backend -openssl'
-    default_qt_configure_options_windows        = '-qt-sql-sqlite -plugin-sql-sqlite -openssl'
+    default_qt_configure_options_windows        = '-openssl'
     default_qt_installer_framework_url          = 'git://gitorious.org/installer-framework/installer-framework.git'
     default_qt_installer_framework_branch       = 'remotes/origin/1.4'
     default_qt_installer_framework_qmake_args   = '-config release -config static -r'
