@@ -118,7 +118,7 @@ class IfwOptions:
         self.qt_source_package_uri_saveas               = ROOT_DIR + os.sep + os.path.basename(self.qt_source_package_uri)
         self.qt_configure_options                       = qt_configure_options + ' -prefix ' + self.qt_build_dir
         if platform.system().lower().startswith('win'):
-            self.qt_configure_options = self.qt_configure_options + ' -I {0}\\include -L {1}\\lib\\VC\\static'.format(openssl_dir)
+            self.qt_configure_options = self.qt_configure_options + ' -I {0}\\include -L {0}\\lib\\VC\\static'.format(openssl_dir)
         self.qt_installer_framework_url                 = qt_installer_framework_url
         self.qt_installer_framework_branch              = qt_installer_framework_branch
         self.qt_installer_framework_qmake_args          = qt_installer_framework_qmake_args
