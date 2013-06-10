@@ -44,6 +44,7 @@
 from __future__ import print_function
 import sys
 import os
+import re
 import platform
 import argparse
 import multiprocessing
@@ -272,7 +273,8 @@ def build_qt(options):
     # configure first
     print('--------------------------------------------------------------------')
     print('Configuring Qt')
-    cmd_args = options.qt_configure_bin + ' ' + options.qt_configure_options
+    configure_options = re.sub(' +',' ', options.qt_configure_options)
+    cmd_args = options.qt_configure_bin + ' ' + configure_options
     bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), options.qt_build_dir, True)
     print('--------------------------------------------------------------------')
     print('Building Qt')
