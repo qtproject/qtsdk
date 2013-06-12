@@ -822,11 +822,11 @@ def main():
     create_submodule_list()
     # build
     build_qt()
+    # save original qt_prfxpath in qmake executable
+    save_original_qt_prfxpath()
     # build qmlpuppets
     if not ANDROID_BUILD:
         build_qmlpuppets()
-    # save original qt_prfxpath in qmake executable
-    save_original_qt_prfxpath()
     # install
     install_qt()
     # install qmlpuppets
