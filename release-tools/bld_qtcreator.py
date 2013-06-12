@@ -85,7 +85,7 @@ elif sys.platform == "darwin":
         "--qt5path ../../qtcreator_qt5 " \
         "--qt5_essentials7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/mac_cocoa_10.7/qt5_essentials.7z " \
         "--qt5_addons7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/mac_cocoa_10.7/qt5_addons.7z " \
-        "--installerbase7z http://hegel.it.local/projects/installerbase.7z " \
+        "--installerbase7z http://it-dl241-hki.it.local/packages/opensource/ifw/1.4/installer-framework-build-mac-x64.7z" \
         "".format(os.path.basename(sys.argv[0]))
 else:
     parser.epilog = "example: " + os.linesep + "\tpython {0} --clean " \
@@ -185,7 +185,7 @@ if not os.path.lexists(callerArguments.qt5path):
 
     print("##### {0} #####".format("patch Qt"))
     if sys.platform == "darwin":
-        installerbasePath = os.path.join(tempPath, 'installerbase.app/Contents/MacOS/installerbase')
+        installerbasePath = os.path.join(tempPath, 'ifw-bld/bin/installerbase')
         os.chmod(installerbasePath, 0777)
         runCommand(installerbasePath + " -v --runoperation QtPatch mac " + callerArguments.qt5path  + " 5",
             qtCreatorBuildDirectory, callerArguments)
