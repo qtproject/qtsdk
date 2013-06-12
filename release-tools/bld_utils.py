@@ -156,20 +156,23 @@ def download(url, savefile):
         while renamed is False :
             tryRenameCounter = tryRenameCounter + 1
             try:
+                if tryRenameCounter > 5 :
+                    sys.stdout.write("r{0}".format(tryRenameCounter))
                 if os.path.lexists(savefile):
                     raise Exception("Please remove savefile first: {0}".format(savefile))
                 os.rename(savefile_tmp, savefile)
-                if os.path.lexists(savefile):
+                if not os.path.lexists(savefile_tmp):
                     renamed = True
                     # make sure that another output starts in a new line
                     sys.stdout.write(os.linesep)
-            except WindowsError:
-                # if it still exists just try that after a microsleep and stop this after 360 tries
-                if os.path.lexists(savefile_tmp) and tryRenameCounter < 360:
+            except WindowsError as e:
+                # if it still exists just try that after a microsleep and stop this after 720 tries
+                if os.path.lexists(savefile_tmp) and tryRenameCounter < 720:
                     time.sleep(1)
                     continue
                 else:
-                    raise Exception("The savefile_tmp does not exist: {0}".format(savefile_tmp))
+                    if not os.path.lexists(savefile):
+                        raise Exception("Could not rename {0} to {1}{2}Error: {3}".format(savefile_tmp, savefile, os.linesep, e.message))
     except Exception as e:
         # in threadedwork we prevent std so we need to forward the traceback to stderr
         sys.stderr.write(e.message)
