@@ -100,7 +100,7 @@ and run them. Additional examples can be opened by browsing
 Building Qt 5 from Source
 -------------------------
 
-See <install_dir>/<version>/src/README and
+See <install_dir>/<version>/Src/README and
 http://qt-project.org/wiki/Building_Qt_5_from_Git
 for instructions on building Qt from source.
 
