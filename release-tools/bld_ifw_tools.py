@@ -50,6 +50,7 @@ import argparse
 import multiprocessing
 import bldinstallercommon
 import shutil
+import shlex
 
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -275,7 +276,9 @@ def build_qt(options):
     print('Configuring Qt')
     configure_options = re.sub(' +',' ', options.qt_configure_options)
     cmd_args = options.qt_configure_bin + ' ' + configure_options
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), options.qt_build_dir, True)
+    # shlex does not like backslashes
+    cmd_args = cmd_args.replace('\\', '/')
+    bldinstallercommon.do_execute_sub_process(shlex.split(cmd_args), options.qt_build_dir, True)
     print('--------------------------------------------------------------------')
     print('Building Qt')
     cmd_args = options.make_cmd
