@@ -187,7 +187,7 @@ if not os.path.lexists(callerArguments.qt5path):
     if sys.platform == "darwin":
         installerbasePath = os.path.join(tempPath, 'ifw-bld/bin/installerbase')
         os.chmod(installerbasePath, 0777)
-        runCommand(installerbasePath + " -v --runoperation QtPatch mac " + callerArguments.qt5path  + " 5",
+        runCommand(installerbasePath + " -v --runoperation QtPatch mac " + callerArguments.qt5path  + " qt5",
             qtCreatorBuildDirectory, callerArguments)
     else: # don't use qt.conf file, it has a bug on macos QTBUG-29979
         qtConfFile = open(os.path.join(callerArguments.qt5path, 'bin', 'qt.conf'), "w")
