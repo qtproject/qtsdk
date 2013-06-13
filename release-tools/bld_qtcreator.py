@@ -251,7 +251,7 @@ runBuildCommand(currentWorkingDirectory = qtCreatorBuildDirectory, callerArgumen
 
 # on windows the install command is usual nmake so single threaded
 # because docs is creating same directory at the same time sometimes
-runInstallCommand("docs", currentWorkingDirectory = qtCreatorBuildDirectory, callerArguments = callerArguments,
+runInstallCommand("qch_docs", currentWorkingDirectory = qtCreatorBuildDirectory, callerArguments = callerArguments,
     init_environment = environment)
 
 if sys.platform != "darwin":
