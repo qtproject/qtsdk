@@ -86,6 +86,7 @@ elif sys.platform == "darwin":
         "--qt5_essentials7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/mac_cocoa_10.7/qt5_essentials.7z " \
         "--qt5_addons7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/mac_cocoa_10.7/qt5_addons.7z " \
         "--installerbase7z http://it-dl241-hki.it.local/packages/opensource/ifw/1.4/installer-framework-build-mac-x64.7z" \
+        "--keychain_unlock_script $HOME/unlock-keychain.sh" \
         "".format(os.path.basename(sys.argv[0]))
 else:
     parser.epilog = "example: " + os.linesep + "\tpython {0} --clean " \
@@ -117,6 +118,7 @@ if os.name == 'nt':
 
 if sys.platform == "darwin":
     parser.add_argument('--installerbase7z', help="a file or url where it get installerbase binary as 7z")
+    parser.add_argument('--keychain_unlock_script', help="script for unlocking the keychain used for signing")
 
 callerArguments = parser.parse_args()
 
@@ -134,6 +136,13 @@ qtCreatorInstallDirectory = os.path.abspath(os.path.join(os.path.dirname(__file_
     os.path.split(qtCreatorSourceDirectory)[1] + '_install'))
 
 tempPath = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'temp'))
+
+### check mac setup
+if sys.platform == "darwin":
+    if callerArguments.keychain_unlock_script:
+        if not os.environ['SIGNING_IDENTITY']:
+            print('error: Environment variable SIGNING_IDENTITY not set')
+            sys.exit(1)
 
 ### clean step
 if callerArguments.clean:
@@ -256,6 +265,14 @@ runInstallCommand("qch_docs", currentWorkingDirectory = qtCreatorBuildDirectory,
 
 if sys.platform != "darwin":
     runInstallCommand('install install_docs', currentWorkingDirectory = qtCreatorBuildDirectory,
+        callerArguments = callerArguments, init_environment = environment)
+
+if sys.platform == "darwin":
+    if callerArguments.keychain_unlock_script:
+        runCommand(callerArguments.keychain_unlock_script, qtCreatorBuildDirectory, callerArguments = callerArguments,
+            init_environment = environment)
+    # environment has to have SIGNING_IDENTITY, can have SIGNING_FLAGS
+    runInstallCommand('codesign', currentWorkingDirectory = qtCreatorBuildDirectory,
         callerArguments = callerArguments, init_environment = environment)
 
 if os.name == 'nt':
