@@ -21,8 +21,8 @@ function Component()
 changeLicenseLabels = function()
 {
     page = gui.pageWidgetByObjectName("LicenseAgreementPage");
-    page.AcceptLicenseLabel.setText("I h<u>a</u>ve read and agree to the following terms contained in the license agreements accompanying the Qt SDK installer and additional items. I agree that my use of the Qt SDK installer is governed by the terms and conditions contained in these license agreements.");
-    page.RejectLicenseLabel.setText("I <u>d</u>o not accept the terms and conditions of the above listed license agreements. Please note by checking the box, you must cancel the installation or downloading the Qt SDK and must destroy all copies, or portions thereof, of the Qt SDK in your possessions.");
+    page.AcceptLicenseLabel.setText("I h<u>a</u>ve read and agree to the following terms contained in the license agreements accompanying the Qt installer and additional items. I agree that my use of the Qt installer is governed by the terms and conditions contained in these license agreements.");
+    page.RejectLicenseLabel.setText("I <u>d</u>o not accept the terms and conditions of the above listed license agreements. Please note by checking the box, you must cancel the installation or downloading the Qt and must destroy all copies, or portions thereof, of the Qt in your possessions.");
 }
 
 Component.prototype.createOperations = function()
