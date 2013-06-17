@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <Installer>
-    <Name>{AnyApplication}</Name>
+    <Name>Qt</Name>
     <Version>1.0.0</Version>
     <Title>Qt</Title>
     <Publisher>Digia Plc</Publisher>
