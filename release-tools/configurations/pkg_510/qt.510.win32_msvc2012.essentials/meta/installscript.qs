@@ -52,7 +52,7 @@ Component.prototype.isDefault = function()
     return false;
 }
 
-createShortcuts = function()
+function createShortcuts()
 {
     var qtStringVersion = "5.1.0";
     // Create a batch file with the development environment

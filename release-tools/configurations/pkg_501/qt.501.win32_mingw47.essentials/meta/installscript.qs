@@ -44,7 +44,7 @@ function Component()
 {
 }
 
-createShortcuts = function()
+function createShortcuts()
 {
     var qtStringVersion = "%QT_VERSION%";
     // Create a batch file with the development environment
