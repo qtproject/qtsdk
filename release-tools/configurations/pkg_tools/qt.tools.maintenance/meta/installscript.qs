@@ -85,7 +85,7 @@ Component.prototype.createOperations = function()
     // Call the base createOperations and afterwards set some registry settings (unpacking ...)
     component.createOperations();
     buildNativeComponentRootPath();
-    var maintenance_tool_bin = component_root_path + "MaintenanceTool";
+    var maintenance_tool_bin = installer.value("TargetDir") + "/MaintenanceTool";
 
     if ( installer.value("os") == "win" )
     {
