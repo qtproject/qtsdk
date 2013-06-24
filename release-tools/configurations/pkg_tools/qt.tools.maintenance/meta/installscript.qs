@@ -91,7 +91,7 @@ Component.prototype.createOperations = function()
     {
         var win_maintenance_tool_bin = maintenance_tool_bin + ".exe"
         component.addOperation( "SetQtCreatorValue",
-                                "@TargetDir@",
+                                "",
                                 "Updater",
                                 "Application",
                                 win_maintenance_tool_bin );
@@ -104,7 +104,7 @@ Component.prototype.createOperations = function()
     if ( installer.value("os") == "x11" )
     {
         component.addOperation( "SetQtCreatorValue",
-                                "@TargetDir@",
+                                "",
                                 "Updater",
                                 "Application",
                                 maintenance_tool_bin );
@@ -118,19 +118,19 @@ Component.prototype.createOperations = function()
     {
         var mac_maintenance_tool_bin = maintenance_tool_bin + ".app/Contents/MacOS/MaintenanceTool"
         component.addOperation( "SetQtCreatorValue",
-                                "@TargetDir@",
+                                "",
                                 "Updater",
                                 "Application",
                                 mac_maintenance_tool_bin );
     }
 
     component.addOperation( "SetQtCreatorValue",
-                            "@TargetDir@",
+                            "",
                             "Updater",
                             "CheckOnlyArgument",
                             "--checkupdates" );
     component.addOperation( "SetQtCreatorValue",
-                            "@TargetDir@",
+                            "",
                             "Updater",
                             "RunUiArgument",
                             "--updater" );
