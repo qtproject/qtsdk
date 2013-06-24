@@ -112,7 +112,7 @@ Component.prototype.reactOnTargetDirChange = function(key, value)
     }
 }
 
-buildNativeComponentRootPath = function()
+function buildNativeComponentRootPath()
 {
     var target_install_dir = "%TARGET_INSTALL_DIR%";
     if (installer.value("os") == "win") {
