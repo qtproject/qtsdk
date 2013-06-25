@@ -110,8 +110,8 @@ Component.prototype.createOperations = function()
                                 maintenance_tool_bin );
 
         component.addOperation( "CreateDesktopEntry",
-                                "Qt-MaintenanceTool.desktop",
-                                "Type=Application\nExec=@TargetDir@/MaintenanceTool\nPath=@TargetDir@\nName=Qt Maintenance Tool\nGenericName=Install or uninstall Qt components.\nIcon=QtIcon\nTerminal=false\nCategories=Development;Qt;"
+                                "QtOpensource-MaintenanceTool.desktop",
+                                "Type=Application\nExec=@TargetDir@/MaintenanceTool\nPath=@TargetDir@\nName=Qt Maintenance Tool (Opensource)\nGenericName=Install or uninstall Qt components.\nIcon=QtIcon\nTerminal=false\nCategories=Development;Qt;"
                                );
     }
     if ( installer.value("os") == "mac" )
