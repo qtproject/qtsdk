@@ -16,9 +16,12 @@ Component.prototype.createOperations = function()
 {
     component.createOperations();
     try {
+        var qtPath = "@TargetDir@/%TARGET_INSTALL_DIR%";
+        var qmakeBinary = "@TargetDir@/%TARGET_INSTALL_DIR%/bin/qmake";
+        addInitQtPatchOperation(component, "mac", qtPath, qmakeBinary, "qt5");
+
         if (installer.value("SDKToolBinary") == "")
             return;
-        var qmakeBinary = "@TargetDir@/%TARGET_INSTALL_DIR%/bin/qmake";
 
         component.addOperation("Execute",
             new Array("{0}", "@SDKToolBinary@", "addQt", "--id", component.name, "--name", "Qt 5.1.0 clang 64bit", "--type", "Qt4ProjectManager.QtVersion.Desktop", "--qmake", qmakeBinary));

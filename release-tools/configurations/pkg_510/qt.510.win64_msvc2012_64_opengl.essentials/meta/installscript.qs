@@ -117,18 +117,21 @@ Component.prototype.createOperations = function()
 
     if (installer.value("os") == "win") {
         try {
+            var qtPath = "@TargetDir@/%TARGET_INSTALL_DIR%";
+            var qmakeBinary = "@TargetDir@/%TARGET_INSTALL_DIR%/bin/qmake.exe";
+            addInitQtPatchOperation(component, "windows", qtPath, qmakeBinary, "qt5");
+
             // Create a batch file and shortcuts with the development environment
             createShortcuts();
 
             if (installer.value("SDKToolBinary") == "")
                 return;
-            var qmakeBinary = "@TargetDir@/%TARGET_INSTALL_DIR%/bin/qmake.exe";
 
             component.addOperation("Execute",
-                new Array("{0}", "@SDKToolBinary@", "addQt", "--id", component.name, "--name", "Qt 5.1.0 MSVC2012 64bit", "--type", "Qt4ProjectManager.QtVersion.Desktop", "--qmake", qmakeBinary));
+                new Array("{0}", "@SDKToolBinary@", "addQt", "--id", component.name, "--name", "Qt 5.1.0 MSVC2012 OpenGL 64bit", "--type", "Qt4ProjectManager.QtVersion.Desktop", "--qmake", qmakeBinary));
 
             component.addOperation("Execute",
-                new Array("{0}", "@SDKToolBinary@", "addKit", "--id", component.name + "_kit", "--name", "Desktop Qt 5.1.0 MSVC2012 64bit", "--toolchain", "x86-windows-msvc2012-pe-64bit", "--qt", component.name, "--debuggerengine", "4", "--devicetype", "Desktop"));
+                new Array("{0}", "@SDKToolBinary@", "addKit", "--id", component.name + "_kit", "--name", "Desktop Qt 5.1.0 MSVC2012 OpenGL 64bit", "--toolchain", "x86-windows-msvc2012-pe-64bit", "--qt", component.name, "--debuggerengine", "4", "--devicetype", "Desktop"));
 
         } catch( e ) {
             print( e );

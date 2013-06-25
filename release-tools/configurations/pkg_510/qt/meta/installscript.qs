@@ -25,6 +25,23 @@ changeLicenseLabels = function()
     page.RejectLicenseLabel.setText("I <u>d</u>o not accept the terms and conditions of the above listed license agreements. Please note by checking the box, you must cancel the installation or downloading the Qt 5.1.0 and must destroy all copies, or portions thereof, of the Qt 5.1.0 in your possessions.");
 }
 
+qmakeOutputInstallerKey = function(aComponent)
+{
+    var qmakeOutputInstallerKey = aComponent.name;
+    // try to find the parent
+    if (qmakeOutputInstallerKey.lastIndexOf(".") !== -1) {
+        qmakeOutputInstallerKey = qmakeOutputInstallerKey.slice(0, qmakeOutputInstallerKey.lastIndexOf("."));
+    }
+    qmakeOutputInstallerKey += "_qmakeoutput";
+    return qmakeOutputInstallerKey;
+}
+
+addInitQtPatchOperation = function(aComponent, aOS, aQtPath, aQmakePath, version)
+{
+    aComponent.addOperation("ConsumeOutput", qmakeOutputInstallerKey(aComponent), aQmakePath, "-query");
+    aComponent.addOperation("QtPatch", aOS, aQtPath, version);
+}
+
 Component.prototype.createOperations = function()
 {
     component.createOperations();

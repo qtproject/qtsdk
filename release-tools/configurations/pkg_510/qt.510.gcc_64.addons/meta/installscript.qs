@@ -11,6 +11,11 @@ function Component()
 Component.prototype.createOperations = function()
 {
     component.createOperations();
+    component.addOperation("QtPatch",
+                            "linux",
+                            "@TargetDir@/%TARGET_INSTALL_DIR%",
+                            "QmakeOutputInstallerKey=" + qmakeOutputInstallerKey(component),
+                            "qt5");
 
     if (installer.value("os") == "x11") {
         try {
