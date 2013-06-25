@@ -535,6 +535,21 @@ def replace_build_paths(path_to_checked):
                                 print line.rstrip('\n')
     print_wrap('--------------------------------------------------------------------')
 
+###############################
+# function
+###############################
+def replace_system_paths():
+    qconfig_path = MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME \
+                   + os.sep + INSTALL_PREFIX + os.sep + 'mkspecs' + os.sep + 'qconfig.pri'
+    print_wrap('------------ Replacing system paths in ' + qconfig_path + ' ----------------')
+    for line in fileinput.FileInput(qconfig_path, inplace=1):
+        if line.startswith('QMAKE_DEFAULT_LIBDIRS'):
+            print 'QMAKE_DEFAULT_LIBDIRS ='
+        elif line.startswith('QMAKE_DEFAULT_INCDIRS'):
+            print 'QMAKE_DEFAULT_INCDIRS ='
+        else:
+            print line,
+    print_wrap('--------------------------------------------------------------------')
 
 ###############################
 # function
@@ -840,6 +855,8 @@ def main():
         build_docs()
     # replace build directory paths in install_root locations
     replace_build_paths(MAKE_INSTALL_ROOT_DIR)
+    # remove system specific paths from qconfig.pri
+    replace_system_paths()
     # patch RPath if requested
     if REPLACE_RPATH:
         replace_rpath()
