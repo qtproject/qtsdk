@@ -856,7 +856,8 @@ def main():
     # replace build directory paths in install_root locations
     replace_build_paths(MAKE_INSTALL_ROOT_DIR)
     # remove system specific paths from qconfig.pri
-    replace_system_paths()
+    if not ANDROID_BUILD:
+        replace_system_paths()
     # patch RPath if requested
     if REPLACE_RPATH:
         replace_rpath()
