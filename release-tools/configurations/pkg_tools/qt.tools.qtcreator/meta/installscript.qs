@@ -209,12 +209,6 @@ Component.prototype.createOperations = function()
 
     if ( installer.value("os") == "win" )
     {
-        component.addOperation( "SetPluginPathOnQtCore",
-                                path + "bin",
-                                path + "plugins");
-        component.addOperation( "SetImportsPathOnQtCore",
-                                path + "bin",
-                                path + "bin");
         component.addOperation( "CreateShortcut",
                                 component.qtCreatorBinaryPath,
                                 "@StartMenuDir@\\Qt Creator.lnk",
@@ -228,12 +222,6 @@ Component.prototype.createOperations = function()
     }
     if ( installer.value("os") == "x11" )
     {
-        component.addOperation( "SetPluginPathOnQtCore",
-                                path + "lib" + native_path_separator + "qtcreator",
-                                path + "lib" + native_path_separator + "qtcreator" + native_path_separator + "plugins");
-        component.addOperation( "SetImportsPathOnQtCore",
-                                path + "lib" + native_path_separator + "qtcreator",
-                                path + "bin");
         component.addOperation( "InstallIcons", path + "share" + native_path_separator + "icons" );
         component.addOperation( "CreateDesktopEntry",
                                 "DigiaQtOpenSource-qtcreator.desktop",
