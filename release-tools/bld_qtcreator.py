@@ -105,6 +105,8 @@ parser.add_argument('--debug', help="use debug builds", action='store_true', def
 parser.add_argument('--qt5_essentials7z', help="a file or url where it get the built qt5 essential content as 7z")
 parser.add_argument('--qt5_addons7z', help="a file or url where it get the built qt5 essential content as 7z")
 parser.add_argument('--versiondescription', help="version description to be shown in the about dialog, e.g. 'pre-2.7.2")
+parser.add_argument('--additional_plugin', help="path to additional Qt Creator plugin to build", action='append')
+
 if (sys.platform != "darwin"):
     parser.add_argument('--icu7z', help="a file or url where it get icu libs as 7z", required=True)
 
@@ -266,6 +268,20 @@ runInstallCommand("docs", currentWorkingDirectory = qtCreatorBuildDirectory, cal
 if sys.platform != "darwin":
     runInstallCommand('install install_docs', currentWorkingDirectory = qtCreatorBuildDirectory,
         callerArguments = callerArguments, init_environment = environment)
+
+# build & install additional plugins
+if callerArguments.additional_plugin:
+    for plugin_dir in callerArguments.additional_plugin:
+        env = environment
+        env['QTC_SOURCE'] = qtCreatorSourceDirectory
+        env['QTC_BUILD'] = qtCreatorBuildDirectory
+        runCommand('{0} QTC_PREFIX={1}'.format(qmakeBinary, qtCreatorInstallDirectory), plugin_dir,
+            callerArguments = callerArguments, init_environment = env)
+        runBuildCommand(currentWorkingDirectory = plugin_dir, callerArguments = callerArguments,
+            init_environment = env)
+        if sys.platform != 'darwin':
+            runInstallCommand('install', currentWorkingDirectory = plugin_dir,
+                callerArguments = callerArguments, init_environment = env)
 
 if sys.platform == "darwin":
     if callerArguments.keychain_unlock_script:
