@@ -49,7 +49,7 @@ archives:               502.msvc2010.essentials, icu_49_release.win_32, icu_49_d
 target_install_base:    /5.0.2/msvc2010
 version:                5.0.2
 version_tag:            %QT_VERSION%
-package_default:        true
+package_default:        false
 [502.msvc2010.essentials]
 archive_uri:            /qt/5.0.2/latest/windows_vs2010_32/qt5_essentials.7z
 package_strip_dirs:
@@ -80,7 +80,7 @@ archives:               502.msvc2010.addons
 target_install_base:    /5.0.2/msvc2010
 version:                5.0.2
 version_tag:            %QT_VERSION%
-package_default:        true
+package_default:        false
 [502.msvc2010.addons]
 archive_uri:            /qt/5.0.2/latest/windows_vs2010_32/qt5_addons.7z
 package_strip_dirs:
