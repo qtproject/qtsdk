@@ -168,8 +168,8 @@ def check_required_tools():
             break
 
     if not found:
-        print '*** Error! Required tools are not present in the system (7z)'
-        print '*** Abort!'
+        sys.stderr.write('*** Error! Required tools are not present in the system (7z)')
+        sys.stderr.write('*** Abort!')
         sys.exit(-1)
 
 
@@ -181,8 +181,8 @@ def check_platform_identifier(platform_identifier):
     path_to_be_checked = CONFIGURATIONS_DIR + os.sep + platform_identifier
     if os.path.exists(path_to_be_checked):
         return
-    print '*** Unsupported platform identifier given: ' + platform_identifier
-    print '*** Following directory can not be found:   ' + path_to_be_checked
+    sys.stderr.write('*** Unsupported platform identifier given: ' + platform_identifier)
+    sys.stderr.write('*** Following directory can not be found:   ' + path_to_be_checked)
     sys.exit(-1)
 
 
@@ -389,12 +389,12 @@ def parse_cmd_line():
     if INCREMENTAL_MODE:
         DEVELOPMENT_MODE = True
     if CREATE_ONLINE_INSTALLER and CREATE_OFFLINE_INSTALLER:
-        print '*** Error! This script does not support (yet) creating offline and online installers at the same time!'
-        print '*** Choose either offline or online!'
+        sys.stderr.write('*** Error! This script does not support (yet) creating offline and online installers at the same time!')
+        sys.stderr.write('*** Choose either offline or online!')
         sys.exit(-1)
     if CREATE_ONLINE_INSTALLER and CREATE_REPOSITORY:
-        print '*** Error! This script does not support (yet) creating online installer and repository at the same time!'
-        print '*** Choose either online installer or repository creation!'
+        sys.stderr.write('*** Error! This script does not support (yet) creating online installer and repository at the same time!')
+        sys.stderr.write('*** Choose either online installer or repository creation!')
         sys.exit(-1)
 
     # check that given main configuration root dir exists
@@ -544,9 +544,9 @@ def set_config_xml():
     config_template_source = CONFIGURATIONS_DIR + os.sep + PLATFORM_IDENTIFIER + os.sep + configxml_filename
     # if no config.xml template, we assume the "config" template dir already contains it
     if not os.path.exists(config_template_source):
-        print '*** Error!'
-        print '*** Given config.xml template does not exist: ' + config_template_source
-        print '*** Abort!'
+        sys.stderr.write('*** Error!')
+        sys.stderr.write('*** Given config.xml template does not exist: ' + config_template_source)
+        sys.stderr.write('*** Abort!')
         sys.exit(-1)
 
     # name has to be config.xml for installer-framework
@@ -742,8 +742,8 @@ def move_directory_one_layer_up(directory):
         bldinstallercommon.move_tree(temp_path_name, new_location)
         bldinstallercommon.remove_tree(temp_path_name)
     else:
-        print '*** Error: unsupported folder structure encountered, abort!'
-        print '*** Found items: ' + str(items) + ' in directory: ' + directory
+        sys.stderr.write('*** Error: unsupported folder structure encountered, abort!')
+        sys.stderr.write('*** Found items: ' + str(items) + ' in directory: ' + directory)
         sys.exit(-1)
 
 
@@ -938,12 +938,12 @@ def install_ifw_tools():
                 print ' Downloading:  ' + package_url
                 res = bldinstallercommon.is_content_url_valid(package_url)
                 if not(res):
-                    print '*** Package URL is invalid: [' + package_url + ']'
-                    print '*** Abort!'
+                    sys.stderr.write('*** Package URL is invalid: [' + package_url + ']')
+                    sys.stderr.write('*** Abort!')
                     sys.exit(-1)
                 bldinstallercommon.retrieve_url(package_url, package_save_as_temp)
             if not (os.path.isfile(package_save_as_temp)):
-                print '*** Downloading failed! Aborting!'
+                sys.stderr.write('*** Downloading failed! Aborting!')
                 sys.exit(-1)
             # extract IFW archive
             bldinstallercommon.extract_file(package_save_as_temp, IFW_TOOLS_DIR)
@@ -957,8 +957,8 @@ def install_ifw_tools():
                 bldinstallercommon.remove_tree(IFW_TOOLS_DIR + os.sep + dir_name)
                 os.chdir(SCRIPT_ROOT_DIR)
             else:
-                print '*** Unsupported dir structure for installer-framework-tools package?!'
-                print '*** Abort!'
+                sys.stderr.write('*** Unsupported dir structure for installer-framework-tools package?!')
+                sys.stderr.write('*** Abort!')
                 sys.exit(-1)
             tools_bin_path = IFW_TOOLS_DIR
 
@@ -969,16 +969,16 @@ def install_ifw_tools():
     REPOGEN_TOOL = bldinstallercommon.locate_executable(tools_bin_path, 'repogen' + executable_suffix)
     # check
     if not (os.path.isfile(ARCHIVEGEN_TOOL)):
-        print '*** Archivegen tool not found: ' + ARCHIVEGEN_TOOL
+        sys.stderr.write('*** Archivegen tool not found: ' + ARCHIVEGEN_TOOL)
         sys.exit(-1)
     if not (os.path.isfile(BINARYCREATOR_TOOL)):
-        print '*** Binarycreator tool not found: ' + BINARYCREATOR_TOOL
+        sys.stderr.write('*** Binarycreator tool not found: ' + BINARYCREATOR_TOOL)
         sys.exit(-1)
     if not (os.path.isfile(INSTALLERBASE_TOOL)):
-        print '*** Installerbase tool not found: ' + INSTALLERBASE_TOOL
+        sys.stderr.write('*** Installerbase tool not found: ' + INSTALLERBASE_TOOL)
         sys.exit(-1)
     if not (os.path.isfile(REPOGEN_TOOL)):
-        print '*** Repogen tool not found: ' + REPOGEN_TOOL
+        sys.stderr.write('*** Repogen tool not found: ' + REPOGEN_TOOL)
         sys.exit(-1)
 
     print ' ARCHIVEGEN_TOOL: ' + ARCHIVEGEN_TOOL
@@ -1074,7 +1074,7 @@ def create_offline_repository():
         # create repository
         bldinstallercommon.do_execute_sub_process(repogen_args, SCRIPT_ROOT_DIR, True)
         if not os.path.exists(REPO_OUTPUT_DIR):
-            print '*** Fatal error! Unable to create repository directory: ' + REPO_OUTPUT_DIR
+            sys.stderr.write('*** Fatal error! Unable to create repository directory: ' + REPO_OUTPUT_DIR)
             sys.exit(-1)
 
 
@@ -1098,8 +1098,8 @@ def create_mac_disk_image():
         print '           into:            ' + package_save_as_temp
         res = bldinstallercommon.is_content_url_valid(nib_archive_name)
         if not(res):
-            print '*** Package URL is invalid: [' + nib_archive_name + ']'
-            print '*** Abort!'
+            sys.stderr.write('*** Package URL is invalid: [' + nib_archive_name + ']')
+            sys.stderr.write('*** Abort!')
             sys.exit(-1)
         bldinstallercommon.retrieve_url(nib_archive_name, package_save_as_temp)
 
