@@ -54,7 +54,7 @@ base_path:
 packages:               foo.bar, foo.bar2, foo.bar3
 
 [ExtraPackageConfigurationFiles]
-file_list:              qt-conf, qt510-src-conf, x86-qt510-msvc2012_32-conf, x86-tools-qtcreator-conf, x86-tools-vcredist_32-conf, installer-readme-conf
+file_list:              qt-conf, qt511-src-conf, x86-qt511-msvc2012_32-conf, x86-tools-qtcreator-conf, x86-tools-vcredist_32-conf, installer-readme-conf
 
 [OfflinePackageExcludeList]
 package_list:
@@ -69,7 +69,7 @@ template_name:          config_qt5
 template_name:          config.xml.template.windows.qt5
 
 [WorkingDirectories]
-packages_dir:           pkg_510, pkg_tools
+packages_dir:           pkg_511, pkg_tools
 
 [InstallerFrameworkTools]
 name:                   ifwt
