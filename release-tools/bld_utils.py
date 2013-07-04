@@ -168,7 +168,7 @@ def download(url, savefile):
             except WindowsError as e:
                 # if it still exists just try that after a microsleep and stop this after 720 tries
                 if os.path.lexists(savefile_tmp) and tryRenameCounter < 720:
-                    time.sleep(1)
+                    time.sleep(2)
                     continue
                 else:
                     if not os.path.lexists(savefile):
