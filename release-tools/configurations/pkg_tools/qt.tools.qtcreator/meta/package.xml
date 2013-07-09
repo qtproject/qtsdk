@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
     <DisplayName>Qt Creator</DisplayName>
-    <Description>Qt CreatorIDE for Qt application development</Description>
+    <Description>IDE for Qt application development</Description>
     <Version>%QTCREATOR_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Name>qt.tools.qtcreator</Name>
