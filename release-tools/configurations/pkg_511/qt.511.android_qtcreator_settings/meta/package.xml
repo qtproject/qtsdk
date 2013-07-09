@@ -4,7 +4,7 @@
     <Description>This component sets the MakeExtraSearchDirectory setting on Qt Creator for Android targets.</Description>
     <Version>%ANDROID_QTCREATOR_SETTINGS_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Dependencies>qt.tools.qtcreator</Dependencies>
+    <Dependencies>qt.tools.qtcreator->=2.8.0</Dependencies>
     <Script>installscript.qs</Script>
     <Virtual>true</Virtual>
 </Package>

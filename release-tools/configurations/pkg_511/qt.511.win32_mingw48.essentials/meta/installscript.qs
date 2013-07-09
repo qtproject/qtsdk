@@ -114,16 +114,40 @@ Component.prototype.createOperations = function()
             if (installer.value("SDKToolBinary") == "")
                 return;
 
+            //
+            // keep TC registered because it might be shared with other Qt versions
+            // (TODO: Actually the toolchain package should do this ...)
+            //
             var tcId = "ProjectExplorer.ToolChain.Mingw:" + component.name;
             component.addOperation("Execute",
-                new Array("{0}", "@SDKToolBinary@", "addTC", "--id", tcId, "--name", "MinGW 4.8 32bit", "--path", "@MINGW48_DIR@\\bin\\gcc.exe", "--abi", "x86-windows-msys-pe-32bit", "--supportedAbis", "x86-windows-msys-pe-32bit"));
+                                   ["{0,2}", "@SDKToolBinary@", "addTC",
+                                    "--id", tcId,
+                                    "--name", "MinGW 4.8 32bit",
+                                    "--path", "@MINGW48_DIR@\\bin\\gcc.exe",
+                                    "--abi", "x86-windows-msys-pe-32bit",
+                                    "--supportedAbis", "x86-windows-msys-pe-32bit"]);
 
             component.addOperation("Execute",
-                new Array("{0}", "@SDKToolBinary@", "addQt", "--id", component.name, "--name", "Qt 5.1.1 MinGW 32bit", "--type", "Qt4ProjectManager.QtVersion.Desktop", "--qmake", qmakeBinary));
+                                   ["@SDKToolBinary@", "addQt",
+                                    "--id", component.name,
+                                    "--name", "Qt 5.1.1 MinGW 32bit",
+                                    "--type", "Qt4ProjectManager.QtVersion.Desktop",
+                                    "--qmake", qmakeBinary,
+                                    "UNDOEXECUTE",
+                                    "@SDKToolBinary@", "rmQt", "--id", component.name]);
 
+            var kitName = component.name + "_kit";
             component.addOperation("Execute",
-                new Array("{0}", "@SDKToolBinary@", "addKit", "--id", component.name + "_kit", "--name", "Desktop Qt 5.1.1 MinGW 32bit", "--toolchain", tcId, "--qt", component.name, "--debuggerengine", "1", "--debugger", "@MINGW48_DIR@\\bin\\gdb.exe", "--devicetype", "Desktop"));
-
+                                   ["@SDKToolBinary@", "addKit",
+                                    "--id", kitName,
+                                    "--name", "Desktop Qt 5.1.1 MinGW 32bit",
+                                    "--toolchain", tcId,
+                                    "--qt", component.name,
+                                    "--debuggerengine", "1",
+                                    "--debugger", "@MINGW48_DIR@\\bin\\gdb.exe",
+                                    "--devicetype", "Desktop",
+                                    "UNDOEXECUTE",
+                                    "@SDKToolBinary@", "rmKit", "--id", kitName]);
         } catch( e ) {
             print( e );
         }

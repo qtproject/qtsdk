@@ -71,9 +71,24 @@ Component.prototype.createOperations = function()
             return;
 
         component.addOperation("Execute",
-            new Array("{0}", "@SDKToolBinary@", "addQt", "--id", component.name, "--name", "Qt 5.1.1 GCC 32bit", "--type", "Qt4ProjectManager.QtVersion.Desktop", "--qmake", qmakeBinary));
+                               ["@SDKToolBinary@", "addQt",
+                                "--id", component.name,
+                                "--name", "Qt 5.1.1 GCC 32bit",
+                                "--type", "Qt4ProjectManager.QtVersion.Desktop",
+                                "--qmake", qmakeBinary,
+                                "UNDOEXECUTE",
+                                "@SDKToolBinary@", "rmQt", "--id", component.name]);
 
+        var kitName = component.name + "_kit";
         component.addOperation("Execute",
-            new Array("{0}", "@SDKToolBinary@", "addKit", "--id", component.name + "_kit", "--name", "Desktop Qt 5.1.1 GCC 32bit", "--toolchain", "x86-linux-generic-elf-32bit", "--qt", component.name, "--debuggerengine", "1", "--devicetype", "Desktop"));
+                               ["@SDKToolBinary@", "addKit",
+                                "--id", kitName,
+                                "--name", "Desktop Qt 5.1.1 GCC 32bit",
+                                "--toolchain", "x86-linux-generic-elf-32bit",
+                                "--qt", component.name,
+                                "--debuggerengine", "1",
+                                "--devicetype", "Desktop",
+                                "UNDOEXECUTE",
+                                "@SDKToolBinary@", "rmKit", "--id", kitName]);
     }
 }

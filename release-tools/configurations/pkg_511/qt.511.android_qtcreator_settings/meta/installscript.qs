@@ -64,7 +64,7 @@ Component.prototype.createOperations = function()
     }
 
     // this is only needed under windows
-    component.addOperation("Execute", new Array(
-        "{0}", "@SDKToolBinary@", "addKeys", "android", "MakeExtraSearchDirectory", "QString:@MINGW48_DIR@\\bin",
-        "UNDOEXECUTE", "{0}", "@SDKToolBinary@", "rmKeys", "android", "MakeExtraSearchDirectory"));
+    component.addOperation("Execute",
+                           ["{0,4}", "@SDKToolBinary@", "addKeys",
+                            "android", "MakeExtraSearchDirectory", "QString:@MINGW48_DIR@\\bin"]);
 }

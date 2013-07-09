@@ -84,6 +84,11 @@ Component.prototype.createOperations = function()
 
     // add Qt into QtCreator
     component.addOperation("Execute",
-        new Array("{0}", "@SDKToolBinary@", "addQt", "--id", component.name, "--name", "Qt 5.1.1 for Android armv7", "--type",
-        "Qt4ProjectManager.QtVersion.Android", "--qmake", qmakeBinary));
+                           ["@SDKToolBinary@", "addQt",
+                            "--id", component.name,
+                            "--name", "Qt 5.1.1 for Android armv7",
+                            "--type", "Qt4ProjectManager.QtVersion.Android",
+                            "--qmake", qmakeBinary,
+                            "UNDOEXECUTE",
+                            "@SDKToolBinary@", "rmQt", "--id", component.name]);
 }
