@@ -54,7 +54,7 @@ function usage()
   echo "-N             don't use git fetch to update submodules"
   echo "--tag          also tag the repository"
   echo "-i submodule   will exclude the submodule from final package "
-  echo "-l license     license type, will default to 'opensource', if set to 'commercial' all the necessary patches will be applied for commercial build"
+  echo "-l license     license type, will default to 'opensource', if set to 'enterprise' all the necessary patches will be applied for enterprise build"
   echo "-p patch file  patch file (.sh) to execute, example: change_licenses.sh"
   echo "-r revision    committish to pack (tag name, branch name or SHA-1)"
   echo "--skip-syncqt  do not run syncqt by default"
@@ -285,8 +285,8 @@ while read submodule _SHA; do
       tar -x -C $_TMP_DIR
   #store the sha1
   echo "$(echo $(echo $submodule|sed 's/-/_/g') | cut -d/ -f1)=$_SHA" >>$_TMP_DIR/$QTGITTAG
-  #add QT_PACKAGEDATE_STR for commercial license key check
-  if [ $LICENSE = commercial -a $submodule = qtbase ]; then
+  #add QT_PACKAGEDATE_STR for enterprise license key check
+  if [ $LICENSE = enterprise -a $submodule = qtbase ]; then
       rm -f $_TMP_DIR/$submodule/$PACK_FILE
       echo "QT_PACKAGEDATE_STR=$PACK_TIME">$_TMP_DIR/$submodule/$PACK_FILE
   fi
@@ -348,8 +348,8 @@ find . -type f -print0 | xargs -0 sed -i -e "s/%VERSION%/$QTVER/g" -e "s/%SHORTV
 # if needed
 #------------------------------------------------------------------
 if [ $PATCH_FILE ]; then
-  if [ $LICENSE = commercial ]; then
-    # when doing commercial build, patch file needs src folder and qt version no as parameters
+  if [ $LICENSE = enterprise]; then
+    # when doing enterprise build, patch file needs src folder and qt version no as parameters
     $PATCH_FILE $CUR_DIR/$PACKAGE_NAME/ $QTVER
   else
     $PATCH_FILE
