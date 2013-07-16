@@ -125,6 +125,7 @@ INSTALLER_FRAMEWORK_BRANCH                      = ''
 INSTALLER_FRAMEWORK_QMAKE_ARGS                  = ''
 INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_URL     = ''
 INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_BRANCH  = ''
+INSTALLER_FRAMEWORK_OPENSSL                     = ''
 # ----------------------------------------------------------------------
 
 
@@ -273,6 +274,9 @@ def setup_option_parser():
     OPTION_PARSER.add_option("--installer-framework-product-key-checker-branch",
                       action="store", type="string", dest="installer_framework_product_key_checker_branch", default="",
                       help="If you wish to build ifw with commercial product key checker: branch for product key checker")
+    OPTION_PARSER.add_option("--installer-framework-openssl",
+                      action="store", type="string", dest="installer_framework_openssl", default="",
+                      help="If you wish to build ifw: optional directory with OpenSSL libraries on Windows")
     # global key-value substitution
     OPTION_PARSER.add_option("--add-substitution",
                       action="extend", type="string", dest="global_key_value_substitution_list",
@@ -350,6 +354,7 @@ def parse_cmd_line():
     global INSTALLER_FRAMEWORK_QMAKE_ARGS
     global INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_URL
     global INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_BRANCH
+    global INSTALLER_FRAMEWORK_OPENSSL
 
     global KEY_SUBSTITUTION_LIST
 
@@ -378,6 +383,7 @@ def parse_cmd_line():
     INSTALLER_FRAMEWORK_QMAKE_ARGS                  = options.installer_framework_qmake_args
     INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_URL     = options.installer_framework_product_key_checker_url
     INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_BRANCH  = options.installer_framework_product_key_checker_branch
+    INSTALLER_FRAMEWORK_OPENSSL                     = options.installer_framework_openssl
 
     # key value substitution list init
     if options.global_key_value_substitution_list:
@@ -912,7 +918,8 @@ def install_ifw_tools():
                            INSTALLER_FRAMEWORK_BRANCH,
                            INSTALLER_FRAMEWORK_QMAKE_ARGS,
                            INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_URL,
-                           INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_BRANCH
+                           INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_BRANCH,
+                           INSTALLER_FRAMEWORK_OPENSSL
                            )
 
         options.development_mode = True
