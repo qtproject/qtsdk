@@ -49,7 +49,7 @@ archives:               510.gcc.essentials, 510.gcc.icu_51, 510.gcc.essentials.i
 target_install_base:    /@QT_VERSION@/gcc
 version:                5.1.0
 version_tag:            %QT_VERSION%
-package_default:        true
+package_default:        false
 [510.gcc.essentials]
 archive_uri:            /qt/5.1.0/latest/linux_gcc_32_ubuntu1110/qt5_essentials.7z
 package_strip_dirs:
@@ -73,7 +73,7 @@ archives:               510.gcc.addons, 510.gcc.addons.icu_path_patcher
 target_install_base:    /@QT_VERSION@/gcc
 version:                5.1.0
 version_tag:            %QT_VERSION%
-package_default:        true
+package_default:        false
 [510.gcc.addons]
 archive_uri:            /qt/5.1.0/latest/linux_gcc_32_ubuntu1110/qt5_addons.7z
 package_strip_dirs:

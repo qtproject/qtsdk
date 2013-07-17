@@ -66,7 +66,7 @@ archives:               src.essentials.qtbase, src.essentials.qtdeclarative, src
 target_install_base:    /@QT_VERSION@/Src/
 version:                5.1.0
 version_tag:            %QT_VERSION%
-package_default:        true
+package_default:        false
 [src.essentials.qtbase]
 archive_uri:            /qt/5.1.0/latest/src/submodules/qtbase-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
@@ -155,7 +155,7 @@ archives:               src.addons.qtactiveqt
 target_install_base:    /@QT_VERSION@/Src/qtactiveqt
 version:                5.1.0
 version_tag:            %QT_VERSION%
-package_default:        true
+package_default:        false
 [src.addons.qtactiveqt]
 archive_uri:            /qt/5.1.0/latest/src/submodules/qtactiveqt-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
@@ -168,7 +168,7 @@ archives:               src.addons.qtgraphicaleffects
 target_install_base:    /@QT_VERSION@/Src/qtgraphicaleffects
 version:                5.1.0
 version_tag:            %QT_VERSION%
-package_default:        true
+package_default:        false
 [src.addons.qtgraphicaleffects]
 archive_uri:            /qt/5.1.0/latest/src/submodules/qtgraphicaleffects-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
@@ -181,7 +181,7 @@ archives:               src.addons.qtimageformats
 target_install_base:    /@QT_VERSION@/Src/qtimageformats
 version:                5.1.0
 version_tag:            %QT_VERSION%
-package_default:        true
+package_default:        false
 [src.addons.qtimageformats]
 archive_uri:            /qt/5.1.0/latest/src/submodules/qtimageformats-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
@@ -194,7 +194,7 @@ archives:               src.addons.qtsvg
 target_install_base:    /@QT_VERSION@/Src/qtsvg
 version:                5.1.0
 version_tag:            %QT_VERSION%
-package_default:        true
+package_default:        false
 [src.addons.qtsvg]
 archive_uri:            /qt/5.1.0/latest/src/submodules/qtsvg-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
@@ -207,7 +207,7 @@ archives:               src.addons.qttranslations
 target_install_base:    /@QT_VERSION@/Src/qttranslations
 version:                5.1.0
 version_tag:            %QT_VERSION%
-package_default:        true
+package_default:        false
 [src.addons.qttranslations]
 archive_uri:            /qt/5.1.0/latest/src/submodules/qttranslations-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1

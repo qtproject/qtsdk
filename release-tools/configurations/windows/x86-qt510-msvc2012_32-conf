@@ -49,7 +49,7 @@ archives:               510.msvc2012.essentials, 510.msvc2012.icu_51_release.win
 target_install_base:    /@QT_VERSION@/msvc2012
 version:                5.1.0
 version_tag:            %QT_VERSION%
-package_default:        true
+package_default:        false
 [510.msvc2012.essentials]
 archive_uri:            /qt/5.1.0/latest/windows_vs2012_32/qt5_essentials.7z
 package_strip_dirs:
@@ -74,7 +74,7 @@ archives:               510.msvc2012.addons
 target_install_base:    /@QT_VERSION@/msvc2012
 version:                5.1.0
 version_tag:            %QT_VERSION%
-package_default:        true
+package_default:        false
 [510.msvc2012.addons]
 archive_uri:            /qt/5.1.0/latest/windows_vs2012_32/qt5_addons.7z
 package_strip_dirs:

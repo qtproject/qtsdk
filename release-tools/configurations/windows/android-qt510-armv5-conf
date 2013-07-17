@@ -53,7 +53,7 @@ archives:               510.android_armv5.essentials, 510.android_armv5.icu_51.m
 target_install_base:    /@QT_VERSION@/android_armv5
 version:                5.1.0
 version_tag:            %QT_VERSION%
-package_default:        true
+package_default:        false
 [510.android_armv5.essentials]
 archive_uri:            /qt/5.1.0/latest/android_armv5/mingw_x86/qt5_essentials.7z
 package_strip_dirs:
@@ -78,7 +78,7 @@ archives:               510.android_armv5.addons
 target_install_base:    /@QT_VERSION@/android_armv5
 version:                5.1.0
 version_tag:            %QT_VERSION%
-package_default:        true
+package_default:        false
 [510.android_armv5.addons]
 archive_uri:            /qt/5.1.0/latest/android_armv5/mingw_x86/qt5_addons.7z
 package_strip_dirs:
