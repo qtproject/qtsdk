@@ -117,8 +117,8 @@ Component.prototype.createOperations = function()
 
     if (installer.value("os") == "win") {
         try {
-            var qtPath = "@TargetDir@/%TARGET_INSTALL_DIR%";
-            var qmakeBinary = "@TargetDir@/%TARGET_INSTALL_DIR%/bin/qmake.exe";
+            var qtPath = "@TargetDir@" + "%TARGET_INSTALL_DIR%";
+            var qmakeBinary = "@TargetDir@" + "%TARGET_INSTALL_DIR%/bin/qmake.exe";
             addInitQtPatchOperation(component, "windows", qtPath, qmakeBinary, "qt5");
 
             // Create a batch file and shortcuts with the development environment

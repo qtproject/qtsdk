@@ -64,19 +64,19 @@ Component.prototype.createOperations = function()
     var qmakeBinary = "";
     var platform = "";
     if (installer.value("os") == "x11") {
-        qmakeBinary = "@TargetDir@/%TARGET_INSTALL_DIR%/bin/qmake";
+        qmakeBinary = "@TargetDir@" + "%TARGET_INSTALL_DIR%/bin/qmake";
         platform = "linux";
     }
     if (installer.value("os") == "mac") {
-        qmakeBinary = "@TargetDir@/%TARGET_INSTALL_DIR%/bin/qmake";
+        qmakeBinary = "@TargetDir@" + "%TARGET_INSTALL_DIR%/bin/qmake";
         platform = "mac";
     }
     if (installer.value("os") == "win") {
-        qmakeBinary = "@TargetDir@/%TARGET_INSTALL_DIR%/bin/qmake.exe";
+        qmakeBinary = "@TargetDir@" + "%TARGET_INSTALL_DIR%/bin/qmake.exe";
         platform = "windows";
     }
 
-    var qtPath = "@TargetDir@/%TARGET_INSTALL_DIR%";
+    var qtPath = "@TargetDir@" + "%TARGET_INSTALL_DIR%";
     addInitQtPatchOperation(component, platform, qtPath, qmakeBinary, "emb-arm");
 
     if (installer.value("SDKToolBinary") == "")

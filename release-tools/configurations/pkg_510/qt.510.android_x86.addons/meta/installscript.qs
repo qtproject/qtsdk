@@ -62,7 +62,7 @@ Component.prototype.createOperations = function()
 
     component.addOperation("QtPatch",
                             platform,
-                            "@TargetDir@/%TARGET_INSTALL_DIR%",
+                            "@TargetDir@" + "%TARGET_INSTALL_DIR%",
                             "QmakeOutputInstallerKey=" + qmakeOutputInstallerKey(component),
                             "emb-arm");
 }

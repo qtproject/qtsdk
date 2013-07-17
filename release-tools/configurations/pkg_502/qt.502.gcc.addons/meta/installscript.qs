@@ -50,7 +50,7 @@ Component.prototype.createOperations = function()
     component.createOperations();
     component.addOperation("QtPatch",
                             "linux",
-                            "@TargetDir@/%TARGET_INSTALL_DIR%",
+                            "@TargetDir@" + "%TARGET_INSTALL_DIR%",
                             "QmakeOutputInstallerKey=" + qmakeOutputInstallerKey(component),
                             "qt5");
 

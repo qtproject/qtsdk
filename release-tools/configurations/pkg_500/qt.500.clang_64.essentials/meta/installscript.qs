@@ -55,7 +55,7 @@ Component.prototype.createOperations = function()
     try {
         if (installer.value("SDKToolBinary") == "")
             return;
-        var qmakeBinary = "@TargetDir@/%TARGET_INSTALL_DIR%/bin/qmake";
+        var qmakeBinary = "@TargetDir@" + "%TARGET_INSTALL_DIR%/bin/qmake";
 
         component.addOperation("Execute",
             new Array("{1}", "@SDKToolBinary@", "addQt", "--id", component.name, "--name", "Qt %QT_VERSION% clang 64bit", "--type", "Qt4ProjectManager.QtVersion.Desktop", "--qmake", qmakeBinary));

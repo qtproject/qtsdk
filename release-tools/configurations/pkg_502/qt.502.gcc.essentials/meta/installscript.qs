@@ -54,8 +54,8 @@ Component.prototype.createOperations = function()
     component.createOperations();
 
     if (installer.value("os") == "x11") {
-        var qtPath = "@TargetDir@/%TARGET_INSTALL_DIR%";
-        var qmakeBinary = "@TargetDir@/%TARGET_INSTALL_DIR%/bin/qmake";
+        var qtPath = "@TargetDir@" + "%TARGET_INSTALL_DIR%";
+        var qmakeBinary = "@TargetDir@" + "%TARGET_INSTALL_DIR%/bin/qmake";
         addInitQtPatchOperation(component, "linux", qtPath, qmakeBinary, "qt5");
 
         try {

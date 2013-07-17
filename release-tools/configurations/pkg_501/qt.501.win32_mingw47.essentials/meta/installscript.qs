@@ -109,7 +109,7 @@ Component.prototype.createOperations = function()
 
             if (installer.value("SDKToolBinary") == "")
                 return;
-            var qmakeBinary = "@TargetDir@/%TARGET_INSTALL_DIR%/bin/qmake.exe";
+            var qmakeBinary = "@TargetDir@" + "%TARGET_INSTALL_DIR%/bin/qmake.exe";
 
             component.addOperation("Execute",
                 new Array("{1}", "@SDKToolBinary@", "addTC", "--id", "ProjectExplorer.ToolChain.Mingw:" + component.name, "--name", "MinGW 4.7 32bit", "--path", "@MINGW47_DIR@\\bin\\gcc.exe", "--abi", "x86-windows-msys-pe-32bit", "--supportedAbis", "x86-windows-msys-pe-32bit"));
