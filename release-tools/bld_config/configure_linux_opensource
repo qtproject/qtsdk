@@ -1,1 +1,1 @@
--opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -qt-xcb -sysconfdir /etc/xdg -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -openssl -dbus
+-opensource -confirm-license -debug-and-release -release -nomake tests -qt-zlib -qt-libjpeg -qt-libpng -qt-xcb -sysconfdir /etc/xdg -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -openssl -dbus -no-compile-examples
