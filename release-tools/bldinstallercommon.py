@@ -720,11 +720,8 @@ def clone_repository(repo_url, repo_branch_or_tag, destination_folder):
     print 'Dest:               ' + destination_folder
     print '--------------------------------------------------------------------'
 
-    cmd_args = ['git', 'clone', '--depth', '0', repo_url, destination_folder]
+    cmd_args = ['git', 'clone', '--depth', '0', repo_url, destination_folder, '--branch', repo_branch_or_tag]
     do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
-
-    cmd_args = ['git', 'checkout', repo_branch_or_tag]
-    do_execute_sub_process(cmd_args, destination_folder, True)
 
 
 ###############################
