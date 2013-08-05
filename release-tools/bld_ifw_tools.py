@@ -189,9 +189,9 @@ def setup_argument_parser():
     parser.add_argument('--ifw_url', help="Git URL for Qt Installer-Framework", required=False, default=IfwOptions.default_qt_installer_framework_url)
     parser.add_argument('--ifw_branch', help="Git branch for Qt Installer-Framework", required=False, default=IfwOptions.default_qt_installer_framework_branch)
     parser.add_argument('--ifw_qmake_args', help="Qmake arguments for Installer-Framework build ", required=False, default=IfwOptions.default_qt_installer_framework_qmake_args)
-    parser.add_argument('--product_key_checker_url', help="Git URL for commercial product key checker", required=False)
-    parser.add_argument('--product_key_checker_branch', help="Git branch for commercial product key checker", required=False)
-    parser.add_argument('--license', help="License type, 'opensource' or 'commercial'", required=False, default='opensource')
+    parser.add_argument('--product_key_checker_url', help="Git URL for enterprise product key checker", required=False)
+    parser.add_argument('--product_key_checker_branch', help="Git branch for enterprise product key checker", required=False)
+    parser.add_argument('--license', help="License type, 'opensource' or 'enterprise'", required=False, default='opensource')
     parser.add_argument('--openssl_dir', help="Path where it can find the openssl installation(libs, includes) on windows.", required=False, default='C:\\OpenSSL')
     return parser
 
