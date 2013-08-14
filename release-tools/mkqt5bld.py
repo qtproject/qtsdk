@@ -89,8 +89,9 @@ QT5_ESSENTIALS                      = [ 'qtbase', 'qtdeclarative', 'qtdoc', \
 ORIGINAL_QMAKE_QT_PRFXPATH          = ''
 PADDING                             = '______________________________PADDING______________________________'
 FILES_TO_REMOVE_LIST                = ['Makefile', 'Makefile.Release', 'Makefile.Debug', \
-                                       '.o', '.moc', '.init-repository', \
-                                       '.gitignore', '.obj']
+                                       '.o', '.obj', '.moc', \
+                                       '.init-repository', '.gitignore', \
+                                       'libQt5Bootstrap.a', 'qt_lib_bootstrap.pri']
 IGNORE_PATCH_LIST                   = ['.png', '.jpg', '.gif', '.bmp', '.exe', '.dll', '.lib', '.qph']
 INSTALL_PREFIX                      = ''
 #Commandline options
