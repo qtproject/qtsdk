@@ -44,7 +44,7 @@
 [qt.tools.qtcreator]
 archives:               tools.qtcreator, tools.qtcreator.d3d_compiler_43.x86
 target_install_base:    /Tools/QtCreator
-version:                2.8.0
+version:                2.8.1
 version_tag:            %QTCREATOR_VERSION%
 package_default:        true
 [tools.qtcreator]
