@@ -47,7 +47,7 @@ archives:               tools.mingw47
 target_install_base:    /Tools/MinGW
 version:                4.7.2-1-1
 version_tag:            %MINGW47_VERSION%
-package_default:        true
+package_default:        false
 [tools.mingw47]
 archive_uri:            http://download.qt-project.org/development_releases/prebuilt/mingw_32/x32-4.7.2-release-posix-sjlj-rev8.7z
 package_strip_dirs:     1
