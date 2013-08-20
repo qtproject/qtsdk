@@ -101,6 +101,7 @@ USE_LEGACY_IFW              = False
 STRICT_MODE                 = True
 ARCHIVE_SERVER_BASE_URL     = ''
 INSTALLER_FRAMEWORK_TOOLS   = ''
+INSTALLER_OUTPUT_DIR        = 'installer_output'
 
 INSTALLER_NAMING_SCHEME_COMPILER    = ''
 INSTALLER_NAMING_SCHEME_TARGET_ARCH = ''
@@ -926,7 +927,7 @@ def install_ifw_tools():
         options.incremental_mode = INCREMENTAL_MODE
         tools_dir_temp = bld_ifw_tools.build_ifw(options)
         tools_bin_path = SCRIPT_ROOT_DIR + os.sep + tools_dir_temp
-    else:
+    elif not os.path.exists(IFW_TOOLS_DIR):
         tools_dir_name = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'InstallerFrameworkTools')['name']
         tools_dir_name = os.path.normpath(tools_dir_name)
         if INSTALLER_FRAMEWORK_TOOLS:
@@ -1057,6 +1058,17 @@ def create_installer_binary():
         # create installer binary
         bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
+    # move results to dedicated directory
+    output_dir = os.path.join(SCRIPT_ROOT_DIR, INSTALLER_OUTPUT_DIR)
+    bldinstallercommon.create_dirs(output_dir)
+    file_name = os.path.join(SCRIPT_ROOT_DIR, SDK_NAME)
+    old_existing_file_name = os.path.join(output_dir, SDK_NAME)
+    # remove old if exists
+    if os.path.isfile(old_existing_file_name):
+        print 'Deleting old existing file: ' + old_existing_file_name
+        os.remove(old_existing_file_name)
+    shutil.move(file_name, output_dir)
+
 
 ##############################################################
 # Create the repository
@@ -1095,7 +1107,7 @@ def create_mac_disk_image():
     print '=================================================='
 
     nib_archive_name = bldinstallercommon.safe_config_key_fetch(CONFIG_PARSER_TARGET, 'qtmenunib', 'package_url')
-    package_save_as_folder = SCRIPT_ROOT_DIR + os.sep + SDK_NAME + '.app' + os.sep + 'Contents' + os.sep + 'Resources'
+    package_save_as_folder = SCRIPT_ROOT_DIR + os.sep + INSTALLER_OUTPUT_DIR + os.sep + SDK_NAME + '.app' + os.sep + 'Contents' + os.sep + 'Resources'
     package_save_as_temp = package_save_as_folder + os.sep + os.path.basename(nib_archive_name)
     print ' package_url: ' + nib_archive_name
     print ' save as:     ' + package_save_as_temp
@@ -1115,10 +1127,10 @@ def create_mac_disk_image():
 
     # create disk image
     cmd_args = ['hdiutil', 'create', '-srcfolder', \
-                os.path.join(SCRIPT_ROOT_DIR, SDK_NAME + '.app'), \
+                os.path.join(SCRIPT_ROOT_DIR, INSTALLER_OUTPUT_DIR, SDK_NAME + '.app'), \
                 '-volname', SDK_NAME, \
                 '-format', 'UDBZ', \
-                os.path.join(SCRIPT_ROOT_DIR, SDK_NAME + '.dmg'), \
+                os.path.join(SCRIPT_ROOT_DIR, INSTALLER_OUTPUT_DIR, SDK_NAME + '.dmg'), \
                 '-ov', '-scrub', '-size', '2g']
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 

@@ -54,7 +54,7 @@ base_path:
 packages:               foo.bar, foo.bar2, foo.bar3
 
 [ExtraPackageConfigurationFiles]
-file_list:              qt-conf, qt511-src-conf, x86-qt511-gcc-conf, android-x86-qt511-armv7-conf, android-x86-qt511-x86-conf, x86-tools-conf, installer-readme-conf
+file_list:              qt-conf, qt511-src-conf, x86-qt511-gcc-conf, android-x86-qt511-armv7-conf, android-x86-qt511-x86-conf, x86-tools-qtcreator-conf, installer-readme-conf
 
 [OfflinePackageExcludeList]
 package_list:

@@ -54,7 +54,7 @@ base_path:
 packages:               foo.bar, foo.bar2, foo.bar3
 
 [ExtraPackageConfigurationFiles]
-file_list:              qt-conf, qt511-src-conf, x86_64-qt511-clang-conf, x86_64-tools-conf, installer-readme-conf
+file_list:              qt-conf, qt511-src-conf, x86_64-qt511-clang-conf, x86_64-tools-qtcreator-conf, installer-readme-conf
 
 [OfflinePackageExcludeList]
 package_list:

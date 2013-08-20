@@ -1,0 +1,43 @@
+
+################################################################################
+## Global defines
+################################################################################
+[ifwtools]
+windows-x86:                installer-framework-build-win-x86.7z
+linux-x86:                  installer-framework-build-linux-x86.7z
+linux-x64:                  installer-framework-build-linux-x64.7z
+mac-x64:                    installer-framework-build-mac-x64.7z
+
+[release.global]
+qt_type:                    qt5
+version:                    1.4.0-2
+version_tag:
+
+
+################################################################################
+## Linux online client
+################################################################################
+[release.onlineclient.online.linux.x86]
+arg_configurations_file:    linux_x86_online
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+
+[release.onlineclient.online.linux.x64]
+arg_configurations_file:    linux_x64_online
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+
+
+################################################################################
+## Windows online client
+################################################################################
+[release.onlineclient.online.windows.x86]
+arg_configurations_file:    win_x86_online
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+
+
+################################################################################
+## Mac online client
+################################################################################
+[release.onlineclient.online.mac.x64]
+arg_configurations_file:    mac_x64_online
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+

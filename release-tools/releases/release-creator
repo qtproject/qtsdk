@@ -1,0 +1,62 @@
+# Define release content
+
+
+################################################################################
+## Global defines
+################################################################################
+[ifwtools]
+windows-x86:                installer-framework-build-win-x86.7z
+linux-x86:                  installer-framework-build-linux-x86.7z
+linux-x64:                  installer-framework-build-linux-x64.7z
+mac-x64:                    installer-framework-build-mac-x64.7z
+
+[release.global]
+qt_type:                    qt5
+version:                    2.8.1
+version_tag:
+repo_content_type:          qtcreator
+repo_components_to_update:  qt.tools.qtcreator.*
+
+
+################################################################################
+## Linux repository
+################################################################################
+[release.qtcreator.repository.linux.x86]
+arg_configurations_file:    repository_configs_tools_desktop/linux_x86_repository_tools_qtcreator
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          qtcreator
+repo_components_to_update:  qt.tools.qtcreator.*
+repo_url_specifier:         linux_x86/desktop/tools_qtcreator
+
+[release.qtcreator.repository.linux.x64]
+arg_configurations_file:    repository_configs_tools_desktop/linux_x64_repository_tools_qtcreator
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          qtcreator
+repo_components_to_update:  qt.tools.qtcreator.*
+repo_url_specifier:         linux_x64/desktop/tools_qtcreator
+
+
+################################################################################
+## Windows repository
+################################################################################
+[release.qtcreator.repository.windows.x86]
+arg_configurations_file:    repository_configs_tools_desktop/win_x86_repository_tools_qtcreator
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+repo_content_type:          qtcreator
+repo_components_to_update:  qt.tools.qtcreator.*
+repo_url_specifier:         windows_x86/desktop/tools_qtcreator
+
+
+################################################################################
+## Mac repository
+################################################################################
+[release.qtcreator.repository.mac.x64]
+arg_configurations_file:    repository_configs_tools_desktop/mac_x64_repository_tools_qtcreator
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          qtcreator
+repo_components_to_update:  qt.tools.qtcreator.*
+repo_url_specifier:         mac_x64/desktop/tools_qtcreator
+
+
+
+

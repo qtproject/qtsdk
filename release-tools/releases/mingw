@@ -1,0 +1,28 @@
+
+################################################################################
+## Global defines
+################################################################################
+[ifwtools]
+windows-x86:                installer-framework-build-win-x86.7z
+linux-x86:                  installer-framework-build-linux-x86.7z
+linux-x64:                  installer-framework-build-linux-x64.7z
+mac-x64:                    installer-framework-build-mac-x64.7z
+
+[release.global]
+qt_type:                    qt5
+version:                    2.8.1
+version_tag:
+repo_content_type:          mingw
+repo_components_to_update:
+
+
+################################################################################
+## Windows repository
+################################################################################
+[release.mingw.repository.windows.x86]
+arg_configurations_file:    repository_configs_tools_desktop/win_x86_repository_tools_mingw
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+repo_content_type:          mingw
+repo_components_to_update:  qt.tools.mingw47,qt.tools.win32_mingw48
+repo_url_specifier:         windows_x86/desktop/tools_mingw
+
