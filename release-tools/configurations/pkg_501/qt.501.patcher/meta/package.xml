@@ -4,7 +4,6 @@
     <Description>Qt patcher</Description>
     <Version>1.0.0</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Name>qt.501.patcher</Name>
     <Script>installscript.qs</Script>   <!-- File name of a script being loaded - optional. -->
     <Virtual>true</Virtual>
     <AutoDependOn>qt.501</AutoDependOn>

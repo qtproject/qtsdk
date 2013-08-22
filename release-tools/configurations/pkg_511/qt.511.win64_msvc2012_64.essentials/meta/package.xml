@@ -4,7 +4,6 @@
     <Description>Qt 5.1.1 Prebuilt Essential modules for msvc2012 64-bit</Description>
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Name>qt.511.win64_msvc2012_64.essentials</Name>
     <Dependencies>qt.tools.qtcreator, qt.tools.vcredist_64</Dependencies>
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
     <!--<AutoSelectOn></AutoSelectOn>-->

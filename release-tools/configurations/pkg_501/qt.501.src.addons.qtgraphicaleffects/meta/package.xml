@@ -4,7 +4,6 @@
     <Description>Qt 5.0.1 Add-Ons Qt Graphical Effects Source Component</Description>
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Name>qt.501.src.addons.qtgraphicaleffects</Name>
     <!--<Dependencies></Dependencies>--> <!-- Comma-separated list of dependencies - optional -->
     <!--<Default></Default>-->
     <!--<AutoSelectOn></AutoSelectOn>-->

@@ -4,7 +4,6 @@
     <Description>Qt 5.1.0 Prebuilt Add-on modules for Android x86</Description>
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Name>qt.510.android_x86.addons</Name>
     <Dependencies>qt.510.android_x86.essentials</Dependencies> <!-- Comma-separated list of dependencies - optional -->
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
     <!--<AutoSelectOn></AutoSelectOn>-->

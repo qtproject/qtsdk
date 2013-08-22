@@ -4,7 +4,6 @@
     <Description>Qt 5.0.1 Prebuilt Essential modules for MinGW 4.7</Description>
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Name>qt.501.win32_mingw47.essentials</Name>
     <Dependencies>qt.tools.qtcreator, qt.tools.mingw47</Dependencies>
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
     <!--<AutoSelectOn></AutoSelectOn>-->

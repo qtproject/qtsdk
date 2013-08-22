@@ -4,7 +4,6 @@
     <Description>Qt 5.0.2 Add-Ons Qt Translations Source Component</Description>
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Name>qt.502.src.addons.qttranslations</Name>
     <!--<Dependencies></Dependencies>--> <!-- Comma-separated list of dependencies - optional -->
     <!--<Default></Default>-->
     <!--<AutoSelectOn></AutoSelectOn>-->

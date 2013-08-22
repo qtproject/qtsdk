@@ -4,7 +4,6 @@
     <Description>Qt 5.1.0 Prebuilt Essential modules for gcc</Description>
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Name>qt.510.gcc.essentials</Name>
     <Dependencies>qt.tools.qtcreator</Dependencies>
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
     <!--<AutoSelectOn></AutoSelectOn>-->

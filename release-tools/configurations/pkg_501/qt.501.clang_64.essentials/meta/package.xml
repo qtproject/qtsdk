@@ -4,7 +4,6 @@
     <Description>Qt 5.0.1 Prebuilt Essential modules for clang 64-bit</Description>
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Name>qt.501.clang_64.essentials</Name>
     <Dependencies>qt.tools.qtcreator</Dependencies>
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
     <!--<AutoSelectOn></AutoSelectOn>-->

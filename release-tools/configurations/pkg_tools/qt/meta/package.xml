@@ -4,7 +4,6 @@
     <Description>Qt</Description>
     <Version>1.0.0</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Name>qt</Name>
     <Script>installscript.qs</Script>
     <Licenses>
         <License name="Qt Installer LGPL Agreement" file="LICENSE.LGPL" />

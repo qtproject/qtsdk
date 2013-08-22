@@ -3,7 +3,6 @@
     <DisplayName>VCRedist for MSVC 32bit</DisplayName>
     <Description>Needed by all included Qt applications.</Description>
     <Version>%VCREDIST_X86_VERSION%</Version>
-    <Name>qt.tools.vcredist</Name>
     <ReleaseDate>%VCREDIST_X86_VERSION%</ReleaseDate>
     <Script>installscript.qs</Script>
     <Virtual>true</Virtual>

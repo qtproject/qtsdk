@@ -4,7 +4,6 @@
     <Description>Qt 5.0.1</Description>
     <Version>1.0.0</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Name>qt</Name>
     <Script>installscript.qs</Script>
     <Licenses>
         <License name="Qt Installer Third Party Agreement" file="ThirdPartySoftware_Listing.txt" />

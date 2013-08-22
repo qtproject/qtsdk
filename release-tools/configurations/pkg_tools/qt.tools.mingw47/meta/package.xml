@@ -3,7 +3,6 @@
     <DisplayName>MinGW 4.7</DisplayName>
     <Description>MinGW-builds 4.7.2 32 bit toolchain.</Description>
     <Version>%MINGW47_VERSION%</Version>
-    <Name>qt.tools.mingw47</Name>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
     <Script>installscript.qs</Script>

@@ -4,7 +4,6 @@
     <Description>Qt 5.1.1 Prebuilt Components for msvc2010 32-bit OpenGL</Description>
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Name>qt.511.win32_msvc2010_opengl</Name>
     <!--<Dependencies></Dependencies>-->
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
     <!--<AutoSelectOn></AutoSelectOn>-->

@@ -4,7 +4,6 @@
     <Description>Qt 5.0.1 Readme</Description>
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Name>qt.readme</Name>
     <!--<Dependencies></Dependencies>--> <!-- Comma-separated list of dependencies - optional -->
     <!--<AutoSelectOn></AutoSelectOn>-->
     <Script>installscript.qs</Script>   <!-- File name of a script being loaded - optional. -->

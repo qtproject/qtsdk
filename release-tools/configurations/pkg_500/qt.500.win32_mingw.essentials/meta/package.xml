@@ -4,7 +4,6 @@
     <Description>Qt 5.0.0 Prebuilt Essential modules for mingw</Description>
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Name>qt.500.win32_mingw.essentials</Name>
     <Dependencies>qt.tools.qtcreator</Dependencies>
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
     <!--<AutoSelectOn></AutoSelectOn>-->

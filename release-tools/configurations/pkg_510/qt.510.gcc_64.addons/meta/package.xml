@@ -4,7 +4,6 @@
     <Description>Qt 5.1.0 Prebuilt Add-on modules for gcc 64-bit</Description>
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Name>qt.510.gcc_64.addons</Name>
     <Dependencies>qt.510.gcc_64.essentials</Dependencies> <!-- Comma-separated list of dependencies - optional -->
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
     <!--<AutoSelectOn></AutoSelectOn>-->

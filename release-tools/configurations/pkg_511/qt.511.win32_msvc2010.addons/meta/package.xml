@@ -4,7 +4,6 @@
     <Description>Qt 5.1.1 Prebuilt Add-on modules for msvc2010 32-bit</Description>
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Name>qt.511.win32_msvc2010.addons</Name>
     <Dependencies>qt.511.win32_msvc2010.essentials</Dependencies>
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
     <!--<AutoSelectOn></AutoSelectOn>-->

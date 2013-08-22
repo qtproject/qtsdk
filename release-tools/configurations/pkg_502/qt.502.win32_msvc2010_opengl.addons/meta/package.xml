@@ -4,7 +4,6 @@
     <Description>Qt 5.0.2 Prebuilt Add-on modules for msvc2010 32-bit (OpenGL)</Description>
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Name>qt.502.win32_msvc2010_opengl.addons</Name>
     <Dependencies>qt.502.win32_msvc2010_opengl.essentials</Dependencies>
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
     <!--<AutoSelectOn></AutoSelectOn>-->

@@ -4,7 +4,6 @@
     <Description>IDE for Qt application development</Description>
     <Version>%QTCREATOR_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Name>qt.tools.qtcreator</Name>
     <Script>installscript.qs</Script>
     <UserInterfaces>
         <UserInterface>associatecommonfiletypesform.ui</UserInterface>

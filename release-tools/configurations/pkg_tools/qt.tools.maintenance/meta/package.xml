@@ -4,7 +4,6 @@
     <Description>Maintenance Tool</Description>
     <Version>%MAINTENANCE_TOOL_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Name>qt.tools.maintenance</Name>
     <Script>installscript.qs</Script>
     <Essential>true</Essential>
     <ForcedInstallation>true</ForcedInstallation>
