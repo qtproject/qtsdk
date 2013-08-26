@@ -1,0 +1,255 @@
+#############################################################################
+##
+## Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+## Contact: http://www.qt-project.org/legal
+##
+## This file is part of the release tools of the Qt Toolkit.
+##
+## $QT_BEGIN_LICENSE:LGPL$
+## Commercial License Usage
+## Licensees holding valid commercial Qt licenses may use this file in
+## accordance with the commercial license agreement provided with the
+## Software or, alternatively, in accordance with the terms contained in
+## a written agreement between you and Digia.  For licensing terms and
+## conditions see http://qt.digia.com/licensing.  For further information
+## use the contact form at http://qt.digia.com/contact-us.
+##
+## GNU Lesser General Public License Usage
+## Alternatively, this file may be used under the terms of the GNU Lesser
+## General Public License version 2.1 as published by the Free Software
+## Foundation and appearing in the file LICENSE.LGPL included in the
+## packaging of this file.  Please review the following information to
+## ensure the GNU Lesser General Public License version 2.1 requirements
+## will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+##
+## In addition, as a special exception, Digia gives you certain additional
+## rights.  These rights are described in the Digia Qt LGPL Exception
+## version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
+##
+## GNU General Public License Usage
+## Alternatively, this file may be used under the terms of the GNU
+## General Public License version 3.0 as published by the Free Software
+## Foundation and appearing in the file LICENSE.GPL included in the
+## packaging of this file.  Please review the following information to
+## ensure the GNU General Public License version 3.0 requirements will be
+## met: http://www.gnu.org/copyleft/gpl.html.
+##
+##
+## $QT_END_LICENSE$
+##
+#############################################################################
+
+
+# for testing purposes
+[PackageIgnoreList]
+packages:
+
+[ExtraPackageConfigurationFiles]
+file_list:
+
+
+[qt.520]
+version:                5.2.0
+version_tag:            %QT_VERSION%
+
+[qt.520.src]
+version:                5.2.0
+version_tag:            %QT_VERSION%
+
+
+#################################
+## Essentials
+#################################
+
+[qt.520.src.essentials]
+archives:               src.essentials.qtbase, src.essentials.qtdeclarative, src.essentials.qtdoc, src.essentials.qtjsbackend, src.essentials.qtquick1, src.essentials.qtscript, src.essentials.qttools, src.essentials.qtwebkit, src.essentials.qtwebkitexamples, src.essentials.qtxmlpatterns, src.essentials.qtmultimedia, src.essentials.qtquickcontrols
+target_install_base:    /@QT_VERSION@/Src/
+version:                5.2.0
+version_tag:            %QT_VERSION%
+package_default:        true
+[src.essentials.qtbase]
+archive_uri:            /qt/5.2.0/latest/src/submodules/qtbase-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qtbase
+rpath_target:
+archive_name:           qtbase-src.7z
+[src.essentials.qtdeclarative]
+archive_uri:            /qt/5.2.0/latest/src/submodules/qtdeclarative-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qtdeclarative
+rpath_target:
+archive_name:           qtdeclarative-src.7z
+[src.essentials.qtdoc]
+archive_uri:            /qt/5.2.0/latest/src/submodules/qtdoc-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qtdoc
+rpath_target:
+archive_name:           qtdoc-src.7z
+[src.essentials.qtjsbackend]
+archive_uri:            /qt/5.2.0/latest/src/submodules/qtjsbackend-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qtjsbackend
+rpath_target:
+archive_name:           qtjsbackend-src.7z
+[src.essentials.qtquick1]
+archive_uri:            /qt/5.2.0/latest/src/submodules/qtquick1-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qtquick1
+rpath_target:
+archive_name:           qtquick1-src.7z
+[src.essentials.qtscript]
+archive_uri:            /qt/5.2.0/latest/src/submodules/qtscript-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qtscript
+rpath_target:
+archive_name:           qtscript-src.7z
+[src.essentials.qttools]
+archive_uri:            /qt/5.2.0/latest/src/submodules/qttools-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qttools
+rpath_target:
+archive_name:           qttools-src.7z
+[src.essentials.qtwebkit]
+archive_uri:            /qt/5.2.0/latest/src/submodules/qtwebkit-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qtwebkit
+rpath_target:
+archive_name:           qtwebkit-src.7z
+[src.essentials.qtwebkitexamples]
+archive_uri:            /qt/5.2.0/latest/src/submodules/qtwebkit-examples-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qtwebkit-examples
+rpath_target:
+archive_name:           qtwebkit-examples-src.7z
+[src.essentials.qtxmlpatterns]
+archive_uri:            /qt/5.2.0/latest/src/submodules/qtxmlpatterns-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qtxmlpatterns
+rpath_target:
+archive_name:           qtxmlpatterns-src.7z
+[src.essentials.qtmultimedia]
+archive_uri:            /qt/5.2.0/latest/src/submodules/qtmultimedia-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qtmultimedia
+rpath_target:
+archive_name:           qtmultimedia-src.7z
+[src.essentials.qtquickcontrols]
+archive_uri:            /qt/5.2.0/latest/src/submodules/qtquickcontrols-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qtquickcontrols
+rpath_target:
+archive_name:           qtquickcontrols-src.7z
+
+
+
+#################################
+## Add-Ons
+#################################
+
+[qt.520.src.addons]
+version:                5.2.0
+version_tag:            %QT_VERSION%
+
+[qt.520.src.addons.qtactiveqt]
+archives:               src.addons.qtactiveqt
+target_install_base:    /@QT_VERSION@/Src/qtactiveqt
+version:                5.2.0
+version_tag:            %QT_VERSION%
+package_default:        true
+[src.addons.qtactiveqt]
+archive_uri:            /qt/5.2.0/latest/src/submodules/qtactiveqt-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /
+rpath_target:
+archive_name:           qtactiveqt-src.7z
+
+[qt.520.src.addons.qtgraphicaleffects]
+archives:               src.addons.qtgraphicaleffects
+target_install_base:    /@QT_VERSION@/Src/qtgraphicaleffects
+version:                5.2.0
+version_tag:            %QT_VERSION%
+package_default:        true
+[src.addons.qtgraphicaleffects]
+archive_uri:            /qt/5.2.0/latest/src/submodules/qtgraphicaleffects-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /
+rpath_target:
+archive_name:           qtgraphicaleffects-src.7z
+
+[qt.520.src.addons.qtimageformats]
+archives:               src.addons.qtimageformats
+target_install_base:    /@QT_VERSION@/Src/qtimageformats
+version:                5.2.0
+version_tag:            %QT_VERSION%
+package_default:        true
+[src.addons.qtimageformats]
+archive_uri:            /qt/5.2.0/latest/src/submodules/qtimageformats-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /
+rpath_target:
+archive_name:           qtimageformats-src.7z
+
+[qt.520.src.addons.qtsvg]
+archives:               src.addons.qtsvg
+target_install_base:    /@QT_VERSION@/Src/qtsvg
+version:                5.2.0
+version_tag:            %QT_VERSION%
+package_default:        true
+[src.addons.qtsvg]
+archive_uri:            /qt/5.2.0/latest/src/submodules/qtsvg-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /
+rpath_target:
+archive_name:           qtsvg-src.7z
+
+[qt.520.src.addons.qttranslations]
+archives:               src.addons.qttranslations
+target_install_base:    /@QT_VERSION@/Src/qttranslations
+version:                5.2.0
+version_tag:            %QT_VERSION%
+package_default:        true
+[src.addons.qttranslations]
+archive_uri:            /qt/5.2.0/latest/src/submodules/qttranslations-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /
+rpath_target:
+archive_name:           qttranslations-src.7z
+
+[qt.520.src.addons.qtsensors]
+archives:               src.addons.qtsensors
+target_install_base:    /@QT_VERSION@/Src/qtsensors
+version:                5.2.0
+version_tag:            %QT_VERSION%
+package_default:        false
+[src.addons.qtsensors]
+archive_uri:            /qt/5.2.0/latest/src/submodules/qtsensors-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /
+rpath_target:
+archive_name:           qtsensors-src.7z
+
+[qt.520.src.addons.qtserialport]
+archives:               src.addons.qtserialport
+target_install_base:    /@QT_VERSION@/Src/qtserialport
+version:                5.2.0
+version_tag:            %QT_VERSION%
+package_default:        false
+[src.addons.qtserialport]
+archive_uri:            /qt/5.2.0/latest/src/submodules/qtserialport-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /
+rpath_target:
+archive_name:           qtserialport-src.7z
+
+[qt.520.src.addons.qtx11extras]
+archives:               src.addons.qtx11extras
+target_install_base:    /@QT_VERSION@/Src/qtx11extras
+version:                5.2.0
+version_tag:            %QT_VERSION%
+package_default:        false
+[src.addons.qtx11extras]
+archive_uri:            /qt/5.2.0/latest/src/submodules/qtx11extras-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /
+rpath_target:
+archive_name:           qtx11extras-src.7z
