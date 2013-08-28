@@ -4,7 +4,6 @@
     <Description>Qt 5.2.0 Prebuilt Essential modules for Android x86</Description>
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Name>qt.520.android_x86.essentials</Name>
     <Dependencies>qt.tools.qtcreator, qt.520.android_qtcreator_settings</Dependencies>
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
     <!--<AutoSelectOn></AutoSelectOn>-->

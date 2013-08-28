@@ -4,7 +4,6 @@
     <Description>Qt 5.2.0 Prebuilt Add-on modules for Android armv5</Description>
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Name>qt.520.android_armv5.addons</Name>
     <Dependencies>qt.520.android_armv5.essentials</Dependencies> <!-- Comma-separated list of dependencies - optional -->
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
     <!--<AutoSelectOn></AutoSelectOn>-->

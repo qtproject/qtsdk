@@ -4,7 +4,6 @@
     <Description>Qt 5.2.0 Add-Ons Qt ActiveQt Source Component</Description>
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Name>qt.520.src.addons.qtactiveqt</Name>
     <!--<Dependencies></Dependencies>--> <!-- Comma-separated list of dependencies - optional -->
     <!--<Default></Default>-->
     <!--<AutoSelectOn></AutoSelectOn>-->

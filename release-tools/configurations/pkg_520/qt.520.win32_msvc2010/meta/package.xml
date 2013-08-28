@@ -4,7 +4,6 @@
     <Description>Qt 5.2.0 Prebuilt Components for msvc2010 32-bit</Description>
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Name>qt.520.win32_msvc2010</Name>
     <!--<Dependencies></Dependencies>-->
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
     <!--<AutoSelectOn></AutoSelectOn>-->

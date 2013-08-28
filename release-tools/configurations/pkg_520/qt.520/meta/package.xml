@@ -4,7 +4,6 @@
     <Description>Qt 5.2.0</Description>
     <Version>1.0.0</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Name>qt.520</Name>
     <!--<Dependencies></Dependencies>--> <!-- Comma-separated list of dependencies - optional -->
     <!--<Default></Default>-->
     <!--<AutoSelectOn></AutoSelectOn>-->
