@@ -45,6 +45,7 @@ from __future__ import print_function
 
 import itertools
 import subprocess
+import os
 
 # http://stackoverflow.com/questions/1214496/how-to-get-environment-from-a-subprocess-in-python
 #def validate_pair(ob):
@@ -72,6 +73,9 @@ def get(env_cmd, initial = None, arguments = None):
     If initial is supplied, it is used as the initial environment passed
     to the child process.
     """
+    if not os.path.lexists(env_cmd):
+        raise Exception("Can not find {0} to get an environment from it.".format(env_cmd))
+
     #if not isinstance(env_cmd, (list, tuple)):
     #    env_cmd = [env_cmd]
     # construct the command that will alter the environment
