@@ -23,6 +23,9 @@
 # release-tools/mksrc.sh: line 161: $1: unbound variable
 set -u
 
+# Exit immediately if a command exits with a non-zero status.
+set -e
+
 CUR_DIR=$PWD
 SCRIPT=$(readlink -f $0)
 SCRIPT_DIR=$(dirname $SCRIPT)
