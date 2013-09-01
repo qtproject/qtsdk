@@ -123,7 +123,7 @@ Component.prototype.createOperations = function()
                                    ["{0,2}", "@SDKToolBinary@", "addTC",
                                     "--id", tcId,
                                     "--name", "MinGW 4.8 32bit",
-                                    "--path", "@MINGW48_DIR@\\bin\\gcc.exe",
+                                    "--path", "@MINGW48_DIR@\\bin\\g++.exe",
                                     "--abi", "x86-windows-msys-pe-32bit",
                                     "--supportedAbis", "x86-windows-msys-pe-32bit"]);
 

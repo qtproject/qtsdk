@@ -116,7 +116,7 @@ Component.prototype.createOperations = function()
 
             var tcId = "ProjectExplorer.ToolChain.Mingw:" + component.name;
             component.addOperation("Execute",
-                new Array("{0}", "@SDKToolBinary@", "addTC", "--id", tcId, "--name", "MinGW 4.8 32bit", "--path", "@MINGW48_DIR@\\bin\\gcc.exe", "--abi", "x86-windows-msys-pe-32bit", "--supportedAbis", "x86-windows-msys-pe-32bit"));
+                new Array("{0}", "@SDKToolBinary@", "addTC", "--id", tcId, "--name", "MinGW 4.8 32bit", "--path", "@MINGW48_DIR@\\bin\\g++.exe", "--abi", "x86-windows-msys-pe-32bit", "--supportedAbis", "x86-windows-msys-pe-32bit"));
 
             component.addOperation("Execute",
                 new Array("{0}", "@SDKToolBinary@", "addQt", "--id", component.name, "--name", "Qt 5.1.0 MinGW 32bit", "--type", "Qt4ProjectManager.QtVersion.Desktop", "--qmake", qmakeBinary));

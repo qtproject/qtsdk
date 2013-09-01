@@ -112,7 +112,7 @@ Component.prototype.createOperations = function()
             var qmakeBinary = "@TargetDir@" + "%TARGET_INSTALL_DIR%/bin/qmake.exe";
 
             component.addOperation("Execute",
-                new Array("{1}", "@SDKToolBinary@", "addTC", "--id", "ProjectExplorer.ToolChain.Mingw:" + component.name, "--name", "MinGW 4.7 32bit", "--path", "@MINGW47_DIR@\\bin\\gcc.exe", "--abi", "x86-windows-msys-pe-32bit", "--supportedAbis", "x86-windows-msys-pe-32bit"));
+                new Array("{1}", "@SDKToolBinary@", "addTC", "--id", "ProjectExplorer.ToolChain.Mingw:" + component.name, "--name", "MinGW 4.7 32bit", "--path", "@MINGW47_DIR@\\bin\\g++.exe", "--abi", "x86-windows-msys-pe-32bit", "--supportedAbis", "x86-windows-msys-pe-32bit"));
 
             component.addOperation("Execute",
                 new Array("{1}", "@SDKToolBinary@", "addQt", "--id", component.name, "--name", "Qt %QT_VERSION% MinGW 32bit", "--type", "Qt4ProjectManager.QtVersion.Desktop", "--qmake", qmakeBinary));
