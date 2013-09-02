@@ -55,6 +55,7 @@ ROOT_DIR            = os.path.dirname(os.path.realpath(__file__))
 REPOGEN_TOOL        = 'repogen'
 REPOGEN_TOOLS_DIR   = ROOT_DIR + os.sep + 'repogen_tools'
 
+UPDATE_NEW_COMPONENTS_ONLY = False  # default to update all (given) components
 
 
 ###############################
@@ -71,6 +72,7 @@ def setup_argument_parser():
     parser.add_argument('--source_config_xml', help="Path to config.xml file", required=True, default="")
     parser.add_argument('--components_to_update', help="Comma separated list of component to update", required=False, default="")
     parser.add_argument('--backup_base_dir', help="Backup directory, if given a backup will be taken from the repo when making updates", required=False, default="")
+    parser.add_argument('--update_new_components_only', help="Update component(s) only if version number increase", required=False, action='store_true', default=False)
     return parser
 
 
@@ -119,11 +121,10 @@ def fetch_repogen_tools(tools_uri):
 ###############################
 # Function
 ###############################
-def update_repository(source_pkg, target_repo, config_xml_file, components_to_update):
+def update_repository(source_pkg, target_repo, components_to_update):
     print('Updating repository')
     print('  Target repository: {0}'.format(target_repo))
     print('  Source pkg:        {0}'.format(source_pkg))
-    print('  Source config xml: {0}'.format(config_xml_file))
     print('  Components:        {0}'.format(components_to_update))
     print()
     if not len(components_to_update):
@@ -135,7 +136,12 @@ def update_repository(source_pkg, target_repo, config_xml_file, components_to_up
     if not os.path.exists(target_repo):
         print('*** Target repository does not exist: {0}'.format(target_repo))
         sys.exit(-1)
-    cmd_args = [REPOGEN_TOOL, '--update', '-p', source_pkg, '-c', config_xml_file]
+    # do we update new components only or all given components no matter
+    # what the version numbers are
+    repogen_update_cmd = '--update'
+    if (UPDATE_NEW_COMPONENTS_ONLY):
+        repogen_update_cmd = '--update-new-components'
+    cmd_args = [REPOGEN_TOOL, repogen_update_cmd, '-p', source_pkg]
     if components_to_update[0] and components_to_update[0] == '*':
         cmd_args += [target_repo]
     else:
@@ -264,6 +270,10 @@ def backup_repo(backup_base_dir, directory_to_be_backed_up):
 # Function
 ###############################
 def parse_components_from_argument(caller_arguments):
+    global UPDATE_NEW_COMPONENTS_ONLY
+    if (caller_arguments.update_new_components_only):
+        UPDATE_NEW_COMPONENTS_ONLY = True
+
     components_to_update_list = caller_arguments.components_to_update
     components_to_update_list = components_to_update_list.replace(" ", "")
     split_components = caller_arguments.components_to_update.split(',')
@@ -332,7 +342,7 @@ if __name__ == "__main__":
     if caller_arguments.backup_base_dir:
         backup_repo(caller_arguments.backup_base_dir, caller_arguments.target_repo)
     # update repo
-    update_repository(caller_arguments.source_pkg, caller_arguments.target_repo, caller_arguments.source_config_xml, components_to_update)
+    update_repository(caller_arguments.source_pkg, caller_arguments.target_repo, components_to_update)
     print('\nRepository updated successfully!')
 
 
