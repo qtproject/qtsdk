@@ -1063,6 +1063,9 @@ def create_installer_binary():
     bldinstallercommon.create_dirs(output_dir)
     file_name = os.path.join(SCRIPT_ROOT_DIR, SDK_NAME)
     old_existing_file_name = os.path.join(output_dir, SDK_NAME)
+    if bldinstallercommon.is_mac_platform():
+        file_name = file_name + '.app'
+        old_existing_file_name = old_existing_file_name + '.app'
     # remove old if exists
     if os.path.isfile(old_existing_file_name):
         print 'Deleting old existing file: ' + old_existing_file_name
