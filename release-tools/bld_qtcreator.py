@@ -212,9 +212,6 @@ if not os.path.lexists(callerArguments.qt5path):
     print("##### {0} ##### ... done".format("patch Qt"))
     runCommand(qmakeBinary + " -query", qtCreatorBuildDirectory, callerArguments)
 ### lets start building
-pathKey='PATH'
-if os.name == 'nt':
-    pathKey='Path'
 
 # prepare the environment for example setting LD_LIBRARY_PATH
 # or adding qmake path into the Path environment variable (Qt deployment step)
@@ -228,7 +225,7 @@ if hasattr(callerArguments, 'sevenzippath') and callerArguments.sevenzippath:
 if hasattr(callerArguments, 'gitpath') and callerArguments.gitpath:
     pathKeyList.append(callerArguments.gitpath)
 
-environment = {pathKey: os.pathsep.join(pathKeyList)}
+environment = {'PATH': os.pathsep.join(pathKeyList)}
 
 environment["INSTALLER_ARCHIVE"] = "qtcreator.7z"
 

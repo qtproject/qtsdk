@@ -185,20 +185,19 @@ def download(url, savefile):
             pass
 
 def setValueOnEnvironmentDict(environment, key, value):
-    # if the data already contains the value stop here
-    if value in environment[key].split(os.pathsep):
-        return
+    # convert PATH to Path to avoid duplicates
+    if os.name == 'nt' and key == 'PATH':
+        key = 'Path'
 
     if key in environment:
+        # if the data already contains the value stop here
+        if value in environment[key].split(os.pathsep):
+            return
         environment[key] = os.pathsep.join((value, environment[key]))
     else:
         environment[key] = value
 
 def getEnvironment(init_environment = {}, callerArguments = None):
-    pathKey='PATH'
-    if os.name == 'nt':
-        pathKey='Path'
-
     # first take the one from the system and use the plain dictionary data for that
     environment = os.environ.__dict__["data"]
 
@@ -208,33 +207,41 @@ def getEnvironment(init_environment = {}, callerArguments = None):
 
     if (hasattr(callerArguments, 'gnuwin32binpath') and callerArguments.gnuwin32binpath and
         os.path.lexists(callerArguments.gnuwin32binpath)):
-        setValueOnEnvironmentDict(environment, pathKey, callerArguments.gnuwin32binpath)
+        setValueOnEnvironmentDict(environment, 'PATH', callerArguments.gnuwin32binpath)
 
     if hasattr(callerArguments, 'pythonpath') and callerArguments.pythonpath:
-        setValueOnEnvironmentDict(environment, pathKey, callerArguments.pythonpath)
+        setValueOnEnvironmentDict(environment, 'PATH', callerArguments.pythonpath)
     if hasattr(callerArguments, 'perlpath') and callerArguments.perlpath:
-        setValueOnEnvironmentDict(environment, pathKey, callerArguments.perlpath)
+        setValueOnEnvironmentDict(environment, 'PATH', callerArguments.perlpath)
     if hasattr(callerArguments, 'icupath') and callerArguments.icupath:
-        setValueOnEnvironmentDict(environment, pathKey, os.path.join(callerArguments.icupath, 'bin'))
+        setValueOnEnvironmentDict(environment, 'PATH', os.path.join(callerArguments.icupath, 'bin'))
         setValueOnEnvironmentDict(environment, 'INCLUDE', os.path.join(callerArguments.icupath, 'include'))
         setValueOnEnvironmentDict(environment, 'LIB', os.path.join(callerArguments.icupath, 'lib'))
     if hasattr(callerArguments, 'opensslpath') and callerArguments.opensslpath:
-        setValueOnEnvironmentDict(environment, pathKey, os.path.join(callerArguments.opensslpath, 'bin'))
+        setValueOnEnvironmentDict(environment, 'PATH', os.path.join(callerArguments.opensslpath, 'bin'))
         setValueOnEnvironmentDict(environment, 'INCLUDE', os.path.join(callerArguments.opensslpath, 'include'))
         setValueOnEnvironmentDict(environment, 'LIB', os.path.join(callerArguments.opensslpath, 'lib'))
 
-    # just merge the environment dicts
-    if environment and init_environment:
-        for key in environment.viewkeys() & init_environment.viewkeys():
-            # merge most of they values, but exclude some of it
-            keyUpper = key.upper()
-            if any((keyUpper == 'PATH', keyUpper == 'INCLUDE', keyUpper == 'LIB')):
-                setValueOnEnvironmentDict(environment, key, init_environment[key])
-            else:
-                environment[key] = init_environment[key]
-        for key in init_environment.viewkeys() - environment.viewkeys():
-             environment[key] = init_environment[key]
-    return environment
+    if not init_environment:
+        return environment
+
+    # if we have an init_environment we merge the environment dicts
+    merged_environment = {}
+    for key in init_environment.viewkeys():
+        keyUpper = key.upper()
+        if any((keyUpper == 'PATH', keyUpper == 'INCLUDE', keyUpper == 'LIB')):
+            # use save setValueOnEnvironmentDict in case there are PATH and Path
+            setValueOnEnvironmentDict(merged_environment, key, init_environment[key])
+        else:
+            merged_environment[key] = init_environment[key]
+    # now add the ones from the system environment
+    for key in environment.viewkeys():
+        keyUpper = key.upper()
+        if any((keyUpper == 'PATH', keyUpper == 'INCLUDE', keyUpper == 'LIB')):
+            setValueOnEnvironmentDict(merged_environment, key, environment[key])
+        else:
+            merged_environment[key] = environment[key]
+    return merged_environment
 
 def runCommand(command, currentWorkingDirectory, callerArguments = None,
     abort_on_fail = True, init_environment = None):
