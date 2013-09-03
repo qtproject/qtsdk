@@ -75,7 +75,7 @@ SINGLE_INSTALL_DIR_NAME             = SUBMODULE_INSTALL_BASE_DIR_NAME + 'single'
 QT5_MODULES_LIST                    = [ 'qt3d', 'qlalr', 'qtactiveqt', 'qtbase',     \
                                         'qtconnectivity', 'qtdeclarative', 'qtdoc', \
                                         'qtfeedback', 'qtgraphicaleffects', \
-                                        'qtimageformats', 'qtjsbackend', \
+                                        'qtimageformats', \
                                         'qtlocation', 'qtmultimedia', 'qtpim', \
                                         'qtqa', 'qtquick1', 'qtrepotools', 'qtscript', \
                                         'qtsensors', 'qtsvg', 'qtsystems', 'qttools', \
@@ -83,7 +83,7 @@ QT5_MODULES_LIST                    = [ 'qt3d', 'qlalr', 'qtactiveqt', 'qtbase',
                                         'qtwebkit-examples', 'qtxmlpatterns', \
                                         'qtquickcontrols', 'qtserialport', 'qtx11extras' ]
 QT5_ESSENTIALS                      = [ 'qtbase', 'qtdeclarative', 'qtdoc', \
-                                        'qtjsbackend', 'qtquick1', 'qtscript', \
+                                        'qtquick1', 'qtscript', \
                                         'qttools', 'qtwebkit', 'qtxmlpatterns', \
                                         'qtmultimedia', 'qtwebkit-examples', 'qtquickcontrols' ]
 ORIGINAL_QMAKE_QT_PRFXPATH          = ''

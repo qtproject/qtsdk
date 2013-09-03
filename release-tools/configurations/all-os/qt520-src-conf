@@ -62,7 +62,7 @@ version_tag:            %QT_VERSION%
 #################################
 
 [qt.520.src.essentials]
-archives:               src.essentials.qtbase, src.essentials.qtdeclarative, src.essentials.qtdoc, src.essentials.qtjsbackend, src.essentials.qtquick1, src.essentials.qtscript, src.essentials.qttools, src.essentials.qtwebkit, src.essentials.qtwebkitexamples, src.essentials.qtxmlpatterns, src.essentials.qtmultimedia, src.essentials.qtquickcontrols
+archives:               src.essentials.qtbase, src.essentials.qtdeclarative, src.essentials.qtdoc, src.essentials.qtquick1, src.essentials.qtscript, src.essentials.qttools, src.essentials.qtwebkit, src.essentials.qtwebkitexamples, src.essentials.qtxmlpatterns, src.essentials.qtmultimedia, src.essentials.qtquickcontrols
 target_install_base:    /@QT_VERSION@/Src/
 version:                5.2.0
 version_tag:            %QT_VERSION%
@@ -85,12 +85,6 @@ package_strip_dirs:     1
 target_install_dir:     /qtdoc
 rpath_target:
 archive_name:           qtdoc-src.7z
-[src.essentials.qtjsbackend]
-archive_uri:            /qt/5.2.0/latest/src/submodules/qtjsbackend-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
-package_strip_dirs:     1
-target_install_dir:     /qtjsbackend
-rpath_target:
-archive_name:           qtjsbackend-src.7z
 [src.essentials.qtquick1]
 archive_uri:            /qt/5.2.0/latest/src/submodules/qtquick1-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
