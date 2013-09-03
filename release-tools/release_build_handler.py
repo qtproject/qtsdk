@@ -56,7 +56,6 @@ import urllib
 import urlparse
 import tarfile
 
-LICENSE                                 = 'opensource'
 SSH_COMMAND                             = 'ssh'
 REPO_STAGING_SERVER                     = 'server'
 REPO_STAGING_SERVER_UNAME               = 'username'
@@ -66,8 +65,16 @@ SCRIPT_ROOT_DIR                         = os.path.dirname(os.path.realpath(__fil
 IFW_TOOLS_BASE_URL                      = ''
 CONFIGURATIONS_FILE_BASE_DIR            = ''
 
+REPOSITORY_BASE_NAME                    = 'qtsdkrepository'
+
 REPO_STAGING_SERVER_TEST_REPO           = '/online_repo'
 REPO_STAGING_SERVER_TEST_REPO_PENDING   = '/online_repo_pending'
+REPO_STAGING_SERVER_TEST_REPO_DIST_WORK = '/online_repo_dist_update_work'
+
+PROD_USER                               = ''
+PROD_ADDR                               = ''
+PROD_SRV_REPO_BASE_PATH                 = ''
+PROD_SRV_REPO_PENDING_AREA_DIR          = ''
 
 PKG_SERVER_URL                          = ''
 # search/replace tags in configuration files
@@ -132,6 +139,7 @@ class BuildJob:
             print(self.repo_content_type)
             print(self.repo_components_to_update)
             print(self.repo_url_specifier)
+        print('')
 
     # validate content
     def validate(self):
@@ -173,6 +181,7 @@ class BuildJob:
         items = self.node_name.split('.')
         if len(items) >= 6:
             return items[5]
+
 
 def preformat_substitution_list(arg_substitution_list, global_version, global_version_tag):
     version = global_version
@@ -342,33 +351,21 @@ def handle_offline_installer_build(conf_file, license, branch, platform, arch, p
 
 # helper function/wrapper to create offline installer
 def create_offline_installer(job, packages_base_url):
-    cmd_args = ['python','-u','create_installer.py']
-    cmd_args = cmd_args + ['-c', job.configurations_dir]
-    cmd_args = cmd_args + ['-f', job.configurations_file]
-    cmd_args = cmd_args + ['-o']
-    cmd_args = cmd_args + ['-l', job.license]
-    arch_naming = job.architecture
-    package_type = job.get_package_type()
-    if package_type:
-        arch_naming = arch_naming + '-' + package_type
-    cmd_args = cmd_args + ['-a', arch_naming]
-    cmd_args = cmd_args + ['--version-number=' + job.version_number]
-    cmd_args = cmd_args + ['--version-tag=' + job.version_number_tag]
-    cmd_args = cmd_args + ['-u', urlparse.urljoin(packages_base_url, job.license)]
-    cmd_args = cmd_args + ['--ifw-tools=' + job.ifw_tools]
-    if (len(job.substitution_arg_list) > 0):
-        for item in job.substitution_arg_list:
-            cmd_args = cmd_args + [item]
-    # execute
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+    create_installer(job, packages_base_url, '-o')
 
 
 # helper function/wrapper to create online installer
 def create_online_installer(job, packages_base_url):
+    create_installer(job, packages_base_url, '-O')
+
+
+# helper function/wrapper to create online installer
+def create_installer(job, packages_base_url, installer_type):
+    job.print_data()
     cmd_args = ['python','-u','create_installer.py']
     cmd_args = cmd_args + ['-c', job.configurations_dir]
     cmd_args = cmd_args + ['-f', job.configurations_file]
-    cmd_args = cmd_args + ['-O']
+    cmd_args = cmd_args + [installer_type]
     cmd_args = cmd_args + ['-l', job.license]
     arch_naming = job.architecture
     package_type = job.get_package_type()
@@ -390,7 +387,7 @@ def create_online_installer(job, packages_base_url):
 # - online reposiory build
 # - upload repository into test server
 # - update existing repository at test server with new content
-def handle_repo_build(conf_file, license, branch, platform, arch, packages_base_url):
+def handle_repo_build(conf_file, license, branch, platform, arch, packages_base_url, update_production_repo):
     if not os.path.isfile(conf_file):
         print('*** Fatal error! Given file does not exist: {0}'.format(conf_file))
         sys.exit(-1)
@@ -404,9 +401,9 @@ def handle_repo_build(conf_file, license, branch, platform, arch, packages_base_
     parser = ConfigParser.ConfigParser()
     parser.readfp(open(conf_file))
     section_name = branch + '.' + 'global'
-    global_qt_type                     = bldinstallercommon.safe_config_key_fetch(parser, section_name, 'qt_type')
-    global_version                     = bldinstallercommon.safe_config_key_fetch(parser, section_name, 'version')
-    global_version_tag                 = bldinstallercommon.safe_config_key_fetch(parser, section_name, 'version_tag')
+    global_qt_type     = bldinstallercommon.safe_config_key_fetch(parser, section_name, 'qt_type')
+    global_version     = bldinstallercommon.safe_config_key_fetch(parser, section_name, 'version')
+    global_version_tag = bldinstallercommon.safe_config_key_fetch(parser, section_name, 'version_tag')
     if not global_version:
         print('*** Fatal error! Invalid values in {0} -> {1}'.format(conf_file, section_name))
         sys.exit(-1)
@@ -429,11 +426,12 @@ def handle_repo_build(conf_file, license, branch, platform, arch, packages_base_
         bldinstallercommon.remove_tree(source_path_repository)
         bldinstallercommon.remove_tree(source_path_pkg)
         # update repo in testing area
-        update_online_repo(job)
+        update_online_repo(job, update_production_repo)
 
 
 # helper function to create online repository
 def create_online_repository(build_job, packages_base_url):
+    build_job.print_data()
     cmd_args = ['python','-u', 'create_installer.py', \
                 '-c', build_job.configurations_dir, \
                 '-f', build_job.configurations_file, \
@@ -511,7 +509,7 @@ def init_repositories(conf_file, branch, license):
 
 # helper function to create remote directories
 def create_remote_dirs(server, dir_path):
-    cmd_args = [SSH_COMMAND, '-t', '-t', server, 'mkdir -p' ,dir_path]
+    cmd_args = [SSH_COMMAND, '-t', '-t', server, 'mkdir -p', dir_path]
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
 
@@ -534,49 +532,99 @@ def generate_online_repo_paths(base_path, suffix_list, url_list):
     repo_path_list = []
     for item in url_list:
         if not suffix_list:
-            path_repo = os.path.join(base_path, 'qtsdkrepository', item)
+            path_repo = os.path.join(base_path, REPOSITORY_BASE_NAME, item)
             repo_path_list.append(path_repo)
         else:
             for suffix in suffix_list:
-                path_repo = os.path.join(base_path, 'qtsdkrepository', item, suffix)
+                path_repo = os.path.join(base_path, REPOSITORY_BASE_NAME, item, suffix)
                 repo_path_list.append(path_repo)
     return repo_path_list
 
 
 # helper function to generate correct path structure for pending area
 def generate_repo_dest_path_pending(repo_job):
-    dest_path_base = os.path.join(REPO_STAGING_SERVER_TEST_REPO_PENDING, repo_job.license, repo_job.repo_content_type, 'qtsdkrepository', repo_job.repo_url_specifier)
+    dest_path_base = os.path.join(REPO_STAGING_SERVER_TEST_REPO_PENDING, repo_job.license, repo_job.repo_content_type, REPOSITORY_BASE_NAME, repo_job.repo_url_specifier)
     dest_path_repository = os.path.join(dest_path_base, 'online_repository')
     dest_path_pkg = os.path.join(dest_path_base, 'pkg')
     return dest_path_repository, dest_path_pkg
 
 
 # execute online repository update
-def update_online_repo(job):
-    server_addr = REPO_STAGING_SERVER_UNAME + '@' + REPO_STAGING_SERVER
+def update_online_repo(job, update_production_repo):
+    staging_server_addr = REPO_STAGING_SERVER_UNAME + '@' + REPO_STAGING_SERVER
     staging_server_ifw_tools = 'installer-framework-build-linux-x64.7z'
     script = os.path.join(REPO_STAGING_SERVER_HOME_TOOLS, 'update_repository.py')
     repogen_tools = os.path.join(REPO_STAGING_SERVER_HOME, staging_server_ifw_tools)
     # determine paths on test server
-    source_repo, source_pkg = generate_repo_dest_path_pending(job)
+    staging_source_repo, staging_source_pkg = generate_repo_dest_path_pending(job)
     # determine target repo
-    target_repo = os.path.join(REPO_STAGING_SERVER_TEST_REPO, job.license, 'qtsdkrepository', job.repo_url_specifier)
+    staging_target_repo = os.path.join(REPO_STAGING_SERVER_TEST_REPO, job.license, REPOSITORY_BASE_NAME, job.repo_url_specifier)
     repo_components_to_update = job.repo_components_to_update
-    cmd_args = [SSH_COMMAND, '-t', '-t', server_addr]
+    cmd_args = [SSH_COMMAND, '-t', '-t', staging_server_addr]
     cmd_args = cmd_args + ['python', script]
     cmd_args = cmd_args + ['--repogen_tools=' + repogen_tools]
-    cmd_args = cmd_args + ['--source_pkg=' + source_pkg]
-    cmd_args = cmd_args + ['--source_repo=' + source_repo]
-    cmd_args = cmd_args + ['--target_repo=' + target_repo]
+    cmd_args = cmd_args + ['--source_pkg=' + staging_source_pkg]
+    cmd_args = cmd_args + ['--source_repo=' + staging_source_repo]
+    cmd_args = cmd_args + ['--target_repo=' + staging_target_repo]
     cmd_args = cmd_args + ['--components_to_update=' + repo_components_to_update]
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+    # do we also update the production repository?
+    if update_production_repo:
+        # (1) pull repo from production into staging server 'temp' location
+        production_repo = PROD_USER + '@' + PROD_ADDR + ':'
+        production_repo_path = PROD_SRV_REPO_BASE_PATH + '/' + REPOSITORY_BASE_NAME + '/' + job.repo_url_specifier
+        production_repo_path = production_repo_path.replace('//', '/')
+        prod_url = production_repo + production_repo_path
+        staging_prod_repo_temp_path = REPO_STAGING_SERVER_TEST_REPO_DIST_WORK + '/' + job.license + '/' + REPOSITORY_BASE_NAME + '/' + job.repo_url_specifier
+        # delete old existing 'temp' paths
+        delete_online_repo_paths(staging_server_addr, staging_prod_repo_temp_path)
+        # create 'temp' location where to pull the repo from production
+        create_remote_dirs(staging_server_addr, staging_prod_repo_temp_path)
+        # chop out the last path component for remote copy as it would result in duplicate nested subdirectory
+        remote_copy_path = staging_prod_repo_temp_path
+        if (remote_copy_path.endswith('/')):
+            remote_copy_path = remote_copy_path[:len(remote_copy_path) - 1]
+        remote_copy_path = os.path.dirname(remote_copy_path)
+        cmd_args = [SSH_COMMAND, '-t', '-t', staging_server_addr, REMOTE_COPY_COMMAND, '-r', prod_url, remote_copy_path]
+        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+        # (2) update
+        cmd_args = [SSH_COMMAND, '-t', '-t', staging_server_addr]
+        cmd_args = cmd_args + ['python', script]
+        cmd_args = cmd_args + ['--repogen_tools=' + repogen_tools]
+        cmd_args = cmd_args + ['--source_pkg=' + staging_source_pkg]
+        cmd_args = cmd_args + ['--source_repo=' + staging_source_repo]
+        cmd_args = cmd_args + ['--target_repo=' + staging_prod_repo_temp_path]
+        cmd_args = cmd_args + ['--components_to_update=' + repo_components_to_update]
+        cmd_args = cmd_args + ['--update_new_components_only'] # for production repos we update only those with version number increase
+        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+        # (3) push updated repo back to production
+        prod_server_pending_area_dir = PROD_SRV_REPO_PENDING_AREA_DIR + '/' + REPOSITORY_BASE_NAME + '/' + job.repo_url_specifier
+        cmd_args_log_to_staging = [SSH_COMMAND, '-t', '-t', staging_server_addr]
+        cmd_args_log_to_prod = cmd_args_log_to_staging + [SSH_COMMAND, '-t', '-t', PROD_USER + '@' + PROD_ADDR ]
+        # delete old stuff from pending area, but do sanity check first!
+        if (os.path.normpath(PROD_SRV_REPO_PENDING_AREA_DIR).contains(os.path.normpath(PROD_SRV_REPO_BASE_PATH + '/' + REPOSITORY_BASE_NAME))):
+            print('*** Fatal error!!! You are trying to delete production repository: '.format(prod_server_pending_area_dir))
+            print('*** Aborting ...')
+            sys.exit(-1)
+        cmd_args_rm_old = cmd_args_log_to_prod + ['rm', '-rf', prod_server_pending_area_dir]
+        bldinstallercommon.do_execute_sub_process(cmd_args_rm_old, SCRIPT_ROOT_DIR, True)
+        # create pending dirs into production server
+        cmd_args_mkdirp = cmd_args_log_to_prod + ['mkdir', '-p', prod_server_pending_area_dir]
+        bldinstallercommon.do_execute_sub_process(cmd_args_mkdirp, SCRIPT_ROOT_DIR, True)
+        # chop out the last path component for remote copy as it would result in duplicate nested subdirectory
+        prod_dest_path = production_repo + PROD_SRV_REPO_PENDING_AREA_DIR + '/' + REPOSITORY_BASE_NAME + '/' + job.repo_url_specifier
+        if (prod_dest_path.endswith('/')):
+            prod_dest_path = prod_dest_path[:len(prod_dest_path) - 1]
+        prod_dest_path = os.path.dirname(prod_dest_path)
+        # copy updated repo into 'waiting' area on production server
+        cmd_args = cmd_args_log_to_staging + [REMOTE_COPY_COMMAND, '-r', staging_prod_repo_temp_path, prod_dest_path]
+        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
 
 # init environment
 def init_env():
     global REPO_STAGING_SERVER
     global REPO_STAGING_SERVER_UNAME
-    global LICENSE
     global PKG_SERVER_URL
     global REPO_STAGING_SERVER_HOME
     global REPO_STAGING_SERVER_HOME_TOOLS
@@ -584,21 +632,32 @@ def init_env():
     global IFW_TOOLS_BASE_URL
     global CONFIGURATIONS_FILE_BASE_DIR
     global REMOTE_COPY_COMMAND
+    global PROD_USER
+    global PROD_ADDR
+    global PROD_SRV_REPO_BASE_PATH
+    global PROD_SRV_REPO_PENDING_AREA_DIR
+
     REPO_STAGING_SERVER             = os.environ['PKG_STAGING_SERVER']
     REPO_STAGING_SERVER_UNAME       = os.environ['PKG_STAGING_SERVER_UNAME']
-    LICENSE                         = os.environ['LICENSE']
     PKG_SERVER_URL                  = os.environ['PKG_SERVER_URL']
     REPO_STAGING_SERVER_HOME        = os.environ['REPO_STAGING_SERVER_HOME']
     REPO_STAGING_SERVER_HOME_TOOLS  = os.path.join(REPO_STAGING_SERVER_HOME, REPO_STAGING_SERVER_HOME_TOOLS)
     IFW_TOOLS_BASE_URL              = os.environ['IFW_TOOLS_BASE_URL']
     CONFIGURATIONS_FILE_BASE_DIR    = os.environ['CONFIGURATIONS_FILE_BASE_DIR']
     REMOTE_COPY_COMMAND             = os.environ['REMOTE_COPY_COMMAND']
+    PROD_USER                       = os.environ['PROD_USER']
+    PROD_ADDR                       = os.environ['PROD_ADDR']
+    PROD_SRV_REPO_BASE_PATH         = os.environ['PROD_SRV_REPO_BASE_PATH']
+    PROD_SRV_REPO_PENDING_AREA_DIR  = os.environ['PROD_SRV_REPO_PENDING_AREA_DIR']
     print('Staging server: {0}'.format(REPO_STAGING_SERVER))
     print('Staging server uname: {0}'.format(REPO_STAGING_SERVER_UNAME))
-    print('License: {0}'.format(LICENSE))
-    print('Packages server base URL: {0}'.format(PKG_SERVER_URL))
     print('Staging server home: {0}'.format(REPO_STAGING_SERVER_HOME))
     print('Staging server tools dir: {0}'.format(REPO_STAGING_SERVER_HOME_TOOLS))
+    print('Production server: {0}'.format(PROD_USER))
+    print('Production server uname: {0}'.format(PROD_ADDR))
+    print('Production server repository base path: {0}'.format(PROD_SRV_REPO_BASE_PATH))
+    print('Production server pending area: {0}'.format(PROD_SRV_REPO_PENDING_AREA_DIR))
+    print('Packages server base URL: {0}'.format(PKG_SERVER_URL))
     print('IFW tools base url: {0}'.format(IFW_TOOLS_BASE_URL))
     print('Configurations file base dir: {0}'.format(CONFIGURATIONS_FILE_BASE_DIR))
     bldinstallercommon.init_common_module(SCRIPT_ROOT_DIR)
