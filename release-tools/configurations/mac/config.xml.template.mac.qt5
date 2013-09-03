@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <Installer>
-    <Name>Qt 5.1.1</Name>
-    <Version>5.1.1</Version>
-    <Title>Qt 5.1.1</Title>
+    <Name>Qt 5.2.0</Name>
+    <Version>5.2.0</Version>
+    <Title>Qt 5.2.0</Title>
     <Publisher>Digia Plc</Publisher>
     <Logo>logo.png</Logo>
     <InstallerWindowIcon>logo-small</InstallerWindowIcon>
     <InstallerApplicationIcon>logo-small</InstallerApplicationIcon>
     <Watermark>watermark.png</Watermark>
-    <StartMenuDir>Qt 5.1.1</StartMenuDir>
+    <StartMenuDir>Qt 5.2.0</StartMenuDir>
     <ProductUrl>http://qt-project.org/</ProductUrl>
     <Background>background.png</Background>
     <UninstallerName>MaintenanceTool</UninstallerName>
@@ -19,5 +19,5 @@
         </Repository>
     </RemoteRepositories>-->
     <!-- @homeDir@ and @rootDir@ are some of the supported vars -->
-    <TargetDir>@homeDir@/Qt5.1.1</TargetDir>
+    <TargetDir>@homeDir@/Qt5.2.0</TargetDir>
 </Installer>
