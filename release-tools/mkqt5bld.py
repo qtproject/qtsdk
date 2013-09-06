@@ -111,6 +111,7 @@ ANDROID_NDK_HOME                    =''
 ANDROID_BUILD                       = False
 EXTRA_ENV                           = dict(os.environ)
 REPLACE_RPATH                       = False
+CUSTOM_ICU_URI                      = ''
 
 
 class MultipleOption(Option):
@@ -681,6 +682,31 @@ def archive_submodules():
 ###############################
 # function
 ###############################
+def use_custom_icu():
+    if os.path.isdir(CUSTOM_ICU_URI):
+        return CUSTOM_ICU_URI
+    package_raw_name = os.path.basename(CUSTOM_ICU_URI)
+    icu_extract_path = os.path.join(SCRIPT_ROOT_DIR, 'icu_saveas')
+    if os.path.isdir(icu_extract_path):
+        bldinstallercommon.remove_tree(icu_extract_path)
+    bldinstallercommon.create_dirs(icu_extract_path)
+    icu_extract_saveas = os.path.join(icu_extract_path, package_raw_name)
+    if os.path.isfile(CUSTOM_ICU_URI):
+        bldinstallercommon.extract_file(CUSTOM_ICU_URI, icu_extract_path)
+    if bldinstallercommon.is_content_url_valid(CUSTOM_ICU_URI):
+        bldinstallercommon.retrieve_url(CUSTOM_ICU_URI, icu_extract_saveas)
+        bldinstallercommon.extract_file(icu_extract_saveas, icu_extract_path)
+    lib_path = bldinstallercommon.locate_directory(icu_extract_path, 'lib')
+    if not lib_path:
+        return icu_extract_path
+    if (lib_path.endswith('/')):
+        lib_path = lib_path[:len(lib_path) - 1]
+    return os.path.dirname(lib_path)
+
+
+###############################
+# function
+###############################
 def parse_cmd_line():
     print_wrap('---------------- Parsing commandline arguments ---------------------')
     global QT_SRC_PACKAGE_URL
@@ -699,6 +725,8 @@ def parse_cmd_line():
     global ANDROID_NDK_HOME
     global ANDROID_BUILD
     global REPLACE_RPATH
+    global CUSTOM_ICU_URI
+    global EXTRA_ENV
 
     setup_option_parser()
 
@@ -757,6 +785,30 @@ def parse_cmd_line():
         print_wrap('*** Invalid arguments for Android build. Please check them.')
         sys.exit(-1)
 
+    if options.icu_uri:
+        CUSTOM_ICU_URI = options.icu_uri
+        icu_install_base_path = use_custom_icu()
+        print_wrap('Using custom ICU from path: ' + icu_install_base_path)
+        icu_path_lib = os.path.join(icu_install_base_path, 'lib')
+        icu_path_inc = os.path.join(icu_install_base_path, 'include')
+        CONFIGURE_OPTIONS += ' ' + '-L' + ' ' + icu_path_lib
+        CONFIGURE_OPTIONS += ' ' + '-I' + ' ' + icu_path_inc
+        if bldinstallercommon.is_linux_platform():
+            env = EXTRA_ENV['LD_LIBRARY_PATH']
+            if env:
+                env = ':' + env
+            EXTRA_ENV['LD_LIBRARY_PATH'] = icu_path_lib + env
+        if bldinstallercommon.is_win_platform():
+            env = EXTRA_ENV['LIB']
+            if env:
+                env = ';' + env
+            EXTRA_ENV['LIB'] = icu_path_lib + env
+    if options.prefix:
+        CONFIGURE_OPTIONS += ' ' + '-prefix' + ' ' + options.prefix
+    if options.runtime_path:
+        CONFIGURE_OPTIONS += ' ' + '-R' + ' ' + options.runtime_path
+
+    CONFIGURE_OPTIONS = CONFIGURE_OPTIONS.replace('  ', ' ')
     print_wrap('---------------------------------------------------------------------')
     return True
 
@@ -792,13 +844,22 @@ def setup_option_parser():
                       help="options for configure command. In addition option -a can be used to give extra parameters.")
     OPTION_PARSER.add_option("-a", "--add-configure-option",
                       action="store", type="string", dest="add_configure_option", default="",
-                      help="options to be added to default configure options. For example, if -prefix or -R are needed but not defined in configure options file given with -c, those can be passed with this option, e.g. -a \"-prefix /home/user/my/path/here -R /home/user/my/path/here\"")
+                      help="options to be added to configure options not defined in configure options file given with -c, e.g. -a \"-<configure_option> <value>\"")
     OPTION_PARSER.add_option("--creator-dir",
                       action="store", type="string", dest="qt_creator_src_dir", default="",
                       help="path to Qt Creator sources. If given, the Qt Quick Designer processes (qmlpuppet, qml2puppet) will be built and packaged.")
     OPTION_PARSER.add_option("--replace-rpath",
                       action="store_true", dest="replace_rpath", default=False,
                       help="patch RPath with relative paths pointing to /lib")
+    OPTION_PARSER.add_option("--icu",
+                      action="store", type="string", dest="icu_uri", default="",
+                      help="use the given icu for qt5 build, e.g. --icu=http://master.qt-project.org/development_releases/prebuilt/icu/prebuilt/ubuntu1110/icu_51_1_ubuntu_11_10_64_devel.7z")
+    OPTION_PARSER.add_option("--runtime-path",
+                      action="store", type="string", dest="runtime_path", default="",
+                      help="use the given dynamic runtime path for qt5 build (-R for configure), e.g. --runtime-path=/home/user/my/path/here")
+    OPTION_PARSER.add_option("--prefix",
+                      action="store", type="string", dest="prefix", default="",
+                      help="use the given prefix for qt5 build (-prefix for configure)")
     # for Android cross compilations
     OPTION_PARSER.add_option("--android-ndk-host",
                       action="store", type="string", dest="android_ndk_host", default="",
