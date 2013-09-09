@@ -54,7 +54,7 @@ base_path:
 packages:               foo.bar, foo.bar2, foo.bar3
 
 [ExtraPackageConfigurationFiles]
-file_list:              qt-conf, qt511-src-conf, x86_64-qt511-gcc-conf, android-x64-qt511-armv7-conf, android-x64-qt511-x86-conf, x86_64-tools-qtcreator-conf, installer-readme-conf
+file_list:              qt-conf, qt520-src-conf, x86_64-qt520-gcc-conf, android-x64-qt520-armv7-conf, android-x64-qt520-x86-conf, x86_64-tools-qtcreator-conf, installer-readme-conf
 
 [OfflinePackageExcludeList]
 package_list:
@@ -69,7 +69,7 @@ template_name:          config_qt5
 template_name:          config.xml.template.linux.qt5
 
 [WorkingDirectories]
-packages_dir:           pkg_511, pkg_tools
+packages_dir:           pkg_520, pkg_tools
 
 [InstallerFrameworkTools]
 name:                   ifwt
