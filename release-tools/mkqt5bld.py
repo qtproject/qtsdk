@@ -664,8 +664,14 @@ def archive_submodules():
     # Essentials
     print_wrap('---------- Archiving essential modules')
     if os.path.exists(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME):
+        # Archive the essential modules first
         cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_essentials' + '.7z *'
         run_in = os.path.normpath(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX)
+        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), run_in, True, True)
+
+        # Also archive docs in a separated qt5_docs.7z file
+        cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_docs' + '.7z *'
+        run_in = os.path.normpath(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX + os.sep + 'doc')
         bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), run_in, True, True)
     else:
         print_wrap(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> essentials not archived!')
