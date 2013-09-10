@@ -69,6 +69,7 @@ COMMAND                     =''
 LICENSE                     =''
 QT_VERSION                  =''
 QT_VERSION_TAG              =''
+QT_FULL_VERSION             =''
 TIME_STAMP                  =''
 BUILD_NUMBER                =''
 SERVER                      ='QT@qt-rnd.it.local'
@@ -162,6 +163,17 @@ def init_qt_build_cycle():
         cmd_args =[SSH_COMMAND,SERVER,'ln -sfn',REMOTE_DIR,LATEST_DIR]
     bldinstallercommon.do_execute_sub_process(cmd_args,SCRIPT_ROOT_DIR, True)
 
+    # QT Creator directory
+    dir_path = PATH + '/' + LICENSE_DIRS[LICENSE] + '/' + 'qtcreator'
+    create_remote_dirs(SERVER, dir_path + '/' + TIME_STAMP + '-' + BUILD_NUMBER)
+
+    ssh_cmd = SSH_COMMAND
+    if bldinstallercommon.is_win_platform():
+        ssh_cmd = SSH_COMMAND_WIN
+    cmd_args =[ssh_cmd, SERVER, 'ln -sfn', dir_path + '/' + TIME_STAMP + '-' + BUILD_NUMBER, dir_path + '/' + 'latest']
+    bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR,True)
+
+
 
 ###############################
 # handle_ifw_build()
@@ -220,31 +232,34 @@ def handle_qt_src_package_build():
     package_path = WORK_DIR + os.sep + 'src_pkg'
     bldinstallercommon.create_dirs(package_path)
     if QT_VERSION == '5.1.1':
-        cmd_args = [WORK_DIR + os.sep + 'qtsdk/release-tools/mksrc.sh','-u',WORK_DIR + os.sep + 'qt5','-v',QT_VERSION,'-m','-N','-l',LICENSE_DIRS[LICENSE],'-i','qlalr','-i','qt3d','-i','qtconnectivity','-i','qtdocgallery','-i','qtfeedback','-i','qtjsondb','-i','qtlocation','-i','qtmacextras','-i','qtpim','-i','qtqa','-i','qtrepotools','-i','qtsystems','-i','qtwayland','-i','qtwinextras']
+        cmd_args = [WORK_DIR + os.sep + 'qtsdk/release-tools/mksrc.sh','-u',WORK_DIR + os.sep + 'qt5','-v',QT_FULL_VERSION,'-m','-N','-l',LICENSE_DIRS[LICENSE],'-i','qlalr','-i','qt3d','-i','qtconnectivity','-i','qtdocgallery','-i','qtfeedback','-i','qtjsondb','-i','qtlocation','-i','qtmacextras','-i','qtpim','-i','qtqa','-i','qtrepotools','-i','qtsystems','-i','qtwayland','-i','qtwinextras']
     else: # 5.2.0
-        cmd_args = [WORK_DIR + os.sep + 'qtsdk/release-tools/mksrc.sh','-u',WORK_DIR + os.sep + 'qt5','-v',QT_VERSION,'-m','-N','-l',LICENSE_DIRS[LICENSE],'-i','qlalr','-i','qt3d','-i','qtconnectivity','-i','qtdocgallery','-i','qtfeedback','-i','qtjsondb','-i','qtlocation','-i','qtmacextras','-i','qtpim','-i','qtqa','-i','qtrepotools','-i','qtsystems','-i','qtwayland']
+        cmd_args = [WORK_DIR + os.sep + 'qtsdk/release-tools/mksrc.sh','-u',WORK_DIR + os.sep + 'qt5','-v',QT_FULL_VERSION,'-m','-N','-l',LICENSE_DIRS[LICENSE],'-i','qlalr','-i','qt3d','-i','qtconnectivity','-i','qtdocgallery','-i','qtfeedback','-i','qtjsondb','-i','qtlocation','-i','qtmacextras','-i','qtpim','-i','qtqa','-i','qtrepotools','-i','qtsystems','-i','qtwayland']
 
     bldinstallercommon.do_execute_sub_process(cmd_args,package_path, True)
 
     # Example injection
-    cmd_args = ['tar','xzf','single/qt-everywhere-' + LICENSE_DIRS[LICENSE] + '-src-' + QT_VERSION + '.tar.gz']
+    package_name = 'qt-everywhere-' + LICENSE_DIRS[LICENSE] + '-src-' + QT_FULL_VERSION
+
+    cmd_args = ['tar','xzf','single/' + package_name + '.tar.gz']
+
     bldinstallercommon.do_execute_sub_process(cmd_args,package_path, True)
     essentials_path = WORK_DIR + os.sep + 'src_pkg' + os.sep + 'examples_essentials'
     bldinstallercommon.create_dirs(essentials_path)
     addons_path = WORK_DIR + os.sep + 'src_pkg' + os.sep + 'examples_addons'
     bldinstallercommon.create_dirs(addons_path)
 
-    src_dirs = os.listdir(package_path + os.sep + 'qt-everywhere-'+ LICENSE_DIRS[LICENSE] + '-src-' + QT_VERSION)
+    src_dirs = os.listdir(package_path + os.sep + package_name)
     current_path = os.getcwd()
-    os.chdir(package_path + os.sep + 'qt-everywhere-'+ LICENSE_DIRS[LICENSE] + '-src-' + QT_VERSION)
+    os.chdir(package_path + os.sep + package_name)
     for dir_name in src_dirs:
         if os.path.isdir(dir_name):
             module_dirs = os.listdir(dir_name)
             for example_dir in module_dirs:
                 if example_dir == 'examples':
-                    bldinstallercommon.copy_tree(package_path + os.sep + 'qt-everywhere-'+ LICENSE_DIRS[LICENSE] + '-src-' + QT_VERSION + os.sep + dir_name + os.sep + example_dir, essentials_path)
+                    bldinstallercommon.copy_tree(package_path + os.sep + package_name + os.sep + dir_name + os.sep + example_dir, essentials_path)
     os.chdir(current_path)
-    cmd_args = ['cp','-r','qt-everywhere-'+ LICENSE_DIRS[LICENSE] + '-src-' + QT_VERSION + os.sep + 'qtbase' + os.sep + 'examples' + os.sep +'examples.pro', essentials_path]
+    cmd_args = ['cp','-r',package_name + os.sep + 'qtbase' + os.sep + 'examples' + os.sep +'examples.pro', essentials_path]
     bldinstallercommon.do_execute_sub_process(cmd_args,package_path, True)
 
     # remove out of place top level files from qtdeclarative
@@ -345,7 +360,6 @@ def handle_icu_build():
 # handle_qt_android_release_build
 ###############################
 def handle_qt_android_release_build():
-
     configure_extra_options = ''
     if LICENSE == 'enterprise':
         if bldinstallercommon.is_win_platform():
@@ -355,7 +369,7 @@ def handle_qt_android_release_build():
     global EXTRA_ENV
     cmd_args = ''
     script_path = 'qtsdk' + os.sep + 'release-tools' + os.sep + 'mkqt5bld.py'
-    source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE_DIRS[LICENSE] + '-src-' + QT_VERSION
+    source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE_DIRS[LICENSE] + '-src-' + QT_FULL_VERSION
     configure_files_path = os.path.join(WORK_DIR, 'qtsdk', 'release-tools', 'bld_config' + os.sep)
     if bldinstallercommon.is_linux_platform():
         if TARGET_ENV.find("x64") >= 1:
@@ -386,7 +400,6 @@ def handle_qt_android_release_build():
 # handle_qt_release_build
 ###############################
 def handle_qt_release_build():
-
     # Handle Android build
     if TARGET_ENV.find("Android") >= 1:
         handle_qt_android_release_build()
@@ -419,7 +432,7 @@ def handle_qt_release_build():
                         icu_include_path = WORK_DIR + os.sep + file_name + os.sep + 'include'
                         EXTRA_ENV['LD_LIBRARY_PATH'] = icu_lib_path
         script_path = 'qtsdk' + os.sep + 'release-tools' + os.sep + 'mkqt5bld.py'
-        source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE_DIRS[LICENSE] + '-src-' + QT_VERSION
+        source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE_DIRS[LICENSE] + '-src-' + QT_FULL_VERSION
         configure_files_path = os.path.join(WORK_DIR, 'qtsdk', 'release-tools', 'bld_config' + os.sep)
         if bldinstallercommon.is_linux_platform():
             if LICENSE == 'commercial':
@@ -579,9 +592,7 @@ def handle_qt_release_build():
 ###############################
 def handle_qt_creator_build():
 
-    dir_path = PATH + LICENSE_DIRS[LICENSE] + '/qtcreator'
-
-    create_remote_dirs(SERVER, dir_path + '/' + TIME_STAMP + '-' + BUILD_NUMBER)
+    dir_path = PATH + LICENSE_DIRS[LICENSE] + '/qtcreator/latest'
 
     if bldinstallercommon.is_linux_platform():
         if LICENSE == 'opensource':
@@ -606,31 +617,19 @@ def handle_qt_creator_build():
 
     if bldinstallercommon.is_linux_platform():
         if TARGET_ENV.find('64') != -1:
-            cmd_args = [SCP_COMMAND,'qt-creator_build/qtcreator.7z',SERVER + ':' + dir_path + '/' + TIME_STAMP + '-' + BUILD_NUMBER + '/qtcreator_linux_gcc_64_ubuntu1110.7z']
+            cmd_args = [SCP_COMMAND,'qt-creator_build/qtcreator.7z',SERVER + ':' + dir_path + '/qtcreator_linux_gcc_64_ubuntu1110.7z']
             bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR,True)
         else:
-            cmd_args = [SCP_COMMAND,'qt-creator_build/qtcreator.7z',SERVER + ':' + dir_path + '/' + TIME_STAMP + '-' + BUILD_NUMBER + '/qtcreator_linux_gcc_32_ubuntu1110.7z']
+            cmd_args = [SCP_COMMAND,'qt-creator_build/qtcreator.7z',SERVER + ':' + dir_path + '/qtcreator_linux_gcc_32_ubuntu1110.7z']
             bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR,True)
     elif bldinstallercommon.is_mac_platform():
-        cmd_args = [SCP_COMMAND,'qt-creator_build/qtcreator.7z',SERVER + ':' + dir_path + '/' + TIME_STAMP + '-' + BUILD_NUMBER + '/qtcreator_mac_cocoa_10_7.7z']
+        cmd_args = [SCP_COMMAND,'qt-creator_build/qtcreator.7z',SERVER + ':' + dir_path + '/qtcreator_mac_cocoa_10_7.7z']
         bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR,True)
     else:
-        cmd_args = [SCP_COMMAND_WIN,'qt-creator_build/qtcreator.7z',SERVER + ':' + dir_path + '/' + TIME_STAMP + '-' + BUILD_NUMBER + '/qtcreator_windows_vs2010_32.7z']
+        cmd_args = [SCP_COMMAND_WIN,'qt-creator_build/qtcreator.7z',SERVER + ':' + dir_path + '/qtcreator_windows_vs2010_32.7z']
         bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR,True)
 
     #TODO: Check qt-creator checkout!
-
-    if bldinstallercommon.is_linux_platform() or bldinstallercommon.is_mac_platform():
-        cmd_args =[SSH_COMMAND,SERVER,'ln -sfn',dir_path + '/' + TIME_STAMP + '-' + BUILD_NUMBER,dir_path + '/' + 'latest']
-        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR,True)
-        cmd_args =[SSH_COMMAND,SERVER,'ln -sfn',dir_path + '/latest',PATH + '/opensource/qtcreator/latest']
-        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR,True)
-    else:
-        cmd_args =[SSH_COMMAND_WIN,SERVER,'ln -sfn',dir_path + '/' + TIME_STAMP + '-' + BUILD_NUMBER,dir_path + '/' + 'latest']
-        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR,True)
-
-
-
 
 
 ###############################
@@ -760,6 +759,8 @@ def parse_cmd_line():
     global REMOTE_DIR
     global LATEST_DIR
     global PLATFORM
+    global QT_VERSION_TAG
+    global QT_FULL_VERSION
 
     setup_option_parser()
 
@@ -786,6 +787,10 @@ def parse_cmd_line():
             TARGET_ENV      = options.target_env
             ICU_LIBS        = options.icu_libs
             SRC_URL         = options.src_url
+            QT_VERSION_TAG  = options.version_tag
+            QT_FULL_VERSION = QT_VERSION
+            if QT_VERSION_TAG:
+                QT_FULL_VERSION += '-' + QT_VERSION_TAG
             REMOTE_DIR      = PATH + '/' + LICENSE_DIRS[LICENSE] + '/' + 'qt' + '/' + QT_VERSION + '/' + TIME_STAMP + '-' + BUILD_NUMBER
             LATEST_DIR      = PATH + '/' + LICENSE_DIRS[LICENSE] + '/' + 'qt' + '/' + QT_VERSION + '/' + 'latest'
     else:
@@ -837,6 +842,10 @@ def setup_option_parser():
     OPTION_PARSER.add_option("-u", "--src_url",
                       action="store", type="string", dest="src_url", default="",
                       help="Url for source code")
+    OPTION_PARSER.add_option("--version-tag",
+                      action="store", type="string", dest="version_tag", default="",
+                      help="Version tag e.g. alpha, beta, rc1")
+
 
 ###############################
 # Main
