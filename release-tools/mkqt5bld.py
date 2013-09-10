@@ -428,6 +428,9 @@ def install_qt():
     #make install for each module with INSTALL_ROOT
     print_wrap('    Install modules to separate INSTALL_ROOT')
     for module_name in QT5_MODULES_LIST:
+        # we do not provide pre-built examples
+        if 'qtwebkit-examples' in module_name:
+            continue
         install_dir = ''
         if module_name in QT5_ESSENTIALS:
             install_dir = ESSENTIALS_INSTALL_DIR_NAME
