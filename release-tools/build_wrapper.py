@@ -222,7 +222,7 @@ def handle_qt_src_package_build():
     if QT_VERSION == '5.1.1':
         cmd_args = [WORK_DIR + os.sep + 'qtsdk/release-tools/mksrc.sh','-u',WORK_DIR + os.sep + 'qt5','-v',QT_VERSION,'-m','-N','-l',LICENSE_DIRS[LICENSE],'-i','qlalr','-i','qt3d','-i','qtconnectivity','-i','qtdocgallery','-i','qtfeedback','-i','qtjsondb','-i','qtlocation','-i','qtmacextras','-i','qtpim','-i','qtqa','-i','qtrepotools','-i','qtsystems','-i','qtwayland','-i','qtwinextras']
     else: # 5.2.0
-        cmd_args = [WORK_DIR + os.sep + 'qtsdk/release-tools/mksrc.sh','-u',WORK_DIR + os.sep + 'qt5','-v',QT_VERSION,'-m','-N','-l',LICENSE_DIRS[LICENSE],'-i','qlalr','-i','qt3d','-i','qtconnectivity','-i','qtdocgallery','-i','qtfeedback','-i','qtjsondb','-i','qtlocation','-i','qtmacextras','-i','qtpim','-i','qtqa','-i','qtrepotools','-i','qtsystems','-i','qtwayland','-i','qtwinextras']
+        cmd_args = [WORK_DIR + os.sep + 'qtsdk/release-tools/mksrc.sh','-u',WORK_DIR + os.sep + 'qt5','-v',QT_VERSION,'-m','-N','-l',LICENSE_DIRS[LICENSE],'-i','qlalr','-i','qt3d','-i','qtconnectivity','-i','qtdocgallery','-i','qtfeedback','-i','qtjsondb','-i','qtlocation','-i','qtmacextras','-i','qtpim','-i','qtqa','-i','qtrepotools','-i','qtsystems','-i','qtwayland']
 
     bldinstallercommon.do_execute_sub_process(cmd_args,package_path, True)
 
