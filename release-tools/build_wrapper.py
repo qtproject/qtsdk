@@ -271,10 +271,6 @@ def handle_qt_src_package_build():
     exec_path = SCRIPT_ROOT_DIR
     cmd_args = ['rsync','-r','../../src_pkg/single/',SERVER + ':' + LATEST_DIR + os.sep + 'src' + os.sep + 'single' + os.sep]
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
-    cmd_args = ['rsync','-r','../../src_pkg/submodules_tar/',SERVER + ':' + LATEST_DIR + os.sep + 'src' + os.sep + 'submodules_tar' + os.sep]
-    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
-    cmd_args = ['rsync','-r','../../src_pkg/submodules_zip/',SERVER + ':' + LATEST_DIR + os.sep + 'src' + os.sep + 'submodules_zip' + os.sep]
-    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
     cmd_args = ['rsync','-r','../../src_pkg/submodules_tar/',SERVER + ':' + LATEST_DIR + os.sep + 'src' + os.sep + 'submodules' + os.sep]
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
     cmd_args = ['rsync','-r','../../src_pkg/submodules_zip/',SERVER + ':' + LATEST_DIR + os.sep + 'src' + os.sep + 'submodules' + os.sep]
