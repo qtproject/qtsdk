@@ -356,17 +356,18 @@ def handle_qt_android_release_build():
     cmd_args = ''
     script_path = 'qtsdk' + os.sep + 'release-tools' + os.sep + 'mkqt5bld.py'
     source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE_DIRS[LICENSE] + '-src-' + QT_VERSION
+    configure_files_path = os.path.join(WORK_DIR, 'qtsdk', 'release-tools', 'bld_config' + os.sep)
     if bldinstallercommon.is_linux_platform():
         if TARGET_ENV.find("x64") >= 1:
             if TARGET_ENV.find("armv7") >= 1:
-                cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','-c',WORK_DIR + os.sep + 'qtsdk' + os.sep + 'release-tools' + os.sep + 'bld_config' + os.sep + 'configure_android_armv7_' + LICENSE,'-a','-prefix ' +WORK_DIR + os.sep + '______________________________PADDING______________________________' + ' -android-toolchain-version 4.8','--android-ndk-host=linux-x86_64','--android-api-version=android-10','--android-sdk-home=/opt/android/sdk','--android-ndk-home=/opt/android/ndk','--replace-rpath']
+                cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','-c',configure_files_path + 'configure_android_armv7_' + LICENSE,'-a','-prefix ' +WORK_DIR + os.sep + '______________________________PADDING______________________________' + ' -android-toolchain-version 4.8','--android-ndk-host=linux-x86_64','--android-api-version=android-10','--android-sdk-home=/opt/android/sdk','--android-ndk-home=/opt/android/ndk','--replace-rpath']
             else:
-                cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','-c',WORK_DIR + os.sep + 'qtsdk' + os.sep + 'release-tools' + os.sep + 'bld_config' + os.sep + 'configure_android_x86_' + LICENSE,'-a','-prefix ' +WORK_DIR + os.sep + '______________________________PADDING______________________________' + ' -android-toolchain-version 4.8','--android-ndk-host=linux-x86_64','--android-api-version=android-10','--android-sdk-home=/opt/android/sdk','--android-ndk-home=/opt/android/ndk','--replace-rpath']
+                cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','-c',configure_files_path + 'configure_android_x86_' + LICENSE,'-a','-prefix ' +WORK_DIR + os.sep + '______________________________PADDING______________________________' + ' -android-toolchain-version 4.8','--android-ndk-host=linux-x86_64','--android-api-version=android-10','--android-sdk-home=/opt/android/sdk','--android-ndk-home=/opt/android/ndk','--replace-rpath']
         else:
             if TARGET_ENV.find("armv7") >= 1:
-                cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','-c',WORK_DIR + os.sep + 'qtsdk' + os.sep + 'release-tools' + os.sep + 'bld_config' + os.sep + 'configure_android_armv7_' + LICENSE,'-a','-prefix ' +WORK_DIR + os.sep + '______________________________PADDING______________________________' + ' -android-toolchain-version 4.8','--android-ndk-host=linux-x86','--android-api-version=android-10','--android-sdk-home=/opt/android/sdk','--android-ndk-home=/opt/android/ndk','--replace-rpath']
+                cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','-c',configure_files_path + 'configure_android_armv7_' + LICENSE,'-a','-prefix ' +WORK_DIR + os.sep + '______________________________PADDING______________________________' + ' -android-toolchain-version 4.8','--android-ndk-host=linux-x86','--android-api-version=android-10','--android-sdk-home=/opt/android/sdk','--android-ndk-home=/opt/android/ndk','--replace-rpath']
             else:
-                cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','-c',WORK_DIR + os.sep + 'qtsdk' + os.sep + 'release-tools' + os.sep + 'bld_config' + os.sep + 'configure_android_x86_' + LICENSE,'-a','-prefix ' +WORK_DIR + os.sep + '______________________________PADDING______________________________' + ' -android-toolchain-version 4.8','--android-ndk-host=linux-x86','--android-api-version=android-10','--android-sdk-home=/opt/android/sdk','--android-ndk-home=/opt/android/ndk','--replace-rpath']
+                cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','-c',configure_files_path + 'configure_android_x86_' + LICENSE,'-a','-prefix ' +WORK_DIR + os.sep + '______________________________PADDING______________________________' + ' -android-toolchain-version 4.8','--android-ndk-host=linux-x86','--android-api-version=android-10','--android-sdk-home=/opt/android/sdk','--android-ndk-home=/opt/android/ndk','--replace-rpath']
         bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR, True)
     elif bldinstallercommon.is_win_platform():
         os.chdir('/')
@@ -374,11 +375,11 @@ def handle_qt_android_release_build():
         if TARGET_ENV.find("armv7") >= 1:
             EXTRA_ENV['ANDROID_TARGET_ARCH'] = 'armeabi-v7a'
             EXTRA_ENV['QTDIR'] = ''
-            cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','-m','mingw32-make','-c',WORK_DIR + os.sep + 'qtsdk' + os.sep + 'release-tools' + os.sep + 'bld_config' + os.sep + 'configure_android_armv7_' + LICENSE,'-a','-prefix ' +WORK_DIR + os.sep + 'PADDING' + ' -android-toolchain-version 4.8','--android-ndk-host=windows','--android-api-version=android-10','--android-sdk-home=C:'+os.sep+'Utils'+os.sep+'android'+os.sep+'sdk'+os.sep+'sdk','--android-ndk-home=C:'+os.sep+'Utils'+os.sep+'android'+os.sep+'ndk']
+            cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','-m','mingw32-make','-c',configure_files_path + 'configure_android_armv7_' + LICENSE,'-a','-prefix ' +WORK_DIR + os.sep + 'PADDING' + ' -android-toolchain-version 4.8','--android-ndk-host=windows','--android-api-version=android-10','--android-sdk-home=C:'+os.sep+'Utils'+os.sep+'android'+os.sep+'sdk'+os.sep+'sdk','--android-ndk-home=C:'+os.sep+'Utils'+os.sep+'android'+os.sep+'ndk']
         else:
             EXTRA_ENV['ANDROID_TARGET_ARCH'] = 'x86'
             EXTRA_ENV['QTDIR'] = ''
-            cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','-m','mingw32-make','-c',WORK_DIR + os.sep + 'qtsdk' + os.sep + 'release-tools' + os.sep + 'bld_config' + os.sep + 'configure_android_x86_' + LICENSE,'-a','-prefix ' +WORK_DIR + os.sep + 'PADDING' + ' -android-toolchain-version 4.8','--android-ndk-host=windows','--android-api-version=android-10','--android-sdk-home=C:'+os.sep+'Utils'+os.sep+'android'+os.sep+'sdk'+os.sep+'sdk','--android-ndk-home=C:'+os.sep+'Utils'+os.sep+'android'+os.sep+'ndk']
+            cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','-m','mingw32-make','-c',configure_files_path + 'configure_android_x86_' + LICENSE,'-a','-prefix ' +WORK_DIR + os.sep + 'PADDING' + ' -android-toolchain-version 4.8','--android-ndk-host=windows','--android-api-version=android-10','--android-sdk-home=C:'+os.sep+'Utils'+os.sep+'android'+os.sep+'sdk'+os.sep+'sdk','--android-ndk-home=C:'+os.sep+'Utils'+os.sep+'android'+os.sep+'ndk']
         bldinstallercommon.do_execute_sub_process(cmd_args,exec_dir, True)
 
 ###############################
@@ -419,31 +420,32 @@ def handle_qt_release_build():
                         EXTRA_ENV['LD_LIBRARY_PATH'] = icu_lib_path
         script_path = 'qtsdk' + os.sep + 'release-tools' + os.sep + 'mkqt5bld.py'
         source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE_DIRS[LICENSE] + '-src-' + QT_VERSION
+        configure_files_path = os.path.join(WORK_DIR, 'qtsdk', 'release-tools', 'bld_config' + os.sep)
         if bldinstallercommon.is_linux_platform():
             if LICENSE == 'commercial':
-                cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-c',WORK_DIR + os.sep + 'qtsdk' + os.sep + 'release-tools' + os.sep + 'bld_config' + os.sep + 'configure_linux_' + LICENSE,'-a','-DQT_EVAL -L '+icu_lib_path + ' -I ' + icu_include_path + ' -prefix ' +WORK_DIR + os.sep + '______________________________PADDING______________________________' + ' -R ' + WORK_DIR + os.sep + '______________________________PADDING______________________________']
+                cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-c',configure_files_path + 'configure_linux_' + LICENSE,'-a','-DQT_EVAL -L '+icu_lib_path + ' -I ' + icu_include_path + ' -prefix ' +WORK_DIR + os.sep + '______________________________PADDING______________________________' + ' -R ' + WORK_DIR + os.sep + '______________________________PADDING______________________________']
             else:
-                cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-c',WORK_DIR + os.sep + 'qtsdk' + os.sep + 'release-tools' + os.sep + 'bld_config' + os.sep + 'configure_linux_' + LICENSE,'-a','-L '+icu_lib_path + ' -I ' + icu_include_path + ' -prefix ' +WORK_DIR + os.sep + '______________________________PADDING______________________________' + ' -R ' + WORK_DIR + os.sep + '______________________________PADDING______________________________']
+                cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-c',configure_files_path + 'configure_linux_' + LICENSE,'-a','-L '+icu_lib_path + ' -I ' + icu_include_path + ' -prefix ' +WORK_DIR + os.sep + '______________________________PADDING______________________________' + ' -R ' + WORK_DIR + os.sep + '______________________________PADDING______________________________']
             bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR, True,EXTRA_ENV)
         elif bldinstallercommon.is_win_platform():
             exec_path = os.getcwd()
             if LICENSE == 'commercial':
                 if TARGET_ENV.find('opengl') >= 1 or TARGET_ENV.find('OpenGL') >= 1:
-                    cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',WORK_DIR + os.sep + 'qtsdk' + os.sep + 'release-tools' + os.sep + 'bld_config' + os.sep + 'configure_win_opengl_' + LICENSE,'-a','-D QT_EVAL']
+                    cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_opengl_' + LICENSE,'-a','-D QT_EVAL']
                 elif TARGET_ENV.find('msvc2012') >= 1 and TARGET_ENV.find('x86') >= 1:
-                    cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','-m','jom','-c',WORK_DIR + os.sep + 'qtsdk' + os.sep + 'release-tools' + os.sep + 'bld_config' + os.sep + 'configure_win_' + LICENSE,'-a','-D QT_EVAL -no-vcproj']
+                    cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','-m','jom','-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-D QT_EVAL -no-vcproj']
                 else:
-                    cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',WORK_DIR + os.sep + 'qtsdk' + os.sep + 'release-tools' + os.sep + 'bld_config' + os.sep + 'configure_win_' + LICENSE,'-a','-D QT_EVAL']
+                    cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-D QT_EVAL']
             else:
                 if TARGET_ENV.find('opengl') >=1 or TARGET_ENV.find('OpenGL') >= 1:
-                    cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',WORK_DIR + os.sep + 'qtsdk' + os.sep + 'release-tools' + os.sep + 'bld_config' + os.sep + 'configure_win_opengl_' + LICENSE]
+                    cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_opengl_' + LICENSE]
                 elif TARGET_ENV.find('msvc2012') >= 1 and TARGET_ENV.find('x86') >= 1:
-                    cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',WORK_DIR + os.sep + 'qtsdk' + os.sep + 'release-tools' + os.sep + 'bld_config' + os.sep + 'configure_win_' + LICENSE,'-a','-D QT_EVAL -no-vcproj']
+                    cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-D QT_EVAL -no-vcproj']
                 else:
-                    cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',WORK_DIR + os.sep + 'qtsdk' + os.sep + 'release-tools' + os.sep + 'bld_config' + os.sep + 'configure_win_' + LICENSE]
+                    cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_' + LICENSE]
             bldinstallercommon.do_execute_sub_process(cmd_args,exec_path, True)
         elif bldinstallercommon.is_mac_platform():
-            cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-c',WORK_DIR + os.sep + 'qtsdk' + os.sep + 'release-tools' + os.sep + 'bld_config' + os.sep + 'configure_mac_' + LICENSE,'-a','-prefix ' + WORK_DIR + os.sep + '______________________________PADDING______________________________']
+            cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-c',configure_files_path + 'configure_mac_' + LICENSE,'-a','-prefix ' + WORK_DIR + os.sep + '______________________________PADDING______________________________']
             bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR, True)
 
     # Inject examples
