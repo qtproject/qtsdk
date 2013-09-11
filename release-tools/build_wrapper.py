@@ -231,11 +231,20 @@ def handle_qt_src_package_build():
         copy_license_checkers()
     package_path = WORK_DIR + os.sep + 'src_pkg'
     bldinstallercommon.create_dirs(package_path)
-    if QT_VERSION == '5.1.1':
-        cmd_args = [WORK_DIR + os.sep + 'qtsdk/release-tools/mksrc.sh','-u',WORK_DIR + os.sep + 'qt5','-v',QT_FULL_VERSION,'-m','-N','-l',LICENSE_DIRS[LICENSE],'-i','qlalr','-i','qt3d','-i','qtconnectivity','-i','qtdocgallery','-i','qtfeedback','-i','qtjsondb','-i','qtlocation','-i','qtmacextras','-i','qtpim','-i','qtqa','-i','qtrepotools','-i','qtsystems','-i','qtwayland','-i','qtwinextras']
-    else: # 5.2.0
-        cmd_args = [WORK_DIR + os.sep + 'qtsdk/release-tools/mksrc.sh','-u',WORK_DIR + os.sep + 'qt5','-v',QT_FULL_VERSION,'-m','-N','-l',LICENSE_DIRS[LICENSE],'-i','qlalr','-i','qt3d','-i','qtdocgallery','-i','qtfeedback','-i','qtjsondb','-i','qtlocation','-i','qtmacextras','-i','qtpim','-i','qtqa','-i','qtrepotools','-i','qtsystems','-i','qtwayland']
-
+    # parse module exclude list from release description file
+    conf_file_base_path = os.path.join(WORK_DIR, 'qtsdk', 'release-tools', 'releases', os.environ['RELEASE_BUILD_CONF_FILE'])
+    parser = ConfigParser.ConfigParser()
+    parser.readfp(open(conf_file_base_path))
+    exclude_list = bldinstallercommon.safe_config_key_fetch(parser, 'release.global', 'module_exclude_list')
+    split_exclude_list = exclude_list.split(',')
+    module_exclude_list = []
+    for item in split_exclude_list:
+        module_exclude_list += ['-i', item]
+    # cmd args for source packaging srcipt
+    cmd_args = [WORK_DIR + os.sep + 'qtsdk/release-tools/mksrc.sh', '-u', WORK_DIR + os.sep + 'qt5']
+    cmd_args += ['-v', QT_FULL_VERSION, '-m', '-N', '-l',LICENSE_DIRS[LICENSE]]
+    cmd_args += module_exclude_list
+    # create src package
     bldinstallercommon.do_execute_sub_process(cmd_args,package_path, True)
 
     # Example injection

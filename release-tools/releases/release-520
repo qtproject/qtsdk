@@ -16,6 +16,7 @@ version:                    5.2.0
 version_tag:                alpha
 repo_content_type:          520
 repo_components_to_update:  qt.520.*
+module_exclude_list:        qlalr, qt3d, qtdocgallery, qtfeedback, qtjsondb, qtlocation, qtmacextras, qtpim, qtqa, qtrepotools, qtsystems, qtwayland
 
 
 ################################################################################

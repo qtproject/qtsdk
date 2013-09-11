@@ -19,6 +19,7 @@ version:                    5.1.1
 version_tag:
 repo_content_type:          511
 repo_components_to_update:  qt.511.*
+module_exclude_list:        qlalr, qt3d, qtconnectivity, qtdocgallery, qtfeedback, qtjsondb, qtlocation, qtmacextras, qtpim, qtqa, qtrepotools, qtsystems, qtwayland, qtwinextras
 
 
 ################################################################################
