@@ -75,17 +75,17 @@ SINGLE_INSTALL_DIR_NAME             = SUBMODULE_INSTALL_BASE_DIR_NAME + 'single'
 QT5_MODULES_LIST                    = [ 'qt3d', 'qlalr', 'qtactiveqt', 'qtbase',     \
                                         'qtconnectivity', 'qtdeclarative', 'qtdoc', \
                                         'qtfeedback', 'qtgraphicaleffects', \
-                                        'qtimageformats', \
-                                        'qtlocation', 'qtmultimedia', 'qtpim', \
-                                        'qtqa', 'qtquick1', 'qtrepotools', 'qtscript', \
-                                        'qtsensors', 'qtsvg', 'qtsystems', 'qttools', \
-                                        'qttranslations', 'qtwayland', 'qtwebkit', \
-                                        'qtwebkit-examples', 'qtxmlpatterns', \
-                                        'qtquickcontrols', 'qtserialport', 'qtx11extras' ]
+                                        'qtimageformats', 'qtlocation', 'qtmacextras', \
+                                        'qtmultimedia', 'qtpim', 'qtqa', 'qtquick1', \
+                                        'qtquickcontrols', 'qtrepotools', 'qtscript', \
+                                        'qtsensors', 'qtserialport', 'qtsvg', 'qtsystems', \
+                                        'qttools', 'qttranslations', 'qtwayland', \
+                                        'qtwebkit', 'qtwebkit-examples', 'qtwinextras', \
+                                        'qtxmlpatterns', 'qtx11extras' ]
 QT5_ESSENTIALS                      = [ 'qtbase', 'qtdeclarative', 'qtdoc', \
-                                        'qtquick1', 'qtscript', \
-                                        'qttools', 'qtwebkit', 'qtxmlpatterns', \
-                                        'qtmultimedia', 'qtwebkit-examples', 'qtquickcontrols' ]
+                                        'qtmultimedia', 'qtquick1', 'qtquickcontrols', \
+                                        'qtscript', 'qttools', 'qtwebkit', \
+                                        'qtwebkit-examples', 'qtxmlpatterns' ]
 ORIGINAL_QMAKE_QT_PRFXPATH          = ''
 PADDING                             = '______________________________PADDING______________________________'
 FILES_TO_REMOVE_LIST                = ['Makefile', 'Makefile.Release', 'Makefile.Debug', \
