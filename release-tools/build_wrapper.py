@@ -195,7 +195,7 @@ def handle_ifw_build():
     # execute
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
     #create destination dirs
-    create_remote_dirs(SERVER,PATH + '/' + LICENSE_DIRS[LICENSE] + '/ifw/' + ifw_branch);
+    create_remote_dirs(SERVER,PATH + '/' + LICENSE_DIRS[LICENSE] + '/ifw/' + ifw_branch)
 
     if bldinstallercommon.is_win_platform():
         file_list = os.listdir(SCRIPT_ROOT_DIR+'/build_artefacts')
@@ -569,7 +569,7 @@ def handle_qt_release_build():
             bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives/addons',True)
 
     # Create target directory
-    create_remote_dirs(SERVER,LATEST_DIR+'/'+BIN_TARGET_DIRS[TARGET_ENV]);
+    create_remote_dirs(SERVER,LATEST_DIR+'/'+BIN_TARGET_DIRS[TARGET_ENV])
 
     dir_list = os.listdir(WORK_DIR + os.sep + 'module_archives')
     print(dir_list)
