@@ -76,6 +76,8 @@ SERVER                      ='QT@qt-rnd.it.local'
 PATH                        ='/data/www/packages/jenkins'
 TARGET_ENV                  =''
 ICU_LIBS                    ='http://download.qt-project.org/development_releases/prebuilt/icu/src/icu4c-51_1-src.tgz'
+QT_SRC_FOR_IFW_PREPARED     = 'http://download.qt-project.org/development_releases/prebuilt/qt-src-for-ifw/qt_4.8.4_ifw_prepared'
+IFW_GIT_URL                 = 'git://gitorious.org/installer-framework/installer-framework.git'
 SRC_URL_PREFIX              ='http://qt-rnd.it.local/packages/jenkins'
 SRC_URL                     =''
 SSH_COMMAND                 ='ssh'
@@ -179,32 +181,30 @@ def init_qt_build_cycle():
 # handle_ifw_build()
 ###############################
 def handle_ifw_build():
-    os.chdir(WORK_DIR+'/qtsdk/release-tools')
+    os.chdir(SCRIPT_ROOT_DIR)
+    extension = '.tar.gz'
+    qt_src_pkg = QT_SRC_FOR_IFW_PREPARED
+    ifw_url = IFW_GIT_URL
+    ifw_branch = '1.4'
     if bldinstallercommon.is_win_platform():
-        if LICENSE == 'commercial':
-            cmd_args = ['python','-u','bld_ifw_tools.py','--license='+LICENSE,'--qt_archive_uri=http://download.qt-project.org/development_releases/prebuilt/qt-src-for-ifw/qt_4.8.4_ifw_prepared.zip','--ifw_url=git://gitorious.org/installer-framework/installer-framework.git','--ifw_branch=1.4','--product_key_checker_url='+WORK_DIR+'/qtsdk-enterprise/productkeycheck/qt_product_key_checker.pri']
-        else:
-            cmd_args = ['python','-u','bld_ifw_tools.py','--license='+LICENSE,'--qt_archive_uri=http://download.qt-project.org/development_releases/prebuilt/qt-src-for-ifw/qt_4.8.4_ifw_prepared.zip','--ifw_url=git://gitorious.org/installer-framework/installer-framework.git','--ifw_branch=1.4']
-    else:
-        if LICENSE == 'commercial':
-            cmd_args = ['python','-u','bld_ifw_tools.py','--license='+LICENSE,'--qt_archive_uri=http://download.qt-project.org/development_releases/prebuilt/qt-src-for-ifw/qt_4.8.4_ifw_prepared.tar.gz','--ifw_url=git://gitorious.org/installer-framework/installer-framework.git','--ifw_branch=1.4','--product_key_checker_url='+WORK_DIR+'/qtsdk-enterprise/productkeycheck/qt_product_key_checker.pri']
-        else:
-            cmd_args = ['python','-u','bld_ifw_tools.py','--license='+LICENSE,'--qt_archive_uri=http://download.qt-project.org/development_releases/prebuilt/qt-src-for-ifw/qt_4.8.4_ifw_prepared.tar.gz','--ifw_url=git://gitorious.org/installer-framework/installer-framework.git','--ifw_branch=1.4']
-
-
-    bldinstallercommon.do_execute_sub_process(cmd_args,'/work/build/qtsdk/release-tools',True)
-
+        extension = '.zip'
+    qt_src_pkg += extension
+    cmd_args = ['python', '-u', 'bld_ifw_tools.py', '--license=' + LICENSE, '--qt_archive_uri=' + qt_src_pkg, '--ifw_url=' + ifw_url, '--ifw_branch=' + ifw_branch]
+    if LICENSE == 'commercial':
+        cmd_args += ['--product_key_checker_url=' + WORK_DIR + '/qtsdk-enterprise/productkeycheck/qt_product_key_checker.pri']
+    # execute
+    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
     #create destination dirs
-    create_remote_dirs(SERVER,PATH + '/' + LICENSE_DIRS[LICENSE] + '/ifw/1.4');
+    create_remote_dirs(SERVER,PATH + '/' + LICENSE_DIRS[LICENSE] + '/ifw/' + ifw_branch);
 
     if bldinstallercommon.is_win_platform():
         file_list = os.listdir(SCRIPT_ROOT_DIR+'/build_artefacts')
         for file_name in file_list:
-            if file_name.endswith(".7z"):
-                cmd_args = [SCP_COMMAND_WIN,file_name,SERVER + ':' + PATH + '/' + LICENSE_DIRS[LICENSE] + '/ifw/1.4/']
+            if file_name.endswith(".7z"):QT_SRC_FOR_IFW_PREPARED
+                cmd_args = [SCP_COMMAND_WIN,file_name,SERVER + ':' + PATH + '/' + LICENSE_DIRS[LICENSE] + '/ifw/' + ifw_branch + '/']
                 bldinstallercommon.do_execute_sub_process(cmd_args,SCRIPT_ROOT_DIR+'/build_artefacts',True)
     else:
-        cmd_args = ['rsync','-r','./',SERVER + ':' + PATH + '/' + LICENSE_DIRS[LICENSE] + '/ifw/1.4/']
+        cmd_args = ['rsync','-r','./',SERVER + ':' + PATH + '/' + LICENSE_DIRS[LICENSE] + '/ifw/' + ifw_branch + '/']
         bldinstallercommon.do_execute_sub_process(cmd_args,SCRIPT_ROOT_DIR+'/build_artefacts',True)
 
 
