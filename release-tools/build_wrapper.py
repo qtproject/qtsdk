@@ -88,9 +88,7 @@ PLATFORM                    =''
 LICENSE_DIRS                = \
 {'opensource': 'opensource'\
 ,'commercial': 'enterprise'}
-SRC_DEST_DIRS               = \
-['src','src/submodules_tar','src/submodules_zip'\
-,'src/submodules','src/examples_injection','src/licheck',]
+SRC_DEST_DIRS               = ['src', 'src/submodules', 'src/examples_injection', 'src/licheck']
 # TODO: target directories hard coded, should be figured out from somewhere!
 BIN_TARGET_DIRS             = \
 {'linux-g++-Ubuntu11.10-x86_Android-armv5':'android_armv5/linux_x86'\
