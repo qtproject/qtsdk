@@ -317,7 +317,9 @@ def handle_online_installer_build(conf_file, license, branch, platform, arch, pa
     # handle build jobs
     for job in job_list:
         create_online_installer(job, packages_base_url)
-
+    if not os.listdir(output_dir):
+        print('*** Fatal error! No online installers generated into: {0}'.format(output_dir))
+        sys.exit(-1)
 
 # execute
 # - offline installer build(s)
@@ -347,7 +349,11 @@ def handle_offline_installer_build(conf_file, license, branch, platform, arch, p
     # handle build jobs
     for job in job_list:
         create_offline_installer(job, packages_base_url)
-
+    # if "/installer_output" directory is empty -> error
+    output_dir = os.path.join(SCRIPT_ROOT_DIR, 'installer_output')
+    if not os.listdir(output_dir):
+        print('*** Fatal error! No offline installers generated into: {0}'.format(output_dir))
+        sys.exit(-1)
 
 # helper function/wrapper to create offline installer
 def create_offline_installer(job, packages_base_url):
@@ -379,8 +385,8 @@ def create_installer(job, packages_base_url, installer_type):
     if (len(job.substitution_arg_list) > 0):
         for item in job.substitution_arg_list:
             cmd_args = cmd_args + [item]
-    # execute
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+    # execute, do not bail out if installer job fails (False)
+    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, False)
 
 
 # execute:
