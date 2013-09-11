@@ -200,7 +200,7 @@ def handle_ifw_build():
     if bldinstallercommon.is_win_platform():
         file_list = os.listdir(SCRIPT_ROOT_DIR+'/build_artefacts')
         for file_name in file_list:
-            if file_name.endswith(".7z"):QT_SRC_FOR_IFW_PREPARED
+            if file_name.endswith(".7z"):
                 cmd_args = [SCP_COMMAND_WIN,file_name,SERVER + ':' + PATH + '/' + LICENSE_DIRS[LICENSE] + '/ifw/' + ifw_branch + '/']
                 bldinstallercommon.do_execute_sub_process(cmd_args,SCRIPT_ROOT_DIR+'/build_artefacts',True)
     else:
