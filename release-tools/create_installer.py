@@ -1066,10 +1066,14 @@ def create_installer_binary():
     if bldinstallercommon.is_mac_platform():
         file_name = file_name + '.app'
         old_existing_file_name = old_existing_file_name + '.app'
+    if bldinstallercommon.is_win_platform():
+        file_name = file_name + '.exe'
+        old_existing_file_name = old_existing_file_name + '.exe'
     # remove old if exists
     if os.path.isfile(old_existing_file_name):
         print 'Deleting old existing file: ' + old_existing_file_name
         os.remove(old_existing_file_name)
+    print 'Moving: [' + file_name + '] into: [' + output_dir + ']'
     shutil.move(file_name, output_dir)
 
 
