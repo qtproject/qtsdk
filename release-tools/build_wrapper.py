@@ -382,13 +382,25 @@ def handle_qt_android_release_build():
         if TARGET_ENV.find("x64") >= 1:
             if TARGET_ENV.find("armv7") >= 1:
                 cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','-c',configure_files_path + 'configure_android_armv7_' + LICENSE,'-a','-prefix ' +WORK_DIR + os.sep + '______________________________PADDING______________________________' + ' -android-toolchain-version 4.8','--android-ndk-host=linux-x86_64','--android-api-version=android-10','--android-sdk-home=/opt/android/sdk','--android-ndk-home=/opt/android/ndk','--replace-rpath']
+            elif TARGET_ENV.find("armv5") >= 1:
+                cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','-c',configure_files_path + 'configure_android_armv5_' + LICENSE,'-a','-prefix ' +WORK_DIR + os.sep + '______________________________PADDING______________________________' + ' -android-toolchain-version 4.8','--android-ndk-host=linux-x86_64','--android-api-version=android-10','--android-sdk-home=/opt/android/sdk','--android-ndk-home=/opt/android/ndk','--replace-rpath']
             else:
                 cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','-c',configure_files_path + 'configure_android_x86_' + LICENSE,'-a','-prefix ' +WORK_DIR + os.sep + '______________________________PADDING______________________________' + ' -android-toolchain-version 4.8','--android-ndk-host=linux-x86_64','--android-api-version=android-10','--android-sdk-home=/opt/android/sdk','--android-ndk-home=/opt/android/ndk','--replace-rpath']
         else:
             if TARGET_ENV.find("armv7") >= 1:
                 cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','-c',configure_files_path + 'configure_android_armv7_' + LICENSE,'-a','-prefix ' +WORK_DIR + os.sep + '______________________________PADDING______________________________' + ' -android-toolchain-version 4.8','--android-ndk-host=linux-x86','--android-api-version=android-10','--android-sdk-home=/opt/android/sdk','--android-ndk-home=/opt/android/ndk','--replace-rpath']
+            elif TARGET_ENV.find("armv5") >= 1:
+                cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','-c',configure_files_path + 'configure_android_armv5_' + LICENSE,'-a','-prefix ' +WORK_DIR + os.sep + '______________________________PADDING______________________________' + ' -android-toolchain-version 4.8','--android-ndk-host=linux-x86','--android-api-version=android-10','--android-sdk-home=/opt/android/sdk','--android-ndk-home=/opt/android/ndk','--replace-rpath']
             else:
                 cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','-c',configure_files_path + 'configure_android_x86_' + LICENSE,'-a','-prefix ' +WORK_DIR + os.sep + '______________________________PADDING______________________________' + ' -android-toolchain-version 4.8','--android-ndk-host=linux-x86','--android-api-version=android-10','--android-sdk-home=/opt/android/sdk','--android-ndk-home=/opt/android/ndk','--replace-rpath']
+        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR, True)
+    elif bldinstallercommon.is_mac_platform():
+        if TARGET_ENV.find("armv7") >= 1:
+            cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','-c',configure_files_path + 'configure_android_armv7_' + LICENSE,'-a','-prefix ' +WORK_DIR + os.sep + '______________________________PADDING______________________________' + ' -android-toolchain-version 4.8','--android-ndk-host=darwin-x86_64','--android-api-version=android-10','--android-sdk-home=/opt/android/sdk','--android-ndk-home=/opt/android/ndk']
+        elif TARGET_ENV.find("armv5") >= 1:
+            cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','-c',configure_files_path + 'configure_android_armv5_' + LICENSE,'-a','-prefix ' +WORK_DIR + os.sep + '______________________________PADDING______________________________' + ' -android-toolchain-version 4.8','--android-ndk-host=darwin-x86_64','--android-api-version=android-10','--android-sdk-home=/opt/android/sdk','--android-ndk-home=/opt/android/ndk']
+        else:
+            cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','-c',configure_files_path + 'configure_android_x86_' + LICENSE,'-a','-prefix ' +WORK_DIR + os.sep + '______________________________PADDING______________________________' + ' -android-toolchain-version 4.8','--android-ndk-host=darwin-x86_64','--android-api-version=android-10','--android-sdk-home=/opt/android/sdk','--android-ndk-home=/opt/android/ndk']
         bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR, True)
     elif bldinstallercommon.is_win_platform():
         os.chdir('/')
@@ -397,6 +409,10 @@ def handle_qt_android_release_build():
             EXTRA_ENV['ANDROID_TARGET_ARCH'] = 'armeabi-v7a'
             EXTRA_ENV['QTDIR'] = ''
             cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','-m','mingw32-make','-c',configure_files_path + 'configure_android_armv7_' + LICENSE,'-a','-prefix ' +WORK_DIR + os.sep + 'PADDING' + ' -android-toolchain-version 4.8','--android-ndk-host=windows','--android-api-version=android-10','--android-sdk-home=C:'+os.sep+'Utils'+os.sep+'android'+os.sep+'sdk'+os.sep+'sdk','--android-ndk-home=C:'+os.sep+'Utils'+os.sep+'android'+os.sep+'ndk']
+        elif TARGET_ENV.find("armv5") >= 1:
+            EXTRA_ENV['ANDROID_TARGET_ARCH'] = 'armeabi'
+            EXTRA_ENV['QTDIR'] = ''
+            cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','-m','mingw32-make','-c',configure_files_path + 'configure_android_armv5_' + LICENSE,'-a','-prefix ' +WORK_DIR + os.sep + 'PADDING' + ' -android-toolchain-version 4.8','--android-ndk-host=windows','--android-api-version=android-10','--android-sdk-home=C:'+os.sep+'Utils'+os.sep+'android'+os.sep+'sdk'+os.sep+'sdk','--android-ndk-home=C:'+os.sep+'Utils'+os.sep+'android'+os.sep+'ndk']
         else:
             EXTRA_ENV['ANDROID_TARGET_ARCH'] = 'x86'
             EXTRA_ENV['QTDIR'] = ''
