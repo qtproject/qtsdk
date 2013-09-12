@@ -79,7 +79,7 @@ PROD_SRV_REPO_PENDING_AREA_DIR          = ''
 PKG_SERVER_URL                          = ''
 # search/replace tags in configuration files
 GLOBAL_VERSION_TAG                      = '%GLOBAL_VERSION%'
-
+RTA_DESCRIPTION_FILE                    = 'rta_description_file'
 
 # container for online repository build job parameters
 class BuildJob:
@@ -97,7 +97,9 @@ class BuildJob:
                  repo_qt_type,
                  repo_content_type,
                  repo_components_to_update,
-                 repo_url_specifier
+                 repo_url_specifier,
+                 installer_name,
+                 rta_keys
                 ):
         self.is_repo_job                = is_repo_job
         self.license                    = license
@@ -113,6 +115,8 @@ class BuildJob:
         self.repo_content_type          = repo_content_type
         self.repo_components_to_update  = repo_components_to_update
         self.repo_url_specifier         = repo_url_specifier
+        self.installer_name             = preformat_global_version_number(installer_name, version_number, version_number_tag)
+        self.rta_key_list               = rta_keys.replace(' ', '')
         self.format_substitution_list(substitution_list)
 
     # format substitution list so that it can be used by create_installer.py
@@ -183,7 +187,7 @@ class BuildJob:
             return items[5]
 
 
-def preformat_substitution_list(arg_substitution_list, global_version, global_version_tag):
+def preformat_global_version_number(arg_substitution_list, global_version, global_version_tag):
     version = global_version
     if global_version_tag:
         version = version + '-' + global_version_tag
@@ -244,8 +248,12 @@ def get_job_list(conf_file, job_type_specifier, license, qt_type, branch, platfo
             if not arg_configurations_file:
                 print('*** Fatal error! Configuration file not defined for {0}'.format(s))
                 sys.exit(-1)
+            # for triggering rta later on if specified
+            rta_key_list = bldinstallercommon.safe_config_key_fetch(parser, s, 'rta_key_list')
+            # preferred installer name
+            installer_name = bldinstallercommon.safe_config_key_fetch(parser, s, 'installer_name')
             arg_substitution_list = bldinstallercommon.safe_config_key_fetch(parser, s, 'arg_substitution_list')
-            arg_substitution_list = preformat_substitution_list(arg_substitution_list, global_version, global_version_tag)
+            arg_substitution_list = preformat_global_version_number(arg_substitution_list, global_version, global_version_tag)
             repo_content_type           = ''
             repo_components_to_update   = ''
             repo_url_specifier          = ''
@@ -266,7 +274,7 @@ def get_job_list(conf_file, job_type_specifier, license, qt_type, branch, platfo
             # determine full path for the conf file
             full_conf_file_path = os.path.join(conf_file_base_dir, arg_configurations_file)
             # create build job
-            job = BuildJob(is_repo_job, license, s, arch, version_number, version_number_tag, conf_file_base_dir, full_conf_file_path, ifw_tools_url, arg_substitution_list, qt_type, repo_content_type, repo_components_to_update, repo_url_specifier)
+            job = BuildJob(is_repo_job, license, s, arch, version_number, version_number_tag, conf_file_base_dir, full_conf_file_path, ifw_tools_url, arg_substitution_list, qt_type, repo_content_type, repo_components_to_update, repo_url_specifier, installer_name, rta_key_list)
             if (job.validate()):
                 job_list.append(job)
     return job_list
@@ -346,11 +354,18 @@ def handle_offline_installer_build(conf_file, license, branch, platform, arch, p
     if (len(job_list) == 0):
         print('*** Fatal error! No offline build jobs found. Probably an error?'.format(conf_file, section_name))
         sys.exit(-1)
+    output_dir = os.path.join(SCRIPT_ROOT_DIR, 'installer_output')
+    # create rta description file
+    architecture = bldinstallercommon.get_architecture()
+    plat_suffix = bldinstallercommon.get_platform_suffix()
+    rta_description_file_name = os.path.join(output_dir, RTA_DESCRIPTION_FILE + '-' + plat_suffix + '-' + architecture + '.txt')
     # handle build jobs
     for job in job_list:
         create_offline_installer(job, packages_base_url)
+        rta_description_file = open(rta_description_file_name, 'a')
+        rta_description_file.write(job.installer_name + ' ' + job.rta_key_list + '\n')
+        rta_description_file.close()
     # if "/installer_output" directory is empty -> error
-    output_dir = os.path.join(SCRIPT_ROOT_DIR, 'installer_output')
     if not os.listdir(output_dir):
         print('*** Fatal error! No offline installers generated into: {0}'.format(output_dir))
         sys.exit(-1)
@@ -382,6 +397,7 @@ def create_installer(job, packages_base_url, installer_type):
     cmd_args = cmd_args + ['--version-tag=' + job.version_number_tag]
     cmd_args = cmd_args + ['-u', urlparse.urljoin(packages_base_url, job.license)]
     cmd_args = cmd_args + ['--ifw-tools=' + job.ifw_tools]
+    cmd_args = cmd_args + ['--preferred-installer-name=' + job.installer_name]
     if (len(job.substitution_arg_list) > 0):
         for item in job.substitution_arg_list:
             cmd_args = cmd_args + [item]

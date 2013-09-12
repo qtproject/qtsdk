@@ -674,11 +674,17 @@ def handle_offline_installer_build():
         arch = 'x86'
     packages_base_url = SERVER # os.environ['PKG_SERVER_URL'] 'http://it-dl241-hki/packages/jenkins'
 
-    # create all offline installers for this host
-    release_build_handler.handle_offline_installer_build(conf_file, license, branch, platform, arch, packages_base_url)
-    # copy all offline installers from /qtsdk/release-tools/installer_output/
-    # into network disk
+    ssh_cmd = SSH_COMMAND
+    scp_cmd = SCP_COMMAND
+    if bldinstallercommon.is_win_platform():
+        ssh_cmd = SSH_COMMAND_WIN
+        scp_cmd = SCP_COMMAND_WIN
 
+    # determine local installer output directory
+    installer_output_dir = os.path.join(SCRIPT_ROOT_DIR, 'installer_output')
+    # (1) create all offline installers for this host
+    release_build_handler.handle_offline_installer_build(conf_file, license, branch, platform, arch, packages_base_url)
+    # (2) copy all offline installers from 'installer_output_dir' into network disk
     # Crete remote directories
     dest_server = 'QT@qt-rnd.it.local'
     dest_dir = PATH + '/' + LICENSE_DIRS[LICENSE] + '/offline_installers/' + TIME_STAMP + '-' + BUILD_NUMBER
@@ -687,30 +693,30 @@ def handle_offline_installer_build():
 
     installer_name = ''
     installer_name_base = ''
-    dir_list = os.listdir(WORK_DIR + os.sep + 'qtsdk' + os.sep + 'release-tools' + os.sep + 'installer_output')
+    dir_list = os.listdir(installer_output_dir)
     if bldinstallercommon.is_linux_platform():
         for file_name in dir_list:
             if file_name.endswith(".run"):
                 installer_name = file_name
                 installer_name_base = os.path.splitext(file_name)[0]
-                cmd_args = ['rsync', installer_name, dest_server + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '.run']
-                bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + os.sep + 'installer_output', True)
+                cmd_args = [scp_cmd, installer_name, dest_server + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '.run']
+                bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
     elif bldinstallercommon.is_mac_platform():
         for file_name in dir_list:
             if file_name.endswith(".dmg"):
                 installer_name = file_name
                 installer_name_base = os.path.splitext(file_name)[0]
                 cmd_args = ['/Users/qt/unlock-keychain.py']
-                bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + os.sep + 'installer_output', True)
+                bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
                 s_arg = 'Developer ID Application: Digia Plc'
                 cmd_args = ['codesign', '-r', '/Users/qt/csreq.txt', '-s', s_arg, installer_name_base + '.app']
-                bldinstallercommon.do_execute_sub_process(cmd_args,  SCRIPT_ROOT_DIR + os.sep + 'installer_output', True)
+                bldinstallercommon.do_execute_sub_process(cmd_args,  installer_output_dir, True)
                 cmd_args = ['security','lock-keychain','Developer_ID_Digia.keychain']
-                bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + os.sep + 'installer_output', True)
-                cmd_args = ['hdiutil', 'create', '-srcfolder', WORK_DIR + '/qtsdk/release-tools/installer_output/' + installer_name_base + '.app', '-volname', installer_name_base, '-format', 'UDBZ', WORK_DIR + '/qtsdk/release-tools/installer_output/'  + installer_name_base + '.dmg', '-ov', '-scrub']
-                bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + os.sep + 'installer_output', True)
-                cmd_args = ['rsync', installer_name, dest_server + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '.dmg']
-                bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + os.sep + 'installer_output', True)
+                bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
+                cmd_args = ['hdiutil', 'create', '-srcfolder', installer_output_dir + os.sep + installer_name_base + '.app', '-volname', installer_name_base, '-format', 'UDBZ', installer_output_dir + os.sep + installer_name_base + '.dmg', '-ov', '-scrub']
+                bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
+                cmd_args = [scp_cmd, installer_name, dest_server + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '.dmg']
+                bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
     else:
         for file_name in dir_list:
             if file_name.endswith(".exe"):
@@ -720,21 +726,61 @@ def handle_offline_installer_build():
                     cmd_args = ['C:\Utils\sign\signtool.exe', 'sign /v /du' + os.environ[SIGNING_SERVER], '/p' + os.environ[SIGNING_PASSWORD], '/t http://timestamp.verisign.com/scripts/timestamp.dll', '/f "C:\utils\sign\keys.pfx"' + installer_name]
                 else:
                     cmd_args = ['C:\Utils\sign\signtool.exe', 'sign /v /du' + os.environ[SIGNING_SERVER], '/p' + os.environ[SIGNING_PASSWORD], '/t http://timestamp.verisign.com/scripts/timestamp.dll', '/f "C:\utils\sign\keys.pfx"' + installer_name]
-                bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + os.sep + 'installer_output', True)
-                cmd_args = [SCP_COMMAND_WIN, installer_name, dest_server + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '.exe']
-                bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + os.sep + 'installer_output', True)
-
+                bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
+                cmd_args = [scp_cmd, installer_name, dest_server + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '.exe']
+                bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
     #Update latest link
     ssh_cmd = SSH_COMMAND
     if bldinstallercommon.is_win_platform():
         ssh_cmd = SSH_COMMAND_WIN
     cmd_args =[ssh_cmd, dest_server, 'ln -sfn', dest_dir, latest_dir]
     bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR,True)
+    # copy rta description file(s)
+    for file_name in dir_list:
+        if file_name.endswith('.txt'):
+            cmd_args = [scp_cmd, file_name, dest_server + ':' + dest_dir + '/' + file_name]
+            bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
+    # (3) trigger rta cases
+    trigger_rta(installer_output_dir)
 
+
+###############################
+# Trigger RTA cases
+###############################
+def trigger_rta(installer_output_dir):
+    # obtain RTA server base url
+    if not os.environ.get('RTA_SERVER_BASE_URL'):
+        print('*** Error - RTA server base url is not defined. Unable to proceed!')
+        sys.exit(-1)
+    rta_server_base_url = os.environ['RTA_SERVER_BASE_URL']
+    if not (rta_server_base_url.endswith('/')):
+        rta_server_base_url += '/'
+
+    if not os.path.isdir(installer_output_dir):
+        print('*** Error - Given installer_output_dir does not exist: {0}'.format(installer_output_dir))
+        sys.exit(-1)
+    dir_list = os.listdir(installer_output_dir)
+    matching = [s for s in dir_list if 'rta_description_file' in s]
+    # sanity check, should contain only one rta test case file
+    if len(matching) != 1:
+        print('*** Error - Given installer_output_dir contained {0} rta description files?'.format(len(matching)))
+        sys.exit(-1)
+    rta_file = os.path.join(installer_output_dir, matching[0])
+    f = open(rta_file)
+    for line in iter(f):
+        line_split = line.split(' ')
+        if len(line_split) != 2:
+            print('*** Error - Invalid format in rta description file {0}, line: {1}'.format(rta_file, line))
+            sys.exit(-1)
+        rta_keys = line_split[1].split(',')
+        for item in rta_keys:
+            url = rta_server_base_url + item.rstrip() + '/build?token=JENKINS_SQUISH'
+            print('Triggering RTA case: {0}'.format(url))
+            urllib.urlretrieve(url)
+    f.close()
 
 
 #def handle_online_installer_build(license, ....):
-
 #def handle_online_repository_build(license, ....):
 
 ###############################

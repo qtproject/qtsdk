@@ -118,6 +118,7 @@ INSTALL_PRIORITY_TAG                = '%INSTALL_PRIORITY%'
 SORTING_PRIORITY_TAG                = '%SORTING_PRIORITY%'
 
 KEY_SUBSTITUTION_LIST               = []
+PREFERRED_INSTALLER_NAME            = ''
 # ----------------------------------------------------------------------
 INSTALLER_FRAMEWORK_QT_ARCHIVE_URI              = ''
 INSTALLER_FRAMEWORK_QT_CONFIGURE_OPTIONS        = ''
@@ -253,6 +254,10 @@ def setup_option_parser():
     OPTION_PARSER.add_option("--version-tag",
                       action="store", type="string", dest="installer_version_tag", default="",
                       help="installer file name scheme: define installer version tag (in addition to version number)")
+
+    OPTION_PARSER.add_option("--preferred-installer-name",
+                      action="store", type="string", dest="preferred_installer_name", default="",
+                      help="alternatively define the full installer name excluding the extension (.run, .exe, .app")
     # dev mode i.e. building installer-framework
     OPTION_PARSER.add_option("--installer-framework-qt-archive-uri",
                       action="store", type="string", dest="installer_framework_qt_archive_uri", default=IfwOptions.default_qt_source_package_uri,
@@ -358,6 +363,7 @@ def parse_cmd_line():
     global INSTALLER_FRAMEWORK_OPENSSL
 
     global KEY_SUBSTITUTION_LIST
+    global PREFERRED_INSTALLER_NAME
 
     CONFIGURATIONS_DIR                  = options.configurations_dir
     MAIN_CONFIG_NAME                    = options.configuration_file
@@ -385,6 +391,8 @@ def parse_cmd_line():
     INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_URL     = options.installer_framework_product_key_checker_url
     INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_BRANCH  = options.installer_framework_product_key_checker_branch
     INSTALLER_FRAMEWORK_OPENSSL                     = options.installer_framework_openssl
+
+    PREFERRED_INSTALLER_NAME                        = options.preferred_installer_name
 
     # key value substitution list init
     if options.global_key_value_substitution_list:
@@ -1014,20 +1022,24 @@ def create_installer_binary():
     installer_type  = 'offline' if CREATE_OFFLINE_INSTALLER else 'online'
     extension       = '.run' if bldinstallercommon.is_linux_platform() else ''
 
-    SDK_NAME = SDK_NAME + '-' + platform + '-' + LICENSE_TYPE
-    # optional
-    if INSTALLER_NAMING_SCHEME_VERSION_NUM:
-        SDK_NAME += '-' + INSTALLER_NAMING_SCHEME_VERSION_NUM
-    # optional
-    if INSTALLER_NAMING_SCHEME_VERSION_TAG:
-        SDK_NAME += '-' + INSTALLER_NAMING_SCHEME_VERSION_TAG
-    # optional
-    if INSTALLER_NAMING_SCHEME_COMPILER:
-        SDK_NAME = SDK_NAME + '-' + INSTALLER_NAMING_SCHEME_COMPILER
-    # optional
-    if INSTALLER_NAMING_SCHEME_TARGET_ARCH:
-        SDK_NAME = SDK_NAME + '-' + INSTALLER_NAMING_SCHEME_TARGET_ARCH
-    SDK_NAME = SDK_NAME + '-' + installer_type + extension
+    if not PREFERRED_INSTALLER_NAME:
+        SDK_NAME = SDK_NAME + '-' + platform + '-' + LICENSE_TYPE
+        # optional
+        if INSTALLER_NAMING_SCHEME_VERSION_NUM:
+            SDK_NAME += '-' + INSTALLER_NAMING_SCHEME_VERSION_NUM
+        # optional
+        if INSTALLER_NAMING_SCHEME_VERSION_TAG:
+            SDK_NAME += '-' + INSTALLER_NAMING_SCHEME_VERSION_TAG
+        # optional
+        if INSTALLER_NAMING_SCHEME_COMPILER:
+            SDK_NAME = SDK_NAME + '-' + INSTALLER_NAMING_SCHEME_COMPILER
+        # optional
+        if INSTALLER_NAMING_SCHEME_TARGET_ARCH:
+            SDK_NAME = SDK_NAME + '-' + INSTALLER_NAMING_SCHEME_TARGET_ARCH
+        SDK_NAME = SDK_NAME + '-' + installer_type
+    else:
+        SDK_NAME = PREFERRED_INSTALLER_NAME
+    SDK_NAME += extension
 
     # if online installer only
     if CREATE_ONLINE_INSTALLER:
