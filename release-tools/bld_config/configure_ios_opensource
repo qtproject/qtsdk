@@ -1,1 +1,1 @@
--opensource -confirm-license -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -no-pkg-config -xplatform unsupported/macx-ios-clang
+-opensource -confirm-license -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -no-pkg-config -xplatform macx-ios-clang
