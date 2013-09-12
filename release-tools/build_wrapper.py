@@ -453,7 +453,7 @@ def handle_qt_release_build():
                 if TARGET_ENV.find('opengl') >= 1 or TARGET_ENV.find('OpenGL') >= 1:
                     cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_opengl_' + LICENSE,'-a','-D QT_EVAL']
                 elif TARGET_ENV.find('msvc2012') >= 1 and TARGET_ENV.find('x86') >= 1:
-                    cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','-m','jom','-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-D QT_EVAL -no-vcproj']
+                    cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-D QT_EVAL -no-vcproj']
                 else:
                     cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-D QT_EVAL']
             else:
