@@ -661,8 +661,10 @@ def handle_offline_installer_build():
     # into network disk
 
     # Crete remote directories
-    dest_dir = PATH + '/sdk_qt5_offline_' + LICENSE_DIRS[LICENSE] + '/' + QT_VERSION + '-offline'
-    create_remote_dirs('QT@qt-rnd.it.local', dest_dir)
+    dest_server = 'QT@qt-rnd.it.local'
+    dest_dir = PATH + '/' + LICENSE_DIRS[LICENSE] + '/offline_installers/' + TIME_STAMP + '-' + BUILD_NUMBER
+    latest_dir = PATH + '/' + LICENSE_DIRS[LICENSE] + '/offline_installers/latest'
+    create_remote_dirs(dest_server, dest_dir)
 
     installer_name = ''
     installer_name_base = ''
@@ -672,7 +674,7 @@ def handle_offline_installer_build():
             if file_name.endswith(".run"):
                 installer_name = file_name
                 installer_name_base = os.path.splitext(file_name)[0]
-                cmd_args = ['rsync', installer_name, 'QT@qt-rnd.it.local:' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '.run']
+                cmd_args = ['rsync', installer_name, dest_server + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '.run']
                 bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + os.sep + 'installer_output', True)
     elif bldinstallercommon.is_mac_platform():
         for file_name in dir_list:
@@ -688,7 +690,7 @@ def handle_offline_installer_build():
                 bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + os.sep + 'installer_output', True)
                 cmd_args = ['hdiutil', 'create', '-srcfolder', WORK_DIR + '/qtsdk/release-tools/installer_output/' + installer_name_base + '.app', '-volname', installer_name_base, '-format', 'UDBZ', WORK_DIR + '/qtsdk/release-tools/installer_output/'  + installer_name_base + '.dmg', '-ov', '-scrub']
                 bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + os.sep + 'installer_output', True)
-                cmd_args = ['rsync', installer_name, 'QT@qt-rnd.it.local:' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '.dmg']
+                cmd_args = ['rsync', installer_name, dest_server + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '.dmg']
                 bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + os.sep + 'installer_output', True)
     else:
         for file_name in dir_list:
@@ -700,8 +702,13 @@ def handle_offline_installer_build():
                 else:
                     cmd_args = ['C:\Utils\sign\signtool.exe', 'sign /v /du' + os.environ[SIGNING_SERVER], '/p' + os.environ[SIGNING_PASSWORD], '/t http://timestamp.verisign.com/scripts/timestamp.dll', '/f "C:\utils\sign\keys.pfx"' + installer_name]
                 bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + os.sep + 'installer_output', True)
-                cmd_args = [SCP_COMMAND_WIN, installer_name, 'QT@qt-rnd.it.local:' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '.exe']
+                cmd_args = [SCP_COMMAND_WIN, installer_name, dest_server + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '.exe']
                 bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + os.sep + 'installer_output', True)
+
+    #Update latest link
+    cmd_args =[ssh_cmd, dest_server, 'ln -sfn', dest_dir, latest_dir]
+    bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR,True)
+
 
 
 #def handle_online_installer_build(license, ....):
