@@ -403,7 +403,6 @@ def handle_qt_android_release_build():
             cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','-c',configure_files_path + 'configure_android_x86_' + LICENSE,'-a','-prefix ' +WORK_DIR + os.sep + '______________________________PADDING______________________________' + ' -android-toolchain-version 4.8','--android-ndk-host=darwin-x86_64','--android-api-version=android-10','--android-sdk-home=/opt/android/sdk','--android-ndk-home=/opt/android/ndk']
         bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR, True)
     elif bldinstallercommon.is_win_platform():
-        os.chdir('/')
         exec_dir=os.getcwd()
         if TARGET_ENV.find("armv7") >= 1:
             EXTRA_ENV['ANDROID_TARGET_ARCH'] = 'armeabi-v7a'
