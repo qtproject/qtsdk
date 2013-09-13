@@ -93,15 +93,19 @@ SRC_DEST_DIRS               = ['src', 'src/submodules', 'src/examples_injection'
 BIN_TARGET_DIRS             = \
 {'linux-g++-Ubuntu11.10-x86_Android-armv5':'android_armv5/linux_x86'\
 ,'linux-g++-Ubuntu11.10-x64_Android-armv5':'android_armv5/linux_x64'\
+,'mac-clang-10.7-x64_Android-armv5':'android_armv5/mac_x64'\
 ,'win-MinGW4.8-Windows7-x86_Android-armv5':'android_armv5/mingw_x86'\
 ,'linux-g++-Ubuntu11.10-x86_Android-armv7':'android_armv7/linux_x86'\
 ,'linux-g++-Ubuntu11.10-x64_Android-armv7':'android_armv7/linux_x64'\
+,'mac-clang-10.7-x64_Android-armv7':'android_armv7/mac_x64'\
 ,'win-MinGW4.8-Windows7-x86_Android-armv7':'android_armv7/mingw_x86'\
 ,'linux-g++-Ubuntu11.10-x86_Android-mips':'android_mips/linux_x86'\
 ,'linux-g++-Ubuntu11.10-x64_Android-mips':'android_mips/linux_x64'\
+,'mac-clang-10.7-x64_Android-mips':'android_mips/mac_x64'\
 ,'win-MinGW4.8-Windows7-x86_Android-mips':'android_mips/mingw_x86'\
 ,'linux-g++-Ubuntu11.10-x86_Android-x86':'android_x86/linux_x86'\
 ,'linux-g++-Ubuntu11.10-x64_Android-x86':'android_x86/linux_x64'\
+,'mac-clang-10.7-x64_Android-x86':'android_x86/mac_x64'\
 ,'win-MinGW4.8-Windows7-x86_Android-x86':'android_x86/mingw_x86'\
 ,'linux-g++-Ubuntu11.10-x86':'linux_gcc_32_ubuntu1110'\
 ,'linux-g++-Ubuntu11.10-x64':'linux_gcc_64_ubuntu1110'\
