@@ -470,18 +470,18 @@ def handle_qt_release_build():
             exec_path = os.getcwd()
             if LICENSE == 'commercial':
                 if TARGET_ENV.find('opengl') >= 1 or TARGET_ENV.find('OpenGL') >= 1:
-                    cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_opengl_' + LICENSE,'-a','-D QT_EVAL']
+                    cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_opengl_' + LICENSE,'-a','-D QT_EVAL' + ' -prefix ' + WORK_DIR + os.sep + 'PADDING']
                 elif TARGET_ENV.find('msvc2012') >= 1 and TARGET_ENV.find('x86') >= 1:
-                    cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-D QT_EVAL -no-vcproj']
+                    cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-D QT_EVAL -no-vcproj' + ' -prefix ' + WORK_DIR + os.sep + 'PADDING']
                 else:
-                    cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-D QT_EVAL']
+                    cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-D QT_EVAL' + ' -prefix ' + WORK_DIR + os.sep + 'PADDING']
             else:
                 if TARGET_ENV.find('opengl') >=1 or TARGET_ENV.find('OpenGL') >= 1:
-                    cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_opengl_' + LICENSE]
+                    cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_opengl_' + LICENSE,'-a','-prefix ' + WORK_DIR + os.sep + 'PADDING']
                 elif TARGET_ENV.find('msvc2012') >= 1 and TARGET_ENV.find('x86') >= 1:
-                    cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-no-vcproj']
+                    cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-no-vcproj' + ' -prefix ' + WORK_DIR + os.sep + 'PADDING']
                 else:
-                    cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_' + LICENSE]
+                    cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-prefix ' + WORK_DIR + os.sep + 'PADDING']
             bldinstallercommon.do_execute_sub_process(cmd_args,exec_path, True)
         elif bldinstallercommon.is_mac_platform():
             cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-c',configure_files_path + 'configure_mac_' + LICENSE,'-a','-prefix ' + WORK_DIR + os.sep + '______________________________PADDING______________________________']
