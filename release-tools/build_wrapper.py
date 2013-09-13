@@ -722,6 +722,9 @@ def handle_offline_installer_build():
                 bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + os.sep + 'installer_output', True)
 
     #Update latest link
+    ssh_cmd = SSH_COMMAND
+    if bldinstallercommon.is_win_platform():
+        ssh_cmd = SSH_COMMAND_WIN
     cmd_args =[ssh_cmd, dest_server, 'ln -sfn', dest_dir, latest_dir]
     bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR,True)
 
