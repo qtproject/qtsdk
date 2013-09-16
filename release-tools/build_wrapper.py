@@ -433,7 +433,7 @@ def handle_qt_ios_release_build():
         configure_extra_options += '-DQT_EVAL'
     global EXTRA_ENV
     cmd_args = ''
-    script_path = os.path.join(SCRIPT_ROOT_DIR, mkqt5bld.py)
+    script_path = os.path.join(SCRIPT_ROOT_DIR, 'mkqt5bld.py')
     source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE_DIRS[LICENSE] + '-src-' + QT_FULL_VERSION
     configure_files_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_config' + os.sep)
     if bldinstallercommon.is_mac_platform():
