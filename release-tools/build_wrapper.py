@@ -87,7 +87,7 @@ SCP_COMMAND_WIN             ='%SCP%'
 PLATFORM                    =''
 LICENSE_DIRS                = \
 {'opensource': 'opensource'\
-,'commercial': 'enterprise'}
+,'enterprise': 'commercial'}
 SRC_DEST_DIRS               = ['src', 'src/submodules', 'src/examples_injection', 'src/licheck']
 # TODO: target directories hard coded, should be figured out from somewhere!
 BIN_TARGET_DIRS             = \
@@ -155,7 +155,7 @@ def init_qt_build_cycle():
         if dir_name != 'src/licheck':
             dir_path = REMOTE_DIR + '/' + dir_name
             create_remote_dirs(SERVER, dir_path)
-        elif LICENSE == 'commercial':
+        elif LICENSE == 'enterprise':
             dir_path = REMOTE_DIR + '/' + dir_name
             create_remote_dirs(SERVER, dir_path)
 
@@ -172,7 +172,7 @@ def init_qt_build_cycle():
     bldinstallercommon.do_execute_sub_process(cmd_args,SCRIPT_ROOT_DIR, True)
 
     # QT Creator directory
-    dir_path = PATH + '/' + LICENSE_DIRS[LICENSE] + '/' + 'qtcreator'
+    dir_path = PATH + '/' + LICENSE + '/' + 'qtcreator'
     create_remote_dirs(SERVER, dir_path + '/' + TIME_STAMP + '-' + BUILD_NUMBER)
 
     ssh_cmd = SSH_COMMAND
@@ -195,22 +195,22 @@ def handle_ifw_build():
     if bldinstallercommon.is_win_platform():
         extension = '.zip'
     qt_src_pkg += extension
-    cmd_args = ['python', '-u', 'bld_ifw_tools.py', '--license=' + LICENSE, '--qt_archive_uri=' + qt_src_pkg, '--ifw_url=' + ifw_url, '--ifw_branch=' + ifw_branch]
-    if LICENSE == 'commercial':
+    cmd_args = ['python', '-u', 'bld_ifw_tools.py', '--license=' + LICENSE_DIRS[LICENSE], '--qt_archive_uri=' + qt_src_pkg, '--ifw_url=' + ifw_url, '--ifw_branch=' + ifw_branch]
+    if LICENSE == 'enterprise':
         cmd_args += ['--product_key_checker_url=' + WORK_DIR + '/qtsdk-enterprise/productkeycheck/qt_product_key_checker.pri']
     # execute
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
     #create destination dirs
-    create_remote_dirs(SERVER,PATH + '/' + LICENSE_DIRS[LICENSE] + '/ifw/' + ifw_branch)
+    create_remote_dirs(SERVER,PATH + '/' + LICENSE + '/ifw/' + ifw_branch)
 
     if bldinstallercommon.is_win_platform():
         file_list = os.listdir(SCRIPT_ROOT_DIR+'/build_artefacts')
         for file_name in file_list:
             if file_name.endswith(".7z"):
-                cmd_args = [SCP_COMMAND_WIN,file_name,SERVER + ':' + PATH + '/' + LICENSE_DIRS[LICENSE] + '/ifw/' + ifw_branch + '/']
+                cmd_args = [SCP_COMMAND_WIN,file_name,SERVER + ':' + PATH + '/' + LICENSE + '/ifw/' + ifw_branch + '/']
                 bldinstallercommon.do_execute_sub_process(cmd_args,SCRIPT_ROOT_DIR+'/build_artefacts',True)
     else:
-        cmd_args = ['rsync','-r','./',SERVER + ':' + PATH + '/' + LICENSE_DIRS[LICENSE] + '/ifw/' + ifw_branch + '/']
+        cmd_args = ['rsync','-r','./',SERVER + ':' + PATH + '/' + LICENSE + '/ifw/' + ifw_branch + '/']
         bldinstallercommon.do_execute_sub_process(cmd_args,SCRIPT_ROOT_DIR+'/build_artefacts',True)
 
 
@@ -229,11 +229,11 @@ def handle_qt_src_package_build():
     #cmd_args = ['./init-repository','-f']
     exec_path = WORK_DIR + os.sep + 'qt5'
     #bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
-    if LICENSE == 'commercial':
+    if LICENSE == 'enterprise':
         cmd_args = ['../patches/apply.sh']
         bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
 
-    if LICENSE == 'commercial':
+    if LICENSE == 'enterprise':
         copy_license_checkers()
     package_path = WORK_DIR + os.sep + 'src_pkg'
     bldinstallercommon.create_dirs(package_path)
@@ -248,13 +248,13 @@ def handle_qt_src_package_build():
         module_exclude_list += ['-i', item]
     # cmd args for source packaging srcipt
     cmd_args = [WORK_DIR + os.sep + 'qtsdk/release-tools/mksrc.sh', '-u', WORK_DIR + os.sep + 'qt5']
-    cmd_args += ['-v', QT_FULL_VERSION, '-m', '-N', '-l',LICENSE_DIRS[LICENSE]]
+    cmd_args += ['-v', QT_FULL_VERSION, '-m', '-N', '-l',LICENSE]
     cmd_args += module_exclude_list
     # create src package
     bldinstallercommon.do_execute_sub_process(cmd_args,package_path, True)
 
     # Example injection
-    package_name = 'qt-everywhere-' + LICENSE_DIRS[LICENSE] + '-src-' + QT_FULL_VERSION
+    package_name = 'qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
 
     cmd_args = ['tar','xzf','single/' + package_name + '.tar.gz']
 
@@ -377,7 +377,7 @@ def handle_icu_build():
 def handle_qt_android_release_build():
     cmd_args = ''
     script_path = 'qtsdk' + os.sep + 'release-tools' + os.sep + 'mkqt5bld.py'
-    source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE_DIRS[LICENSE] + '-src-' + QT_FULL_VERSION
+    source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
     configure_files_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_config' + os.sep)
 
     qt_configure_options_file = os.environ['RELEASE_BUILD_QT_CONFIGURE_OPTIONS_FILE']
@@ -423,7 +423,7 @@ def handle_qt_ios_release_build():
     global EXTRA_ENV
     cmd_args = ''
     script_path = os.path.join(SCRIPT_ROOT_DIR, 'mkqt5bld.py')
-    source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE_DIRS[LICENSE] + '-src-' + QT_FULL_VERSION
+    source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
     configure_files_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_config' + os.sep)
     if bldinstallercommon.is_mac_platform():
         if TARGET_ENV.find("x64") >= 1:
@@ -469,17 +469,17 @@ def handle_qt_release_build():
                         icu_include_path = WORK_DIR + os.sep + file_name + os.sep + 'include'
                         EXTRA_ENV['LD_LIBRARY_PATH'] = icu_lib_path
         script_path = 'qtsdk' + os.sep + 'release-tools' + os.sep + 'mkqt5bld.py'
-        source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE_DIRS[LICENSE] + '-src-' + QT_FULL_VERSION
+        source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
         configure_files_path = os.path.join(WORK_DIR, 'qtsdk', 'release-tools', 'bld_config' + os.sep)
         if bldinstallercommon.is_linux_platform():
-            if LICENSE == 'commercial':
+            if LICENSE == 'enterprise':
                 cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-c',configure_files_path + 'configure_linux_' + LICENSE,'-a','-DQT_EVAL -L '+icu_lib_path + ' -I ' + icu_include_path + ' -prefix ' +WORK_DIR + os.sep + '______________________________PADDING______________________________' + ' -R ' + WORK_DIR + os.sep + '______________________________PADDING______________________________']
             else:
                 cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-c',configure_files_path + 'configure_linux_' + LICENSE,'-a','-L '+icu_lib_path + ' -I ' + icu_include_path + ' -prefix ' +WORK_DIR + os.sep + '______________________________PADDING______________________________' + ' -R ' + WORK_DIR + os.sep + '______________________________PADDING______________________________']
             bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR, True,EXTRA_ENV)
         elif bldinstallercommon.is_win_platform():
             exec_path = os.getcwd()
-            if LICENSE == 'commercial':
+            if LICENSE == 'enterprise':
                 if TARGET_ENV.find('opengl') >= 1 or TARGET_ENV.find('OpenGL') >= 1:
                     cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_opengl_' + LICENSE,'-a','-D QT_EVAL' + ' -prefix ' + WORK_DIR + os.sep + 'PADDING']
                 elif TARGET_ENV.find('msvc2012') >= 1 and TARGET_ENV.find('x86') >= 1:
@@ -629,7 +629,7 @@ def handle_qt_release_build():
 ###############################
 def handle_qt_creator_build():
 
-    dir_path = PATH + LICENSE_DIRS[LICENSE] + '/qtcreator/latest'
+    dir_path = PATH + LICENSE + '/qtcreator/latest'
 
     if bldinstallercommon.is_linux_platform():
         if LICENSE == 'opensource':
@@ -698,8 +698,8 @@ def handle_offline_installer_build():
     # (2) copy all offline installers from 'installer_output_dir' into network disk
     # Crete remote directories
     dest_server = 'QT@qt-rnd.it.local'
-    dest_dir = PATH + '/' + LICENSE_DIRS[LICENSE] + '/offline_installers/' + TIME_STAMP + '-' + BUILD_NUMBER
-    latest_dir = PATH + '/' + LICENSE_DIRS[LICENSE] + '/offline_installers/latest'
+    dest_dir = PATH + '/' + LICENSE + '/offline_installers/' + TIME_STAMP + '-' + BUILD_NUMBER
+    latest_dir = PATH + '/' + LICENSE + '/offline_installers/latest'
     create_remote_dirs(dest_server, dest_dir)
 
     installer_name = ''
@@ -815,12 +815,12 @@ def copy_license_checkers():
 
     cmd_args = ['git','add','.']
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
-    cmd_args = ['git','commit','-m','"Add license checkers into commercial source package"']
+    cmd_args = ['git','commit','-m','"Add license checkers into enterprise source package"']
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
     exec_path = WORK_DIR + os.sep + 'qt5'
     cmd_args = ['git','add','.']
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
-    cmd_args = ['git','commit','-m','"Add license checkers into commercial source package"']
+    cmd_args = ['git','commit','-m','"Add license checkers into enterprise source package"']
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
 
     os.chdir(SCRIPT_ROOT_DIR)
@@ -884,8 +884,8 @@ def parse_cmd_line():
             QT_FULL_VERSION = QT_VERSION
             if QT_VERSION_TAG:
                 QT_FULL_VERSION += '-' + QT_VERSION_TAG
-            REMOTE_DIR      = PATH + '/' + LICENSE_DIRS[LICENSE] + '/' + 'qt' + '/' + QT_VERSION + '/' + TIME_STAMP + '-' + BUILD_NUMBER
-            LATEST_DIR      = PATH + '/' + LICENSE_DIRS[LICENSE] + '/' + 'qt' + '/' + QT_VERSION + '/' + 'latest'
+            REMOTE_DIR      = PATH + '/' + LICENSE + '/' + 'qt' + '/' + QT_VERSION + '/' + TIME_STAMP + '-' + BUILD_NUMBER
+            LATEST_DIR      = PATH + '/' + LICENSE + '/' + 'qt' + '/' + QT_VERSION + '/' + 'latest'
     else:
         OPTION_PARSER.print_help()
         sys.exit(-1)
@@ -910,7 +910,7 @@ def setup_option_parser():
                       help="command to be executed: e.g. -c init")
     OPTION_PARSER.add_option("-l", "--license",
                       action="store", type="string", dest="license", default="",
-                      help="license type: commercial or opensource")
+                      help="license type: enterprise or opensource")
     OPTION_PARSER.add_option("-v", "--qt_version",
                       action="store", type="string", dest="qt_version", default="",
                       help="Qt version e.g. 5.0.2")
