@@ -107,6 +107,7 @@ BIN_TARGET_DIRS             = \
 ,'linux-g++-Ubuntu11.10-x64_Android-x86':'android_x86/linux_x64'\
 ,'mac-clang-10.7-x64_Android-x86':'android_x86/mac_x64'\
 ,'win-MinGW4.8-Windows7-x86_Android-x86':'android_x86/mingw_x86'\
+,'mac-clang-10.8-x64_iOS':'ios/mac_x64'\
 ,'linux-g++-Ubuntu11.10-x86':'linux_gcc_32_ubuntu1110'\
 ,'linux-g++-Ubuntu11.10-x64':'linux_gcc_64_ubuntu1110'\
 ,'linux-g++-Ubuntu_11.10_x86':'linux_gcc_32_ubuntu1110'\
@@ -422,6 +423,25 @@ def handle_qt_android_release_build():
             cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','-m','mingw32-make','-c',configure_files_path + 'configure_android_x86_' + LICENSE,'-a','-prefix ' +WORK_DIR + os.sep + 'PADDING' + ' -android-toolchain-version 4.8','--android-ndk-host=windows','--android-api-version=android-10','--android-sdk-home=C:'+os.sep+'Utils'+os.sep+'android'+os.sep+'sdk'+os.sep+'sdk','--android-ndk-home=C:'+os.sep+'Utils'+os.sep+'android'+os.sep+'ndk']
         bldinstallercommon.do_execute_sub_process(cmd_args,exec_dir, True)
 
+
+###############################
+# handle_qt_ios_release_build
+###############################
+def handle_qt_ios_release_build():
+    configure_extra_options = ''
+    if LICENSE == 'enterprise':
+        configure_extra_options += '-DQT_EVAL'
+    global EXTRA_ENV
+    cmd_args = ''
+    script_path = os.path.join(SCRIPT_ROOT_DIR, mkqt5bld.py)
+    source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE_DIRS[LICENSE] + '-src-' + QT_FULL_VERSION
+    configure_files_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_config' + os.sep)
+    if bldinstallercommon.is_mac_platform():
+        if TARGET_ENV.find("x64") >= 1:
+            cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','-c',configure_files_path + 'configure_ios_' + LICENSE,'-a','-prefix ' +WORK_DIR + os.sep + '______________________________PADDING______________________________']
+        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR, True)
+
+
 ###############################
 # handle_qt_release_build
 ###############################
@@ -429,6 +449,8 @@ def handle_qt_release_build():
     # Handle Android build
     if TARGET_ENV.find("Android") >= 1:
         handle_qt_android_release_build()
+    elif TARGET_ENV.find("iOS") >= 1:
+        handle_qt_ios_release_build()
     else:
         # download pre-compiled ICU
         global EXTRA_ENV
