@@ -804,7 +804,7 @@ def handle_online_repository_build():
     packages_base_url = os.environ['PKG_SERVER_URL']
     # do we also update production repository?
     update_production_repo = False
-    if os.environ.get('DO_UPDATE_PRODUCTION_REPOSITORY')
+    if os.environ.get('DO_UPDATE_PRODUCTION_REPOSITORY'):
         update = os.environ['DO_UPDATE_PRODUCTION_REPOSITORY']
         if update.lower() in ['yes', 'true', '1']:
             update_production_repo = True
