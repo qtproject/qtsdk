@@ -792,7 +792,24 @@ def trigger_rta(installer_output_dir):
 
 
 #def handle_online_installer_build(license, ....):
-#def handle_online_repository_build(license, ....):
+
+
+def handle_online_repository_build():
+    conf_file_base_path = os.path.join(SCRIPT_ROOT_DIR, 'releases')
+    conf_file = os.path.join(conf_file_base_path, os.environ['RELEASE_BUILD_CONF_FILE'])
+    if TARGET_ENV.find('64') != -1:
+        arch = 'x64'
+    else:
+        arch = 'x86'
+    packages_base_url = os.environ['PKG_SERVER_URL']
+    # do we also update production repository?
+    update_production_repo = False
+    if os.environ.get('DO_UPDATE_PRODUCTION_REPOSITORY')
+        update = os.environ['DO_UPDATE_PRODUCTION_REPOSITORY']
+        if update.lower() in ['yes', 'true', '1']:
+            update_production_repo = True
+    release_build_handler.handle_repo_build(conf_file, LICENSE, 'release', PLATFORM, update_production_repo)
+
 
 ###############################
 # copy_license_checkers
