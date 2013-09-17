@@ -403,14 +403,12 @@ def handle_qt_android_release_build():
     cmd_args += ['--android-ndk-home=' + android_ndk_home]          # e.g. "/opt/android/ndk"
     if bldinstallercommon.is_linux_platform():
         cmd_args += ['--replace-rpath']
-    cmd_args += ['-a','-prefix ' + WORK_DIR + os.sep + make_install_padding]
+    cmd_args += ['-a', configure_extra_options + ' -prefix ' + WORK_DIR + os.sep + make_install_padding]
     cmd_args += [' -android-toolchain-version ' + android_toolchain_version]    # e.g. "4.8"
-    cmd_args += [' ' + configure_extra_options]
 
-    if bldinstallercommon.is_linux_platform():
+    if bldinstallercommon.is_linux_platform() or bldinstallercommon.is_mac_platform():
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
     elif bldinstallercommon.is_win_platform():
-        os.chdir('/')
         exec_dir = os.getcwd()
         bldinstallercommon.do_execute_sub_process(cmd_args, exec_dir, True)
 
