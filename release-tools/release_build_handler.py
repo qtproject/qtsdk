@@ -361,10 +361,12 @@ def handle_offline_installer_build(conf_file, license, branch, platform, arch, p
     rta_description_file_name = os.path.join(output_dir, RTA_DESCRIPTION_FILE + '-' + plat_suffix + '-' + architecture + '.txt')
     # handle build jobs
     for job in job_list:
-        create_offline_installer(job, packages_base_url)
-        rta_description_file = open(rta_description_file_name, 'a')
-        rta_description_file.write(job.installer_name + ' ' + job.rta_key_list + '\n')
-        rta_description_file.close()
+        creation_ok = create_offline_installer(job, packages_base_url)
+        # write the rta description file only if installer creation was ok
+        if (creation_ok):
+            rta_description_file = open(rta_description_file_name, 'a')
+            rta_description_file.write(job.installer_name + ' ' + job.rta_key_list + '\n')
+            rta_description_file.close()
     # if "/installer_output" directory is empty -> error
     if not os.listdir(output_dir):
         print('*** Fatal error! No offline installers generated into: {0}'.format(output_dir))
@@ -372,12 +374,12 @@ def handle_offline_installer_build(conf_file, license, branch, platform, arch, p
 
 # helper function/wrapper to create offline installer
 def create_offline_installer(job, packages_base_url):
-    create_installer(job, packages_base_url, '-o')
+    return create_installer(job, packages_base_url, '-o')
 
 
 # helper function/wrapper to create online installer
 def create_online_installer(job, packages_base_url):
-    create_installer(job, packages_base_url, '-O')
+    return create_installer(job, packages_base_url, '-O')
 
 
 # helper function/wrapper to create online installer
@@ -401,9 +403,15 @@ def create_installer(job, packages_base_url, installer_type):
     if (len(job.substitution_arg_list) > 0):
         for item in job.substitution_arg_list:
             cmd_args = cmd_args + [item]
-    # execute, do not bail out if installer job fails (False)
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, False)
-
+    # execute, do not bail out if installer job fails
+    subprocess_exec_stataus = False
+    try:
+        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+        subprocess_exec_stataus = True
+    except:
+        # catch any interrupt into installer creation, we assume the operation failed
+        subprocess_exec_stataus = False
+    return subprocess_exec_stataus
 
 # execute:
 # - online reposiory build
