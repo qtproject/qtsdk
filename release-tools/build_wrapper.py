@@ -978,6 +978,8 @@ def main():
         handle_ifw_build()
     elif COMMAND == 'build_creator':
         handle_qt_creator_build()
+    elif COMMAND == 'repo_build':
+        handle_online_repository_build()
     else:
         print('Unsupported command')
 
