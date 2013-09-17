@@ -397,7 +397,7 @@ def handle_qt_android_release_build():
     if bldinstallercommon.is_win_platform():
         cmd_args += ['-m','mingw32-make']
     cmd_args += ['-c',configure_files_path + qt_configure_options_file]
-    cmd_args += ['--android-ndk-host=' + android_ndk_host]          # "linux-x86" or "linux-x86_64" or "windows"
+    cmd_args += ['--android-ndk-host=' + android_ndk_host]          # "linux-x86" or "linux-x86_64" or "windows" or "darwin-x86_64"
     cmd_args += ['--android-api-version=' + android_api_version]    # e.g. "android-10"
     cmd_args += ['--android-sdk-home=' + android_sdk_home]          # e.g. "/opt/android/sdk"
     cmd_args += ['--android-ndk-home=' + android_ndk_home]          # e.g. "/opt/android/ndk"
