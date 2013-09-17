@@ -795,8 +795,10 @@ def trigger_rta(installer_output_dir):
 
 
 def handle_online_repository_build():
-    conf_file_base_path = os.path.join(SCRIPT_ROOT_DIR, 'releases')
-    conf_file = os.path.join(conf_file_base_path, os.environ['RELEASE_BUILD_CONF_FILE'])
+    conf_file = os.environ['RELEASE_BUILD_CONF_FILE']
+    if not os.path.exists(conf_file):
+        print('*** The given file does not exist: {0}'.format(conf_file))
+        sys.exit(-1)
     if TARGET_ENV.find('64') != -1:
         arch = 'x64'
     else:
