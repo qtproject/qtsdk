@@ -734,9 +734,9 @@ def handle_offline_installer_build():
                 installer_name = file_name
                 installer_name_base = os.path.splitext(file_name)[0]
                 if LICENSE == 'opensource':
-                    cmd_args = ['C:\Utils\sign\signtool.exe', 'sign /v /du' + os.environ['SIGNING_SERVER'], '/p' + os.environ['SIGNING_PASSWORD'], '/t http://timestamp.verisign.com/scripts/timestamp.dll', '/f "C:\utils\sign\keys.pfx"' + installer_name]
+                    cmd_args = ['C:\Utils\sign\signtool.exe', 'sign', '/v', '/du ' + os.environ['SIGNING_SERVER'], '/p ' + os.environ['SIGNING_PASSWORD'], '/t http://timestamp.verisign.com/scripts/timestamp.dll', '/f "C:\utils\sign\keys.pfx" ', installer_name]
                 elif LICENSE == 'enterprise':
-                    cmd_args = ['C:\Utils\sign\signtool.exe', 'sign /v /du' + os.environ['SIGNING_SERVER'], '/p' + os.environ['SIGNING_PASSWORD'], '/t http://timestamp.verisign.com/scripts/timestamp.dll', '/f "C:\utils\sign\keys.pfx"' + installer_name]
+                    cmd_args = ['C:\Utils\sign\signtool.exe', 'sign', '/v', '/du ' + os.environ['SIGNING_SERVER'], '/p ' + os.environ['SIGNING_PASSWORD'], '/t http://timestamp.verisign.com/scripts/timestamp.dll', '/f "C:\utils\sign\keys.pfx" ', installer_name]
                 else:
                     print('*** License unknown: {0}'.format(LICENSE))
                     sys.exit(-1)
