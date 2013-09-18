@@ -940,6 +940,10 @@ def setup_option_parser():
 # Initialize Environment
 ##############################################################
 def init_env():
+    global MAKE_INSTALL_PADDING
+    global SSH_COMMAND
+    global SCP_COMMAND
+
     MAKE_INSTALL_PADDING = 'PADDING' if bldinstallercommon.is_win_platform() else '______________________________PADDING______________________________'
     SSH_COMMAND          = '%SSH%'   if bldinstallercommon.is_win_platform() else 'ssh'
     SCP_COMMAND          = '%SCP%'   if bldinstallercommon.is_win_platform() else 'scp'
