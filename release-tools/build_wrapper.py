@@ -230,7 +230,7 @@ def handle_qt_src_package_build():
     package_path = WORK_DIR + os.sep + 'src_pkg'
     bldinstallercommon.create_dirs(package_path)
     # parse module exclude list from release description file
-    conf_file_base_path = os.path.join(WORK_DIR, 'qtsdk', 'release-tools', 'releases', os.environ['RELEASE_BUILD_CONF_FILE'])
+    conf_file_base_path = os.path.join(SCRIPT_ROOT_DIR, 'releases', os.environ['RELEASE_BUILD_CONF_FILE'])
     parser = ConfigParser.ConfigParser()
     parser.readfp(open(conf_file_base_path))
     exclude_list = bldinstallercommon.safe_config_key_fetch(parser, 'release.global', 'module_exclude_list')
@@ -239,7 +239,7 @@ def handle_qt_src_package_build():
     for item in split_exclude_list:
         module_exclude_list += ['-i', item]
     # cmd args for source packaging srcipt
-    cmd_args = [WORK_DIR + os.sep + 'qtsdk/release-tools/mksrc.sh', '-u', WORK_DIR + os.sep + 'qt5']
+    cmd_args = [os.path.join(SCRIPT_ROOT_DIR, + 'mksrc.sh'), '-u', os.path.join(WORK_DIR, 'qt5')]
     cmd_args += ['-v', QT_FULL_VERSION, '-m', '-N', '-l',LICENSE]
     cmd_args += module_exclude_list
     # create src package
@@ -368,7 +368,7 @@ def handle_icu_build():
 ###############################
 def handle_qt_android_release_build():
     cmd_args = ''
-    script_path = 'qtsdk' + os.sep + 'release-tools' + os.sep + 'mkqt5bld.py'
+    script_path = os.path.join(SCRIPT_ROOT_DIR, 'mkqt5bld.py')
     source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
     configure_files_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_config' + os.sep)
 
@@ -452,9 +452,9 @@ def handle_qt_desktop_release_build():
                     icu_lib_path = WORK_DIR + os.sep + file_name + os.sep + 'lib'
                     icu_include_path = WORK_DIR + os.sep + file_name + os.sep + 'include'
                     EXTRA_ENV['LD_LIBRARY_PATH'] = icu_lib_path
-    script_path = 'qtsdk' + os.sep + 'release-tools' + os.sep + 'mkqt5bld.py'
+    script_path = os.path.join(SCRIPT_ROOT_DIR, 'mkqt5bld.py')
     source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
-    configure_files_path = os.path.join(WORK_DIR, 'qtsdk', 'release-tools', 'bld_config' + os.sep)
+    configure_files_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_config' + os.sep)
     if bldinstallercommon.is_linux_platform():
         if LICENSE == 'enterprise':
             cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-c',configure_files_path + 'configure_linux_' + LICENSE,'-a','-DQT_EVAL -L '+icu_lib_path + ' -I ' + icu_include_path + ' -prefix ' +WORK_DIR + os.sep + MAKE_INSTALL_PADDING + ' -R ' + WORK_DIR + os.sep + MAKE_INSTALL_PADDING]
