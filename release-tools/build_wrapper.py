@@ -693,7 +693,7 @@ def handle_offline_installer_build():
             if file_name.endswith(".run"):
                 installer_name = file_name
                 installer_name_base = os.path.splitext(file_name)[0]
-                cmd_args = [SCP_COMMAND, installer_name, dest_server + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '.run']
+                cmd_args = [SCP_COMMAND, installer_name, dest_server + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '-' + BUILD_NUMBER + '.run']
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
     elif bldinstallercommon.is_mac_platform():
         for file_name in dir_list:
@@ -709,7 +709,7 @@ def handle_offline_installer_build():
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
                 cmd_args = ['hdiutil', 'create', '-srcfolder', installer_output_dir + os.sep + installer_name_base + '.app', '-volname', installer_name_base, '-format', 'UDBZ', installer_output_dir + os.sep + installer_name_base + '.dmg', '-ov', '-scrub']
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
-                cmd_args = [SCP_COMMAND, installer_name, dest_server + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '.dmg']
+                cmd_args = [SCP_COMMAND, installer_name, dest_server + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '-' + BUILD_NUMBER + '.dmg']
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
     else:
         for file_name in dir_list:
@@ -721,7 +721,7 @@ def handle_offline_installer_build():
                 else:
                     cmd_args = ['C:\Utils\sign\signtool.exe', 'sign /v /du' + os.environ['SIGNING_SERVER'], '/p' + os.environ['SIGNING_PASSWORD'], '/t http://timestamp.verisign.com/scripts/timestamp.dll', '/f "C:\utils\sign\keys.pfx"' + installer_name]
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
-                cmd_args = [SCP_COMMAND, installer_name, dest_server + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '.exe']
+                cmd_args = [SCP_COMMAND, installer_name, dest_server + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '-' + BUILD_NUMBER + '.exe']
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
     #Update latest link
     cmd_args = [SSH_COMMAND, dest_server, 'ln -sfn', dest_dir, latest_dir]
