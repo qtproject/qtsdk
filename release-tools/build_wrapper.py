@@ -385,7 +385,10 @@ def handle_qt_android_release_build():
     android_api_version       = os.environ['ANDROID_API_VERSION']
     android_sdk_home          = os.environ['ANDROID_SDK_HOME']
     android_ndk_home          = os.environ['ANDROID_NDK_HOME']
-    configure_extra_options   = os.environ['EXTRA_QT_CONFIGURE_OPTIONS']
+    if os.environ.get('EXTRA_QT_CONFIGURE_OPTIONS'):
+        configure_extra_options = os.environ['EXTRA_QT_CONFIGURE_OPTIONS']
+    else:
+        configure_extra_options = ''
     extension = '.tar.gz'
     if bldinstallercommon.is_win_platform():
         extension = '.zip'
