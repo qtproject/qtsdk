@@ -83,9 +83,6 @@ SRC_URL                     =''
 SSH_COMMAND                 = ''
 SCP_COMMAND                 = ''
 PLATFORM                    =''
-LICENSE_DIRS                = \
-{'opensource': 'opensource'\
-,'enterprise': 'commercial'}
 SRC_DEST_DIRS               = ['src', 'src/submodules', 'src/examples_injection', 'src/licheck']
 # TODO: target directories hard coded, should be figured out from somewhere!
 BIN_TARGET_DIRS             = \
@@ -187,7 +184,7 @@ def handle_ifw_build():
     if bldinstallercommon.is_win_platform():
         extension = '.zip'
     qt_src_pkg += extension
-    cmd_args = ['python', '-u', 'bld_ifw_tools.py', '--license=' + LICENSE_DIRS[LICENSE], '--qt_archive_uri=' + qt_src_pkg, '--ifw_url=' + ifw_url, '--ifw_branch=' + ifw_branch]
+    cmd_args = ['python', '-u', 'bld_ifw_tools.py', '--qt_archive_uri=' + qt_src_pkg, '--ifw_url=' + ifw_url, '--ifw_branch=' + ifw_branch]
     if LICENSE == 'enterprise':
         cmd_args += ['--product_key_checker_url=' + WORK_DIR + '/qtsdk-enterprise/productkeycheck/qt_product_key_checker.pri']
     # execute
