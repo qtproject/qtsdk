@@ -463,8 +463,11 @@ def handle_qt_release_build():
         if bldinstallercommon.is_linux_platform():
             if LICENSE == 'enterprise':
                 cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-c',configure_files_path + 'configure_linux_' + LICENSE,'-a','-DQT_EVAL -L '+icu_lib_path + ' -I ' + icu_include_path + ' -prefix ' +WORK_DIR + os.sep + MAKE_INSTALL_PADDING + ' -R ' + WORK_DIR + os.sep + MAKE_INSTALL_PADDING]
-            else:
+            elif LICENSE == 'opensource':
                 cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-c',configure_files_path + 'configure_linux_' + LICENSE,'-a','-L '+icu_lib_path + ' -I ' + icu_include_path + ' -prefix ' +WORK_DIR + os.sep + MAKE_INSTALL_PADDING + ' -R ' + WORK_DIR + os.sep + MAKE_INSTALL_PADDING]
+            else:
+                print('*** License unknown: {0}'.format(LICENSE))
+                sys.exit(-1)
             bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR, True,EXTRA_ENV)
         elif bldinstallercommon.is_win_platform():
             exec_path = os.getcwd()
@@ -475,13 +478,16 @@ def handle_qt_release_build():
                     cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-D QT_EVAL -no-vcproj' + ' -prefix ' + WORK_DIR + os.sep + MAKE_INSTALL_PADDING]
                 else:
                     cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-D QT_EVAL' + ' -prefix ' + WORK_DIR + os.sep + MAKE_INSTALL_PADDING]
-            else:
+            elif LICENSE == 'opensource':
                 if TARGET_ENV.find('opengl') >=1 or TARGET_ENV.find('OpenGL') >= 1:
                     cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_opengl_' + LICENSE,'-a','-prefix ' + WORK_DIR + os.sep + MAKE_INSTALL_PADDING]
                 elif TARGET_ENV.find('msvc2012') >= 1 and TARGET_ENV.find('x86') >= 1:
                     cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-no-vcproj' + ' -prefix ' + WORK_DIR + os.sep + MAKE_INSTALL_PADDING]
                 else:
                     cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-prefix ' + WORK_DIR + os.sep + MAKE_INSTALL_PADDING]
+            else:
+                print('*** License unknown: {0}'.format(LICENSE))
+                sys.exit(-1)
             bldinstallercommon.do_execute_sub_process(cmd_args,exec_path, True)
         elif bldinstallercommon.is_mac_platform():
             cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-c',configure_files_path + 'configure_mac_' + LICENSE,'-a','-prefix ' + WORK_DIR + os.sep + MAKE_INSTALL_PADDING]
@@ -623,22 +629,31 @@ def handle_qt_creator_build():
     if bldinstallercommon.is_linux_platform():
         if LICENSE == 'opensource':
             cmd_args=['python','./bld_qtcreator.py','--clean','--qt5path','../../qt5_install_dir','--qt5_essentials7z',SRC_URL+BIN_TARGET_DIRS[TARGET_ENV]+'/qt5_essentials.7z','--qt5_addons7z',SRC_URL+BIN_TARGET_DIRS[TARGET_ENV]+'/qt5_addons.7z','--icu7z',ICU_LIBS,'--versiondescription','""']
-        else:
+        elif LICENSE == 'enterprise':
             cmd_args=['python','./bld_qtcreator.py','--clean','--qt5path','../../qt5_install_dir','--qt5_essentials7z',SRC_URL+BIN_TARGET_DIRS[TARGET_ENV]+'/qt5_essentials.7z','--qt5_addons7z',SRC_URL+BIN_TARGET_DIRS[TARGET_ENV]+'/qt5_addons.7z','--icu7z',ICU_LIBS,'--versiondescription','""','--additional_plugin',WORK_DIR + '/qmlprofiler','--additional_plugin',WORK_DIR + '/qtquickdesigner']
+        else:
+            print('*** License unknown: {0}'.format(LICENSE))
+            sys.exit(-1)
         bldinstallercommon.do_execute_sub_process(cmd_args,SCRIPT_ROOT_DIR,True)
     elif bldinstallercommon.is_mac_platform():
         if LICENSE == 'opensource':
             cmd_args=['python','-u','./bld_qtcreator.py','--clean','--installcommand','make -j1','--qt5path','../../qt5_install_dir','--qt5_essentials7z',SRC_URL+BIN_TARGET_DIRS[TARGET_ENV]+'/qt5_essentials.7z','--qt5_addons7z',SRC_URL+BIN_TARGET_DIRS[TARGET_ENV]+'/qt5_addons.7z','--installerbase7z','http://it-dl241-hki/packages/jenkins/opensource/ifw/1.4/installer-framework-build-mac-x64.7z','--versiondescription','""','--keychain_unlock_script','/Users/qt/unlock-keychain.sh']
-        else:
+        elif LICENSE == 'enterprise':
             cmd_args=['python','-u','./bld_qtcreator.py','--clean','--installcommand','make -j1','--qt5path','../../qt5_install_dir','--qt5_essentials7z',SRC_URL+BIN_TARGET_DIRS[TARGET_ENV]+'/qt5_essentials.7z','--qt5_addons7z',SRC_URL+BIN_TARGET_DIRS[TARGET_ENV]+'/qt5_addons.7z','--installerbase7z','http://it-dl241-hki/packages/jenkins/opensource/ifw/1.4/installer-framework-build-mac-x64.7z','--versiondescription','""','--additional_plugin',WORK_DIR + '/qmlprofiler','--additional_plugin',WORK_DIR + '/qtquickdesigner','--keychain_unlock_script','/Users/qt/unlock-keychain.sh']
+        else:
+            print('*** License unknown: {0}'.format(LICENSE))
+            sys.exit(-1)
         bldinstallercommon.do_execute_sub_process(cmd_args,SCRIPT_ROOT_DIR,True)
         cmd_args = ['security','lock-keychain','Developer_ID_Digia.keychain']
         bldinstallercommon.do_execute_sub_process(cmd_args,SCRIPT_ROOT_DIR,True)
     else:
         if LICENSE == 'opensource':
             cmd_args=['python','-u','bld_qtcreator.py','--clean','--buildcommand','C:\Utils\jom\jom.exe','--installcommand','c:\Program Files\Microsoft Visual Studio 10.0\VC\\bin\\nmake.exe','--qt5path','..\..\qt5_install_dir','--qt5_essentials7z',SRC_URL+BIN_TARGET_DIRS[TARGET_ENV]+'/qt5_essentials.7z','--qt5_addons7z',SRC_URL+BIN_TARGET_DIRS[TARGET_ENV]+'/qt5_addons.7z','--icu7z',ICU_LIBS,'--sevenzippath','C:\Utils\\sevenzip','--gitpath','C:\Program Files\Git\\bin','--d3dcompiler7z','http://download.qt-project.org/development_releases/prebuilt/d3dcompiler/msvc2010/D3DCompiler_43-x86.dll.7z','--environment_batch','"C:\Program Files\Microsoft Visual Studio 10.0\VC\\vcvarsall.bat"','--environment_batch_argument','x86','--versiondescription','""']
-        else:
+        elif LICENSE == 'enterprise':
             cmd_args=['python','-u','bld_qtcreator.py','--clean','--buildcommand','C:\Utils\jom\jom.exe','--installcommand','c:\Program Files\Microsoft Visual Studio 10.0\VC\\bin\\nmake.exe','--qt5path','..\..\qt5_install_dir','--qt5_essentials7z',SRC_URL+BIN_TARGET_DIRS[TARGET_ENV]+'/qt5_essentials.7z','--qt5_addons7z',SRC_URL+BIN_TARGET_DIRS[TARGET_ENV]+'/qt5_addons.7z','--icu7z',ICU_LIBS,'--sevenzippath','C:\\Utils\\sevenzip','--gitpath','C:\Program Files\Git\\bin','--d3dcompiler7z','http://download.qt-project.org/development_releases/prebuilt/d3dcompiler/msvc2010/D3DCompiler_43-x86.dll.7z','--versiondescription','""','--additional_plugin',WORK_DIR + '/qmlprofiler','--additional_plugin',WORK_DIR + '/qtquickdesigner','--environment_batch','"C:\Program Files\Microsoft Visual Studio 10.0\VC\\vcvarsall.bat"','--environment_batch_argument','x86']
+        else:
+            print('*** License unknown: {0}'.format(LICENSE))
+            sys.exit(-1)
         bldinstallercommon.do_execute_sub_process(cmd_args,SCRIPT_ROOT_DIR,True)
 
     if bldinstallercommon.is_linux_platform():
@@ -718,8 +733,11 @@ def handle_offline_installer_build():
                 installer_name_base = os.path.splitext(file_name)[0]
                 if LICENSE == 'opensource':
                     cmd_args = ['C:\Utils\sign\signtool.exe', 'sign /v /du' + os.environ['SIGNING_SERVER'], '/p' + os.environ['SIGNING_PASSWORD'], '/t http://timestamp.verisign.com/scripts/timestamp.dll', '/f "C:\utils\sign\keys.pfx"' + installer_name]
-                else:
+                elif LICENSE == 'enterprise':
                     cmd_args = ['C:\Utils\sign\signtool.exe', 'sign /v /du' + os.environ['SIGNING_SERVER'], '/p' + os.environ['SIGNING_PASSWORD'], '/t http://timestamp.verisign.com/scripts/timestamp.dll', '/f "C:\utils\sign\keys.pfx"' + installer_name]
+                else:
+                    print('*** License unknown: {0}'.format(LICENSE))
+                    sys.exit(-1)
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
                 cmd_args = [SCP_COMMAND, installer_name, dest_server + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '-' + BUILD_NUMBER + '.exe']
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
@@ -884,6 +902,9 @@ def parse_cmd_line():
             LATEST_DIR      = PATH + '/' + LICENSE + '/' + 'qt' + '/' + QT_VERSION + '/' + 'latest'
     else:
         OPTION_PARSER.print_help()
+        sys.exit(-1)
+    if not any(LICENSE in s for s in ['opensource', 'enterprise']):
+        print('*** License unknown: {0}'.format(LICENSE))
         sys.exit(-1)
     if bldinstallercommon.is_linux_platform():
         PLATFORM = 'linux'
