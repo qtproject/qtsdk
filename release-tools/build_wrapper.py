@@ -855,6 +855,22 @@ def create_remote_dirs(server, dir_path):
     cmd_args = [SSH_COMMAND, '-t', '-t', server, 'mkdir -p' ,dir_path]
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
+
+###############################
+# sanity check command line options
+###############################
+def sanity_check_options(options):
+    if not options.command in ['init', 'build_src', 'build_bin', 'offline_installer', 'ifw', 'build_creator', 'repo_build']:
+        return False
+    if options.command == 'repo_build':
+        if len(sys.argv) < 4:
+            return False
+    if options.command != 'repo_build':
+        if len(sys.argv) < 15:
+            return False
+    return True
+
+
 ###############################
 # parse_cmd_line
 ###############################
@@ -876,36 +892,30 @@ def parse_cmd_line():
     global QT_FULL_VERSION
 
     setup_option_parser()
-
     arg_count = len(sys.argv)
     if arg_count < 2:
         OPTION_PARSER.print_help()
         sys.exit(-1)
 
     (options, args) = OPTION_PARSER.parse_args()
-
-    COMMAND                 = options.command
-    if options.command == 'init' or options.command == 'build_src' or options.command == 'build_bin' or options.command == 'offline_installer' or options.command == 'ifw' or options.command == 'build_creator':
-        if arg_count < 15:
-            OPTION_PARSER.print_help()
-            sys.exit(-1)
-        else:
-            COMMAND         = options.command
-            LICENSE         = options.license
-            QT_VERSION      = options.qt_version
-            TIME_STAMP      = options.time_stamp
-            BUILD_NUMBER    = options.build_number
-            SERVER          = options.server
-            PATH            = options.path
-            TARGET_ENV      = options.target_env
-            ICU_LIBS        = options.icu_libs
-            SRC_URL         = options.src_url
-            QT_VERSION_TAG  = options.version_tag
-            QT_FULL_VERSION = QT_VERSION
-            if QT_VERSION_TAG:
-                QT_FULL_VERSION += '-' + QT_VERSION_TAG
-            REMOTE_DIR      = PATH + '/' + LICENSE + '/' + 'qt' + '/' + QT_VERSION + '/' + TIME_STAMP + '-' + BUILD_NUMBER
-            LATEST_DIR      = PATH + '/' + LICENSE + '/' + 'qt' + '/' + QT_VERSION + '/' + 'latest'
+    COMMAND = options.command
+    if (sanity_check_options(options)):
+        COMMAND         = options.command
+        LICENSE         = options.license
+        QT_VERSION      = options.qt_version
+        TIME_STAMP      = options.time_stamp
+        BUILD_NUMBER    = options.build_number
+        SERVER          = options.server
+        PATH            = options.path
+        TARGET_ENV      = options.target_env
+        ICU_LIBS        = options.icu_libs
+        SRC_URL         = options.src_url
+        QT_VERSION_TAG  = options.version_tag
+        QT_FULL_VERSION = QT_VERSION
+        if QT_VERSION_TAG:
+            QT_FULL_VERSION += '-' + QT_VERSION_TAG
+        REMOTE_DIR      = PATH + '/' + LICENSE + '/' + 'qt' + '/' + QT_VERSION + '/' + TIME_STAMP + '-' + BUILD_NUMBER
+        LATEST_DIR      = PATH + '/' + LICENSE + '/' + 'qt' + '/' + QT_VERSION + '/' + 'latest'
     else:
         OPTION_PARSER.print_help()
         sys.exit(-1)
@@ -920,6 +930,7 @@ def parse_cmd_line():
         PLATFORM = 'windows'
 
     return True
+
 
 ##############################################################
 # Setup Option Parser
