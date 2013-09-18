@@ -62,8 +62,8 @@ import release_build_handler
 # ----------------------------------------------------------------------
 BUILD_TIMESTAMP             = strftime('%Y-%m-%d', gmtime())
 SCRIPT_ROOT_DIR             = os.path.dirname(os.path.realpath(__file__))
-REPO_OUTPUT_DIR             = os.path.normpath(SCRIPT_ROOT_DIR + os.sep + 'repository')
-WORK_DIR                    = os.environ['PKG_NODE_ROOT'] + os.sep + 'build'
+REPO_OUTPUT_DIR             = os.path.normpath(os.path.join(SCRIPT_ROOT_DIR, 'repository'))
+WORK_DIR                    = os.path.join(os.environ['PKG_NODE_ROOT'], 'build')
 #WORK_DIR                    = os.environ['PKG_NODE_ROOT']
 COMMAND                     =''
 LICENSE                     =''
@@ -156,7 +156,7 @@ def init_qt_build_cycle():
 
     # Create directories for targets
     # for dir_name in BIN_TARGET_DIRS:
-    #    dir_path = REMOTE_DIR + os.sep + dir_name
+    #    dir_path = os.path.join(REMOTE_DIR, dir_name)
     #    create_remote_dirs(SERVER, dir_path)
 
     # Update latest link
@@ -215,7 +215,7 @@ def handle_qt_src_package_build():
     global SERVER
     global PATH
 
-    exec_path = WORK_DIR + os.sep + 'qt5'
+    exec_path = os.path.join(WORK_DIR, 'qt5')
     #bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
     if LICENSE == 'enterprise':
         cmd_args = ['../patches/apply.sh']
@@ -223,7 +223,7 @@ def handle_qt_src_package_build():
 
     if LICENSE == 'enterprise':
         copy_license_checkers()
-    package_path = WORK_DIR + os.sep + 'src_pkg'
+    package_path = os.path.join(WORK_DIR, 'src_pkg')
     bldinstallercommon.create_dirs(package_path)
     # parse module exclude list from release description file
     conf_file_base_path = os.path.join(SCRIPT_ROOT_DIR, 'releases', os.environ['RELEASE_BUILD_CONF_FILE'])
@@ -247,60 +247,60 @@ def handle_qt_src_package_build():
     cmd_args = ['tar','xzf','single/' + package_name + '.tar.gz']
 
     bldinstallercommon.do_execute_sub_process(cmd_args,package_path, True)
-    essentials_path = WORK_DIR + os.sep + 'src_pkg' + os.sep + 'examples_essentials'
+    essentials_path = os.path.join(WORK_DIR, 'src_pkg', 'examples_essentials')
     bldinstallercommon.create_dirs(essentials_path)
-    addons_path = WORK_DIR + os.sep + 'src_pkg' + os.sep + 'examples_addons'
+    addons_path = os.path.join(WORK_DIR, 'src_pkg', 'examples_addons')
     bldinstallercommon.create_dirs(addons_path)
 
-    src_dirs = os.listdir(package_path + os.sep + package_name)
+    src_dirs = os.listdir(os.path.join(package_path, package_name))
     current_path = os.getcwd()
-    os.chdir(package_path + os.sep + package_name)
+    os.chdir(os.path.join(package_path, package_name))
     for dir_name in src_dirs:
         if os.path.isdir(dir_name):
             module_dirs = os.listdir(dir_name)
             for example_dir in module_dirs:
                 if example_dir == 'examples':
-                    bldinstallercommon.copy_tree(package_path + os.sep + package_name + os.sep + dir_name + os.sep + example_dir, essentials_path)
+                    bldinstallercommon.copy_tree(os.path.join(package_path, package_name, dir_name, example_dir), essentials_path)
     os.chdir(current_path)
-    cmd_args = ['cp','-r',package_name + os.sep + 'qtbase' + os.sep + 'examples' + os.sep +'examples.pro', essentials_path]
+    cmd_args = ['cp','-r', os.path.join(package_name, 'qtbase', 'examples', 'examples.pro'), essentials_path]
     bldinstallercommon.do_execute_sub_process(cmd_args,package_path, True)
 
     # remove out of place top level files from qtdeclarative
-    if os.path.exists(essentials_path + os.sep + 'HACKING'):
-        os.remove(essentials_path + os.sep + 'HACKING')
-    if os.path.exists(essentials_path + os.sep + 'README'):
-        os.remove(essentials_path + os.sep + 'README')
+    if os.path.exists(os.path.join(essentials_path, 'HACKING')):
+        os.remove(os.path.join(essentials_path, 'HACKING'))
+    if os.path.exists(os.path.join(essentials_path, 'README')):
+        os.remove(os.path.join(essentials_path, 'README'))
 
-    shutil.move(essentials_path + os.sep + 'activeqt', addons_path)
-    shutil.move(essentials_path + os.sep +'svg', addons_path)
+    shutil.move(os.path.join(essentials_path, 'activeqt'), addons_path)
+    shutil.move(os.path.join(essentials_path, 'svg'), addons_path)
 
-    cmd_args = ['7z','a','..' + os.sep + 'examples_essentials.7z','*']
+    cmd_args = ['7z','a', os.path.join('..', 'examples_essentials.7z'), '*']
     bldinstallercommon.do_execute_sub_process(cmd_args,essentials_path, True)
-    cmd_args = [SCRIPT_ROOT_DIR + os.sep + 'winzipdir.sh', '..' + os.sep + 'examples_essentials.zip','.' ]
+    cmd_args = [os.path.join(SCRIPT_ROOT_DIR, 'winzipdir.sh'), os.path.join('..', 'examples_essentials.zip'),'.' ]
     bldinstallercommon.do_execute_sub_process(cmd_args,essentials_path, True)
 
-    cmd_args = ['7z','a','..' + os.sep + 'examples_addons.7z','*']
+    cmd_args = ['7z','a', os.path.join('..', 'examples_addons.7z'), '*']
     bldinstallercommon.do_execute_sub_process(cmd_args,addons_path, True)
-    cmd_args = [SCRIPT_ROOT_DIR + os.sep + 'winzipdir.sh', '..' + os.sep + 'examples_addons.zip','.' ]
+    cmd_args = [os.path.join(SCRIPT_ROOT_DIR, 'winzipdir.sh'), os.path.join('..', 'examples_addons.zip'),'.' ]
     bldinstallercommon.do_execute_sub_process(cmd_args,addons_path, True)
 
 
     # Upload packages
     exec_path = SCRIPT_ROOT_DIR
-    cmd_args = ['rsync','-r','../../src_pkg/single/',SERVER + ':' + LATEST_DIR + os.sep + 'src' + os.sep + 'single' + os.sep]
+    cmd_args = ['rsync','-r','../../src_pkg/single/',SERVER + ':' + os.path.join(LATEST_DIR, 'src', 'single', '')]
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
-    cmd_args = ['rsync','-r','../../src_pkg/submodules_tar/',SERVER + ':' + LATEST_DIR + os.sep + 'src' + os.sep + 'submodules' + os.sep]
+    cmd_args = ['rsync','-r','../../src_pkg/submodules_tar/',SERVER + ':' + os.path.join(LATEST_DIR, 'src', 'submodules', '')]
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
-    cmd_args = ['rsync','-r','../../src_pkg/submodules_zip/',SERVER + ':' + LATEST_DIR + os.sep + 'src' + os.sep + 'submodules' + os.sep]
+    cmd_args = ['rsync','-r','../../src_pkg/submodules_zip/',SERVER + ':' + os.path.join(LATEST_DIR, 'src', 'submodules', '')]
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
 
     file_list = os.listdir(package_path)
     for file_name in file_list:
         if file_name.startswith("examples_addons."):
-            cmd_args = ['scp',file_name,SERVER + ':' + LATEST_DIR + os.sep + 'src' + os.sep + 'examples_injection']
+            cmd_args = ['scp',file_name,SERVER + ':' + os.path.join(LATEST_DIR, 'src', 'examples_injection')]
             bldinstallercommon.do_execute_sub_process(cmd_args,package_path, True)
         if file_name.startswith("examples_essentials."):
-            cmd_args = ['scp',file_name,SERVER + ':' + LATEST_DIR + os.sep + 'src' + os.sep + 'examples_injection']
+            cmd_args = ['scp',file_name,SERVER + ':' + os.path.join(LATEST_DIR, 'src', 'examples_injection')]
             bldinstallercommon.do_execute_sub_process(cmd_args,package_path, True)
 
 ###############################
@@ -316,7 +316,7 @@ def handle_icu_build():
 
     cmd_args = 'rm -rf icu*'
     bldinstallercommon.do_execute_sub_process(cmd_args.split(' '),WORK_DIR, True)
-    bldinstallercommon.create_dirs(WORK_DIR+ os.sep + 'icu_install')
+    bldinstallercommon.create_dirs(os.path.join(WORK_DIR, 'icu_install'))
     exec_path = WORK_DIR
     cmd_args = ['wget',ICU_LIBS]
     bldinstallercommon.do_execute_sub_process(cmd_args,exec_path, True)
@@ -326,8 +326,8 @@ def handle_icu_build():
             cmd_args = ['tar','xvzf',file_name]
             bldinstallercommon.do_execute_sub_process(cmd_args,exec_path, True)
     EXTRA_ENV['LFLAGS']='-Wl,-rpath,\$ORIGIN'
-    cmd_args = ['./runConfigureICU','Linux','--enable-rpath','--prefix='+WORK_DIR + os.sep + 'icu_install']
-    exec_path = WORK_DIR+os.sep+'icu'+os.sep+'source'
+    cmd_args = ['./runConfigureICU','Linux','--enable-rpath','--prefix=' + os.path.join(WORK_DIR, 'icu_install')]
+    exec_path = os.path.join(WORK_DIR, 'icu', 'source')
     bldinstallercommon.do_execute_sub_process(cmd_args,exec_path, True,EXTRA_ENV)
     cmd_args = ['make','-j6']
     bldinstallercommon.do_execute_sub_process(cmd_args,exec_path, True,EXTRA_ENV)
@@ -335,7 +335,7 @@ def handle_icu_build():
     bldinstallercommon.do_execute_sub_process(cmd_args,exec_path, True,EXTRA_ENV)
 
     cmd_args = 'chrpath -r $ORIGIN libicuuc.so'
-    exec_path = WORK_DIR+os.sep+'icu_install'+os.sep+'lib'
+    exec_path = os.path.join(WORK_DIR, 'icu_install', 'lib')
     bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), exec_path, True, EXTRA_ENV)
     cmd_args = 'chrpath -r \$ORIGIN libicui18n.so'
     bldinstallercommon.do_execute_sub_process(cmd_args.split(' '),exec_path, True,EXTRA_ENV)
@@ -366,7 +366,7 @@ def handle_qt_android_release_build():
     cmd_args = ''
     script_path = os.path.join(SCRIPT_ROOT_DIR, 'mkqt5bld.py')
     source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
-    configure_files_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_config' + os.sep)
+    configure_files_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_config', '')
 
     qt_configure_options_file = os.environ['RELEASE_BUILD_QT_CONFIGURE_OPTIONS_FILE']
     android_ndk_host          = os.environ['ANDROID_NDK_HOST']
@@ -389,7 +389,7 @@ def handle_qt_android_release_build():
     cmd_args += ['--android-ndk-home=' + android_ndk_home]          # e.g. "/opt/android/ndk"
     if bldinstallercommon.is_linux_platform():
         cmd_args += ['--replace-rpath']
-    cmd_args += ['-a', configure_extra_options + ' -prefix ' + WORK_DIR + os.sep + MAKE_INSTALL_PADDING]
+    cmd_args += ['-a', configure_extra_options + ' -prefix ' + os.path.join(WORK_DIR,  MAKE_INSTALL_PADDING)]
     cmd_args += [' -android-toolchain-version ' + android_toolchain_version]    # e.g. "4.8"
 
     if bldinstallercommon.is_linux_platform() or bldinstallercommon.is_mac_platform():
@@ -410,10 +410,10 @@ def handle_qt_ios_release_build():
     cmd_args = ''
     script_path = os.path.join(SCRIPT_ROOT_DIR, 'mkqt5bld.py')
     source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
-    configure_files_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_config' + os.sep)
+    configure_files_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_config', '')
     if bldinstallercommon.is_mac_platform():
         if TARGET_ENV.find("x64") >= 1:
-            cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','-c',configure_files_path + 'configure_ios_' + LICENSE,'-a','-prefix ' +WORK_DIR + os.sep + MAKE_INSTALL_PADDING]
+            cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','-c',configure_files_path + 'configure_ios_' + LICENSE,'-a','-prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
         bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR, True)
 
 
@@ -436,16 +436,16 @@ def handle_qt_desktop_release_build():
             print(file_name)
             if file_name.startswith("icu"):
                 print(file_name)
-                if os.path.isdir(WORK_DIR+ os.sep + file_name):
-                    icu_lib_path = WORK_DIR + os.sep + file_name + os.sep + 'lib'
-                    icu_include_path = WORK_DIR + os.sep + file_name + os.sep + 'include'
+                if os.path.isdir(os.path.join(WORK_DIR, file_name)):
+                    icu_lib_path = os.path.join(WORK_DIR, file_name, 'lib')
+                    icu_include_path = os.path.join(WORK_DIR, file_name, 'include')
                     EXTRA_ENV['LD_LIBRARY_PATH'] = icu_lib_path
 
     ## let's build Qt
     # some common variables
     script_path = os.path.join(SCRIPT_ROOT_DIR, 'mkqt5bld.py')
     source_url = SRC_URL + '/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
-    configure_files_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_config' + os.sep)
+    configure_files_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_config', '')
 
     ## common cmd_args for all platforms
     # we need to change the extension to .zip on windows. os x and linux use .tar.gz for the source file (.zip includes configure.exe)
@@ -505,103 +505,103 @@ def handle_examples_injection():
         bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + '/module_archives', True)
     elif bldinstallercommon.is_mac_platform():
         cmd_args = ['curl','-O',SRC_URL + '/examples_injection/examples_essentials.7z']
-        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+        bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
         cmd_args = ['curl','-O',SRC_URL + '/examples_injection/examples_addons.7z']
-        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+        bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
     else:
         if TARGET_ENV.find('x86') >=1:
             cmd_args = ['C:\Program Files\Git\\bin\curl','-O',SRC_URL + '/examples_injection/examples_essentials.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
             cmd_args = ['C:\Program Files\Git\\bin\curl','-O',SRC_URL + '/examples_injection/examples_addons.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
         else:
             cmd_args = ['C:\Program Files (x86)\Git\\bin\curl','-O',SRC_URL + '/examples_injection/examples_essentials.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
             cmd_args = ['C:\Program Files (x86)\Git\\bin\curl','-O',SRC_URL + '/examples_injection/examples_addons.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
-    bldinstallercommon.create_dirs(WORK_DIR+'module_archives' +os.sep+ 'essentials')
-    bldinstallercommon.create_dirs(WORK_DIR+'module_archives' +os.sep + 'addons')
+    bldinstallercommon.create_dirs(os.path.join(WORK_DIR, 'module_archives', 'essentials'))
+    bldinstallercommon.create_dirs(os.path.join(WORK_DIR, 'module_archives', 'addons'))
 
     if bldinstallercommon.is_win_platform():
         if TARGET_ENV.find('x86') >= 1:
             cmd_args = ['7z','x','qt5_essentials.7z','-oessentials']
-            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-            cmd_args = ['7z','x','examples_essentials.7z','-oessentials'+os.sep+'examples','-y']
-            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
+            cmd_args = ['7z','x','examples_essentials.7z', os.path.join('-oessentials', 'examples'),'-y']
+            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
             cmd_args = ['C:\Program Files\Git\\bin\\rm','qt5_essentials.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
             cmd_args = ['C:\Program Files\Git\\bin\\rm','examples_essentials.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
-            cmd_args = ['7z','a','..'+os.sep+'qt5_essentials.7z','*']
-            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives/essentials', True)
+            cmd_args = ['7z','a', os.path.join('..', 'qt5_essentials.7z'),'*']
+            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives/essentials'), True)
 
             cmd_args = ['7z','x','qt5_addons.7z','-oaddons']
-            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-            cmd_args = ['7z','x','examples_addons.7z','-oaddons'+os.sep+'examples','-y']
-            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
+            cmd_args = ['7z','x','examples_addons.7z', os.path.join('-oaddons', 'examples'),'-y']
+            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
             cmd_args = ['C:\Program Files\Git\\bin\\rm','qt5_addons.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
             cmd_args = ['C:\Program Files\Git\\bin\\rm','examples_addons.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
-            cmd_args = ['7z','a','..'+os.sep+'qt5_addons.7z','*']
-            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives/addons',True)
+            cmd_args = ['7z','a', os.path.join('..', 'qt5_addons.7z'),'*']
+            bldinstallercommon.do_execute_sub_process(cmd_args,os.path.join(WORK_DIR, 'module_archives/addons'),True)
         else:
             cmd_args = ['7z','x','qt5_essentials.7z','-oessentials']
-            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-            cmd_args = ['7z','x','examples_essentials.7z','-oessentials'+os.sep+'examples','-y']
-            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
+            cmd_args = ['7z','x','examples_essentials.7z', os.path.join('-oessentials', 'examples'),'-y']
+            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
             cmd_args = ['C:\Program Files (x86)\Git\\bin\\rm','qt5_essentials.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
             cmd_args = ['C:\Program Files (x86)\Git\\bin\\rm','examples_essentials.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
-            cmd_args = ['7z','a','..'+os.sep+'qt5_essentials.7z','*']
-            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives/essentials', True)
+            cmd_args = ['7z','a', os.path.join('..', 'qt5_essentials.7z'),'*']
+            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives/essentials'), True)
 
             cmd_args = ['7z','x','qt5_addons.7z','-oaddons']
-            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-            cmd_args = ['7z','x','examples_addons.7z','-oaddons'+os.sep+'examples','-y']
-            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
+            cmd_args = ['7z','x','examples_addons.7z', os.path.join('-oaddons', 'examples'),'-y']
+            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
             cmd_args = ['C:\Program Files (x86)\Git\\bin\\rm','qt5_addons.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
             cmd_args = ['C:\Program Files (x86)\Git\\bin\\rm','examples_addons.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
-            cmd_args = ['7z','a','..'+os.sep+'qt5_addons.7z','*']
-            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives/addons',True)
+            cmd_args = ['7z','a', os.path.join('..', 'qt5_addons.7z'),'*']
+            bldinstallercommon.do_execute_sub_process(cmd_args,os.path.join(WORK_DIR, 'module_archives/addons'),True)
     else:
         cmd_args = ['7z','x','qt5_essentials.7z','-oessentials']
-        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-        cmd_args = ['7z','x','examples_essentials.7z','-oessentials'+os.sep+'examples','-y']
-        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+        bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
+        cmd_args = ['7z','x','examples_essentials.7z', os.path.join('-oessentials', 'examples'),'-y']
+        bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
         cmd_args = ['rm','qt5_essentials.7z']
-        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+        bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
         cmd_args = ['rm','examples_essentials.7z']
-        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+        bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
-        cmd_args = ['7z','a','..'+os.sep+'qt5_essentials.7z','*']
-        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives/essentials', True)
+        cmd_args = ['7z','a', os.path.join('..', 'qt5_essentials.7z'),'*']
+        bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives/essentials'), True)
 
         cmd_args = ['7z','x','qt5_addons.7z','-oaddons']
-        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-        cmd_args = ['7z','x','examples_addons.7z','-oaddons'+os.sep+'examples','-y']
-        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+        bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
+        cmd_args = ['7z','x','examples_addons.7z', os.path.join('-oaddons', 'examples'),'-y']
+        bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
         cmd_args = ['rm','qt5_addons.7z']
-        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+        bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
         cmd_args = ['rm','examples_addons.7z']
-        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+        bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
-        cmd_args = ['7z','a','..'+os.sep+'qt5_addons.7z','*']
-        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives/addons',True)
+        cmd_args = ['7z','a', os.path.join('..', 'qt5_addons.7z'),'*']
+        bldinstallercommon.do_execute_sub_process(cmd_args,os.path.join(WORK_DIR, 'module_archives/addons'),True)
 
 
 ###############################
@@ -620,19 +620,19 @@ def handle_qt_release_build():
     # Create target directory
     create_remote_dirs(SERVER,LATEST_DIR+'/'+BIN_TARGET_DIRS[TARGET_ENV])
 
-    dir_list = os.listdir(WORK_DIR + os.sep + 'module_archives')
+    dir_list = os.listdir(os.path.join(WORK_DIR, 'module_archives'))
     print(dir_list)
     for file_name in dir_list:
         print(file_name)
         if file_name.endswith(".7z"):
             print(file_name)
             if bldinstallercommon.is_linux_platform():
-                cmd_args = [SCP_COMMAND,WORK_DIR + os.sep + 'module_archives' + os.sep + file_name,SERVER + ':' + LATEST_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV]]
+                cmd_args = [SCP_COMMAND, os.path.join(WORK_DIR, 'module_archives', file_name), SERVER + ':' + LATEST_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV]]
             elif bldinstallercommon.is_win_platform():
                 cmd_args = [SCP_COMMAND,file_name,SERVER + ':' + LATEST_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV] + '/']
             else:
-                cmd_args = ['rsync',WORK_DIR + os.sep + 'module_archives' + os.sep + file_name,SERVER + ':' + LATEST_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV]]
-            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives',True)
+                cmd_args = ['rsync', os.path.join(WORK_DIR, 'module_archives', file_name), SERVER + ':' + LATEST_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV]]
+            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'),True)
 
     # TODO: Missing_modules.txt upload
 
@@ -759,7 +759,7 @@ def handle_installer_build(offline_installer_build):
                 bldinstallercommon.do_execute_sub_process(cmd_args,  installer_output_dir, True)
                 cmd_args = ['security','lock-keychain','Developer_ID_Digia.keychain']
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
-                cmd_args = ['hdiutil', 'create', '-srcfolder', installer_output_dir + os.sep + installer_name_base + '.app', '-volname', installer_name_base, '-format', 'UDBZ', installer_output_dir + os.sep + installer_name_base + '.dmg', '-ov', '-scrub']
+                cmd_args = ['hdiutil', 'create', '-srcfolder', os.path.join(installer_output_dir, installer_name_base) + '.app', '-volname', installer_name_base, '-format', 'UDBZ', os.path.join(installer_output_dir, installer_name_base) + '.dmg', '-ov', '-scrub']
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
                 cmd_args = [SCP_COMMAND, installer_name, dest_server + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '-' + BUILD_NUMBER + '.dmg']
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
@@ -852,17 +852,17 @@ def handle_online_repository_build():
 # copy_license_checkers
 ###############################
 def copy_license_checkers():
-    exec_path = WORK_DIR + os.sep + 'qt5' + os.sep + 'qtbase' + os.sep + 'bin'
-    cmd_args = [SCP_COMMAND,SERVER + ':' + LATEST_DIR +os.sep +'src' +os.sep +'licheck' + os.sep + 'licheck.exe','.']
+    exec_path = os.path.join(WORK_DIR, 'qt5', 'qtbase', 'bin')
+    cmd_args = [SCP_COMMAND,SERVER + ':' + os.path.join(LATEST_DIR, 'src', 'licheck', 'licheck.exe'),'.']
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
-    cmd_args = [SCP_COMMAND,SERVER + ':' + LATEST_DIR +os.sep +'src' +os.sep +'licheck' + os.sep + 'licheck32','.']
+    cmd_args = [SCP_COMMAND,SERVER + ':' + os.path.join(LATEST_DIR, 'src', 'licheck', 'licheck32'),'.']
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
-    cmd_args = [SCP_COMMAND,SERVER + ':' + LATEST_DIR +os.sep +'src' +os.sep +'licheck' + os.sep + 'licheck64','.']
+    cmd_args = [SCP_COMMAND,SERVER + ':' + os.path.join(LATEST_DIR, 'src', 'licheck', 'licheck64'),'.']
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
-    cmd_args = [SCP_COMMAND,SERVER + ':' + LATEST_DIR +os.sep +'src' +os.sep +'licheck' + os.sep + 'licheck_mac','.']
+    cmd_args = [SCP_COMMAND,SERVER + ':' + os.path.join(LATEST_DIR, 'src', 'licheck', 'licheck_mac'),'.']
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
     #change permissions
-    os.chdir(WORK_DIR + os.sep + 'qt5' + os.sep + 'qtbase' + os.sep + 'bin')
+    os.chdir(os.path.join(WORK_DIR, 'qt5', 'qtbase', 'bin'))
     os.system('chmod u+x licheck32')
     os.system('chmod u+x licheck64')
     os.system('chmod u+x licheck_mac')
@@ -871,7 +871,7 @@ def copy_license_checkers():
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
     cmd_args = ['git','commit','-m','"Add license checkers into enterprise source package"']
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
-    exec_path = WORK_DIR + os.sep + 'qt5'
+    exec_path = os.path.join(WORK_DIR, 'qt5')
     cmd_args = ['git','add','.']
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
     cmd_args = ['git','commit','-m','"Add license checkers into enterprise source package"']
