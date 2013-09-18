@@ -817,7 +817,7 @@ def handle_online_repository_build():
         update = os.environ['DO_UPDATE_PRODUCTION_REPOSITORY']
         if update.lower() in ['yes', 'true', '1']:
             update_production_repo = True
-    release_build_handler.handle_repo_build(conf_file, LICENSE, 'release', PLATFORM, update_production_repo)
+    release_build_handler.handle_repo_build(conf_file, LICENSE, 'release', PLATFORM, arch, packages_base_url, update_production_repo)
 
 
 ###############################
