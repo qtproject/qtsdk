@@ -79,7 +79,6 @@ PROD_SRV_REPO_PENDING_AREA_DIR          = ''
 PKG_SERVER_URL                          = ''
 # search/replace tags in configuration files
 GLOBAL_VERSION_TAG                      = '%GLOBAL_VERSION%'
-GLOBAL_LICENSE_TAG                      = '%GLOBAL_LICENSE%'
 RTA_DESCRIPTION_FILE                    = 'rta_description_file'
 
 # container for online repository build job parameters
@@ -250,9 +249,9 @@ def get_job_list(conf_file, job_type_specifier, license, qt_type, branch, platfo
                 print('*** Fatal error! Configuration file not defined for {0}'.format(s))
                 sys.exit(-1)
             # for triggering rta later on if specified
-            rta_key_list = bldinstallercommon.safe_config_key_fetch(parser, s, 'rta_key_list').replace(GLOBAL_LICENSE_TAG, license)
+            rta_key_list = bldinstallercommon.safe_config_key_fetch(parser, s, 'rta_key_list')
             # preferred installer name
-            installer_name = bldinstallercommon.safe_config_key_fetch(parser, s, 'installer_name').replace(GLOBAL_LICENSE_TAG, license)
+            installer_name = bldinstallercommon.safe_config_key_fetch(parser, s, 'installer_name')
             arg_substitution_list = bldinstallercommon.safe_config_key_fetch(parser, s, 'arg_substitution_list')
             arg_substitution_list = preformat_global_version_number(arg_substitution_list, global_version, global_version_tag)
             repo_content_type           = ''
