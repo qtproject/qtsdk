@@ -111,6 +111,7 @@ BIN_TARGET_DIRS             = \
 ,'linux-g++-Ubuntu_11.10_x86':'linux_gcc_32_ubuntu1110'\
 ,'linux-g++-Ubuntu_11.10_x64':'linux_gcc_64_ubuntu1110'\
 ,'mac-clang-OSX_10.7_x64':'mac_cocoa_10.7'\
+,'mac-clang-10.8-x64':'mac_cocoa_10.7'\
 ,'win-MinGW4.8-Windows7-x86_OpenGL':'windows_mingw'\
 ,'win-msvc2010-Windows7-x86_ANGLE':'windows_vs2010_32'\
 ,'win-msvc2010-Windows7-x86_OpenGL':'windows_vs2010_32_opengl'\
