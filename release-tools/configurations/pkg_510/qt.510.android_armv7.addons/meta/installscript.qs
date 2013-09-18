@@ -64,7 +64,7 @@ Component.prototype.createOperations = function()
                             platform,
                             "@TargetDir@" + "%TARGET_INSTALL_DIR%",
                             "QmakeOutputInstallerKey=" + qmakeOutputInstallerKey(component),
-                            "emb-arm");
+                            "emb-arm-qt5");
 }
 
 

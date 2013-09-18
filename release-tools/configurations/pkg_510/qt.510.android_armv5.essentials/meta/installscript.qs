@@ -77,7 +77,7 @@ Component.prototype.createOperations = function()
     }
 
     var qtPath = "@TargetDir@" + "%TARGET_INSTALL_DIR%";
-    addInitQtPatchOperation(component, platform, qtPath, qmakeBinary, "emb-arm");
+    addInitQtPatchOperation(component, platform, qtPath, qmakeBinary, "emb-arm-qt5");
 
     if (installer.value("SDKToolBinary") == "")
         return;
