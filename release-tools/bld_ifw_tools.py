@@ -86,7 +86,6 @@ class IfwOptions:
     default_qt_installer_framework_qmake_args   = '-config release -config static -r'
 
     def __init__(self,
-                 license_type,
                  qt_source_package_uri,
                  qt_configure_options,
                  qt_installer_framework_url,
@@ -95,7 +94,6 @@ class IfwOptions:
                  product_key_checker_url,
                  product_key_checker_branch,
                  openssl_dir):
-        self.license_type                               = license_type
         self.development_mode                           = False
         self.incremental_mode                           = False
         self.qt_source_dir                              = os.path.normpath(ROOT_DIR + os.sep + 'qt-src')
@@ -155,7 +153,6 @@ class IfwOptions:
 
     def print_data(self):
         print('-----------------------------------------')
-        print('license_type:                            {0}'.format(self.license_type))
         print('make cmd:                                {0}'.format(self.make_cmd))
         print('qt_source_package_uri:                   {0}'.format(self.qt_source_package_uri))
         print('qt_source_package_uri_saveas:            {0}'.format(self.qt_source_package_uri_saveas))
@@ -193,7 +190,6 @@ def setup_argument_parser():
     parser.add_argument('--ifw_qmake_args', help="Qmake arguments for Installer-Framework build ", required=False, default=IfwOptions.default_qt_installer_framework_qmake_args)
     parser.add_argument('--product_key_checker_url', help="Git URL for enterprise product key checker", required=False)
     parser.add_argument('--product_key_checker_branch', help="Git branch for enterprise product key checker", required=False)
-    parser.add_argument('--license', help="License type, 'opensource' or 'enterprise'", required=False, default='opensource')
     parser.add_argument('--openssl_dir', help="Path where it can find the openssl installation(libs, includes) on windows.", required=False, default='C:\\OpenSSL')
     return parser
 
@@ -472,8 +468,7 @@ if __name__ == "__main__":
     # parse args
     caller_arguments = parser.parse_args()
     # create options object
-    options=IfwOptions(caller_arguments.license,
-                       caller_arguments.qt_archive_uri,
+    options=IfwOptions(caller_arguments.qt_archive_uri,
                        caller_arguments.qt_configure_options,
                        caller_arguments.ifw_url,
                        caller_arguments.ifw_branch,

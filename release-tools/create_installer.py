@@ -922,8 +922,7 @@ def install_ifw_tools():
     # if "devmode" mode used, then build IFW from sources
     if DEVELOPMENT_MODE:
         # create options object
-        options=IfwOptions(LICENSE_TYPE,
-                           INSTALLER_FRAMEWORK_QT_ARCHIVE_URI,
+        options=IfwOptions(INSTALLER_FRAMEWORK_QT_ARCHIVE_URI,
                            INSTALLER_FRAMEWORK_QT_CONFIGURE_OPTIONS,
                            INSTALLER_FRAMEWORK_URL,
                            INSTALLER_FRAMEWORK_BRANCH,
