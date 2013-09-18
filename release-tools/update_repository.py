@@ -69,7 +69,7 @@ def setup_argument_parser():
     parser.add_argument('--target_repo', help="Repository to be updated", required=True, default="")
     parser.add_argument('--source_repo', help="New repository source. Used only if target repository does not exits i.e. first time usage", required=False, default="")
     parser.add_argument('--source_pkg', help="pkg folder containing updates", required=True, default="")
-    parser.add_argument('--source_config_xml', help="Path to config.xml file", required=True, default="")
+    parser.add_argument('--source_config_xml', help="Path to config.xml file", required=False, default="")
     parser.add_argument('--components_to_update', help="Comma separated list of component to update", required=False, default="")
     parser.add_argument('--backup_base_dir', help="Backup directory, if given a backup will be taken from the repo when making updates", required=False, default="")
     parser.add_argument('--update_new_components_only', help="Update component(s) only if version number increase", required=False, action='store_true', default=False)
