@@ -80,10 +80,8 @@ QT_SRC_FOR_IFW_PREPARED     = 'http://download.qt-project.org/development_releas
 IFW_GIT_URL                 = 'git://gitorious.org/installer-framework/installer-framework.git'
 SRC_URL_PREFIX              ='http://qt-rnd.it.local/packages/jenkins'
 SRC_URL                     =''
-SSH_COMMAND                 ='ssh'
-SSH_COMMAND_WIN             ='%SSH%'
-SCP_COMMAND                 ='scp'
-SCP_COMMAND_WIN             ='%SCP%'
+SSH_COMMAND                 = '%SSH%' if bldinstallercommon.is_win_platform() else 'ssh'
+SCP_COMMAND                 = '%SCP%' if bldinstallercommon.is_win_platform() else 'scp'
 PLATFORM                    =''
 LICENSE_DIRS                = \
 {'opensource': 'opensource'\
@@ -164,20 +162,14 @@ def init_qt_build_cycle():
     #    create_remote_dirs(SERVER, dir_path)
 
     # Update latest link
-    if bldinstallercommon.is_win_platform():
-        cmd_args =[SSH_COMMAND_WIN,SERVER,'ln -sfn',REMOTE_DIR,LATEST_DIR]
-    else:
-        cmd_args =[SSH_COMMAND,SERVER,'ln -sfn',REMOTE_DIR,LATEST_DIR]
+    cmd_args = [SSH_COMMAND,SERVER,'ln -sfn',REMOTE_DIR,LATEST_DIR]
     bldinstallercommon.do_execute_sub_process(cmd_args,SCRIPT_ROOT_DIR, True)
 
     # QT Creator directory
     dir_path = PATH + '/' + LICENSE + '/' + 'qtcreator'
     create_remote_dirs(SERVER, dir_path + '/' + TIME_STAMP + '-' + BUILD_NUMBER)
 
-    ssh_cmd = SSH_COMMAND
-    if bldinstallercommon.is_win_platform():
-        ssh_cmd = SSH_COMMAND_WIN
-    cmd_args =[ssh_cmd, SERVER, 'ln -sfn', dir_path + '/' + TIME_STAMP + '-' + BUILD_NUMBER, dir_path + '/' + 'latest']
+    cmd_args = [SSH_COMMAND, SERVER, 'ln -sfn', dir_path + '/' + TIME_STAMP + '-' + BUILD_NUMBER, dir_path + '/' + 'latest']
     bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR,True)
 
 
@@ -206,7 +198,7 @@ def handle_ifw_build():
         file_list = os.listdir(SCRIPT_ROOT_DIR+'/build_artefacts')
         for file_name in file_list:
             if file_name.endswith(".7z"):
-                cmd_args = [SCP_COMMAND_WIN,file_name,SERVER + ':' + PATH + '/' + LICENSE + '/ifw/' + ifw_branch + '/']
+                cmd_args = [SCP_COMMAND,file_name,SERVER + ':' + PATH + '/' + LICENSE + '/ifw/' + ifw_branch + '/']
                 bldinstallercommon.do_execute_sub_process(cmd_args,SCRIPT_ROOT_DIR+'/build_artefacts',True)
     else:
         cmd_args = ['rsync','-r','./',SERVER + ':' + PATH + '/' + LICENSE + '/ifw/' + ifw_branch + '/']
@@ -614,7 +606,7 @@ def handle_qt_release_build():
             if bldinstallercommon.is_linux_platform():
                 cmd_args = [SCP_COMMAND,WORK_DIR + os.sep + 'module_archives' + os.sep + file_name,SERVER + ':' + LATEST_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV]]
             elif bldinstallercommon.is_win_platform():
-                cmd_args = [SCP_COMMAND_WIN,file_name,SERVER + ':' + LATEST_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV] + '/']
+                cmd_args = [SCP_COMMAND,file_name,SERVER + ':' + LATEST_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV] + '/']
             else:
                 cmd_args = ['rsync',WORK_DIR + os.sep + 'module_archives' + os.sep + file_name,SERVER + ':' + LATEST_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV]]
             bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives',True)
@@ -660,7 +652,7 @@ def handle_qt_creator_build():
         cmd_args = [SCP_COMMAND,'qt-creator_build/qtcreator.7z',SERVER + ':' + dir_path + '/qtcreator_mac_cocoa_10_7.7z']
         bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR,True)
     else:
-        cmd_args = [SCP_COMMAND_WIN,'qt-creator_build/qtcreator.7z',SERVER + ':' + dir_path + '/qtcreator_windows_vs2010_32.7z']
+        cmd_args = [SCP_COMMAND,'qt-creator_build/qtcreator.7z',SERVER + ':' + dir_path + '/qtcreator_windows_vs2010_32.7z']
         bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR,True)
 
     #TODO: Check qt-creator checkout!
@@ -682,12 +674,6 @@ def handle_offline_installer_build():
         arch = 'x86'
     packages_base_url = SERVER # os.environ['PKG_SERVER_URL'] 'http://it-dl241-hki/packages/jenkins'
 
-    ssh_cmd = SSH_COMMAND
-    scp_cmd = SCP_COMMAND
-    if bldinstallercommon.is_win_platform():
-        ssh_cmd = SSH_COMMAND_WIN
-        scp_cmd = SCP_COMMAND_WIN
-
     # determine local installer output directory
     installer_output_dir = os.path.join(SCRIPT_ROOT_DIR, 'installer_output')
     # (1) create all offline installers for this host
@@ -707,7 +693,7 @@ def handle_offline_installer_build():
             if file_name.endswith(".run"):
                 installer_name = file_name
                 installer_name_base = os.path.splitext(file_name)[0]
-                cmd_args = [scp_cmd, installer_name, dest_server + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '.run']
+                cmd_args = [SCP_COMMAND, installer_name, dest_server + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '.run']
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
     elif bldinstallercommon.is_mac_platform():
         for file_name in dir_list:
@@ -723,7 +709,7 @@ def handle_offline_installer_build():
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
                 cmd_args = ['hdiutil', 'create', '-srcfolder', installer_output_dir + os.sep + installer_name_base + '.app', '-volname', installer_name_base, '-format', 'UDBZ', installer_output_dir + os.sep + installer_name_base + '.dmg', '-ov', '-scrub']
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
-                cmd_args = [scp_cmd, installer_name, dest_server + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '.dmg']
+                cmd_args = [SCP_COMMAND, installer_name, dest_server + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '.dmg']
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
     else:
         for file_name in dir_list:
@@ -735,18 +721,15 @@ def handle_offline_installer_build():
                 else:
                     cmd_args = ['C:\Utils\sign\signtool.exe', 'sign /v /du' + os.environ['SIGNING_SERVER'], '/p' + os.environ['SIGNING_PASSWORD'], '/t http://timestamp.verisign.com/scripts/timestamp.dll', '/f "C:\utils\sign\keys.pfx"' + installer_name]
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
-                cmd_args = [scp_cmd, installer_name, dest_server + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '.exe']
+                cmd_args = [SCP_COMMAND, installer_name, dest_server + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '.exe']
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
     #Update latest link
-    ssh_cmd = SSH_COMMAND
-    if bldinstallercommon.is_win_platform():
-        ssh_cmd = SSH_COMMAND_WIN
-    cmd_args =[ssh_cmd, dest_server, 'ln -sfn', dest_dir, latest_dir]
+    cmd_args = [SSH_COMMAND, dest_server, 'ln -sfn', dest_dir, latest_dir]
     bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR,True)
     # copy rta description file(s)
     for file_name in dir_list:
         if file_name.endswith('.txt'):
-            cmd_args = [scp_cmd, file_name, dest_server + ':' + dest_dir + '/' + file_name]
+            cmd_args = [SCP_COMMAND, file_name, dest_server + ':' + dest_dir + '/' + file_name]
             bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
     # (3) trigger rta cases
     trigger_rta(installer_output_dir)
@@ -845,10 +828,7 @@ def copy_license_checkers():
 # create_remote_dirs
 ###############################
 def create_remote_dirs(server, dir_path):
-    if bldinstallercommon.is_win_platform():
-        cmd_args = [SSH_COMMAND_WIN, '-t', '-t', server, 'mkdir -p' ,dir_path]
-    else:
-        cmd_args = [SSH_COMMAND, '-t', '-t', server, 'mkdir -p' ,dir_path]
+    cmd_args = [SSH_COMMAND, '-t', '-t', server, 'mkdir -p' ,dir_path]
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
 ###############################
