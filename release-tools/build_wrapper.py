@@ -80,8 +80,8 @@ QT_SRC_FOR_IFW_PREPARED     = 'http://download.qt-project.org/development_releas
 IFW_GIT_URL                 = 'git://gitorious.org/installer-framework/installer-framework.git'
 SRC_URL_PREFIX              ='http://qt-rnd.it.local/packages/jenkins'
 SRC_URL                     =''
-SSH_COMMAND                 = '%SSH%' if bldinstallercommon.is_win_platform() else 'ssh'
-SCP_COMMAND                 = '%SCP%' if bldinstallercommon.is_win_platform() else 'scp'
+SSH_COMMAND                 = ''
+SCP_COMMAND                 = ''
 PLATFORM                    =''
 LICENSE_DIRS                = \
 {'opensource': 'opensource'\
@@ -126,7 +126,7 @@ BIN_TARGET_DIRS             = \
 REMOTE_DIR                  =''
 LATEST_DIR                  =''
 EXTRA_ENV                   = dict(os.environ)
-MAKE_INSTALL_PADDING        = 'PADDING' if bldinstallercommon.is_win_platform() else '______________________________PADDING______________________________'
+MAKE_INSTALL_PADDING        = ''
 
 
 class MultipleOption(Option):
@@ -936,11 +936,21 @@ def setup_option_parser():
                       help="Version tag e.g. alpha, beta, rc1")
 
 
+##############################################################
+# Initialize Environment
+##############################################################
+def init_env():
+    MAKE_INSTALL_PADDING = 'PADDING' if bldinstallercommon.is_win_platform() else '______________________________PADDING______________________________'
+    SSH_COMMAND          = '%SSH%'   if bldinstallercommon.is_win_platform() else 'ssh'
+    SCP_COMMAND          = '%SCP%'   if bldinstallercommon.is_win_platform() else 'scp'
+
 ###############################
 # Main
 ###############################
 def main():
     bldinstallercommon.init_common_module(SCRIPT_ROOT_DIR)
+
+    init_env()
 
     parse_cmd_line()
     if COMMAND == 'init':
