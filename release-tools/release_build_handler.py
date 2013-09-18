@@ -541,7 +541,9 @@ def init_repositories(conf_file, branch, license):
 
 # helper function to create remote directories
 def create_remote_dirs(server, dir_path):
-    cmd_args = [SSH_COMMAND, '-t', '-t', server, 'mkdir -p', dir_path]
+    temp_path = dir_path.replace('\\', '/')
+    temp_path = temp_path.replace('//', '/')
+    cmd_args = [SSH_COMMAND, '-t', '-t', server, 'mkdir -p', temp_path]
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
 
@@ -555,7 +557,9 @@ def create_online_repo_paths(server_addr, base_path, suffix_list, url_list):
 
 # helper function to delete online repository directories on remote server
 def delete_online_repo_paths(server_addr, path_to_be_deleted):
-    cmd_args = [SSH_COMMAND, '-t', '-t', server_addr, 'rm -rf', path_to_be_deleted]
+    temp_path = path_to_be_deleted.replace('\\', '/')
+    temp_path = temp_path.replace('//', '/')
+    cmd_args = [SSH_COMMAND, '-t', '-t', server_addr, 'rm -rf', temp_path]
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
 
