@@ -25,26 +25,26 @@ module_exclude_list:        qlalr, qt3d, qtdocgallery, qtfeedback, qtjsondb, qtl
 [release.520.offline.linux.x86]
 arg_configurations_file:    linux_x86_32_u1110_offline
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz
-installer_name:             qt-linux-%GLOBAL_LICENSE%-%GLOBAL_VERSION%-x86-offline
-rta_key_list:               Qt5_RTA_%GLOBAL_LICENSE%_packaging_tests_linux_32bit, Qt5_RTA_%GLOBAL_LICENSE%_BIC_Qt5.0.0_tests_linux_32bit, Qt5_RTA_%GLOBAL_LICENSE%_installer_tests_linux_32bit
+installer_name:             qt-linux-opensource-%GLOBAL_VERSION%-x86-offline
+rta_key_list:               Qt5_RTA_opensource_packaging_tests_linux_32bit, Qt5_RTA_opensource_BIC_Qt5.0.0_tests_linux_32bit, Qt5_RTA_opensource_installer_tests_linux_32bit
 
 [release.520.offline.linux.x86.android]
 arg_configurations_file:    linux_x86_32_u1110_android_offline
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz
-installer_name:             qt-linux-%GLOBAL_LICENSE%-%GLOBAL_VERSION%-android-x86-offline
-rta_key_list:               Qt5_RTA_%GLOBAL_LICENSE%_example_building_for_Android_target_linux32bit, Qt5_RTA_%GLOBAL_LICENSE%_installer_tests_android_linux_32bit
+installer_name:             qt-linux-opensource-%GLOBAL_VERSION%-android-x86-offline
+rta_key_list:               Qt5_RTA_opensource_example_building_for_Android_target_linux32bit, Qt5_RTA_opensource_installer_tests_android_linux_32bit
 
 [release.520.offline.linux.x64]
 arg_configurations_file:    linux_x86_64_u1110_offline
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz
-installer_name:             qt-linux-%GLOBAL_LICENSE%-%GLOBAL_VERSION%-x64-offline
-rta_key_list:               Qt5_RTA_%GLOBAL_LICENSE%_packaging_tests_linux_64bit, Qt5_RTA_%GLOBAL_LICENSE%_BIC_Qt5.0.0_tests_linux_64bit, Qt5_RTA_%GLOBAL_LICENSE%_installer_tests_linux_64bit
+installer_name:             qt-linux-opensource-%GLOBAL_VERSION%-x64-offline
+rta_key_list:               Qt5_RTA_opensource_packaging_tests_linux_64bit, Qt5_RTA_opensource_BIC_Qt5.0.0_tests_linux_64bit, Qt5_RTA_opensource_installer_tests_linux_64bit
 
 [release.520.offline.linux.x64.android]
 arg_configurations_file:    linux_x86_64_u1110_android_offline
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz
-installer_name:             qt-linux-%GLOBAL_LICENSE%-%GLOBAL_VERSION%-android-x64-offline
-rta_key_list:               Qt5_RTA_%GLOBAL_LICENSE%_installer_tests_android_linux_64bit, Qt5_RTA_%GLOBAL_LICENSE%_example_building_for_Android_target_linux64bit
+installer_name:             qt-linux-opensource-%GLOBAL_VERSION%-android-x64-offline
+rta_key_list:               Qt5_RTA_opensource_installer_tests_android_linux_64bit, Qt5_RTA_opensource_example_building_for_Android_target_linux64bit
 
 
 ################################################################################
@@ -53,8 +53,8 @@ rta_key_list:               Qt5_RTA_%GLOBAL_LICENSE%_installer_tests_android_lin
 [release.520.offline.mac.x64]
 arg_configurations_file:    mac_x86_64_offline
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz
-installer_name:             qt-mac-%GLOBAL_LICENSE%-%GLOBAL_VERSION%-clang-offline
-rta_key_list:               Qt5_RTA_%GLOBAL_LICENSE%_packaging_tests_mac, Qt5_RTA_%GLOBAL_LICENSE%_BIC_Qt5.0.0_tests_mac, Qt5_RTA_%GLOBAL_LICENSE%_installer_tests_mac
+installer_name:             qt-mac-opensource-%GLOBAL_VERSION%-clang-offline
+rta_key_list:               Qt5_RTA_opensource_packaging_tests_mac, Qt5_RTA_opensource_BIC_Qt5.0.0_tests_mac, Qt5_RTA_opensource_installer_tests_mac
 
 
 ################################################################################
@@ -63,44 +63,44 @@ rta_key_list:               Qt5_RTA_%GLOBAL_LICENSE%_packaging_tests_mac, Qt5_RT
 [release.520.offline.windows.x86.mingw48]
 arg_configurations_file:    win_x86_32_mingw48_offline
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
-installer_name:             qt-windows-%GLOBAL_LICENSE%-%GLOBAL_VERSION%-mingw48_opengl-x86-offline
-rta_key_list:               Qt5_RTA_%GLOBAL_LICENSE%_packaging_tests_mingw_32bit, Qt5_RTA_%GLOBAL_LICENSE%_installer_tests_mingw
+installer_name:             qt-windows-opensource-%GLOBAL_VERSION%-mingw48_opengl-x86-offline
+rta_key_list:               Qt5_RTA_opensource_packaging_tests_mingw_32bit, Qt5_RTA_opensource_installer_tests_mingw
 
 [release.520.offline.windows.x86.msvc2010_angle]
 arg_configurations_file:    win_x86_32_msvc2010_offline
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
-installer_name:             qt-windows-%GLOBAL_LICENSE%-%GLOBAL_VERSION%-msvc2010-x86-offline
-rta_key_list:               Qt5_RTA_%GLOBAL_LICENSE%_packaging_tests_msvc2010_32bit, Qt5_RTA_%GLOBAL_LICENSE%_BIC_Qt5.0.0_tests_msvc2010_32bit, Qt5_RTA_%GLOBAL_LICENSE%_installer_tests_msvc2010_32bit
+installer_name:             qt-windows-opensource-%GLOBAL_VERSION%-msvc2010-x86-offline
+rta_key_list:               Qt5_RTA_opensource_packaging_tests_msvc2010_32bit, Qt5_RTA_opensource_BIC_Qt5.0.0_tests_msvc2010_32bit, Qt5_RTA_opensource_installer_tests_msvc2010_32bit
 
 [release.520.offline.windows.x86.msvc2010_opengl]
 arg_configurations_file:    win_x86_32_msvc2010_opengl_offline
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
-installer_name:             qt-windows-%GLOBAL_LICENSE%-%GLOBAL_VERSION%-msvc2010_opengl-x86-offline
-rta_key_list:               Qt5_RTA_%GLOBAL_LICENSE%_packaging_tests_opengl_msvc2010_32bit, Qt5_RTA_%GLOBAL_LICENSE%_installer_tests_opengl_msvc2010_32bit
+installer_name:             qt-windows-opensource-%GLOBAL_VERSION%-msvc2010_opengl-x86-offline
+rta_key_list:               Qt5_RTA_opensource_packaging_tests_opengl_msvc2010_32bit, Qt5_RTA_opensource_installer_tests_opengl_msvc2010_32bit
 
 [release.520.offline.windows.x86.msvc2012_angle]
 arg_configurations_file:    win_x86_32_msvc2012_offline
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
-installer_name:             qt-windows-%GLOBAL_LICENSE%-%GLOBAL_VERSION%-msvc2012-x86-offline
-rta_key_list:               Qt5_RTA_%GLOBAL_LICENSE%_packaging_tests_msvc2012_32bit, Qt5_RTA_%GLOBAL_LICENSE%_installer_tests_msvc2012_32bit
+installer_name:             qt-windows-opensource-%GLOBAL_VERSION%-msvc2012-x86-offline
+rta_key_list:               Qt5_RTA_opensource_packaging_tests_msvc2012_32bit, Qt5_RTA_opensource_installer_tests_msvc2012_32bit
 
 [release.520.offline.windows.x86.x64-msvc2012_angle]
 arg_configurations_file:    win_x86_64_msvc2012_offline
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
-installer_name:             qt-windows-%GLOBAL_LICENSE%-%GLOBAL_VERSION%-msvc2012-x64-offline
-rta_key_list:               Qt5_RTA_%GLOBAL_LICENSE%_packaging_tests_msvc2012_64bit, Qt5_RTA_%GLOBAL_LICENSE%_installer_tests_msvc2012_64bit
+installer_name:             qt-windows-opensource-%GLOBAL_VERSION%-msvc2012-x64-offline
+rta_key_list:               Qt5_RTA_opensource_packaging_tests_msvc2012_64bit, Qt5_RTA_opensource_installer_tests_msvc2012_64bit
 
 [release.520.offline.windows.x86.x64-msvc2012_opengl]
 arg_configurations_file:    win_x86_64_msvc2012_opengl_offline
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
-installer_name:             qt-windows-%GLOBAL_LICENSE%-%GLOBAL_VERSION%-msvc2012_opengl-x64-offline
-rta_key_list:               Qt5_RTA_%GLOBAL_LICENSE%_packaging_tests_opengl_msvc2012_64bit, Qt5_RTA_%GLOBAL_LICENSE%_installer_tests_opengl_msvc2012_64bit
+installer_name:             qt-windows-opensource-%GLOBAL_VERSION%-msvc2012_opengl-x64-offline
+rta_key_list:               Qt5_RTA_opensource_packaging_tests_opengl_msvc2012_64bit, Qt5_RTA_opensource_installer_tests_opengl_msvc2012_64bit
 
 [release.520.offline.windows.x86.mingw48.android]
 arg_configurations_file:    win_x86_32_mingw48_android_offline
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
-installer_name:             qt-windows-%GLOBAL_LICENSE%-%GLOBAL_VERSION%-android-x86-win32-offline
-rta_key_list:               Qt5_RTA_%GLOBAL_LICENSE%_installer_tests_android_windows
+installer_name:             qt-windows-opensource-%GLOBAL_VERSION%-android-x86-win32-offline
+rta_key_list:               Qt5_RTA_opensource_installer_tests_android_windows
 
 
 ################################################################################
