@@ -677,9 +677,10 @@ def handle_qt_creator_build():
 # handle_offline_installer_build
 ###############################
 def handle_offline_installer_build():
-
-    conf_file_base_path = WORK_DIR + os.sep + 'qtsdk' + os.sep + 'release-tools' + os.sep + 'releases'
-    conf_file = conf_file_base_path + os.sep + os.environ['RELEASE_BUILD_CONF_FILE']
+    conf_file = os.environ['RELEASE_BUILD_CONF_FILE']
+    if not os.path.exists(conf_file):
+        print('*** The given file does not exist: {0}'.format(conf_file))
+        sys.exit(-1)
     license = LICENSE
     branch = 'release' # TODO
     platform = PLATFORM
