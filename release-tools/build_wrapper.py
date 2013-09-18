@@ -682,6 +682,20 @@ def handle_qt_creator_build():
 # handle_offline_installer_build
 ###############################
 def handle_offline_installer_build():
+    handle_installer_build(True)
+
+
+###############################
+# handle_online_installer_build
+###############################
+def handle_online_installer_build():
+    handle_installer_build(False)
+
+
+###############################
+# generic handle installer build
+###############################
+def handle_installer_build(offline_installer_build):
     conf_file = os.environ['RELEASE_BUILD_CONF_FILE']
     if not os.path.exists(conf_file):
         print('*** The given file does not exist: {0}'.format(conf_file))
@@ -694,16 +708,21 @@ def handle_offline_installer_build():
     else:
         arch = 'x86'
     packages_base_url = SERVER # os.environ['PKG_SERVER_URL'] 'http://it-dl241-hki/packages/jenkins'
-
+    temp_path = ''
     # determine local installer output directory
     installer_output_dir = os.path.join(SCRIPT_ROOT_DIR, 'installer_output')
-    # (1) create all offline installers for this host
-    release_build_handler.handle_offline_installer_build(conf_file, license, branch, platform, arch, packages_base_url)
-    # (2) copy all offline installers from 'installer_output_dir' into network disk
+    # (1) create all installers for this host
+    if offline_installer_build:
+        release_build_handler.handle_offline_installer_build(conf_file, license, branch, platform, arch, packages_base_url)
+        temp_path = '/offline_installers/'
+    else:
+        release_build_handler.handle_online_installer_build(conf_file, license, branch, platform, arch, packages_base_url)
+        temp_path = '/online_installers/'
+    # (2) copy all installers from 'installer_output_dir' into network disk
     # Crete remote directories
     dest_server = 'QT@qt-rnd.it.local'
-    dest_dir = PATH + '/' + LICENSE + '/offline_installers/' + TIME_STAMP + '-' + BUILD_NUMBER
-    latest_dir = PATH + '/' + LICENSE + '/offline_installers/latest'
+    dest_dir = PATH + '/' + LICENSE + temp_path + TIME_STAMP + '-' + BUILD_NUMBER
+    latest_dir = PATH + '/' + LICENSE + temp_path + 'latest'
     create_remote_dirs(dest_server, dest_dir)
 
     installer_name = ''
@@ -860,12 +879,16 @@ def create_remote_dirs(server, dir_path):
 # sanity check command line options
 ###############################
 def sanity_check_options(options):
-    if not options.command in ['init', 'build_src', 'build_bin', 'offline_installer', 'ifw', 'build_creator', 'repo_build']:
+    if not options.command in ['init', 'build_src', 'build_bin', 'offline_installer', 'ifw', 'build_creator', 'repo_build', 'online_installer']:
         return False
     if options.command == 'repo_build':
         if len(sys.argv) < 4:
             return False
-    if options.command != 'repo_build':
+    elif options.command == 'online_installer':
+        if len(sys.argv) < 4:
+            print('*** Insufficient arguments for online installer build!')
+            return False
+    else:
         if len(sys.argv) < 15:
             return False
     return True
@@ -1003,14 +1026,16 @@ def main():
         handle_qt_src_package_build()
     elif COMMAND == 'build_bin':
         handle_qt_release_build()
-    elif COMMAND == 'offline_installer':
-        handle_offline_installer_build()
     elif COMMAND == 'ifw':
         handle_ifw_build()
     elif COMMAND == 'build_creator':
         handle_qt_creator_build()
     elif COMMAND == 'repo_build':
         handle_online_repository_build()
+    elif COMMAND == 'offline_installer':
+        handle_offline_installer_build()
+    elif COMMAND == 'online_installer':
+        handle_online_installer_build()
     else:
         print('Unsupported command')
 
