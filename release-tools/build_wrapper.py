@@ -494,106 +494,45 @@ def handle_qt_desktop_release_build():
 
 
 ###############################
-# handle_qt_release_build
+# handle_examples_injection
 ###############################
-def handle_qt_release_build():
-    # Handle Android build
-    if TARGET_ENV.find("Android") >= 1:
-        handle_qt_android_release_build()
-    elif TARGET_ENV.find("iOS") >= 1:
-        handle_qt_ios_release_build()
-    else:
-        handle_qt_desktop_release_build()
-
+def handle_examples_injection():
     # Inject examples
-    if TARGET_ENV.find('Android') <= 0:
-        if bldinstallercommon.is_linux_platform():
-            cmd_args = ['wget', SRC_URL + '/examples_injection/examples_essentials.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + '/module_archives', True)
-            cmd_args = ['wget', SRC_URL + '/examples_injection/examples_addons.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + '/module_archives', True)
-        elif bldinstallercommon.is_mac_platform():
-            cmd_args = ['curl','-O',SRC_URL + '/examples_injection/examples_essentials.7z']
+    if bldinstallercommon.is_linux_platform():
+        cmd_args = ['wget', SRC_URL + '/examples_injection/examples_essentials.7z']
+        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + '/module_archives', True)
+        cmd_args = ['wget', SRC_URL + '/examples_injection/examples_addons.7z']
+        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + '/module_archives', True)
+    elif bldinstallercommon.is_mac_platform():
+        cmd_args = ['curl','-O',SRC_URL + '/examples_injection/examples_essentials.7z']
+        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+        cmd_args = ['curl','-O',SRC_URL + '/examples_injection/examples_addons.7z']
+        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+    else:
+        if TARGET_ENV.find('x86') >=1:
+            cmd_args = ['C:\Program Files\Git\\bin\curl','-O',SRC_URL + '/examples_injection/examples_essentials.7z']
             bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-            cmd_args = ['curl','-O',SRC_URL + '/examples_injection/examples_addons.7z']
+            cmd_args = ['C:\Program Files\Git\\bin\curl','-O',SRC_URL + '/examples_injection/examples_addons.7z']
             bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
         else:
-            if TARGET_ENV.find('x86') >=1:
-                cmd_args = ['C:\Program Files\Git\\bin\curl','-O',SRC_URL + '/examples_injection/examples_essentials.7z']
-                bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-                cmd_args = ['C:\Program Files\Git\\bin\curl','-O',SRC_URL + '/examples_injection/examples_addons.7z']
-                bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-            else:
-                cmd_args = ['C:\Program Files (x86)\Git\\bin\curl','-O',SRC_URL + '/examples_injection/examples_essentials.7z']
-                bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-                cmd_args = ['C:\Program Files (x86)\Git\\bin\curl','-O',SRC_URL + '/examples_injection/examples_addons.7z']
-                bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+            cmd_args = ['C:\Program Files (x86)\Git\\bin\curl','-O',SRC_URL + '/examples_injection/examples_essentials.7z']
+            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+            cmd_args = ['C:\Program Files (x86)\Git\\bin\curl','-O',SRC_URL + '/examples_injection/examples_addons.7z']
+            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
 
-        bldinstallercommon.create_dirs(WORK_DIR+'module_archives' +os.sep+ 'essentials')
-        bldinstallercommon.create_dirs(WORK_DIR+'module_archives' +os.sep + 'addons')
+    bldinstallercommon.create_dirs(WORK_DIR+'module_archives' +os.sep+ 'essentials')
+    bldinstallercommon.create_dirs(WORK_DIR+'module_archives' +os.sep + 'addons')
 
-        if bldinstallercommon.is_win_platform():
-            if TARGET_ENV.find('x86') >= 1:
-                cmd_args = ['7z','x','qt5_essentials.7z','-oessentials']
-                bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-                cmd_args = ['7z','x','examples_essentials.7z','-oessentials'+os.sep+'examples','-y']
-                bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-
-                cmd_args = ['C:\Program Files\Git\\bin\\rm','qt5_essentials.7z']
-                bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-                cmd_args = ['C:\Program Files\Git\\bin\\rm','examples_essentials.7z']
-                bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-
-                cmd_args = ['7z','a','..'+os.sep+'qt5_essentials.7z','*']
-                bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives/essentials', True)
-
-                cmd_args = ['7z','x','qt5_addons.7z','-oaddons']
-                bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-                cmd_args = ['7z','x','examples_addons.7z','-oaddons'+os.sep+'examples','-y']
-                bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-
-                cmd_args = ['C:\Program Files\Git\\bin\\rm','qt5_addons.7z']
-                bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-                cmd_args = ['C:\Program Files\Git\\bin\\rm','examples_addons.7z']
-                bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-
-                cmd_args = ['7z','a','..'+os.sep+'qt5_addons.7z','*']
-                bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives/addons',True)
-            else:
-                cmd_args = ['7z','x','qt5_essentials.7z','-oessentials']
-                bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-                cmd_args = ['7z','x','examples_essentials.7z','-oessentials'+os.sep+'examples','-y']
-                bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-
-                cmd_args = ['C:\Program Files (x86)\Git\\bin\\rm','qt5_essentials.7z']
-                bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-                cmd_args = ['C:\Program Files (x86)\Git\\bin\\rm','examples_essentials.7z']
-                bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-
-                cmd_args = ['7z','a','..'+os.sep+'qt5_essentials.7z','*']
-                bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives/essentials', True)
-
-                cmd_args = ['7z','x','qt5_addons.7z','-oaddons']
-                bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-                cmd_args = ['7z','x','examples_addons.7z','-oaddons'+os.sep+'examples','-y']
-                bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-
-                cmd_args = ['C:\Program Files (x86)\Git\\bin\\rm','qt5_addons.7z']
-                bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-                cmd_args = ['C:\Program Files (x86)\Git\\bin\\rm','examples_addons.7z']
-                bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-
-                cmd_args = ['7z','a','..'+os.sep+'qt5_addons.7z','*']
-                bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives/addons',True)
-        else:
+    if bldinstallercommon.is_win_platform():
+        if TARGET_ENV.find('x86') >= 1:
             cmd_args = ['7z','x','qt5_essentials.7z','-oessentials']
             bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
             cmd_args = ['7z','x','examples_essentials.7z','-oessentials'+os.sep+'examples','-y']
             bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
 
-            cmd_args = ['rm','qt5_essentials.7z']
+            cmd_args = ['C:\Program Files\Git\\bin\\rm','qt5_essentials.7z']
             bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-            cmd_args = ['rm','examples_essentials.7z']
+            cmd_args = ['C:\Program Files\Git\\bin\\rm','examples_essentials.7z']
             bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
 
             cmd_args = ['7z','a','..'+os.sep+'qt5_essentials.7z','*']
@@ -604,13 +543,79 @@ def handle_qt_release_build():
             cmd_args = ['7z','x','examples_addons.7z','-oaddons'+os.sep+'examples','-y']
             bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
 
-            cmd_args = ['rm','qt5_addons.7z']
+            cmd_args = ['C:\Program Files\Git\\bin\\rm','qt5_addons.7z']
             bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
-            cmd_args = ['rm','examples_addons.7z']
+            cmd_args = ['C:\Program Files\Git\\bin\\rm','examples_addons.7z']
             bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
 
             cmd_args = ['7z','a','..'+os.sep+'qt5_addons.7z','*']
             bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives/addons',True)
+        else:
+            cmd_args = ['7z','x','qt5_essentials.7z','-oessentials']
+            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+            cmd_args = ['7z','x','examples_essentials.7z','-oessentials'+os.sep+'examples','-y']
+            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+
+            cmd_args = ['C:\Program Files (x86)\Git\\bin\\rm','qt5_essentials.7z']
+            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+            cmd_args = ['C:\Program Files (x86)\Git\\bin\\rm','examples_essentials.7z']
+            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+
+            cmd_args = ['7z','a','..'+os.sep+'qt5_essentials.7z','*']
+            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives/essentials', True)
+
+            cmd_args = ['7z','x','qt5_addons.7z','-oaddons']
+            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+            cmd_args = ['7z','x','examples_addons.7z','-oaddons'+os.sep+'examples','-y']
+            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+
+            cmd_args = ['C:\Program Files (x86)\Git\\bin\\rm','qt5_addons.7z']
+            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+            cmd_args = ['C:\Program Files (x86)\Git\\bin\\rm','examples_addons.7z']
+            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+
+            cmd_args = ['7z','a','..'+os.sep+'qt5_addons.7z','*']
+            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives/addons',True)
+    else:
+        cmd_args = ['7z','x','qt5_essentials.7z','-oessentials']
+        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+        cmd_args = ['7z','x','examples_essentials.7z','-oessentials'+os.sep+'examples','-y']
+        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+
+        cmd_args = ['rm','qt5_essentials.7z']
+        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+        cmd_args = ['rm','examples_essentials.7z']
+        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+
+        cmd_args = ['7z','a','..'+os.sep+'qt5_essentials.7z','*']
+        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives/essentials', True)
+
+        cmd_args = ['7z','x','qt5_addons.7z','-oaddons']
+        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+        cmd_args = ['7z','x','examples_addons.7z','-oaddons'+os.sep+'examples','-y']
+        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+
+        cmd_args = ['rm','qt5_addons.7z']
+        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+        cmd_args = ['rm','examples_addons.7z']
+        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives', True)
+
+        cmd_args = ['7z','a','..'+os.sep+'qt5_addons.7z','*']
+        bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR + os.sep + 'module_archives/addons',True)
+
+
+###############################
+# handle_qt_release_build
+###############################
+def handle_qt_release_build():
+    # Handle Android build
+    if TARGET_ENV.find("Android") >= 1:
+        handle_qt_android_release_build()
+    elif TARGET_ENV.find("iOS") >= 1:
+        handle_qt_ios_release_build()
+    else:
+        handle_qt_desktop_release_build()
+        handle_examples_injection()
 
     # Create target directory
     create_remote_dirs(SERVER,LATEST_DIR+'/'+BIN_TARGET_DIRS[TARGET_ENV])
