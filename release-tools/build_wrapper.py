@@ -456,14 +456,16 @@ def handle_qt_desktop_release_build():
     cmd_args = ['python', '-u', script_path, '-u', source_url + extension, '--creator-dir=' + os.path.join(WORK_DIR, 'qt-creator')]
     # on windows we build with jom instead of make
     if bldinstallercommon.is_win_platform():
-        cmd_args += ['-m','jom']
+        cmd_args += ['-m', 'jom']
 
     # run mkqt5bld.py with the correct options according to the platform and license being used
     if bldinstallercommon.is_linux_platform():
+        icu_lib_prefix_rpath = icu_lib_path + ' -I ' + icu_include_path + ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING) + ' -R ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)
+        cmd_args += ['-c', configure_files_path + 'configure_linux_' + LICENSE]
         if LICENSE == 'enterprise':
-            cmd_args += ['-c', configure_files_path + 'configure_linux_' + LICENSE,'-a','-DQT_EVAL -L '+icu_lib_path + ' -I ' + icu_include_path + ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING) + ' -R ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
+            cmd_args += ['-a', '-DQT_EVAL -L ' + icu_lib_prefix_rpath]
         elif LICENSE == 'opensource':
-            cmd_args += ['-c',configure_files_path + 'configure_linux_' + LICENSE,'-a','-L '+icu_lib_path + ' -I ' + icu_include_path + ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING) + ' -R ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
+            cmd_args += ['-a', '-L ' + icu_lib_prefix_rpath]
         else:
             print('*** License unknown: {0}'.format(LICENSE))
             sys.exit(-1)
@@ -472,18 +474,16 @@ def handle_qt_desktop_release_build():
         exec_path = os.getcwd()
         if LICENSE == 'enterprise':
             if TARGET_ENV.find('opengl') >= 1 or TARGET_ENV.find('OpenGL') >= 1:
-                cmd_args += ['-c',configure_files_path + 'configure_win_opengl_' + LICENSE,'-a','-D QT_EVAL' + ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
-            elif TARGET_ENV.find('msvc2012') >= 1 and TARGET_ENV.find('x86') >= 1:
-                cmd_args += ['-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-D QT_EVAL -no-vcproj' + ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
+                cmd_args += ['-c', configure_files_path + 'configure_win_opengl_' + LICENSE]
             else:
-                cmd_args += ['-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-D QT_EVAL' + ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
+                cmd_args += ['-c', configure_files_path + 'configure_win_' + LICENSE]
+            cmd_args += ['-a', '-D QT_EVAL' + ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
         elif LICENSE == 'opensource':
             if TARGET_ENV.find('opengl') >=1 or TARGET_ENV.find('OpenGL') >= 1:
-                cmd_args += ['-c',configure_files_path + 'configure_win_opengl_' + LICENSE,'-a','-prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
-            elif TARGET_ENV.find('msvc2012') >= 1 and TARGET_ENV.find('x86') >= 1:
-                cmd_args += ['-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-no-vcproj' + ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
+                cmd_args += ['-c', configure_files_path + 'configure_win_opengl_' + LICENSE]
             else:
-                cmd_args += ['-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
+                cmd_args += ['-c', configure_files_path + 'configure_win_' + LICENSE]
+            cmd_args += ['-a', '-prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
         else:
             print('*** License unknown: {0}'.format(LICENSE))
             sys.exit(-1)
