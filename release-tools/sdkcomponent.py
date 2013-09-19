@@ -42,6 +42,7 @@
 
 import os
 import sys
+import ntpath
 import bldinstallercommon
 from archiveresolver import ArchiveLocationResolver
 
@@ -57,8 +58,10 @@ class SdkComponent:
             self.package_strip_dirs = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'package_strip_dirs')
             self.target_install_dir = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'target_install_dir') # todo, is needed?
             self.rpath_target       = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'rpath_target')
-            self.archive_name       = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'archive_name')
             self.nomalize_archive_uri(package_name, archive_server_name, archive_location_resolver)
+            self.archive_name       = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'archive_name')
+            if not self.archive_name:
+                self.archive_name       = self.path_leaf(archive_uri)
             # substitute key-value pairs if any
             for item in key_value_substitution_list:
                 self.target_install_base = self.target_install_dir.replace(item[0], item[1])
@@ -75,6 +78,10 @@ class SdkComponent:
                     return '*** Archive check fail! ***\n*** Unable to locate archive: ' + self.archive_uri
             elif not os.path.isfile(self.archive_uri):
                 return '*** Archive check fail! ***\n*** Unable to locate archive: ' + self.archive_uri
+
+        def path_leaf(path):
+            head, tail = ntpath.split(path)
+            return tail or ntpath.basename(head)
 
 
     def __init__(self, section_name, target_config, packages_full_path_list, archive_location_resolver, key_value_substitution_list):
