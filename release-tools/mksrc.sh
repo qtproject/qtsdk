@@ -115,9 +115,6 @@ function create_and_delete_submodule()
   cd ..
 }
 
-#read machine config
-. $(dirname $0)/default_src.config
-
 # read the arguments
 while test $# -gt 0; do
   case "$1" in
