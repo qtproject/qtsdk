@@ -487,7 +487,7 @@ def push_online_repository(server_addr, username, what_to_copy, where_to_copy):
     tar.close()
     # transfer
     destination  = username + '@' + server_addr + ':' + where_to_copy + '/'
-    cmd_args = [REMOTE_COPY_COMMAND, filename, destination]
+    cmd_args = [REMOTE_COPY_COMMAND, '-r', filename, destination]
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
     # delete local tar file
     os.remove(filename)
