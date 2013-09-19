@@ -449,14 +449,30 @@ def handle_qt_desktop_release_build():
                     icu_lib_path = WORK_DIR + os.sep + file_name + os.sep + 'lib'
                     icu_include_path = WORK_DIR + os.sep + file_name + os.sep + 'include'
                     EXTRA_ENV['LD_LIBRARY_PATH'] = icu_lib_path
+
+    ## let's build Qt
+    # some common variables
     script_path = os.path.join(SCRIPT_ROOT_DIR, 'mkqt5bld.py')
-    source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
+    source_url = SRC_URL + '/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
     configure_files_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_config' + os.sep)
+
+    ## common cmd_args for all platforms
+    # we need to change the extension to .zip on windows. os x and linux use .tar.gz for the source file (.zip includes configure.exe)
+    extension = '.tar.gz'
+    if bldinstallercommon.is_win_platform():
+        extension = '.zip'
+    # this args don't change, so we can re-use them
+    cmd_args = ['python', '-u', script_path, '-u', source_url + extension, '--creator-dir=' + os.path.join(WORK_DIR, 'qt-creator')]
+    # on windows we build with jom instead of make
+    if bldinstallercommon.is_win_platform():
+        cmd_args += ['-m','jom']
+
+    # run mkqt5bld.py with the correct options according to the platform and license being used
     if bldinstallercommon.is_linux_platform():
         if LICENSE == 'enterprise':
-            cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-c',configure_files_path + 'configure_linux_' + LICENSE,'-a','-DQT_EVAL -L '+icu_lib_path + ' -I ' + icu_include_path + ' -prefix ' +WORK_DIR + os.sep + MAKE_INSTALL_PADDING + ' -R ' + WORK_DIR + os.sep + MAKE_INSTALL_PADDING]
+            cmd_args += ['-c', configure_files_path + 'configure_linux_' + LICENSE,'-a','-DQT_EVAL -L '+icu_lib_path + ' -I ' + icu_include_path + ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING) + ' -R ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
         elif LICENSE == 'opensource':
-            cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-c',configure_files_path + 'configure_linux_' + LICENSE,'-a','-L '+icu_lib_path + ' -I ' + icu_include_path + ' -prefix ' +WORK_DIR + os.sep + MAKE_INSTALL_PADDING + ' -R ' + WORK_DIR + os.sep + MAKE_INSTALL_PADDING]
+            cmd_args += ['-c',configure_files_path + 'configure_linux_' + LICENSE,'-a','-L '+icu_lib_path + ' -I ' + icu_include_path + ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING) + ' -R ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
         else:
             print('*** License unknown: {0}'.format(LICENSE))
             sys.exit(-1)
@@ -465,24 +481,24 @@ def handle_qt_desktop_release_build():
         exec_path = os.getcwd()
         if LICENSE == 'enterprise':
             if TARGET_ENV.find('opengl') >= 1 or TARGET_ENV.find('OpenGL') >= 1:
-                cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_opengl_' + LICENSE,'-a','-D QT_EVAL' + ' -prefix ' + WORK_DIR + os.sep + MAKE_INSTALL_PADDING]
+                cmd_args += ['-c',configure_files_path + 'configure_win_opengl_' + LICENSE,'-a','-D QT_EVAL' + ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
             elif TARGET_ENV.find('msvc2012') >= 1 and TARGET_ENV.find('x86') >= 1:
-                cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-D QT_EVAL -no-vcproj' + ' -prefix ' + WORK_DIR + os.sep + MAKE_INSTALL_PADDING]
+                cmd_args += ['-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-D QT_EVAL -no-vcproj' + ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
             else:
-                cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-D QT_EVAL' + ' -prefix ' + WORK_DIR + os.sep + MAKE_INSTALL_PADDING]
+                cmd_args += ['-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-D QT_EVAL' + ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
         elif LICENSE == 'opensource':
             if TARGET_ENV.find('opengl') >=1 or TARGET_ENV.find('OpenGL') >= 1:
-                cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_opengl_' + LICENSE,'-a','-prefix ' + WORK_DIR + os.sep + MAKE_INSTALL_PADDING]
+                cmd_args += ['-c',configure_files_path + 'configure_win_opengl_' + LICENSE,'-a','-prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
             elif TARGET_ENV.find('msvc2012') >= 1 and TARGET_ENV.find('x86') >= 1:
-                cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-no-vcproj' + ' -prefix ' + WORK_DIR + os.sep + MAKE_INSTALL_PADDING]
+                cmd_args += ['-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-no-vcproj' + ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
             else:
-                cmd_args = ['python','-u',script_path,'-u',source_url + '.zip','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-m','jom','-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-prefix ' + WORK_DIR + os.sep + MAKE_INSTALL_PADDING]
+                cmd_args += ['-c',configure_files_path + 'configure_win_' + LICENSE,'-a','-prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
         else:
             print('*** License unknown: {0}'.format(LICENSE))
             sys.exit(-1)
         bldinstallercommon.do_execute_sub_process(cmd_args,exec_path, True)
     elif bldinstallercommon.is_mac_platform():
-        cmd_args = ['python','-u',script_path,'-u',source_url + '.tar.gz','--creator-dir=' + WORK_DIR + os.sep + 'qt-creator','-c',configure_files_path + 'configure_mac_' + LICENSE,'-a','-prefix ' + WORK_DIR + os.sep + MAKE_INSTALL_PADDING]
+        cmd_args += ['-c',configure_files_path + 'configure_mac_' + LICENSE,'-a','-prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
         bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR, True)
 
 
