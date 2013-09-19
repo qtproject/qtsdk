@@ -215,7 +215,6 @@ def handle_qt_src_package_build():
     global SERVER
     global PATH
 
-    #cmd_args = ['./init-repository','-f']
     exec_path = WORK_DIR + os.sep + 'qt5'
     #bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
     if LICENSE == 'enterprise':
@@ -428,14 +427,6 @@ def handle_qt_desktop_release_build():
     icu_include_path = ''
     if ICU_LIBS !='':
         handle_icu_build()
-#    cmd_args = ['wget',ICU_LIBS]
-#    bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR, True)
-
-#    dir_list = os.listdir(WORK_DIR)
-#    for file_name in dir_list:
-#        if file_name.startswith("icu_"):
-#            cmd_args = ['7z','x',file_name]
-#            bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR, True)
 
     # del os.environ['QTDIR']
     if ICU_LIBS !='':
