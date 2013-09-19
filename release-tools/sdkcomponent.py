@@ -61,11 +61,11 @@ class SdkComponent:
             self.nomalize_archive_uri(package_name, archive_server_name, archive_location_resolver)
             self.archive_name       = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'archive_name')
             if not self.archive_name:
-                self.archive_name       = self.path_leaf(archive_uri)
+                self.archive_name = self.path_leaf(archive_uri)
             # substitute key-value pairs if any
             for item in key_value_substitution_list:
-                self.target_install_base = self.target_install_dir.replace(item[0], item[1])
-                self.version = self.archive_name.replace(item[0], item[1])
+                self.target_install_dir = self.target_install_dir.replace(item[0], item[1])
+                self.archive_name       = self.archive_name.replace(item[0], item[1])
 
         def nomalize_archive_uri(self, package_name, archive_server_name, archive_location_resolver):
             self.archive_uri = archive_location_resolver.resolve_full_uri(package_name, archive_server_name, self.archive_uri)
