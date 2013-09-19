@@ -778,8 +778,8 @@ def trigger_rta(installer_output_dir):
     matching = [s for s in dir_list if 'rta_description_file' in s]
     # sanity check, should contain only one rta test case file
     if len(matching) != 1:
-        print('*** Error - Given installer_output_dir contained {0} rta description files?'.format(len(matching)))
-        sys.exit(-1)
+        print('*** Warning - Given installer_output_dir contained {0} rta description files?'.format(len(matching)))
+        return
     rta_file = os.path.join(installer_output_dir, matching[0])
     f = open(rta_file)
     for line in iter(f):
