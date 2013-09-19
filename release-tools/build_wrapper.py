@@ -235,7 +235,7 @@ def handle_qt_src_package_build():
     for item in split_exclude_list:
         module_exclude_list += ['-i', item]
     # cmd args for source packaging srcipt
-    cmd_args = [os.path.join(SCRIPT_ROOT_DIR, + 'mksrc.sh'), '-u', os.path.join(WORK_DIR, 'qt5')]
+    cmd_args = [os.path.join(SCRIPT_ROOT_DIR, 'mksrc.sh'), '-u', os.path.join(WORK_DIR, 'qt5')]
     cmd_args += ['-v', QT_FULL_VERSION, '-m', '-N', '-l',LICENSE]
     cmd_args += module_exclude_list
     # create src package
