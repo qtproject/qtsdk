@@ -323,6 +323,7 @@ def handle_online_installer_build(conf_file, license, branch, platform, arch, pa
     if (len(job_list) == 0):
         print('*** Fatal error! No online installer build jobs found. Probably an error?'.format(conf_file, section_name))
         sys.exit(-1)
+    output_dir = os.path.join(SCRIPT_ROOT_DIR, 'installer_output')
     # handle build jobs
     for job in job_list:
         create_online_installer(job, packages_base_url)
