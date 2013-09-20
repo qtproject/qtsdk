@@ -53,7 +53,7 @@ import bldinstallercommon
 TIMESTAMP           = strftime('%Y-%m-%d-%H-%M', gmtime())
 ROOT_DIR            = os.path.dirname(os.path.realpath(__file__))
 REPOGEN_TOOL        = 'repogen'
-REPOGEN_TOOLS_DIR   = ROOT_DIR + os.sep + 'repogen_tools'
+REPOGEN_TOOLS_DIR   = os.path.join(ROOT_DIR, 'repogen_tools')
 
 UPDATE_NEW_COMPONENTS_ONLY = False  # default to update all (given) components
 
@@ -98,7 +98,7 @@ def fetch_repogen_tools(tools_uri):
     # fetch
     print('Fetch repogen tools')
     if bldinstallercommon.is_content_url_valid(tools_uri):
-        package_save_as_temp = os.path.normpath(ROOT_DIR + os.sep + os.path.basename(tools_uri))
+        package_save_as_temp = os.path.normpath(os.path.join(ROOT_DIR, os.path.basename(tools_uri)))
         bldinstallercommon.retrieve_url(tools_uri, package_save_as_temp)
         bldinstallercommon.extract_file(package_save_as_temp, REPOGEN_TOOLS_DIR)
         print('Trying to locate repogen tool: {0}'.format(REPOGEN_TOOL + executable_suffix))
@@ -256,7 +256,7 @@ def ask_for_components(source_pkg):
 # Function
 ###############################
 def backup_repo(backup_base_dir, directory_to_be_backed_up):
-    backup_full_path = backup_base_dir + os.sep + TIMESTAMP
+    backup_full_path = os.path.join(backup_base_dir, TIMESTAMP)
     # create dirs
     bldinstallercommon.create_dirs(backup_full_path)
     # backup
@@ -308,11 +308,11 @@ if __name__ == "__main__":
     # 1) target repository directory must be empty i.e. we initialize things for the first time
     # 2) copy the source repository as target repository 1:1 and nothing else
     if caller_arguments.source_repo:
-        if not os.path.isdir(caller_arguments.source_repo) or not os.path.isfile(caller_arguments.source_repo + os.sep + 'Updates.xml'):
+        if not os.path.isdir(caller_arguments.source_repo) or not os.path.isfile(os.path.join(caller_arguments.source_repo, 'Updates.xml')):
             print('*** The given source directory does not seem to be proper repository? Abort!')
             print('Given source repository: {0}'.format(caller_arguments.source_repo))
             sys.exit(-1)
-        if os.path.isfile(caller_arguments.target_repo + os.sep + 'Updates.xml'):
+        if os.path.isfile(os.path.join(caller_arguments.target_repo, 'Updates.xml')):
             print('The given destination directory already contains a repository.')
             print('We just update the existing repository:')
             print('Given target repository: {0}'.format(caller_arguments.target_repo))
