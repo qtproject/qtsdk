@@ -486,6 +486,7 @@ def push_online_repository(server_addr, username, what_to_copy, where_to_copy):
     tar.add(what_to_copy, arcname="")
     tar.close()
     # transfer
+    where_to_copy = ensure_unix_paths(where_to_copy)
     destination  = username + '@' + server_addr + ':' + where_to_copy + '/'
     cmd_args = [REMOTE_COPY_COMMAND, '-r', filename, destination]
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
@@ -540,11 +541,15 @@ def init_repositories(conf_file, branch, license):
 
 # helper function to create remote directories
 def create_remote_dirs(server, dir_path):
-    temp_path = dir_path.replace('\\', '/')
-    temp_path = temp_path.replace('//', '/')
+    temp_path = ensure_unix_paths(dir_path)
     cmd_args = [SSH_COMMAND, '-t', '-t', server, 'mkdir -p', temp_path]
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
+
+def ensure_unix_paths(path):
+    temp_path = path.replace('\\', '/')
+    temp_path = temp_path.replace('//', '/')
+    return temp_path
 
 # helper function to create remote directoriesinux_x64/desktop/qt5
 def create_online_repo_paths(server_addr, base_path, suffix_list, url_list):
@@ -556,8 +561,7 @@ def create_online_repo_paths(server_addr, base_path, suffix_list, url_list):
 
 # helper function to delete online repository directories on remote server
 def delete_online_repo_paths(server_addr, path_to_be_deleted):
-    temp_path = path_to_be_deleted.replace('\\', '/')
-    temp_path = temp_path.replace('//', '/')
+    temp_path = ensure_unix_paths(path_to_be_deleted)
     cmd_args = [SSH_COMMAND, '-t', '-t', server_addr, 'rm -rf', temp_path]
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
@@ -620,6 +624,7 @@ def update_online_repo(job, update_production_repo):
         if (remote_copy_path.endswith('/')):
             remote_copy_path = remote_copy_path[:len(remote_copy_path) - 1]
         remote_copy_path = os.path.dirname(remote_copy_path)
+        remote_copy_path = ensure_unix_paths(remote_copy_path)
         cmd_args = [SSH_COMMAND, '-t', '-t', staging_server_addr, REMOTE_COPY_COMMAND, '-r', prod_url, remote_copy_path]
         bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
         # (2) update
@@ -634,6 +639,7 @@ def update_online_repo(job, update_production_repo):
         bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
         # (3) push updated repo back to production
         prod_server_pending_area_dir = PROD_SRV_REPO_PENDING_AREA_DIR + '/' + REPOSITORY_BASE_NAME + '/' + job.repo_url_specifier
+        prod_server_pending_area_dir = ensure_unix_paths(prod_server_pending_area_dir)
         cmd_args_log_to_staging = [SSH_COMMAND, '-t', '-t', staging_server_addr]
         cmd_args_log_to_prod = cmd_args_log_to_staging + [SSH_COMMAND, '-t', '-t', PROD_USER + '@' + PROD_ADDR ]
         # delete old stuff from pending area, but do sanity check first!
