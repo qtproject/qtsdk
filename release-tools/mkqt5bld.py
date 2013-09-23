@@ -72,9 +72,9 @@ ESSENTIALS_INSTALL_DIR_NAME         = SUBMODULE_INSTALL_BASE_DIR_NAME + 'essenti
 ADDONS_INSTALL_DIR_NAME             = SUBMODULE_INSTALL_BASE_DIR_NAME + 'addons'
 SINGLE_INSTALL_DIR_NAME             = SUBMODULE_INSTALL_BASE_DIR_NAME + 'single'
 #list of modules, only a backup list, this list will be updated during script execution
-QT5_MODULES_LIST                    = [ 'qt3d', 'qlalr', 'qtactiveqt', 'qtbase',     \
-                                        'qtconnectivity', 'qtdeclarative', 'qtdoc', \
-                                        'qtfeedback', 'qtgraphicaleffects', \
+QT5_MODULES_LIST                    = [ 'qt3d', 'qlalr', 'qtactiveqt', 'qtandroidextras', \
+                                        'qtbase', 'qtconnectivity', 'qtdeclarative', \
+                                        'qtdoc', 'qtfeedback', 'qtgraphicaleffects', \
                                         'qtimageformats', 'qtlocation', 'qtmacextras', \
                                         'qtmultimedia', 'qtpim', 'qtqa', 'qtquick1', \
                                         'qtquickcontrols', 'qtrepotools', 'qtscript', \
