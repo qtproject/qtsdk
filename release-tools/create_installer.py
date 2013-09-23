@@ -395,10 +395,12 @@ def parse_cmd_line():
     PREFERRED_INSTALLER_NAME                        = options.preferred_installer_name
 
     # key value substitution list init
+    delimeter = '='
     if options.global_key_value_substitution_list:
         for item in options.global_key_value_substitution_list:
-            key, value = item.split('=')
-            KEY_SUBSTITUTION_LIST.append([key, value])
+            if delimeter in item:
+                key, value = item.split(delimeter)
+                KEY_SUBSTITUTION_LIST.append([key, value])
     KEY_SUBSTITUTION_LIST.append(['@LICENSE@', LICENSE_TYPE])
 
     if INCREMENTAL_MODE:
