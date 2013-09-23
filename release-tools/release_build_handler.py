@@ -56,7 +56,9 @@ import urllib
 import urlparse
 import tarfile
 
+INIT_DONE                               = False
 SSH_COMMAND                             = 'ssh'
+REMOTE_COPY_COMMAND                     = 'scp'
 REPO_STAGING_SERVER                     = 'server'
 REPO_STAGING_SERVER_UNAME               = 'username'
 REPO_STAGING_SERVER_HOME                = ''
@@ -479,10 +481,11 @@ def create_online_repository(build_job, packages_base_url):
 
 # push online repository into remote server
 def push_online_repository(server_addr, username, what_to_copy, where_to_copy):
+    print('Preparing to copy: {0}'.format(what_to_copy))
     # tar contents to be transferred
-    filename = os.path.join(SCRIPT_ROOT_DIR, 'repo.tar')
-    print('filename: {0}'.format(filename))
-    tar = tarfile.open(filename, "w")
+    filename = 'repo.tar'
+    full_filename = os.path.join(SCRIPT_ROOT_DIR, filename)
+    tar = tarfile.open(full_filename, "w")
     tar.add(what_to_copy, arcname="")
     tar.close()
     # transfer
@@ -491,12 +494,12 @@ def push_online_repository(server_addr, username, what_to_copy, where_to_copy):
     cmd_args = [REMOTE_COPY_COMMAND, '-r', filename, destination]
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
     # delete local tar file
-    os.remove(filename)
+    os.remove(full_filename)
     # extract remote tar file
-    cmd_args = [SSH_COMMAND, '-t', '-t', username + '@' + server_addr, 'tar', '-C', where_to_copy, '-xf', where_to_copy + '/' + 'repo.tar']
+    cmd_args = [SSH_COMMAND, '-t', '-t', username + '@' + server_addr, 'tar', '-C', where_to_copy, '-xf', where_to_copy + '/' + filename]
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
     # delete remote tar file
-    cmd_args = [SSH_COMMAND, '-t', '-t', username + '@' + server_addr, 'rm', '-f', where_to_copy + '/' + 'repo.tar']
+    cmd_args = [SSH_COMMAND, '-t', '-t', username + '@' + server_addr, 'rm', '-f', where_to_copy + '/' + filename]
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
 
@@ -528,10 +531,10 @@ def init_repositories(conf_file, branch, license):
             url_list.append(repo_url_specifier)
     server_addr = REPO_STAGING_SERVER_UNAME + '@' + REPO_STAGING_SERVER
     # test area
-    base_path_testing = os.path.join(REPO_STAGING_SERVER_TEST_REPO, license)
+    base_path_testing = REPO_STAGING_SERVER_TEST_REPO + '/' + license
     create_online_repo_paths(server_addr, base_path_testing, [], url_list)
     # pending (merge) area
-    base_path_pending = os.path.join(REPO_STAGING_SERVER_TEST_REPO_PENDING, license, repo_content_type)
+    base_path_pending = REPO_STAGING_SERVER_TEST_REPO_PENDING + '/' + license + '/' + repo_content_type
     # delete old pending material first from pending area
     content_to_be_deleted = base_path_pending + '/*'
     delete_online_repo_paths(server_addr, content_to_be_deleted)
@@ -545,7 +548,7 @@ def create_remote_dirs(server, dir_path):
     cmd_args = [SSH_COMMAND, '-t', '-t', server, 'mkdir -p', temp_path]
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
-
+# ensure unix style paths
 def ensure_unix_paths(path):
     temp_path = path.replace('\\', '/')
     temp_path = temp_path.replace('//', '/')
@@ -583,8 +586,8 @@ def generate_online_repo_paths(base_path, suffix_list, url_list):
 # helper function to generate correct path structure for pending area
 def generate_repo_dest_path_pending(repo_job):
     dest_path_base = os.path.join(REPO_STAGING_SERVER_TEST_REPO_PENDING, repo_job.license, repo_job.repo_content_type, REPOSITORY_BASE_NAME, repo_job.repo_url_specifier)
-    dest_path_repository = os.path.join(dest_path_base, 'online_repository')
-    dest_path_pkg = os.path.join(dest_path_base, 'pkg')
+    dest_path_repository = ensure_unix_paths(os.path.join(dest_path_base, 'online_repository'))
+    dest_path_pkg = ensure_unix_paths(os.path.join(dest_path_base, 'pkg'))
     return dest_path_repository, dest_path_pkg
 
 
@@ -592,12 +595,12 @@ def generate_repo_dest_path_pending(repo_job):
 def update_online_repo(job, update_production_repo):
     staging_server_addr = REPO_STAGING_SERVER_UNAME + '@' + REPO_STAGING_SERVER
     staging_server_ifw_tools = 'installer-framework-build-linux-x64.7z'
-    script = os.path.join(REPO_STAGING_SERVER_HOME_TOOLS, 'update_repository.py')
-    repogen_tools = os.path.join(REPO_STAGING_SERVER_HOME, staging_server_ifw_tools)
+    script = REPO_STAGING_SERVER_HOME_TOOLS + '/' + 'update_repository.py'
+    repogen_tools = REPO_STAGING_SERVER_HOME + '/' + staging_server_ifw_tools
     # determine paths on test server
     staging_source_repo, staging_source_pkg = generate_repo_dest_path_pending(job)
     # determine target repo
-    staging_target_repo = os.path.join(REPO_STAGING_SERVER_TEST_REPO, job.license, REPOSITORY_BASE_NAME, job.repo_url_specifier)
+    staging_target_repo = REPO_STAGING_SERVER_TEST_REPO + '/' + job.license + '/' + REPOSITORY_BASE_NAME + '/' + job.repo_url_specifier
     repo_components_to_update = job.repo_components_to_update
     cmd_args = [SSH_COMMAND, '-t', '-t', staging_server_addr]
     cmd_args = cmd_args + ['python', script]
@@ -664,28 +667,30 @@ def update_online_repo(job, update_production_repo):
 
 # init environment
 def init_env():
+    if INIT_DONE:
+        return
     global REPO_STAGING_SERVER
     global REPO_STAGING_SERVER_UNAME
     global PKG_SERVER_URL
     global REPO_STAGING_SERVER_HOME
     global REPO_STAGING_SERVER_HOME_TOOLS
     global SSH_COMMAND
+    global REMOTE_COPY_COMMAND
     global IFW_TOOLS_BASE_URL
     global CONFIGURATIONS_FILE_BASE_DIR
-    global REMOTE_COPY_COMMAND
     global PROD_USER
     global PROD_ADDR
     global PROD_SRV_REPO_BASE_PATH
     global PROD_SRV_REPO_PENDING_AREA_DIR
+    global INIT_DONE
 
     REPO_STAGING_SERVER             = os.environ['PKG_STAGING_SERVER']
     REPO_STAGING_SERVER_UNAME       = os.environ['PKG_STAGING_SERVER_UNAME']
     PKG_SERVER_URL                  = os.environ['PKG_SERVER_URL']
     REPO_STAGING_SERVER_HOME        = os.environ['REPO_STAGING_SERVER_HOME']
-    REPO_STAGING_SERVER_HOME_TOOLS  = os.path.join(REPO_STAGING_SERVER_HOME, REPO_STAGING_SERVER_HOME_TOOLS)
+    REPO_STAGING_SERVER_HOME_TOOLS  = REPO_STAGING_SERVER_HOME + '/' + REPO_STAGING_SERVER_HOME_TOOLS
     IFW_TOOLS_BASE_URL              = os.environ['IFW_TOOLS_BASE_URL']
     CONFIGURATIONS_FILE_BASE_DIR    = os.environ['CONFIGURATIONS_FILE_BASE_DIR']
-    REMOTE_COPY_COMMAND             = os.environ['REMOTE_COPY_COMMAND']
     PROD_USER                       = os.environ['PROD_USER']
     PROD_ADDR                       = os.environ['PROD_ADDR']
     PROD_SRV_REPO_BASE_PATH         = os.environ['PROD_SRV_REPO_BASE_PATH']
@@ -704,5 +709,6 @@ def init_env():
     bldinstallercommon.init_common_module(SCRIPT_ROOT_DIR)
     if bldinstallercommon.is_win_platform():
         SSH_COMMAND = '%SSH%'
-
+        REMOTE_COPY_COMMAND = '%SCP%'
+    INIT_DONE = True
 
