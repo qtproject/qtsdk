@@ -695,10 +695,10 @@ def parse_component_data(configuration_file, configurations_base_path):
     # check for extra configuration files if defined
     extra_conf_list = bldinstallercommon.safe_config_key_fetch(configuration, 'ExtraPackageConfigurationFiles', 'file_list')
     if extra_conf_list:
-        extra_conf_list = extra_conf_list.replace(' ', '')
         extra_conf_list = extra_conf_list.rstrip(',\n')
         file_list = extra_conf_list.split(',')
         for extra_conf_file in file_list:
+            extra_conf_file = extra_conf_file.strip()
             extra_conf_file_path = os.path.normpath(configurations_base_path + os.sep + extra_conf_file)
             if not os.path.isfile(extra_conf_file_path):
                 # then the file should exist in common (all-os) directory
