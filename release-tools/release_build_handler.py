@@ -667,8 +667,6 @@ def update_online_repo(job, update_production_repo):
 
 # init environment
 def init_env():
-    if INIT_DONE:
-        return
     global REPO_STAGING_SERVER
     global REPO_STAGING_SERVER_UNAME
     global PKG_SERVER_URL
@@ -683,6 +681,8 @@ def init_env():
     global PROD_SRV_REPO_BASE_PATH
     global PROD_SRV_REPO_PENDING_AREA_DIR
     global INIT_DONE
+    if INIT_DONE:
+        return
 
     REPO_STAGING_SERVER             = os.environ['PKG_STAGING_SERVER']
     REPO_STAGING_SERVER_UNAME       = os.environ['PKG_STAGING_SERVER_UNAME']
