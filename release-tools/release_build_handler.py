@@ -96,7 +96,6 @@ class BuildJob:
                  configurations_file,
                  ifw_tools,
                  substitution_list,
-                 repo_qt_type,
                  repo_content_type,
                  repo_components_to_update,
                  repo_url_specifier,
@@ -113,7 +112,6 @@ class BuildJob:
         self.configurations_file        = configurations_file
         self.ifw_tools                  = ifw_tools
         self.substitution_arg_list      = []
-        self.repo_qt_type               = repo_qt_type
         self.repo_content_type          = repo_content_type
         self.repo_components_to_update  = repo_components_to_update
         self.repo_url_specifier         = repo_url_specifier
@@ -141,7 +139,6 @@ class BuildJob:
         print(self.ifw_tools)
         print(self.substitution_arg_list)
         if self.is_repo_job:
-            print(self.repo_qt_type)
             print(self.repo_content_type)
             print(self.repo_components_to_update)
             print(self.repo_url_specifier)
@@ -209,7 +206,8 @@ def is_valid_job_type(job_type_specifier):
 
 # parse build jobs for given platform and architecture
 #<branch>.<qt_version>.<offline/repository>.<host_os>.<architecture>.<package_type>
-def get_job_list(conf_file, job_type_specifier, license, qt_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag):
+def get_job_list(conf_file, job_type_specifier, license, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag):
+    print('Get build job list for: {0}'.format(platform + '-' + arch))
     if not os.path.isfile(conf_file):
         print('*** Fatal error! Given file does not exist: {0}'.format(conf_file))
         sys.exit(-1)
@@ -276,7 +274,7 @@ def get_job_list(conf_file, job_type_specifier, license, qt_type, branch, platfo
             # determine full path for the conf file
             full_conf_file_path = os.path.join(conf_file_base_dir, arg_configurations_file)
             # create build job
-            job = BuildJob(is_repo_job, license, s, arch, version_number, version_number_tag, conf_file_base_dir, full_conf_file_path, ifw_tools_url, arg_substitution_list, qt_type, repo_content_type, repo_components_to_update, repo_url_specifier, installer_name, rta_key_list)
+            job = BuildJob(is_repo_job, license, s, arch, version_number, version_number_tag, conf_file_base_dir, full_conf_file_path, ifw_tools_url, arg_substitution_list, repo_content_type, repo_components_to_update, repo_url_specifier, installer_name, rta_key_list)
             if (job.validate()):
                 job_list.append(job)
     return job_list
@@ -284,19 +282,19 @@ def get_job_list(conf_file, job_type_specifier, license, qt_type, branch, platfo
 
 # parse online repository build jobs for given platform and architecture
 #<branch>.<qt_version>.<offline/repository>.<host_os>.<architecture>.<package_type>
-def get_repo_job_list(conf_file, license, qt_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag):
-    return get_job_list(conf_file, 'repository', license, qt_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
+def get_repo_job_list(conf_file, license, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag):
+    return get_job_list(conf_file, 'repository', license, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
 
 
 # parse offline installer build jobs for given platform and architecture
 #<branch>.<qt_version>.<offline/repository>.<host_os>.<architecture>.<package_type>
-def get_offline_job_list(conf_file, license, qt_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag):
-    return get_job_list(conf_file, 'offline', license, qt_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
+def get_offline_job_list(conf_file, license, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag):
+    return get_job_list(conf_file, 'offline', license, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
 
 # parse online installer build jobs for given platform and architecture
 #<branch>.<qt_version>.<offline/repository>.<host_os>.<architecture>.<package_type>
-def get_online_job_list(conf_file, license, qt_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag):
-    return get_job_list(conf_file, 'online', license, qt_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
+def get_online_job_list(conf_file, license, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag):
+    return get_job_list(conf_file, 'online', license, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
 
 
 # execute
@@ -313,14 +311,13 @@ def handle_online_installer_build(conf_file, license, branch, platform, arch, pa
     parser = ConfigParser.ConfigParser()
     parser.readfp(open(conf_file))
     section_name        = branch + '.' + 'global'
-    global_qt_type      = bldinstallercommon.safe_config_key_fetch(parser, section_name, 'qt_type')
     global_version      = bldinstallercommon.safe_config_key_fetch(parser, section_name, 'version')
     global_version_tag  = bldinstallercommon.safe_config_key_fetch(parser, section_name, 'version_tag')
     if not global_version:
         print('*** Fatal error! Invalid values in {0} -> {1}'.format(conf_file, section_name))
         sys.exit(-1)
     # parse build jobs
-    job_list = get_online_job_list(conf_file, license, global_qt_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
+    job_list = get_online_job_list(conf_file, license, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
     if (len(job_list) == 0):
         print('*** Fatal error! No online installer build jobs found. Probably an error?'.format(conf_file, section_name))
         sys.exit(-1)
@@ -346,14 +343,13 @@ def handle_offline_installer_build(conf_file, license, branch, platform, arch, p
     parser = ConfigParser.ConfigParser()
     parser.readfp(open(conf_file))
     section_name        = branch + '.' + 'global'
-    global_qt_type      = bldinstallercommon.safe_config_key_fetch(parser, section_name, 'qt_type')
     global_version      = bldinstallercommon.safe_config_key_fetch(parser, section_name, 'version')
     global_version_tag  = bldinstallercommon.safe_config_key_fetch(parser, section_name, 'version_tag')
     if not global_version:
         print('*** Fatal error! Invalid values in {0} -> {1}'.format(conf_file, section_name))
         sys.exit(-1)
     # parse build jobs
-    job_list = get_offline_job_list(conf_file, license, global_qt_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
+    job_list = get_offline_job_list(conf_file, license, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
     if (len(job_list) == 0):
         print('*** Fatal error! No offline build jobs found. Probably an error?'.format(conf_file, section_name))
         sys.exit(-1)
@@ -428,23 +424,22 @@ def handle_repo_build(conf_file, license, branch, platform, arch, packages_base_
     release_tools_dir   = SCRIPT_ROOT_DIR
     conf_file_base_dir  = CONFIGURATIONS_FILE_BASE_DIR
     ifw_base_url        = IFW_TOOLS_BASE_URL
-    # init repo dirs
-    init_repositories(conf_file, branch, license)
     # parse conf file
     parser = ConfigParser.ConfigParser()
     parser.readfp(open(conf_file))
     section_name = branch + '.' + 'global'
-    global_qt_type     = bldinstallercommon.safe_config_key_fetch(parser, section_name, 'qt_type')
     global_version     = bldinstallercommon.safe_config_key_fetch(parser, section_name, 'version')
     global_version_tag = bldinstallercommon.safe_config_key_fetch(parser, section_name, 'version_tag')
     if not global_version:
         print('*** Fatal error! Invalid values in {0} -> {1}'.format(conf_file, section_name))
         sys.exit(-1)
     # parse build jobs
-    repo_job_list = get_repo_job_list(conf_file, license, global_qt_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
+    repo_job_list = get_repo_job_list(conf_file, license, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
     if (len(repo_job_list) == 0):
         print('*** Fatal error! No repository build jobs found. Probably an error?'.format(conf_file, section_name))
         sys.exit(-1)
+    # init repo dirs
+    init_repositories(repo_job_list)
     # handle repo build jobs
     for job in repo_job_list:
         create_online_repository(job, packages_base_url)
@@ -504,42 +499,53 @@ def push_online_repository(server_addr, username, what_to_copy, where_to_copy):
 
 
 # init online repository directory structure at remote server
-def init_repositories(conf_file, branch, license):
-    if not os.path.isfile(conf_file):
-        print('*** Fatal error! Given file does not exist: {0}'.format(conf_file))
-        sys.exit(-1)
+def init_repositories(job_list):
+    print('Initializing repositories ...')
     init_env()
-    parser = ConfigParser.ConfigParser()
-    parser.readfp(open(conf_file))
-    qt_type = bldinstallercommon.safe_config_key_fetch(parser, branch + '.' + 'global', 'qt_type')
-    repo_content_type = bldinstallercommon.safe_config_key_fetch(parser, branch + '.' + 'global', 'repo_content_type')
-    if not repo_content_type:
-        print('*** Fatal error! Invalid values in {0} -> {1} missing?'.format(branch + '.' + 'global', 'repo_content_type'))
-        sys.exit(-1)
-    url_list = []
-    for s in parser.sections():
-        section_parts = s.split('.')
-        if (len(section_parts) <= 2):
-            continue
-        if not (section_parts[0] == branch):
-            continue
-        if (section_parts[2] == 'repository'):
-            repo_url_specifier = bldinstallercommon.safe_config_key_fetch(parser, s, 'repo_url_specifier')
-            if not repo_url_specifier:
-                print('*** Fatal error! Empty value in repo_url_specifier: {0}'.format(s))
-                sys.exit(-1)
-            url_list.append(repo_url_specifier)
     server_addr = REPO_STAGING_SERVER_UNAME + '@' + REPO_STAGING_SERVER
-    # test area
-    base_path_testing = REPO_STAGING_SERVER_TEST_REPO + '/' + license
-    create_online_repo_paths(server_addr, base_path_testing, [], url_list)
-    # pending (merge) area
-    base_path_pending = REPO_STAGING_SERVER_TEST_REPO_PENDING + '/' + license + '/' + repo_content_type
-    # delete old pending material first from pending area
-    content_to_be_deleted = base_path_pending + '/*'
-    delete_online_repo_paths(server_addr, content_to_be_deleted)
-    # create clean dir structure in pending area
-    create_online_repo_paths(server_addr, base_path_pending,  ['online_repository', 'pkg'], url_list)
+    for item in job_list:
+        base_path_testing = REPO_STAGING_SERVER_TEST_REPO + '/' + item.license
+        url_list = [item.repo_url_specifier]
+        # create test area paths
+        test_area_path = generate_repo_path_for_test_area(item)
+        create_remote_dirs(server_addr, test_area_path)
+        # pending (merge) area paths
+        pending_area_base_path_repo, pending_area_base_path_pkg = generate_repo_dest_path_pending(item)
+        # delete old pending material first from pending area
+        content_to_be_deleted = generate_repo_path_for_pending_area(item) + '/*'
+        delete_online_repo_paths(server_addr, content_to_be_deleted)
+        # create clean dir structure in pending area
+        create_remote_dirs(server_addr, pending_area_base_path_pkg)
+        create_remote_dirs(server_addr, pending_area_base_path_repo)
+
+
+# generate the common part for the repo path
+def generate_repo_path(build_job):
+    path = REPOSITORY_BASE_NAME + '/' + build_job.repo_url_specifier
+    return ensure_unix_paths(path)
+
+
+# generate full path for test area repository
+def generate_repo_path_for_test_area(build_job):
+    path = REPO_STAGING_SERVER_TEST_REPO + '/' + build_job.license + '/'
+    path += generate_repo_path(build_job)
+    return ensure_unix_paths(path)
+
+
+# generate pending area (base) path
+def generate_repo_path_for_pending_area(build_job):
+    path = REPO_STAGING_SERVER_TEST_REPO_PENDING + '/' + build_job.license + '/'
+    path += build_job.repo_content_type + '/'
+    path += generate_repo_path(build_job)
+    return ensure_unix_paths(path)
+
+
+# generate temporary 'pkg' and 'online_repository' pending area paths for repo update work
+def generate_repo_dest_path_pending(repo_job):
+    base_path_pending = generate_repo_path_for_pending_area(repo_job)
+    dest_path_repository = ensure_unix_paths(os.path.join(base_path_pending, 'online_repository'))
+    dest_path_pkg = ensure_unix_paths(os.path.join(base_path_pending, 'pkg'))
+    return dest_path_repository, dest_path_pkg
 
 
 # helper function to create remote directories
@@ -547,19 +553,6 @@ def create_remote_dirs(server, dir_path):
     temp_path = ensure_unix_paths(dir_path)
     cmd_args = [SSH_COMMAND, '-t', '-t', server, 'mkdir -p', temp_path]
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
-
-# ensure unix style paths
-def ensure_unix_paths(path):
-    temp_path = path.replace('\\', '/')
-    temp_path = temp_path.replace('//', '/')
-    return temp_path
-
-# helper function to create remote directoriesinux_x64/desktop/qt5
-def create_online_repo_paths(server_addr, base_path, suffix_list, url_list):
-    repo_path_list = generate_online_repo_paths(base_path, suffix_list, url_list)
-    for item in repo_path_list:
-        print('Creating remote directory: {0}'.format(item))
-        create_remote_dirs(server_addr, item)
 
 
 # helper function to delete online repository directories on remote server
@@ -569,26 +562,18 @@ def delete_online_repo_paths(server_addr, path_to_be_deleted):
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
 
-# helper function to generate correct path structure for online repos
-def generate_online_repo_paths(base_path, suffix_list, url_list):
-    repo_path_list = []
-    for item in url_list:
-        if not suffix_list:
-            path_repo = os.path.join(base_path, REPOSITORY_BASE_NAME, item)
-            repo_path_list.append(path_repo)
-        else:
-            for suffix in suffix_list:
-                path_repo = os.path.join(base_path, REPOSITORY_BASE_NAME, item, suffix)
-                repo_path_list.append(path_repo)
-    return repo_path_list
+# ensure unix style paths
+def ensure_unix_paths(path):
+    temp_path = path.replace('\\', '/')
+    temp_path = temp_path.replace('//', '/')
+    return temp_path
 
 
 # helper function to generate correct path structure for pending area
-def generate_repo_dest_path_pending(repo_job):
-    dest_path_base = os.path.join(REPO_STAGING_SERVER_TEST_REPO_PENDING, repo_job.license, repo_job.repo_content_type, REPOSITORY_BASE_NAME, repo_job.repo_url_specifier)
-    dest_path_repository = ensure_unix_paths(os.path.join(dest_path_base, 'online_repository'))
-    dest_path_pkg = ensure_unix_paths(os.path.join(dest_path_base, 'pkg'))
-    return dest_path_repository, dest_path_pkg
+def generate_repo_pending_base_path(build_job):
+    base_path_pending = REPO_STAGING_SERVER_TEST_REPO_PENDING + '/' + build_job.license + '/'
+    base_path_pending += build_job.repo_content_type + '/' + REPOSITORY_BASE_NAME + '/' + build_job.repo_url_specifier
+    return base_path_pending
 
 
 # execute online repository update
@@ -615,7 +600,7 @@ def update_online_repo(job, update_production_repo):
         # (1) pull repo from production into staging server 'temp' location
         production_repo = PROD_USER + '@' + PROD_ADDR + ':'
         production_repo_path = PROD_SRV_REPO_BASE_PATH + '/' + REPOSITORY_BASE_NAME + '/' + job.repo_url_specifier
-        production_repo_path = production_repo_path.replace('//', '/')
+        production_repo_path = ensure_unix_paths(production_repo_path)
         prod_url = production_repo + production_repo_path
         staging_prod_repo_temp_path = REPO_STAGING_SERVER_TEST_REPO_DIST_WORK + '/' + job.license + '/' + REPOSITORY_BASE_NAME + '/' + job.repo_url_specifier
         # delete old existing 'temp' paths
@@ -699,8 +684,8 @@ def init_env():
     print('Staging server uname: {0}'.format(REPO_STAGING_SERVER_UNAME))
     print('Staging server home: {0}'.format(REPO_STAGING_SERVER_HOME))
     print('Staging server tools dir: {0}'.format(REPO_STAGING_SERVER_HOME_TOOLS))
-    print('Production server: {0}'.format(PROD_USER))
-    print('Production server uname: {0}'.format(PROD_ADDR))
+    print('Production server: {0}'.format(PROD_ADDR))
+    print('Production server uname: {0}'.format(PROD_USER))
     print('Production server repository base path: {0}'.format(PROD_SRV_REPO_BASE_PATH))
     print('Production server pending area: {0}'.format(PROD_SRV_REPO_PENDING_AREA_DIR))
     print('Packages server base URL: {0}'.format(PKG_SERVER_URL))
