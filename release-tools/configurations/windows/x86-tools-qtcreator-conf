@@ -39,7 +39,6 @@
 ##
 #############################################################################
 
-[qt.tools]
 
 [qt.tools.qtcreator]
 archives:               tools.qtcreator, tools.qtcreator.d3d_compiler_43.x86

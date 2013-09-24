@@ -39,6 +39,8 @@
 ##
 #############################################################################
 
+[qt.tools]
+
 [qt.readme]
 archives:               readme, qtprojecturl
 target_install_base:    /

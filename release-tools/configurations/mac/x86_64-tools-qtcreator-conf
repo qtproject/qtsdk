@@ -39,7 +39,6 @@
 ##
 #############################################################################
 
-[qt.tools]
 
 [qt.tools.qtcreator]
 archives:               tools.qtcreator

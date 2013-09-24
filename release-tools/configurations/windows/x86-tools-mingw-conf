@@ -40,8 +40,6 @@
 #############################################################################
 
 
-[qt.tools]
-
 [qt.tools.mingw47]
 archives:               tools.mingw47
 target_install_base:    /Tools/MinGW

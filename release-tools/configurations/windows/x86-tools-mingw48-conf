@@ -40,8 +40,6 @@
 #############################################################################
 
 
-[qt.tools]
-
 [qt.tools.win32_mingw48]
 archives:               tools.win32_mingw48
 target_install_base:    /Tools/mingw48_32
