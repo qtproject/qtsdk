@@ -14,9 +14,9 @@
     <UninstallerName>MaintenanceTool</UninstallerName>
     <RemoteRepositories>
         <Repository>
-            <Url>http://download.qt-project.org/online/qt5/mac/x64/online_repository/</Url>
+            <Url>http://download.qt-project.org/online/sdkrepository/mac_x64/root/qt/</Url>
             <Enabled>1</Enabled>
-            <DisplayName>Qt Mac online repository</DisplayName>
+            <DisplayName>Qt Mac-x64 online root repository</DisplayName>
         </Repository>
     </RemoteRepositories>
     <!-- @homeDir@ and @rootDir@ are some of the supported vars -->

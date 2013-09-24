@@ -14,14 +14,9 @@
     <UninstallerName>MaintenanceTool</UninstallerName>
     <RemoteRepositories>
         <Repository>
-            <Url>http://download.qt-project.org/online/qt5/linux/x64/online_repository/</Url>
+            <Url>http://download.qt-project.org/online/sdkrepository/linux_x64/root/qt/</Url>
             <Enabled>1</Enabled>
-            <DisplayName>Qt Linux-x64 online repository</DisplayName>
-        </Repository>
-        <Repository>
-            <Url>http://download.qt-project.org/online/qt5/linux/x64_android/online_repository/</Url>
-            <Enabled>1</Enabled>
-            <DisplayName>Qt Android for Linux-x64 host online repository</DisplayName>
+            <DisplayName>Qt Linux-x64 online root repository</DisplayName>
         </Repository>
     </RemoteRepositories>
     <!-- @homeDir@ and @rootDir@ are some of the supported vars -->
