@@ -759,7 +759,7 @@ def handle_installer_build(offline_installer_build):
                 bldinstallercommon.do_execute_sub_process(cmd_args,  installer_output_dir, True)
                 cmd_args = ['security','lock-keychain','Developer_ID_Digia.keychain']
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
-                cmd_args = ['hdiutil', 'create', '-srcfolder', os.path.join(installer_output_dir, installer_name_base) + '.app', '-volname', installer_name_base, '-format', 'UDBZ', os.path.join(installer_output_dir, installer_name_base) + '.dmg', '-ov', '-scrub']
+                cmd_args = ['hdiutil', 'create', '-srcfolder', os.path.join(installer_output_dir, installer_name_base) + '.app', '-volname', installer_name_base, '-format', 'UDBZ', os.path.join(installer_output_dir, installer_name_base) + '.dmg', '-ov', '-scrub', '-size', '2g']
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
                 cmd_args = [SCP_COMMAND, installer_name, dest_server + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '-' + BUILD_NUMBER + '.dmg']
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
