@@ -613,6 +613,7 @@ def update_online_repo(job, update_production_repo):
             remote_copy_path = remote_copy_path[:len(remote_copy_path) - 1]
         remote_copy_path = os.path.dirname(remote_copy_path)
         remote_copy_path = ensure_unix_paths(remote_copy_path)
+        print('Pulling production repository: {0}'.format(prod_url))
         cmd_args = [SSH_COMMAND, '-t', '-t', staging_server_addr, REMOTE_COPY_COMMAND, '-r', prod_url, remote_copy_path]
         bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
         # (2) update
@@ -631,7 +632,7 @@ def update_online_repo(job, update_production_repo):
         cmd_args_log_to_staging = [SSH_COMMAND, '-t', '-t', staging_server_addr]
         cmd_args_log_to_prod = cmd_args_log_to_staging + [SSH_COMMAND, '-t', '-t', PROD_USER + '@' + PROD_ADDR ]
         # delete old stuff from pending area, but do sanity check first!
-        if (os.path.normpath(PROD_SRV_REPO_PENDING_AREA_DIR).contains(os.path.normpath(PROD_SRV_REPO_BASE_PATH + '/' + REPOSITORY_BASE_NAME))):
+        if (os.path.normpath(PROD_SRV_REPO_PENDING_AREA_DIR) in (os.path.normpath(PROD_SRV_REPO_BASE_PATH + '/' + REPOSITORY_BASE_NAME))):
             print('*** Fatal error!!! You are trying to delete production repository: '.format(prod_server_pending_area_dir))
             print('*** Aborting ...')
             sys.exit(-1)
@@ -646,8 +647,10 @@ def update_online_repo(job, update_production_repo):
             prod_dest_path = prod_dest_path[:len(prod_dest_path) - 1]
         prod_dest_path = os.path.dirname(prod_dest_path)
         # copy updated repo into 'waiting' area on production server
+        print('Pushing [{0}] into [{1}]'.format(staging_prod_repo_temp_path, prod_dest_path))
         cmd_args = cmd_args_log_to_staging + [REMOTE_COPY_COMMAND, '-r', staging_prod_repo_temp_path, prod_dest_path]
         bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+        print('Repository [{0}] updated and pushed into production server pending area successfully.'.format(job.repo_url_specifier))
 
 
 # init environment
