@@ -614,7 +614,7 @@ def update_online_repo(job, update_production_repo):
         remote_copy_path = os.path.dirname(remote_copy_path)
         remote_copy_path = ensure_unix_paths(remote_copy_path)
         print('Pulling production repository: {0}'.format(prod_url))
-        cmd_args = [SSH_COMMAND, '-t', '-t', staging_server_addr, REMOTE_COPY_COMMAND, '-r', prod_url, remote_copy_path]
+        cmd_args = [SSH_COMMAND, '-t', '-t', staging_server_addr, 'rsync', '-r', prod_url, remote_copy_path]
         bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
         # (2) update
         cmd_args = [SSH_COMMAND, '-t', '-t', staging_server_addr]
@@ -648,7 +648,7 @@ def update_online_repo(job, update_production_repo):
         prod_dest_path = os.path.dirname(prod_dest_path)
         # copy updated repo into 'waiting' area on production server
         print('Pushing [{0}] into [{1}]'.format(staging_prod_repo_temp_path, prod_dest_path))
-        cmd_args = cmd_args_log_to_staging + [REMOTE_COPY_COMMAND, '-r', staging_prod_repo_temp_path, prod_dest_path]
+        cmd_args = cmd_args_log_to_staging + ['rsync', '-r', staging_prod_repo_temp_path, prod_dest_path]
         bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
         print('Repository [{0}] updated and pushed into production server pending area successfully.'.format(job.repo_url_specifier))
 
