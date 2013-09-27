@@ -72,7 +72,7 @@ QT_VERSION_TAG              =''
 QT_FULL_VERSION             =''
 TIME_STAMP                  =''
 BUILD_NUMBER                =''
-SERVER                      ='QT@qt-rnd.it.local'
+PKG_SERVER_ADDR             = ''
 PATH                        ='/data/www/packages/jenkins'
 TARGET_ENV                  =''
 ICU_LIBS                    ='http://download.qt-project.org/development_releases/prebuilt/icu/src/icu4c-51_1-src.tgz'
@@ -141,33 +141,43 @@ class MultipleOption(Option):
 
 
 ###############################
+# Sanity check packaging server
+###############################
+def sanity_check_packaging_server():
+    if not PKG_SERVER_ADDR:
+        print('*** Error - Packaging server address (PKG_SERVER_ADDR) not defined?')
+        sys.exit(-1)
+
+
+###############################
 # init_qt_build_cycle
 ###############################
 def init_qt_build_cycle():
+    sanity_check_packaging_server()
     # create dir structures in network drive
     # TODO: Figure out correct path + check parameters!
     for dir_name in SRC_DEST_DIRS:
         if dir_name != 'src/licheck':
             dir_path = REMOTE_DIR + '/' + dir_name
-            create_remote_dirs(SERVER, dir_path)
+            create_remote_dirs(PKG_SERVER_ADDR, dir_path)
         elif LICENSE == 'enterprise':
             dir_path = REMOTE_DIR + '/' + dir_name
-            create_remote_dirs(SERVER, dir_path)
+            create_remote_dirs(PKG_SERVER_ADDR, dir_path)
 
     # Create directories for targets
     # for dir_name in BIN_TARGET_DIRS:
     #    dir_path = os.path.join(REMOTE_DIR, dir_name)
-    #    create_remote_dirs(SERVER, dir_path)
+    #    create_remote_dirs(PKG_SERVER_ADDR, dir_path)
 
     # Update latest link
-    cmd_args = [SSH_COMMAND,SERVER,'ln -sfn',REMOTE_DIR,LATEST_DIR]
+    cmd_args = [SSH_COMMAND,PKG_SERVER_ADDR,'ln -sfn',REMOTE_DIR,LATEST_DIR]
     bldinstallercommon.do_execute_sub_process(cmd_args,SCRIPT_ROOT_DIR, True)
 
     # QT Creator directory
     dir_path = PATH + '/' + LICENSE + '/' + 'qtcreator'
-    create_remote_dirs(SERVER, dir_path + '/' + TIME_STAMP + '-' + BUILD_NUMBER)
+    create_remote_dirs(PKG_SERVER_ADDR, dir_path + '/' + TIME_STAMP + '-' + BUILD_NUMBER)
 
-    cmd_args = [SSH_COMMAND, SERVER, 'ln -sfn', dir_path + '/' + TIME_STAMP + '-' + BUILD_NUMBER, dir_path + '/' + 'latest']
+    cmd_args = [SSH_COMMAND, PKG_SERVER_ADDR, 'ln -sfn', dir_path + '/' + TIME_STAMP + '-' + BUILD_NUMBER, dir_path + '/' + 'latest']
     bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR,True)
 
 
@@ -176,6 +186,7 @@ def init_qt_build_cycle():
 # handle_ifw_build()
 ###############################
 def handle_ifw_build():
+    sanity_check_packaging_server()
     os.chdir(SCRIPT_ROOT_DIR)
     extension = '.tar.gz'
     qt_src_pkg = QT_SRC_FOR_IFW_PREPARED
@@ -190,16 +201,16 @@ def handle_ifw_build():
     # execute
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
     #create destination dirs
-    create_remote_dirs(SERVER,PATH + '/' + LICENSE + '/ifw/' + ifw_branch)
+    create_remote_dirs(PKG_SERVER_ADDR,PATH + '/' + LICENSE + '/ifw/' + ifw_branch)
 
     if bldinstallercommon.is_win_platform():
         file_list = os.listdir(SCRIPT_ROOT_DIR+'/build_artefacts')
         for file_name in file_list:
             if file_name.endswith(".7z"):
-                cmd_args = [SCP_COMMAND,file_name,SERVER + ':' + PATH + '/' + LICENSE + '/ifw/' + ifw_branch + '/']
+                cmd_args = [SCP_COMMAND,file_name,PKG_SERVER_ADDR + ':' + PATH + '/' + LICENSE + '/ifw/' + ifw_branch + '/']
                 bldinstallercommon.do_execute_sub_process(cmd_args,SCRIPT_ROOT_DIR+'/build_artefacts',True)
     else:
-        cmd_args = ['rsync','-r','./',SERVER + ':' + PATH + '/' + LICENSE + '/ifw/' + ifw_branch + '/']
+        cmd_args = ['rsync','-r','./',PKG_SERVER_ADDR + ':' + PATH + '/' + LICENSE + '/ifw/' + ifw_branch + '/']
         bldinstallercommon.do_execute_sub_process(cmd_args,SCRIPT_ROOT_DIR+'/build_artefacts',True)
 
 
@@ -212,9 +223,9 @@ def handle_qt_src_package_build():
     global QT_VERSION
     global TIME_STAMP
     global BUILD_NUMBER
-    global SERVER
     global PATH
 
+    sanity_check_packaging_server()
     exec_path = os.path.join(WORK_DIR, 'qt5')
     #bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
     if LICENSE == 'enterprise':
@@ -287,20 +298,20 @@ def handle_qt_src_package_build():
 
     # Upload packages
     exec_path = SCRIPT_ROOT_DIR
-    cmd_args = ['rsync','-r','../../src_pkg/single/',SERVER + ':' + os.path.join(LATEST_DIR, 'src', 'single', '')]
+    cmd_args = ['rsync','-r','../../src_pkg/single/',PKG_SERVER_ADDR + ':' + os.path.join(LATEST_DIR, 'src', 'single', '')]
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
-    cmd_args = ['rsync','-r','../../src_pkg/submodules_tar/',SERVER + ':' + os.path.join(LATEST_DIR, 'src', 'submodules', '')]
+    cmd_args = ['rsync','-r','../../src_pkg/submodules_tar/',PKG_SERVER_ADDR + ':' + os.path.join(LATEST_DIR, 'src', 'submodules', '')]
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
-    cmd_args = ['rsync','-r','../../src_pkg/submodules_zip/',SERVER + ':' + os.path.join(LATEST_DIR, 'src', 'submodules', '')]
+    cmd_args = ['rsync','-r','../../src_pkg/submodules_zip/',PKG_SERVER_ADDR + ':' + os.path.join(LATEST_DIR, 'src', 'submodules', '')]
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
 
     file_list = os.listdir(package_path)
     for file_name in file_list:
         if file_name.startswith("examples_addons."):
-            cmd_args = ['scp',file_name,SERVER + ':' + os.path.join(LATEST_DIR, 'src', 'examples_injection')]
+            cmd_args = ['scp',file_name,PKG_SERVER_ADDR + ':' + os.path.join(LATEST_DIR, 'src', 'examples_injection')]
             bldinstallercommon.do_execute_sub_process(cmd_args,package_path, True)
         if file_name.startswith("examples_essentials."):
-            cmd_args = ['scp',file_name,SERVER + ':' + os.path.join(LATEST_DIR, 'src', 'examples_injection')]
+            cmd_args = ['scp',file_name,PKG_SERVER_ADDR + ':' + os.path.join(LATEST_DIR, 'src', 'examples_injection')]
             bldinstallercommon.do_execute_sub_process(cmd_args,package_path, True)
 
 ###############################
@@ -608,6 +619,7 @@ def handle_examples_injection():
 # handle_qt_release_build
 ###############################
 def handle_qt_release_build():
+    sanity_check_packaging_server()
     # Handle Android build
     if TARGET_ENV.find("Android") >= 1:
         handle_qt_android_release_build()
@@ -618,7 +630,7 @@ def handle_qt_release_build():
         handle_examples_injection()
 
     # Create target directory
-    create_remote_dirs(SERVER,LATEST_DIR+'/'+BIN_TARGET_DIRS[TARGET_ENV])
+    create_remote_dirs(PKG_SERVER_ADDR,LATEST_DIR+'/'+BIN_TARGET_DIRS[TARGET_ENV])
 
     dir_list = os.listdir(os.path.join(WORK_DIR, 'module_archives'))
     print(dir_list)
@@ -627,11 +639,11 @@ def handle_qt_release_build():
         if file_name.endswith(".7z"):
             print(file_name)
             if bldinstallercommon.is_linux_platform():
-                cmd_args = [SCP_COMMAND, os.path.join(WORK_DIR, 'module_archives', file_name), SERVER + ':' + LATEST_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV]]
+                cmd_args = [SCP_COMMAND, os.path.join(WORK_DIR, 'module_archives', file_name), PKG_SERVER_ADDR + ':' + LATEST_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV]]
             elif bldinstallercommon.is_win_platform():
-                cmd_args = [SCP_COMMAND,file_name,SERVER + ':' + LATEST_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV] + '/']
+                cmd_args = [SCP_COMMAND,file_name,PKG_SERVER_ADDR + ':' + LATEST_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV] + '/']
             else:
-                cmd_args = ['rsync', os.path.join(WORK_DIR, 'module_archives', file_name), SERVER + ':' + LATEST_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV]]
+                cmd_args = ['rsync', os.path.join(WORK_DIR, 'module_archives', file_name), PKG_SERVER_ADDR + ':' + LATEST_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV]]
             bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'),True)
 
     # TODO: Missing_modules.txt upload
@@ -640,7 +652,7 @@ def handle_qt_release_build():
 # handle_qt_creator_build
 ###############################
 def handle_qt_creator_build():
-
+    sanity_check_packaging_server()
     dir_path = PATH + LICENSE + '/qtcreator/latest'
 
     if bldinstallercommon.is_linux_platform():
@@ -675,16 +687,16 @@ def handle_qt_creator_build():
 
     if bldinstallercommon.is_linux_platform():
         if TARGET_ENV.find('64') != -1:
-            cmd_args = [SCP_COMMAND,'qt-creator_build/qtcreator.7z',SERVER + ':' + dir_path + '/qtcreator_linux_gcc_64_ubuntu1110.7z']
+            cmd_args = [SCP_COMMAND,'qt-creator_build/qtcreator.7z',PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_linux_gcc_64_ubuntu1110.7z']
             bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR,True)
         else:
-            cmd_args = [SCP_COMMAND,'qt-creator_build/qtcreator.7z',SERVER + ':' + dir_path + '/qtcreator_linux_gcc_32_ubuntu1110.7z']
+            cmd_args = [SCP_COMMAND,'qt-creator_build/qtcreator.7z',PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_linux_gcc_32_ubuntu1110.7z']
             bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR,True)
     elif bldinstallercommon.is_mac_platform():
-        cmd_args = [SCP_COMMAND,'qt-creator_build/qtcreator.7z',SERVER + ':' + dir_path + '/qtcreator_mac_cocoa_10_7.7z']
+        cmd_args = [SCP_COMMAND,'qt-creator_build/qtcreator.7z',PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_mac_cocoa_10_7.7z']
         bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR,True)
     else:
-        cmd_args = [SCP_COMMAND,'qt-creator_build/qtcreator.7z',SERVER + ':' + dir_path + '/qtcreator_windows_vs2010_32.7z']
+        cmd_args = [SCP_COMMAND,'qt-creator_build/qtcreator.7z',PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_windows_vs2010_32.7z']
         bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR,True)
 
     #TODO: Check qt-creator checkout!
@@ -708,6 +720,7 @@ def handle_online_installer_build():
 # generic handle installer build
 ###############################
 def handle_installer_build(offline_installer_build):
+    sanity_check_packaging_server()
     conf_file = os.environ['RELEASE_BUILD_CONF_FILE']
     if not os.path.exists(conf_file):
         print('*** The given file does not exist: {0}'.format(conf_file))
@@ -719,7 +732,7 @@ def handle_installer_build(offline_installer_build):
         arch = 'x64'
     else:
         arch = 'x86'
-    packages_base_url = SERVER # os.environ['PKG_SERVER_URL'] 'http://it-dl241-hki/packages/jenkins'
+    packages_base_url = os.environ['PKG_SERVER_URL']
     temp_path = ''
     # determine local installer output directory
     installer_output_dir = os.path.join(SCRIPT_ROOT_DIR, 'installer_output')
@@ -732,10 +745,9 @@ def handle_installer_build(offline_installer_build):
         temp_path = '/online_installers/'
     # (2) copy all installers from 'installer_output_dir' into network disk
     # Crete remote directories
-    dest_server = 'QT@qt-rnd.it.local'
     dest_dir = PATH + '/' + LICENSE + temp_path + TIME_STAMP + '-' + BUILD_NUMBER
     latest_dir = PATH + '/' + LICENSE + temp_path + 'latest'
-    create_remote_dirs(dest_server, dest_dir)
+    create_remote_dirs(PKG_SERVER_ADDR, dest_dir)
 
     installer_name = ''
     installer_name_base = ''
@@ -745,7 +757,7 @@ def handle_installer_build(offline_installer_build):
             if file_name.endswith(".run"):
                 installer_name = file_name
                 installer_name_base = os.path.splitext(file_name)[0]
-                cmd_args = [SCP_COMMAND, installer_name, dest_server + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '-' + BUILD_NUMBER + '.run']
+                cmd_args = [SCP_COMMAND, installer_name, PKG_SERVER_ADDR + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '-' + BUILD_NUMBER + '.run']
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
     elif bldinstallercommon.is_mac_platform():
         for file_name in dir_list:
@@ -761,7 +773,7 @@ def handle_installer_build(offline_installer_build):
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
                 cmd_args = ['hdiutil', 'create', '-srcfolder', os.path.join(installer_output_dir, installer_name_base) + '.app', '-volname', installer_name_base, '-format', 'UDBZ', os.path.join(installer_output_dir, installer_name_base) + '.dmg', '-ov', '-scrub', '-size', '2g']
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
-                cmd_args = [SCP_COMMAND, installer_name, dest_server + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '-' + BUILD_NUMBER + '.dmg']
+                cmd_args = [SCP_COMMAND, installer_name, PKG_SERVER_ADDR + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '-' + BUILD_NUMBER + '.dmg']
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
     else:
         for file_name in dir_list:
@@ -776,15 +788,15 @@ def handle_installer_build(offline_installer_build):
                     print('*** License unknown: {0}'.format(LICENSE))
                     sys.exit(-1)
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
-                cmd_args = [SCP_COMMAND, installer_name, dest_server + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '-' + BUILD_NUMBER + '.exe']
+                cmd_args = [SCP_COMMAND, installer_name, PKG_SERVER_ADDR + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '-' + BUILD_NUMBER + '.exe']
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
     #Update latest link
-    cmd_args = [SSH_COMMAND, dest_server, 'ln -sfn', dest_dir, latest_dir]
+    cmd_args = [SSH_COMMAND, PKG_SERVER_ADDR, 'ln -sfn', dest_dir, latest_dir]
     bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR,True)
     # copy rta description file(s)
     for file_name in dir_list:
         if file_name.endswith('.txt'):
-            cmd_args = [SCP_COMMAND, file_name, dest_server + ':' + dest_dir + '/' + file_name]
+            cmd_args = [SCP_COMMAND, file_name, PKG_SERVER_ADDR + ':' + dest_dir + '/' + file_name]
             bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
     # (3) trigger rta cases
     trigger_rta(installer_output_dir)
@@ -852,14 +864,15 @@ def handle_online_repository_build():
 # copy_license_checkers
 ###############################
 def copy_license_checkers():
+    sanity_check_packaging_server()
     exec_path = os.path.join(WORK_DIR, 'qt5', 'qtbase', 'bin')
-    cmd_args = [SCP_COMMAND,SERVER + ':' + os.path.join(LATEST_DIR, 'src', 'licheck', 'licheck.exe'),'.']
+    cmd_args = [SCP_COMMAND,PKG_SERVER_ADDR + ':' + os.path.join(LATEST_DIR, 'src', 'licheck', 'licheck.exe'),'.']
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
-    cmd_args = [SCP_COMMAND,SERVER + ':' + os.path.join(LATEST_DIR, 'src', 'licheck', 'licheck32'),'.']
+    cmd_args = [SCP_COMMAND,PKG_SERVER_ADDR + ':' + os.path.join(LATEST_DIR, 'src', 'licheck', 'licheck32'),'.']
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
-    cmd_args = [SCP_COMMAND,SERVER + ':' + os.path.join(LATEST_DIR, 'src', 'licheck', 'licheck64'),'.']
+    cmd_args = [SCP_COMMAND,PKG_SERVER_ADDR + ':' + os.path.join(LATEST_DIR, 'src', 'licheck', 'licheck64'),'.']
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
-    cmd_args = [SCP_COMMAND,SERVER + ':' + os.path.join(LATEST_DIR, 'src', 'licheck', 'licheck_mac'),'.']
+    cmd_args = [SCP_COMMAND,PKG_SERVER_ADDR + ':' + os.path.join(LATEST_DIR, 'src', 'licheck', 'licheck_mac'),'.']
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
     #change permissions
     os.chdir(os.path.join(WORK_DIR, 'qt5', 'qtbase', 'bin'))
@@ -915,7 +928,7 @@ def parse_cmd_line():
     global QT_VERSION
     global TIME_STAMP
     global BUILD_NUMBER
-    global SERVER
+    global PKG_SERVER_ADDR
     global PATH
     global TARGET_ENV
     global ICU_LIBS
@@ -940,7 +953,7 @@ def parse_cmd_line():
         QT_VERSION      = options.qt_version
         TIME_STAMP      = options.time_stamp
         BUILD_NUMBER    = options.build_number
-        SERVER          = options.server
+        PKG_SERVER_ADDR = options.server
         PATH            = options.path
         TARGET_ENV      = options.target_env
         ICU_LIBS        = options.icu_libs
