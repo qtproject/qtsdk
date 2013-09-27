@@ -211,6 +211,8 @@ def get_job_list(conf_file, job_type_specifier, license, branch, platform, arch,
     if not os.path.isfile(conf_file):
         print('*** Fatal error! Given file does not exist: {0}'.format(conf_file))
         sys.exit(-1)
+    # ensure the string ends with '/'
+    os.path.join(ifw_base_url, '')
     parser = ConfigParser.ConfigParser()
     parser.readfp(open(conf_file))
     # validate job type
@@ -383,6 +385,8 @@ def create_online_installer(job, packages_base_url):
 
 # helper function/wrapper to create online installer
 def create_installer(job, packages_base_url, installer_type):
+    # ensure the string ends with '/'
+    os.path.join(packages_base_url, '')
     job.print_data()
     cmd_args = ['python','-u','create_installer.py']
     cmd_args = cmd_args + ['-c', job.configurations_dir]
@@ -459,6 +463,8 @@ def handle_repo_build(conf_file, license, branch, platform, arch, packages_base_
 
 # helper function to create online repository
 def create_online_repository(build_job, packages_base_url):
+    # ensure the string ends with '/'
+    os.path.join(packages_base_url, '')
     build_job.print_data()
     cmd_args = ['python','-u', 'create_installer.py', \
                 '-c', build_job.configurations_dir, \
