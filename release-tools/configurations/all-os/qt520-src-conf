@@ -157,6 +157,32 @@ target_install_dir:     /
 rpath_target:
 archive_name:           qtactiveqt-src.7z
 
+[qt.520.src.addons.qtandroidextras]
+archives:               src.addons.qtandroidextras
+target_install_base:    /@QT_VERSION@/Src/qtandroidextras
+version:                5.2.0
+version_tag:            %QT_VERSION%
+package_default:        false
+[src.addons.qtandroidextras]
+archive_uri:            /qt/5.2.0/latest/src/submodules/qtandroidextras-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /
+rpath_target:
+archive_name:           qtandroidextras-src.7z
+
+[qt.520.src.addons.qtconnectivity]
+archives:               src.addons.qtconnectivity
+target_install_base:    /@QT_VERSION@/Src/qtconnectivity
+version:                5.2.0
+version_tag:            %QT_VERSION%
+package_default:        false
+[src.addons.qtconnectivity]
+archive_uri:            /qt/5.2.0/latest/src/submodules/qtconnectivity-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /
+rpath_target:
+archive_name:           qtconnectivity-src.7z
+
 [qt.520.src.addons.qtgraphicaleffects]
 archives:               src.addons.qtgraphicaleffects
 target_install_base:    /@QT_VERSION@/Src/qtgraphicaleffects
@@ -182,6 +208,32 @@ package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:
 archive_name:           qtimageformats-src.7z
+
+[qt.520.src.addons.qtlocation]
+archives:               src.addons.qtlocation
+target_install_base:    /@QT_VERSION@/Src/qtlocation
+version:                5.2.0
+version_tag:            %QT_VERSION%
+package_default:        false
+[src.addons.qtlocation]
+archive_uri:            /qt/5.2.0/latest/src/submodules/qtlocation-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /
+rpath_target:
+archive_name:           qtlocation-src.7z
+
+[qt.520.src.addons.qtmacextras]
+archives:               src.addons.qtmacextras
+target_install_base:    /@QT_VERSION@/Src/qtmacextras
+version:                5.2.0
+version_tag:            %QT_VERSION%
+package_default:        false
+[src.addons.qtmacextras]
+archive_uri:            /qt/5.2.0/latest/src/submodules/qtmacextras-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /
+rpath_target:
+archive_name:           qtmacextras-src.7z
 
 [qt.520.src.addons.qtsvg]
 archives:               src.addons.qtsvg
@@ -234,6 +286,19 @@ package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:
 archive_name:           qtserialport-src.7z
+
+[qt.520.src.addons.qtwinextras]
+archives:               src.addons.qtwinextras
+target_install_base:    /@QT_VERSION@/Src/qtwinextras
+version:                5.2.0
+version_tag:            %QT_VERSION%
+package_default:        false
+[src.addons.qtwinextras]
+archive_uri:            /qt/5.2.0/latest/src/submodules/qtwinextras-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /
+rpath_target:
+archive_name:           qtwinextras-src.7z
 
 [qt.520.src.addons.qtx11extras]
 archives:               src.addons.qtx11extras
