@@ -44,24 +44,26 @@ QTVER=0.0.0
 REPO_DIR=$CUR_DIR
 REPO_NAME=''
 REPO_TAG=HEAD
+SINGLEMODULE=no
 SKIPSYNCQT=no
 STRICT=1
 
 function usage()
 {
   echo "Usage:"
-  echo "./mksrc.sh -u <file_url_to_git_repo> -v <version> [-m][-N][--tag][-i sub][-l lic][-p patch][-r revision][--skip-syncqt][-S]"
+  echo "./mksrc.sh -u <file_url_to_git_repo> -v <version> [-m][-N][--tag][-i sub][-l lic][-p patch][-r revision][--single-module][--skip-syncqt][-S]"
   echo "where -u is path to git repo and -v is version"
   echo "Optional parameters:"
-  echo "-m             one is able to tar each sub module separately"
-  echo "-N             don't use git fetch to update submodules"
-  echo "--tag          also tag the repository"
-  echo "-i submodule   will exclude the submodule from final package "
-  echo "-l license     license type, will default to 'opensource', if set to 'enterprise' all the necessary patches will be applied for enterprise build"
-  echo "-p patch file  patch file (.sh) to execute, example: change_licenses.sh"
-  echo "-r revision    committish to pack (tag name, branch name or SHA-1)"
-  echo "--skip-syncqt  do not run syncqt by default"
-  echo "-S             don't run in strict mode"
+  echo "-m              one is able to tar each sub module separately"
+  echo "-N              don't use git fetch to update submodules"
+  echo "--tag           also tag the repository"
+  echo "-i submodule    will exclude the submodule from final package "
+  echo "-l license      license type, will default to 'opensource', if set to 'enterprise' all the necessary patches will be applied for enterprise build"
+  echo "-p patch file   patch file (.sh) to execute, example: change_licenses.sh"
+  echo "-r revision     committish to pack (tag name, branch name or SHA-1)"
+  echo "--single-module tar any single git repository (that might live outside the supermodule)"
+  echo "--skip-syncqt   do not run syncqt by default"
+  echo "-S              don't run in strict mode"
 }
 
 function cleanup()
@@ -192,6 +194,10 @@ while test $# -gt 0; do
       shift
       SKIPSYNCQT=yes
     ;;
+    --single-module)
+      shift
+      SINGLEMODULE=yes
+    ;;
     -S|--no-strict)
       shift
       STRICT=0
@@ -212,7 +218,11 @@ if ! git rev-parse --git-dir >/dev/null 2>/dev/null; then
 fi
 REPO_NAME=$(basename $REPO_DIR)
 
-PACKAGE_NAME=qt-everywhere-$LICENSE-src-$QTVER
+if [ $SINGLEMODULE = no ]; then
+  PACKAGE_NAME=qt-everywhere-$LICENSE-src-$QTVER
+else
+  PACKAGE_NAME=$REPO_NAME-$LICENSE-src-$QTVER
+fi
 MODULES=$CUR_DIR/submodules.txt
 _TMP_DIR=$CUR_DIR/$PACKAGE_NAME
 
@@ -220,102 +230,116 @@ _TMP_DIR=$CUR_DIR/$PACKAGE_NAME
 # Step 1, Find all submodules from main repo and archive them
 #------------------------------------------------------------------
 
-echo " -- Finding submodules from $REPO_DIR -- "
+if [ $SINGLEMODULE = no ]; then
+  echo " -- Finding submodules from $REPO_DIR -- "
 
-rm -f $MODULES
-rm -rf $_TMP_DIR
-mkdir $_TMP_DIR
+  rm -f $MODULES
+  rm -rf $_TMP_DIR
+  mkdir $_TMP_DIR
 
-# detect the submodules to be archived
-git ls-tree $REPO_TAG | while read mode type sha1 name; do
-    test "$type" = "commit" || continue
-    test -d "$name" || {
-        echo >&2 "Warning: submodule '$name' is not present"
-        continue
-    }
-    case " $IGNORE_LIST " in
-        *" $name "*)
-            # Ignored module, skip
-            continue
-            ;;
-    esac
-    echo $name $sha1
-done >> $MODULES
+  # detect the submodules to be archived
+  git ls-tree $REPO_TAG | while read mode type sha1 name; do
+      test "$type" = "commit" || continue
+      test -d "$name" || {
+          echo >&2 "Warning: submodule '$name' is not present"
+          continue
+      }
+      case " $IGNORE_LIST " in
+          *" $name "*)
+              # Ignored module, skip
+              continue
+              ;;
+      esac
+      echo $name $sha1
+  done >> $MODULES
 
-#tag the master repo, maybe
-if $DO_TAG && test "v$QTVER" != "$REPO_TAG"; then
-    git tag -f -a -m "Qt $QTVER Release" v$QTVER $REPO_TAG || \
-        { echo >&2 "Unable to tag master repository"; exit 1; }
-    REPO_TAG=v$QTVER
-fi
-
-cd $REPO_DIR
-
-#archive the main repo
-git archive --format=tar $REPO_TAG | tar -x -C $_TMP_DIR
-_SHA=`git rev-parse $REPO_TAG`
-MASTER_SHA=$_SHA
-rm -f $_TMP_DIR/$QTGITTAG
-echo "$REPO_NAME=$_SHA">$_TMP_DIR/$QTGITTAG
-
-echo " -- From dir $PWD, let's pack the master repo at $MASTER_SHA --"
-
-#archive all the submodules and generate file from sha1's
-while read submodule _SHA; do
-  echo " -- From dir $PWD/$submodule, lets pack $submodule at $_SHA --"
-  cd $submodule
-  _file=$(echo "$submodule" | cut -d'/' -f1).tar.gz
-  #check that _SHA exists
-  if ! git cat-file -e $_SHA; then
-      $DO_FETCH && git fetch >/dev/null
-      if ! git cat-file -e $_SHA; then
-          echo >&2 "Commit $_SHA does not exist in submodule $submodule"
-          echo >&2 "and could not be fetched. Cannot continue."
-          exit 1
-      fi
+  #tag the master repo, maybe
+  if $DO_TAG && test "v$QTVER" != "$REPO_TAG"; then
+      git tag -f -a -m "Qt $QTVER Release" v$QTVER $REPO_TAG || \
+          { echo >&2 "Unable to tag master repository"; exit 1; }
+      REPO_TAG=v$QTVER
   fi
-  #tag me, maybe
-  if $DO_TAG; then
-      git tag -f -a -m "Qt $QTVER Release" v$QTVER $_SHA || \
-          { echo >&2 "Unable to tag submodule $submodule"; exit 1; }
-      _SHA=v$QTVER
-  fi
-  #export the repository contents
-  git archive --format=tar --prefix=$submodule/ $_SHA | \
-      tar -x -C $_TMP_DIR
-  #store the sha1
-  echo "$(echo $(echo $submodule|sed 's/-/_/g') | cut -d/ -f1)=$_SHA" >>$_TMP_DIR/$QTGITTAG
-  #add QT_PACKAGEDATE_STR for enterprise license key check
-  if [ $LICENSE = enterprise -a $submodule = qtbase ]; then
-      rm -f $_TMP_DIR/$submodule/$PACK_FILE
-      echo "QT_PACKAGEDATE_STR=$PACK_TIME">$_TMP_DIR/$submodule/$PACK_FILE
-  fi
+
   cd $REPO_DIR
-done < $MODULES
-#mv $MODULES $CUR_DIR
 
-cd $CUR_DIR/$PACKAGE_NAME
-__skip_sub=no
-rm -f _tmp_mod
-rm -f _tmp_shas
+  #archive the main repo
+  git archive --format=tar $REPO_TAG | tar -x -C $_TMP_DIR
+  _SHA=`git rev-parse $REPO_TAG`
+  MASTER_SHA=$_SHA
+  rm -f $_TMP_DIR/$QTGITTAG
+  echo "$REPO_NAME=$_SHA">$_TMP_DIR/$QTGITTAG
 
-# read the shas
-echo "$REPO_NAME was archived from $MASTER_SHA" >$CUR_DIR/_tmp_shas
-echo "------------------------------------------------------------------------">>$CUR_DIR/_tmp_shas
-echo "Fixing shas"
-while read submodule submodule_sha1; do
-    echo $submodule >>$CUR_DIR/_tmp_mod
-    echo "$submodule was archived from $submodule_sha1"
-    echo "------------------------------------------------------------------------"
-done < $MODULES >>$CUR_DIR/_tmp_shas
-cat $CUR_DIR/_tmp_mod > $MODULES
-rm -f $CUR_DIR/$PACKAGE_NAME/$QTGITTAG
-cat $CUR_DIR/_tmp_shas > $CUR_DIR/$PACKAGE_NAME/$QTGITTAG
+  echo " -- From dir $PWD, let's pack the master repo at $MASTER_SHA --"
 
-# remove possible empty directories in case of some submodules ignored
-for IDIR in $IGNORE_LIST ; do
-  rm -rf $CUR_DIR/$PACKAGE_NAME/$IDIR
-done
+  #archive all the submodules and generate file from sha1's
+  while read submodule _SHA; do
+    echo " -- From dir $PWD/$submodule, lets pack $submodule at $_SHA --"
+    cd $submodule
+    _file=$(echo "$submodule" | cut -d'/' -f1).tar.gz
+    #check that _SHA exists
+    if ! git cat-file -e $_SHA; then
+        $DO_FETCH && git fetch >/dev/null
+        if ! git cat-file -e $_SHA; then
+            echo >&2 "Commit $_SHA does not exist in submodule $submodule"
+            echo >&2 "and could not be fetched. Cannot continue."
+            exit 1
+        fi
+    fi
+    #tag me, maybe
+    if $DO_TAG; then
+        git tag -f -a -m "Qt $QTVER Release" v$QTVER $_SHA || \
+            { echo >&2 "Unable to tag submodule $submodule"; exit 1; }
+        _SHA=v$QTVER
+    fi
+    #export the repository contents
+    git archive --format=tar --prefix=$submodule/ $_SHA | \
+        tar -x -C $_TMP_DIR
+    #store the sha1
+    echo "$(echo $(echo $submodule|sed 's/-/_/g') | cut -d/ -f1)=$_SHA" >>$_TMP_DIR/$QTGITTAG
+    #add QT_PACKAGEDATE_STR for enterprise license key check
+    if [ $LICENSE = enterprise -a $submodule = qtbase ]; then
+        rm -f $_TMP_DIR/$submodule/$PACK_FILE
+        echo "QT_PACKAGEDATE_STR=$PACK_TIME">$_TMP_DIR/$submodule/$PACK_FILE
+    fi
+    cd $REPO_DIR
+  done < $MODULES
+  #mv $MODULES $CUR_DIR
+
+  cd $CUR_DIR/$PACKAGE_NAME
+  __skip_sub=no
+  rm -f _tmp_mod
+  rm -f _tmp_shas
+
+  # read the shas
+  echo "$REPO_NAME was archived from $MASTER_SHA" >$CUR_DIR/_tmp_shas
+  echo "------------------------------------------------------------------------">>$CUR_DIR/_tmp_shas
+  echo "Fixing shas"
+  while read submodule submodule_sha1; do
+      echo $submodule >>$CUR_DIR/_tmp_mod
+      echo "$submodule was archived from $submodule_sha1"
+      echo "------------------------------------------------------------------------"
+  done < $MODULES >>$CUR_DIR/_tmp_shas
+  cat $CUR_DIR/_tmp_mod > $MODULES
+  rm -f $CUR_DIR/$PACKAGE_NAME/$QTGITTAG
+  cat $CUR_DIR/_tmp_shas > $CUR_DIR/$PACKAGE_NAME/$QTGITTAG
+
+  # remove possible empty directories in case of some submodules ignored
+  for IDIR in $IGNORE_LIST ; do
+    rm -rf $CUR_DIR/$PACKAGE_NAME/$IDIR
+  done
+else
+  rm -rf $_TMP_DIR
+  mkdir $_TMP_DIR
+
+  cd $REPO_DIR
+
+  #archive the single repo
+  git archive --format=tar $REPO_TAG | tar -x -C $_TMP_DIR
+  _SHA=`git rev-parse $REPO_TAG`
+  SINGLEMODULE_SHA=$_SHA
+
+  echo " -- From dir $PWD, let's pack the $REPO_NAME repo at $SINGLEMODULE_SHA --"
+fi # SINGLEMODULE
 
 
 #------------------------------------------------------------------
@@ -324,15 +348,20 @@ done
 if [ $SKIPSYNCQT = no ]; then
   PACKAGE_DIR=$CUR_DIR/$PACKAGE_NAME
   echo "Running syncqt.pl"
-  while read submodule; do
-    echo " - Running syncqt.pl for $submodule with -version $QTSYNCQTVER"
-    if [ $submodule = qtwebkit ]; then
-      SYNC_PROFILE_DIR=$PACKAGE_DIR/$submodule/Source
-    else
-      SYNC_PROFILE_DIR=$PACKAGE_DIR/$submodule
-    fi
-    $PACKAGE_DIR/qtbase/bin/syncqt.pl -version $QTSYNCQTVER -outdir $PACKAGE_DIR/$submodule $SYNC_PROFILE_DIR
-  done < $MODULES
+  if [ $SINGLEMODULE = no ]; then
+    while read submodule; do
+      echo " - Running syncqt.pl for $submodule with -version $QTSYNCQTVER"
+      if [ $submodule = qtwebkit ]; then
+        SYNC_PROFILE_DIR=$PACKAGE_DIR/$submodule/Source
+      else
+        SYNC_PROFILE_DIR=$PACKAGE_DIR/$submodule
+      fi
+      $PACKAGE_DIR/qtbase/bin/syncqt.pl -version $QTSYNCQTVER -outdir $PACKAGE_DIR/$submodule $SYNC_PROFILE_DIR
+    done < $MODULES
+  else
+    echo " - Running syncqt.pl for $REPO_NAME with -version $QTSYNCQTVER"
+    $CUR_DIR/../qtbase/bin/syncqt.pl -version $QTSYNCQTVER -outdir $PACKAGE_DIR $PACKAGE_DIR
+  fi
 fi
 
 #------------------------------------------------------------------
@@ -366,7 +395,7 @@ echo " -- Create B I G archives -- "
 create_main_file
 
 # Create tar/submodule
-if [ $MULTIPACK = yes ]; then
+if [ $MULTIPACK = yes -a $SINGLEMODULE = no ]; then
   mkdir single
   mv $PACKAGE_NAME.* single/
   echo " -- Creating archives per submodule -- "
