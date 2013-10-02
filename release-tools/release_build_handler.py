@@ -639,7 +639,7 @@ def update_online_repo(job, update_production_repo):
         prod_server_pending_area_dir = PROD_SRV_REPO_PENDING_AREA_DIR + '/' + REPOSITORY_BASE_NAME + '/' + job.repo_url_specifier
         prod_server_pending_area_dir = ensure_unix_paths(prod_server_pending_area_dir)
         cmd_args_log_to_staging = [SSH_COMMAND, '-t', '-t', staging_server_addr]
-        cmd_args_log_to_prod = cmd_args_log_to_staging + [SSH_COMMAND, '-t', '-t', PROD_USER + '@' + PROD_ADDR ]
+        cmd_args_log_to_prod = cmd_args_log_to_staging + ['ssh', '-t', '-t', PROD_USER + '@' + PROD_ADDR ]
         # delete old stuff from pending area, but do sanity check first!
         if (os.path.normpath(PROD_SRV_REPO_PENDING_AREA_DIR) in (os.path.normpath(PROD_SRV_REPO_BASE_PATH + '/' + REPOSITORY_BASE_NAME))):
             print('*** Fatal error!!! You are trying to delete production repository: '.format(prod_server_pending_area_dir))
