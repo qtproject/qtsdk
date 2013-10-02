@@ -13,7 +13,7 @@ mac-x64:                    installer-framework-build-mac-x64.7z
 [release.global]
 qt_type:                    qt5
 version:                    5.2.0
-version_tag:                alpha
+version_tag:                beta1
 repo_content_type:          520
 repo_components_to_update:  qt.520.*
 module_exclude_list:        qlalr, qt3d, qtdocgallery, qtfeedback, qtjsondb, qtpim, qtqa, qtrepotools, qtsystems, qtwayland
