@@ -53,7 +53,7 @@ base_path:
 packages:
 
 [ExtraPackageConfigurationFiles]
-file_list:              android-x64-qt520-x86-conf, android-x64-qt520-armv7-conf
+file_list:              android-x64-qt520-x86-conf, android-x64-qt520-armv5-conf, android-x64-qt520-armv7-conf
 
 [OfflinePackageExcludeList]
 package_list:
