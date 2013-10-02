@@ -110,10 +110,15 @@ parser.add_argument('--buildcommand', help="this means usually make", default="m
 parser.add_argument('--installcommand', help="this means usually make", default="make")
 parser.add_argument('--debug', help="use debug builds", action='store_true', default=False)
 parser.add_argument('--qt5_essentials7z', help="a file or url where it get the built qt5 essential content as 7z")
-parser.add_argument('--qt5_addons7z', help="a file or url where it get the built qt5 essential content as 7z")
+parser.add_argument('--qt5_addons7z', help="a file or url where it get the built qt5 addons content as 7z")
 parser.add_argument('--application_url', help="Git URL for Qt Application", required=False, default='')
 parser.add_argument('--application_branch', help="Git branch for Qt Application", required=False, default='')
 parser.add_argument('--application_dir', help="Local copy of Qt Application", required=False, default='')
+parser.add_argument('--application7z', help="a file or url where it get the application source", required=False, default='')
+
+
+if (sys.platform != "darwin"):
+    parser.add_argument('--icu7z', help="a file or url where it get icu libs as 7z", required=True)
 
 # if we are on windows, maybe we want some other arguments
 if os.name == 'nt':
@@ -122,7 +127,7 @@ if os.name == 'nt':
 
 if sys.platform == "darwin":
     parser.add_argument('--installerbase7z', help="a file or url where it get installerbase binary as 7z")
-
+    parser.add_argument('--keychain_unlock_script', help="script for unlocking the keychain used for signing")
 callerArguments = parser.parse_args()
 
 # cleanup some values inside the callerArguments object
@@ -133,21 +138,31 @@ if callerArguments.qt5path != os.path.abspath(callerArguments.qt5path):
     callerArguments.qt5path = os.path.abspath(callerArguments.qt5path)
 
 
+
+tempPath = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'temp'))
+
 # clone application repo
 if callerArguments.application_url != '':
     bldinstallercommon.init_common_module(os.getcwd())
     bldinstallercommon.create_dirs(os.path.join(os.path.dirname(__file__),"..",os.environ['APPLICATION_NAME']))
     bldinstallercommon.clone_repository(callerArguments.application_url, callerArguments.application_branch, os.path.join(os.path.dirname(__file__),"..",os.environ['APPLICATION_NAME']))
     qtApplicationSourceDirectory = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', os.environ['APPLICATION_NAME']))
+elif callerArguments.application7z !='':
+    myGetQtEnginio = ThreadedWork("get and extract application src")
+    myGetQtEnginio.addTaskObject(createDownloadExtract7zTask(callerArguments.application7z, os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..')), tempPath, callerArguments))
+    myGetQtEnginio.run()
+    src_dir = os.environ['APPLICATION_NAME'] + '-' + os.environ['LICENSE'] + '-' + 'src' + '-' + os.environ['VERSION']
+    qtApplicationSourceDirectory = os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', src_dir))
 else:
     print(("Using local copy of {0}").format(os.environ['APPLICATION_NAME']))
     qtApplicationSourceDirectory = callerArguments.application_dir
 qtApplicationBuildDirectory = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..',
-    os.path.split(qtApplicationSourceDirectory)[1] + '_build'))
+    os.environ['APPLICATION_NAME'] + '_build'))
 qtApplicationInstallDirectory = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..',
-    os.path.split(qtApplicationSourceDirectory)[1] + '_install'))
+    os.environ['APPLICATION_NAME'] + '_install'))
+if os.name == 'nt':
+    qtApplicationInstallDirectory = qtApplicationInstallDirectory[2:]
 
-tempPath = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'temp'))
 
 ### check mac setup
 if sys.platform == "darwin":
@@ -187,6 +202,16 @@ if not os.path.lexists(callerArguments.qt5path):
         targetPath = os.path.join(callerArguments.qt5path, 'bin')
     else:
         targetPath = os.path.join(callerArguments.qt5path, 'lib')
+
+### add get icu lib task
+    if os.name == 'nt':
+        targetPath = os.path.join(callerArguments.qt5path, 'bin')
+    else:
+        targetPath = os.path.join(callerArguments.qt5path, 'lib')
+
+    if not sys.platform == "darwin":
+        myGetQtBinaryWork.addTaskObject(
+            createDownloadExtract7zTask(callerArguments.icu7z, targetPath, tempPath, callerArguments))
 
     if sys.platform == "darwin":
         myGetQtBinaryWork.addTaskObject(
@@ -249,32 +274,24 @@ qtApplicationProFile = os.path.join(qtApplicationSourceDirectory, os.environ['AP
 
 qmakeCommandArguments = "-r {0}".format(qtApplicationProFile)
 
-runCommand("{0} {1}".format(qmakeBinary, qmakeCommandArguments), qtApplicationBuildDirectory,
-    callerArguments = callerArguments, init_environment = environment)
+#qmakeCommandArguments = "-r {0}".format(qtApplicationProFile)
 
-runBuildCommand(currentWorkingDirectory = qtApplicationBuildDirectory, callerArguments = callerArguments,
-    init_environment = environment)
+#runCommand("{0} {1}".format(qmakeBinary, qmakeCommandArguments), qtApplicationBuildDirectory, callerArguments = callerArguments, init_environment = environment)
 
-makeCommandArguments = '-j6'
+runCommand("{0} {1}".format(qmakeBinary, qmakeCommandArguments), qtApplicationBuildDirectory)
+
+#runBuildCommand(currentWorkingDirectory = qtApplicationBuildDirectory, callerArguments = callerArguments,
+#    init_environment = environment)
 makeCommand = 'make'
-runCommand("{0} {1}".format(makeCommand, makeCommandArguments), qtApplicationBuildDirectory)
+if os.name == 'nt':
+    makeCommand = callerArguments.installcommand
+#runCommand("{0}".format(makeCommand),currentWorkingDirectory = qtApplicationBuildDirectory, callerArguments = callerArguments, init_environment = environment)
+runCommand("{0}".format(makeCommand),currentWorkingDirectory = qtApplicationBuildDirectory)
 
 #runInstallCommand("docs", currentWorkingDirectory = qtApplicationBuildDirectory, callerArguments = callerArguments,
 #    init_environment = environment)
-
-if sys.platform == "darwin":
-    if callerArguments.keychain_unlock_script:
-        runCommand(callerArguments.keychain_unlock_script, qtApplicationBuildDirectory, callerArguments = callerArguments,
-            init_environment = environment)
-    # environment has to have SIGNING_IDENTITY, can have SIGNING_FLAGS
-    runInstallCommand('codesign', currentWorkingDirectory = qtApplicationBuildDirectory,
+makeCommandArguments = 'install INSTALL_ROOT=' + qtApplicationInstallDirectory
+runCommand("{0} {1}".format(makeCommand,makeCommandArguments), currentWorkingDirectory = qtApplicationBuildDirectory,
         callerArguments = callerArguments, init_environment = environment)
-
-if os.name == 'nt':
-    runInstallCommand('deployartifacts', qtApplicationBuildDirectory,
-        callerArguments = callerArguments, init_environment = environment)
-installArguments = 'INSTALL_ROOT=' + qtApplicationInstallDirectory
-installCommand = 'make install'
-runCommand("{0} {1}".format(installCommand, installArguments), qtApplicationBuildDirectory)
 
 
