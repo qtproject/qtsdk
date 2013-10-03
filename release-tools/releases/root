@@ -1,0 +1,57 @@
+
+################################################################################
+## Global defines
+################################################################################
+[ifwtools]
+windows-x86:                installer-framework-build-win-x86.7z
+linux-x86:                  installer-framework-build-linux-x86.7z
+linux-x64:                  installer-framework-build-linux-x64.7z
+mac-x64:                    installer-framework-build-mac-x64.7z
+
+[release.global]
+version:                    1.0.1
+version_tag:
+
+
+################################################################################
+## Linux repository
+################################################################################
+[release.root.repository.linux.x86]
+arg_configurations_file:    repository_configs_root/linux_x86_repository_root
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          root
+repo_components_to_update:  qt
+repo_url_specifier:         linux_x86/root/qt
+
+[release.root.repository.linux.x64]
+arg_configurations_file:    repository_configs_root/linux_x64_repository_root
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          root
+repo_components_to_update:  qt
+repo_url_specifier:         linux_x64/root/qt
+
+
+################################################################################
+## Windows repository
+################################################################################
+[release.root.repository.windows.x86]
+arg_configurations_file:    repository_configs_root/win_x86_repository_root
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+repo_content_type:          root
+repo_components_to_update:  qt
+repo_url_specifier:         windows_x86/root/qt
+
+
+################################################################################
+## Mac repository
+################################################################################
+[release.root.repository.mac.x64]
+arg_configurations_file:    repository_configs_root/mac_x64_repository_root
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          root
+repo_components_to_update:  qt
+repo_url_specifier:         mac_x64/root/qt
+
+
+
+
