@@ -8,11 +8,8 @@ linux-x64:                  installer-framework-build-linux-x64.7z
 mac-x64:                    installer-framework-build-mac-x64.7z
 
 [release.global]
-qt_type:                    qt5
 version:                    1.0.0
 version_tag:
-repo_content_type:          qt_readme
-repo_components_to_update:
 
 
 ################################################################################
