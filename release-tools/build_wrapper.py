@@ -732,6 +732,7 @@ def handle_installer_build(offline_installer_build):
         arch = 'x64'
     else:
         arch = 'x86'
+    # Internal server address
     packages_base_url = os.environ['PKG_SERVER_URL']
     temp_path = ''
     # determine local installer output directory
@@ -748,6 +749,16 @@ def handle_installer_build(offline_installer_build):
     dest_dir = PATH + '/' + LICENSE + temp_path + TIME_STAMP + '-' + BUILD_NUMBER
     latest_dir = PATH + '/' + LICENSE + temp_path + 'latest'
     create_remote_dirs(PKG_SERVER_ADDR, dest_dir)
+    # Create remote dirs in Mirror Brain
+    if LICENSE == 'opensource':
+        # Mirror Brain server address and path
+        ext_server_base_url  = os.environ['EXT_SERVER_BASE_URL']
+        ext_server_base_path = os.environ['EXT_SERVER_BASE_PATH']
+        # mirror brain directories
+        ext_dest_dir = ext_server_base_path + '/snapshots/qt/' + QT_VERSION[:3] + '/' + QT_FULL_VERSION + '/' + TIME_STAMP + '-' + BUILD_NUMBER
+        cmd_args_mkdir_pkg = [SSH_COMMAND, PKG_SERVER_ADDR]
+        cmd_args_mkdir_ext = cmd_args_mkdir_pkg + ['ssh', ext_server_base_url, 'mkdir -p', ext_dest_dir]
+        bldinstallercommon.do_execute_sub_process(cmd_args_mkdir_ext, SCRIPT_ROOT_DIR, True)
 
     installer_name = ''
     installer_name_base = ''
@@ -757,13 +768,21 @@ def handle_installer_build(offline_installer_build):
             if file_name.endswith(".run"):
                 installer_name = file_name
                 installer_name_base = os.path.splitext(file_name)[0]
-                cmd_args = [SCP_COMMAND, installer_name, PKG_SERVER_ADDR + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '-' + BUILD_NUMBER + '.run']
+                installer_name_final = installer_name_base + '_' + TIME_STAMP + '-' + BUILD_NUMBER + '.run'
+                # copy installer to internal server
+                cmd_args = [SCP_COMMAND, installer_name, PKG_SERVER_ADDR + ':' + dest_dir + '/' + installer_name_final]
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
+                # copy installer to mirror brain server
+                if LICENSE == 'opensource':
+                    cmd_args_copy_to_pkg = [SSH_COMMAND, PKG_SERVER_ADDR]
+                    cmd_args_copy_to_ext = cmd_args_copy_to_pkg + ['scp', dest_dir + '/' + installer_name_final, ext_server_base_url + ':' + ext_dest_dir  + '/' + installer_name_final]
+                    bldinstallercommon.do_execute_sub_process(cmd_args_copy_to_ext, installer_output_dir, True)
     elif bldinstallercommon.is_mac_platform():
         for file_name in dir_list:
             if file_name.endswith(".dmg"):
                 installer_name = file_name
                 installer_name_base = os.path.splitext(file_name)[0]
+                installer_name_final = installer_name_base + '_' + TIME_STAMP + '-' + BUILD_NUMBER + '.dmg'
                 cmd_args = ['/Users/qt/unlock-keychain.py']
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
                 s_arg = 'Developer ID Application: Digia Plc'
@@ -773,13 +792,20 @@ def handle_installer_build(offline_installer_build):
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
                 cmd_args = ['hdiutil', 'create', '-srcfolder', os.path.join(installer_output_dir, installer_name_base) + '.app', '-volname', installer_name_base, '-format', 'UDBZ', os.path.join(installer_output_dir, installer_name_base) + '.dmg', '-ov', '-scrub', '-size', '2g']
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
-                cmd_args = [SCP_COMMAND, installer_name, PKG_SERVER_ADDR + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '-' + BUILD_NUMBER + '.dmg']
+                # copy installer to internal server
+                cmd_args = [SCP_COMMAND, installer_name, PKG_SERVER_ADDR + ':' + dest_dir + '/' + installer_name_final]
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
+                # copy installer to mirror brain server
+                if LICENSE == 'opensource':
+                    cmd_args_copy_to_pkg = [SSH_COMMAND, PKG_SERVER_ADDR]
+                    cmd_args_copy_to_ext = cmd_args_copy_to_pk + ['scp', dest_dir + '/' + installer_name_final, ext_server_base_url + ':' + ext_dest_dir + '/' + installer_name_final]
+                    bldinstallercommon.do_execute_sub_process(cmd_args_copy_to_ext, installer_output_dir, True)
     else:
         for file_name in dir_list:
             if file_name.endswith(".exe"):
                 installer_name = file_name
                 installer_name_base = os.path.splitext(file_name)[0]
+                installer_name_final = installer_name_base + '_' + TIME_STAMP + '-' + BUILD_NUMBER + '.exe'
                 if LICENSE == 'opensource':
                     cmd_args = ['C:\Utils\sign\signtool.exe', 'sign', '/v', '/du', os.environ['SIGNING_SERVER'], '/p', os.environ['SIGNING_PASSWORD'], '/t', 'http://timestamp.verisign.com/scripts/timestamp.dll', '/f', 'C:\utils\sign\keys.pfx', installer_name]
                 elif LICENSE == 'enterprise':
@@ -788,8 +814,14 @@ def handle_installer_build(offline_installer_build):
                     print('*** License unknown: {0}'.format(LICENSE))
                     sys.exit(-1)
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
-                cmd_args = [SCP_COMMAND, installer_name, PKG_SERVER_ADDR + ':' + dest_dir + '/' + installer_name_base + '_' + TIME_STAMP + '-' + BUILD_NUMBER + '.exe']
+                # copy installer to internal server
+                cmd_args = [SCP_COMMAND, installer_name, PKG_SERVER_ADDR + ':' + dest_dir + '/' + installer_name_final]
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
+                # copy installer to mirror brain server
+                if LICENSE == 'opensource':
+                    cmd_args_copy_to_pkg = [SSH_COMMAND, PKG_SERVER_ADDR]
+                    cmd_args_copy_to_ext = cmd_args_copy_to_pkg + ['scp', dest_dir + '/' + installer_name_final, ext_server_base_url + ':' + ext_dest_dir + '/' + installer_name_final]
+                    bldinstallercommon.do_execute_sub_process(cmd_args_copy_to_ext, installer_output_dir, True)
     #Update latest link
     cmd_args = [SSH_COMMAND, PKG_SERVER_ADDR, 'ln -sfn', dest_dir, latest_dir]
     bldinstallercommon.do_execute_sub_process(cmd_args,WORK_DIR,True)
