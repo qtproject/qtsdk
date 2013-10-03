@@ -269,6 +269,14 @@ def handle_qt_src_package_build():
     cmd_args = ['cp', '-r', os.path.join(package_name, 'qtbase', 'examples', 'examples.pro'), essentials_path]
     bldinstallercommon.do_execute_sub_process(cmd_args, package_path, True)
 
+    # remove documentation source files ('doc' subdirs) from examples
+    doc_dir = 'doc'
+    for root, dirs, files in os.walk(essentials_path):
+        if doc_dir in dirs:
+            # do not recurse into doc directory
+            dirs.remove(doc_dir)
+            shutil.rmtree(os.path.join(root, doc_dir))
+
     # remove out of place top level files from qtdeclarative
     if os.path.exists(os.path.join(essentials_path, 'HACKING')):
         os.remove(os.path.join(essentials_path, 'HACKING'))
