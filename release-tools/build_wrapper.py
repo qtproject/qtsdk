@@ -414,7 +414,9 @@ def handle_qt_android_release_build():
 # handle_qt_ios_release_build
 ###############################
 def handle_qt_ios_release_build():
-    configure_extra_options = ''
+    qt_configure_options_file = os.environ['RELEASE_BUILD_QT_CONFIGURE_OPTIONS_FILE']
+    configure_extra_options   = os.environ['EXTRA_QT_CONFIGURE_OPTIONS']
+
     if LICENSE == 'enterprise':
         configure_extra_options += '-DQT_EVAL'
     global EXTRA_ENV
@@ -424,7 +426,7 @@ def handle_qt_ios_release_build():
     configure_files_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_config', '')
     if bldinstallercommon.is_mac_platform():
         if TARGET_ENV.find("x64") >= 1:
-            cmd_args = ['python', '-u', script_path, '-u', source_url + '.tar.gz', '-c', configure_files_path + 'configure_ios_' + LICENSE, '-a', '-prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
+            cmd_args = ['python', '-u', script_path, '-u', source_url + '.tar.gz', '-c', configure_files_path + qt_configure_options_file, '-a', configure_extra_options + ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
 
 
