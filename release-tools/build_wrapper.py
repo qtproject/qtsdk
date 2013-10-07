@@ -798,7 +798,7 @@ def handle_installer_build(offline_installer_build):
                 # copy installer to mirror brain server
                 if LICENSE == 'opensource':
                     cmd_args_copy_to_pkg = [SSH_COMMAND, PKG_SERVER_ADDR]
-                    cmd_args_copy_to_ext = cmd_args_copy_to_pk + ['scp', dest_dir + '/' + installer_name_final, ext_server_base_url + ':' + ext_dest_dir + '/' + installer_name_final]
+                    cmd_args_copy_to_ext = cmd_args_copy_to_pkg + ['scp', dest_dir + '/' + installer_name_final, ext_server_base_url + ':' + ext_dest_dir + '/' + installer_name_final]
                     bldinstallercommon.do_execute_sub_process(cmd_args_copy_to_ext, installer_output_dir, True)
     else:
         for file_name in dir_list:
