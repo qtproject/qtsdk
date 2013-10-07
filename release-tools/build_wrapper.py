@@ -689,16 +689,20 @@ def handle_qt_creator_build():
 
     if bldinstallercommon.is_linux_platform():
         if TARGET_ENV.find('64') != -1:
-            cmd_args = [SCP_COMMAND, 'qt-creator_build/qtcreator.7z', PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_linux_gcc_64_ubuntu1110.7z']
+            cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator-installer-archive.7z', PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_linux_gcc_64_ubuntu1110.7z']
             bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
         else:
-            cmd_args = [SCP_COMMAND, 'qt-creator_build/qtcreator.7z', PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_linux_gcc_32_ubuntu1110.7z']
+            cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator-installer-archive.7z', PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_linux_gcc_32_ubuntu1110.7z']
             bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
     elif bldinstallercommon.is_mac_platform():
-        cmd_args = [SCP_COMMAND, 'qt-creator_build/qtcreator.7z', PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_mac_cocoa_10_7.7z']
+        cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator-installer-archive.7z', PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_mac_cocoa_10_7.7z']
+        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
+        cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator.dmg', PKG_SERVER_ADDR + ':' + dir_path + '/qt-creator-mac-' + LICENSE + '.dmg']
+        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
+        cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator-installer.dmg', PKG_SERVER_ADDR + ':' + dir_path + '/qt-creator-mac-' + LICENSE + '-installer.dmg']
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
     else:
-        cmd_args = [SCP_COMMAND, 'qt-creator_build/qtcreator.7z', PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_windows_vs2010_32.7z']
+        cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator-installer-archive.7z', PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_windows_vs2010_32.7z']
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
 
     #TODO: Check qt-creator checkout!

@@ -192,12 +192,13 @@ if not os.path.lexists(callerArguments.qt5path):
     if sys.platform == "darwin":
         myGetQtBinaryWork.addTaskObject(
             createDownloadExtract7zTask(callerArguments.installerbase7z, tempPath, tempPath, callerArguments))
+        installerPath = os.path.join(tempPath, 'ifw-bld')
 ### run get Qt 5 tasks
     myGetQtBinaryWork.run()
 
     print("##### {0} #####".format("patch Qt"))
     if sys.platform == "darwin":
-        installerbasePath = os.path.join(tempPath, 'ifw-bld/bin/installerbase')
+        installerbasePath = os.path.join(installerPath, 'bin/installerbase')
         os.chmod(installerbasePath, 0777)
         runCommand(installerbasePath + " -v --runoperation QtPatch mac " + callerArguments.qt5path  + " qt5",
             qtCreatorBuildDirectory, callerArguments)
@@ -227,7 +228,7 @@ if hasattr(callerArguments, 'gitpath') and callerArguments.gitpath:
 
 environment = {'PATH': os.pathsep.join(pathKeyList)}
 
-environment["INSTALLER_ARCHIVE"] = "qtcreator.7z"
+environment["INSTALL_BASENAME"] = "qt-creator"
 
 if sys.platform.startswith('linux'):
     environment["LD_LIBRARY_PATH"] = os.path.join(callerArguments.qt5path, 'lib')
@@ -235,6 +236,7 @@ if sys.platform.startswith('linux'):
 
 if sys.platform == "darwin":
     environment["DYLD_FRAMEWORK_PATH"] = os.path.join(callerArguments.qt5path, 'lib')
+    environment["IFW_PATH"] = installerPath
 
 if os.name != 'nt':
     environment["MAKEFLAGS"] = "-j" + str(multiprocessing.cpu_count() + 1)
@@ -298,3 +300,7 @@ if os.name == 'nt':
 
 runInstallCommand('bindist_installer', qtCreatorBuildDirectory, callerArguments = callerArguments,
     init_environment = environment)
+
+# Qt Creator standalone package
+if sys.platform == "darwin":
+    runInstallCommand('installer codesign_installer dmg_installer dmg')
