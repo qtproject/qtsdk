@@ -1,0 +1,1 @@
+-commercial -confirm-license -release -nomake tests -nomake examples -sdk iphone6.1 -qt-zlib -qt-libjpeg -qt-libpng -no-pkg-config -xplatform macx-ios-clang -no-sql-mysql
