@@ -14,7 +14,7 @@
     <DependsOnLocalInstallerBinary>true</DependsOnLocalInstallerBinary>
     <RemoteRepositories>
         <Repository>
-            <Url>http://download.qt-project.org/online/sdkrepository/windows_x86/root/qt/</Url>
+            <Url>http://download.qt-project.org/online/qtsdkrepository/windows_x86/root/qt/</Url>
             <Enabled>1</Enabled>
             <DisplayName>Qt Windows-x86 online root repository</DisplayName>
         </Repository>
