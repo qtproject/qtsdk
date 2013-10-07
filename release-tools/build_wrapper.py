@@ -729,7 +729,6 @@ def handle_installer_build(offline_installer_build):
     if not os.path.exists(conf_file):
         print('*** The given file does not exist: {0}'.format(conf_file))
         sys.exit(-1)
-    license = LICENSE
     branch = 'release' # TODO
     platform = PLATFORM
     if TARGET_ENV.find('64') != -1:
@@ -743,10 +742,10 @@ def handle_installer_build(offline_installer_build):
     installer_output_dir = os.path.join(SCRIPT_ROOT_DIR, 'installer_output')
     # (1) create all installers for this host
     if offline_installer_build:
-        release_build_handler.handle_offline_installer_build(conf_file, license, branch, platform, arch, packages_base_url)
+        release_build_handler.handle_offline_installer_build(conf_file, LICENSE, branch, platform, arch, packages_base_url)
         temp_path = '/offline_installers/'
     else:
-        release_build_handler.handle_online_installer_build(conf_file, license, branch, platform, arch, packages_base_url)
+        release_build_handler.handle_online_installer_build(conf_file, LICENSE, branch, platform, arch, packages_base_url)
         temp_path = '/online_installers/'
     # (2) copy all installers from 'installer_output_dir' into network disk
     # Crete remote directories
