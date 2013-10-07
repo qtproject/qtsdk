@@ -50,12 +50,10 @@ import shutil
 import sys
 from time import gmtime, strftime
 import urllib
-from optparse import OptionParser, Option, OptionValueError
+from optparse import OptionParser, Option
 
 
 import bldinstallercommon
-import bld_ifw_tools
-from bld_ifw_tools import IfwOptions
 import release_build_handler
 
 
