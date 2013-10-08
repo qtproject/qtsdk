@@ -286,6 +286,9 @@ if callerArguments.additional_plugin:
             runInstallCommand('install', currentWorkingDirectory = plugin_dir,
                 callerArguments = callerArguments, init_environment = env)
 
+runInstallCommand('deployqt', currentWorkingDirectory = qtCreatorBuildDirectory, callerArguments = callerArguments,
+    init_environment = environment)
+
 if sys.platform == "darwin":
     if callerArguments.keychain_unlock_script:
         runCommand(callerArguments.keychain_unlock_script, qtCreatorBuildDirectory, callerArguments = callerArguments,
