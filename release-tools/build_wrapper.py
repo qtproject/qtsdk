@@ -410,8 +410,6 @@ def handle_qt_ios_release_build():
     qt_configure_options_file = os.environ['RELEASE_BUILD_QT_CONFIGURE_OPTIONS_FILE']
     configure_extra_options   = os.environ['EXTRA_QT_CONFIGURE_OPTIONS']
 
-    if LICENSE == 'enterprise':
-        configure_extra_options += '-DQT_EVAL'
     cmd_args = ''
     script_path = os.path.join(SCRIPT_ROOT_DIR, 'mkqt5bld.py')
     source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
