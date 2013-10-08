@@ -643,6 +643,7 @@ def archive_submodules():
     print_wrap('---------------- Archiving submodules ------------------------------')
     bldinstallercommon.create_dirs(MODULE_ARCHIVE_DIR)
 
+    ## QTBUG-33793
     # temporary solution for Android on Windows compilations
     if ANDROID_BUILD and bldinstallercommon.is_win_platform():
         install_path = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
@@ -683,6 +684,49 @@ def archive_submodules():
         else:
             print_wrap(install_path + os.sep + SINGLE_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> Qt not archived!')
         return
+
+    ## QTBUG-33660
+    # remove references to absolute path of the NDK on the build machine
+    if ANDROID_BUILD and not bldinstallercommon.is_win_platform():
+        install_path_essent = MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME
+        install_path_addons = MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME
+        # find the lib directory under the install directory for essentials and addons
+        lib_path_essent = os.path.normpath(install_path_essent + os.sep + INSTALL_PREFIX + os.sep + 'lib')
+        lib_path_addons = os.path.normpath(install_path_addons + os.sep + INSTALL_PREFIX + os.sep + 'lib')
+
+        # just list the files with a pattern like 'libQt5Core.prl'
+        for lib_path_final in [lib_path_essent, lib_path_addons]:
+            print_wrap('---------- Remove references to absolute path of the NDK in ' + lib_path_final + ' ----------------')
+            if os.path.exists(lib_path_final):
+                prl_files = [f for f in os.listdir(lib_path_final) if re.match(r'libQt5.*\.prl', f)]
+                for prl_name in prl_files:
+                    # let's just remove the undesired string for QMAKE_PRL_LIBS
+                    prl_name_path = os.path.join(lib_path_final, prl_name)
+                    if os.path.isfile(prl_name_path):
+                        for line in fileinput.FileInput(prl_name_path, inplace=1):
+                            if line.startswith('QMAKE_PRL_LIBS'):
+                                # android_armv7
+                                line = line.replace(' -L/opt/android/ndk/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a', '')
+                                line = line.replace(' -L/opt/android/ndk/platforms/android-9/arch-arm//usr/lib', '')
+                                # android_armv5
+                                line = line.replace(' -L/opt/android/ndk/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi', '')
+                                line = line.replace(' -L/opt/android/ndk/platforms/android-9/arch-arm//usr/lib', '')
+                                # android_x86
+                                line = line.replace(' -L/opt/android/ndk/sources/cxx-stl/gnu-libstdc++/4.8/libs/x86', '')
+                                line = line.replace(' -L/opt/android/ndk/platforms/android-9/arch-x86//usr/lib', '')
+                                print line,
+                            else:
+                                print line,
+                    else:
+                        print_wrap('*** Warning! The file : ' + prl_name_path + ' does not exist')
+            else:
+                print_wrap('*** Warning! Unable to locate ' + lib_path_final + ' directory')
+        print_wrap('--->            String to remove (armv7) : -L/opt/android/ndk/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a')
+        print_wrap('--->            String to remove (armv7) : -L/opt/android/ndk/platforms/android-9/arch-arm//usr/lib')
+        print_wrap('--->            String to remove (armv5) : -L/opt/android/ndk/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi')
+        print_wrap('--->            String to remove (armv5) : -L/opt/android/ndk/platforms/android-9/arch-arm//usr/lib')
+        print_wrap('--->            String to remove (x86)   : -L/opt/android/ndk/sources/cxx-stl/gnu-libstdc++/4.8/libs/x86')
+        print_wrap('--->            String to remove (x86)   : -L/opt/android/ndk/platforms/android-9/arch-x86//usr/lib')
 
     # Essentials
     print_wrap('---------- Archiving essential modules')
