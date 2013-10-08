@@ -216,13 +216,6 @@ def handle_ifw_build():
 # handle_qt_src_package_build
 ###############################
 def handle_qt_src_package_build():
-    global COMMAND
-    global LICENSE
-    global QT_VERSION
-    global TIME_STAMP
-    global BUILD_NUMBER
-    global PATH
-
     sanity_check_packaging_server()
     exec_path = os.path.join(WORK_DIR, 'qt5')
     #bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
@@ -316,7 +309,6 @@ def handle_qt_src_package_build():
 # handle_icu_build
 ###############################
 def handle_icu_build():
-    global EXTRA_ENV
     dir_list = os.listdir(WORK_DIR)
     for file_name in dir_list:
         if file_name.startswith("icu"):
@@ -417,7 +409,6 @@ def handle_qt_ios_release_build():
 
     if LICENSE == 'enterprise':
         configure_extra_options += '-DQT_EVAL'
-    global EXTRA_ENV
     cmd_args = ''
     script_path = os.path.join(SCRIPT_ROOT_DIR, 'mkqt5bld.py')
     source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
@@ -433,7 +424,6 @@ def handle_qt_ios_release_build():
 ###############################
 def handle_qt_desktop_release_build():
     # download pre-compiled ICU
-    global EXTRA_ENV
     icu_lib_path = ''
     icu_include_path = ''
     if ICU_LIBS != '':
