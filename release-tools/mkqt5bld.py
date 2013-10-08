@@ -44,15 +44,13 @@
 import os
 import re
 import shutil
-import subprocess
-from subprocess import PIPE, STDOUT
 import sys
 import urllib
 import fileinput
 import bldinstallercommon
 import multiprocessing
 import patch_qmake_qt_key
-from optparse import OptionParser, Option, OptionValueError
+from optparse import OptionParser, Option
 
 SCRIPT_ROOT_DIR                     = os.getcwd()
 WORK_DIR_NAME                       = 'qt5_workdir'
@@ -104,10 +102,10 @@ MAKE_CMD                            = ''
 MAKE_THREAD_COUNT                   = ''
 MAKE_INSTALL_CMD                    = ''
 CONFIGURE_OPTIONS                   = '-confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng'
-ANDROID_NDK_HOST                    =''
-ANDROID_API_VERSION                 ='android-10'
-ANDROID_SDK_HOME                    =''
-ANDROID_NDK_HOME                    =''
+ANDROID_NDK_HOST                    = ''
+ANDROID_API_VERSION                 = 'android-10'
+ANDROID_SDK_HOME                    = ''
+ANDROID_NDK_HOME                    = ''
 ANDROID_BUILD                       = False
 EXTRA_ENV                           = dict(os.environ)
 REPLACE_RPATH                       = False
@@ -150,9 +148,6 @@ def init_mkqt5bld():
     global CONFIGURE_OPTIONS
     global MAKE_CMD
     global MAKE_INSTALL_CMD
-    global SUBMODULE_INSTALL_BASE_DIR_NAME
-    global MAKE_INSTALL_ROOT_DIR
-    global INSTALL_PREFIX
     global EXTRA_ENV
 
     print_wrap('---------------- Initializing build --------------------------------')
@@ -235,7 +230,6 @@ def fetch_src_package():
 ###############################
 def extract_src_package():
     global QT_SOURCE_DIR
-    global CONFIGURE_CMD
     print_wrap('---------------- Extracting source package -------------------------')
     if os.path.exists(QT_SOURCE_DIR):
         print_wrap('Source dir ' + QT_SOURCE_DIR + ' already exists, using that (not re-extracting the archive!)')
@@ -516,7 +510,7 @@ def replace_build_paths(path_to_checked):
             path = os.path.join(root, name)
             if not os.path.isdir(path) and not os.path.islink(path):
                 if not (any(name.endswith(item) for item in IGNORE_PATCH_LIST)):
-                    readlines=open(path,'r').read()
+                    readlines = open(path,'r').read()
                     if pattern.search(readlines):
                         print_wrap('---> Regexp match: ' + path)
                         if bldinstallercommon.is_text_file(path):
@@ -524,7 +518,7 @@ def replace_build_paths(path_to_checked):
                             print_wrap('--->         String to match: ' + QT_SOURCE_DIR)
                             print_wrap('--->         String to match: ' + qt_source_dir_delimeter_2)
                             print_wrap('--->             Replacement: ' + ORIGINAL_QMAKE_QT_PRFXPATH)
-                            for line in fileinput.FileInput(path,inplace=1):
+                            for line in fileinput.FileInput(path, inplace=1):
                                 output1 = line.replace(QT_SOURCE_DIR, ORIGINAL_QMAKE_QT_PRFXPATH)
                                 if line != output1:
                                     # we had a match
@@ -754,7 +748,6 @@ def parse_cmd_line():
     global QT5_MODULES_IGNORE_LIST
     global STRICT_MODE
     global CONFIGURE_OPTIONS
-    global CONFIGURE_OVERRIDE
     global QT_CREATOR_SRC_DIR
     global ANDROID_NDK_HOST
     global ANDROID_API_VERSION
