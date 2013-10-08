@@ -61,7 +61,7 @@ class SdkComponent:
             self.nomalize_archive_uri(package_name, archive_server_name, archive_location_resolver)
             self.archive_name       = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'archive_name')
             if not self.archive_name:
-                self.archive_name = self.path_leaf(archive_uri)
+                self.archive_name = self.path_leaf(self.archive_uri)
             # substitute key-value pairs if any
             for item in key_value_substitution_list:
                 self.target_install_dir = self.target_install_dir.replace(item[0], item[1])
@@ -79,7 +79,7 @@ class SdkComponent:
             elif not os.path.isfile(self.archive_uri):
                 return '*** Archive check fail! ***\n*** Unable to locate archive: ' + self.archive_uri
 
-        def path_leaf(path):
+        def path_leaf(self, path):
             head, tail = ntpath.split(path)
             return tail or ntpath.basename(head)
 
