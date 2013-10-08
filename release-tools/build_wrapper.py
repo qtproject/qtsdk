@@ -58,6 +58,12 @@ import release_build_handler
 
 
 # ----------------------------------------------------------------------
+# external commands
+CURL_COMMAND                = ''
+SSH_COMMAND                 = ''
+SCP_COMMAND                 = ''
+
+# ----------------------------------------------------------------------
 BUILD_TIMESTAMP             = strftime('%Y-%m-%d', gmtime())
 SCRIPT_ROOT_DIR             = os.path.dirname(os.path.realpath(__file__))
 REPO_OUTPUT_DIR             = os.path.normpath(os.path.join(SCRIPT_ROOT_DIR, 'repository'))
@@ -81,8 +87,6 @@ QT_SRC_FOR_IFW_PREPARED     = 'http://download.qt-project.org/development_releas
 IFW_GIT_URL                 = 'git://gitorious.org/installer-framework/installer-framework.git'
 SRC_URL_PREFIX              = 'http://qt-rnd.it.local/packages/jenkins'
 SRC_URL                     = ''
-SSH_COMMAND                 = ''
-SCP_COMMAND                 = ''
 PLATFORM                    = ''
 SRC_DEST_DIRS               = ['src', 'src/submodules', 'src/examples_injection', 'src/licheck']
 INSTALLER_BUILD_OUTPUT_DIR  = 'build_artifacts'
@@ -672,20 +676,20 @@ def handle_examples_injection():
         cmd_args = ['wget', SRC_URL + '/examples_injection/examples_addons.7z']
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR + '/module_archives', True)
     elif bldinstallercommon.is_mac_platform():
-        cmd_args = ['curl', '-O', SRC_URL + '/examples_injection/examples_essentials.7z']
+        cmd_args = [CURL_COMMAND, '-O', SRC_URL + '/examples_injection/examples_essentials.7z']
         bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-        cmd_args = ['curl', '-O', SRC_URL + '/examples_injection/examples_addons.7z']
+        cmd_args = [CURL_COMMAND, '-O', SRC_URL + '/examples_injection/examples_addons.7z']
         bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
     else:
         if TARGET_ENV.find('x86') >=1:
-            cmd_args = ['C:\Program Files\Git\\bin\curl', '-O', SRC_URL + '/examples_injection/examples_essentials.7z']
+            cmd_args = [CURL_COMMAND, '-O', SRC_URL + '/examples_injection/examples_essentials.7z']
             bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-            cmd_args = ['C:\Program Files\Git\\bin\curl', '-O', SRC_URL + '/examples_injection/examples_addons.7z']
+            cmd_args = [CURL_COMMAND, '-O', SRC_URL + '/examples_injection/examples_addons.7z']
             bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
         else:
-            cmd_args = ['C:\Program Files (x86)\Git\\bin\curl', '-O', SRC_URL + '/examples_injection/examples_essentials.7z']
+            cmd_args = [CURL_COMMAND, '-O', SRC_URL + '/examples_injection/examples_essentials.7z']
             bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-            cmd_args = ['C:\Program Files (x86)\Git\\bin\curl', '-O', SRC_URL + '/examples_injection/examples_addons.7z']
+            cmd_args = [CURL_COMMAND, '-O', SRC_URL + '/examples_injection/examples_addons.7z']
             bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
     bldinstallercommon.create_dirs(os.path.join(WORK_DIR, 'module_archives', 'essentials'))
@@ -1280,10 +1284,14 @@ def setup_option_parser():
 ##############################################################
 def init_env():
     global MAKE_INSTALL_PADDING
+    global CURL_COMMAND
     global SSH_COMMAND
     global SCP_COMMAND
 
+    # prefix build
     MAKE_INSTALL_PADDING = 'PADDING' if bldinstallercommon.is_win_platform() else '______________________________PADDING______________________________'
+    # external commands
+    CURL_COMMAND         = '%CURL%'  if bldinstallercommon.is_win_platform() else 'curl'
     SSH_COMMAND          = '%SSH%'   if bldinstallercommon.is_win_platform() else 'ssh'
     SCP_COMMAND          = '%SCP%'   if bldinstallercommon.is_win_platform() else 'scp'
 
