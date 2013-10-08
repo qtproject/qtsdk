@@ -60,6 +60,7 @@ import release_build_handler
 # ----------------------------------------------------------------------
 # external commands
 CURL_COMMAND                = ''
+RM_COMMAND                  = ''
 SSH_COMMAND                 = ''
 SCP_COMMAND                 = ''
 
@@ -702,9 +703,9 @@ def handle_examples_injection():
             cmd_args = ['7z', 'x', 'examples_essentials.7z', os.path.join('-oessentials', 'examples'), '-y']
             bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
-            cmd_args = ['C:\Program Files\Git\\bin\\rm', 'qt5_essentials.7z']
+            cmd_args = [RM_COMMAND, 'qt5_essentials.7z']
             bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-            cmd_args = ['C:\Program Files\Git\\bin\\rm', 'examples_essentials.7z']
+            cmd_args = [RM_COMMAND, 'examples_essentials.7z']
             bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
             cmd_args = ['7z', 'a', os.path.join('..', 'qt5_essentials.7z'), '*']
@@ -715,9 +716,9 @@ def handle_examples_injection():
             cmd_args = ['7z', 'x', 'examples_addons.7z', os.path.join('-oaddons', 'examples'), '-y']
             bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
-            cmd_args = ['C:\Program Files\Git\\bin\\rm', 'qt5_addons.7z']
+            cmd_args = [RM_COMMAND, 'qt5_addons.7z']
             bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-            cmd_args = ['C:\Program Files\Git\\bin\\rm', 'examples_addons.7z']
+            cmd_args = [RM_COMMAND, 'examples_addons.7z']
             bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
             cmd_args = ['7z', 'a', os.path.join('..', 'qt5_addons.7z'), '*']
@@ -728,9 +729,9 @@ def handle_examples_injection():
             cmd_args = ['7z', 'x', 'examples_essentials.7z', os.path.join('-oessentials', 'examples'), '-y']
             bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
-            cmd_args = ['C:\Program Files (x86)\Git\\bin\\rm', 'qt5_essentials.7z']
+            cmd_args = [RM_COMMAND, 'qt5_essentials.7z']
             bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-            cmd_args = ['C:\Program Files (x86)\Git\\bin\\rm', 'examples_essentials.7z']
+            cmd_args = [RM_COMMAND, 'examples_essentials.7z']
             bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
             cmd_args = ['7z', 'a', os.path.join('..', 'qt5_essentials.7z'), '*']
@@ -741,9 +742,9 @@ def handle_examples_injection():
             cmd_args = ['7z', 'x', 'examples_addons.7z', os.path.join('-oaddons', 'examples'), '-y']
             bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
-            cmd_args = ['C:\Program Files (x86)\Git\\bin\\rm', 'qt5_addons.7z']
+            cmd_args = [RM_COMMAND, 'qt5_addons.7z']
             bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-            cmd_args = ['C:\Program Files (x86)\Git\\bin\\rm', 'examples_addons.7z']
+            cmd_args = [RM_COMMAND, 'examples_addons.7z']
             bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
             cmd_args = ['7z', 'a', os.path.join('..', 'qt5_addons.7z'), '*']
@@ -754,9 +755,9 @@ def handle_examples_injection():
         cmd_args = ['7z', 'x', 'examples_essentials.7z', os.path.join('-oessentials', 'examples'), '-y']
         bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
-        cmd_args = ['rm', 'qt5_essentials.7z']
+        cmd_args = [RM_COMMAND, 'qt5_essentials.7z']
         bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-        cmd_args = ['rm', 'examples_essentials.7z']
+        cmd_args = [RM_COMMAND, 'examples_essentials.7z']
         bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
         cmd_args = ['7z', 'a', os.path.join('..', 'qt5_essentials.7z'), '*']
@@ -767,9 +768,9 @@ def handle_examples_injection():
         cmd_args = ['7z', 'x', 'examples_addons.7z', os.path.join('-oaddons', 'examples'), '-y']
         bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
-        cmd_args = ['rm', 'qt5_addons.7z']
+        cmd_args = [RM_COMMAND, 'qt5_addons.7z']
         bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-        cmd_args = ['rm', 'examples_addons.7z']
+        cmd_args = [RM_COMMAND, 'examples_addons.7z']
         bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
         cmd_args = ['7z', 'a', os.path.join('..', 'qt5_addons.7z'), '*']
@@ -1285,6 +1286,7 @@ def setup_option_parser():
 def init_env():
     global MAKE_INSTALL_PADDING
     global CURL_COMMAND
+    global RM_COMMAND
     global SSH_COMMAND
     global SCP_COMMAND
 
@@ -1292,6 +1294,7 @@ def init_env():
     MAKE_INSTALL_PADDING = 'PADDING' if bldinstallercommon.is_win_platform() else '______________________________PADDING______________________________'
     # external commands
     CURL_COMMAND         = '%CURL%'  if bldinstallercommon.is_win_platform() else 'curl'
+    RM_COMMAND           = '%RM%'    if bldinstallercommon.is_win_platform() else 'rm'
     SSH_COMMAND          = '%SSH%'   if bldinstallercommon.is_win_platform() else 'ssh'
     SCP_COMMAND          = '%SCP%'   if bldinstallercommon.is_win_platform() else 'scp'
 
