@@ -656,7 +656,7 @@ def archive_submodules():
         ## rename the .so files for Android on Windows
         # find the lib directory under the install directory for essentials
         lib_path_essentials = os.path.normpath(install_path + os.sep + INSTALL_PREFIX + os.sep + 'lib')
-        print_wrap('------------ Renaming .so name files in ' + lib_path_essentials + ' ----------------')
+        print_wrap('---------- Renaming .so name files in ' + lib_path_essentials + ' ----------------')
         # regex for Qt version, eg. 5.2.0
         # assuming that Qt version will always have one digit, eg, 5.2.0
         p = re.compile('\d\.\d\.\d')
@@ -672,6 +672,8 @@ def archive_submodules():
                     old_filepath = os.path.join(lib_path_essentials, name)
                     new_filepath = os.path.join(lib_path_essentials, filename + '.so')
                     os.rename(old_filepath, new_filepath)
+                    print_wrap('--->            Old file name : ' + old_filepath)
+                    print_wrap('--->            New file name : ' + new_filepath)
                 else:
                     print_wrap('*** Warning! The file : ' + filename + " does not match the pattern 'libQt5.*\.so\..*'")
         else:
