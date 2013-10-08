@@ -282,8 +282,10 @@ if callerArguments.additional_plugin:
             callerArguments = callerArguments, init_environment = env)
         runBuildCommand(currentWorkingDirectory = plugin_dir, callerArguments = callerArguments,
             init_environment = env)
+        runInstallCommand("docs", currentWorkingDirectory = plugin_dir, callerArguments = callerArguments,
+            init_environment = env)
         if sys.platform != 'darwin':
-            runInstallCommand('install', currentWorkingDirectory = plugin_dir,
+            runInstallCommand('install install_docs', currentWorkingDirectory = plugin_dir,
                 callerArguments = callerArguments, init_environment = env)
 
 runInstallCommand('deployqt', currentWorkingDirectory = qtCreatorBuildDirectory, callerArguments = callerArguments,
