@@ -647,18 +647,18 @@ def handle_qt_creator_build():
 
     if bldinstallercommon.is_linux_platform():
         if LICENSE == 'opensource':
-            cmd_args = ['python', './bld_qtcreator.py', '--clean', '--qt5path', '../../qt5_install_dir', '--qt5_essentials7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_essentials.7z', '--qt5_addons7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_addons.7z', '--icu7z', ICU_LIBS, '--versiondescription', '""']
+            cmd_args = ['python', './bld_qtcreator.py', '--clean', '--qt5path', '../../qt5_install_dir', '--qt5_essentials7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_essentials.7z', '--qt5_addons7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_addons.7z', '--icu7z', ICU_LIBS, '--versiondescription', '"' + QTCREATOR_VERSION_DESCRIPTION + '"']
         elif LICENSE == 'enterprise':
-            cmd_args = ['python', './bld_qtcreator.py', '--clean', '--qt5path', '../../qt5_install_dir', '--qt5_essentials7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_essentials.7z', '--qt5_addons7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_addons.7z', '--icu7z', ICU_LIBS, '--versiondescription', '""', '--additional_plugin', WORK_DIR + '/qmlprofiler', '--additional_plugin', WORK_DIR + '/qtquickdesigner']
+            cmd_args = ['python', './bld_qtcreator.py', '--clean', '--qt5path', '../../qt5_install_dir', '--qt5_essentials7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_essentials.7z', '--qt5_addons7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_addons.7z', '--icu7z', ICU_LIBS, '--versiondescription', '"' + QTCREATOR_VERSION_DESCRIPTION + '"', '--additional_plugin', WORK_DIR + '/qmlprofiler', '--additional_plugin', WORK_DIR + '/qtquickdesigner']
         else:
             print('*** License unknown: {0}'.format(LICENSE))
             sys.exit(-1)
         bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
     elif bldinstallercommon.is_mac_platform():
         if LICENSE == 'opensource':
-            cmd_args = ['python', '-u', './bld_qtcreator.py', '--clean', '--installcommand', 'make -j1', '--qt5path', '../../qt5_install_dir', '--qt5_essentials7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_essentials.7z', '--qt5_addons7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_addons.7z', '--installerbase7z', 'http://it-dl241-hki/packages/jenkins/opensource/ifw/1.4/installer-framework-build-mac-x64.7z', '--versiondescription', '""', '--keychain_unlock_script', '/Users/qt/unlock-keychain.sh']
+            cmd_args = ['python', '-u', './bld_qtcreator.py', '--clean', '--installcommand', 'make -j1', '--qt5path', '../../qt5_install_dir', '--qt5_essentials7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_essentials.7z', '--qt5_addons7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_addons.7z', '--installerbase7z', 'http://it-dl241-hki/packages/jenkins/opensource/ifw/1.4/installer-framework-build-mac-x64.7z', '--versiondescription', '"' + QTCREATOR_VERSION_DESCRIPTION + '"', '--keychain_unlock_script', '/Users/qt/unlock-keychain.sh']
         elif LICENSE == 'enterprise':
-            cmd_args = ['python', '-u', './bld_qtcreator.py', '--clean', '--installcommand', 'make -j1', '--qt5path', '../../qt5_install_dir', '--qt5_essentials7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_essentials.7z', '--qt5_addons7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_addons.7z', '--installerbase7z', 'http://it-dl241-hki/packages/jenkins/opensource/ifw/1.4/installer-framework-build-mac-x64.7z', '--versiondescription', '""', '--additional_plugin', WORK_DIR + '/qmlprofiler', '--additional_plugin', WORK_DIR + '/qtquickdesigner', '--keychain_unlock_script', '/Users/qt/unlock-keychain.sh']
+            cmd_args = ['python', '-u', './bld_qtcreator.py', '--clean', '--installcommand', 'make -j1', '--qt5path', '../../qt5_install_dir', '--qt5_essentials7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_essentials.7z', '--qt5_addons7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_addons.7z', '--installerbase7z', 'http://it-dl241-hki/packages/jenkins/opensource/ifw/1.4/installer-framework-build-mac-x64.7z', '--versiondescription', '"' + QTCREATOR_VERSION_DESCRIPTION + '"', '--additional_plugin', WORK_DIR + '/qmlprofiler', '--additional_plugin', WORK_DIR + '/qtquickdesigner', '--keychain_unlock_script', '/Users/qt/unlock-keychain.sh']
         else:
             print('*** License unknown: {0}'.format(LICENSE))
             sys.exit(-1)
@@ -667,14 +667,17 @@ def handle_qt_creator_build():
         bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
     else:
         if LICENSE == 'opensource':
-            cmd_args = ['python', '-u', 'bld_qtcreator.py', '--clean', '--buildcommand', 'C:\Utils\jom\jom.exe', '--installcommand', 'c:\Program Files\Microsoft Visual Studio 10.0\VC\\bin\\nmake.exe', '--qt5path', '..\..\qt5_install_dir', '--qt5_essentials7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_essentials.7z', '--qt5_addons7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_addons.7z', '--icu7z', ICU_LIBS, '--sevenzippath', 'C:\Utils\\sevenzip', '--gitpath', 'C:\Program Files\Git\\bin', '--d3dcompiler7z', 'http://download.qt-project.org/development_releases/prebuilt/d3dcompiler/msvc2010/D3DCompiler_43-x86.dll.7z', '--environment_batch', '"C:\Program Files\Microsoft Visual Studio 10.0\VC\\vcvarsall.bat"', '--environment_batch_argument', 'x86', '--versiondescription', '""']
+            cmd_args = ['python', '-u', 'bld_qtcreator.py', '--clean', '--buildcommand', 'C:\Utils\jom\jom.exe', '--installcommand', 'c:\Program Files\Microsoft Visual Studio 10.0\VC\\bin\\nmake.exe', '--qt5path', '..\..\qt5_install_dir', '--qt5_essentials7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_essentials.7z', '--qt5_addons7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_addons.7z', '--icu7z', ICU_LIBS, '--sevenzippath', 'C:\Utils\\sevenzip', '--gitpath', 'C:\Program Files\Git\\bin', '--d3dcompiler7z', 'http://download.qt-project.org/development_releases/prebuilt/d3dcompiler/msvc2010/D3DCompiler_43-x86.dll.7z', '--environment_batch', '"C:\Program Files\Microsoft Visual Studio 10.0\VC\\vcvarsall.bat"', '--environment_batch_argument', 'x86', '--versiondescription', '"' + QTCREATOR_VERSION_DESCRIPTION + '"']
         elif LICENSE == 'enterprise':
-            cmd_args = ['python', '-u', 'bld_qtcreator.py', '--clean', '--buildcommand', 'C:\Utils\jom\jom.exe', '--installcommand', 'c:\Program Files\Microsoft Visual Studio 10.0\VC\\bin\\nmake.exe', '--qt5path', '..\..\qt5_install_dir', '--qt5_essentials7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_essentials.7z', '--qt5_addons7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_addons.7z', '--icu7z', ICU_LIBS, '--sevenzippath', 'C:\\Utils\\sevenzip', '--gitpath', 'C:\Program Files\Git\\bin', '--d3dcompiler7z', 'http://download.qt-project.org/development_releases/prebuilt/d3dcompiler/msvc2010/D3DCompiler_43-x86.dll.7z', '--versiondescription', '""', '--additional_plugin', WORK_DIR + '/qmlprofiler', '--additional_plugin', WORK_DIR + '/qtquickdesigner', '--environment_batch', '"C:\Program Files\Microsoft Visual Studio 10.0\VC\\vcvarsall.bat"', '--environment_batch_argument', 'x86']
+            cmd_args = ['python', '-u', 'bld_qtcreator.py', '--clean', '--buildcommand', 'C:\Utils\jom\jom.exe', '--installcommand', 'c:\Program Files\Microsoft Visual Studio 10.0\VC\\bin\\nmake.exe', '--qt5path', '..\..\qt5_install_dir', '--qt5_essentials7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_essentials.7z', '--qt5_addons7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_addons.7z', '--icu7z', ICU_LIBS, '--sevenzippath', 'C:\\Utils\\sevenzip', '--gitpath', 'C:\Program Files\Git\\bin', '--d3dcompiler7z', 'http://download.qt-project.org/development_releases/prebuilt/d3dcompiler/msvc2010/D3DCompiler_43-x86.dll.7z', '--versiondescription', '"' + QTCREATOR_VERSION_DESCRIPTION + '"', '--additional_plugin', WORK_DIR + '/qmlprofiler', '--additional_plugin', WORK_DIR + '/qtquickdesigner', '--environment_batch', '"C:\Program Files\Microsoft Visual Studio 10.0\VC\\vcvarsall.bat"', '--environment_batch_argument', 'x86']
         else:
             print('*** License unknown: {0}'.format(LICENSE))
             sys.exit(-1)
         bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
+    postfix = ''
+    if QTCREATOR_VERSION:
+        postfix = '-' + QTCREATOR_VERSION
     if bldinstallercommon.is_linux_platform():
         if TARGET_ENV.find('64') != -1:
             cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator-installer-archive.7z', PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_linux_gcc_64_ubuntu1110.7z']
@@ -685,9 +688,9 @@ def handle_qt_creator_build():
     elif bldinstallercommon.is_mac_platform():
         cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator-installer-archive.7z', PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_mac_cocoa_10_7.7z']
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
-        cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator.dmg', PKG_SERVER_ADDR + ':' + dir_path + '/qt-creator-mac-' + LICENSE + '.dmg']
+        cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator.dmg', PKG_SERVER_ADDR + ':' + dir_path + '/qt-creator-mac-' + LICENSE + postfix + '.dmg']
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
-        cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator-installer.dmg', PKG_SERVER_ADDR + ':' + dir_path + '/qt-creator-mac-' + LICENSE + '-installer.dmg']
+        cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator-installer.dmg', PKG_SERVER_ADDR + ':' + dir_path + '/qt-creator-mac-' + LICENSE + postfix + '-installer.dmg']
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
     else:
         cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator-installer-archive.7z', PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_windows_vs2010_32.7z']
@@ -963,6 +966,8 @@ def parse_cmd_line():
     global PLATFORM
     global QT_VERSION_TAG
     global QT_FULL_VERSION
+    global QTCREATOR_VERSION
+    global QTCREATOR_VERSION_DESCRIPTION
 
     setup_option_parser()
     arg_count = len(sys.argv)
@@ -973,20 +978,25 @@ def parse_cmd_line():
     (options, args) = OPTION_PARSER.parse_args()
     COMMAND = options.command
     if (sanity_check_options(options)):
-        COMMAND         = options.command
-        LICENSE         = options.license
-        QT_VERSION      = options.qt_version
-        TIME_STAMP      = options.time_stamp
-        BUILD_NUMBER    = options.build_number
-        PKG_SERVER_ADDR = options.server
-        PATH            = options.path
-        TARGET_ENV      = options.target_env
-        ICU_LIBS        = options.icu_libs
-        SRC_URL         = options.src_url
-        QT_VERSION_TAG  = options.version_tag
-        QT_FULL_VERSION = QT_VERSION
+        COMMAND           = options.command
+        LICENSE           = options.license
+        QT_VERSION        = options.qt_version
+        TIME_STAMP        = options.time_stamp
+        BUILD_NUMBER      = options.build_number
+        PKG_SERVER_ADDR   = options.server
+        PATH              = options.path
+        TARGET_ENV        = options.target_env
+        ICU_LIBS          = options.icu_libs
+        SRC_URL           = options.src_url
+        QT_VERSION_TAG    = options.version_tag
+        QTCREATOR_VERSION = options.qtcreator_version
+        QT_FULL_VERSION   = QT_VERSION
         if QT_VERSION_TAG:
             QT_FULL_VERSION += '-' + QT_VERSION_TAG
+        if options.qtcreator_set_description:
+            QTCREATOR_VERSION_DESCRIPTION = QTCREATOR_VERSION
+        else:
+            QTCREATOR_VERSION_DESCRIPTION = ''
         REMOTE_DIR      = PATH + '/' + LICENSE + '/' + 'qt' + '/' + QT_VERSION + '/' + TIME_STAMP + '-' + BUILD_NUMBER
         LATEST_DIR      = PATH + '/' + LICENSE + '/' + 'qt' + '/' + QT_VERSION + '/' + 'latest'
     else:
@@ -1045,6 +1055,12 @@ def setup_option_parser():
     OPTION_PARSER.add_option("--version-tag",
                       action="store", type="string", dest="version_tag", default="",
                       help="Version tag e.g. alpha, beta, rc1")
+    OPTION_PARSER.add_option("--qtcreator-version",
+                      action="store", type="string", dest="qtcreator_version", default="",
+                      help="Qt Creator version, e.g. 3.0.0-rc, used in file names and for --qtcreator-set-description")
+    OPTION_PARSER.add_option("--qtcreator-set-description",
+                      action="store_true", dest="qtcreator_set_description", default=False,
+                      help="Sets Qt Creator's version description to the value given in --qtcreator-version")
 
 
 ##############################################################
