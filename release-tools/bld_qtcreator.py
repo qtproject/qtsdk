@@ -74,6 +74,7 @@ if os.name == 'nt':
         "--buildcommand C:\\bin\\ibjom.cmd --installcommand nmake --qt5path ..\\..\\creator_qt5 " \
         "--qt5_essentials7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/windows_vs2010_32/qt5_essentials.7z " \
         "--qt5_addons7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/windows_vs2010_32/qt5_addons.7z " \
+        "--installerbase7z http://it-dl241-hki.it.local/packages/opensource/ifw/1.4/installer-framework-build-win-x86.7z" \
         "--sevenzippath \"C:\\Program Files\\7-Zip\" " \
         "--gitpath \"C:\\Program Files (x86)\\Git\\cmd\" "\
         "--icu7z http://origin.releases.qt-project.org/prebuilt/icu_49_win_32_release.7z " \
@@ -94,6 +95,7 @@ else:
         "--qt5path ../../qtcreator_qt5 " \
         "--qt5_essentials7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/linux_gcc_64_ubuntu1110/qt5_essentials.7z " \
         "--qt5_addons7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/linux_gcc_64_ubuntu1110/qt5_addons.7z " \
+        "--installerbase7z http://it-dl241-hki.it.local/packages/opensource/ifw/1.4/installer-framework-build-linux-x64.7z" \
         "--icu7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/linux_gcc_64_ubuntu1110/libicu_x86_64_ubuntu1110.7z " \
         "".format(os.path.basename(sys.argv[0]))
 
@@ -105,6 +107,7 @@ parser.add_argument('--installcommand', help="this means usually make", default=
 parser.add_argument('--debug', help="use debug builds", action='store_true', default=False)
 parser.add_argument('--qt5_essentials7z', help="a file or url where it get the built qt5 essential content as 7z")
 parser.add_argument('--qt5_addons7z', help="a file or url where it get the built qt5 essential content as 7z")
+parser.add_argument('--installerbase7z', help="a file or url where it get installerbase binary as 7z")
 parser.add_argument('--versiondescription', help="version description to be shown in the about dialog, e.g. 'pre-2.7.2")
 parser.add_argument('--additional_plugin', help="path to additional Qt Creator plugin to build", action='append')
 
@@ -120,7 +123,6 @@ if os.name == 'nt':
     parser.add_argument('--gitpath', help="path where the git binary is located")
 
 if sys.platform == "darwin":
-    parser.add_argument('--installerbase7z', help="a file or url where it get installerbase binary as 7z")
     parser.add_argument('--keychain_unlock_script', help="script for unlocking the keychain used for signing")
 
 callerArguments = parser.parse_args()
@@ -189,10 +191,12 @@ if not os.path.lexists(callerArguments.qt5path):
         targetPath = os.path.join(callerArguments.qt5path, 'bin')
         myGetQtBinaryWork.addTaskObject(
             createDownloadExtract7zTask(callerArguments.d3dcompiler7z, targetPath, tempPath, callerArguments))
-    if sys.platform == "darwin":
-        myGetQtBinaryWork.addTaskObject(
-            createDownloadExtract7zTask(callerArguments.installerbase7z, tempPath, tempPath, callerArguments))
-        installerPath = os.path.join(tempPath, 'ifw-bld')
+
+### add get installer base task
+    myGetQtBinaryWork.addTaskObject(
+        createDownloadExtract7zTask(callerArguments.installerbase7z, tempPath, tempPath, callerArguments))
+    installerPath = os.path.join(tempPath, 'ifw-bld')
+
 ### run get Qt 5 tasks
     myGetQtBinaryWork.run()
 
@@ -229,6 +233,7 @@ if hasattr(callerArguments, 'gitpath') and callerArguments.gitpath:
 environment = {'PATH': os.pathsep.join(pathKeyList)}
 
 environment["INSTALL_BASENAME"] = "qt-creator"
+environment["IFW_PATH"] = installerPath
 
 if sys.platform.startswith('linux'):
     environment["LD_LIBRARY_PATH"] = os.path.join(callerArguments.qt5path, 'lib')
@@ -236,7 +241,6 @@ if sys.platform.startswith('linux'):
 
 if sys.platform == "darwin":
     environment["DYLD_FRAMEWORK_PATH"] = os.path.join(callerArguments.qt5path, 'lib')
-    environment["IFW_PATH"] = installerPath
 
 if os.name != 'nt':
     environment["MAKEFLAGS"] = "-j" + str(multiprocessing.cpu_count() + 1)
@@ -307,6 +311,8 @@ runInstallCommand('bindist_installer', qtCreatorBuildDirectory, callerArguments 
     init_environment = environment)
 
 # Qt Creator standalone package
+runInstallCommand('installer', qtCreatorBuildDirectory, callerArguments = callerArguments,
+    init_environment = environment)
 if sys.platform == "darwin":
-    runInstallCommand('installer codesign_installer dmg dmg_installer', qtCreatorBuildDirectory,
-    callerArguments = callerArguments, init_environment = environment)
+    runInstallCommand('codesign_installer dmg dmg_installer', qtCreatorBuildDirectory,
+        callerArguments = callerArguments, init_environment = environment)

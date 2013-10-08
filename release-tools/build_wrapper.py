@@ -665,6 +665,10 @@ def handle_qt_creator_build():
 
     if bldinstallercommon.is_linux_platform():
         cmd_args.extend(['--icu7z', ICU_LIBS])
+        if TARGET_ENV.find('64') != -1:
+            cmd_args.extend(['--installerbase7z', 'http://it-dl241-hki/packages/jenkins/' + LICENSE + '/ifw/1.4/installer-framework-build-linux-x64.7z'])
+        else:
+            cmd_args.extend(['--installerbase7z', 'http://it-dl241-hki/packages/jenkins/' + LICENSE + '/ifw/1.4/installer-framework-build-linux-x86.7z'])
     elif bldinstallercommon.is_mac_platform():
         cmd_args.extend(['--installcommand', 'make -j1',
                          '--installerbase7z', 'http://it-dl241-hki/packages/jenkins/' + LICENSE + '/ifw/1.4/installer-framework-build-mac-x64.7z',
@@ -676,6 +680,7 @@ def handle_qt_creator_build():
                          '--sevenzippath', os.path.normpath('C:/Utils/sevenzip'),
                          '--gitpath', os.path.normpath('C:/Program Files/Git/bin'),
                          '--d3dcompiler7z', 'http://download.qt-project.org/development_releases/prebuilt/d3dcompiler/msvc2010/D3DCompiler_43-x86.dll.7z',
+                         '--installerbase7z', 'http://it-dl241-hki/packages/jenkins/' + LICENSE + '/ifw/1.4/installer-framework-build-win-x86.7z',
                          '--environment_batch', os.path.normpath('C:/Program Files/Microsoft Visual Studio 10.0/VC/vcvarsall.bat'),
                          '--environment_batch_argument', 'x86'])
 
@@ -689,12 +694,17 @@ def handle_qt_creator_build():
     if QTCREATOR_VERSION:
         postfix = '-' + QTCREATOR_VERSION
     if bldinstallercommon.is_linux_platform():
+        linux_bits = '32'
+        linux_arch = 'x86'
         if TARGET_ENV.find('64') != -1:
-            cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator-installer-archive.7z', PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_linux_gcc_64_ubuntu1110.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
-        else:
-            cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator-installer-archive.7z', PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_linux_gcc_32_ubuntu1110.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
+            linux_bits = '64'
+            linux_arch = 'x86_64'
+        cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator-installer-archive.7z',
+            PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_linux_gcc_' + linux_bits + '64_ubuntu1110.7z']
+        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
+        cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator.run',
+            PKG_SERVER_ADDR + ':' + dir_path + '/qt-creator-linux-' + linux_arch + '-' + LICENSE + postfix + '.run']
+        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
     elif bldinstallercommon.is_mac_platform():
         cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator-installer-archive.7z', PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_mac_cocoa_10_7.7z']
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
@@ -704,6 +714,8 @@ def handle_qt_creator_build():
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
     else:
         cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator-installer-archive.7z', PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_windows_vs2010_32.7z']
+        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
+        cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator.exe', PKG_SERVER_ADDR + ':' + dir_path + '/qt-creator-windows-' + LICENSE + postfix + '.exe']
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
 
     #TODO: Check qt-creator checkout!
