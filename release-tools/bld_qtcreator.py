@@ -308,5 +308,5 @@ runInstallCommand('bindist_installer', qtCreatorBuildDirectory, callerArguments 
 
 # Qt Creator standalone package
 if sys.platform == "darwin":
-    runInstallCommand('installer codesign_installer dmg_installer dmg', qtCreatorBuildDirectory,
+    runInstallCommand('installer codesign_installer dmg dmg_installer', qtCreatorBuildDirectory,
     callerArguments = callerArguments, init_environment = environment)
