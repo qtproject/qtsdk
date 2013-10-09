@@ -774,18 +774,16 @@ def handle_installer_build(offline_installer_build):
                     cmd_args_copy_to_ext = cmd_args_copy_to_pkg + ['scp', dest_dir + '/' + installer_name_final, ext_server_base_url + ':' + ext_dest_dir  + '/' + installer_name_final]
                     bldinstallercommon.do_execute_sub_process(cmd_args_copy_to_ext, installer_output_dir, True)
     elif bldinstallercommon.is_mac_platform():
+        cmd_args = ['/Users/qt/unlock-keychain.py']
+        bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
         for file_name in dir_list:
             if file_name.endswith(".dmg"):
                 installer_name = file_name
                 installer_name_base = os.path.splitext(file_name)[0]
                 installer_name_final = installer_name_base + '_' + TIME_STAMP + '-' + BUILD_NUMBER + '.dmg'
-                cmd_args = ['/Users/qt/unlock-keychain.py']
-                bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
                 s_arg = 'Developer ID Application: Digia Plc'
                 cmd_args = ['codesign', '-r', '/Users/qt/csreq.txt', '-s', s_arg, installer_name_base + '.app']
                 bldinstallercommon.do_execute_sub_process(cmd_args,  installer_output_dir, True)
-                cmd_args = ['security', 'lock-keychain', 'Developer_ID_Digia.keychain']
-                bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
                 cmd_args = ['hdiutil', 'create', '-srcfolder', os.path.join(installer_output_dir, installer_name_base) + '.app', '-volname', installer_name_base, '-format', 'UDBZ', os.path.join(installer_output_dir, installer_name_base) + '.dmg', '-ov', '-scrub', '-size', '2g']
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
                 # copy installer to internal server
@@ -796,6 +794,8 @@ def handle_installer_build(offline_installer_build):
                     cmd_args_copy_to_pkg = [SSH_COMMAND, PKG_SERVER_ADDR]
                     cmd_args_copy_to_ext = cmd_args_copy_to_pkg + ['scp', dest_dir + '/' + installer_name_final, ext_server_base_url + ':' + ext_dest_dir + '/' + installer_name_final]
                     bldinstallercommon.do_execute_sub_process(cmd_args_copy_to_ext, installer_output_dir, True)
+        cmd_args = ['security', 'lock-keychain', 'Developer_ID_Digia.keychain']
+        bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
     else:
         for file_name in dir_list:
             if file_name.endswith(".exe"):
