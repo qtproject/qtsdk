@@ -585,6 +585,29 @@ def requires_rpath(file_path):
 ###############################
 # Function
 ###############################
+def sanity_check_rpath_max_length(file_path, new_rpath):
+    if IS_LINUX_PLATFORM or IS_SOLARIS_PLATFORM:
+        if not is_executable(file_path):
+            return False
+        result = re.search(r':*.RPATH=.*', subprocess.Popen(['chrpath', '-l', file_path], stdout=subprocess.PIPE).stdout.read())
+        if not result:
+            print '*** No RPath found from given file: ' + file_path
+        else:
+            rpath = result.group()
+            index = rpath.index('=')
+            rpath = rpath[index+1:]
+            space_for_new_rpath = len(rpath)
+            if len(new_rpath) > space_for_new_rpath:
+                print '*** Warning - Not able to process RPath for file: ' + file_path
+                print '*** Required length for new RPath [' + new_rpath + '] is: ' + str(len(new_rpath))
+                print '*** Space available for new RPath inside the binary is: ' + str(space_for_new_rpath)
+                sys.exit(-1)
+    return True
+
+
+###############################
+# Function
+###############################
 def pathsplit(p, rest=[]):
     (h,t) = os.path.split(p)
     if len(h) < 1: return [t]+rest
@@ -653,10 +676,11 @@ def handle_component_rpath(component_root_path, destination_lib_path):
                 if requires_rpath(file_full_path):
                     dst = os.path.normpath(component_root_path + os.sep + destination_lib_path)
                     rp = calculate_rpath(file_full_path, dst)
-                    #print '        RPath value: [' + rp + '] for file: [' + file_full_path + ']'
-                    cmd_args = ['chrpath', '-r', rp, file_full_path]
-                    #force silent operation
-                    do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True, False)
+                    if sanity_check_rpath_max_length(file_full_path, rp):
+                        #print '        RPath value: [' + rp + '] for file: [' + file_full_path + ']'
+                        cmd_args = ['chrpath', '-r', rp, file_full_path]
+                        #force silent operation
+                        do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True, False)
 
 
 ###############################
