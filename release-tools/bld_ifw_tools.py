@@ -134,6 +134,8 @@ class IfwOptions:
             else:
                 self.product_key_checker_source_dir         = os.path.normpath(ROOT_DIR + os.sep + 'product_key_checker')
                 self.qt_installer_framework_qmake_args      += ' PRODUCTKEYCHECK_PRI_FILE=' + self.product_key_checker_source_dir + os.sep + 'qt_product_key_checker.pri'
+        if bldinstallercommon.is_mac_platform():
+            self.qt_installer_framework_qmake_args += ' QT_MENU_NIB_DIR=' + self.qt_source_dir + os.sep + 'src/gui/mac/qt_menu.nib'
         # sanity check
         self.sanity_check()
 
