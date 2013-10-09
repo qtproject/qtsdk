@@ -701,7 +701,7 @@ def rename_android_soname_files():
         print_wrap('---------- Renaming .so name files in ' + lib_path_essentials + ' ----------------')
         # regex for Qt version, eg. 5.2.0
         # assuming that Qt version will always have one digit, eg, 5.2.0
-        p = re.compile('\d\.\d\.\d')
+        p = re.compile(r'\d\.\d\.\d')
         if os.path.exists(lib_path_essentials):
             # just list the files with a pattern like 'libQt5Core.so.5.2.0'
             files = [f for f in os.listdir(lib_path_essentials) if re.match(r'libQt5.*\.so\..*', f)]
@@ -717,9 +717,9 @@ def rename_android_soname_files():
                     print_wrap('--->            Old file name : ' + old_filepath)
                     print_wrap('--->            New file name : ' + new_filepath)
                 else:
-                    print_wrap('*** Warning! The file : ' + filename + " does not match the pattern 'libQt5.*\.so\..*'")
+                    print_wrap('*** Warning! The file : ' + filename + ' does not match the pattern')
         else:
-            print_wrap('*** Warning! Unable to locate \\lib directory under: ' + install_path + os.sep + INSTALL_PREFIX)
+            print_wrap('*** Warning! Unable to locate /lib directory under: ' + install_path + os.sep + INSTALL_PREFIX)
 
 
 ###############################
