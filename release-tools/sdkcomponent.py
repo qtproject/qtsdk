@@ -62,6 +62,8 @@ class SdkComponent:
             self.archive_name       = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'archive_name')
             if not self.archive_name:
                 self.archive_name = self.path_leaf(self.archive_uri)
+                if not self.archive_name.endswith('.7z'):
+                    self.archive_name += '.7z'
             # substitute key-value pairs if any
             for item in key_value_substitution_list:
                 self.target_install_dir = self.target_install_dir.replace(item[0], item[1])
