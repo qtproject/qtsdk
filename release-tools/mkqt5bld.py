@@ -55,6 +55,7 @@ from optparse import OptionParser, Option
 SCRIPT_ROOT_DIR                     = os.getcwd()
 WORK_DIR_NAME                       = 'qt5_workdir'
 WORK_DIR                            = SCRIPT_ROOT_DIR + os.sep + WORK_DIR_NAME
+QT_CREATOR_SRC_DIR                  = ''
 QT_PACKAGE_SAVE_AS_TEMP             = ''
 QT_SOURCE_DIR_NAME                  = 'w'
 QT_SOURCE_DIR                       = WORK_DIR + os.sep + QT_SOURCE_DIR_NAME
