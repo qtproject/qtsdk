@@ -644,35 +644,37 @@ def handle_qt_release_build():
 def handle_qt_creator_build():
     sanity_check_packaging_server()
     dir_path = PATH + LICENSE + '/qtcreator/latest'
+    cmd_args = ['python', '-u', 'bld_qtcreator.py',
+        '--clean',
+        '--qt5path', os.path.normpath('../../qt5_install_dir'),
+        '--qt5_essentials7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_essentials.7z',
+        '--qt5_addons7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_addons.7z',
+        '--versiondescription', '"' + QTCREATOR_VERSION_DESCRIPTION + '"']
+
+    if LICENSE == 'enterprise':
+        cmd_args.extend(['--additional_plugin', os.path.normpath(WORK_DIR + '/qmlprofiler'),
+                         '--additional_plugin', os.path.normpath(WORK_DIR + '/qtquickdesigner')])
 
     if bldinstallercommon.is_linux_platform():
-        if LICENSE == 'opensource':
-            cmd_args = ['python', './bld_qtcreator.py', '--clean', '--qt5path', '../../qt5_install_dir', '--qt5_essentials7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_essentials.7z', '--qt5_addons7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_addons.7z', '--icu7z', ICU_LIBS, '--versiondescription', '"' + QTCREATOR_VERSION_DESCRIPTION + '"']
-        elif LICENSE == 'enterprise':
-            cmd_args = ['python', './bld_qtcreator.py', '--clean', '--qt5path', '../../qt5_install_dir', '--qt5_essentials7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_essentials.7z', '--qt5_addons7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_addons.7z', '--icu7z', ICU_LIBS, '--versiondescription', '"' + QTCREATOR_VERSION_DESCRIPTION + '"', '--additional_plugin', WORK_DIR + '/qmlprofiler', '--additional_plugin', WORK_DIR + '/qtquickdesigner']
-        else:
-            print('*** License unknown: {0}'.format(LICENSE))
-            sys.exit(-1)
-        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+        cmd_args.extend(['--icu7z', ICU_LIBS])
     elif bldinstallercommon.is_mac_platform():
-        if LICENSE == 'opensource':
-            cmd_args = ['python', '-u', './bld_qtcreator.py', '--clean', '--installcommand', 'make -j1', '--qt5path', '../../qt5_install_dir', '--qt5_essentials7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_essentials.7z', '--qt5_addons7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_addons.7z', '--installerbase7z', 'http://it-dl241-hki/packages/jenkins/opensource/ifw/1.4/installer-framework-build-mac-x64.7z', '--versiondescription', '"' + QTCREATOR_VERSION_DESCRIPTION + '"', '--keychain_unlock_script', '/Users/qt/unlock-keychain.sh']
-        elif LICENSE == 'enterprise':
-            cmd_args = ['python', '-u', './bld_qtcreator.py', '--clean', '--installcommand', 'make -j1', '--qt5path', '../../qt5_install_dir', '--qt5_essentials7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_essentials.7z', '--qt5_addons7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_addons.7z', '--installerbase7z', 'http://it-dl241-hki/packages/jenkins/opensource/ifw/1.4/installer-framework-build-mac-x64.7z', '--versiondescription', '"' + QTCREATOR_VERSION_DESCRIPTION + '"', '--additional_plugin', WORK_DIR + '/qmlprofiler', '--additional_plugin', WORK_DIR + '/qtquickdesigner', '--keychain_unlock_script', '/Users/qt/unlock-keychain.sh']
-        else:
-            print('*** License unknown: {0}'.format(LICENSE))
-            sys.exit(-1)
-        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
-        cmd_args = ['security', 'lock-keychain', 'Developer_ID_Digia.keychain']
-        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+        cmd_args.extend(['--installcommand', 'make -j1',
+                         '--installerbase7z', 'http://it-dl241-hki/packages/jenkins/' + LICENSE + '/ifw/1.4/installer-framework-build-mac-x64.7z',
+                         '--keychain_unlock_script', '/Users/qt/unlock-keychain.sh'])
     else:
-        if LICENSE == 'opensource':
-            cmd_args = ['python', '-u', 'bld_qtcreator.py', '--clean', '--buildcommand', 'C:\Utils\jom\jom.exe', '--installcommand', 'c:\Program Files\Microsoft Visual Studio 10.0\VC\\bin\\nmake.exe', '--qt5path', '..\..\qt5_install_dir', '--qt5_essentials7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_essentials.7z', '--qt5_addons7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_addons.7z', '--icu7z', ICU_LIBS, '--sevenzippath', 'C:\Utils\\sevenzip', '--gitpath', 'C:\Program Files\Git\\bin', '--d3dcompiler7z', 'http://download.qt-project.org/development_releases/prebuilt/d3dcompiler/msvc2010/D3DCompiler_43-x86.dll.7z', '--environment_batch', '"C:\Program Files\Microsoft Visual Studio 10.0\VC\\vcvarsall.bat"', '--environment_batch_argument', 'x86', '--versiondescription', '"' + QTCREATOR_VERSION_DESCRIPTION + '"']
-        elif LICENSE == 'enterprise':
-            cmd_args = ['python', '-u', 'bld_qtcreator.py', '--clean', '--buildcommand', 'C:\Utils\jom\jom.exe', '--installcommand', 'c:\Program Files\Microsoft Visual Studio 10.0\VC\\bin\\nmake.exe', '--qt5path', '..\..\qt5_install_dir', '--qt5_essentials7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_essentials.7z', '--qt5_addons7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_addons.7z', '--icu7z', ICU_LIBS, '--sevenzippath', 'C:\\Utils\\sevenzip', '--gitpath', 'C:\Program Files\Git\\bin', '--d3dcompiler7z', 'http://download.qt-project.org/development_releases/prebuilt/d3dcompiler/msvc2010/D3DCompiler_43-x86.dll.7z', '--versiondescription', '"' + QTCREATOR_VERSION_DESCRIPTION + '"', '--additional_plugin', WORK_DIR + '/qmlprofiler', '--additional_plugin', WORK_DIR + '/qtquickdesigner', '--environment_batch', '"C:\Program Files\Microsoft Visual Studio 10.0\VC\\vcvarsall.bat"', '--environment_batch_argument', 'x86']
-        else:
-            print('*** License unknown: {0}'.format(LICENSE))
-            sys.exit(-1)
+        cmd_args.extend(['--buildcommand', os.path.normpath('C:/Utils/jom/jom.exe'),
+                         '--installcommand', os.path.normpath('C:/Program Files/Microsoft Visual Studio 10.0/VC/bin/nmake.exe'),
+                         '--icu7z', ICU_LIBS,
+                         '--sevenzippath', os.path.normpath('C:/Utils/sevenzip'),
+                         '--gitpath', os.path.normpath('C:/Program Files/Git/bin'),
+                         '--d3dcompiler7z', 'http://download.qt-project.org/development_releases/prebuilt/d3dcompiler/msvc2010/D3DCompiler_43-x86.dll.7z',
+                         '--environment_batch', os.path.normpath('C:/Program Files/Microsoft Visual Studio 10.0/VC/vcvarsall.bat'),
+                         '--environment_batch_argument', 'x86'])
+
+    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+
+    if bldinstallercommon.is_mac_platform():
+        cmd_args = ['security', 'lock-keychain', 'Developer_ID_Digia.keychain']
         bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
     postfix = ''
