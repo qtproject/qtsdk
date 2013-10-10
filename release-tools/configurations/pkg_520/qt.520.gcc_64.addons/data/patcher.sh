@@ -53,5 +53,5 @@ done < <(grep -riIl -e 'icu_install' $1)
 #echo "Grepping matches..done"
 
 #echo "Sedding.."
-sed -i -e -r 's/-[I|L]\"*\/work\/build.*icu_install\/(lib|include)[\" $]//g' "${tmpfilenames[@]}"
+sed -i -e 's/-[I|L]\"*\/data\/bamboo\/xml-data\/build-dir.*icu_install\/.*[\" $]//g' "${tmpfilenames[@]}"
 
