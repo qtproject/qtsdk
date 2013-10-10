@@ -44,15 +44,9 @@
 from __future__ import print_function
 import sys
 import os
-import re
 import platform
-import argparse
-import multiprocessing
 import bldinstallercommon
-import shutil
-import shlex
 import ConfigParser
-import urllib
 import urlparse
 import tarfile
 
@@ -307,7 +301,6 @@ def handle_online_installer_build(conf_file, license, branch, platform, arch, pa
         print('*** Fatal error! Given file does not exist: {0}'.format(conf_file))
         sys.exit(-1)
     init_env()
-    release_tools_dir   = SCRIPT_ROOT_DIR
     conf_file_base_dir  = CONFIGURATIONS_FILE_BASE_DIR
     ifw_base_url        = IFW_TOOLS_BASE_URL
     # parse conf file
@@ -339,7 +332,6 @@ def handle_offline_installer_build(conf_file, license, branch, platform, arch, p
         print('*** Fatal error! Given file does not exist: {0}'.format(conf_file))
         sys.exit(-1)
     init_env()
-    release_tools_dir   = SCRIPT_ROOT_DIR
     conf_file_base_dir  = CONFIGURATIONS_FILE_BASE_DIR
     ifw_base_url        = IFW_TOOLS_BASE_URL
     # parse conf file
@@ -390,7 +382,7 @@ def create_installer(job, packages_base_url, installer_type):
     if not packages_base_url.endswith('/'):
         packages_base_url += '/'
     job.print_data()
-    cmd_args = ['python','-u','create_installer.py']
+    cmd_args = ['python', '-u','create_installer.py']
     cmd_args = cmd_args + ['-c', job.configurations_dir]
     cmd_args = cmd_args + ['-f', job.configurations_file]
     cmd_args = cmd_args + [installer_type]
@@ -469,7 +461,7 @@ def create_online_repository(build_job, packages_base_url):
     if not packages_base_url.endswith('/'):
         packages_base_url += '/'
     build_job.print_data()
-    cmd_args = ['python','-u', 'create_installer.py', \
+    cmd_args = ['python', '-u', 'create_installer.py', \
                 '-c', build_job.configurations_dir, \
                 '-f', build_job.configurations_file, \
                 '--create-repo', \
@@ -513,8 +505,6 @@ def init_repositories(job_list):
     init_env()
     server_addr = REPO_STAGING_SERVER_UNAME + '@' + REPO_STAGING_SERVER
     for item in job_list:
-        base_path_testing = REPO_STAGING_SERVER_TEST_REPO + '/' + item.license
-        url_list = [item.repo_url_specifier]
         # create test area paths
         test_area_path = generate_repo_path_for_test_area(item)
         create_remote_dirs(server_addr, test_area_path)
