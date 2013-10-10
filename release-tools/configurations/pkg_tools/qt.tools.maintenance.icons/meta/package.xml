@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Maintenance Tool icons</DisplayName>
     <Description>Maintenance Tool icons</Description>
-    <Version>1.0.0</Version>
+    <Version>%MAINTENANCE_TOOL_ICONS_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <AutoDependOn>qt.tools.maintenance</AutoDependOn>
     <Script>installscript.qs</Script>
