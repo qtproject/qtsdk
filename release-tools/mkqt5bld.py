@@ -696,7 +696,7 @@ def archive_submodules():
 
         # just list the files with a pattern like 'libQt5Core.prl'
         for lib_path_final in [lib_path_essent, lib_path_addons]:
-            print_wrap('---------- Remove references to absolute path of the NDK in ' + lib_path_final + ' ----------------')
+            print_wrap('---------- Remove references to a static library in the NDK under ' + lib_path_final + ' ----------------')
             if os.path.exists(lib_path_final):
                 prl_files = [f for f in os.listdir(lib_path_final) if re.match(r'libQt5.*\.prl', f)]
                 for prl_name in prl_files:
@@ -705,15 +705,7 @@ def archive_submodules():
                     if os.path.isfile(prl_name_path):
                         for line in fileinput.FileInput(prl_name_path, inplace=1):
                             if line.startswith('QMAKE_PRL_LIBS'):
-                                # android_armv7
-                                line = line.replace(' -L/opt/android/ndk/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a', '')
-                                line = line.replace(' -L/opt/android/ndk/platforms/android-9/arch-arm//usr/lib', '')
-                                # android_armv5
-                                line = line.replace(' -L/opt/android/ndk/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi', '')
-                                line = line.replace(' -L/opt/android/ndk/platforms/android-9/arch-arm//usr/lib', '')
-                                # android_x86
-                                line = line.replace(' -L/opt/android/ndk/sources/cxx-stl/gnu-libstdc++/4.8/libs/x86', '')
-                                line = line.replace(' -L/opt/android/ndk/platforms/android-9/arch-x86//usr/lib', '')
+                                line = line.replace(' /opt/android/ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/../lib/gcc/arm-linux-androideabi/4.8/libgcc.a', '')
                                 print line,
                             else:
                                 print line,
@@ -721,12 +713,7 @@ def archive_submodules():
                         print_wrap('*** Warning! The file : ' + prl_name_path + ' does not exist')
             else:
                 print_wrap('*** Warning! Unable to locate ' + lib_path_final + ' directory')
-        print_wrap('--->            String to remove (armv7) : -L/opt/android/ndk/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a')
-        print_wrap('--->            String to remove (armv7) : -L/opt/android/ndk/platforms/android-9/arch-arm//usr/lib')
-        print_wrap('--->            String to remove (armv5) : -L/opt/android/ndk/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi')
-        print_wrap('--->            String to remove (armv5) : -L/opt/android/ndk/platforms/android-9/arch-arm//usr/lib')
-        print_wrap('--->            String to remove (x86)   : -L/opt/android/ndk/sources/cxx-stl/gnu-libstdc++/4.8/libs/x86')
-        print_wrap('--->            String to remove (x86)   : -L/opt/android/ndk/platforms/android-9/arch-x86//usr/lib')
+        print_wrap('--->            String to remove : /opt/android/ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86/bin/../lib/gcc/arm-linux-androideabi/4.8/libgcc.a')
 
     # Essentials
     print_wrap('---------- Archiving essential modules')
