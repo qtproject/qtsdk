@@ -1126,25 +1126,6 @@ def create_mac_disk_image():
     print '= Create mac disk image'
     print '=================================================='
 
-    nib_archive_name = bldinstallercommon.safe_config_key_fetch(CONFIG_PARSER_TARGET, 'qtmenunib', 'package_url')
-    package_save_as_folder = SCRIPT_ROOT_DIR + os.sep + INSTALLER_OUTPUT_DIR + os.sep + SDK_NAME + '.app' + os.sep + 'Contents' + os.sep + 'Resources'
-    package_save_as_temp = package_save_as_folder + os.sep + os.path.basename(nib_archive_name)
-    print ' package_url: ' + nib_archive_name
-    print ' save as:     ' + package_save_as_temp
-
-    if not nib_archive_name == '':
-        print '    Downloading:            ' + nib_archive_name
-        print '           into:            ' + package_save_as_temp
-        res = bldinstallercommon.is_content_url_valid(nib_archive_name)
-        if not(res):
-            sys.stderr.write('*** Package URL is invalid: [' + nib_archive_name + ']')
-            sys.stderr.write('*** Abort!')
-            sys.exit(-1)
-        bldinstallercommon.retrieve_url(nib_archive_name, package_save_as_temp)
-
-    # extract contents
-    bldinstallercommon.extract_file(package_save_as_temp, package_save_as_folder)
-
     # create disk image
     cmd_args = ['hdiutil', 'create', '-srcfolder', \
                 os.path.join(SCRIPT_ROOT_DIR, INSTALLER_OUTPUT_DIR, SDK_NAME + '.app'), \
