@@ -643,6 +643,37 @@ def archive_submodules():
     print_wrap('---------------- Archiving submodules ------------------------------')
     bldinstallercommon.create_dirs(MODULE_ARCHIVE_DIR)
 
+    # Essentials
+    print_wrap('---------- Archiving essential modules')
+    if os.path.exists(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME):
+        # Archive the essential modules first
+        cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_essentials' + '.7z *'
+        run_in = os.path.normpath(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX)
+        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), run_in, True, True)
+
+        # Also archive docs in a separated qt5_docs.7z file
+        cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_docs' + '.7z *'
+        run_in = os.path.normpath(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX + os.sep + 'doc')
+        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), run_in, True, True)
+    else:
+        print_wrap(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> essentials not archived!')
+
+    # Add-ons
+    print_wrap('---------- Archiving add-on modules')
+    if os.path.exists(MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME):
+        cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_addons' + '.7z *'
+        run_in = os.path.normpath(MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX)
+        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), run_in, True, True)
+    else:
+        print_wrap(MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> add-ons not archived!')
+
+    print_wrap('---------------------------------------------------------------------')
+
+
+###############################
+# function
+###############################
+def patch_android_prl_files():
     ## QTBUG-33793
     # temporary solution for Android on Windows compilations
     if ANDROID_BUILD and bldinstallercommon.is_win_platform():
@@ -715,31 +746,21 @@ def archive_submodules():
                 print_wrap('*** Warning! Unable to locate ' + lib_path_final + ' directory')
         print_wrap('--->            String to remove : /opt/android/ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86/bin/../lib/gcc/arm-linux-androideabi/4.8/libgcc.a')
 
-    # Essentials
-    print_wrap('---------- Archiving essential modules')
-    if os.path.exists(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME):
-        # Archive the essential modules first
-        cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_essentials' + '.7z *'
-        run_in = os.path.normpath(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX)
-        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), run_in, True, True)
 
-        # Also archive docs in a separated qt5_docs.7z file
-        cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_docs' + '.7z *'
-        run_in = os.path.normpath(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX + os.sep + 'doc')
-        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), run_in, True, True)
-    else:
-        print_wrap(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> essentials not archived!')
-
-    # Add-ons
-    print_wrap('---------- Archiving add-on modules')
-    if os.path.exists(MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME):
-        cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_addons' + '.7z *'
-        run_in = os.path.normpath(MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX)
-        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), run_in, True, True)
-    else:
-        print_wrap(MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> add-ons not archived!')
-
-    print_wrap('---------------------------------------------------------------------')
+###############################
+# function
+###############################
+def patch_build():
+    # replace build directory paths in install_root locations
+    replace_build_paths(MAKE_INSTALL_ROOT_DIR)
+    # remove system specific paths from qconfig.pri
+    if not ANDROID_BUILD:
+        replace_system_paths()
+    if ANDROID_BUILD:
+        patch_android_prl_files()
+    # patch RPath if requested
+    if REPLACE_RPATH:
+        replace_rpath()
 
 
 ###############################
@@ -977,14 +998,8 @@ def main():
     # build docs and copy to essentials install dir
     if not ANDROID_BUILD:
         build_docs()
-    # replace build directory paths in install_root locations
-    replace_build_paths(MAKE_INSTALL_ROOT_DIR)
-    # remove system specific paths from qconfig.pri
-    if not ANDROID_BUILD:
-        replace_system_paths()
-    # patch RPath if requested
-    if REPLACE_RPATH:
-        replace_rpath()
+    # patch files after build
+    patch_build()
     # archive each submodule
     archive_submodules()
 
