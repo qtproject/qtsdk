@@ -767,7 +767,7 @@ def handle_installer_build(offline_installer_build):
         temp_path = '/online_installers/'
     # (2) copy all installers from 'installer_output_dir' into network disk
     # Crete remote directories
-    dest_dir = PATH + '/' + LICENSE + temp_path + TIME_STAMP + '-' + BUILD_NUMBER
+    dest_dir = PATH + '/' + LICENSE + temp_path + TIME_STAMP[:10] + '_' + BUILD_NUMBER
     latest_dir = PATH + '/' + LICENSE + temp_path + 'latest'
     create_remote_dirs(PKG_SERVER_ADDR, dest_dir)
     # Create remote dirs in Mirror Brain
@@ -776,7 +776,7 @@ def handle_installer_build(offline_installer_build):
         ext_server_base_url  = os.environ['EXT_SERVER_BASE_URL']
         ext_server_base_path = os.environ['EXT_SERVER_BASE_PATH']
         # mirror brain directories
-        ext_dest_dir = ext_server_base_path + '/snapshots/qt/' + QT_VERSION[:3] + '/' + QT_FULL_VERSION + '/' + TIME_STAMP + '-' + BUILD_NUMBER
+        ext_dest_dir = ext_server_base_path + '/snapshots/qt/' + QT_VERSION[:3] + '/' + QT_FULL_VERSION + '/' + TIME_STAMP[:10] + '_' + BUILD_NUMBER
         cmd_args_mkdir_pkg = [SSH_COMMAND, PKG_SERVER_ADDR]
         cmd_args_mkdir_ext = cmd_args_mkdir_pkg + ['ssh', ext_server_base_url, 'mkdir -p', ext_dest_dir]
         bldinstallercommon.do_execute_sub_process(cmd_args_mkdir_ext, SCRIPT_ROOT_DIR, True)
