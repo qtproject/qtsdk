@@ -174,14 +174,14 @@ repo_url_specifier:         mac_x64/desktop/qt5
 
 [release.520.repository.mac.x64.android]
 arg_configurations_file:    repository_configs_android_qt5/mac_x64_android_repository_520
-arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
+arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz
 repo_content_type:          520
 repo_components_to_update:  qt.520.*
 repo_url_specifier:         mac_x64/android/qt5
 
 [release.520.repository.mac.x64.ios]
 arg_configurations_file:    repository_configs_ios_qt5/mac_x64_ios_repository_520
-arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
+arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz
 repo_content_type:          520
 repo_components_to_update:  qt.520.*
 repo_url_specifier:         mac_x64/ios/qt5
