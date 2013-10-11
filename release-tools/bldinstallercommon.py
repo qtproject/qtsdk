@@ -234,7 +234,7 @@ def make_files_list(directory, rgxp):
     for root, dirs, files in os.walk(directory):
         for name in files:
             if regex.search(name):
-                path = os.path.join(root, name)
+                path = os.path.normpath(os.path.join(root, name))
                 filelist.append(path)
 
     return filelist[:]
