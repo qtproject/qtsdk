@@ -736,7 +736,9 @@ def patch_android_prl_files():
                     if os.path.isfile(prl_name_path):
                         for line in fileinput.FileInput(prl_name_path, inplace=1):
                             if line.startswith('QMAKE_PRL_LIBS'):
+                                line = line.replace(' /opt/android/ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86/bin/../lib/gcc/arm-linux-androideabi/4.8/libgcc.a', '')
                                 line = line.replace(' /opt/android/ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/../lib/gcc/arm-linux-androideabi/4.8/libgcc.a', '')
+                                line = line.replace(' /opt/android/ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/darwin-x86_64/bin/../lib/gcc/arm-linux-androideabi/4.8/libgcc.a', '')
                                 print line,
                             else:
                                 print line,
@@ -745,6 +747,8 @@ def patch_android_prl_files():
             else:
                 print_wrap('*** Warning! Unable to locate ' + lib_path_final + ' directory')
         print_wrap('--->            String to remove : /opt/android/ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86/bin/../lib/gcc/arm-linux-androideabi/4.8/libgcc.a')
+        print_wrap('--->            String to remove : /opt/android/ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/../lib/gcc/arm-linux-androideabi/4.8/libgcc.a')
+        print_wrap('--->            String to remove : /opt/android/ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/darwin-x86_64/bin/../lib/gcc/arm-linux-androideabi/4.8/libgcc.a')
 
 
 ###############################
