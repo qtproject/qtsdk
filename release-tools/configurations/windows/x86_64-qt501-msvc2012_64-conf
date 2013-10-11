@@ -56,19 +56,19 @@ target_install_dir:     /
 rpath_target:
 archive_name:           msvc2012_64_essentials.7z
 [icu_49_release.win_64]
-archive_uri:            http://origin.releases.qt-project.org/prebuilt/msvc2012/icu_49_vs2012_64_release.7z
+archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/msvc2012/icu_49_vs2012_64_release.7z
 package_strip_dirs:     0
 target_install_dir:     /bin
 rpath_target:
 archive_name:           icu_49_vs2012_64_release.7z
 [icu_49_debug.win_64]
-archive_uri:            http://origin.releases.qt-project.org/prebuilt/msvc2012/icu_49_vs2012_64_debug.7z
+archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/msvc2012/icu_49_vs2012_64_debug.7z
 package_strip_dirs:     0
 target_install_dir:     /bin
 rpath_target:
 archive_name:           icu_49_vs2012_64_debug.7z
 [msvc2012_64.essentials.d3d_compiler_46.x64]
-archive_uri:            http://origin.releases.qt-project.org/prebuilt/msvc2012/d3dcompiler_46_64.dll.7z
+archive_uri:            http://download.qt-project.org/development_releases/prebuilt/d3dcompiler/msvc2012/d3dcompiler_46_64.dll.7z
 package_strip_dirs:     0
 target_install_dir:     /bin
 rpath_target:

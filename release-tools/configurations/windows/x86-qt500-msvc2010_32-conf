@@ -56,13 +56,13 @@ target_install_dir:     /
 rpath_target:
 archive_name:           msvc2010_essentials.7z
 [icu_49.win_32]
-archive_uri:            http://origin.releases.qt-project.org/prebuilt/icu_49_win_32.7z
+archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/msvc2010/icu_49_win_32.7z
 package_strip_dirs:     0
 target_install_dir:     /bin
 rpath_target:
 archive_name:           icu_49_win_32.7z
 [win32_msvc2010.essentials.d3d_compiler_43.x86]
-archive_uri:            http://origin.releases.qt-project.org/prebuilt/D3DCompiler_43-x86.dll.7z
+archive_uri:            http://download.qt-project.org/development_releases/prebuilt/d3dcompiler/msvc2010/D3DCompiler_43-x86.dll.7z
 package_strip_dirs:     0
 target_install_dir:     /bin
 rpath_target:
