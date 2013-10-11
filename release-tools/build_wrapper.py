@@ -700,7 +700,7 @@ def handle_qt_creator_build():
             linux_bits = '64'
             linux_arch = 'x86_64'
         cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator-installer-archive.7z',
-            PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_linux_gcc_' + linux_bits + '64_ubuntu1110.7z']
+            PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_linux_gcc_' + linux_bits + '_ubuntu1110.7z']
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
         cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator.run',
             PKG_SERVER_ADDR + ':' + dir_path + '/qt-creator-linux-' + linux_arch + '-' + LICENSE + postfix + '.run']
