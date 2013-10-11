@@ -536,6 +536,7 @@ def replace_build_paths(path_to_checked):
                                 print line.rstrip('\n')
     print_wrap('--------------------------------------------------------------------')
 
+
 ###############################
 # function
 ###############################
@@ -761,6 +762,8 @@ def patch_build():
     # remove system specific paths from qconfig.pri
     if not ANDROID_BUILD:
         replace_system_paths()
+    # fix qmake prl build fir references
+    erase_qmake_prl_build_dir()
     if ANDROID_BUILD:
         patch_android_prl_files()
     # patch RPath if requested
@@ -802,6 +805,26 @@ def patch_icu_paths(search_path):
             print formatted_line.rstrip('\n')
         if match:
             print_wrap('Items erased: ' + str(match))
+
+
+###############################
+# function
+###############################
+def erase_qmake_prl_build_dir():
+    print_wrap('--- Fix .prl files ---')
+    # fetch all .prl files
+    file_list = bldinstallercommon.make_files_list(MAKE_INSTALL_ROOT_DIR, '\\.prl')
+    # erase lines starting with 'QMAKE_PRL_BUILD_DIR' from .prl files
+    for item in file_list:
+        found = False
+        for line in fileinput.FileInput(item, inplace = 1):
+            if line.startswith('QMAKE_PRL_BUILD_DIR'):
+                found = True
+                print ''
+            else:
+                print line,
+        if found:
+            print_wrap('Erased \'QMAKE_PRL_BUILD_DIR\' from: ' + item)
 
 
 ###############################
