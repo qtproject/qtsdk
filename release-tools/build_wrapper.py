@@ -148,6 +148,14 @@ def sanity_check_packaging_server():
         print('*** Error - Packaging server address (PKG_SERVER_ADDR) not defined?')
         sys.exit(-1)
 
+###############################
+# sign windows executable
+###############################
+def sign_windows_executable(file_path, working_dir, abort_on_fail):
+    cmd_args = ['C:\Utils\sign\signtool.exe', 'sign', '/v', '/du', os.environ['SIGNING_SERVER'], '/p', os.environ['SIGNING_PASSWORD'],
+        '/t', 'http://timestamp.verisign.com/scripts/timestamp.dll', '/f', 'C:\utils\sign\keys.pfx', file_path]
+    bldinstallercommon.do_execute_sub_process(cmd_args, working_dir, abort_on_fail)
+
 
 ###############################
 # init_qt_build_cycle
@@ -709,15 +717,20 @@ def handle_qt_creator_build():
             PKG_SERVER_ADDR + ':' + dir_path + '/qt-creator-linux-' + linux_arch + '-' + LICENSE + postfix + '.run']
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
     elif bldinstallercommon.is_mac_platform():
-        cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator-installer-archive.7z', PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_mac_cocoa_10_7.7z']
+        cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator-installer-archive.7z',
+            PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_mac_cocoa_10_7.7z']
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
-        cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator.dmg', PKG_SERVER_ADDR + ':' + dir_path + '/qt-creator-mac-' + LICENSE + postfix + '.dmg']
+        cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator.dmg',
+            PKG_SERVER_ADDR + ':' + dir_path + '/qt-creator-mac-' + LICENSE + postfix + '.dmg']
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
-        cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator-installer.dmg', PKG_SERVER_ADDR + ':' + dir_path + '/qt-creator-mac-' + LICENSE + postfix + '-installer.dmg']
+        cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator-installer.dmg',
+            PKG_SERVER_ADDR + ':' + dir_path + '/qt-creator-mac-' + LICENSE + postfix + '-installer.dmg']
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
     else:
-        cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator-installer-archive.7z', PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_windows_vs2010_32.7z']
+        cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator-installer-archive.7z',
+            PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_windows_vs2010_32.7z']
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
+        sign_windows_executable('qt-creator_build/qt-creator.exe', WORK_DIR, True)
         cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator.exe', PKG_SERVER_ADDR + ':' + dir_path + '/qt-creator-windows-' + LICENSE + postfix + '.exe']
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
 
@@ -827,14 +840,7 @@ def handle_installer_build(offline_installer_build):
                 installer_name = file_name
                 installer_name_base = os.path.splitext(file_name)[0]
                 installer_name_final = installer_name_base + '_' + TIME_STAMP + '-' + BUILD_NUMBER + '.exe'
-                if LICENSE == 'opensource':
-                    cmd_args = ['C:\Utils\sign\signtool.exe', 'sign', '/v', '/du', os.environ['SIGNING_SERVER'], '/p', os.environ['SIGNING_PASSWORD'], '/t', 'http://timestamp.verisign.com/scripts/timestamp.dll', '/f', 'C:\utils\sign\keys.pfx', installer_name]
-                elif LICENSE == 'enterprise':
-                    cmd_args = ['C:\Utils\sign\signtool.exe', 'sign', '/v', '/du', os.environ['SIGNING_SERVER'], '/p', os.environ['SIGNING_PASSWORD'], '/t', 'http://timestamp.verisign.com/scripts/timestamp.dll', '/f', 'C:\utils\sign\keys.pfx', installer_name]
-                else:
-                    print('*** License unknown: {0}'.format(LICENSE))
-                    sys.exit(-1)
-                bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
+                sign_windows_executable(installer_name, installer_output_dir, True)
                 # copy installer to internal server
                 cmd_args = [SCP_COMMAND, installer_name, PKG_SERVER_ADDR + ':' + dest_dir + '/' + installer_name_final]
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
