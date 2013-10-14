@@ -45,7 +45,7 @@ version:                5.2.0
 version_tag:            %QT_VERSION%
 
 [qt.520.gcc_64.essentials]
-archives:               520.gcc_64.essentials, 520.gcc_64.icu_51, 520.gcc_64.essentials.icu_path_patcher
+archives:               520.gcc_64.essentials, 520.gcc_64.icu_51
 target_install_base:    /@QT_VERSION@/gcc_64
 version:                5.2.0
 version_tag:            %QT_VERSION%
@@ -62,14 +62,9 @@ package_strip_dirs:     0
 target_install_dir:     /lib
 rpath_target:
 archive_name:           icu_51_1_ubuntu_11_10_64.7z
-[520.gcc_64.essentials.icu_path_patcher]
-archive_uri:            patcher.sh
-package_strip_dirs:     0
-target_install_dir:     /
-archive_name:           icu_path_patcher.sh.7z
 
 [qt.520.gcc_64.addons]
-archives:               520.gcc_64.addons, 520.gcc_64.addons.icu_path_patcher
+archives:               520.gcc_64.addons
 target_install_base:    /@QT_VERSION@/gcc_64
 version:                5.2.0
 version_tag:            %QT_VERSION%
@@ -80,8 +75,3 @@ package_strip_dirs:
 target_install_dir:     /
 rpath_target:           /lib
 archive_name:           gcc_64_qt5_addons.7z
-[520.gcc_64.addons.icu_path_patcher]
-archive_uri:            patcher.sh
-package_strip_dirs:     0
-target_install_dir:     /
-archive_name:           icu_path_patcher.sh.7z

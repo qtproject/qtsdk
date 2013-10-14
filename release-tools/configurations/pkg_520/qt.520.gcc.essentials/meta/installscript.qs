@@ -58,15 +58,6 @@ Component.prototype.createOperations = function()
         var qmakeBinary = "@TargetDir@" + "%TARGET_INSTALL_DIR%/bin/qmake";
         addInitQtPatchOperation(component, "linux", qtPath, qmakeBinary, "qt5");
 
-        try {
-            // patch Qt binaries
-            var path = installer.value("TargetDir") + "%TARGET_INSTALL_DIR%";
-            var script = path + "/patcher.sh";
-            component.addOperation("Execute", "{0}", "/bin/bash", script, path);
-            component.addOperation("Execute", "{0}", "/bin/rm", script);
-        } catch( e ) {
-            print( e );
-        }
         if (installer.value("SDKToolBinary") == "")
             return;
 

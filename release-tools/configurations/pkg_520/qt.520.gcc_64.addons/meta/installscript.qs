@@ -53,18 +53,6 @@ Component.prototype.createOperations = function()
                             "@TargetDir@" + "%TARGET_INSTALL_DIR%",
                             "QmakeOutputInstallerKey=" + qmakeOutputInstallerKey(component),
                             "qt5");
-
-    if (installer.value("os") == "x11") {
-        try {
-            // patch Qt binaries
-            var path = installer.value("TargetDir") + "%TARGET_INSTALL_DIR%";
-            var script = path + "/patcher.sh";
-            component.addOperation("Execute", "{0}", "/bin/bash", script, path);
-            component.addOperation("Execute", "{0}", "/bin/rm", script);
-        } catch( e ) {
-            print( e );
-        }
-    }
 }
 
 
