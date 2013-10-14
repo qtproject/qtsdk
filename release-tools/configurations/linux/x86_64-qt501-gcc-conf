@@ -57,7 +57,7 @@ target_install_dir:     /
 rpath_target:           /lib
 archive_name:           gcc_64_qt5_essentials.7z
 [501.gcc_64.icu]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/libicu_x86_64_ubuntu1110.7z
+archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/ubuntu1110/libicu_x86_64_ubuntu1110.7z
 package_strip_dirs:     0
 target_install_dir:     /lib
 rpath_target:
