@@ -1,1 +1,1 @@
--opensource -confirm-license -release -nomake tests -nomake examples -sdk iphoneos6.1 -qt-zlib -qt-libjpeg -qt-libpng -no-pkg-config -xplatform macx-ios-clang -no-sql-mysql
+-opensource -confirm-license -release -nomake tests -nomake examples -sdk iphoneos -qt-zlib -qt-libjpeg -qt-libpng -no-pkg-config -xplatform macx-ios-clang -no-sql-mysql
