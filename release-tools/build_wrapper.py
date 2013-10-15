@@ -955,6 +955,33 @@ def copy_license_checkers():
 
     os.chdir(SCRIPT_ROOT_DIR)
 
+
+###############################
+# publish_src_packages
+###############################
+def publish_src_packages():
+    # Mirror Brain server address and path
+    ext_server_base_url  = os.environ['EXT_SERVER_BASE_URL']
+    ext_server_base_path = os.environ['EXT_SERVER_BASE_PATH']
+
+    ext_dest_dir = ext_server_base_path + '/snapshots/qt/' + QT_VERSION[:3] + '/' + QT_FULL_VERSION + '/' + TIME_STAMP[:10] + '_' + BUILD_NUMBER
+
+    # copy source packages to public server
+    if LICENSE == 'opensource':
+        # create source directories
+        cmd_args_mkdir_src_pkg = [SSH_COMMAND, PKG_SERVER_ADDR]
+        cmd_args_mkdir_src_ext = cmd_args_mkdir_src_pkg + ['ssh', ext_server_base_url, 'mkdir', '-p', ext_dest_dir + '/' + 'single']
+        bldinstallercommon.do_execute_sub_process(cmd_args_mkdir_src_ext, SCRIPT_ROOT_DIR, True)
+        cmd_args_mkdir_src_ext = cmd_args_mkdir_src_pkg + ['ssh', ext_server_base_url, 'mkdir', '-p', ext_dest_dir + '/' + 'submodules']
+        bldinstallercommon.do_execute_sub_process(cmd_args_mkdir_src_ext, SCRIPT_ROOT_DIR, True)
+        # copy the source packages to the remove directory
+        cmd_args_copy_src_to_pkg = [SSH_COMMAND, PKG_SERVER_ADDR]
+        cmd_args_copy_src_to_ext = cmd_args_copy_src_to_pkg + ['scp', '-r', LATEST_DIR + '/' + 'src/single/*', ext_server_base_url + ':' + ext_dest_dir + '/' + 'single']
+        bldinstallercommon.do_execute_sub_process(cmd_args_copy_src_to_ext, SCRIPT_ROOT_DIR, True)
+        cmd_args_copy_src_to_ext = cmd_args_copy_src_to_pkg + ['scp', '-r', LATEST_DIR + '/' + 'src/submodules/*', ext_server_base_url + ':' + ext_dest_dir + '/' + 'submodules']
+        bldinstallercommon.do_execute_sub_process(cmd_args_copy_src_to_ext, SCRIPT_ROOT_DIR, True)
+
+
 ###############################
 # create_remote_dirs
 ###############################
@@ -967,7 +994,7 @@ def create_remote_dirs(server, dir_path):
 # sanity check command line options
 ###############################
 def sanity_check_options(options):
-    if not options.command in ['init', 'build_src', 'build_bin', 'offline_installer', 'ifw', 'build_creator', 'repo_build', 'online_installer']:
+    if not options.command in ['init', 'build_src', 'build_bin', 'offline_installer', 'ifw', 'build_creator', 'repo_build', 'online_installer', 'publish_src_packages']:
         return False
     if options.command == 'repo_build':
         if len(sys.argv) < 4:
@@ -1137,6 +1164,8 @@ def main():
         handle_offline_installer_build()
     elif COMMAND == 'online_installer':
         handle_online_installer_build()
+    elif COMMAND == 'publish_src_packages':
+        publish_src_packages()
     else:
         print('Unsupported command')
 
