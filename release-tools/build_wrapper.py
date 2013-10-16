@@ -212,8 +212,20 @@ def handle_ifw_build():
         cmd_args += ['--product_key_checker_url=' + WORK_DIR + '/qtsdk-enterprise/productkeycheck/qt_product_key_checker.pri']
     # execute
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
-    #create destination dirs
+
+    ## create destination dirs
+    # internal
     create_remote_dirs(PKG_SERVER_ADDR, PATH + '/' + LICENSE + '/ifw/' + ifw_branch)
+    # public
+    if LICENSE == 'opensource':
+        # public server address and path
+        ext_server_base_url  = os.environ['EXT_SERVER_BASE_URL']
+        ext_server_base_path = os.environ['EXT_SERVER_BASE_PATH']
+        # public server directories
+        ext_dest_dir = ext_server_base_path + '/snapshots/ifw/' + ifw_branch + '/' + TIME_STAMP[:10] + '_' + BUILD_NUMBER
+        cmd_args_mkdir_pkg = [SSH_COMMAND, PKG_SERVER_ADDR]
+        cmd_args_mkdir_ext = cmd_args_mkdir_pkg + ['ssh', ext_server_base_url, 'mkdir', '-p', ext_dest_dir]
+        bldinstallercommon.do_execute_sub_process(cmd_args_mkdir_ext, SCRIPT_ROOT_DIR, True)
 
     if bldinstallercommon.is_win_platform():
         file_list = os.listdir(SCRIPT_ROOT_DIR+'/' + INSTALLER_BUILD_OUTPUT_DIR)
@@ -224,6 +236,12 @@ def handle_ifw_build():
     else:
         cmd_args = ['rsync', '-r', './', PKG_SERVER_ADDR + ':' + PATH + '/' + LICENSE + '/ifw/' + ifw_branch + '/']
         bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + '/' + INSTALLER_BUILD_OUTPUT_DIR, True)
+
+    # copy ifw snapshot to public server
+    if LICENSE == 'opensource':
+        cmd_args_copy_ifw_pkg = [SSH_COMMAND, PKG_SERVER_ADDR]
+        cmd_args_copy_ifw_ext = cmd_args_copy_ifw_pkg + ['scp', PATH + '/' + LICENSE + '/ifw/' + ifw_branch + '/' + 'installer-framework-build*.7z', ext_server_base_url + ':' + ext_dest_dir]
+        bldinstallercommon.do_execute_sub_process(cmd_args_copy_ifw_ext, SCRIPT_ROOT_DIR, True)
 
 
 ###############################
