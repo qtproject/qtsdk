@@ -44,9 +44,7 @@
 
 import os
 import sys
-import shutil
 import re
-import datetime
 
 
 ##############################################################
@@ -67,28 +65,26 @@ def replace_key(qmake_file_name, key, new_value):
         print '*** Length for the given new value was: ' + str(len(new_value))
         return False
 
-    f = open(qmake_file_name, 'rb+')
+    filename = open(qmake_file_name, 'rb+')
     text = ''
     while True:
-        temp = f.read()
+        temp = filename.read()
         if not temp or len(temp) == 0:
             break
         text = text + temp
-    full_length = len(text)
-    m = re.search(key + '=', text)
-    if not m:
+    mkey = re.search(key + '=', text)
+    if not mkey:
         print '*** Given key not found: ' + key
         print '*** Abort!'
         return False
-    end_index = m.end()
-    remaining_max_length = full_length - end_index
+    end_index = mkey.end()
     read_reamaining_offset = end_index + len(new_value) + 1
     replacement_text = text[0:end_index] + new_value + '\0' + text[read_reamaining_offset:]
 
-    f.seek(0)
-    f.write(replacement_text)
-    f.truncate()
-    f.close()
+    filename.seek(0)
+    filename.write(replacement_text)
+    filename.truncate()
+    filename.close()
     return
 
 
@@ -103,23 +99,23 @@ def fetch_key(qmake_file_name, key):
         print '*** Given key empty! '
         return False
 
-    f = open(qmake_file_name, 'rb')
+    filename = open(qmake_file_name, 'rb')
     text = ''
     while True:
-        temp = f.read()
+        temp = filename.read()
         if not temp or len(temp) == 0:
             break
         text = text + temp
         print 'got text'
 
-    f.close()
+    filename.close()
 
-    m = re.search(key + '=', text)
-    if not m:
+    mkey = re.search(key + '=', text)
+    if not mkey:
         print '*** Could not find given key: ' + key
         print '*** From: ' + qmake_file_name
         return ''
-    end_index = m.end()
+    end_index = mkey.end()
 
     text = text[end_index:]
     end_index_2 = re.search('\0', text)
@@ -135,8 +131,7 @@ if __name__ == "__main__":
         print '*** Three parameters needed!'
         print '*** Abort!'
         sys.exit(-1)
-    key = fetch_key(sys.argv[1], sys.argv[2])
-    print key
+    print fetch_key(sys.argv[1], sys.argv[2])
     replace_key(sys.argv[1], sys.argv[2], sys.argv[3])
     sys.exit(0)
 
