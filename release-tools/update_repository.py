@@ -44,9 +44,7 @@
 from __future__ import print_function
 import sys
 import os
-import platform
 import argparse
-import shutil
 from time import gmtime, strftime
 import bldinstallercommon
 
@@ -301,48 +299,48 @@ def parse_components_from_argument(caller_arguments):
 if __name__ == "__main__":
     # init things
     bldinstallercommon.init_common_module(ROOT_DIR)
-    parser = setup_argument_parser()
+    PARSER = setup_argument_parser()
     # parse args
-    caller_arguments = parser.parse_args()
+    CALLER_ARGUMENTS = PARSER.parse_args()
     # check if first time usage!
     # 1) target repository directory must be empty i.e. we initialize things for the first time
     # 2) copy the source repository as target repository 1:1 and nothing else
-    if caller_arguments.source_repo:
-        if not os.path.isdir(caller_arguments.source_repo) or not os.path.isfile(os.path.join(caller_arguments.source_repo, 'Updates.xml')):
+    if CALLER_ARGUMENTS.source_repo:
+        if not os.path.isdir(CALLER_ARGUMENTS.source_repo) or not os.path.isfile(os.path.join(CALLER_ARGUMENTS.source_repo, 'Updates.xml')):
             print('*** The given source directory does not seem to be proper repository? Abort!')
-            print('Given source repository: {0}'.format(caller_arguments.source_repo))
+            print('Given source repository: {0}'.format(CALLER_ARGUMENTS.source_repo))
             sys.exit(-1)
-        if os.path.isfile(os.path.join(caller_arguments.target_repo, 'Updates.xml')):
+        if os.path.isfile(os.path.join(CALLER_ARGUMENTS.target_repo, 'Updates.xml')):
             print('The given destination directory already contains a repository.')
             print('We just update the existing repository:')
-            print('Given target repository: {0}'.format(caller_arguments.target_repo))
+            print('Given target repository: {0}'.format(CALLER_ARGUMENTS.target_repo))
         else:
             print('Initializing the repository for the first time!')
             # create dirs
-            bldinstallercommon.create_dirs(caller_arguments.target_repo)
+            bldinstallercommon.create_dirs(CALLER_ARGUMENTS.target_repo)
             # copy repository
-            bldinstallercommon.copy_tree(caller_arguments.source_repo, caller_arguments.target_repo)
+            bldinstallercommon.copy_tree(CALLER_ARGUMENTS.source_repo, CALLER_ARGUMENTS.target_repo)
             # everything done now!
             print('Repository initialized:')
-            print('Source:      {0}'.format(caller_arguments.source_repo))
-            print('Destination: {0}'.format(caller_arguments.target_repo))
+            print('Source:      {0}'.format(CALLER_ARGUMENTS.source_repo))
+            print('Destination: {0}'.format(CALLER_ARGUMENTS.target_repo))
             sys.exit()
     # fetch tools
-    fetch_repogen_tools(caller_arguments.repogen_tools)
+    fetch_repogen_tools(CALLER_ARGUMENTS.repogen_tools)
     # components to update
-    components_to_update = []
-    if not caller_arguments.components_to_update or caller_arguments.components_to_update == '':
+    COMPONENTS_TO_UPDATE = []
+    if not CALLER_ARGUMENTS.components_to_update or CALLER_ARGUMENTS.components_to_update == '':
         # ask user which components to update
-        components_to_update = ask_for_components(caller_arguments.source_pkg)
+        COMPONENTS_TO_UPDATE = ask_for_components(CALLER_ARGUMENTS.source_pkg)
     else:
-        components_to_update = parse_components_from_argument(caller_arguments)
+        COMPONENTS_TO_UPDATE = parse_components_from_argument(CALLER_ARGUMENTS)
     # sanity check
-    sanity_check(components_to_update, caller_arguments.source_pkg)
+    sanity_check(COMPONENTS_TO_UPDATE, CALLER_ARGUMENTS.source_pkg)
     # backup current repo
-    if caller_arguments.backup_base_dir:
-        backup_repo(caller_arguments.backup_base_dir, caller_arguments.target_repo)
+    if CALLER_ARGUMENTS.backup_base_dir:
+        backup_repo(CALLER_ARGUMENTS.backup_base_dir, CALLER_ARGUMENTS.target_repo)
     # update repo
-    update_repository(caller_arguments.source_pkg, caller_arguments.target_repo, components_to_update)
+    update_repository(CALLER_ARGUMENTS.source_pkg, CALLER_ARGUMENTS.target_repo, COMPONENTS_TO_UPDATE)
     print('\nRepository updated successfully!')
 
 
