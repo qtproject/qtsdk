@@ -185,6 +185,13 @@ registerWindowsFileTypeExtensions = function()
                             component.qtCreatorBinaryPath + ",6",
                             "ProgId=QtProject.QtCreator.pri");
     component.addOperation( "RegisterFileType",
+                            "qbs",
+                            component.qtCreatorBinaryPath + " -client '%1'",
+                            "Qbs Project file",
+                            "text/plain",
+                            component.qtCreatorBinaryPath + ",5",
+                            "ProgId=QtProject.QtCreator.qbs");
+    component.addOperation( "RegisterFileType",
                             "qs",
                             component.qtCreatorBinaryPath + " -client '%1'",
                             "Qt Script file",
@@ -196,7 +203,7 @@ registerWindowsFileTypeExtensions = function()
                             component.qtCreatorBinaryPath + " -client '%1'",
                             "Qt Quick Markup language file",
                             "text/plain",
-                            component.qtCreatorBinaryPath + ",0",
+                            component.qtCreatorBinaryPath + ",7",
                             "ProgId=QtProject.QtCreator.qml");
 }
 
@@ -225,7 +232,7 @@ Component.prototype.createOperations = function()
         component.addOperation( "InstallIcons", path + "share" + native_path_separator + "icons" );
         component.addOperation( "CreateDesktopEntry",
                                 "DigiaQtOpenSource-qtcreator.desktop",
-                                "Type=Application\nExec=" + component.qtCreatorBinaryPath + "\nPath=@homeDir@\nName=Qt Creator (Opensource)\nGenericName=The IDE of choice for Qt development.\nIcon=QtProject-qtcreator\nTerminal=false\nCategories=Development;IDE;Qt;\nMimeType=text/x-c++src;text/x-c++hdr;text/x-xsrc;application/x-designer;application/vnd.qt.qmakeprofile;application/vnd.qt.xml.resource;");
+                                "Type=Application\nExec=" + component.qtCreatorBinaryPath + "\nPath=@homeDir@\nName=Qt Creator (Opensource)\nGenericName=The IDE of choice for Qt development.\nIcon=QtProject-qtcreator\nTerminal=false\nCategories=Development;IDE;Qt;\nMimeType=text/x-c++src;text/x-c++hdr;text/x-xsrc;application/x-designer;application/vnd.qt.qmakeprofile;application/vnd.qt.xml.resource;text/x-qml;text/x-qt.qml;text/x-qt.qbs;");
     }
     if (installer.value("os") == "mac")
     {
