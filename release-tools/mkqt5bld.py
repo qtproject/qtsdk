@@ -645,6 +645,19 @@ def archive_submodules():
     print_wrap('---------------- Archiving submodules ------------------------------')
     bldinstallercommon.create_dirs(MODULE_ARCHIVE_DIR)
 
+    # temporary solution for Android on Windows compilations
+    if ANDROID_BUILD and bldinstallercommon.is_win_platform():
+        print_wrap('---------- Archiving Qt modules')
+        install_path = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
+        install_path = 'C' + install_path[1:]
+        if os.path.exists(install_path):
+            cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_essentials' + '.7z *'
+            run_in = os.path.normpath(install_path + os.sep + INSTALL_PREFIX)
+            bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), run_in, True, True)
+        else:
+            print_wrap(install_path + os.sep + SINGLE_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> Qt not archived!')
+        return
+
     # Essentials
     print_wrap('---------- Archiving essential modules')
     if os.path.exists(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME):
@@ -708,21 +721,16 @@ def patch_android_prl_files():
         else:
             print_wrap('*** Warning! Unable to locate \\lib directory under: ' + install_path + os.sep + INSTALL_PREFIX)
 
-        ## archive Qt modules for Android on Windows
-        print_wrap('---------- Archiving Qt modules')
-        if os.path.exists(install_path):
-            cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_essentials' + '.7z *'
-            run_in = os.path.normpath(install_path + os.sep + INSTALL_PREFIX)
-            bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), run_in, True, True)
-        else:
-            print_wrap(install_path + os.sep + SINGLE_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> Qt not archived!')
-        return
-
     ## QTBUG-33660
     # remove references to absolute path of the NDK on the build machine
-    if ANDROID_BUILD and not bldinstallercommon.is_win_platform():
+    if ANDROID_BUILD:
         install_path_essent = MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME
         install_path_addons = MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME
+        # temporary solution for Android on Windows compilations
+        if bldinstallercommon.is_win_platform():
+            install_path_essent = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
+            install_path_essent = 'C' + install_path[1:]
+
         # find the lib directory under the install directory for essentials and addons
         lib_path_essent = os.path.normpath(install_path_essent + os.sep + INSTALL_PREFIX + os.sep + 'lib')
         lib_path_addons = os.path.normpath(install_path_addons + os.sep + INSTALL_PREFIX + os.sep + 'lib')
@@ -741,6 +749,7 @@ def patch_android_prl_files():
                                 line = line.replace(' /opt/android/ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86/bin/../lib/gcc/arm-linux-androideabi/4.8/libgcc.a', '')
                                 line = line.replace(' /opt/android/ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/../lib/gcc/arm-linux-androideabi/4.8/libgcc.a', '')
                                 line = line.replace(' /opt/android/ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/darwin-x86_64/bin/../lib/gcc/arm-linux-androideabi/4.8/libgcc.a', '')
+                                line = line.replace(' c:/utils/android/ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/windows/bin/../lib/gcc/arm-linux-androideabi/4.8/libgcc.a', '')
                                 print line,
                             else:
                                 print line,
@@ -751,6 +760,7 @@ def patch_android_prl_files():
         print_wrap('--->            String to remove : /opt/android/ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86/bin/../lib/gcc/arm-linux-androideabi/4.8/libgcc.a')
         print_wrap('--->            String to remove : /opt/android/ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/../lib/gcc/arm-linux-androideabi/4.8/libgcc.a')
         print_wrap('--->            String to remove : /opt/android/ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/darwin-x86_64/bin/../lib/gcc/arm-linux-androideabi/4.8/libgcc.a')
+        print_wrap('--->            String to remove : c:/utils/android/ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/windows/bin/../lib/gcc/arm-linux-androideabi/4.8/libgcc.a')
 
 
 ###############################
