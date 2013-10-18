@@ -274,7 +274,7 @@ def build_qt(options):
     # configure first
     print('--------------------------------------------------------------------')
     print('Configuring Qt')
-    configure_options = re.sub(' +',' ', options.qt_configure_options)
+    configure_options = re.sub(' +', ' ', options.qt_configure_options)
     cmd_args = options.qt_configure_bin + ' ' + configure_options
     # shlex does not like backslashes
     cmd_args = cmd_args.replace('\\', '/')
@@ -418,7 +418,7 @@ def archive_installerbase(options):
         bldinstallercommon.create_dirs(bin_temp)
         shutil.copy(bin_path, bin_temp + os.sep + 'SDKMaintenanceToolBase.exe')
         cmd_args_archive = ['7z', 'a', options.installer_base_archive_name, bin_temp]
-        cmd_args_clean = ['rmdir' ,'/q/s', bin_temp]
+        cmd_args_clean = ['rmdir' , '/q/s', bin_temp]
     bldinstallercommon.do_execute_sub_process(cmd_args_archive, ROOT_DIR, True)
     bldinstallercommon.do_execute_sub_process(cmd_args_clean, ROOT_DIR, True)
     if not os.path.isfile(options.installer_base_archive_name):
@@ -466,20 +466,20 @@ def archive_macdeployqt(options):
 if __name__ == "__main__":
     # init things
     bldinstallercommon.init_common_module(ROOT_DIR)
-    parser = setup_argument_parser()
+    PARSER = setup_argument_parser()
     # parse args
-    caller_arguments = parser.parse_args()
+    CALLER_ARGUMENTS = PARSER.parse_args()
     # create options object
-    options=IfwOptions(caller_arguments.qt_archive_uri,
-                       caller_arguments.qt_configure_options,
-                       caller_arguments.ifw_url,
-                       caller_arguments.ifw_branch,
-                       caller_arguments.ifw_qmake_args,
-                       caller_arguments.product_key_checker_url,
-                       caller_arguments.product_key_checker_branch,
-                       caller_arguments.openssl_dir
-                       )
+    OPTIONS = IfwOptions(CALLER_ARGUMENTS.qt_archive_uri,
+                         CALLER_ARGUMENTS.qt_configure_options,
+                         CALLER_ARGUMENTS.ifw_url,
+                         CALLER_ARGUMENTS.ifw_branch,
+                         CALLER_ARGUMENTS.ifw_qmake_args,
+                         CALLER_ARGUMENTS.product_key_checker_url,
+                         CALLER_ARGUMENTS.product_key_checker_branch,
+                         CALLER_ARGUMENTS.openssl_dir
+                        )
     # build ifw tools
-    build_ifw(options)
+    build_ifw(OPTIONS)
 
 
