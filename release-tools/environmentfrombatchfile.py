@@ -57,9 +57,10 @@ import os
 #        return False
 #    return True
 
-def consume(iter):
+def consume(iterator):
     try:
-        while True: next(iter)
+        while True:
+            next(iterator)
     except StopIteration:
         pass
 
@@ -92,10 +93,8 @@ def get(env_cmd, initial = None, arguments = None):
     lines = proc.stdout
     # consume whatever output occurs until the tag is reached
     consume(itertools.takewhile(lambda line: tag not in line, lines))
-    # define a way to handle each KEY=VALUE line
-    handle_line = lambda line: line.rstrip().split('=',1)
     # parse key/values into pairs
-    pairs = (line.rstrip().split('=',1) for line in lines)
+    pairs = (line.rstrip().split('=', 1) for line in lines)
     # make sure the pairs are valid
     valid_pairs = (pair for pair in pairs if len(pair) == 2)
     # construct a dictionary of the pairs
