@@ -47,25 +47,24 @@ from __future__ import print_function
 import argparse # commandline argument parser
 import multiprocessing
 import os
-import stat
 import sys
 from urlparse import urlparse
 
 # own imports
-from threadedwork import *
-from bld_utils import *
+from threadedwork import Task, ThreadedWork
+from bld_utils import download, removeDir, runCommand, stripVars
 import bldinstallercommon
 
 SCRIPT_ROOT_DIR             = os.path.dirname(os.path.realpath(__file__))
 
-def createDownloadExtract7zTask(url, targetPath, tempPath, callerArguments):
+def createDownloadExtract7zTask(url, target_path, temp_path, caller_arguments):
     fileNameFromUrl = os.path.basename(urlparse(url).path)
-    sevenzipFile = os.path.join(tempPath, fileNameFromUrl)
-    downloadExtract7zTask = Task("download {0} to {1} and extract it to {2}".format(url, sevenzipFile, targetPath))
+    sevenzipFile = os.path.join(temp_path, fileNameFromUrl)
+    downloadExtract7zTask = Task("download {0} to {1} and extract it to {2}".format(url, sevenzipFile, target_path))
 
     downloadExtract7zTask.addFunction(download, url, sevenzipFile)
     downloadExtract7zTask.addFunction(runCommand, "7z x -y {0} -o{1}".format(
-        sevenzipFile, targetPath), tempPath, callerArguments)
+        sevenzipFile, target_path), temp_path, caller_arguments)
     return downloadExtract7zTask
 
 # install an argument parser
@@ -144,15 +143,15 @@ tempPath = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '
 # clone application repo
 if callerArguments.application_url != '':
     bldinstallercommon.init_common_module(os.getcwd())
-    bldinstallercommon.create_dirs(os.path.join(os.path.dirname(__file__),"..",os.environ['APPLICATION_NAME']))
-    bldinstallercommon.clone_repository(callerArguments.application_url, callerArguments.application_branch, os.path.join(os.path.dirname(__file__),"..",os.environ['APPLICATION_NAME']))
+    bldinstallercommon.create_dirs(os.path.join(os.path.dirname(__file__), "..", os.environ['APPLICATION_NAME']))
+    bldinstallercommon.clone_repository(callerArguments.application_url, callerArguments.application_branch, os.path.join(os.path.dirname(__file__), "..", os.environ['APPLICATION_NAME']))
     qtApplicationSourceDirectory = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', os.environ['APPLICATION_NAME']))
-elif callerArguments.application7z !='':
+elif callerArguments.application7z != '':
     myGetQtEnginio = ThreadedWork("get and extract application src")
     myGetQtEnginio.addTaskObject(createDownloadExtract7zTask(callerArguments.application7z, os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..')), tempPath, callerArguments))
     myGetQtEnginio.run()
     src_dir = os.environ['APPLICATION_NAME'] + '-' + os.environ['LICENSE'] + '-' + 'src' + '-' + os.environ['VERSION']
-    qtApplicationSourceDirectory = os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', src_dir))
+    qtApplicationSourceDirectory = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', src_dir))
 else:
     print(("Using local copy of {0}").format(os.environ['APPLICATION_NAME']))
     qtApplicationSourceDirectory = callerArguments.application_dir
@@ -286,12 +285,12 @@ makeCommand = 'make'
 if os.name == 'nt':
     makeCommand = callerArguments.installcommand
 #runCommand("{0}".format(makeCommand),currentWorkingDirectory = qtApplicationBuildDirectory, callerArguments = callerArguments, init_environment = environment)
-runCommand("{0}".format(makeCommand),currentWorkingDirectory = qtApplicationBuildDirectory)
+runCommand("{0}".format(makeCommand), currentWorkingDirectory = qtApplicationBuildDirectory)
 
 #runInstallCommand("docs", currentWorkingDirectory = qtApplicationBuildDirectory, callerArguments = callerArguments,
 #    init_environment = environment)
 makeCommandArguments = 'install INSTALL_ROOT=' + qtApplicationInstallDirectory
-runCommand("{0} {1}".format(makeCommand,makeCommandArguments), currentWorkingDirectory = qtApplicationBuildDirectory,
+runCommand("{0} {1}".format(makeCommand, makeCommandArguments), currentWorkingDirectory = qtApplicationBuildDirectory,
         callerArguments = callerArguments, init_environment = environment)
 
 
