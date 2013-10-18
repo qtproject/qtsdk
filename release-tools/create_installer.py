@@ -47,11 +47,10 @@ import os
 import shutil
 import sys
 from time import gmtime, strftime
-import urllib
-from optparse import OptionParser, Option, OptionValueError
+from optparse import OptionParser, Option
 import multiprocessing # to get the cpu core count
 
-from threadedwork import *
+from threadedwork import ThreadedWork
 import bld_utils
 import bldinstallercommon
 import bld_ifw_tools
@@ -92,7 +91,6 @@ ARCHIVE_DOWNLOAD_SKIP       = False
 CREATE_ONLINE_INSTALLER     = False
 CREATE_OFFLINE_INSTALLER    = False
 CREATE_REPOSITORY           = False
-NO_REMOTE_BACKEND           = False
 ARCHIVE_LOCATION_RESOLVER   = None
 SDK_COMPONENT_LIST          = []
 SDK_COMPONENT_LIST_SKIPPED  = []
@@ -341,7 +339,6 @@ def parse_cmd_line():
     global CREATE_ONLINE_INSTALLER
     global CREATE_OFFLINE_INSTALLER
     global CREATE_REPOSITORY
-    global NO_REMOTE_BACKEND
     global USE_LEGACY_IFW
     global INSTALLER_NAMING_SCHEME_COMPILER
     global INSTALLER_NAMING_SCHEME_TARGET_ARCH
@@ -451,7 +448,7 @@ def init_data():
     global PACKAGES_FULL_PATH_DST
     global IFW_TOOLS_DIR
     global ARCHIVE_LOCATION_RESOLVER
-    global CONFIG_DIR
+    global CONFIG_DIR_DST
     global PLATFORM_IDENTIFIER
 
     if DEVELOPMENT_MODE:
@@ -922,15 +919,15 @@ def install_ifw_tools():
     # if "devmode" mode used, then build IFW from sources
     if DEVELOPMENT_MODE:
         # create options object
-        options=IfwOptions(INSTALLER_FRAMEWORK_QT_ARCHIVE_URI,
-                           INSTALLER_FRAMEWORK_QT_CONFIGURE_OPTIONS,
-                           INSTALLER_FRAMEWORK_URL,
-                           INSTALLER_FRAMEWORK_BRANCH,
-                           INSTALLER_FRAMEWORK_QMAKE_ARGS,
-                           INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_URL,
-                           INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_BRANCH,
-                           INSTALLER_FRAMEWORK_OPENSSL
-                           )
+        options = IfwOptions(INSTALLER_FRAMEWORK_QT_ARCHIVE_URI,
+                             INSTALLER_FRAMEWORK_QT_CONFIGURE_OPTIONS,
+                             INSTALLER_FRAMEWORK_URL,
+                             INSTALLER_FRAMEWORK_BRANCH,
+                             INSTALLER_FRAMEWORK_QMAKE_ARGS,
+                             INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_URL,
+                             INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_BRANCH,
+                             INSTALLER_FRAMEWORK_OPENSSL
+                             )
 
         options.development_mode = True
         options.incremental_mode = INCREMENTAL_MODE
