@@ -47,23 +47,22 @@ from __future__ import print_function
 import argparse # commandline argument parser
 import multiprocessing
 import os
-import stat
 import sys
 from urlparse import urlparse
 
 # own imports
-from threadedwork import *
-from bld_utils import *
+from threadedwork import Task, ThreadedWork
+from bld_utils import download, gitSHA, removeDir, runBuildCommand, runCommand, runInstallCommand, stripVars
 import bldinstallercommon
 
-def createDownloadExtract7zTask(url, targetPath, tempPath, callerArguments):
+def createDownloadExtract7zTask(url, target_path, temp_path, caller_arguments):
     fileNameFromUrl = os.path.basename(urlparse(url).path)
-    sevenzipFile = os.path.join(tempPath, fileNameFromUrl)
-    downloadExtract7zTask = Task("download {0} to {1} and extract it to {2}".format(url, sevenzipFile, targetPath))
+    sevenzipFile = os.path.join(temp_path, fileNameFromUrl)
+    downloadExtract7zTask = Task("download {0} to {1} and extract it to {2}".format(url, sevenzipFile, target_path))
 
     downloadExtract7zTask.addFunction(download, url, sevenzipFile)
     downloadExtract7zTask.addFunction(runCommand, "7z x -y {0} -o{1}".format(
-        sevenzipFile, targetPath), tempPath, callerArguments)
+        sevenzipFile, target_path), temp_path, caller_arguments)
     return downloadExtract7zTask
 
 # install an argument parser
