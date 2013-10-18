@@ -112,7 +112,7 @@ ANDROID_BUILD                       = False
 EXTRA_ENV                           = dict(os.environ)
 REPLACE_RPATH                       = False
 CUSTOM_ICU_URI                      = ''
-DISK_MOUNT_FREE_SPACE_START         = 0
+
 
 class MultipleOption(Option):
     ACTIONS = Option.ACTIONS + ("extend",)
@@ -134,21 +134,6 @@ def print_wrap(text):
     print 'QT5BLD: ' + text
 
 
-###############################
-# function
-###############################
-def print_free_disk_space():
-    print_wrap('Available disk space: ' + bldinstallercommon.sizeof_fmt((bldinstallercommon.get_free_space(SCRIPT_ROOT_DIR))) + '\n')
-
-
-###############################
-# function
-###############################
-def print_total_disk_usage():
-    free_end = bldinstallercommon.get_free_space(SCRIPT_ROOT_DIR)
-    used = DISK_MOUNT_FREE_SPACE_START - free_end
-    print_wrap('Disk space consumed during the build: ' + bldinstallercommon.sizeof_fmt(used))
-
 
 ###############################
 # function
@@ -166,10 +151,8 @@ def init_mkqt5bld():
     global MAKE_CMD
     global MAKE_INSTALL_CMD
     global EXTRA_ENV
-    global DISK_MOUNT_FREE_SPACE_START
-    print_wrap('---------------- Initializing build --------------------------------\n')
-    print_free_disk_space()
-    DISK_MOUNT_FREE_SPACE_START = bldinstallercommon.get_free_space(SCRIPT_ROOT_DIR)
+
+    print_wrap('---------------- Initializing build --------------------------------')
     #do not edit configure options, if configure options are overridden from commandline options
     if bldinstallercommon.is_unix_platform():
         CONFIGURE_CMD = './'
@@ -230,7 +213,6 @@ def fetch_src_package():
     global QT_PACKAGE_SAVE_AS_TEMP
     QT_PACKAGE_SAVE_AS_TEMP = os.path.normpath(WORK_DIR + os.sep + os.path.basename(QT_SRC_PACKAGE_URL))
     print_wrap('---------------- Fetching Qt src package ---------------------------')
-    print_free_disk_space()
     # check first if package on local file system
     if not os.path.isfile(QT_PACKAGE_SAVE_AS_TEMP):
         if not bldinstallercommon.is_content_url_valid(QT_SRC_PACKAGE_URL):
@@ -251,7 +233,6 @@ def fetch_src_package():
 def extract_src_package():
     global QT_SOURCE_DIR
     print_wrap('---------------- Extracting source package -------------------------')
-    print_free_disk_space()
     if os.path.exists(QT_SOURCE_DIR):
         print_wrap('Source dir ' + QT_SOURCE_DIR + ' already exists, using that (not re-extracting the archive!)')
     else:
@@ -288,7 +269,6 @@ def extract_src_package():
 ###############################
 def configure_qt():
     print_wrap('---------------- Configuring Qt ------------------------------------')
-    print_free_disk_space()
     cmd_args = CONFIGURE_CMD + ' ' + CONFIGURE_OPTIONS
     print_wrap('    Configure line: ' + cmd_args)
     if os.path.exists(QT_SOURCE_DIR + os.sep + CONFIGURE_CMD):
@@ -306,7 +286,6 @@ def configure_qt():
 ###############################
 def save_install_prefix():
     print_wrap('---------------- Saving install prefix -----------------------------')
-    print_free_disk_space()
     global INSTALL_PREFIX
 
     qmake_executable_path = bldinstallercommon.locate_executable(QT_SOURCE_DIR, 'qmake' + bldinstallercommon.get_executable_suffix())
@@ -339,7 +318,6 @@ def save_install_prefix():
 def create_submodule_list():
     global QT5_MODULES_LIST
     print_wrap('-------- Creating ordered list of submodules -----------------------')
-    print_free_disk_space()
 
     #create list of modules in default make order
     regex = re.compile('^make_first:.*') #search line starting with 'make_first:'
@@ -378,7 +356,6 @@ def create_submodule_list():
 ###############################
 def build_qt():
     print_wrap('---------------- Building Qt ---------------------------------------')
-    print_free_disk_space()
     #remove if old dir exists
     if os.path.exists(MAKE_INSTALL_ROOT_DIR):
         shutil.rmtree(MAKE_INSTALL_ROOT_DIR)
@@ -400,7 +377,6 @@ def build_qmlpuppets():
     if not QT_CREATOR_SRC_DIR:
         return
     print_wrap('---------------- Building QML Puppets -------------------------------')
-    print_free_disk_space()
 
     qmake_executable_path = bldinstallercommon.locate_executable(QT_SOURCE_DIR, 'qmake' + bldinstallercommon.get_executable_suffix())
     if not qmake_executable_path:
@@ -432,7 +408,7 @@ def build_qmlpuppets():
 ###############################
 def install_qt():
     print_wrap('---------------- Installing Qt -------------------------------------')
-    print_free_disk_space()
+
     # temporary solution for installing cross compiled Qt for Android on Windows host
     if ANDROID_BUILD and bldinstallercommon.is_win_platform():
         install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
@@ -480,7 +456,7 @@ def install_qmlpuppets():
     if not QT_CREATOR_SRC_DIR:
         return
     print_wrap('---------------- Installing qmlpuppets------------------------------')
-    print_free_disk_space()
+
     #make install for each module with INSTALL_ROOT
     install_dir = ESSENTIALS_INSTALL_DIR_NAME
     prfx_path = ORIGINAL_QMAKE_QT_PRFXPATH
@@ -510,7 +486,6 @@ def install_qmlpuppets():
 ###############################
 def save_original_qt_prfxpath():
     print_wrap('---------------- Saving original qt_prfxpath -----------------------')
-    print_free_disk_space()
     global ORIGINAL_QMAKE_QT_PRFXPATH
     qmake_executable_path = bldinstallercommon.locate_executable(QT_SOURCE_DIR, 'qmake' + bldinstallercommon.get_executable_suffix())
     if not qmake_executable_path:
@@ -530,7 +505,6 @@ def save_original_qt_prfxpath():
 ###############################
 def replace_build_paths(path_to_checked):
     print_wrap('------------ Replacing build paths in ' + path_to_checked + '----------------')
-    print_free_disk_space()
     pattern = re.compile(WORK_DIR_NAME)
     qt_source_dir_delimeter_2 = QT_SOURCE_DIR.replace('/', os.sep)
     for root, dirs, files in os.walk(path_to_checked):
@@ -567,7 +541,6 @@ def replace_build_paths(path_to_checked):
 # function
 ###############################
 def replace_system_paths():
-    print_free_disk_space()
     qconfig_path = MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME \
                    + os.sep + INSTALL_PREFIX + os.sep + 'mkspecs' + os.sep + 'qconfig.pri'
     print_wrap('------------ Replacing system paths in ' + qconfig_path + ' ----------------')
@@ -585,7 +558,6 @@ def replace_system_paths():
 ###############################
 def clean_up(install_dir):
     print_wrap('---------------- Cleaning unnecessary files from ' + install_dir + '----------')
-    print_free_disk_space()
     # all platforms
     for root, dirs, files in os.walk(install_dir):
         for name in files:
@@ -631,7 +603,6 @@ def clean_up(install_dir):
 ###############################
 def build_docs():
     print_wrap('------------------------- Building documentation -------------------')
-    print_free_disk_space()
 
     #first we need to do make install for the sources
     print_wrap('    Running make install...')
@@ -659,7 +630,6 @@ def build_docs():
 # function
 ###############################
 def replace_rpath():
-    print_free_disk_space()
     if not bldinstallercommon.is_linux_platform():
         print_wrap('*** Warning! RPath patching enabled only for Linux platforms')
         return
@@ -673,7 +643,6 @@ def replace_rpath():
 ###############################
 def archive_submodules():
     print_wrap('---------------- Archiving submodules ------------------------------')
-    print_free_disk_space()
     bldinstallercommon.create_dirs(MODULE_ARCHIVE_DIR)
 
     # Essentials
@@ -707,7 +676,6 @@ def archive_submodules():
 # function
 ###############################
 def patch_android_prl_files():
-    print_free_disk_space()
     ## QTBUG-33793
     # temporary solution for Android on Windows compilations
     if ANDROID_BUILD and bldinstallercommon.is_win_platform():
@@ -810,7 +778,6 @@ def patch_build():
 # function
 ###############################
 def patch_icu_paths(search_path):
-    print_free_disk_space()
     extension_list = ['*.prl', '*.pri', '*.pc', '*.la']
     pattern = re.compile('icu_install')
     file_list = []
@@ -845,7 +812,6 @@ def patch_icu_paths(search_path):
 ###############################
 def erase_qmake_prl_build_dir():
     print_wrap('--- Fix .prl files ---')
-    print_free_disk_space()
     # fetch all .prl files
     file_list = bldinstallercommon.make_files_list(MAKE_INSTALL_ROOT_DIR, '\\.prl')
     # erase lines starting with 'QMAKE_PRL_BUILD_DIR' from .prl files
@@ -865,7 +831,6 @@ def erase_qmake_prl_build_dir():
 # function
 ###############################
 def use_custom_icu():
-    print_free_disk_space()
     if os.path.isdir(CUSTOM_ICU_URI):
         return CUSTOM_ICU_URI
     package_raw_name = os.path.basename(CUSTOM_ICU_URI)
@@ -1101,8 +1066,6 @@ def main():
     patch_build()
     # archive each submodule
     archive_submodules()
-    # print some disk usage statistics
-    print_total_disk_usage()
 
 
 ###############################
