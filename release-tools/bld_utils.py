@@ -44,13 +44,10 @@
 from __future__ import print_function
 
 # built in imports
-import copy
 from distutils.spawn import find_executable # runCommand method
 import os
-import signal
 import sys
 import time
-import urllib
 import urllib2
 import shutil
 import subprocess
@@ -72,7 +69,7 @@ class DirRenamer(object):
     def __enter__(self):
         if self.oldName != self.newName:
             os.rename(self.oldName, self.newName)
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, etype, value, etraceback):
         if self.oldName != self.newName:
             os.rename(self.newName, self.oldName)
 
@@ -89,10 +86,10 @@ def compress(path, directoryName, sevenZipTarget, callerArguments):
     if currentSevenZipPath != sevenZipTarget:
         shutil.move(currentSevenZipPath, sevenZipTarget)
 
-def stripVars(object, chars):
-    for key, value in vars(object).items():
+def stripVars(sobject, chars):
+    for key, value in vars(sobject).items():
         if isinstance(value, str):
-            setattr(object, key, value.strip(chars))
+            setattr(sobject, key, value.strip(chars))
 
 def removeDir(path, raiseNoException = False):
     if os.path.isdir(path):
@@ -110,10 +107,10 @@ def urllib2_response_read(response, file_path, block_size = 8192):
     total_size = int(total_size)
     bytes_count = 0
 
-    file = open(file_path, 'wb')
+    filename = open(file_path, 'wb')
     while 1:
         block = response.read(block_size)
-        file.write(block)
+        filename.write(block)
         bytes_count += len(block)
 
         if not block:
@@ -122,7 +119,7 @@ def urllib2_response_read(response, file_path, block_size = 8192):
         fraction = min(1, float(bytes_count) / total_size)
         sys.stdout.write("\r{:.1%}".format(fraction))
 
-    file.close()
+    filename.close()
     return bytes_count
 
 def download(url, savefile):
@@ -140,7 +137,8 @@ def download(url, savefile):
         savefile_tmp = os.extsep.join((savefile, 'tmp'))
         try:
             os.makedirs(os.path.dirname(savefile_tmp))
-        except: pass
+        except:
+            pass
 
         try:
             # use urlopen which raise an error if that file is not existing
@@ -197,7 +195,9 @@ def setValueOnEnvironmentDict(environment, key, value):
     else:
         environment[key] = value
 
-def getEnvironment(init_environment = {}, callerArguments = None):
+def getEnvironment(init_environment = None, callerArguments = None):
+    if init_environment is None:
+        init_environment = {}
     # first take the one from the system and use the plain dictionary data for that
     environment = os.environ.__dict__["data"]
 
@@ -314,7 +314,9 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None,
     return exitCode
 
 
-def runInstallCommand(arguments = 'install', currentWorkingDirectory = None, callerArguments = None, init_environment = {}):
+def runInstallCommand(arguments = 'install', currentWorkingDirectory = None, callerArguments = None, init_environment = None):
+    if init_environment is None:
+        init_environment = {}
     installcommand = 'make'
     if hasattr(callerArguments, 'installcommand') and callerArguments.installcommand:
         installcommand = callerArguments.installcommand
@@ -328,7 +330,9 @@ def runInstallCommand(arguments = 'install', currentWorkingDirectory = None, cal
         installcommand = ' '.join((installcommand, arguments))
     runCommand(installcommand, currentWorkingDirectory, callerArguments, init_environment = init_environment)
 
-def runBuildCommand(arguments = None, currentWorkingDirectory = None, callerArguments = None, init_environment = {}):
+def runBuildCommand(arguments = None, currentWorkingDirectory = None, callerArguments = None, init_environment = None):
+    if init_environment is None:
+        init_environment = {}
     buildcommand = 'make'
     if hasattr(callerArguments, 'buildcommand') and callerArguments.buildcommand:
         buildcommand = callerArguments.buildcommand
@@ -337,7 +341,9 @@ def runBuildCommand(arguments = None, currentWorkingDirectory = None, callerArgu
         buildcommand = ' '.join((buildcommand, arguments))
     runCommand(buildcommand, currentWorkingDirectory, callerArguments, init_environment = init_environment)
 
-def getReturnValue(command, currentWorkingDirectory = None, init_environment = {}, callerArguments = None):
+def getReturnValue(command, currentWorkingDirectory = None, init_environment = None, callerArguments = None):
+    if init_environment is None:
+        init_environment = {}
     commandAsList = command[:].split(' ')
     return subprocess.Popen(commandAsList, stdout=subprocess.PIPE, stderr = subprocess.STDOUT,
         cwd = currentWorkingDirectory, env = getEnvironment(init_environment, callerArguments)).communicate()[0].strip()
