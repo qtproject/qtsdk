@@ -44,7 +44,6 @@
 from __future__ import print_function
 import sys
 import os
-import platform
 import bldinstallercommon
 import ConfigParser
 import urlparse
@@ -81,7 +80,7 @@ RTA_DESCRIPTION_FILE                    = 'rta_description_file'
 class BuildJob:
     def __init__(self,
                  is_repo_job,
-                 license,
+                 license_type,
                  node_name,
                  architecture,
                  version_number,
@@ -97,7 +96,7 @@ class BuildJob:
                  rta_keys
                 ):
         self.is_repo_job                = is_repo_job
-        self.license                    = license
+        self.license                    = license_type
         self.node_name                  = node_name
         self.architecture               = architecture
         self.version_number             = version_number
@@ -200,7 +199,7 @@ def is_valid_job_type(job_type_specifier):
 
 # parse build jobs for given platform and architecture
 #<branch>.<qt_version>.<offline/repository>.<host_os>.<architecture>.<package_type>
-def get_job_list(conf_file, job_type_specifier, license, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag):
+def get_job_list(conf_file, job_type_specifier, license_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag):
     print('Get build job list for: {0}'.format(platform + '-' + arch))
     if not os.path.isfile(conf_file):
         print('*** Fatal error! Given file does not exist: {0}'.format(conf_file))
@@ -271,7 +270,7 @@ def get_job_list(conf_file, job_type_specifier, license, branch, platform, arch,
             # determine full path for the conf file
             full_conf_file_path = os.path.join(conf_file_base_dir, arg_configurations_file)
             # create build job
-            job = BuildJob(is_repo_job, license, s, arch, version_number, version_number_tag, conf_file_base_dir, full_conf_file_path, ifw_tools_url, arg_substitution_list, repo_content_type, repo_components_to_update, repo_url_specifier, installer_name, rta_key_list)
+            job = BuildJob(is_repo_job, license_type, s, arch, version_number, version_number_tag, conf_file_base_dir, full_conf_file_path, ifw_tools_url, arg_substitution_list, repo_content_type, repo_components_to_update, repo_url_specifier, installer_name, rta_key_list)
             if (job.validate()):
                 job_list.append(job)
     return job_list
@@ -279,24 +278,24 @@ def get_job_list(conf_file, job_type_specifier, license, branch, platform, arch,
 
 # parse online repository build jobs for given platform and architecture
 #<branch>.<qt_version>.<offline/repository>.<host_os>.<architecture>.<package_type>
-def get_repo_job_list(conf_file, license, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag):
-    return get_job_list(conf_file, 'repository', license, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
+def get_repo_job_list(conf_file, license_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag):
+    return get_job_list(conf_file, 'repository', license_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
 
 
 # parse offline installer build jobs for given platform and architecture
 #<branch>.<qt_version>.<offline/repository>.<host_os>.<architecture>.<package_type>
-def get_offline_job_list(conf_file, license, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag):
-    return get_job_list(conf_file, 'offline', license, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
+def get_offline_job_list(conf_file, license_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag):
+    return get_job_list(conf_file, 'offline', license_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
 
 # parse online installer build jobs for given platform and architecture
 #<branch>.<qt_version>.<offline/repository>.<host_os>.<architecture>.<package_type>
-def get_online_job_list(conf_file, license, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag):
-    return get_job_list(conf_file, 'online', license, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
+def get_online_job_list(conf_file, license_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag):
+    return get_job_list(conf_file, 'online', license_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
 
 
 # execute
 # - online installer build(s)
-def handle_online_installer_build(conf_file, license, branch, platform, arch, packages_base_url):
+def handle_online_installer_build(conf_file, license_type, branch, platform, arch, packages_base_url):
     if not os.path.isfile(conf_file):
         print('*** Fatal error! Given file does not exist: {0}'.format(conf_file))
         sys.exit(-1)
@@ -313,7 +312,7 @@ def handle_online_installer_build(conf_file, license, branch, platform, arch, pa
         print('*** Fatal error! Invalid values in {0} -> {1}'.format(conf_file, section_name))
         sys.exit(-1)
     # parse build jobs
-    job_list = get_online_job_list(conf_file, license, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
+    job_list = get_online_job_list(conf_file, license_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
     if (len(job_list) == 0):
         print('*** Fatal error! No online installer build jobs found. Probably an error?'.format(conf_file, section_name))
         sys.exit(-1)
@@ -327,7 +326,7 @@ def handle_online_installer_build(conf_file, license, branch, platform, arch, pa
 
 # execute
 # - offline installer build(s)
-def handle_offline_installer_build(conf_file, license, branch, platform, arch, packages_base_url):
+def handle_offline_installer_build(conf_file, license_type, branch, platform, arch, packages_base_url):
     if not os.path.isfile(conf_file):
         print('*** Fatal error! Given file does not exist: {0}'.format(conf_file))
         sys.exit(-1)
@@ -344,7 +343,7 @@ def handle_offline_installer_build(conf_file, license, branch, platform, arch, p
         print('*** Fatal error! Invalid values in {0} -> {1}'.format(conf_file, section_name))
         sys.exit(-1)
     # parse build jobs
-    job_list = get_offline_job_list(conf_file, license, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
+    job_list = get_offline_job_list(conf_file, license_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
     if (len(job_list) == 0):
         print('*** Fatal error! No offline build jobs found. Probably an error?'.format(conf_file, section_name))
         sys.exit(-1)
@@ -414,7 +413,7 @@ def create_installer(job, packages_base_url, installer_type):
 # - online reposiory build
 # - upload repository into test server
 # - update existing repository at test server with new content
-def handle_repo_build(conf_file, license, branch, platform, arch, packages_base_url, update_production_repo):
+def handle_repo_build(conf_file, license_type, branch, platform, arch, packages_base_url, update_production_repo):
     if not os.path.isfile(conf_file):
         print('*** Fatal error! Given file does not exist: {0}'.format(conf_file))
         sys.exit(-1)
@@ -432,7 +431,7 @@ def handle_repo_build(conf_file, license, branch, platform, arch, packages_base_
         print('*** Fatal error! Invalid values in {0} -> {1}'.format(conf_file, section_name))
         sys.exit(-1)
     # parse build jobs
-    repo_job_list = get_repo_job_list(conf_file, license, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
+    repo_job_list = get_repo_job_list(conf_file, license_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
     if (len(repo_job_list) == 0):
         print('*** Fatal error! No repository build jobs found. Probably an error?'.format(conf_file, section_name))
         sys.exit(-1)
