@@ -688,7 +688,7 @@ def archive_submodules():
 ###############################
 # function
 ###############################
-def patch_android_prl_files():
+def rename_android_soname_files():
     ## QTBUG-33793
     # temporary solution for Android on Windows compilations
     if ANDROID_BUILD and bldinstallercommon.is_win_platform():
@@ -721,6 +721,11 @@ def patch_android_prl_files():
         else:
             print_wrap('*** Warning! Unable to locate \\lib directory under: ' + install_path + os.sep + INSTALL_PREFIX)
 
+
+###############################
+# function
+###############################
+def patch_android_prl_files():
     ## QTBUG-33660
     # remove references to absolute path of the NDK on the build machine
     if ANDROID_BUILD:
@@ -775,6 +780,7 @@ def patch_build():
     # fix qmake prl build fir references
     erase_qmake_prl_build_dir()
     if ANDROID_BUILD:
+        rename_android_soname_files()
         patch_android_prl_files()
     # patch RPath if requested
     if REPLACE_RPATH:
