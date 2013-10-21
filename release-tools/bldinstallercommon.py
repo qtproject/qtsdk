@@ -785,3 +785,15 @@ def list_as_string(argument_list):
     output= ' '.join(argument_list)
     return output
 
+
+###############################
+# function
+###############################
+def remote_path_exists(remote_addr, path_to_check):
+    text_to_print = 'REMOTE_PATH_EXISTS'
+    cmd_args = ['ssh', remote_addr, 'bash', '-c', '\"if [ -e ' + path_to_check + ' ] ; then echo ' + text_to_print + ' ; fi\"']
+    output = do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True, True)
+    check = output[1].rstrip()
+    return check == text_to_print
+
+
