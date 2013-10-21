@@ -50,11 +50,9 @@ import subprocess
 from subprocess import PIPE, STDOUT
 import sys
 import stat
-import tarfile
 import traceback
 import urllib
 import urllib2
-import zipfile
 import string
 import fileinput
 
@@ -98,12 +96,12 @@ def is_content_url_valid(url):
     # throws error if url does not point to valid object
     result = False
     try:
-        response = urllib2.urlopen(head_request(url))
+        urllib2.urlopen(head_request(url))
         result = True
     except Exception:
         pass
 
-    return result;
+    return result
 
 
 ###############################
@@ -267,7 +265,6 @@ def findInSubdirectory(filename, subdirectory=''):
 ###############################
 def move_tree(srcdir, dstdir, pattern=None):
     # windows has length limit for path names so try to truncate them as much as possible
-    global IS_WIN_PLATFORM
     if IS_WIN_PLATFORM:
         srcdir = win32api.GetShortPathName(srcdir)
         dstdir = win32api.GetShortPathName(dstdir)
@@ -325,12 +322,12 @@ def copy_tree(source_dir, dest_dir):
 # function
 ###############################
 def handle_remove_readonly(func, path, exc):
-  excvalue = exc[1]
-  if func in (os.rmdir, os.remove) and excvalue.errno == errno.EACCES:
-      os.chmod(path, stat.S_IRWXU| stat.S_IRWXG| stat.S_IRWXO) # 0777
-      func(path)
-  else:
-      raise
+    excvalue = exc[1]
+    if func in (os.rmdir, os.remove) and excvalue.errno == errno.EACCES:
+        os.chmod(path, stat.S_IRWXU| stat.S_IRWXG| stat.S_IRWXO) # 0777
+        func(path)
+    else:
+        raise
 
 def remove_tree(source_dir):
     if IS_WIN_PLATFORM:
@@ -349,23 +346,23 @@ def remove_tree(source_dir):
 ###############################
 # substitute all matches in files with replacement_string
 def replace_in_files(filelist, regexp, replacement_string):
-    regexp_compiled=re.compile(regexp)
+    regexp_compiled = re.compile(regexp)
     for xfile in filelist:
-        replaceflag=0
-        readlines=open(xfile,'r').readlines()
+        replaceflag = 0
+        readlines = open(xfile,'r').readlines()
         listindex = -1
         for currentline in readlines:
             listindex = listindex + 1
             if regexp_compiled.search(currentline):
                 # substitute
-                f=re.sub(regexp,replacement_string,currentline)
+                f = re.sub(regexp, replacement_string, currentline)
                 # update the whole file variable ('readlines')
                 readlines[listindex] = f
-                replaceflag=1
+                replaceflag = 1
         # if some text was replaced overwrite the original file
-        if replaceflag==1:
+        if replaceflag == 1:
             # open the file for writting
-            write_file=open(xfile,'w')
+            write_file = open(xfile,'w')
             # overwrite the file
             for line in readlines:
                 write_file.write(line)
@@ -387,14 +384,14 @@ def replace_in_text_files(root_directory, match_string, replacement_string, file
             path = os.path.join(root, name)
             if not os.path.isdir(path) and not os.path.islink(path):
                 if not (any(name.endswith(item) for item in file_type_ignore_list)):
-                    readlines=open(path,'r').read()
+                    readlines = open(path, 'r').read()
                     if pattern.search(readlines):
                         print '---> Regexp match: ' + path
                         if is_text_file(path):
                             print '---> Replacing build path in: ' + path
                             print '--->         String to match: ' + match_string
                             print '--->             Replacement: ' + replacement_string
-                            for line in fileinput.FileInput(path,inplace=1):
+                            for line in fileinput.FileInput(path, inplace=1):
                                 output1 = line.replace(match_string, replacement_string)
                                 if line != output1:
                                     # we had a match
@@ -515,7 +512,6 @@ def locate_directory(base_dir, dir_name):
 # Function
 ###############################
 def is_executable(path):
-    plat = platform.system().lower()
     if IS_WIN_PLATFORM:
         if path.endswith('.exe') or path.endswith('.com'):
             return True
@@ -609,19 +605,24 @@ def sanity_check_rpath_max_length(file_path, new_rpath):
 # Function
 ###############################
 def pathsplit(p, rest=[]):
-    (h,t) = os.path.split(p)
-    if len(h) < 1: return [t]+rest
-    if len(t) < 1: return [h]+rest
-    return pathsplit(h,[t]+rest)
+    (h, t) = os.path.split(p)
+    if len(h) < 1:
+        return [t]+rest
+    if len(t) < 1:
+        return [h]+rest
+    return pathsplit(h, [t]+rest)
 
 def commonpath(l1, l2, common=[]):
-    if len(l1) < 1: return (common, l1, l2)
-    if len(l2) < 1: return (common, l1, l2)
-    if l1[0] != l2[0]: return (common, l1, l2)
+    if len(l1) < 1:
+        return (common, l1, l2)
+    if len(l2) < 1:
+        return (common, l1, l2)
+    if l1[0] != l2[0]:
+        return (common, l1, l2)
     return commonpath(l1[1:], l2[1:], common+[l1[0]])
 
 def calculate_relpath(p1, p2):
-    (common,l1,l2) = commonpath(pathsplit(p1), pathsplit(p2))
+    (common, l1, l2) = commonpath(pathsplit(p1), pathsplit(p2))
     p = []
     if len(l1) > 0:
         tmp = '..' + os.sep
@@ -666,8 +667,6 @@ def handle_component_rpath(component_root_path, destination_lib_path):
     print '        Component root path:  ' + component_root_path
     print '        Destination lib path: ' + destination_lib_path
 
-    # initialize the file list
-    fileslist = []
     # loop on all files
     for root, dirs, files in os.walk(component_root_path):
         for name in files:
@@ -782,7 +781,7 @@ def extract_file(path, to_directory='.'):
 # function
 ###############################
 def list_as_string(argument_list):
-    output= ' '.join(argument_list)
+    output = ' '.join(argument_list)
     return output
 
 
