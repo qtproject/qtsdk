@@ -178,6 +178,15 @@ def lock_keychain():
 
 
 ###############################
+# sign windows executable
+###############################
+def sign_mac_executable(file_path, working_dir, abort_on_fail):
+    s_arg = 'Developer ID Application: Digia Plc'
+    cmd_args = ['codesign', '-r', '/Users/qt/csreq.txt', '-s', s_arg, file_path]
+    bldinstallercommon.do_execute_sub_process(cmd_args, working_dir, abort_on_fail)
+
+
+###############################
 # init_qt_build_cycle
 ###############################
 def init_qt_build_cycle():
@@ -855,9 +864,8 @@ def handle_installer_build(offline_installer_build):
                 installer_name = file_name
                 installer_name_base = os.path.splitext(file_name)[0]
                 installer_name_final = installer_name_base + '_' + TIME_STAMP + '-' + BUILD_NUMBER + '.dmg'
-                s_arg = 'Developer ID Application: Digia Plc'
-                cmd_args = ['codesign', '-r', '/Users/qt/csreq.txt', '-s', s_arg, installer_name_base + '.app']
-                bldinstallercommon.do_execute_sub_process(cmd_args,  installer_output_dir, True)
+                # sign executable
+                sign_mac_executable(installer_name_base + '.app', installer_output_dir, True)
                 cmd_args = ['hdiutil', 'create', '-srcfolder', os.path.join(installer_output_dir, installer_name_base) + '.app', '-volname', installer_name_base, '-format', 'UDBZ', os.path.join(installer_output_dir, installer_name_base) + '.dmg', '-ov', '-scrub', '-size', '2g']
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
                 # copy installer to internal server
