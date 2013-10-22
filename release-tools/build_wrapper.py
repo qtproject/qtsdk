@@ -162,6 +162,22 @@ def sign_windows_executable(file_path, working_dir, abort_on_fail):
 
 
 ###############################
+# Unlock keychain
+###############################
+def unlock_keychain():
+    cmd_args = ['/Users/qt/unlock-keychain.py']
+    bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
+
+
+###############################
+# Lock keychain
+###############################
+def lock_keychain():
+    cmd_args = ['security', 'lock-keychain', 'Developer_ID_Digia.keychain']
+    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+
+
+###############################
 # init_qt_build_cycle
 ###############################
 def init_qt_build_cycle():
@@ -720,8 +736,7 @@ def handle_qt_creator_build():
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
     if bldinstallercommon.is_mac_platform():
-        cmd_args = ['security', 'lock-keychain', 'Developer_ID_Digia.keychain']
-        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+        lock_keychain()
 
     postfix = ''
     if QTCREATOR_VERSION:
@@ -834,8 +849,7 @@ def handle_installer_build(offline_installer_build):
                     cmd_args_copy_to_ext = cmd_args_copy_to_pkg + ['scp', dest_dir + '/' + installer_name_final, ext_server_base_url + ':' + ext_dest_dir  + '/' + installer_name_final]
                     bldinstallercommon.do_execute_sub_process(cmd_args_copy_to_ext, installer_output_dir, True)
     elif bldinstallercommon.is_mac_platform():
-        cmd_args = ['/Users/qt/unlock-keychain.py']
-        bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
+        unlock_keychain()
         for file_name in dir_list:
             if file_name.endswith(".dmg"):
                 installer_name = file_name
@@ -854,8 +868,7 @@ def handle_installer_build(offline_installer_build):
                     cmd_args_copy_to_pkg = [SSH_COMMAND, PKG_SERVER_ADDR]
                     cmd_args_copy_to_ext = cmd_args_copy_to_pkg + ['scp', dest_dir + '/' + installer_name_final, ext_server_base_url + ':' + ext_dest_dir + '/' + installer_name_final]
                     bldinstallercommon.do_execute_sub_process(cmd_args_copy_to_ext, installer_output_dir, True)
-        cmd_args = ['security', 'lock-keychain', 'Developer_ID_Digia.keychain']
-        bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
+        lock_keychain()
     else:
         for file_name in dir_list:
             if file_name.endswith(".exe"):
