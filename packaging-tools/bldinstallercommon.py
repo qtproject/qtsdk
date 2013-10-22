@@ -796,3 +796,18 @@ def remote_path_exists(remote_addr, path_to_check):
     return check == text_to_print
 
 
+###############################
+# function
+###############################
+def create_mac_disk_image(execution_path, file_directory, file_base_name, image_size = '2g'):
+    # create disk image
+    cmd_args = ['hdiutil', 'create', '-srcfolder', \
+                os.path.join(file_directory, file_base_name + '.app'), \
+                '-volname', file_base_name, \
+                '-format', 'UDBZ', \
+                os.path.join(file_directory, file_base_name + '.dmg'), \
+                '-ov', '-scrub', '-size', image_size]
+    bldinstallercommon.do_execute_sub_process(cmd_args, execution_path, True)
+
+
+
