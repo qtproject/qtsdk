@@ -66,7 +66,7 @@ def get_default_qt_configure_options():
         default_options = IfwOptions.default_qt_configure_options_windows
     elif plat.startswith('darwin'):
         default_options = IfwOptions.default_qt_configure_options_mac
-    default_options = '-static -release -opensource -confirm-license -nomake examples -nomake demos -nomake tests -nomake docs -no-webkit -no-phonon -no-qt3support -no-opengl -no-dbus -no-declarative -no-accessibility -no-xmlpatterns -no-phonon-backend -no-multimedia -no-declarative-debug {0}'.format(default_options)
+    default_options = '-static -release -opensource -confirm-license -accessibility -nomake examples -nomake demos -nomake tests -nomake docs -no-webkit -no-phonon -no-qt3support -no-opengl -no-dbus -no-declarative -no-xmlpatterns -no-phonon-backend -no-multimedia -no-declarative-debug {0}'.format(default_options)
     return default_options
 
 ###############################
