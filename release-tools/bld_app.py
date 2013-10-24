@@ -138,27 +138,25 @@ if callerArguments.qt5path != os.path.abspath(callerArguments.qt5path):
 
 
 
-tempPath = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'temp'))
+tempPath = os.path.abspath(os.path.join(os.path.dirname(__file__), 'temp'))
 
 # clone application repo
 if callerArguments.application_url != '':
     bldinstallercommon.init_common_module(os.getcwd())
-    bldinstallercommon.create_dirs(os.path.join(os.path.dirname(__file__), "..", os.environ['APPLICATION_NAME']))
-    bldinstallercommon.clone_repository(callerArguments.application_url, callerArguments.application_branch, os.path.join(os.path.dirname(__file__), "..", os.environ['APPLICATION_NAME']))
-    qtApplicationSourceDirectory = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', os.environ['APPLICATION_NAME']))
+    bldinstallercommon.create_dirs(os.path.join(os.path.dirname(__file__), os.environ['APPLICATION_NAME']))
+    bldinstallercommon.clone_repository(callerArguments.application_url, callerArguments.application_branch, os.path.join(os.path.dirname(__file__), os.environ['APPLICATION_NAME']))
+    qtApplicationSourceDirectory = os.path.abspath(os.path.join(os.path.dirname(__file__), os.environ['APPLICATION_NAME']))
 elif callerArguments.application7z != '':
     myGetQtEnginio = ThreadedWork("get and extract application src")
-    myGetQtEnginio.addTaskObject(createDownloadExtract7zTask(callerArguments.application7z, os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..')), tempPath, callerArguments))
+    myGetQtEnginio.addTaskObject(createDownloadExtract7zTask(callerArguments.application7z, os.path.abspath(os.path.join(os.path.dirname(__file__))), tempPath, callerArguments))
     myGetQtEnginio.run()
     src_dir = os.environ['APPLICATION_NAME'] + '-' + os.environ['LICENSE'] + '-' + 'src' + '-' + os.environ['VERSION']
-    qtApplicationSourceDirectory = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', src_dir))
+    qtApplicationSourceDirectory = os.path.abspath(os.path.join(os.path.dirname(__file__), src_dir))
 else:
     print(("Using local copy of {0}").format(os.environ['APPLICATION_NAME']))
     qtApplicationSourceDirectory = callerArguments.application_dir
-qtApplicationBuildDirectory = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..',
-    os.environ['APPLICATION_NAME'] + '_build'))
-qtApplicationInstallDirectory = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..',
-    os.environ['APPLICATION_NAME'] + '_install'))
+qtApplicationBuildDirectory = os.path.abspath(os.path.join(os.path.dirname(__file__), os.environ['APPLICATION_NAME'] + '_build'))
+qtApplicationInstallDirectory = os.path.abspath(os.path.join(os.path.dirname(__file__), os.environ['APPLICATION_NAME'] + '_install'))
 if os.name == 'nt':
     qtApplicationInstallDirectory = qtApplicationInstallDirectory[2:]
 
@@ -293,4 +291,7 @@ makeCommandArguments = 'install INSTALL_ROOT=' + qtApplicationInstallDirectory
 runCommand("{0} {1}".format(makeCommand, makeCommandArguments), currentWorkingDirectory = qtApplicationBuildDirectory,
         callerArguments = callerArguments, init_environment = environment)
 
+# create 7z archive
+archive_cmd = '7z a ' + 'module_archives' + os.sep + 'qt5_' + os.environ['APPLICATION_NAME'] + '.7z' + ' ' + qtApplicationInstallDirectory
+runCommand("{0}".format(archive_cmd), currentWorkingDirectory = os.path.dirname(os.path.realpath(__file__)) )
 

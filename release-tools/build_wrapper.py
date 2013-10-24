@@ -561,6 +561,114 @@ def handle_qt_desktop_release_build():
 
 
 ###############################
+# Validate build args for Enginio build
+###############################
+def validate_enginio_build_args(cmd_line_options):
+    # check env variables
+    if not os.environ.get('QT5_ENGINIO_SRC_URI'):
+        print('*** Enginio build missing environment variable: {0}'.format('QT5_ENGINIO_SRC_URI'))
+        sys.exit(-1)
+    if not os.environ.get('QT5_ESSENTIALS_LIB_PACKAGE_URI'):
+        print('*** Enginio build missing environment variable: {0}'.format('QT5_ESSENTIALS_LIB_PACKAGE_URI'))
+        sys.exit(-1)
+    if not os.environ.get('QT5_ESSENTIALS_LIB_PACKAGE_URI'):
+        print('*** Enginio build missing environment variable: {0}'.format('QT5_ADDONS_LIB_PACKAGE_URI'))
+        sys.exit(-1)
+    if bldinstallercommon.is_win_platform():
+        if not os.environ.get('WINDOWS_BUILD_COMMAND'):
+            print('*** Enginio build missing environment variable: {0}'.format('WINDOWS_BUILD_COMMAND'))
+            sys.exit(-1)
+        if not os.environ.get('WINDOWS_INSTALL_COMMAND'):
+            print('*** Enginio build missing environment variable: {0}'.format('WINDOWS_INSTALL_COMMAND'))
+            sys.exit(-1)
+        if not os.environ.get('7Z_TOOL_PATH'):
+            print('*** Enginio build missing environment variable: {0}'.format('7Z_TOOL_PATH'))
+            sys.exit(-1)
+        if not os.environ.get('GIT_TOOL_PATH'):
+            print('*** Enginio build missing environment variable: {0}'.format('GIT_TOOL_PATH'))
+            sys.exit(-1)
+    if bldinstallercommon.is_mac_platform():
+        if not os.environ.get('IFW_INSTALLERBASE_URI'):
+            print('*** Enginio build missing environment variable: {0}'.format('IFW_INSTALLERBASE_URI'))
+            sys.exit(-1)
+        if not os.environ.get('MAC_INSTALL_COMMAND'):
+            print('*** Enginio build missing environment variable: {0}'.format('MAC_INSTALL_COMMAND'))
+            sys.exit(-1)
+    # check command line arguments
+    if not cmd_line_options.license:
+        print('*** Enginio build missing command line argument: --license')
+        sys.exit(-1)
+    if not cmd_line_options.server:
+        print('*** Enginio build missing command line argument: --server')
+        sys.exit(-1)
+    if not cmd_line_options.qt_version:
+        print('*** Enginio build missing command line argument: --qt_version')
+        sys.exit(-1)
+    if not cmd_line_options.target_env:
+        print('*** Enginio build missing command line argument: --target_env')
+        sys.exit(-1)
+    if not cmd_line_options.path:
+        print('*** Enginio build missing command line argument: --path')
+        sys.exit(-1)
+
+    return True
+
+
+###############################
+# Handle Enginio release build
+###############################
+def handle_qt_enginio_release_build():
+    script_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_app.py')
+    qt5_enginio_source_uri          = os.environ['QT5_ENGINIO_SRC_URI']
+    qt5_essentials_lib_package_uri  = os.environ['QT5_ESSENTIALS_LIB_PACKAGE_URI']
+    qt5_addons_lib_package_uri      = os.environ['QT5_ADDONS_LIB_PACKAGE_URI']
+    icu7z_package                   = os.environ.get('ICU7Z')
+
+    ## common cmd_args for all platforms
+    # we need to change the extension to .zip on windows. os x and linux use .tar.gz for the source file (.zip includes configure.exe)
+    extension = '.tar.gz'
+    if bldinstallercommon.is_win_platform():
+        extension = '.zip'
+    # build command
+    cmd_args = ['python', '-u', script_path, '--clean']
+    cmd_args += ['--qt5path', 'qt5_package_dir']
+    cmd_args += ['--qt5_essentials7z', os.environ['QT5_ESSENTIALS_LIB_PACKAGE_URI']]
+    cmd_args += ['--qt5_addons7z', os.environ['QT5_ADDONS_LIB_PACKAGE_URI']]
+    cmd_args += ['--application7z', os.environ['QT5_ENGINIO_SRC_URI']]
+    if icu7z_package:
+        cmd_args += ['--icu7z', icu7z_package]
+    if bldinstallercommon.is_win_platform():
+        cmd_args += ['--buildcommand', os.environ['WINDOWS_BUILD_COMMAND']]
+        cmd_args += ['--installcommand', os.environ['WINDOWS_INSTALL_COMMAND']]
+        cmd_args += ['--sevenzippath', os.environ['7Z_TOOL_PATH']]
+        cmd_args += ['--gitpath', os.environ['GIT_TOOL_PATH']]
+    if bldinstallercommon.is_mac_platform():
+        cmd_args += ['--installerbase7z', os.environ['IFW_INSTALLERBASE_URI']]
+        cmd_args += ['--installcommand', os.environ['MAC_INSTALL_COMMAND']]
+    # execute build
+    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+    # copy 7z files to network drive
+    remote_target_dir = PKG_SERVER_ADDR + ':' + LATEST_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV]
+    if bldinstallercommon.is_win_platform():
+        remote_target_dir += '/'
+    remote_copy_archives(remote_target_dir, os.path.join(SCRIPT_ROOT_DIR, 'module_archives'))
+
+
+###############################
+# Remote copy files
+###############################
+def remote_copy_archives(remote_target, from_where_path):
+    remote_copy_cmd = SCP_COMMAND
+    if bldinstallercommon.is_mac_platform():
+        remote_copy_cmd = 'rsync'
+    dir_list = os.listdir(from_where_path)
+    for file_name in dir_list:
+        if file_name.endswith(".7z"):
+            cmd_args = [remote_copy_cmd, file_name, remote_target]
+            bldinstallercommon.do_execute_sub_process(cmd_args, from_where_path, True)
+
+
+###############################
 # handle_examples_injection
 ###############################
 def handle_examples_injection():
@@ -1033,7 +1141,7 @@ def create_remote_dirs(server, dir_path):
 # sanity check command line options
 ###############################
 def sanity_check_options(options):
-    if not options.command in ['init', 'build_src', 'build_bin', 'offline_installer', 'ifw', 'build_creator', 'repo_build', 'online_installer', 'publish_src_packages']:
+    if not options.command in ['init', 'build_src', 'build_bin', 'build_enginio', 'offline_installer', 'ifw', 'build_creator', 'repo_build', 'online_installer', 'publish_src_packages']:
         return False
     if options.command == 'repo_build':
         if len(sys.argv) < 4:
@@ -1042,6 +1150,8 @@ def sanity_check_options(options):
         if len(sys.argv) < 4:
             print('*** Insufficient arguments for online installer build!')
             return False
+    elif options.command == 'build_enginio':
+        return validate_enginio_build_args(options)
     else:
         if len(sys.argv) < 15:
             return False
@@ -1193,6 +1303,8 @@ def main():
         handle_qt_src_package_build()
     elif COMMAND == 'build_bin':
         handle_qt_release_build()
+    elif COMMAND == 'build_enginio':
+        handle_qt_enginio_release_build()
     elif COMMAND == 'ifw':
         handle_ifw_build()
     elif COMMAND == 'build_creator':
