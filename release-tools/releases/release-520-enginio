@@ -1,0 +1,84 @@
+# Define release content
+
+
+################################################################################
+## Global defines
+################################################################################
+[ifwtools]
+windows-x86:                installer-framework-build-win-x86.7z
+linux-x86:                  installer-framework-build-linux-x86.7z
+linux-x64:                  installer-framework-build-linux-x64.7z
+mac-x64:                    installer-framework-build-mac-x64.7z
+
+[release.global]
+version:                    0.6.0
+version_tag:
+
+
+################################################################################
+## Linux repository
+################################################################################
+[release.enginio.repository.linux.x86]
+arg_configurations_file:    repository_configs_desktop_qt5/linux_x86_repository_520_enginio
+arg_substitution_list:      @ENGINIO_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz, @QT_VERSION@=5.2.0
+repo_content_type:          enginio
+repo_components_to_update:  qt.520.*
+repo_url_specifier:         linux_x86/desktop/qt5
+
+[release.enginio.repository.linux.x86.android]
+arg_configurations_file:    repository_configs_android_qt5/linux_x86_repository_520_enginio
+arg_substitution_list:      @ENGINIO_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz, @QT_VERSION@=5.2.0
+repo_content_type:          enginio
+repo_components_to_update:  qt.520.*
+repo_url_specifier:         linux_x86/android/qt5
+
+[release.enginio.repository.linux.x64]
+arg_configurations_file:    repository_configs_desktop_qt5/linux_x64_repository_520_enginio
+arg_substitution_list:      @ENGINIO_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz, @QT_VERSION@=5.2.0
+repo_content_type:          enginio
+repo_components_to_update:  qt.520.*
+repo_url_specifier:         linux_x64/desktop/qt5
+
+[release.enginio.repository.linux.x64.android]
+arg_configurations_file:    repository_configs_android_qt5/linux_x64_repository_520_enginio
+arg_substitution_list:      @ENGINIO_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz, @QT_VERSION@=5.2.0
+repo_content_type:          enginio
+repo_components_to_update:  qt.520.*
+repo_url_specifier:         linux_x64/android/qt5
+
+
+################################################################################
+## Windows repository
+################################################################################
+[release.enginio.repository.windows.x86]
+arg_configurations_file:    repository_configs_desktop_qt5/win_x86_repository_520_enginio
+arg_substitution_list:      @ENGINIO_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip, @QT_VERSION@=5.2.0
+repo_content_type:          enginio
+repo_components_to_update:  qt.520.*
+repo_url_specifier:         windows_x86/desktop/qt5
+
+[release.enginio.repository.windows.x86.android]
+arg_configurations_file:    repository_configs_android_qt5/win_x86_repository_520_enginio
+arg_substitution_list:      @ENGINIO_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip, @QT_VERSION@=5.2.0
+repo_content_type:          enginio
+repo_components_to_update:  qt.520.*
+repo_url_specifier:         windows_x86/android/qt5
+
+
+################################################################################
+## Mac repository
+################################################################################
+[release.enginio.repository.mac.x64]
+arg_configurations_file:    repository_configs_desktop_qt5/mac_x64_repository_520_enginio
+arg_substitution_list:      @ENGINIO_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz, @QT_VERSION@=5.2.0
+repo_content_type:          enginio
+repo_components_to_update:  qt.520.*
+repo_url_specifier:         mac_x64/desktop/qt5
+
+[release.enginio.repository.mac.x64.android]
+arg_configurations_file:    repository_configs_android_qt5/mac_x64_repository_520_enginio
+arg_substitution_list:      @ENGINIO_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz, @QT_VERSION@=5.2.0
+repo_content_type:          enginio
+repo_components_to_update:  qt.520.*
+repo_url_specifier:         mac_x64/android/qt5
+
