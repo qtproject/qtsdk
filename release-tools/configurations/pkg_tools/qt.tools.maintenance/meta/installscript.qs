@@ -39,9 +39,6 @@
 **
 ****************************************************************************/
 
-var component_root_path = "/";
-var native_path_separator = "/";
-
 // constructor
 function Component()
 {
@@ -55,37 +52,11 @@ function Component()
     installer.setInstallerBaseBinary(component.installerbaseBinaryPath);
 }
 
-function buildNativeComponentRootPath()
-{
-    var target_install_dir = "%TARGET_INSTALL_DIR%";
-    if (installer.value("os") == "win") {
-        native_path_separator = "\\";
-        target_install_dir = target_install_dir.replace(/\//g, "\\");
-    }
-    else {
-        native_path_separator = "/";
-    }
-
-    component_root_path = installer.value("TargetDir") + target_install_dir;
-}
-
-Component.prototype.createOperationsForArchive = function(archive)
-{
-    //installer.performOperation in older versions of the installer framework don't supports @TargetDir@
-    var normalizedInstallerbaseBinaryPath = component.installerbaseBinaryPath.replace(/@TargetDir@/,
-        installer.value("TargetDir"));
-
-    installer.performOperation("SimpleMoveFile",
-        new Array(normalizedInstallerbaseBinaryPath, normalizedInstallerbaseBinaryPath + "_backup"));
-    component.createOperationsForArchive(archive);
-}
-
 Component.prototype.createOperations = function()
 {
     // Call the base createOperations and afterwards set some registry settings (unpacking ...)
     component.createOperations();
-    buildNativeComponentRootPath();
-    var maintenance_tool_bin = installer.value("TargetDir") + "/MaintenanceTool";
+    var maintenance_tool_bin = "@TargetDir@/MaintenanceTool";
 
     if ( installer.value("os") == "win" )
     {
