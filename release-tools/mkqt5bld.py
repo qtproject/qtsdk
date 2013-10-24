@@ -732,7 +732,7 @@ def patch_android_prl_files():
         # temporary solution for Android on Windows compilations
         if bldinstallercommon.is_win_platform():
             install_path_essent = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
-            install_path_essent = 'C' + install_path[1:]
+            install_path_essent = 'C' + install_path_essent[1:]
 
         # find the lib directory under the install directory for essentials and addons
         lib_path_essent = os.path.normpath(install_path_essent + os.sep + INSTALL_PREFIX + os.sep + 'lib')
