@@ -543,10 +543,12 @@ def replace_system_paths():
                    + os.sep + INSTALL_PREFIX + os.sep + 'mkspecs' + os.sep + 'qconfig.pri'
     print_wrap('------------ Replacing system paths in ' + qconfig_path + ' ----------------')
     for line in fileinput.FileInput(qconfig_path, inplace=1):
-        if line.startswith('QMAKE_DEFAULT_LIBDIRS'):
-            print 'QMAKE_DEFAULT_LIBDIRS ='
-        elif line.startswith('QMAKE_DEFAULT_INCDIRS'):
-            print 'QMAKE_DEFAULT_INCDIRS ='
+        if 'QMAKE_DEFAULT_LIBDIRS' in line:
+            libdirs = line.split('=')[0]
+            print libdirs + ' = '
+        elif 'QMAKE_DEFAULT_INCDIRS' in line:
+            incdirs = line.split('=')[0]
+            print incdirs + ' = '
         else:
             print line,
     print_wrap('--------------------------------------------------------------------')
