@@ -210,13 +210,6 @@ def init_qt_build_cycle():
     cmd_args = [SSH_COMMAND, PKG_SERVER_ADDR, 'ln -sfn', REMOTE_DIR, LATEST_DIR]
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
-    # QT Creator directory
-    dir_path = PATH + '/' + LICENSE + '/' + 'qtcreator'
-    create_remote_dirs(PKG_SERVER_ADDR, dir_path + '/' + TIME_STAMP + '-' + BUILD_NUMBER)
-
-    cmd_args = [SSH_COMMAND, PKG_SERVER_ADDR, 'ln -sfn', dir_path + '/' + TIME_STAMP + '-' + BUILD_NUMBER, dir_path + '/' + 'latest']
-    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
-
 
 
 ###############################
@@ -817,6 +810,14 @@ def handle_qt_release_build():
 ###############################
 def handle_qt_creator_build():
     sanity_check_packaging_server()
+
+    # QT Creator directory
+    dir_path = PATH + '/' + LICENSE + '/' + 'qtcreator'
+    create_remote_dirs(PKG_SERVER_ADDR, dir_path + '/' + TIME_STAMP[:10] + '_' + BUILD_NUMBER)
+
+    cmd_args = [SSH_COMMAND, PKG_SERVER_ADDR, 'ln -sfn', dir_path + '/' + TIME_STAMP[:10] + '_' + BUILD_NUMBER, dir_path + '/' + 'latest']
+    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
+
     dir_path = PATH + LICENSE + '/qtcreator/latest'
     cmd_args = ['python', '-u', 'bld_qtcreator.py',
         '--clean',
