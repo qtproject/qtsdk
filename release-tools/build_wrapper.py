@@ -564,7 +564,7 @@ def validate_enginio_build_args(cmd_line_options):
     if not os.environ.get('QT5_ESSENTIALS_LIB_PACKAGE_URI'):
         print('*** Enginio build missing environment variable: {0}'.format('QT5_ESSENTIALS_LIB_PACKAGE_URI'))
         sys.exit(-1)
-    if not os.environ.get('QT5_ESSENTIALS_LIB_PACKAGE_URI'):
+    if not os.environ.get('QT5_ADDONS_LIB_PACKAGE_URI'):
         print('*** Enginio build missing environment variable: {0}'.format('QT5_ADDONS_LIB_PACKAGE_URI'))
         sys.exit(-1)
     if bldinstallercommon.is_win_platform():
