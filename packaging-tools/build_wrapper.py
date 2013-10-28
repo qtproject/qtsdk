@@ -811,105 +811,42 @@ def handle_examples_injection():
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR + '/module_archives', True)
         cmd_args = ['wget', SRC_URL + '/examples_injection/examples_addons.7z']
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR + '/module_archives', True)
-    elif bldinstallercommon.is_mac_platform():
+    else:
         cmd_args = [CURL_COMMAND, '-O', SRC_URL + '/examples_injection/examples_essentials.7z']
         bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
         cmd_args = [CURL_COMMAND, '-O', SRC_URL + '/examples_injection/examples_addons.7z']
         bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-    else:
-        if TARGET_ENV.find('x86') >=1:
-            cmd_args = [CURL_COMMAND, '-O', SRC_URL + '/examples_injection/examples_essentials.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-            cmd_args = [CURL_COMMAND, '-O', SRC_URL + '/examples_injection/examples_addons.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-        else:
-            cmd_args = [CURL_COMMAND, '-O', SRC_URL + '/examples_injection/examples_essentials.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-            cmd_args = [CURL_COMMAND, '-O', SRC_URL + '/examples_injection/examples_addons.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
     bldinstallercommon.create_dirs(os.path.join(WORK_DIR, 'module_archives', 'essentials'))
     bldinstallercommon.create_dirs(os.path.join(WORK_DIR, 'module_archives', 'addons'))
 
-    if bldinstallercommon.is_win_platform():
-        if TARGET_ENV.find('x86') >= 1:
-            cmd_args = ['7z', 'x', 'qt5_essentials.7z', '-oessentials']
-            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-            cmd_args = ['7z', 'x', 'examples_essentials.7z', os.path.join('-oessentials', 'examples'), '-y']
-            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
+    # essentials
+    cmd_args = ['7z', 'x', 'qt5_essentials.7z', '-oessentials']
+    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
+    cmd_args = ['7z', 'x', 'examples_essentials.7z', os.path.join('-oessentials', 'examples'), '-y']
+    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
-            cmd_args = [RM_COMMAND, 'qt5_essentials.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-            cmd_args = [RM_COMMAND, 'examples_essentials.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
+    cmd_args = [RM_COMMAND, 'qt5_essentials.7z']
+    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
+    cmd_args = [RM_COMMAND, 'examples_essentials.7z']
+    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
-            cmd_args = ['7z', 'a', os.path.join('..', 'qt5_essentials.7z'), '*']
-            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives/essentials'), True)
+    cmd_args = ['7z', 'a', os.path.join('..', 'qt5_essentials.7z'), '*']
+    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives/essentials'), True)
 
-            cmd_args = ['7z', 'x', 'qt5_addons.7z', '-oaddons']
-            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-            cmd_args = ['7z', 'x', 'examples_addons.7z', os.path.join('-oaddons', 'examples'), '-y']
-            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
+    # addons
+    cmd_args = ['7z', 'x', 'qt5_addons.7z', '-oaddons']
+    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
+    cmd_args = ['7z', 'x', 'examples_addons.7z', os.path.join('-oaddons', 'examples'), '-y']
+    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
-            cmd_args = [RM_COMMAND, 'qt5_addons.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-            cmd_args = [RM_COMMAND, 'examples_addons.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
+    cmd_args = [RM_COMMAND, 'qt5_addons.7z']
+    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
+    cmd_args = [RM_COMMAND, 'examples_addons.7z']
+    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
-            cmd_args = ['7z', 'a', os.path.join('..', 'qt5_addons.7z'), '*']
-            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives/addons'), True)
-        else:
-            cmd_args = ['7z', 'x', 'qt5_essentials.7z', '-oessentials']
-            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-            cmd_args = ['7z', 'x', 'examples_essentials.7z', os.path.join('-oessentials', 'examples'), '-y']
-            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-
-            cmd_args = [RM_COMMAND, 'qt5_essentials.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-            cmd_args = [RM_COMMAND, 'examples_essentials.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-
-            cmd_args = ['7z', 'a', os.path.join('..', 'qt5_essentials.7z'), '*']
-            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives/essentials'), True)
-
-            cmd_args = ['7z', 'x', 'qt5_addons.7z', '-oaddons']
-            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-            cmd_args = ['7z', 'x', 'examples_addons.7z', os.path.join('-oaddons', 'examples'), '-y']
-            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-
-            cmd_args = [RM_COMMAND, 'qt5_addons.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-            cmd_args = [RM_COMMAND, 'examples_addons.7z']
-            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-
-            cmd_args = ['7z', 'a', os.path.join('..', 'qt5_addons.7z'), '*']
-            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives/addons'), True)
-    else:
-        cmd_args = ['7z', 'x', 'qt5_essentials.7z', '-oessentials']
-        bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-        cmd_args = ['7z', 'x', 'examples_essentials.7z', os.path.join('-oessentials', 'examples'), '-y']
-        bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-
-        cmd_args = [RM_COMMAND, 'qt5_essentials.7z']
-        bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-        cmd_args = [RM_COMMAND, 'examples_essentials.7z']
-        bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-
-        cmd_args = ['7z', 'a', os.path.join('..', 'qt5_essentials.7z'), '*']
-        bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives/essentials'), True)
-
-        cmd_args = ['7z', 'x', 'qt5_addons.7z', '-oaddons']
-        bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-        cmd_args = ['7z', 'x', 'examples_addons.7z', os.path.join('-oaddons', 'examples'), '-y']
-        bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-
-        cmd_args = [RM_COMMAND, 'qt5_addons.7z']
-        bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-        cmd_args = [RM_COMMAND, 'examples_addons.7z']
-        bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-
-        cmd_args = ['7z', 'a', os.path.join('..', 'qt5_addons.7z'), '*']
-        bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives/addons'), True)
+    cmd_args = ['7z', 'a', os.path.join('..', 'qt5_addons.7z'), '*']
+    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives/addons'), True)
 
 
 ###############################
