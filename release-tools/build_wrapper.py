@@ -166,7 +166,7 @@ def sign_windows_executable(file_path, working_dir, abort_on_fail):
 ###############################
 def unlock_keychain():
     cmd_args = ['/Users/qt/unlock-keychain.py']
-    bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
 
 ###############################
