@@ -48,7 +48,7 @@ version:
 version_tag:
 package_default:        true
 [readme]
-archive_uri:            http://qt.gitorious.org/qtsdk/qtsdk/raw/release-tools/dist/README.txt
+archive_uri:            http://qt.gitorious.org/qtsdk/qtsdk/raw/packaging-tools/dist/README.txt
 package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:

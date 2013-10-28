@@ -3,4 +3,4 @@
 .gitattributes          export-ignore
 .gitmodules             export-ignore
 init-repository         export-ignore
-release-tools           export-ignore
+packaging-tools         export-ignore

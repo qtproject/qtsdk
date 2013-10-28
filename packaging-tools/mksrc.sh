@@ -19,8 +19,8 @@
 # Gives an unbound variable error message at each attempt
 # to use an undeclared parameter.
 #
-# $ release-tools/mksrc.sh -v
-# release-tools/mksrc.sh: line 161: $1: unbound variable
+# $ packaging-tools/mksrc.sh -v
+# packaging-tools/mksrc.sh: line 161: $1: unbound variable
 set -u
 
 # Exit immediately if a command exits with a non-zero status.

@@ -1,6 +1,6 @@
 1.  Introduction to installer scripts
 
-    The folder release-tools of Qt 5's qtrepotools module contains
+    The folder packaging-tools of Qt 5's qtrepotools module contains
     scripts to generate desktop installers based on the Qt
     Installer-Framework. Example configuration templates are provided
     but actual content that is to be installed needs to be generated
