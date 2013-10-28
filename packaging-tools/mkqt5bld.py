@@ -90,6 +90,7 @@ ORIGINAL_QMAKE_QT_PRFXPATH          = ''
 PADDING                             = '______________________________PADDING______________________________'
 FILES_TO_REMOVE_LIST                = ['Makefile', 'Makefile.Release', 'Makefile.Debug', \
                                        '.o', '.obj', '.moc', \
+                                       '.index', '.qhp', \
                                        '.init-repository', '.gitignore', \
                                        'libQt5Bootstrap.a', 'qt_lib_bootstrap.pri']
 IGNORE_PATCH_LIST                   = ['.png', '.jpg', '.gif', '.bmp', '.exe', '.dll', '.lib', '.qph']
@@ -1077,11 +1078,11 @@ def main():
     # install qmlpuppets
     if not ANDROID_BUILD:
         install_qmlpuppets()
-    #cleanup files that are not needed in binary packages
-    clean_up(MAKE_INSTALL_ROOT_DIR)
     # build docs and copy to essentials install dir
     if not ANDROID_BUILD:
         build_docs()
+    #cleanup files that are not needed in binary packages
+    clean_up(MAKE_INSTALL_ROOT_DIR)
     # patch files after build
     patch_build()
     # archive each submodule
