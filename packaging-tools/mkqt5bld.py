@@ -604,6 +604,10 @@ def clean_up(install_dir):
 def build_docs():
     print_wrap('------------------------- Building documentation -------------------')
 
+    print_wrap('    Running \'make qmake_all\' ...')
+    cmd_args = MAKE_CMD + ' qmake_all'
+    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, False, False)
+
     #first we need to do make install for the sources
     print_wrap('    Running make install...')
     install_args = MAKE_INSTALL_CMD
