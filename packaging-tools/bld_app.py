@@ -109,7 +109,7 @@ parser.add_argument('--buildcommand', help="this means usually make", default="m
 parser.add_argument('--installcommand', help="this means usually make", default="make")
 parser.add_argument('--debug', help="use debug builds", action='store_true', default=False)
 parser.add_argument('--qt5_essentials7z', help="a file or url where it get the built qt5 essential content as 7z")
-parser.add_argument('--qt5_addons7z', help="a file or url where it get the built qt5 addons content as 7z")
+parser.add_argument('--qt5_addons7z', help="a file or url where it get the built qt5 addons content as 7z", required=False)
 parser.add_argument('--application_url', help="Git URL for Qt Application", required=False, default='')
 parser.add_argument('--application_branch', help="Git branch for Qt Application", required=False, default='')
 parser.add_argument('--application_dir', help="Local copy of Qt Application", required=False, default='')
@@ -117,12 +117,12 @@ parser.add_argument('--application7z', help="a file or url where it get the appl
 
 
 if (sys.platform != "darwin"):
-    parser.add_argument('--icu7z', help="a file or url where it get icu libs as 7z", required=True)
+    parser.add_argument('--icu7z', help="a file or url where it get icu libs as 7z", required=False)
 
 # if we are on windows, maybe we want some other arguments
 if os.name == 'nt':
-    parser.add_argument('--sevenzippath', help="path where the 7zip binary is located")
-    parser.add_argument('--gitpath', help="path where the git binary is located")
+    parser.add_argument('--sevenzippath', help="path where the 7zip binary is located", required=False)
+    parser.add_argument('--gitpath', help="path where the git binary is located", required=False)
 
 if sys.platform == "darwin":
     parser.add_argument('--installerbase7z', help="a file or url where it get installerbase binary as 7z")
@@ -176,10 +176,9 @@ if callerArguments.clean:
     removeDir(qtApplicationInstallDirectory, raiseNoException = True)
     removeDir(tempPath, raiseNoException = True)
 
-if not os.path.lexists(callerArguments.qt5path) and not all(
-    (callerArguments.qt5_essentials7z, callerArguments.qt5_addons7z)):
+if not os.path.lexists(callerArguments.qt5path) and not (callerArguments.qt5_essentials7z):
     parser.print_help()
-    print(("error: Please add the missing qt5_essentials7z and qt5_addons7z arguments if the {0} does not exist"
+    print(("error: Please add the missing qt5_essentials7z argument if the {0} does not exist"
         + os.linesep + os.linesep).format(callerArguments.qt5path))
     sys.exit(1)
 
@@ -191,24 +190,26 @@ if not os.path.lexists(callerArguments.qt5path):
     myGetQtBinaryWork.addTaskObject(
         createDownloadExtract7zTask(callerArguments.qt5_essentials7z, callerArguments.qt5path, tempPath, callerArguments))
 
-### add get Qt addons task
-    myGetQtBinaryWork.addTaskObject(
-        createDownloadExtract7zTask(callerArguments.qt5_addons7z, callerArguments.qt5path, tempPath, callerArguments))
-
-    if os.name == 'nt':
-        targetPath = os.path.join(callerArguments.qt5path, 'bin')
-    else:
-        targetPath = os.path.join(callerArguments.qt5path, 'lib')
-
-### add get icu lib task
-    if os.name == 'nt':
-        targetPath = os.path.join(callerArguments.qt5path, 'bin')
-    else:
-        targetPath = os.path.join(callerArguments.qt5path, 'lib')
-
-    if not sys.platform == "darwin":
+    ### add get Qt addons task
+    if callerArguments.qt5_addons7z:
         myGetQtBinaryWork.addTaskObject(
-            createDownloadExtract7zTask(callerArguments.icu7z, targetPath, tempPath, callerArguments))
+            createDownloadExtract7zTask(callerArguments.qt5_addons7z, callerArguments.qt5path, tempPath, callerArguments))
+
+        if os.name == 'nt':
+            targetPath = os.path.join(callerArguments.qt5path, 'bin')
+        else:
+            targetPath = os.path.join(callerArguments.qt5path, 'lib')
+
+    ### add get icu lib task
+    if callerArguments.icu7z:
+        if os.name == 'nt':
+            targetPath = os.path.join(callerArguments.qt5path, 'bin')
+        else:
+            targetPath = os.path.join(callerArguments.qt5path, 'lib')
+
+        if not sys.platform == "darwin":
+            myGetQtBinaryWork.addTaskObject(
+                createDownloadExtract7zTask(callerArguments.icu7z, targetPath, tempPath, callerArguments))
 
     if sys.platform == "darwin":
         myGetQtBinaryWork.addTaskObject(
