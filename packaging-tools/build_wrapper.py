@@ -226,7 +226,7 @@ def handle_ifw_build():
     extension = '.tar.gz'
     qt_src_pkg = QT_SRC_FOR_IFW_PREPARED
     ifw_url = IFW_GIT_URL
-    ifw_branch = '1.4'
+    ifw_branch = os.environ['QT_INSTALLER_FRAMEWORK_VERSION']
     if bldinstallercommon.is_win_platform():
         extension = '.zip'
     qt_src_pkg += extension
