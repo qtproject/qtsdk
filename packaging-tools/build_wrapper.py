@@ -136,6 +136,143 @@ EXTRA_ENV                   = dict(os.environ)
 MAKE_INSTALL_PADDING        = ''
 
 
+###########################################
+# Define possible commands for this script
+###########################################
+class BldCommand:
+    init_build_cycle            = 'init'
+    execute_qt5_src_pkg         = 'build_src'
+    execute_qt5_bin_bld         = 'build_bin'
+    execute_qt5_app_bld         = 'build_qt5_app'
+    execute_ifw_bld             = 'ifw'
+    execute_creator_bld         = 'build_creator'
+    execute_repo_bld            = 'repo_build'
+    execute_offline_inst_bld    = 'offline_installer'
+    execute_online_inst_bld     = 'online_installer'
+    publish_qt5_src_pkg         = 'publish_src_packages'
+
+    def __init__(self, options):
+        self.options = options
+
+    ###########################################
+    # Validate the given command
+    ###########################################
+    def is_valid_cmd(self):
+        commands = [self.init_build_cycle]
+        commands += [self.execute_qt5_src_pkg]
+        commands += [self.execute_qt5_bin_bld]
+        commands += [self.execute_qt5_app_bld]
+        commands += [self.execute_ifw_bld]
+        commands += [self.execute_creator_bld]
+        commands += [self.execute_repo_bld]
+        commands += [self.execute_offline_inst_bld]
+        commands += [self.execute_online_inst_bld]
+        commands += [self.publish_qt5_src_pkg]
+        if self.options.command not in commands:
+            return False
+        return True
+
+    ###########################################
+    # Validate generic build arguments
+    ###########################################
+    def validate_bld_args(self):
+        if not self.options.command:
+            print('*** Build command not given? Aborting....')
+            return False
+        if not self.is_valid_cmd():
+            print('*** The given build command enum is invalid: {0}'.format(self.options.command))
+        if self.options.command == self.execute_repo_bld:
+            if len(sys.argv) < 4:
+                return False
+        elif self.options.command == self.execute_online_inst_bld:
+            if len(sys.argv) < 4:
+                print('*** Insufficient arguments for online installer build!')
+                return False
+        elif self.options.command == self.execute_qt5_app_bld:
+            return self.validate_qt5_app_build_args()
+        else:
+            if len(sys.argv) < 15:
+                return False
+        return True
+
+    ###########################################
+    # Validate build args for Qt5 app build
+    ###########################################
+    def validate_qt5_app_build_args(self):
+        print(self.options)
+        # check env variables
+        if not os.environ.get('QT5_APPLICATION_SRC_URI'):
+            print('*** Qt5 app build missing environment variable: {0}'.format('QT5_APPLICATION_SRC_URI'))
+            sys.exit(-1)
+        if not os.environ.get('QT5_ESSENTIALS_LIB_PACKAGE_URI'):
+            print('*** Qt5 app build missing environment variable: {0}'.format('QT5_ESSENTIALS_LIB_PACKAGE_URI'))
+            sys.exit(-1)
+        if not os.environ.get('QT5_ADDONS_LIB_PACKAGE_URI'):
+            print('*** Qt5 app build missing environment variable: {0}'.format('QT5_ADDONS_LIB_PACKAGE_URI'))
+            sys.exit(-1)
+        if bldinstallercommon.is_win_platform():
+            if not os.environ.get('WINDOWS_BUILD_COMMAND'):
+                print('*** Qt5 app build missing environment variable: {0}'.format('WINDOWS_BUILD_COMMAND'))
+                sys.exit(-1)
+            if not os.environ.get('WINDOWS_INSTALL_COMMAND'):
+                print('*** Qt5 app build missing environment variable: {0}'.format('WINDOWS_INSTALL_COMMAND'))
+                sys.exit(-1)
+            if not os.environ.get('7Z_TOOL_PATH'):
+                print('*** Qt5 app build missing environment variable: {0}'.format('7Z_TOOL_PATH'))
+                sys.exit(-1)
+            if not os.environ.get('GIT_TOOL_PATH'):
+                print('*** Qt5 app build missing environment variable: {0}'.format('GIT_TOOL_PATH'))
+                sys.exit(-1)
+        if bldinstallercommon.is_mac_platform():
+            if not os.environ.get('IFW_INSTALLERBASE_URI'):
+                print('*** Qt5 app build missing environment variable: {0}'.format('IFW_INSTALLERBASE_URI'))
+                sys.exit(-1)
+            if not os.environ.get('MAC_INSTALL_COMMAND'):
+                print('*** Qt5 app build missing environment variable: {0}'.format('MAC_INSTALL_COMMAND'))
+                sys.exit(-1)
+        # check command line arguments
+        if not self.options.license:
+            print('*** Qt5 app build missing command line argument: --license')
+            sys.exit(-1)
+        if not self.options.server:
+            print('*** Qt5 app build missing command line argument: --server')
+            sys.exit(-1)
+        if self.is_qt5_release_build() and not self.options.qt_version:
+            print('*** Qt5 app build missing command line argument: --qt_version')
+            sys.exit(-1)
+        if not self.options.target_env:
+            print('*** Qt5 app build missing command line argument: --target_env')
+            sys.exit(-1)
+        if not self.options.path:
+            print('*** Qt5 app build missing command line argument: --path')
+            sys.exit(-1)
+
+        return True
+
+    ###########################################
+    # Determine if command relates to qt5 builds
+    ###########################################
+    def is_qt5_release_build(self):
+        cmd_list = [self.init_build_cycle]
+        cmd_list += [self.execute_qt5_src_pkg]
+        cmd_list += [self.execute_qt5_bin_bld]
+        cmd_list += [self.publish_qt5_src_pkg]
+        if self.options.command not in cmd_list:
+            return False
+        return True
+
+    ###########################################
+    # Determine if this is Enginio build
+    ###########################################
+    def is_enginio_build(self):
+        if self.options.command == self.execute_qt5_app_bld:
+            app_name = os.environ.get('APPLICATION_NAME')
+            if 'enginio' in app_name.lower():
+                return True
+        return False
+
+
+
 class MultipleOption(Option):
     ACTIONS = Option.ACTIONS + ("extend",)
     STORE_ACTIONS = Option.STORE_ACTIONS + ("extend",)
@@ -559,90 +696,31 @@ def handle_qt_desktop_release_build():
 
 
 ###############################
-# Validate build args for Enginio build
+# Handle Application release build
 ###############################
-def validate_enginio_build_args(cmd_line_options):
-    # check env variables
-    if not os.environ.get('QT5_ENGINIO_SRC_URI'):
-        print('*** Enginio build missing environment variable: {0}'.format('QT5_ENGINIO_SRC_URI'))
-        sys.exit(-1)
-    if not os.environ.get('QT5_ESSENTIALS_LIB_PACKAGE_URI'):
-        print('*** Enginio build missing environment variable: {0}'.format('QT5_ESSENTIALS_LIB_PACKAGE_URI'))
-        sys.exit(-1)
-    if not os.environ.get('QT5_ADDONS_LIB_PACKAGE_URI'):
-        print('*** Enginio build missing environment variable: {0}'.format('QT5_ADDONS_LIB_PACKAGE_URI'))
-        sys.exit(-1)
-    if bldinstallercommon.is_win_platform():
-        if not os.environ.get('WINDOWS_BUILD_COMMAND'):
-            print('*** Enginio build missing environment variable: {0}'.format('WINDOWS_BUILD_COMMAND'))
-            sys.exit(-1)
-        if not os.environ.get('WINDOWS_INSTALL_COMMAND'):
-            print('*** Enginio build missing environment variable: {0}'.format('WINDOWS_INSTALL_COMMAND'))
-            sys.exit(-1)
-        if not os.environ.get('7Z_TOOL_PATH'):
-            print('*** Enginio build missing environment variable: {0}'.format('7Z_TOOL_PATH'))
-            sys.exit(-1)
-        if not os.environ.get('GIT_TOOL_PATH'):
-            print('*** Enginio build missing environment variable: {0}'.format('GIT_TOOL_PATH'))
-            sys.exit(-1)
-    if bldinstallercommon.is_mac_platform():
-        if not os.environ.get('IFW_INSTALLERBASE_URI'):
-            print('*** Enginio build missing environment variable: {0}'.format('IFW_INSTALLERBASE_URI'))
-            sys.exit(-1)
-        if not os.environ.get('MAC_INSTALL_COMMAND'):
-            print('*** Enginio build missing environment variable: {0}'.format('MAC_INSTALL_COMMAND'))
-            sys.exit(-1)
-    # check command line arguments
-    if not cmd_line_options.license:
-        print('*** Enginio build missing command line argument: --license')
-        sys.exit(-1)
-    if not cmd_line_options.server:
-        print('*** Enginio build missing command line argument: --server')
-        sys.exit(-1)
-    if not cmd_line_options.qt_version:
-        print('*** Enginio build missing command line argument: --qt_version')
-        sys.exit(-1)
-    if not cmd_line_options.target_env:
-        print('*** Enginio build missing command line argument: --target_env')
-        sys.exit(-1)
-    if not cmd_line_options.path:
-        print('*** Enginio build missing command line argument: --path')
-        sys.exit(-1)
-
-    return True
-
-
-###############################
-# Handle Enginio release build
-###############################
-def handle_qt_enginio_release_build():
+def handle_qt5_application_release_build():
     script_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_app.py')
-    qt5_enginio_source_uri          = os.environ['QT5_ENGINIO_SRC_URI']
-    qt5_essentials_lib_package_uri  = os.environ['QT5_ESSENTIALS_LIB_PACKAGE_URI']
-    qt5_addons_lib_package_uri      = os.environ['QT5_ADDONS_LIB_PACKAGE_URI']
-    icu7z_package                   = os.environ.get('ICU7Z')
-
-    ## common cmd_args for all platforms
-    # we need to change the extension to .zip on windows. os x and linux use .tar.gz for the source file (.zip includes configure.exe)
-    extension = '.tar.gz'
-    if bldinstallercommon.is_win_platform():
-        extension = '.zip'
+    icu7z_package = os.environ.get('ICU7Z')
+    qt5_addons_lib_package_uri = os.environ.get('QT5_ADDONS_LIB_PACKAGE_URI')
     # build command
     cmd_args = ['python', '-u', script_path, '--clean']
     cmd_args += ['--qt5path', 'qt5_package_dir']
     cmd_args += ['--qt5_essentials7z', os.environ['QT5_ESSENTIALS_LIB_PACKAGE_URI']]
-    cmd_args += ['--qt5_addons7z', os.environ['QT5_ADDONS_LIB_PACKAGE_URI']]
-    cmd_args += ['--application7z', os.environ['QT5_ENGINIO_SRC_URI']]
+    if qt5_addons_lib_package_uri:
+        cmd_args += ['--qt5_addons7z', qt5_addons_lib_package_uri]
+    cmd_args += ['--application7z', os.environ['QT5_APPLICATION_SRC_URI']]
     if icu7z_package:
         cmd_args += ['--icu7z', icu7z_package]
     if bldinstallercommon.is_win_platform():
         cmd_args += ['--buildcommand', os.environ['WINDOWS_BUILD_COMMAND']]
         cmd_args += ['--installcommand', os.environ['WINDOWS_INSTALL_COMMAND']]
-        cmd_args += ['--sevenzippath', os.environ['7Z_TOOL_PATH']]
-        cmd_args += ['--gitpath', os.environ['GIT_TOOL_PATH']]
+        cmd_args += ['--sevenzippath', os.environ.get('7Z_TOOL_PATH')]
+        cmd_args += ['--gitpath', os.environ.get('GIT_TOOL_PATH')]
     if bldinstallercommon.is_mac_platform():
         cmd_args += ['--installerbase7z', os.environ['IFW_INSTALLERBASE_URI']]
-        cmd_args += ['--installcommand', os.environ['MAC_INSTALL_COMMAND']]
+        cmd_args += ['--installcommand', os.environ.get('MAC_INSTALL_COMMAND')]
+    # init result directories
+    create_remote_dirs(PKG_SERVER_ADDR, LATEST_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV])
     # execute build
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
     # copy 7z files to network drive
@@ -1144,27 +1222,6 @@ def create_remote_dirs(server, dir_path):
 
 
 ###############################
-# sanity check command line options
-###############################
-def sanity_check_options(options):
-    if not options.command in ['init', 'build_src', 'build_bin', 'build_enginio', 'offline_installer', 'ifw', 'build_creator', 'repo_build', 'online_installer', 'publish_src_packages']:
-        return False
-    if options.command == 'repo_build':
-        if len(sys.argv) < 4:
-            return False
-    elif options.command == 'online_installer':
-        if len(sys.argv) < 4:
-            print('*** Insufficient arguments for online installer build!')
-            return False
-    elif options.command == 'build_enginio':
-        return validate_enginio_build_args(options)
-    else:
-        if len(sys.argv) < 15:
-            return False
-    return True
-
-
-###############################
 # parse_cmd_line
 ###############################
 def parse_cmd_line():
@@ -1194,7 +1251,8 @@ def parse_cmd_line():
 
     (options, args) = OPTION_PARSER.parse_args()
     COMMAND = options.command
-    if (sanity_check_options(options)):
+    bld_cmd_validator = BldCommand(options)
+    if bld_cmd_validator.validate_bld_args():
         COMMAND           = options.command
         LICENSE           = options.license
         QT_VERSION        = options.qt_version
@@ -1214,8 +1272,6 @@ def parse_cmd_line():
             QTCREATOR_VERSION_DESCRIPTION = QTCREATOR_VERSION
         else:
             QTCREATOR_VERSION_DESCRIPTION = ''
-        REMOTE_DIR      = PATH + '/' + LICENSE + '/' + 'qt' + '/' + QT_VERSION + '/' + TIME_STAMP + '-' + BUILD_NUMBER
-        LATEST_DIR      = PATH + '/' + LICENSE + '/' + 'qt' + '/' + QT_VERSION + '/' + 'latest'
     else:
         OPTION_PARSER.print_help()
         sys.exit(-1)
@@ -1228,6 +1284,17 @@ def parse_cmd_line():
         PLATFORM = 'mac'
     else:
         PLATFORM = 'windows'
+
+    # define LATEST directories
+    REMOTE_DIR = PATH + '/' + LICENSE + '/'
+    LATEST_DIR = PATH + '/' + LICENSE + '/'
+
+    if bld_cmd_validator.is_qt5_release_build() or bld_cmd_validator.is_enginio_build():
+        REMOTE_DIR += 'qt' + '/' + QT_VERSION + '/' + TIME_STAMP + '-' + BUILD_NUMBER
+        LATEST_DIR += 'qt' + '/' + QT_VERSION + '/' + 'latest'
+    else:
+        REMOTE_DIR += os.environ['APPLICATION_NAME'] + '/' + os.environ['APPLICATION_VERSION'] + '/' + TIME_STAMP + '-' + BUILD_NUMBER
+        LATEST_DIR += os.environ['APPLICATION_NAME'] + '/' + os.environ['APPLICATION_VERSION'] + '/' + 'latest'
 
     return True
 
@@ -1307,27 +1374,27 @@ def main():
     init_env()
 
     parse_cmd_line()
-    if COMMAND == 'init':
+    if COMMAND == BldCommand.init_build_cycle:
         init_qt_build_cycle()
-    elif COMMAND == 'build_src':
+    elif COMMAND == BldCommand.execute_qt5_src_pkg:
         if LICENSE == 'opensource':
             init_qt_build_cycle()
         handle_qt_src_package_build()
-    elif COMMAND == 'build_bin':
+    elif COMMAND == BldCommand.execute_qt5_bin_bld:
         handle_qt_release_build()
-    elif COMMAND == 'build_enginio':
-        handle_qt_enginio_release_build()
-    elif COMMAND == 'ifw':
+    elif COMMAND == BldCommand.execute_qt5_app_bld:
+        handle_qt5_application_release_build()
+    elif COMMAND == BldCommand.execute_ifw_bld:
         handle_ifw_build()
-    elif COMMAND == 'build_creator':
+    elif COMMAND == BldCommand.execute_creator_bld:
         handle_qt_creator_build()
-    elif COMMAND == 'repo_build':
+    elif COMMAND == BldCommand.execute_repo_bld:
         handle_online_repository_build()
-    elif COMMAND == 'offline_installer':
+    elif COMMAND == BldCommand.execute_offline_inst_bld:
         handle_offline_installer_build()
-    elif COMMAND == 'online_installer':
+    elif COMMAND == BldCommand.execute_online_inst_bld:
         handle_online_installer_build()
-    elif COMMAND == 'publish_src_packages':
+    elif COMMAND == BldCommand.publish_qt5_src_pkg:
         publish_src_packages()
     else:
         print('Unsupported command')
