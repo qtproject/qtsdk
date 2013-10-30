@@ -201,15 +201,16 @@ if not os.path.lexists(callerArguments.qt5path):
             targetPath = os.path.join(callerArguments.qt5path, 'lib')
 
     ### add get icu lib task
-    if callerArguments.icu7z:
-        if os.name == 'nt':
-            targetPath = os.path.join(callerArguments.qt5path, 'bin')
-        else:
-            targetPath = os.path.join(callerArguments.qt5path, 'lib')
+    if not bldinstallercommon.is_mac_platform():
+        if callerArguments.icu7z:
+            if os.name == 'nt':
+                targetPath = os.path.join(callerArguments.qt5path, 'bin')
+            else:
+                targetPath = os.path.join(callerArguments.qt5path, 'lib')
 
-        if not sys.platform == "darwin":
-            myGetQtBinaryWork.addTaskObject(
-                createDownloadExtract7zTask(callerArguments.icu7z, targetPath, tempPath, callerArguments))
+            if not sys.platform == "darwin":
+                myGetQtBinaryWork.addTaskObject(
+                    createDownloadExtract7zTask(callerArguments.icu7z, targetPath, tempPath, callerArguments))
 
     if sys.platform == "darwin":
         myGetQtBinaryWork.addTaskObject(
