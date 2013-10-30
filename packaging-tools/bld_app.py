@@ -281,8 +281,8 @@ runCommand("{0} {1}".format(qmakeBinary, qmakeCommandArguments), qtApplicationBu
 #runBuildCommand(currentWorkingDirectory = qtApplicationBuildDirectory, callerArguments = callerArguments,
 #    init_environment = environment)
 makeCommand = 'make'
-if os.name == 'nt':
-    makeCommand = callerArguments.installcommand
+if os.name == 'nt' or sys.platform == "darwin":
+    makeCommand = callerArguments.buildcommand
 #runCommand("{0}".format(makeCommand),currentWorkingDirectory = qtApplicationBuildDirectory, callerArguments = callerArguments, init_environment = environment)
 runCommand("{0}".format(makeCommand), currentWorkingDirectory = qtApplicationBuildDirectory)
 
