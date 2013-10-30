@@ -109,7 +109,7 @@ parser.add_argument('--buildcommand', help="this means usually make", default="m
 parser.add_argument('--installcommand', help="this means usually make", default="make")
 parser.add_argument('--debug', help="use debug builds", action='store_true', default=False)
 parser.add_argument('--qt5_essentials7z', help="a file or url where it get the built qt5 essential content as 7z")
-parser.add_argument('--qt5_addons7z', help="a file or url where it get the built qt5 addons content as 7z", required=False)
+parser.add_argument('--qt5_addons7z', help="a file or url where it get the built qt5 addons content as 7z", required=False, default='')
 parser.add_argument('--application_url', help="Git URL for Qt Application", required=False, default='')
 parser.add_argument('--application_branch', help="Git branch for Qt Application", required=False, default='')
 parser.add_argument('--application_dir', help="Local copy of Qt Application", required=False, default='')
@@ -117,12 +117,12 @@ parser.add_argument('--application7z', help="a file or url where it get the appl
 
 
 if (sys.platform != "darwin"):
-    parser.add_argument('--icu7z', help="a file or url where it get icu libs as 7z", required=False)
+    parser.add_argument('--icu7z', help="a file or url where it get icu libs as 7z", required=False, default='')
 
 # if we are on windows, maybe we want some other arguments
 if os.name == 'nt':
-    parser.add_argument('--sevenzippath', help="path where the 7zip binary is located", required=False)
-    parser.add_argument('--gitpath', help="path where the git binary is located", required=False)
+    parser.add_argument('--sevenzippath', help="path where the 7zip binary is located", required=False, default='')
+    parser.add_argument('--gitpath', help="path where the git binary is located", required=False, default='')
 
 if sys.platform == "darwin":
     parser.add_argument('--installerbase7z', help="a file or url where it get installerbase binary as 7z")
