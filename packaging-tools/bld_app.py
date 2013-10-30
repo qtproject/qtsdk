@@ -56,6 +56,7 @@ from bld_utils import download, removeDir, runCommand, stripVars
 import bldinstallercommon
 
 SCRIPT_ROOT_DIR             = os.path.dirname(os.path.realpath(__file__))
+bldinstallercommon.init_common_module(os.getcwd())
 
 def createDownloadExtract7zTask(url, target_path, temp_path, caller_arguments):
     fileNameFromUrl = os.path.basename(urlparse(url).path)
@@ -230,7 +231,6 @@ if not os.path.lexists(callerArguments.qt5path):
         qtConfFile.write("Prefix=.." + os.linesep)
         qtConfFile.close()
     if sys.platform.startswith('linux'):
-        bldinstallercommon.init_common_module(os.getcwd())
         bldinstallercommon.handle_component_rpath(callerArguments.qt5path, 'lib')
     print("##### {0} ##### ... done".format("patch Qt"))
     runCommand(qmakeBinary + " -query", qtApplicationBuildDirectory, callerArguments)
