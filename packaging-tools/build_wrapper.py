@@ -211,11 +211,11 @@ class BldCommand:
             print('*** Qt5 app build missing environment variable: {0}'.format('QT5_ADDONS_LIB_PACKAGE_URI'))
             sys.exit(-1)
         if bldinstallercommon.is_win_platform():
-            if not os.environ.get('WINDOWS_BUILD_COMMAND'):
-                print('*** Qt5 app build missing environment variable: {0}'.format('WINDOWS_BUILD_COMMAND'))
+            if not os.environ.get('QT5_APPLICATION_BUILD_CMD'):
+                print('*** Qt5 app build missing environment variable: {0}'.format('QT5_APPLICATION_BUILD_CMD'))
                 sys.exit(-1)
-            if not os.environ.get('WINDOWS_INSTALL_COMMAND'):
-                print('*** Qt5 app build missing environment variable: {0}'.format('WINDOWS_INSTALL_COMMAND'))
+            if not os.environ.get('QT5_APPLICATION_INSTALL_CMD'):
+                print('*** Qt5 app build missing environment variable: {0}'.format('QT5_APPLICATION_INSTALL_CMD'))
                 sys.exit(-1)
             if not os.environ.get('7Z_TOOL_PATH'):
                 print('*** Qt5 app build missing environment variable: {0}'.format('7Z_TOOL_PATH'))
@@ -226,9 +226,6 @@ class BldCommand:
         if bldinstallercommon.is_mac_platform():
             if not os.environ.get('IFW_INSTALLERBASE_URI'):
                 print('*** Qt5 app build missing environment variable: {0}'.format('IFW_INSTALLERBASE_URI'))
-                sys.exit(-1)
-            if not os.environ.get('MAC_INSTALL_COMMAND'):
-                print('*** Qt5 app build missing environment variable: {0}'.format('MAC_INSTALL_COMMAND'))
                 sys.exit(-1)
         # check command line arguments
         if not self.options.license:
@@ -702,6 +699,8 @@ def handle_qt5_application_release_build():
     script_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_app.py')
     icu7z_package = os.environ.get('ICU7Z')
     qt5_addons_lib_package_uri = os.environ.get('QT5_ADDONS_LIB_PACKAGE_URI')
+    build_command = os.environ.get('QT5_APPLICATION_BUILD_CMD')
+    install_command = os.environ.get('QT5_APPLICATION_INSTALL_CMD')
     # build command
     cmd_args = ['python', '-u', script_path, '--clean']
     cmd_args += ['--qt5path', 'qt5_package_dir']
@@ -711,14 +710,15 @@ def handle_qt5_application_release_build():
     cmd_args += ['--application7z', os.environ['QT5_APPLICATION_SRC_URI']]
     if icu7z_package:
         cmd_args += ['--icu7z', icu7z_package]
+    if build_command:
+        cmd_args += ['--buildcommand', build_command]
+    if install_command:
+        cmd_args += ['--installcommand', install_command]
     if bldinstallercommon.is_win_platform():
-        cmd_args += ['--buildcommand', os.environ['WINDOWS_BUILD_COMMAND']]
-        cmd_args += ['--installcommand', os.environ['WINDOWS_INSTALL_COMMAND']]
         cmd_args += ['--sevenzippath', os.environ.get('7Z_TOOL_PATH')]
         cmd_args += ['--gitpath', os.environ.get('GIT_TOOL_PATH')]
     if bldinstallercommon.is_mac_platform():
         cmd_args += ['--installerbase7z', os.environ['IFW_INSTALLERBASE_URI']]
-        cmd_args += ['--installcommand', os.environ.get('MAC_INSTALL_COMMAND')]
     # init result directories
     create_remote_dirs(PKG_SERVER_ADDR, LATEST_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV])
     # execute build
