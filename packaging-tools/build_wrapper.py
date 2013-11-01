@@ -82,6 +82,8 @@ TIME_STAMP                  = ''
 BUILD_NUMBER                = ''
 PKG_SERVER_ADDR             = ''
 PATH                        = '/data/www/packages/jenkins'
+SNAPSHOT_SERVER             = ''
+SNAPSHOT_PATH               = ''
 TARGET_ENV                  = ''
 ICU_LIBS                    = 'http://download.qt-project.org/development_releases/prebuilt/icu/src/icu4c-51_1-src.tgz'
 QT_SRC_FOR_IFW_PREPARED     = 'http://download.qt-project.org/development_releases/prebuilt/qt-src-for-ifw/qt_4.8.4_ifw_prepared'
@@ -894,14 +896,30 @@ def handle_qt_release_build():
 def handle_qt_creator_build():
     sanity_check_packaging_server()
 
-    # QT Creator directory
+    # Qt Creator directory
     dir_path = PATH + '/' + LICENSE + '/' + 'qtcreator'
     create_remote_dirs(PKG_SERVER_ADDR, dir_path + '/' + TIME_STAMP[:10] + '_' + BUILD_NUMBER)
-
     cmd_args = [SSH_COMMAND, PKG_SERVER_ADDR, 'ln -sfn', dir_path + '/' + TIME_STAMP[:10] + '_' + BUILD_NUMBER, dir_path + '/' + 'latest']
     bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
-
     dir_path = PATH + LICENSE + '/qtcreator/latest'
+
+    # snapshot directory
+    snapshot_path = SNAPSHOT_PATH
+    if SNAPSHOT_SERVER and SNAPSHOT_PATH:
+        if QTCREATOR_VERSION:
+            snapshot_path += '/' + QTCREATOR_VERSION
+        cmd_args = [SSH_COMMAND, PKG_SERVER_ADDR, "ssh", SNAPSHOT_SERVER,
+            'mkdir', '-p', snapshot_path + '/' + TIME_STAMP[:10] + '_' + BUILD_NUMBER]
+        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
+        cmd_args = [SSH_COMMAND, PKG_SERVER_ADDR, "ssh", SNAPSHOT_SERVER,
+            'mkdir', '-p', snapshot_path + '/' + TIME_STAMP[:10] + '_' + BUILD_NUMBER + '/installer_source']
+        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
+        cmd_args = [SSH_COMMAND, PKG_SERVER_ADDR, "ssh", SNAPSHOT_SERVER,
+            'ln', '-sfn', snapshot_path + '/' + TIME_STAMP[:10] + '_' + BUILD_NUMBER,
+                    snapshot_path + '/latest']
+        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
+        snapshot_path += '/latest'
+
     cmd_args = ['python', '-u', 'bld_qtcreator.py',
         '--clean',
         '--qt5path', os.path.normpath('../../qt5_install_dir'),
@@ -943,6 +961,7 @@ def handle_qt_creator_build():
     if QTCREATOR_VERSION:
         postfix = '-' + QTCREATOR_VERSION
     file_upload_list = [] # pairs (source, dest), source relative to WORK_DIR, dest relative to server + dir_path
+    snapshot_upload_list = [] # pairs (source, dest), source relative to server + dir_path, dest relative to snapshot server + snapshot_path
     if bldinstallercommon.is_linux_platform():
         linux_bits = '32'
         linux_arch = 'x86'
@@ -951,21 +970,33 @@ def handle_qt_creator_build():
             linux_arch = 'x86_64'
         file_upload_list.append(('qt-creator_build/qt-creator-installer-archive.7z', 'qtcreator_linux_gcc_' + linux_bits + '_ubuntu1110.7z'))
         file_upload_list.append(('qt-creator_build/qt-creator.run', 'qt-creator-linux-' + linux_arch + '-' + LICENSE + postfix + '.run'))
+        snapshot_upload_list.append(('qtcreator_linux_gcc_' + linux_bits + '_ubuntu1110.7z', 'installer_source/'))
+        snapshot_upload_list.append(('qt-creator-linux-' + linux_arch + '-' + LICENSE + postfix + '.run', ''))
     elif bldinstallercommon.is_mac_platform():
         file_upload_list.append(('qt-creator_build/qt-creator-installer-archive.7z', 'qtcreator_mac_cocoa_10_7.7z'))
         if LICENSE == 'opensource': # opensource gets pure disk image with app and license.txt
             file_upload_list.append(('qt-creator_build/qt-creator.dmg', 'qt-creator-mac-' + LICENSE + postfix + '.dmg'))
         else: # enterprise gets installer with license check
             file_upload_list.append(('qt-creator_build/qt-creator-installer.dmg', 'qt-creator-mac-' + LICENSE + postfix + '.dmg'))
+        snapshot_upload_list.append(('qtcreator_mac_cocoa_10_7.7z', 'installer_source/'))
+        snapshot_upload_list.append(('qt-creator-mac-' + LICENSE + postfix + '.dmg', ''))
     else: # --> windows
         file_upload_list.append(('qt-creator_build/qt-creator-installer-archive.7z', 'qtcreator_windows_vs2010_32.7z'))
         sign_windows_executable('qt-creator_build/qt-creator.exe', WORK_DIR, True)
         file_upload_list.append(('qt-creator_build/qt-creator.exe', 'qt-creator-windows-' + LICENSE + postfix + '.exe'))
+        snapshot_upload_list.append(('qtcreator_windows_vs2010_32.7z', 'installer_source/'))
+        snapshot_upload_list.append(('qt-creator-windows-' + LICENSE + postfix + '.exe', ''))
 
     # upload files
     for source, destination in file_upload_list:
         cmd_args = [SCP_COMMAND, source, PKG_SERVER_ADDR + ':' + dir_path + '/' + destination]
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
+    if SNAPSHOT_SERVER and SNAPSHOT_PATH:
+        for source, destination in snapshot_upload_list:
+            cmd_args = [SSH_COMMAND, PKG_SERVER_ADDR, "scp",
+                dir_path + '/' + source,
+                SNAPSHOT_SERVER + ':' + snapshot_path + '/' + destination]
+            bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
 
 
 ###############################
@@ -1235,6 +1266,8 @@ def parse_cmd_line():
     global QT_FULL_VERSION
     global QTCREATOR_VERSION
     global QTCREATOR_VERSION_DESCRIPTION
+    global SNAPSHOT_SERVER
+    global SNAPSHOT_PATH
 
     setup_option_parser()
     arg_count = len(sys.argv)
@@ -1253,6 +1286,8 @@ def parse_cmd_line():
         BUILD_NUMBER      = options.build_number
         PKG_SERVER_ADDR   = options.server
         PATH              = options.path
+        SNAPSHOT_SERVER   = options.snapshot_server
+        SNAPSHOT_PATH     = options.snapshot_path
         TARGET_ENV        = options.target_env
         ICU_LIBS          = options.icu_libs
         SRC_URL           = options.src_url
@@ -1338,6 +1373,12 @@ def setup_option_parser():
     OPTION_PARSER.add_option("--qtcreator-set-description",
                       action="store_true", dest="qtcreator_set_description", default=False,
                       help="Sets Qt Creator's version description to the value given in --qtcreator-version")
+    OPTION_PARSER.add_option("--snapshot-server",
+                      action="store", type="string", dest="snapshot_server", default="",
+                      help="Additional snapshot upload server <user>@<host> (is uploaded from upload server)")
+    OPTION_PARSER.add_option("--snapshot-path",
+                      action="store", type="string", dest="snapshot_path", default="",
+                      help="Path on additional snapshot upload server")
 
 
 ##############################################################
