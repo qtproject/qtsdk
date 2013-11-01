@@ -942,37 +942,30 @@ def handle_qt_creator_build():
     postfix = ''
     if QTCREATOR_VERSION:
         postfix = '-' + QTCREATOR_VERSION
+    file_upload_list = [] # pairs (source, dest), source relative to WORK_DIR, dest relative to server + dir_path
     if bldinstallercommon.is_linux_platform():
         linux_bits = '32'
         linux_arch = 'x86'
         if TARGET_ENV.find('64') != -1:
             linux_bits = '64'
             linux_arch = 'x86_64'
-        cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator-installer-archive.7z',
-            PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_linux_gcc_' + linux_bits + '_ubuntu1110.7z']
-        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
-        cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator.run',
-            PKG_SERVER_ADDR + ':' + dir_path + '/qt-creator-linux-' + linux_arch + '-' + LICENSE + postfix + '.run']
-        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
+        file_upload_list.append(('qt-creator_build/qt-creator-installer-archive.7z', 'qtcreator_linux_gcc_' + linux_bits + '_ubuntu1110.7z'))
+        file_upload_list.append(('qt-creator_build/qt-creator.run', 'qt-creator-linux-' + linux_arch + '-' + LICENSE + postfix + '.run'))
     elif bldinstallercommon.is_mac_platform():
-        cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator-installer-archive.7z',
-            PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_mac_cocoa_10_7.7z']
-        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
-        cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator.dmg',
-            PKG_SERVER_ADDR + ':' + dir_path + '/qt-creator-mac-' + LICENSE + postfix + '.dmg']
-        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
-        cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator-installer.dmg',
-            PKG_SERVER_ADDR + ':' + dir_path + '/qt-creator-mac-' + LICENSE + postfix + '-installer.dmg']
-        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
-    else:
-        cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator-installer-archive.7z',
-            PKG_SERVER_ADDR + ':' + dir_path + '/qtcreator_windows_vs2010_32.7z']
-        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
+        file_upload_list.append(('qt-creator_build/qt-creator-installer-archive.7z', 'qtcreator_mac_cocoa_10_7.7z'))
+        if LICENSE == 'opensource': # opensource gets pure disk image with app and license.txt
+            file_upload_list.append(('qt-creator_build/qt-creator.dmg', 'qt-creator-mac-' + LICENSE + postfix + '.dmg'))
+        else: # enterprise gets installer with license check
+            file_upload_list.append(('qt-creator_build/qt-creator-installer.dmg', 'qt-creator-mac-' + LICENSE + postfix + '.dmg'))
+    else: # --> windows
+        file_upload_list.append(('qt-creator_build/qt-creator-installer-archive.7z', 'qtcreator_windows_vs2010_32.7z'))
         sign_windows_executable('qt-creator_build/qt-creator.exe', WORK_DIR, True)
-        cmd_args = [SCP_COMMAND, 'qt-creator_build/qt-creator.exe', PKG_SERVER_ADDR + ':' + dir_path + '/qt-creator-windows-' + LICENSE + postfix + '.exe']
-        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
+        file_upload_list.append(('qt-creator_build/qt-creator.exe', 'qt-creator-windows-' + LICENSE + postfix + '.exe'))
 
-    #TODO: Check qt-creator checkout!
+    # upload files
+    for source, destination in file_upload_list:
+        cmd_args = [SCP_COMMAND, source, PKG_SERVER_ADDR + ':' + dir_path + '/' + destination]
+        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
 
 
 ###############################
