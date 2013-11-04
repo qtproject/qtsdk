@@ -13,7 +13,7 @@ mac-x64:                    installer-framework-build-mac-x64.7z
 [release.global]
 version:                    5.2.0
 version_tag:                beta1
-module_exclude_list:        qlalr, qt3d, qtdocgallery, qtfeedback, qtjsondb, qtpim, qtqa, qtrepotools, qtsystems, qtwayland
+module_exclude_list:        qlalr, qt3d, qtdocgallery, qtfeedback, qtjsondb, qtpim, qtqa, qtrepotools, qtsystems, qtwayland, qtenginio
 
 
 ################################################################################
