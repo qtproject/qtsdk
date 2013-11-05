@@ -58,15 +58,20 @@ import bldinstallercommon
 SCRIPT_ROOT_DIR             = os.path.dirname(os.path.realpath(__file__))
 bldinstallercommon.init_common_module(os.getcwd())
 
-def createDownloadExtract7zTask(url, target_path, temp_path, caller_arguments):
+def createDownloadExtractTask(url, target_path, temp_path, caller_arguments):
     fileNameFromUrl = os.path.basename(urlparse(url).path)
     sevenzipFile = os.path.join(temp_path, fileNameFromUrl)
-    downloadExtract7zTask = Task("download {0} to {1} and extract it to {2}".format(url, sevenzipFile, target_path))
+    downloadExtractTask = Task("download {0} to {1} and extract it to {2}".format(url, sevenzipFile, target_path))
 
-    downloadExtract7zTask.addFunction(download, url, sevenzipFile)
-    downloadExtract7zTask.addFunction(runCommand, "7z x -y {0} -o{1}".format(
-        sevenzipFile, target_path), temp_path, caller_arguments)
-    return downloadExtract7zTask
+    downloadExtractTask.addFunction(download, url, sevenzipFile)
+    if fileNameFromUrl.endswith('tar.gz'):
+        bldinstallercommon.create_dirs(temp_path)
+        downloadExtractTask.addFunction(runCommand, "tar zxf {0} -C {1}".format(
+            sevenzipFile, target_path), temp_path, caller_arguments)
+    else:
+        downloadExtractTask.addFunction(runCommand, "7z x -y {0} -o{1}".format(
+            sevenzipFile, target_path), temp_path, caller_arguments)
+    return downloadExtractTask
 
 # install an argument parser
 parser = argparse.ArgumentParser(prog = os.path.basename(sys.argv[0]),
@@ -149,7 +154,7 @@ if callerArguments.application_url != '':
     qtApplicationSourceDirectory = os.path.abspath(os.path.join(os.path.dirname(__file__), os.environ['APPLICATION_NAME']))
 elif callerArguments.application7z != '':
     myGetQtEnginio = ThreadedWork("get and extract application src")
-    myGetQtEnginio.addTaskObject(createDownloadExtract7zTask(callerArguments.application7z, os.path.abspath(os.path.join(os.path.dirname(__file__))), tempPath, callerArguments))
+    myGetQtEnginio.addTaskObject(createDownloadExtractTask(callerArguments.application7z, os.path.abspath(os.path.join(os.path.dirname(__file__))), tempPath, callerArguments))
     myGetQtEnginio.run()
     src_dir = os.environ['APPLICATION_NAME'] + '-' + os.environ['LICENSE'] + '-' + 'src' + '-' + os.environ['VERSION']
     qtApplicationSourceDirectory = os.path.abspath(os.path.join(os.path.dirname(__file__), src_dir))
@@ -189,12 +194,12 @@ if not os.path.lexists(callerArguments.qt5path):
     myGetQtBinaryWork = ThreadedWork("get and extract Qt 5 binary")
 ### add get Qt essentials task
     myGetQtBinaryWork.addTaskObject(
-        createDownloadExtract7zTask(callerArguments.qt5_essentials7z, callerArguments.qt5path, tempPath, callerArguments))
+        createDownloadExtractTask(callerArguments.qt5_essentials7z, callerArguments.qt5path, tempPath, callerArguments))
 
     ### add get Qt addons task
     if callerArguments.qt5_addons7z:
         myGetQtBinaryWork.addTaskObject(
-            createDownloadExtract7zTask(callerArguments.qt5_addons7z, callerArguments.qt5path, tempPath, callerArguments))
+            createDownloadExtractTask(callerArguments.qt5_addons7z, callerArguments.qt5path, tempPath, callerArguments))
 
         if os.name == 'nt':
             targetPath = os.path.join(callerArguments.qt5path, 'bin')
@@ -211,11 +216,11 @@ if not os.path.lexists(callerArguments.qt5path):
 
             if not sys.platform == "darwin":
                 myGetQtBinaryWork.addTaskObject(
-                    createDownloadExtract7zTask(callerArguments.icu7z, targetPath, tempPath, callerArguments))
+                    createDownloadExtractTask(callerArguments.icu7z, targetPath, tempPath, callerArguments))
 
     if sys.platform == "darwin":
         myGetQtBinaryWork.addTaskObject(
-            createDownloadExtract7zTask(callerArguments.installerbase7z, tempPath, tempPath, callerArguments))
+            createDownloadExtractTask(callerArguments.installerbase7z, tempPath, tempPath, callerArguments))
 ### run get Qt 5 tasks
     myGetQtBinaryWork.run()
 
