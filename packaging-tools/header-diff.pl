@@ -55,6 +55,8 @@ my $srcdir = scalar @ARGV ? shift @ARGV : ".";
 my $builddir = scalar @ARGV ? shift @ARGV : $srcdir;
 my $includedir = "$builddir/qtbase/include";
 
+my %module_list;
+
 # Sanity check
 die("Not a qtsdk source directory at $srcdir: no qtbase found")
     unless (-d "$srcdir/qtbase");
@@ -86,6 +88,7 @@ PRO: for my $pro (@modules_pro) {
     # Find the corresponding headers.pri
     unless (open HEADERS, "<", "$includedir/$name/headers.pri") {
         print " - No public headers for module $name\n";
+        push @{$module_list{"no headers"}}, $name;
         next;
     }
     my @headers;
@@ -101,6 +104,7 @@ PRO: for my $pro (@modules_pro) {
 
     unless (scalar @headers) {
         print " - No public headers for module $name\n";
+        push @{$module_list{"no headers"}}, $name;
         next;
     }
 
@@ -124,5 +128,22 @@ PRO: for my $pro (@modules_pro) {
     chdir($oldpwd);
     close OUTPUT;
     close DIFF or unlink("$name.diff");
-    unlink("$name.diff") unless ($wrote_anything);
+    if ($?) {
+        print " - Git failed, skipping\n";
+        push @{$module_list{"git failed"}}, $name;
+    } elsif (!$wrote_anything) {
+        print " - No changes!\n";
+        push @{$module_list{"no changes"}}, $name;
+    } else {
+        print " - $name.diff created\n";
+    }
 }
+
+print "\nResults";
+print "\nModules with no public headers:\n\t";
+print join("\n\t", sort @{$module_list{"no headers"}});
+print "\nModules with no changes to public headers:\n\t";
+print join("\n\t", sort @{$module_list{"no changes"}});
+print "\nModules for which Git failed to retrieve changes:\n\t";
+print join("\n\t", sort @{$module_list{"git failed"}});
+print "\n";
