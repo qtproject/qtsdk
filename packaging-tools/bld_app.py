@@ -48,6 +48,7 @@ import argparse # commandline argument parser
 import multiprocessing
 import os
 import sys
+import fnmatch
 from urlparse import urlparse
 
 # own imports
@@ -56,6 +57,8 @@ from bld_utils import download, removeDir, runCommand, stripVars
 import bldinstallercommon
 
 SCRIPT_ROOT_DIR             = os.path.dirname(os.path.realpath(__file__))
+APPLICATION_SRC_DIR_NAME    = 'application_src'
+APPLICATION_SRC_DIR         = os.path.join(SCRIPT_ROOT_DIR, APPLICATION_SRC_DIR_NAME)
 bldinstallercommon.init_common_module(os.getcwd())
 
 def createDownloadExtractTask(url, target_path, temp_path, caller_arguments):
@@ -72,6 +75,17 @@ def createDownloadExtractTask(url, target_path, temp_path, caller_arguments):
         downloadExtractTask.addFunction(runCommand, "7z x -y {0} -o{1}".format(
             sevenzipFile, target_path), temp_path, caller_arguments)
     return downloadExtractTask
+
+def locate_pro(directory):
+    print('Trying to locate application .pro file file from: {0}'.format(directory))
+    for root, dirs, files in os.walk(directory):
+        for basename in files:
+            if fnmatch.fnmatch(basename, '*.pro'):
+                filename = os.path.join(root, basename)
+                print('-> .pro file found: {0}'.format(filename))
+                return filename
+    print('*** Warning! Unable to locate any .pro file from: {0}'.format(directory))
+    return ''
 
 # install an argument parser
 parser = argparse.ArgumentParser(prog = os.path.basename(sys.argv[0]),
@@ -149,20 +163,29 @@ tempPath = os.path.abspath(os.path.join(os.path.dirname(__file__), 'temp'))
 # clone application repo
 if callerArguments.application_url != '':
     bldinstallercommon.init_common_module(os.getcwd())
-    bldinstallercommon.create_dirs(os.path.join(os.path.dirname(__file__), os.environ['APPLICATION_NAME']))
-    bldinstallercommon.clone_repository(callerArguments.application_url, callerArguments.application_branch, os.path.join(os.path.dirname(__file__), os.environ['APPLICATION_NAME']))
-    qtApplicationSourceDirectory = os.path.abspath(os.path.join(os.path.dirname(__file__), os.environ['APPLICATION_NAME']))
+    bldinstallercommon.create_dirs(APPLICATION_SRC_DIR)
+    bldinstallercommon.clone_repository(callerArguments.application_url, callerArguments.application_branch, os.path.join(os.path.dirname(__file__), APPLICATION_SRC_DIR_NAME))
+    qtApplicationSourceDirectory = APPLICATION_SRC_DIR
 elif callerArguments.application7z != '':
-    myGetQtEnginio = ThreadedWork("get and extract application src")
-    myGetQtEnginio.addTaskObject(createDownloadExtractTask(callerArguments.application7z, os.path.abspath(os.path.join(os.path.dirname(__file__))), tempPath, callerArguments))
-    myGetQtEnginio.run()
-    src_dir = os.environ['APPLICATION_NAME'] + '-' + os.environ['LICENSE'] + '-' + 'src' + '-' + os.environ['VERSION']
-    qtApplicationSourceDirectory = os.path.abspath(os.path.join(os.path.dirname(__file__), src_dir))
+    bldinstallercommon.create_dirs(APPLICATION_SRC_DIR)
+    myGetQtApp = ThreadedWork("get and extract application src")
+    myGetQtApp.addTaskObject(createDownloadExtractTask(callerArguments.application7z, APPLICATION_SRC_DIR, tempPath, callerArguments))
+    myGetQtApp.run()
+    qtApplicationSourceDirectory = APPLICATION_SRC_DIR
 else:
     print(("Using local copy of {0}").format(os.environ['APPLICATION_NAME']))
     qtApplicationSourceDirectory = callerArguments.application_dir
-qtApplicationBuildDirectory = os.path.abspath(os.path.join(os.path.dirname(__file__), os.environ['APPLICATION_NAME'] + '_build'))
-qtApplicationInstallDirectory = os.path.abspath(os.path.join(os.path.dirname(__file__), os.environ['APPLICATION_NAME'] + '_install'))
+
+qtApplicationProFile = locate_pro(APPLICATION_SRC_DIR)
+# rip out drive letter from path on Windows
+#if bldinstallercommon.is_win_platform():
+#    qtApplicationProFile = qtApplicationProFile[2:]
+pro_file_base_path = os.path.split(qtApplicationProFile)[0]
+
+qtApplicationBuildDirectory = APPLICATION_SRC_DIR + '_build'
+if bldinstallercommon.is_win_platform():
+    qtApplicationBuildDirectory = pro_file_base_path
+qtApplicationInstallDirectory = APPLICATION_SRC_DIR + '_install'
 if os.name == 'nt':
     qtApplicationInstallDirectory = qtApplicationInstallDirectory[2:]
 
@@ -178,7 +201,7 @@ if sys.platform == "darwin":
 if callerArguments.clean:
     print("##### {0} #####".format("clean old builds"))
     removeDir(callerArguments.qt5path, raiseNoException = True)
-    removeDir(qtApplicationBuildDirectory, raiseNoException = True)
+    #removeDir(qtApplicationBuildDirectory, raiseNoException = True)
     removeDir(qtApplicationInstallDirectory, raiseNoException = True)
     removeDir(tempPath, raiseNoException = True)
 
@@ -274,9 +297,12 @@ if callerArguments.debug:
 else:
     buildType = 'release'
 
-qtApplicationProFile = os.path.join(qtApplicationSourceDirectory, os.environ['APPLICATION_NAME'] + '.pro')
+#qtApplicationProFile = locate_pro(APPLICATION_SRC_DIR)
+# rip out drive letter from path on Windows
+#if bldinstallercommon.is_win_platform():
+#    qtApplicationProFile = qtApplicationProFile[2:]
 
-qmakeCommandArguments = "-r {0}".format(qtApplicationProFile)
+qmakeCommandArguments = "{0}".format(qtApplicationProFile)
 
 #qmakeCommandArguments = "-r {0}".format(qtApplicationProFile)
 
