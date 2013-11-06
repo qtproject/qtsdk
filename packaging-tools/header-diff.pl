@@ -120,7 +120,14 @@ PRO: for my $pro (@modules_pro) {
     open DIFF, "-|", 'git', 'diff', '--diff-filter=M', '-w', '-b', $revrange, '--', @headers
         or die("Could not run git diff: $!");
     my $wrote_anything = 0;
+    my $reading_header = 0;
     while (<DIFF>) {
+        if (/^\@\@ -(\d+),(\d+) /) {
+            # Ignore changes to the first 40 lines of a header
+            # They're copyright changes
+            $reading_header = $1 + $2 < 40;
+        }
+        next if $reading_header;
         $wrote_anything = 1;
         print OUTPUT $_;
     }
