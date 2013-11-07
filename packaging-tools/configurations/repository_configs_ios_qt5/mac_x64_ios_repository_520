@@ -53,7 +53,7 @@ base_path:
 packages:
 
 [ExtraPackageConfigurationFiles]
-file_list:              ios-x64-qt520-armv7-conf, ios-x64-qt520-x86-conf
+file_list:              ios-x64-qt520-conf
 
 [OfflinePackageExcludeList]
 package_list:

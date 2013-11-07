@@ -112,8 +112,6 @@ BIN_TARGET_DIRS             = \
 ,'mac-clang-10.7-x64_Android-x86':'android_x86/mac_x64'\
 ,'win-MinGW4.8-Windows7-x86_Android-x86':'android_x86/mingw_x86'\
 ,'mac-clang-10.8-x64_iOS':'ios/mac_x64'\
-,'mac-clang-10.8-x64_iOS-iphoneos':'ios_armv7/mac_x64'\
-,'mac-clang-10.8-x64_iOS-iphonesimulator':'ios_x86/mac_x64'\
 ,'linux-g++-Ubuntu11.10-x86':'linux_gcc_32_ubuntu1110'\
 ,'linux-g++-Ubuntu11.10-x64':'linux_gcc_64_ubuntu1110'\
 ,'linux-g++-Ubuntu_11.10_x86':'linux_gcc_32_ubuntu1110'\
