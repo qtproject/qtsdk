@@ -324,7 +324,10 @@ makeCommandArguments = 'install INSTALL_ROOT=' + qtApplicationInstallDirectory
 runCommand("{0} {1}".format(makeCommand, makeCommandArguments), currentWorkingDirectory = qtApplicationBuildDirectory,
         callerArguments = callerArguments, init_environment = environment)
 
+# try to figure out where the actual exported content is
+dir_to_archive = os.path.dirname(bldinstallercommon.locate_directory(qtApplicationInstallDirectory, 'lib'))
+
 # create 7z archive
-archive_cmd = '7z a ' + 'module_archives' + os.sep + 'qt5_' + os.environ['APPLICATION_NAME'] + '.7z' + ' ' + qtApplicationInstallDirectory
+archive_cmd = '7z a ' + 'module_archives' + os.sep + 'qt5_' + os.environ['APPLICATION_NAME'] + '.7z' + ' ' + dir_to_archive
 runCommand("{0}".format(archive_cmd), currentWorkingDirectory = os.path.dirname(os.path.realpath(__file__)) )
 
