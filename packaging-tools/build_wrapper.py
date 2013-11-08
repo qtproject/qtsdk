@@ -48,6 +48,7 @@ import ConfigParser
 import os
 import shutil
 import sys
+import re
 from time import gmtime, strftime
 import urllib
 from optparse import OptionParser, Option
@@ -1012,6 +1013,21 @@ def handle_online_installer_build():
 
 
 ###############################
+# save_latest_successful_offline
+###############################
+def save_latest_successful_offline(installer_name, installer_name_final, ls_installer_dir, installer_output):
+    regex = re.compile('.*offline')
+    installer_base_name = "".join(regex.findall(installer_name_final))
+    old_installer = ls_installer_dir + '/' + installer_base_name + '*'
+    # delete old installer
+    cmd_args = [SSH_COMMAND, PKG_SERVER_ADDR, 'rm', old_installer]
+    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+    # save new installer to latest successful directory
+    cmd_args = [SCP_COMMAND, installer_name, PKG_SERVER_ADDR + ':' + ls_installer_dir + '/' + installer_name_final]
+    bldinstallercommon.do_execute_sub_process(cmd_args, installer_output, True)
+
+
+###############################
 # generic handle installer build
 ###############################
 def handle_installer_build(offline_installer_build):
@@ -1042,7 +1058,9 @@ def handle_installer_build(offline_installer_build):
     # Crete remote directories
     dest_dir = PATH + '/' + LICENSE + temp_path + TIME_STAMP[:10] + '_' + BUILD_NUMBER
     latest_dir = PATH + '/' + LICENSE + temp_path + 'latest'
+    latest_successful_dir = PATH + '/' + LICENSE + temp_path + 'latest_successful'
     create_remote_dirs(PKG_SERVER_ADDR, dest_dir)
+    create_remote_dirs(PKG_SERVER_ADDR, latest_successful_dir)
     # Create remote dirs in Mirror Brain
     if LICENSE == 'opensource':
         # Mirror Brain server address and path
@@ -1066,6 +1084,8 @@ def handle_installer_build(offline_installer_build):
                 # copy installer to internal server
                 cmd_args = [SCP_COMMAND, installer_name, PKG_SERVER_ADDR + ':' + dest_dir + '/' + installer_name_final]
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
+                # remove old successful and save latest successful installer
+                save_latest_successful_offline(installer_name, installer_name_final, latest_successful_dir, installer_output_dir)
                 # copy installer to mirror brain server
                 if LICENSE == 'opensource':
                     cmd_args_copy_to_pkg = [SSH_COMMAND, PKG_SERVER_ADDR]
@@ -1085,6 +1105,8 @@ def handle_installer_build(offline_installer_build):
                 # copy installer to internal server
                 cmd_args = [SCP_COMMAND, installer_name, PKG_SERVER_ADDR + ':' + dest_dir + '/' + installer_name_final]
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
+                # remove old successful and save latest successful installer
+                save_latest_successful_offline(installer_name, installer_name_final, latest_successful_dir, installer_output_dir)
                 # copy installer to mirror brain server
                 if LICENSE == 'opensource':
                     cmd_args_copy_to_pkg = [SSH_COMMAND, PKG_SERVER_ADDR]
@@ -1101,6 +1123,8 @@ def handle_installer_build(offline_installer_build):
                 # copy installer to internal server
                 cmd_args = [SCP_COMMAND, installer_name, PKG_SERVER_ADDR + ':' + dest_dir + '/' + installer_name_final]
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
+                # remove old successful and save latest successful installer
+                save_latest_successful_offline(installer_name, installer_name_final, latest_successful_dir, installer_output_dir)
                 # copy installer to mirror brain server
                 if LICENSE == 'opensource':
                     cmd_args_copy_to_pkg = [SSH_COMMAND, PKG_SERVER_ADDR]
