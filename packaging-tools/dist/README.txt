@@ -87,7 +87,7 @@ For example:
 
 You can use Qt Creator to develop with other Qt versions as well:
 
-   http://qt-project.org/doc/qtcreator-2.8/creator-project-qmake.html
+   http://qt-project.org/doc/qtcreator/creator-project-qmake.html
 
 
 Running Example Applications
