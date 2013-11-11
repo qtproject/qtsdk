@@ -1021,7 +1021,7 @@ def save_latest_successful_offline(installer_name, installer_name_final, ls_inst
     old_installer = ls_installer_dir + '/' + installer_base_name + '*'
     # delete old installer
     cmd_args = [SSH_COMMAND, PKG_SERVER_ADDR, 'rm', old_installer]
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, False)
     # save new installer to latest successful directory
     cmd_args = [SCP_COMMAND, installer_name, PKG_SERVER_ADDR + ':' + ls_installer_dir + '/' + installer_name_final]
     bldinstallercommon.do_execute_sub_process(cmd_args, installer_output, True)
