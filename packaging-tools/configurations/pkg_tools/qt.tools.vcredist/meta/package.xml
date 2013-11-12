@@ -6,7 +6,5 @@
     <ReleaseDate>%VCREDIST_X86_VERSION%</ReleaseDate>
     <Script>installscript.qs</Script>
     <Virtual>true</Virtual>
-    <!--<ForcedInstallation>true</ForcedInstallation>-->
-    <RequiresAdminRights>true</RequiresAdminRights>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
