@@ -395,7 +395,7 @@ def build_qmlpuppets():
 
     if bldinstallercommon.is_mac_platform():
         # make install INSTALL_ROOT= doesn't work on the mac, set DESTDIR instead
-        install_root_path = os.path.join(MAKE_INSTALL_ROOT_DIR, ESSENTIALS_INSTALL_DIR_NAME, ORIGINAL_QMAKE_QT_PRFXPATH)
+        install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + ORIGINAL_QMAKE_QT_PRFXPATH
         qmake_executable_path = [qmake_executable_path, '-after', 'DESTDIR=' + os.path.join(install_root_path, 'bin')]
 
     bldinstallercommon.do_execute_sub_process(qmake_executable_path, qmlpuppet_dir, STRICT_MODE)
@@ -1076,7 +1076,7 @@ def main():
     # install
     install_qt()
     # install qmlpuppets
-    if not ANDROID_BUILD:
+    if not ANDROID_BUILD and not bldinstallercommon.is_mac_platform():
         install_qmlpuppets()
     # build docs and copy to essentials install dir
     if not ANDROID_BUILD:
