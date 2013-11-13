@@ -46,15 +46,22 @@ name:                   qt
 identifier:             mac
 
 [ArchiveRemoteLocation.default]
-base_url:               http://add.your.archive.url
+base_url:
 base_path:
 
 # for testing purposes
 [PackageIgnoreList]
-packages:               foo.bar, foo.bar2, foo.bar3
+packages:
 
 [ExtraPackageConfigurationFiles]
-file_list:              qt-conf, qt520-src-conf, x86_64-qt520-clang-conf, android-x64-qt520-armv5-conf, android-x64-qt520-armv7-conf, android-x64-qt520-x86-conf, x86_64-tools-qtcreator-conf, installer-readme-conf
+file_list:              qt-conf,
+                        qt520-src-conf,
+                        x86_64-qt520-clang-conf,
+                        android-x64-qt520-armv5-conf,
+                        android-x64-qt520-armv7-conf,
+                        android-x64-qt520-x86-conf,
+                        x86_64-tools-qtcreator-conf,
+                        installer-readme-conf
 
 [OfflinePackageExcludeList]
 package_list:
