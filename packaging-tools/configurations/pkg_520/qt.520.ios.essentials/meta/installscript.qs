@@ -70,7 +70,7 @@ Component.prototype.createOperations = function()
     component.addOperation("Execute",
                            ["@SDKToolBinary@", "addQt",
                             "--id", component.name,
-                            "--name", "Qt 5.2.0 for iOS armv7",
+                            "--name", "Qt 5.2.0 for iOS",
                             "--type", "Qt4ProjectManager.QtVersion.iOS",
                             "--qmake", qmakeBinary,
                             "UNDOEXECUTE",
