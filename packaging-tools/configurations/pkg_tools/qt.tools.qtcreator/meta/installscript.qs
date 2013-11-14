@@ -213,6 +213,7 @@ Component.prototype.createOperations = function()
     component.createOperations();
     buildNativeComponentRootPath();
     var path = component_root_path + native_path_separator;
+    var maintenanceToolPath;
 
     if ( installer.value("os") == "win" )
     {
@@ -226,6 +227,9 @@ Component.prototype.createOperations = function()
         if (component.userInterface("AssociateCommonFiletypesForm").AssociateCommonFiletypesCheckBox.checked) {
             registerCommonWindowsFileTypeExtensions();
         }
+
+        maintenanceToolPath = installer.value("TargetDir")
+                + "/MaintenanceTool.app/Contents/MacOS/MaintenanceTool";
     }
     if ( installer.value("os") == "x11" )
     {
@@ -233,9 +237,28 @@ Component.prototype.createOperations = function()
         component.addOperation( "CreateDesktopEntry",
                                 "DigiaQtOpenSource-qtcreator.desktop",
                                 "Type=Application\nExec=" + component.qtCreatorBinaryPath + "\nName=Qt Creator (Opensource)\nGenericName=The IDE of choice for Qt development.\nIcon=QtProject-qtcreator\nTerminal=false\nCategories=Development;IDE;Qt;\nMimeType=text/x-c++src;text/x-c++hdr;text/x-xsrc;application/x-designer;application/vnd.qt.qmakeprofile;application/vnd.qt.xml.resource;text/x-qml;text/x-qt.qml;text/x-qt.qbs;");
+        maintenanceToolPath = installer.value("TargetDir") + "/MaintenanceTool";
     }
     if (installer.value("os") == "mac")
     {
+        maintenanceToolPath = installer.value("TargetDir") + "/MaintenanceTool.exe";
+    }
+
+    var settingsFile = installer.value("QtCreatorInstallerSettingsFile");
+    if (!installer.isOfflineOnly()) {
+        // Configure & enable UpdateInfo plugin
+        component.addOperation("Settings", "path="+settingsFile, "method=set",
+                               "key=Updater/Application",
+                               "value="+maintenanceToolPath);
+        component.addOperation("Settings", "path="+settingsFile, "method=set",
+                               "key=Updater/RunUiArgument",
+                               "value=--updater");
+        component.addOperation("Settings", "path="+settingsFile, "method=set",
+                               "key=Updater/CheckOnlyArgument",
+                               "value=--checkupdates");
+        component.addOperation("Settings", "path="+settingsFile,
+                               "method=add_array_value",
+                               "key=Plugins/ForceEnabled", "value=UpdateInfo");
     }
 }
 

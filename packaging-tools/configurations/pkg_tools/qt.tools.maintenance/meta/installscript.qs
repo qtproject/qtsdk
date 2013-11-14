@@ -68,16 +68,9 @@ Component.prototype.createOperations = function()
 {
     // Call the base createOperations and afterwards set some registry settings (unpacking ...)
     component.createOperations();
-    var maintenance_tool_bin = installer.value("TargetDir") + "/MaintenanceTool";
 
     if ( installer.value("os") == "win" )
     {
-        var win_maintenance_tool_bin = maintenance_tool_bin + ".exe"
-        component.addOperation( "SetQtCreatorValue",
-                                "",
-                                "Updater",
-                                "Application",
-                                win_maintenance_tool_bin );
         // create shortcut
         component.addOperation( "CreateShortcut",
                                 win_maintenance_tool_bin,
@@ -86,38 +79,11 @@ Component.prototype.createOperations = function()
     }
     if ( installer.value("os") == "x11" )
     {
-        component.addOperation( "SetQtCreatorValue",
-                                "",
-                                "Updater",
-                                "Application",
-                                maintenance_tool_bin );
-
         component.addOperation( "CreateDesktopEntry",
                                 "QtOpensource-MaintenanceTool.desktop",
                                 "Type=Application\nExec=@TargetDir@/MaintenanceTool\nPath=@TargetDir@\nName=Qt Maintenance Tool (Opensource)\nGenericName=Install or uninstall Qt components.\nIcon=QtIcon\nTerminal=false\nCategories=Development;Qt;"
                                );
     }
-    if ( installer.value("os") == "mac" )
-    {
-        var mac_maintenance_tool_bin = maintenance_tool_bin + ".app/Contents/MacOS/MaintenanceTool"
-        component.addOperation( "SetQtCreatorValue",
-                                "",
-                                "Updater",
-                                "Application",
-                                mac_maintenance_tool_bin );
-    }
-
-    component.addOperation( "SetQtCreatorValue",
-                            "",
-                            "Updater",
-                            "CheckOnlyArgument",
-                            "--checkupdates" );
-    component.addOperation( "SetQtCreatorValue",
-                            "",
-                            "Updater",
-                            "RunUiArgument",
-                            "--updater" );
-
 }
 
 
