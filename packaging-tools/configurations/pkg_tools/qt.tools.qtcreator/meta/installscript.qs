@@ -260,12 +260,6 @@ Component.prototype.createOperations = function()
                                "method=add_array_value",
                                "key=Plugins/ForceEnabled", "value=UpdateInfo");
     }
-
-    if (installer.value("os") == "mac")
-    {
-        component.addOperation("Settings", "path="+settingsFile, "method=add_array_value",
-                               "key=Plugins/ForceEnabled", "value=Ios");
-    }
 }
 
 Component.prototype.installationFinishedPageIsShown = function()
