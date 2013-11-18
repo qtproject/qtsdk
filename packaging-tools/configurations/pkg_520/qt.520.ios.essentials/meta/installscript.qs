@@ -75,4 +75,11 @@ Component.prototype.createOperations = function()
                             "--qmake", qmakeBinary,
                             "UNDOEXECUTE",
                             "@SDKToolBinary@", "rmQt", "--id", component.name]);
+    if (installer.value("os") == "mac") {
+        var settingsFile = installer.value("QtCreatorInstallerSettingsFile");
+        if (settingsFile == "")
+            return;
+        component.addOperation("Settings", "path="+settingsFile, "method=add_array_value",
+            "key=Plugins/ForceEnabled", "value=Ios");
+    }
 }
