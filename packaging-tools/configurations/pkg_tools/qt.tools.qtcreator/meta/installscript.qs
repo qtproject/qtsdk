@@ -262,24 +262,10 @@ Component.prototype.createOperations = function()
     }
 }
 
-function isRoot()
-{
-    if (installer.value("os") == "x11" || installer.value("os") == "mac")
-    {
-        var id = installer.execute("/usr/bin/id", new Array("-u"))[0];
-        id = id.replace(/(\r\n|\n|\r)/gm,"");
-        if (id === "0")
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
 Component.prototype.installationFinishedPageIsShown = function()
 {
     try {
-        if (component.installed && installer.isInstaller() && installer.status == QInstaller.Success && !isRoot()) {
+        if (component.installed && installer.isInstaller() && installer.status == QInstaller.Success) {
             installer.addWizardPageItem( component, "LaunchQtCreatorCheckBoxForm", QInstaller.InstallationFinished );
         }
     } catch(e) {
