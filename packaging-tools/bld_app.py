@@ -302,13 +302,11 @@ else:
 #if bldinstallercommon.is_win_platform():
 #    qtApplicationProFile = qtApplicationProFile[2:]
 
-qmakeCommandArguments = "{0}".format(qtApplicationProFile)
-
-#qmakeCommandArguments = "-r {0}".format(qtApplicationProFile)
-
-#runCommand("{0} {1}".format(qmakeBinary, qmakeCommandArguments), qtApplicationBuildDirectory, callerArguments = callerArguments, init_environment = environment)
-
-runCommand("{0} {1}".format(qmakeBinary, qmakeCommandArguments), qtApplicationBuildDirectory)
+qmakeCommandArguments = [qmakeBinary]
+if os.environ.get('EXTRA_QMAKE_ARGS'):
+    qmakeCommandArguments += [os.environ["EXTRA_QMAKE_ARGS"]]
+qmakeCommandArguments += ["{0}".format(qtApplicationProFile)]
+bldinstallercommon.do_execute_sub_process(qmakeCommandArguments, qtApplicationBuildDirectory, True)
 
 #runBuildCommand(currentWorkingDirectory = qtApplicationBuildDirectory, callerArguments = callerArguments,
 #    init_environment = environment)
