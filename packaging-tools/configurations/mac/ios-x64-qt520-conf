@@ -39,32 +39,32 @@
 ##
 #############################################################################
 
-[qt.520.ios_armv7]
+[qt.520.ios]
 version:                5.2.0
 version_tag:            %QT_VERSION%
 
-[qt.520.ios_armv7.essentials]
-archives:               520.ios_armv7.essentials
-target_install_base:    /@QT_VERSION@/ios_armv7
+[qt.520.ios.essentials]
+archives:               520.ios.essentials
+target_install_base:    /@QT_VERSION@/ios
 version:                5.2.0
 version_tag:            %QT_VERSION%
 package_default:        true
-[520.ios_armv7.essentials]
-archive_uri:            /qt/5.2.0/latest/ios_armv7/mac_x64/qt5_essentials.7z
+[520.ios.essentials]
+archive_uri:            /qt/5.2.0/latest/ios/mac_x64/qt5_essentials.7z
 package_strip_dirs:
 target_install_dir:     /
 rpath_target:
-archive_name:           ios_armv7_qt5_essentials.7z
+archive_name:           ios_qt5_essentials.7z
 
-[qt.520.ios_armv7.addons]
-archives:               520.ios_armv7.addons
-target_install_base:    /@QT_VERSION@/ios_armv7
+[qt.520.ios.addons]
+archives:               520.ios.addons
+target_install_base:    /@QT_VERSION@/ios
 version:                5.2.0
 version_tag:            %QT_VERSION%
 package_default:        true
-[520.ios_armv7.addons]
-archive_uri:            /qt/5.2.0/latest/ios_armv7/mac_x64/qt5_addons.7z
+[520.ios.addons]
+archive_uri:            /qt/5.2.0/latest/ios/mac_x64/qt5_addons.7z
 package_strip_dirs:
 target_install_dir:     /
 rpath_target:
-archive_name:           ios_armv7_qt5_addons.7z
+archive_name:           ios_qt5_addons.7z
