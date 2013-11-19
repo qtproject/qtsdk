@@ -204,6 +204,12 @@ class BldCommand:
     def validate_qt5_app_build_args(self):
         print(self.options)
         # check env variables
+        if not os.environ.get('APPLICATION_NAME'):
+            print('*** Qt5 app build missing environment variable: {0}'.format('APPLICATION_NAME'))
+            sys.exit(-1)
+        if not os.environ.get('APPLICATION_VERSION'):
+            print('*** Qt5 app build missing environment variable: {0}'.format('APPLICATION_VERSION'))
+            sys.exit(-1)
         if not os.environ.get('QT5_APPLICATION_SRC_URI'):
             print('*** Qt5 app build missing environment variable: {0}'.format('QT5_APPLICATION_SRC_URI'))
             sys.exit(-1)
