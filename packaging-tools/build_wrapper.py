@@ -1094,7 +1094,7 @@ def handle_installer_build(offline_installer_build):
                 cmd_args = [SCP_COMMAND, installer_name, PKG_SERVER_ADDR + ':' + dest_dir + '/' + installer_name_final]
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
                 # remove old successful and save latest successful installer
-                save_latest_successful_installer(offline_installer_build,installer_name, installer_name_final, latest_successful_dir, installer_output_dir)
+                save_latest_successful_installer(offline_installer_build, installer_name, installer_name_final, latest_successful_dir, installer_output_dir)
                 # copy installer to mirror brain server
                 if LICENSE == 'opensource':
                     cmd_args_copy_to_pkg = [SSH_COMMAND, PKG_SERVER_ADDR]
@@ -1115,7 +1115,7 @@ def handle_installer_build(offline_installer_build):
                 cmd_args = [SCP_COMMAND, installer_name, PKG_SERVER_ADDR + ':' + dest_dir + '/' + installer_name_final]
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
                 # remove old successful and save latest successful installer
-                save_latest_successful_installer(offline_installer_build,installer_name, installer_name_final, latest_successful_dir, installer_output_dir)
+                save_latest_successful_installer(offline_installer_build, installer_name, installer_name_final, latest_successful_dir, installer_output_dir)
                 # copy installer to mirror brain server
                 if LICENSE == 'opensource':
                     cmd_args_copy_to_pkg = [SSH_COMMAND, PKG_SERVER_ADDR]
@@ -1133,7 +1133,7 @@ def handle_installer_build(offline_installer_build):
                 cmd_args = [SCP_COMMAND, installer_name, PKG_SERVER_ADDR + ':' + dest_dir + '/' + installer_name_final]
                 bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
                 # remove old successful and save latest successful installer
-                save_latest_successful_installer(offline_installer_build,installer_name, installer_name_final, latest_successful_dir, installer_output_dir)
+                save_latest_successful_installer(offline_installer_build, installer_name, installer_name_final, latest_successful_dir, installer_output_dir)
                 # copy installer to mirror brain server
                 if LICENSE == 'opensource':
                     cmd_args_copy_to_pkg = [SSH_COMMAND, PKG_SERVER_ADDR]
