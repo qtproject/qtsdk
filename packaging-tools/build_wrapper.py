@@ -976,17 +976,17 @@ def handle_qt_creator_build():
     elif bldinstallercommon.is_mac_platform():
         file_upload_list.append(('qt-creator_build/qt-creator-installer-archive.7z', 'qtcreator_mac_cocoa_10_7.7z'))
         if LICENSE == 'opensource': # opensource gets pure disk image with app and license.txt
-            file_upload_list.append(('qt-creator_build/qt-creator.dmg', 'qt-creator-' + LICENSE + '-mac-x86_64-' + postfix + '.dmg'))
+            file_upload_list.append(('qt-creator_build/qt-creator.dmg', 'qt-creator-' + LICENSE + '-mac-x86_64' + postfix + '.dmg'))
         else: # enterprise gets installer with license check
-            file_upload_list.append(('qt-creator_build/qt-creator-installer.dmg', 'qt-creator-' + LICENSE + '-mac-x86_64-' + postfix + '.dmg'))
+            file_upload_list.append(('qt-creator_build/qt-creator-installer.dmg', 'qt-creator-' + LICENSE + '-mac-x86_64' + postfix + '.dmg'))
         snapshot_upload_list.append(('qtcreator_mac_cocoa_10_7.7z', 'installer_source/'))
-        snapshot_upload_list.append(('qt-creator-' + LICENSE + '-mac-x86_64-' + postfix + '.dmg', ''))
+        snapshot_upload_list.append(('qt-creator-' + LICENSE + '-mac-x86_64' + postfix + '.dmg', ''))
     else: # --> windows
         file_upload_list.append(('qt-creator_build/qt-creator-installer-archive.7z', 'qtcreator_windows_vs2010_32.7z'))
         sign_windows_executable('qt-creator_build/qt-creator.exe', WORK_DIR, True)
-        file_upload_list.append(('qt-creator_build/qt-creator.exe', 'qt-creator-' + LICENSE + '-windows-x86-' + postfix + '.exe'))
+        file_upload_list.append(('qt-creator_build/qt-creator.exe', 'qt-creator-' + LICENSE + '-windows-x86' + postfix + '.exe'))
         snapshot_upload_list.append(('qtcreator_windows_vs2010_32.7z', 'installer_source/'))
-        snapshot_upload_list.append(('qt-creator-' + LICENSE + '-windows-x86-' + postfix + '.exe', ''))
+        snapshot_upload_list.append(('qt-creator-' + LICENSE + '-windows-x86' + postfix + '.exe', ''))
 
     # upload files
     for source, destination in file_upload_list:
