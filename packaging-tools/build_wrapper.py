@@ -370,6 +370,9 @@ def handle_ifw_build():
     qt_src_pkg = QT_SRC_FOR_IFW_PREPARED
     ifw_url = IFW_GIT_URL
     ifw_branch = os.environ['QT_INSTALLER_FRAMEWORK_VERSION']
+    ifw_dest_dir_name = os.environ.get('IFW_REMOTE_RESULT_DEST_DIR_NAME'):
+    if not ifw_dest_dir_name:
+        ifw_dest_dir_name = ifw_branch
     if bldinstallercommon.is_win_platform():
         extension = '.zip'
     qt_src_pkg += extension
@@ -381,14 +384,14 @@ def handle_ifw_build():
 
     ## create destination dirs
     # internal
-    create_remote_dirs(PKG_SERVER_ADDR, PATH + '/' + LICENSE + '/ifw/' + ifw_branch)
+    create_remote_dirs(PKG_SERVER_ADDR, PATH + '/' + LICENSE + '/ifw/' + ifw_dest_dir_name)
     # public
     if LICENSE == 'opensource':
         # public server address and path
         ext_server_base_url  = os.environ['EXT_SERVER_BASE_URL']
         ext_server_base_path = os.environ['EXT_SERVER_BASE_PATH']
         # public server directories
-        ext_dest_dir = ext_server_base_path + '/snapshots/ifw/' + ifw_branch + '/' + TIME_STAMP[:10] + '_' + BUILD_NUMBER
+        ext_dest_dir = ext_server_base_path + '/snapshots/ifw/' + ifw_dest_dir_name + '/' + TIME_STAMP[:10] + '_' + BUILD_NUMBER
         cmd_args_mkdir_pkg = [SSH_COMMAND, PKG_SERVER_ADDR]
         cmd_args_mkdir_ext = cmd_args_mkdir_pkg + ['ssh', ext_server_base_url, 'mkdir', '-p', ext_dest_dir]
         bldinstallercommon.do_execute_sub_process(cmd_args_mkdir_ext, SCRIPT_ROOT_DIR, True)
@@ -397,16 +400,16 @@ def handle_ifw_build():
         file_list = os.listdir(SCRIPT_ROOT_DIR+'/' + INSTALLER_BUILD_OUTPUT_DIR)
         for file_name in file_list:
             if file_name.endswith(".7z"):
-                cmd_args = [SCP_COMMAND, file_name, PKG_SERVER_ADDR + ':' + PATH + '/' + LICENSE + '/ifw/' + ifw_branch + '/']
+                cmd_args = [SCP_COMMAND, file_name, PKG_SERVER_ADDR + ':' + PATH + '/' + LICENSE + '/ifw/' + ifw_dest_dir_name + '/']
                 bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + '/' + INSTALLER_BUILD_OUTPUT_DIR, True)
     else:
-        cmd_args = ['rsync', '-r', './', PKG_SERVER_ADDR + ':' + PATH + '/' + LICENSE + '/ifw/' + ifw_branch + '/']
+        cmd_args = ['rsync', '-r', './', PKG_SERVER_ADDR + ':' + PATH + '/' + LICENSE + '/ifw/' + ifw_dest_dir_name + '/']
         bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + '/' + INSTALLER_BUILD_OUTPUT_DIR, True)
 
     # copy ifw snapshot to public server
     if LICENSE == 'opensource':
         cmd_args_copy_ifw_pkg = [SSH_COMMAND, PKG_SERVER_ADDR]
-        cmd_args_copy_ifw_ext = cmd_args_copy_ifw_pkg + ['scp', PATH + '/' + LICENSE + '/ifw/' + ifw_branch + '/' + 'installer-framework-build*.7z', ext_server_base_url + ':' + ext_dest_dir]
+        cmd_args_copy_ifw_ext = cmd_args_copy_ifw_pkg + ['scp', PATH + '/' + LICENSE + '/ifw/' + ifw_dest_dir_name + '/' + 'installer-framework-build*.7z', ext_server_base_url + ':' + ext_dest_dir]
         bldinstallercommon.do_execute_sub_process(cmd_args_copy_ifw_ext, SCRIPT_ROOT_DIR, True)
 
 
