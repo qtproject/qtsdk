@@ -370,7 +370,7 @@ def handle_ifw_build():
     qt_src_pkg = QT_SRC_FOR_IFW_PREPARED
     ifw_url = IFW_GIT_URL
     ifw_branch = os.environ['QT_INSTALLER_FRAMEWORK_VERSION']
-    ifw_dest_dir_name = os.environ.get('IFW_REMOTE_RESULT_DEST_DIR_NAME'):
+    ifw_dest_dir_name = os.environ.get('IFW_REMOTE_RESULT_DEST_DIR_NAME')
     if not ifw_dest_dir_name:
         ifw_dest_dir_name = ifw_branch
     if bldinstallercommon.is_win_platform():
