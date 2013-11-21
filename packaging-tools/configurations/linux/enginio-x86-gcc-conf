@@ -48,6 +48,6 @@ version_tag:            %ENGINIO_VERSION%
 package_default:        false
 [cloudservices.enginio.10.gcc]
 archive_uri:            /qtenginio/@QTENGINIO_VERSION@/latest/linux_gcc_32_ubuntu1110/qt5_qtenginio.7z
-package_strip_dirs:
+package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:           /lib
