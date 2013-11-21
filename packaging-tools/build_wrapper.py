@@ -1359,7 +1359,7 @@ def parse_cmd_line():
     REMOTE_DIR = PATH + '/' + LICENSE + '/'
     LATEST_DIR = PATH + '/' + LICENSE + '/'
 
-    if bld_cmd_validator.is_qt5_release_build() or bld_cmd_validator.is_enginio_build():
+    if bld_cmd_validator.is_qt5_release_build():
         REMOTE_DIR += 'qt' + '/' + QT_VERSION + '/' + TIME_STAMP + '-' + BUILD_NUMBER
         LATEST_DIR += 'qt' + '/' + QT_VERSION + '/' + 'latest'
     elif os.environ.get('APPLICATION_NAME'):
