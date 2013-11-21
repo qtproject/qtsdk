@@ -482,6 +482,12 @@ def handle_qt_src_package_build():
     if os.path.exists(os.path.join(essentials_path, 'README')):
         os.remove(os.path.join(essentials_path, 'README'))
 
+    ## QTBUG-34967
+    # remove 'location' subfolder from examples
+    # this is just a workaround that should be removed once QtLocation is officially released
+    if os.path.exists(os.path.join(essentials_path, 'location')):
+        shutil.rmtree(os.path.join(essentials_path, 'location'))
+
     shutil.move(os.path.join(essentials_path, 'activeqt'), addons_path)
     shutil.move(os.path.join(essentials_path, 'svg'), addons_path)
 
