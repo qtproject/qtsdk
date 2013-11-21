@@ -69,7 +69,7 @@ template_name:          config_qt5
 template_name:          config.xml.template.linux-x86.qt5-sdk
 
 [WorkingDirectories]
-packages_dir:           pkg_enterprise
+packages_dir:           pkg_enginio
 
 [InstallerFrameworkTools]
 name:                   ifwt
