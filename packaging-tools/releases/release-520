@@ -65,6 +65,12 @@ arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=ta
 installer_name:             qt-mac-opensource-%GLOBAL_VERSION%-ios-x86_64-offline
 rta_key_list:
 
+[release.520.offline.mac.x64.android_and_ios]
+arg_configurations_file:    mac_x86_64_android_ios_offline
+arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz
+installer_name:             qt-mac-opensource-%GLOBAL_VERSION%-android-ios-x86_64-offline
+rta_key_list:
+
 
 ################################################################################
 ## Windows offline
