@@ -47,7 +47,7 @@ version:                1.0.0
 version_tag:            %ENGINIO_VERSION%
 package_default:        false
 [cloudservices.enginio.10.android_armv7]
-archive_uri:            /qtenginio/@QTENGINIO_VERSION@/latest/android_armv7/mingw_x86/qt5_enginio.7z
+archive_uri:            /qtenginio/@QTENGINIO_VERSION@/latest/android_armv7/mingw_x86/qt5_qtenginio.7z
 package_strip_dirs:
 target_install_dir:     /
 rpath_target:
