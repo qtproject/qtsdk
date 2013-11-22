@@ -9,7 +9,7 @@ linux-x64:                  installer-framework-build-linux-x64.7z
 mac-x64:                    installer-framework-build-mac-x64.7z
 
 [release.global]
-version:                    1.4.0-2
+version:                    1.5.0
 version_tag:
 
 
