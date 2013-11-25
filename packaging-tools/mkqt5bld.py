@@ -395,7 +395,10 @@ def build_qmlpuppets():
 
     # override DESTDIR because DESTDIR in qml2puppet.pro doesn't handle that Qt is not installed in
     # QT_INSTALL_BINS, but within a INSTALL_ROOT
-    install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + ORIGINAL_QMAKE_QT_PRFXPATH
+    prfx_path = ORIGINAL_QMAKE_QT_PRFXPATH
+    if bldinstallercommon.is_win_platform():
+           prfx_path = prfx_path[2:].replace('/', '\\')
+    install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + prfx_path
     qmake_executable_path = [qmake_executable_path, '-after', 'DESTDIR=' + os.path.join(install_root_path, 'bin')]
 
     bldinstallercommon.do_execute_sub_process(qmake_executable_path, qmlpuppet_dir, STRICT_MODE)
