@@ -393,10 +393,10 @@ def build_qmlpuppets():
 
     qmlpuppet_dir = os.path.join(QT_CREATOR_SRC_DIR, 'share', 'qtcreator', 'qml', 'qmlpuppet', 'qml2puppet')
 
-    if bldinstallercommon.is_mac_platform():
-        # make install INSTALL_ROOT= doesn't work on the mac, set DESTDIR instead
-        install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + ORIGINAL_QMAKE_QT_PRFXPATH
-        qmake_executable_path = [qmake_executable_path, '-after', 'DESTDIR=' + os.path.join(install_root_path, 'bin')]
+    # override DESTDIR because DESTDIR in qml2puppet.pro doesn't handle that Qt is not installed in
+    # QT_INSTALL_BINS, but within a INSTALL_ROOT
+    install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + ORIGINAL_QMAKE_QT_PRFXPATH
+    qmake_executable_path = [qmake_executable_path, '-after', 'DESTDIR=' + os.path.join(install_root_path, 'bin')]
 
     bldinstallercommon.do_execute_sub_process(qmake_executable_path, qmlpuppet_dir, STRICT_MODE)
     bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), qmlpuppet_dir, STRICT_MODE)
@@ -447,35 +447,6 @@ def install_qt():
             file_handle = open(MISSING_MODULES_FILE, 'a')
             file_handle.write('\nFailed to build ' + module_name)
             file_handle.close()
-
-    print_wrap('--------------------------------------------------------------------')
-
-###############################
-# function
-###############################
-def install_qmlpuppets():
-    if not QT_CREATOR_SRC_DIR:
-        return
-    print_wrap('---------------- Installing qmlpuppets------------------------------')
-
-    #make install for each module with INSTALL_ROOT
-    install_dir = ESSENTIALS_INSTALL_DIR_NAME
-    prfx_path = ORIGINAL_QMAKE_QT_PRFXPATH
-    if bldinstallercommon.is_win_platform():
-        prfx_path = prfx_path[2:].replace('/', '\\')
-    install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + install_dir + prfx_path
-    print_wrap('    Using install root path: ' + install_root_path)
-    qmlpuppet_dir = os.path.join(QT_CREATOR_SRC_DIR, 'share', 'qtcreator', 'qml', 'qmlpuppet', 'qml2puppet')
-
-    cmd_args = MAKE_INSTALL_CMD + ' ' + 'INSTALL_ROOT=' + install_root_path
-    print_wrap('    Installing qmlpuppet')
-    print_wrap('          -> cmd args: ' + cmd_args)
-    print_wrap('                -> in: ' + qmlpuppet_dir)
-    return_code, output = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), qmlpuppet_dir, STRICT_MODE)
-    if return_code >= 0:
-        file_handle = open(MISSING_MODULES_FILE, 'a')
-        file_handle.write('\nFailed to build qmlpuppet')
-        file_handle.close()
 
     print_wrap('--------------------------------------------------------------------')
 
@@ -1070,14 +1041,11 @@ def main():
     build_qt()
     # save original qt_prfxpath in qmake executable
     save_original_qt_prfxpath()
-    # build qmlpuppets
-    if not ANDROID_BUILD:
-        build_qmlpuppets()
     # install
     install_qt()
-    # install qmlpuppets
-    if not ANDROID_BUILD and not bldinstallercommon.is_mac_platform():
-        install_qmlpuppets()
+    # build qmlpuppets into Qt install
+    if not ANDROID_BUILD:
+        build_qmlpuppets()
     # build docs and copy to essentials install dir
     if not ANDROID_BUILD:
         build_docs()
