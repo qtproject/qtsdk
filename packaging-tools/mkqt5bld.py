@@ -56,7 +56,6 @@ import fnmatch
 SCRIPT_ROOT_DIR                     = os.getcwd()
 WORK_DIR_NAME                       = 'qt5_workdir'
 WORK_DIR                            = SCRIPT_ROOT_DIR + os.sep + WORK_DIR_NAME
-QT_CREATOR_SRC_DIR                  = ''
 QT_PACKAGE_SAVE_AS_TEMP             = ''
 QT_SOURCE_DIR_NAME                  = 'w'
 QT_SOURCE_DIR                       = WORK_DIR + os.sep + QT_SOURCE_DIR_NAME
@@ -96,22 +95,14 @@ IGNORE_PATCH_LIST                   = ['.png', '.jpg', '.gif', '.bmp', '.exe', '
 INSTALL_PREFIX                      = ''
 #Commandline options
 OPTION_PARSER                       = 0
-QT_SRC_PACKAGE_URL                  = ''
-SILENT_BUILD                        = False
-STRICT_MODE                         = True
-QT5_MODULES_IGNORE_LIST             = []
-MAKE_CMD                            = ''
-MAKE_THREAD_COUNT                   = ''
 MAKE_INSTALL_CMD                    = ''
 CONFIGURE_OPTIONS                   = '-confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng'
-ANDROID_NDK_HOST                    = ''
-ANDROID_API_VERSION                 = 'android-10'
-ANDROID_SDK_HOME                    = ''
-ANDROID_NDK_HOME                    = ''
 ANDROID_BUILD                       = False
 EXTRA_ENV                           = dict(os.environ)
-REPLACE_RPATH                       = False
-CUSTOM_ICU_URI                      = ''
+QT_BUILD_OPTIONS                    = 0
+
+# init
+bldinstallercommon.init_common_module(SCRIPT_ROOT_DIR)
 
 
 class MultipleOption(Option):
@@ -126,6 +117,65 @@ class MultipleOption(Option):
         else:
             Option.take_action(self, action, dest, opt, value, values, parser)
 
+###############################
+# Qt5 build options class
+###############################
+class MkQtBuildOptions:
+
+    def __init__(self):
+        self.src_url                = ''
+        self.qt_creator_src_dir     = ''
+        self.configure_options      = ''
+        self.add_configure_option   = ''
+        self.make_cmd               = ''
+        self.make_thread_count      = multiprocessing.cpu_count()+1
+        self.silent_build           = False
+        self.module_ignore_list     = []
+        self.strict_mode            = True
+        self.replace_rpath          = False
+        self.icu_uri                = ''
+        self.runtime_path           = ''
+        self.prefix                 = ''
+        self.android_ndk_host       = ''
+        self.android_api_version    = 'android-10'
+        self.android_sdk_home       = ''
+        self.android_ndk_home       = ''
+
+    def set_args(self, option_parser):
+        if option_parser.src_url:
+            self.src_url = option_parser.src_url
+        if option_parser.qt_creator_src_dir:
+            self.qt_creator_src_dir = option_parser.qt_creator_src_dir
+        if option_parser.configure_options:
+            self.configure_options      = option_parser.configure_options
+        if option_parser.add_configure_option:
+            self.add_configure_option   = option_parser.add_configure_option
+        if option_parser.make_cmd:
+            self.make_cmd               = option_parser.make_cmd
+        if option_parser.make_thread_count:
+            self.make_thread_count      = option_parser.make_thread_count
+        if option_parser.silent_build:
+            self.silent_build           = option_parser.silent_build
+        if option_parser.module_ignore_list:
+            self.module_ignore_list     = option_parser.module_ignore_list
+        if option_parser.strict_mode:
+            self.strict_mode            = option_parser.strict_mode
+        if option_parser.replace_rpath:
+            self.replace_rpath          = option_parser.replace_rpath
+        if option_parser.icu_uri:
+            self.icu_uri                = option_parser.icu_uri
+        if option_parser.runtime_path:
+            self.runtime_path           = option_parser.runtime_path
+        if option_parser.prefix:
+            self.prefix                 = option_parser.prefix
+        if option_parser.android_ndk_host:
+            self.android_ndk_host       = option_parser.android_ndk_host
+        if option_parser.android_api_version:
+            self.android_api_version    = option_parser.android_api_version
+        if option_parser.android_sdk_home:
+            self.android_sdk_home       = option_parser.android_sdk_home
+        if option_parser.android_ndk_home:
+            self.android_ndk_home       = option_parser.android_ndk_home
 
 ###############################
 # function
@@ -148,7 +198,6 @@ def exit_script():
 def init_mkqt5bld():
     global CONFIGURE_CMD
     global CONFIGURE_OPTIONS
-    global MAKE_CMD
     global MAKE_INSTALL_CMD
     global EXTRA_ENV
 
@@ -157,38 +206,38 @@ def init_mkqt5bld():
     if bldinstallercommon.is_unix_platform():
         CONFIGURE_CMD = './'
 
-    if SILENT_BUILD and not bldinstallercommon.is_win_platform():
+    if QT_BUILD_OPTIONS.silent_build and not bldinstallercommon.is_win_platform():
         CONFIGURE_OPTIONS += ' -silent'
     # add required configuration arguments if Android build
     if ANDROID_BUILD:
-        CONFIGURE_OPTIONS += ' -android-ndk ' + ANDROID_NDK_HOME
-        CONFIGURE_OPTIONS += ' -android-sdk ' + ANDROID_SDK_HOME
-        EXTRA_ENV['ANDROID_NDK_HOST'] = ANDROID_NDK_HOST
-        EXTRA_ENV['ANDROID_API_VERSION'] = ANDROID_API_VERSION
+        CONFIGURE_OPTIONS += ' -android-ndk ' + QT_BUILD_OPTIONS.android_ndk_home
+        CONFIGURE_OPTIONS += ' -android-sdk ' + QT_BUILD_OPTIONS.android_sdk_home
+        EXTRA_ENV['ANDROID_NDK_HOST'] = QT_BUILD_OPTIONS.android_ndk_host
+        EXTRA_ENV['ANDROID_API_VERSION'] = QT_BUILD_OPTIONS.android_api_version
 
     CONFIGURE_CMD += 'configure'
 
     # make cmd
-    if MAKE_CMD == '':  #if not given in commandline param, use nmake or make according to the os
+    if QT_BUILD_OPTIONS.make_cmd == '':  #if not given in commandline param, use nmake or make according to the os
         if bldinstallercommon.is_win_platform():        #win
-            MAKE_CMD = 'nmake'
+            QT_BUILD_OPTIONS.make_cmd = 'nmake'
             MAKE_INSTALL_CMD = 'nmake'
-            if SILENT_BUILD:
-                MAKE_CMD += ' /s'
+            if QT_BUILD_OPTIONS.silent_build:
+                QT_BUILD_OPTIONS.make_cmd += ' /s'
                 MAKE_INSTALL_CMD += ' /s'
             MAKE_INSTALL_CMD += ' install'
         elif bldinstallercommon.is_unix_platform():    #linux & mac
-            MAKE_CMD = 'make'
+            QT_BUILD_OPTIONS.make_cmd = 'make'
             MAKE_INSTALL_CMD = 'make'
-            if SILENT_BUILD:
-                MAKE_CMD += ' -s'
+            if QT_BUILD_OPTIONS.silent_build:
+                QT_BUILD_OPTIONS.make_cmd += ' -s'
                 MAKE_INSTALL_CMD += ' -s'
             MAKE_INSTALL_CMD += ' install'
     else:
-        if MAKE_CMD == 'jom':
+        if QT_BUILD_OPTIONS.make_cmd == 'jom':
             MAKE_INSTALL_CMD = 'jom -j1 install'
-            if SILENT_BUILD:
-                MAKE_CMD += ' -s -nologo'
+            if QT_BUILD_OPTIONS.silent_build:
+                QT_BUILD_OPTIONS.make_cmd += ' -s -nologo'
                 MAKE_INSTALL_CMD += ' -s -nologo'
 
     #remove old working dirs
@@ -199,7 +248,7 @@ def init_mkqt5bld():
         print_wrap('    Removing old module archive dir ' + MODULE_ARCHIVE_DIR)
         bldinstallercommon.remove_tree(MODULE_ARCHIVE_DIR)
 
-    print_wrap('  Build    : ' + MAKE_CMD)
+    print_wrap('  Build    : ' + QT_BUILD_OPTIONS.make_cmd)
     print_wrap('  Install  : ' + MAKE_INSTALL_CMD)
     print_wrap('  Configure: ' + CONFIGURE_OPTIONS)
 
@@ -211,17 +260,17 @@ def init_mkqt5bld():
 ###############################
 def fetch_src_package():
     global QT_PACKAGE_SAVE_AS_TEMP
-    QT_PACKAGE_SAVE_AS_TEMP = os.path.normpath(WORK_DIR + os.sep + os.path.basename(QT_SRC_PACKAGE_URL))
+    QT_PACKAGE_SAVE_AS_TEMP = os.path.normpath(WORK_DIR + os.sep + os.path.basename(QT_BUILD_OPTIONS.src_url))
     print_wrap('---------------- Fetching Qt src package ---------------------------')
     # check first if package on local file system
     if not os.path.isfile(QT_PACKAGE_SAVE_AS_TEMP):
-        if not bldinstallercommon.is_content_url_valid(QT_SRC_PACKAGE_URL):
-            print_wrap('*** Qt src package url: [' + QT_SRC_PACKAGE_URL + '] is invalid! Abort!')
+        if not bldinstallercommon.is_content_url_valid(QT_BUILD_OPTIONS.src_url):
+            print_wrap('*** Qt src package url: [' + QT_BUILD_OPTIONS.src_url + '] is invalid! Abort!')
             sys.exit(-1)
-        print_wrap('     Downloading:        ' + QT_SRC_PACKAGE_URL)
+        print_wrap('     Downloading:        ' + QT_BUILD_OPTIONS.src_url)
         print_wrap('            into:        ' + QT_PACKAGE_SAVE_AS_TEMP)
         # start download
-        urllib.urlretrieve(QT_SRC_PACKAGE_URL, QT_PACKAGE_SAVE_AS_TEMP, reporthook=bldinstallercommon.dlProgress)
+        urllib.urlretrieve(QT_BUILD_OPTIONS.src_url, QT_PACKAGE_SAVE_AS_TEMP, reporthook=bldinstallercommon.dlProgress)
     else:
         print_wrap('Found local package, using that: ' + QT_PACKAGE_SAVE_AS_TEMP)
     print_wrap('--------------------------------------------------------------------')
@@ -256,7 +305,7 @@ def extract_src_package():
         sys.exit(-1)
 
     #Remove the modules to be ignored
-    for ignore in QT5_MODULES_IGNORE_LIST:
+    for ignore in QT_BUILD_OPTIONS.module_ignore_list:
         if os.path.exists(QT_SOURCE_DIR + os.sep + ignore):
             print_wrap('    Removing ' + ignore)
             bldinstallercommon.remove_tree(QT_SOURCE_DIR + os.sep + ignore)
@@ -362,10 +411,10 @@ def build_qt():
     #create install dirs
     bldinstallercommon.create_dirs(MAKE_INSTALL_ROOT_DIR)
 
-    cmd_args = MAKE_CMD
+    cmd_args = QT_BUILD_OPTIONS.make_cmd
     if bldinstallercommon.is_unix_platform():
-        cmd_args += ' -j' + str(MAKE_THREAD_COUNT)
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, STRICT_MODE, False, EXTRA_ENV)
+        cmd_args += ' -j' + str(QT_BUILD_OPTIONS.make_thread_count)
+    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, QT_BUILD_OPTIONS.strict_mode, False, EXTRA_ENV)
 
     print_wrap('--------------------------------------------------------------------')
 
@@ -374,7 +423,7 @@ def build_qt():
 # function
 ###############################
 def build_qmlpuppets():
-    if not QT_CREATOR_SRC_DIR:
+    if not QT_BUILD_OPTIONS.qt_creator_src_dir:
         return
     print_wrap('---------------- Building QML Puppets -------------------------------')
 
@@ -383,14 +432,14 @@ def build_qmlpuppets():
         print_wrap('*** Error! qmake executable not found? Looks like the build has failed in previous step?')
         exit_script()
 
-    cmd_args = MAKE_CMD
+    cmd_args = QT_BUILD_OPTIONS.make_cmd
     if bldinstallercommon.is_unix_platform():
-        cmd_args += ' -j' + str(MAKE_THREAD_COUNT)
+        cmd_args += ' -j' + str(QT_BUILD_OPTIONS.make_thread_count)
 
     shutil.copy(os.path.join(QT_SOURCE_DIR, ".qmake.super"),
-                QT_CREATOR_SRC_DIR)
+                QT_BUILD_OPTIONS.qt_creator_src_dir)
 
-    qmlpuppet_dir = os.path.join(QT_CREATOR_SRC_DIR, 'share', 'qtcreator', 'qml', 'qmlpuppet', 'qml2puppet')
+    qmlpuppet_dir = os.path.join(QT_BUILD_OPTIONS.qt_creator_src_dir, 'share', 'qtcreator', 'qml', 'qmlpuppet', 'qml2puppet')
 
     # override DESTDIR because DESTDIR in qml2puppet.pro doesn't handle that Qt is not installed in
     # QT_INSTALL_BINS, but within a INSTALL_ROOT
@@ -400,8 +449,8 @@ def build_qmlpuppets():
     install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + prfx_path
     qmake_executable_path = [qmake_executable_path, '-after', 'DESTDIR=' + os.path.join(install_root_path, 'bin')]
 
-    bldinstallercommon.do_execute_sub_process(qmake_executable_path, qmlpuppet_dir, STRICT_MODE)
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), qmlpuppet_dir, STRICT_MODE)
+    bldinstallercommon.do_execute_sub_process(qmake_executable_path, qmlpuppet_dir, QT_BUILD_OPTIONS.strict_mode)
+    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), qmlpuppet_dir, QT_BUILD_OPTIONS.strict_mode)
 
     print_wrap('--------------------------------------------------------------------')
 
@@ -421,7 +470,7 @@ def install_qt():
         print_wrap('    Installing module: Qt top level')
         print_wrap('          -> cmd args: ' + cmd_args)
         print_wrap('                -> in: ' + QT_SOURCE_DIR)
-        return_code, output = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, STRICT_MODE)
+        return_code, output = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, QT_BUILD_OPTIONS.strict_mode)
         return
 
     #make install for each module with INSTALL_ROOT
@@ -444,7 +493,7 @@ def install_qt():
         print_wrap('    Installing module: ' + module_name)
         print_wrap('          -> cmd args: ' + cmd_args)
         print_wrap('                -> in: ' + submodule_dir_name)
-        return_code, output = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), submodule_dir_name, STRICT_MODE)
+        return_code, output = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), submodule_dir_name, QT_BUILD_OPTIONS.strict_mode)
         if return_code >= 0:
             file_handle = open(MISSING_MODULES_FILE, 'a')
             file_handle.write('\nFailed to build ' + module_name)
@@ -579,7 +628,7 @@ def build_docs():
     print_wrap('------------------------- Building documentation -------------------')
 
     print_wrap('    Running \'make qmake_all\' ...')
-    cmd_args = MAKE_CMD + ' qmake_all'
+    cmd_args = QT_BUILD_OPTIONS.make_cmd + ' qmake_all'
     bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, False, False)
 
     #first we need to do make install for the sources
@@ -587,13 +636,13 @@ def build_docs():
     install_args = MAKE_INSTALL_CMD
     bldinstallercommon.do_execute_sub_process(install_args.split(' '), QT_SOURCE_DIR, False, False)
 
-    cmd_args = MAKE_CMD + ' docs'
+    cmd_args = QT_BUILD_OPTIONS.make_cmd + ' docs'
     print_wrap('    Running make docs in ' + QT_SOURCE_DIR)
     #do not abort on fail, if the doc build fails, we still want to get the binary package
     bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, False)
 
     print_wrap('    Running make install_docs in ' + QT_SOURCE_DIR)
-    make_cmd = MAKE_CMD
+    make_cmd = QT_BUILD_OPTIONS.make_cmd
     install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME
     if bldinstallercommon.is_win_platform():
         install_root_path = install_root_path[2:]
@@ -761,7 +810,7 @@ def patch_build():
         rename_android_soname_files()
         patch_android_prl_files()
     # patch RPath if requested
-    if REPLACE_RPATH:
+    if QT_BUILD_OPTIONS.replace_rpath:
         replace_rpath()
     # patch icu_install paths from files
     if bldinstallercommon.is_linux_platform():
@@ -825,18 +874,18 @@ def erase_qmake_prl_build_dir():
 # function
 ###############################
 def use_custom_icu():
-    if os.path.isdir(CUSTOM_ICU_URI):
-        return CUSTOM_ICU_URI
-    package_raw_name = os.path.basename(CUSTOM_ICU_URI)
+    if os.path.isdir(QT_BUILD_OPTIONS.icu_uri):
+        return QT_BUILD_OPTIONS.icu_uri
+    package_raw_name = os.path.basename(QT_BUILD_OPTIONS.icu_uri)
     icu_extract_path = os.path.join(SCRIPT_ROOT_DIR, 'icu_saveas')
     if os.path.isdir(icu_extract_path):
         bldinstallercommon.remove_tree(icu_extract_path)
     bldinstallercommon.create_dirs(icu_extract_path)
     icu_extract_saveas = os.path.join(icu_extract_path, package_raw_name)
-    if os.path.isfile(CUSTOM_ICU_URI):
-        bldinstallercommon.extract_file(CUSTOM_ICU_URI, icu_extract_path)
-    if bldinstallercommon.is_content_url_valid(CUSTOM_ICU_URI):
-        bldinstallercommon.retrieve_url(CUSTOM_ICU_URI, icu_extract_saveas)
+    if os.path.isfile(QT_BUILD_OPTIONS.icu_uri):
+        bldinstallercommon.extract_file(QT_BUILD_OPTIONS.icu_uri, icu_extract_path)
+    if bldinstallercommon.is_content_url_valid(QT_BUILD_OPTIONS.icu_uri):
+        bldinstallercommon.retrieve_url(QT_BUILD_OPTIONS.icu_uri, icu_extract_saveas)
         bldinstallercommon.extract_file(icu_extract_saveas, icu_extract_path)
     lib_path = bldinstallercommon.locate_directory(icu_extract_path, 'lib')
     if not lib_path:
@@ -851,24 +900,7 @@ def use_custom_icu():
 ###############################
 def parse_cmd_line():
     print_wrap('---------------- Parsing commandline arguments ---------------------')
-    global QT_SRC_PACKAGE_URL
-    global MAKE_CMD
-    global MAKE_THREAD_COUNT
-    global MAKE_INSTALL_CMD
-    global SILENT_BUILD
-    global QT5_MODULES_IGNORE_LIST
-    global STRICT_MODE
-    global CONFIGURE_OPTIONS
-    global QT_CREATOR_SRC_DIR
-    global ANDROID_NDK_HOST
-    global ANDROID_API_VERSION
-    global ANDROID_SDK_HOME
-    global ANDROID_NDK_HOME
-    global ANDROID_BUILD
-    global REPLACE_RPATH
-    global CUSTOM_ICU_URI
-    global EXTRA_ENV
-
+    global QT_BUILD_OPTIONS
     setup_option_parser()
 
     arg_count = len(sys.argv)
@@ -878,78 +910,9 @@ def parse_cmd_line():
 
     (options, args) = OPTION_PARSER.parse_args()
 
-    QT_SRC_PACKAGE_URL      = options.src_url
-    if options.make_cmd:
-        MAKE_CMD            = options.make_cmd
-    MAKE_THREAD_COUNT       = options.make_thread_count
-    MAKE_INSTALL_CMD        = MAKE_CMD + ' install'
-    SILENT_BUILD            = options.silent_build
-    if options.module_ignore_list:
-        QT5_MODULES_IGNORE_LIST = options.module_ignore_list
-    STRICT_MODE             = options.strict_mode
-    QT_CREATOR_SRC_DIR      = options.qt_creator_src_dir
-    REPLACE_RPATH           = options.replace_rpath
+    QT_BUILD_OPTIONS = MkQtBuildOptions()
+    QT_BUILD_OPTIONS.set_args(options)
 
-    if options.configure_options:
-        if os.path.isfile(options.configure_options):
-            configure_file = open(options.configure_options, 'r')
-            CONFIGURE_OPTIONS = configure_file.readline().rstrip('\r\n')
-            configure_file.close()
-        else:
-            print_wrap(' *** Error! Could not find file ' + options.configure_options)
-            exit_script()
-    else:
-        print_wrap(' *** Error! No configure options given!')
-        exit_script()
-
-    if options.add_configure_option:
-        CONFIGURE_OPTIONS += ' ' + options.add_configure_option
-
-    if QT_CREATOR_SRC_DIR and not os.path.isdir(QT_CREATOR_SRC_DIR):
-        print_wrap(' *** Error! Could not find directory ' + QT_CREATOR_SRC_DIR)
-        exit_script()
-
-    #TODO: android options to global variables (all). Check that paths exists, also other values
-    if options.android_ndk_host:
-        ANDROID_NDK_HOST     = options.android_ndk_host
-        ANDROID_BUILD        = True
-    if options.android_api_version:
-        ANDROID_API_VERSION  = options.android_api_version
-    if options.android_sdk_home and os.path.isdir(options.android_sdk_home):
-        ANDROID_SDK_HOME     = options.android_sdk_home
-        ANDROID_BUILD        = True
-    if options.android_ndk_home and os.path.isdir(options.android_ndk_home):
-        ANDROID_NDK_HOME     = options.android_ndk_home
-        ANDROID_BUILD        = True
-    # All or none Android specific arguments must be preset
-    if ANDROID_BUILD and '' in [ANDROID_NDK_HOST, ANDROID_SDK_HOME, ANDROID_NDK_HOME]:
-        print_wrap('*** Invalid arguments for Android build. Please check them.')
-        sys.exit(-1)
-
-    if options.icu_uri:
-        CUSTOM_ICU_URI = options.icu_uri
-        icu_install_base_path = use_custom_icu()
-        print_wrap('Using custom ICU from path: ' + icu_install_base_path)
-        icu_path_lib = os.path.join(icu_install_base_path, 'lib')
-        icu_path_inc = os.path.join(icu_install_base_path, 'include')
-        CONFIGURE_OPTIONS += ' ' + '-L' + ' ' + icu_path_lib
-        CONFIGURE_OPTIONS += ' ' + '-I' + ' ' + icu_path_inc
-        if bldinstallercommon.is_linux_platform():
-            env = EXTRA_ENV['LD_LIBRARY_PATH']
-            if env:
-                env = ':' + env
-            EXTRA_ENV['LD_LIBRARY_PATH'] = icu_path_lib + env
-        if bldinstallercommon.is_win_platform():
-            env = EXTRA_ENV['LIB']
-            if env:
-                env = ';' + env
-            EXTRA_ENV['LIB'] = icu_path_lib + env
-    if options.prefix:
-        CONFIGURE_OPTIONS += ' ' + '-prefix' + ' ' + options.prefix
-    if options.runtime_path:
-        CONFIGURE_OPTIONS += ' ' + '-R' + ' ' + options.runtime_path
-
-    CONFIGURE_OPTIONS = CONFIGURE_OPTIONS.replace('  ', ' ')
     print_wrap('---------------------------------------------------------------------')
     return True
 
@@ -1016,15 +979,82 @@ def setup_option_parser():
                       help="Path to Android NDK home.")
     print_wrap('---------------------------------------------------------------------')
 
+##############################################################
+# main_call_parameters
+##############################################################
+def main_call_parameters():
+
+    global MAKE_INSTALL_CMD
+    global CONFIGURE_OPTIONS
+    global ANDROID_BUILD
+    global EXTRA_ENV
+
+    if QT_BUILD_OPTIONS.make_cmd:
+        MAKE_INSTALL_CMD    = QT_BUILD_OPTIONS.make_cmd + ' install'
+    if not QT_BUILD_OPTIONS.make_thread_count:
+        QT_BUILD_OPTIONS.make_thread_count = multiprocessing.cpu_count()+1
+
+    if QT_BUILD_OPTIONS.configure_options:
+        if os.path.isfile(QT_BUILD_OPTIONS.configure_options):
+            configure_file = open(QT_BUILD_OPTIONS.configure_options, 'r')
+            CONFIGURE_OPTIONS = configure_file.readline().rstrip('\r\n')
+            configure_file.close()
+        else:
+            print_wrap(' *** Error! Could not find file ' + QT_BUILD_OPTIONS.configure_options)
+            exit_script()
+    else:
+        print_wrap(' *** Error! No configure options given!')
+        exit_script()
+
+    if QT_BUILD_OPTIONS.add_configure_option:
+        CONFIGURE_OPTIONS += ' ' + QT_BUILD_OPTIONS.add_configure_option
+
+    if QT_BUILD_OPTIONS.qt_creator_src_dir and not os.path.isdir(QT_BUILD_OPTIONS.qt_creator_src_dir):
+        print_wrap(' *** Error! Could not find directory ' + QT_BUILD_OPTIONS.qt_creator_src_dir)
+        exit_script()
+
+    #TODO: android options to global variables (all). Check that paths exists, also other values
+    if QT_BUILD_OPTIONS.android_ndk_host:
+        ANDROID_BUILD        = True
+    if QT_BUILD_OPTIONS.android_sdk_home and os.path.isdir(QT_BUILD_OPTIONS.android_sdk_home):
+        ANDROID_BUILD        = True
+    if QT_BUILD_OPTIONS.android_ndk_home and os.path.isdir(QT_BUILD_OPTIONS.android_ndk_home):
+        ANDROID_BUILD        = True
+    # All or none Android specific arguments must be preset
+    if ANDROID_BUILD and '' in [QT_BUILD_OPTIONS.android_ndk_host, QT_BUILD_OPTIONS.android_sdk_home, QT_BUILD_OPTIONS.android_ndk_home]:
+        print_wrap('*** Invalid arguments for Android build. Please check them.')
+        sys.exit(-1)
+
+    if QT_BUILD_OPTIONS.icu_uri:
+        icu_install_base_path = use_custom_icu()
+        print_wrap('Using custom ICU from path: ' + icu_install_base_path)
+        icu_path_lib = os.path.join(icu_install_base_path, 'lib')
+        icu_path_inc = os.path.join(icu_install_base_path, 'include')
+        CONFIGURE_OPTIONS += ' ' + '-L' + ' ' + icu_path_lib
+        CONFIGURE_OPTIONS += ' ' + '-I' + ' ' + icu_path_inc
+        if bldinstallercommon.is_linux_platform():
+            env = EXTRA_ENV['LD_LIBRARY_PATH']
+            if env:
+                env = ':' + env
+            EXTRA_ENV['LD_LIBRARY_PATH'] = icu_path_lib + env
+        if bldinstallercommon.is_win_platform():
+            env = EXTRA_ENV['LIB']
+            if env:
+                env = ';' + env
+            EXTRA_ENV['LIB'] = icu_path_lib + env
+    if QT_BUILD_OPTIONS.prefix:
+        CONFIGURE_OPTIONS += ' ' + '-prefix' + ' ' + QT_BUILD_OPTIONS.prefix
+    if QT_BUILD_OPTIONS.runtime_path:
+        CONFIGURE_OPTIONS += ' ' + '-R' + ' ' + QT_BUILD_OPTIONS.runtime_path
+
+    CONFIGURE_OPTIONS = CONFIGURE_OPTIONS.replace('  ', ' ')
+    # Starting the build
+    run_build()
 
 ###############################
-# function
+# run_build()
 ###############################
-def main():
-    # init
-    bldinstallercommon.init_common_module(SCRIPT_ROOT_DIR)
-    # parse cmd line
-    parse_cmd_line()
+def run_build():
     # init
     init_mkqt5bld()
     # create work dir
@@ -1058,10 +1088,18 @@ def main():
     # archive each submodule
     archive_submodules()
 
+###############################
+# execute_build
+###############################
+def execute_build():
+    # parse cmd line
+    parse_cmd_line()
+    # Start the build
+    main_call_parameters()
 
 ###############################
 # function
 ###############################
-main()
-
+if __name__ == "__main__":
+    execute_build()
 

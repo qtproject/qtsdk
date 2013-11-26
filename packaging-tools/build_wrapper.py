@@ -51,8 +51,9 @@ import sys
 import re
 from time import gmtime, strftime
 import urllib
-from optparse import OptionParser, Option
+import mkqt5bld
 
+from optparse import OptionParser, Option
 
 import bldinstallercommon
 import release_build_handler
@@ -668,7 +669,6 @@ def handle_qt_desktop_release_build():
 
     ## let's build Qt
     # some common variables
-    script_path = os.path.join(SCRIPT_ROOT_DIR, 'mkqt5bld.py')
     source_url = SRC_URL + '/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
     configure_files_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_config', '')
 
@@ -677,50 +677,53 @@ def handle_qt_desktop_release_build():
     extension = '.tar.gz'
     if bldinstallercommon.is_win_platform():
         extension = '.zip'
-    # this args don't change, so we can re-use them
-    cmd_args = ['python', '-u', script_path, '-u', source_url + extension, '--creator-dir=' + os.path.join(WORK_DIR, 'qt-creator')]
+    qt5BuildOptions = mkqt5bld.MkQtBuildOptions()
+    qt5BuildOptions.src_url = source_url + extension
+    qt5BuildOptions.qt_creator_src_dir = os.path.join(WORK_DIR, 'qt-creator')
+
     if os.environ.get('EXTRA_QT_CONFIGURE_OPTIONS'):
-        configure_extra_options = os.environ['EXTRA_QT_CONFIGURE_OPTIONS']
+        ext_args = os.environ['EXTRA_QT_CONFIGURE_OPTIONS']
     else:
-        configure_extra_options = ''
+        ext_args = ''
     # on windows we build with jom instead of make
     if bldinstallercommon.is_win_platform():
-        cmd_args += ['-m', 'jom']
+        qt5BuildOptions.make_cmd = 'jom'
 
     # run mkqt5bld.py with the correct options according to the platform and license being used
     if bldinstallercommon.is_linux_platform():
         icu_lib_prefix_rpath = icu_lib_path + ' -I ' + icu_include_path + ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING) + ' -R ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)
-        cmd_args += ['-c', configure_files_path + 'configure_linux_' + LICENSE]
+        qt5BuildOptions.configure_options = configure_files_path + 'configure_linux_' + LICENSE
         if LICENSE == 'enterprise':
-            cmd_args += ['-a', configure_extra_options, ' -DQT_EVAL -L ' + icu_lib_prefix_rpath]
+            ext_args += ' -DQT_EVAL' + ' -L ' + icu_lib_prefix_rpath
         elif LICENSE == 'opensource':
-            cmd_args += ['-a', configure_extra_options, ' -L ' + icu_lib_prefix_rpath]
+            ext_args += ' -L ' + icu_lib_prefix_rpath
         else:
             print('*** License unknown: {0}'.format(LICENSE))
             sys.exit(-1)
-        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True, EXTRA_ENV)
     elif bldinstallercommon.is_win_platform():
-        exec_path = os.getcwd()
         if LICENSE == 'enterprise':
             if TARGET_ENV.find('opengl') >= 1 or TARGET_ENV.find('OpenGL') >= 1:
-                cmd_args += ['-c', configure_files_path + 'configure_win_opengl_' + LICENSE]
+                qt5BuildOptions.configure_options = configure_files_path + 'configure_win_opengl_' + LICENSE
             else:
-                cmd_args += ['-c', configure_files_path + 'configure_win_' + LICENSE]
-            cmd_args += ['-a', configure_extra_options, ' -D QT_EVAL' + ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
+                qt5BuildOptions.configure_options = configure_files_path + 'configure_win_' + LICENSE
+            ext_args += ' -D QT_EVAL' + ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)
         elif LICENSE == 'opensource':
             if TARGET_ENV.find('opengl') >=1 or TARGET_ENV.find('OpenGL') >= 1:
-                cmd_args += ['-c', configure_files_path + 'configure_win_opengl_' + LICENSE]
+                qt5BuildOptions.configure_options = configure_files_path + 'configure_win_opengl_' + LICENSE
             else:
-                cmd_args += ['-c', configure_files_path + 'configure_win_' + LICENSE]
-            cmd_args += ['-a', configure_extra_options, ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
+                qt5BuildOptions.configure_options = configure_files_path + 'configure_win_' + LICENSE
+            ext_args += ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)
         else:
             print('*** License unknown: {0}'.format(LICENSE))
             sys.exit(-1)
-        bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
     elif bldinstallercommon.is_mac_platform():
-        cmd_args += ['-c', configure_files_path + 'configure_mac_' + LICENSE, '-a', configure_extra_options, ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
-        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
-
+        qt5BuildOptions.configure_options = configure_files_path + 'configure_mac_' + LICENSE
+        if LICENSE == 'enterprise':
+            ext_args += ' -DQT_EVAL'
+        ext_args += ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)
+    qt5BuildOptions.add_configure_option = ext_args
+    mkqt5bld.QT_BUILD_OPTIONS = qt5BuildOptions
+    mkqt5bld.main_call_parameters()
 
 ###############################
 # Handle Application release build
