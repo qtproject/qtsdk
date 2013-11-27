@@ -40,14 +40,14 @@
 #############################################################################
 
 
-[qt.cloudservices.enginio.10.ios_armv7]
-archives:               cloudservices.enginio.10.ios_armv7
-target_install_base:    /@QT_VERSION@/ios_armv7
+[qt.cloudservices.enginio.10.ios]
+archives:               cloudservices.enginio.10.ios
+target_install_base:    /@QT_VERSION@/ios
 version:                1.0.0
 version_tag:            %ENGINIO_VERSION%
 package_default:        false
-[cloudservices.enginio.10.ios_armv7]
-archive_uri:            /qtenginio/@QTENGINIO_VERSION@/latest/ios_armv7/mac_x64/qt5_qtenginio.7z
+[cloudservices.enginio.10.ios]
+archive_uri:            /qtenginio/@QTENGINIO_VERSION@/latest/ios/mac_x64/qt5_qtenginio.7z
 package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:
