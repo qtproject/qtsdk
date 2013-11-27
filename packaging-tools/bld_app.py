@@ -49,6 +49,7 @@ import multiprocessing
 import os
 import sys
 import fnmatch
+import shutil
 from urlparse import urlparse
 
 # own imports
@@ -134,6 +135,8 @@ parser.add_argument('--application_url', help="Git URL for Qt Application", requ
 parser.add_argument('--application_branch', help="Git branch for Qt Application", required=False, default='')
 parser.add_argument('--application_dir', help="Local copy of Qt Application", required=False, default='')
 parser.add_argument('--application7z', help="a file or url where it get the application source", required=False, default='')
+parser.add_argument('--makeDocs', help="Should the docs be built for this component?", required=False, action='store_true', default=False)
+parser.add_argument('--collectDocs', help="Should the docs be collected for this component?", required=False, action='store_true', default=False)
 
 
 if (sys.platform != "darwin"):
@@ -321,6 +324,23 @@ runCommand("{0}".format(makeCommand), currentWorkingDirectory = qtApplicationBui
 makeCommandArguments = 'install INSTALL_ROOT=' + qtApplicationInstallDirectory
 runCommand("{0} {1}".format(makeCommand, makeCommandArguments), currentWorkingDirectory = qtApplicationBuildDirectory,
         callerArguments = callerArguments, init_environment = environment)
+
+#charts doc collection
+if callerArguments.collectDocs:
+    doc_list = bldinstallercommon.make_files_list(qtApplicationSourceDirectory, '\\.qch')
+    doc_install_dir = qtApplicationInstallDirectory + os.sep + 'doc'
+    bldinstallercommon.create_dirs(doc_install_dir)
+    for item in doc_list:
+        shutil.copy(item, doc_install_dir)
+
+# enginio etc. docs creation
+if callerArguments.makeDocs:
+    # build docs first
+    makeCommandArguments = '-j1 docs'
+    runCommand("{0} {1}".format(makeCommand, makeCommandArguments), currentWorkingDirectory = qtApplicationBuildDirectory, callerArguments = callerArguments, init_environment = environment)
+    # then make install those
+    makeCommandArguments = '-j1 install_docs INSTALL_ROOT=' + qtApplicationInstallDirectory
+    runCommand("{0} {1}".format(makeCommand, makeCommandArguments), currentWorkingDirectory = qtApplicationBuildDirectory, callerArguments = callerArguments, init_environment = environment)
 
 # try to figure out where the actual exported content is
 dir_to_archive = os.path.dirname(bldinstallercommon.locate_directory(qtApplicationInstallDirectory, 'lib'))

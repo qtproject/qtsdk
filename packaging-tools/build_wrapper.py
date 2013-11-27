@@ -723,6 +723,8 @@ def handle_qt5_application_release_build():
     qt5_addons_lib_package_uri = os.environ.get('QT5_ADDONS_LIB_PACKAGE_URI')
     build_command = os.environ.get('QT5_APPLICATION_BUILD_CMD')
     install_command = os.environ.get('QT5_APPLICATION_INSTALL_CMD')
+    collect_docs_command = os.environ.get('QT5_APPLICATION_COLLECT_DOCS_CMD')
+    make_docs_command = os.environ.get('QT5_APPLICATION_MAKE_DOCS_CMD')
     # build command
     cmd_args = ['python', '-u', script_path, '--clean']
     cmd_args += ['--qt5path', 'qt5_package_dir']
@@ -736,6 +738,10 @@ def handle_qt5_application_release_build():
         cmd_args += ['--buildcommand', build_command]
     if install_command:
         cmd_args += ['--installcommand', install_command]
+    if collect_docs_command:
+        cmd_args += ['--collectDocs']
+    if make_docs_command:
+        cmd_args += ['--makeDocs']
     if bldinstallercommon.is_win_platform():
         cmd_args += ['--sevenzippath', os.environ.get('7Z_TOOL_PATH')]
         cmd_args += ['--gitpath', os.environ.get('GIT_TOOL_PATH')]
