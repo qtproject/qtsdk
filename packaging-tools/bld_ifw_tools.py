@@ -74,9 +74,9 @@ def get_default_qt_configure_options():
 ###############################
 class IfwOptions:
 
-    default_qt_source_package_uri               = 'http://download.qt-project.org/development_releases/prebuilt/qt-src-for-ifw/qt_4.8.4_ifw_prepared.tar.gz'
+    default_qt_source_package_uri               = 'http://download.qt-project.org/development_releases/prebuilt/qt-src-for-ifw/qt-everywhere-opensource-src-4.8.5-ifw-patch.tar.gz'
     if platform.system().lower().startswith('win'):
-        default_qt_source_package_uri           = 'http://download.qt-project.org/development_releases/prebuilt/qt-src-for-ifw/qt_4.8.4_ifw_prepared.zip'
+        default_qt_source_package_uri           = 'http://download.qt-project.org/development_releases/prebuilt/qt-src-for-ifw/qt-everywhere-opensource-src-4.8.5-ifw-patch.zip'
     default_qt_source_package_uri_saveas        = ROOT_DIR + os.sep + os.path.basename(default_qt_source_package_uri)
     default_qt_configure_options_linux          = '-silent -nomake plugins -qt-zlib -qt-libtiff -qt-libpng -qt-libmng -qt-libjpeg -no-svg -no-nis -no-cups -no-audio-backend -no-glib -no-gtkstyle -openssl'
     default_qt_configure_options_mac            = '-silent -nomake plugins -qt-zlib -qt-libtiff -qt-libpng -qt-libmng -qt-libjpeg -no-svg -no-nis -no-cups -no-audio-backend -openssl'
