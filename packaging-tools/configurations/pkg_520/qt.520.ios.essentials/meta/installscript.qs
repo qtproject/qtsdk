@@ -71,7 +71,7 @@ Component.prototype.createOperations = function()
                            ["@SDKToolBinary@", "addQt",
                             "--id", component.name,
                             "--name", "Qt 5.2.0 for iOS",
-                            "--type", "Qt4ProjectManager.QtVersion.iOS",
+                            "--type", "Qt4ProjectManager.QtVersion.Ios",
                             "--qmake", qmakeBinary,
                             "UNDOEXECUTE",
                             "@SDKToolBinary@", "rmQt", "--id", component.name]);
