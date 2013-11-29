@@ -7,7 +7,7 @@
     <Dependencies>qt.520.win64_msvc2012_64_opengl.essentials</Dependencies>
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
     <Script>installscript.qs</Script>
-    <SortingPriority>300</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
+    <SortingPriority>600</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
 
