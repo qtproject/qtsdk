@@ -794,23 +794,27 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
 
     # repackage content so that correct dir structure will get into the package
 
-    # extract contents
-    extracted = bldinstallercommon.extract_file(downloadedArchive, install_dir)
-    # remove old package
-    if extracted:
-        os.remove(downloadedArchive)
-    else:
-        # ok we could not extract the file, so propably not even archived file,
-        # check the case if we downloaded a text file, must ensure proper file endings
-        if bldinstallercommon.is_text_file(downloadedArchive):
-            bldinstallercommon.ensure_text_file_endings(downloadedArchive)
+    if not archive.extract_archive:
+        archive.extract_archive = 'yes'
 
-    # strip out unnecessary folder structure based on the configuration
-    count = 0
-    iterations = int(archive.package_strip_dirs)
-    while(count < iterations):
-        count = count + 1
-        move_directory_one_layer_up(install_dir)
+    # extract contents
+    if archive.extract_archive == 'yes':
+        extracted = bldinstallercommon.extract_file(downloadedArchive, install_dir)
+        # remove old package
+        if extracted:
+            os.remove(downloadedArchive)
+        else:
+            # ok we could not extract the file, so propably not even archived file,
+            # check the case if we downloaded a text file, must ensure proper file endings
+            if bldinstallercommon.is_text_file(downloadedArchive):
+                bldinstallercommon.ensure_text_file_endings(downloadedArchive)
+
+        # strip out unnecessary folder structure based on the configuration
+        count = 0
+        iterations = int(archive.package_strip_dirs)
+        while(count < iterations):
+            count = count + 1
+            move_directory_one_layer_up(install_dir)
 
     if archive.rpath_target:
         if not archive.rpath_target.startswith(os.sep):
