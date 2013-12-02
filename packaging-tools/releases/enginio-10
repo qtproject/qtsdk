@@ -55,12 +55,12 @@ repo_content_type:          enginio
 repo_components_to_update:  qt.cloudservices.enginio.10.*
 repo_url_specifier:         windows_x86/desktop/enginio
 
-#[release.enginio.repository.windows.x86.android]
-#arg_configurations_file:    repository_configs_enginio/win_x86_android_repository_enginio
-#arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip, @QTENGINIO_VERSION@=1.0.0, @QT_VERSION@=5.2.0
-#repo_content_type:          enginio
-#repo_components_to_update:  qt.cloudservices.enginio.10.*
-#repo_url_specifier:         windows_x86/android/enginio
+[release.enginio.repository.windows.x86.android]
+arg_configurations_file:    repository_configs_enginio/win_x86_android_repository_enginio
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip, @QTENGINIO_VERSION@=1.0.0, @QT_VERSION@=5.2.0
+repo_content_type:          enginio
+repo_components_to_update:  qt.cloudservices.enginio.10.*
+repo_url_specifier:         windows_x86/android/enginio
 
 
 ################################################################################
