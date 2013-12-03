@@ -1047,7 +1047,7 @@ def create_installer_binary():
         if USE_LEGACY_IFW:
             cmd_args = cmd_args + ['-c', CONFIG_DIR_DST, SDK_NAME, ROOT_COMPONENT_NAME]
         else:
-            cmd_args = cmd_args + ['-c', CONFIG_DIR_DST + os.sep + 'config.xml', SDK_NAME]
+            cmd_args = cmd_args + ['--online-only', '-c', CONFIG_DIR_DST + os.sep + 'config.xml', SDK_NAME]
         # create installer binary
         bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
