@@ -1193,13 +1193,19 @@ def handle_online_repository_build():
     else:
         arch = 'x86'
     packages_base_url = os.environ['PKG_SERVER_URL']
+    # do we update staging repository?
+    update_staging_repo = True
+    if os.environ.get('DO_UPDATE_STAGING_REPOSITORY'):
+        update = os.environ['DO_UPDATE_STAGING_REPOSITORY']
+        if update.lower() in ['no', 'false', '0']:
+            update_staging_repo = False
     # do we also update production repository?
     update_production_repo = False
     if os.environ.get('DO_UPDATE_PRODUCTION_REPOSITORY'):
         update = os.environ['DO_UPDATE_PRODUCTION_REPOSITORY']
         if update.lower() in ['yes', 'true', '1']:
             update_production_repo = True
-    release_build_handler.handle_repo_build(conf_file, LICENSE, 'release', PLATFORM, arch, packages_base_url, update_production_repo)
+    release_build_handler.handle_repo_build(conf_file, LICENSE, 'release', PLATFORM, arch, packages_base_url, update_staging_repo, update_production_repo)
 
 
 ###############################

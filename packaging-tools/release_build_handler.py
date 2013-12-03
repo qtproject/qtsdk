@@ -413,7 +413,7 @@ def create_installer(job, packages_base_url, installer_type):
 # - online reposiory build
 # - upload repository into test server
 # - update existing repository at test server with new content
-def handle_repo_build(conf_file, license_type, branch, platform, arch, packages_base_url, update_production_repo):
+def handle_repo_build(conf_file, license_type, branch, platform, arch, packages_base_url, update_staging_repo, update_production_repo):
     if not os.path.isfile(conf_file):
         print('*** Fatal error! Given file does not exist: {0}'.format(conf_file))
         sys.exit(-1)
@@ -451,7 +451,7 @@ def handle_repo_build(conf_file, license_type, branch, platform, arch, packages_
         bldinstallercommon.remove_tree(source_path_repository)
         bldinstallercommon.remove_tree(source_path_pkg)
         # update repo in testing area
-        update_online_repo(job, update_production_repo)
+        update_online_repo(job, update_staging_repo, update_production_repo)
 
 
 # helper function to create online repository
@@ -560,24 +560,28 @@ def generate_repo_pending_base_path(build_job):
 
 
 # execute online repository update
-def update_online_repo(job, update_production_repo):
+def update_online_repo(job, update_staging_repo, update_production_repo):
     staging_server_addr = REPO_STAGING_SERVER_UNAME + '@' + REPO_STAGING_SERVER
     staging_server_ifw_tools = 'installer-framework-build-linux-x64.7z'
     script = REPO_STAGING_SERVER_HOME_TOOLS + '/' + 'update_repository.py'
     repogen_tools = REPO_STAGING_SERVER_HOME + '/' + staging_server_ifw_tools
     # determine paths on test server
     staging_source_repo, staging_source_pkg = generate_repo_dest_path_pending(job)
-    # determine target repo
-    staging_target_repo = REPO_STAGING_SERVER_TEST_REPO + '/' + job.license + '/' + REPOSITORY_BASE_NAME + '/' + job.repo_url_specifier
     repo_components_to_update = job.repo_components_to_update
-    cmd_args = [SSH_COMMAND, '-t', '-t', staging_server_addr]
-    cmd_args = cmd_args + ['python', script]
-    cmd_args = cmd_args + ['--repogen_tools=' + repogen_tools]
-    cmd_args = cmd_args + ['--source_pkg=' + staging_source_pkg]
-    cmd_args = cmd_args + ['--source_repo=' + staging_source_repo]
-    cmd_args = cmd_args + ['--target_repo=' + staging_target_repo]
-    cmd_args = cmd_args + ['--components_to_update=' + repo_components_to_update]
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+
+    # do we update the staging repository
+    if update_staging_repo:
+        # determine target repo
+        staging_target_repo = REPO_STAGING_SERVER_TEST_REPO + '/' + job.license + '/' + REPOSITORY_BASE_NAME + '/' + job.repo_url_specifier
+        cmd_args = [SSH_COMMAND, '-t', '-t', staging_server_addr]
+        cmd_args = cmd_args + ['python', script]
+        cmd_args = cmd_args + ['--repogen_tools=' + repogen_tools]
+        cmd_args = cmd_args + ['--source_pkg=' + staging_source_pkg]
+        cmd_args = cmd_args + ['--source_repo=' + staging_source_repo]
+        cmd_args = cmd_args + ['--target_repo=' + staging_target_repo]
+        cmd_args = cmd_args + ['--components_to_update=' + repo_components_to_update]
+        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+
     # do we also update the production repository?
     if update_production_repo:
         # (1) pull repo from production into staging server 'temp' location
