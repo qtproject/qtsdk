@@ -193,6 +193,7 @@ def setup_argument_parser():
     parser.add_argument('--product_key_checker_url', help="Git URL for enterprise product key checker", required=False)
     parser.add_argument('--product_key_checker_branch', help="Git branch for enterprise product key checker", required=False)
     parser.add_argument('--openssl_dir', help="Path where it can find the openssl installation(libs, includes) on windows.", required=False, default='C:\\OpenSSL')
+    parser.add_argument('--debug', help="Build the ifw in debug mode", action='store_true', required=False, default=False)
     return parser
 
 
@@ -469,12 +470,17 @@ if __name__ == "__main__":
     PARSER = setup_argument_parser()
     # parse args
     CALLER_ARGUMENTS = PARSER.parse_args()
+    qt_conf_args = CALLER_ARGUMENTS.qt_configure_options
+    ifw_qmake_args = CALLER_ARGUMENTS.ifw_qmake_args
+    if CALLER_ARGUMENTS.debug:
+        qt_conf_args = qt_conf_args.replace('-release', '-debug')
+        ifw_qmake_args = ifw_qmake_args.replace('-config release', '-config debug')
     # create options object
     OPTIONS = IfwOptions(CALLER_ARGUMENTS.qt_archive_uri,
-                         CALLER_ARGUMENTS.qt_configure_options,
+                         qt_conf_args,
                          CALLER_ARGUMENTS.ifw_url,
                          CALLER_ARGUMENTS.ifw_branch,
-                         CALLER_ARGUMENTS.ifw_qmake_args,
+                         ifw_qmake_args,
                          CALLER_ARGUMENTS.product_key_checker_url,
                          CALLER_ARGUMENTS.product_key_checker_branch,
                          CALLER_ARGUMENTS.openssl_dir
