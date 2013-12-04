@@ -475,27 +475,12 @@ def create_online_repository(build_job, packages_base_url):
 
 
 # push online repository into remote server
-def push_online_repository(server_addr, username, what_to_copy, where_to_copy):
-    print('Preparing to copy: {0}'.format(what_to_copy))
-    # tar contents to be transferred
-    filename = 'repo.tar'
-    full_filename = os.path.join(SCRIPT_ROOT_DIR, filename)
-    tar = tarfile.open(full_filename, "w")
-    tar.add(what_to_copy, arcname="")
-    tar.close()
-    # transfer
+def push_online_repository(server_addr, username, directory_to_copy, where_to_copy):
+    print('Preparing to copy: {0}'.format(directory_to_copy))
     where_to_copy = ensure_unix_paths(where_to_copy)
     destination  = username + '@' + server_addr + ':' + where_to_copy + '/'
-    cmd_args = [REMOTE_COPY_COMMAND, '-r', filename, destination]
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
-    # delete local tar file
-    os.remove(full_filename)
-    # extract remote tar file
-    cmd_args = [SSH_COMMAND, '-t', '-t', username + '@' + server_addr, 'tar', '-C', where_to_copy, '-xf', where_to_copy + '/' + filename]
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
-    # delete remote tar file
-    cmd_args = [SSH_COMMAND, '-t', '-t', username + '@' + server_addr, 'rm', '-f', where_to_copy + '/' + filename]
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+    cmd_args = [REMOTE_COPY_COMMAND, '-r', '.', destination]
+    bldinstallercommon.do_execute_sub_process(cmd_args, directory_to_copy, True)
 
 
 # init online repository directory structure at remote server
