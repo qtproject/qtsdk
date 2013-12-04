@@ -228,8 +228,7 @@ Component.prototype.createOperations = function()
             registerCommonWindowsFileTypeExtensions();
         }
 
-        maintenanceToolPath = installer.value("TargetDir")
-                + "/MaintenanceTool.app/Contents/MacOS/MaintenanceTool";
+        maintenanceToolPath = installer.value("TargetDir") + "/MaintenanceTool.exe";
     }
     if ( installer.value("os") == "x11" )
     {
@@ -241,7 +240,8 @@ Component.prototype.createOperations = function()
     }
     if (installer.value("os") == "mac")
     {
-        maintenanceToolPath = installer.value("TargetDir") + "/MaintenanceTool.exe";
+        maintenanceToolPath = installer.value("TargetDir")
+                + "/MaintenanceTool.app/Contents/MacOS/MaintenanceTool";
     }
 
     var settingsFile = installer.value("QtCreatorInstallerSettingsFile");
