@@ -50,14 +50,12 @@ function Component()
     installer.finishButtonClicked.connect(this, Component.prototype.installationFinished);
     installer.valueChanged.connect(this, Component.prototype.reactOnTargetDirChange);
 
-    if (installer.value("os") == "win")
-    {
+    if (installer.value("os") == "win") {
         // Creator needs vcredist 32bit on windows
         component.addDependency("qt.tools.vcredist");
     }
 
-    if (installer.value("os") == "x11")
-    {
+    if (installer.value("os") == "x11") {
         // set installation directory
         installer.setValue("EmbeddedInstallationRootDir", "/usr/local/Trolltech");
         installer.setValue("EmbeddedToolchainDir", "/usr/local/angstrom/arm");
@@ -131,80 +129,80 @@ registerCommonWindowsFileTypeExtensions = function()
     var headerExtensions = new Array("h", "hh", "hxx", "h++", "hpp");
 
     for (var i = 0; i < headerExtensions.length; ++i) {
-        component.addOperation( "RegisterFileType",
-                                headerExtensions[i],
-                                component.qtCreatorBinaryPath + " -client \"%1\"",
-                                "C++ Header file",
-                                "text/plain",
-                                component.qtCreatorBinaryPath + ",3",
-                                "ProgId=QtProject.QtCreator." + headerExtensions[i]);
+        component.addOperation("RegisterFileType",
+                               headerExtensions[i],
+                               component.qtCreatorBinaryPath + " -client \"%1\"",
+                               "C++ Header file",
+                               "text/plain",
+                               component.qtCreatorBinaryPath + ",3",
+                               "ProgId=QtProject.QtCreator." + headerExtensions[i]);
     }
 
     var cppExtensions = new Array("cc", "cxx", "c++", "cp", "cpp");
 
     for (var i = 0; i < cppExtensions.length; ++i) {
-        component.addOperation( "RegisterFileType",
-                                cppExtensions[i],
-                                component.qtCreatorBinaryPath + " -client \"%1\"",
-                                "C++ Source file",
-                                "text/plain",
-                                component.qtCreatorBinaryPath + ",2",
-                                "ProgId=QtProject.QtCreator." + cppExtensions[i]);
+        component.addOperation("RegisterFileType",
+                               cppExtensions[i],
+                               component.qtCreatorBinaryPath + " -client \"%1\"",
+                               "C++ Source file",
+                               "text/plain",
+                               component.qtCreatorBinaryPath + ",2",
+                               "ProgId=QtProject.QtCreator." + cppExtensions[i]);
     }
 
-    component.addOperation( "RegisterFileType",
-                            "c",
-                            component.qtCreatorBinaryPath + " -client \"%1\"",
-                            "C Source file",
-                            "text/plain",
-                            component.qtCreatorBinaryPath + ",1",
-                            "ProgId=QtProject.QtCreator.c");
+    component.addOperation("RegisterFileType",
+                           "c",
+                           component.qtCreatorBinaryPath + " -client \"%1\"",
+                           "C Source file",
+                           "text/plain",
+                           component.qtCreatorBinaryPath + ",1",
+                           "ProgId=QtProject.QtCreator.c");
 }
 
 registerWindowsFileTypeExtensions = function()
 {
-    component.addOperation( "RegisterFileType",
-                            "ui",
-                            component.qtCreatorBinaryPath + " -client \"%1\"",
-                            "Qt UI file",
-                            "text/plain",
-                            component.qtCreatorBinaryPath + ",4",
-                            "ProgId=QtProject.QtCreator.ui");
-    component.addOperation( "RegisterFileType",
-                            "pro",
-                            component.qtCreatorBinaryPath + " -client \"%1\"",
-                            "Qt Project file",
-                            "text/plain",
-                            component.qtCreatorBinaryPath + ",5",
-                            "ProgId=QtProject.QtCreator.pro");
-    component.addOperation( "RegisterFileType",
-                            "pri",
-                            component.qtCreatorBinaryPath + " -client \"%1\"",
-                            "Qt Project Include file",
-                            "text/plain",
-                            component.qtCreatorBinaryPath + ",6",
-                            "ProgId=QtProject.QtCreator.pri");
-    component.addOperation( "RegisterFileType",
-                            "qbs",
-                            component.qtCreatorBinaryPath + " -client \"%1\"",
-                            "Qbs Project file",
-                            "text/plain",
-                            component.qtCreatorBinaryPath + ",5",
-                            "ProgId=QtProject.QtCreator.qbs");
-    component.addOperation( "RegisterFileType",
-                            "qs",
-                            component.qtCreatorBinaryPath + " -client \"%1\"",
-                            "Qt Script file",
-                            "text/plain",
-                            component.qtCreatorBinaryPath + ",0",
-                            "ProgId=QtProject.QtCreator.qs");
-    component.addOperation( "RegisterFileType",
-                            "qml",
-                            component.qtCreatorBinaryPath + " -client \"%1\"",
-                            "Qt Quick Markup language file",
-                            "text/plain",
-                            component.qtCreatorBinaryPath + ",7",
-                            "ProgId=QtProject.QtCreator.qml");
+    component.addOperation("RegisterFileType",
+                           "ui",
+                           component.qtCreatorBinaryPath + " -client \"%1\"",
+                           "Qt UI file",
+                           "text/plain",
+                           component.qtCreatorBinaryPath + ",4",
+                           "ProgId=QtProject.QtCreator.ui");
+    component.addOperation("RegisterFileType",
+                           "pro",
+                           component.qtCreatorBinaryPath + " -client \"%1\"",
+                           "Qt Project file",
+                           "text/plain",
+                           component.qtCreatorBinaryPath + ",5",
+                           "ProgId=QtProject.QtCreator.pro");
+    component.addOperation("RegisterFileType",
+                           "pri",
+                           component.qtCreatorBinaryPath + " -client \"%1\"",
+                           "Qt Project Include file",
+                           "text/plain",
+                           component.qtCreatorBinaryPath + ",6",
+                           "ProgId=QtProject.QtCreator.pri");
+    component.addOperation("RegisterFileType",
+                           "qbs",
+                           component.qtCreatorBinaryPath + " -client \"%1\"",
+                           "Qbs Project file",
+                           "text/plain",
+                           component.qtCreatorBinaryPath + ",5",
+                           "ProgId=QtProject.QtCreator.qbs");
+    component.addOperation("RegisterFileType",
+                           "qs",
+                           component.qtCreatorBinaryPath + " -client \"%1\"",
+                           "Qt Script file",
+                           "text/plain",
+                           component.qtCreatorBinaryPath + ",0",
+                           "ProgId=QtProject.QtCreator.qs");
+    component.addOperation("RegisterFileType",
+                           "qml",
+                           component.qtCreatorBinaryPath + " -client \"%1\"",
+                           "Qt Quick Markup language file",
+                           "text/plain",
+                           component.qtCreatorBinaryPath + ",7",
+                           "ProgId=QtProject.QtCreator.qml");
 }
 
 Component.prototype.createOperations = function()
@@ -215,31 +213,27 @@ Component.prototype.createOperations = function()
     var path = component_root_path + native_path_separator;
     var maintenanceToolPath;
 
-    if ( installer.value("os") == "win" )
-    {
-        component.addOperation( "CreateShortcut",
-                                component.qtCreatorBinaryPath,
-                                "@StartMenuDir@\\Qt Creator.lnk",
-                                "workingDirectory=" + path + "bin");
+    if (installer.value("os") == "win") {
+        component.addOperation("CreateShortcut",
+                               component.qtCreatorBinaryPath,
+                               "@StartMenuDir@\\Qt Creator.lnk",
+                               "workingDirectory=" + path + "bin");
 
         registerWindowsFileTypeExtensions();
 
-        if (component.userInterface("AssociateCommonFiletypesForm").AssociateCommonFiletypesCheckBox.checked) {
+        if (component.userInterface("AssociateCommonFiletypesForm").AssociateCommonFiletypesCheckBox.checked)
             registerCommonWindowsFileTypeExtensions();
-        }
 
         maintenanceToolPath = installer.value("TargetDir") + "/MaintenanceTool.exe";
     }
-    if ( installer.value("os") == "x11" )
-    {
-        component.addOperation( "InstallIcons", path + "share" + native_path_separator + "icons" );
-        component.addOperation( "CreateDesktopEntry",
-                                "DigiaQtOpenSource-qtcreator.desktop",
-                                "Type=Application\nExec=" + component.qtCreatorBinaryPath + "\nName=Qt Creator (Opensource)\nGenericName=The IDE of choice for Qt development.\nIcon=QtProject-qtcreator\nTerminal=false\nCategories=Development;IDE;Qt;\nMimeType=text/x-c++src;text/x-c++hdr;text/x-xsrc;application/x-designer;application/vnd.qt.qmakeprofile;application/vnd.qt.xml.resource;text/x-qml;text/x-qt.qml;text/x-qt.qbs;");
+    if (installer.value("os") == "x11") {
+        component.addOperation("InstallIcons", path + "share" + native_path_separator + "icons" );
+        component.addOperation("CreateDesktopEntry",
+                               "DigiaQtOpenSource-qtcreator.desktop",
+                               "Type=Application\nExec=" + component.qtCreatorBinaryPath + "\nName=Qt Creator (Opensource)\nGenericName=The IDE of choice for Qt development.\nIcon=QtProject-qtcreator\nTerminal=false\nCategories=Development;IDE;Qt;\nMimeType=text/x-c++src;text/x-c++hdr;text/x-xsrc;application/x-designer;application/vnd.qt.qmakeprofile;application/vnd.qt.xml.resource;text/x-qml;text/x-qt.qml;text/x-qt.qbs;");
         maintenanceToolPath = installer.value("TargetDir") + "/MaintenanceTool";
     }
-    if (installer.value("os") == "mac")
-    {
+    if (installer.value("os") == "mac") {
         maintenanceToolPath = installer.value("TargetDir")
                 + "/MaintenanceTool.app/Contents/MacOS/MaintenanceTool";
     }
@@ -265,9 +259,8 @@ Component.prototype.createOperations = function()
 Component.prototype.installationFinishedPageIsShown = function()
 {
     try {
-        if (component.installed && installer.isInstaller() && installer.status == QInstaller.Success) {
+        if (component.installed && installer.isInstaller() && installer.status == QInstaller.Success)
             installer.addWizardPageItem( component, "LaunchQtCreatorCheckBoxForm", QInstaller.InstallationFinished );
-        }
     } catch(e) {
         print(e);
     }
