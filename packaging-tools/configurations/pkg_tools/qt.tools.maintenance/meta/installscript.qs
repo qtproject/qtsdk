@@ -73,7 +73,7 @@ Component.prototype.createOperations = function()
     {
         // create shortcut
         component.addOperation( "CreateShortcut",
-                                win_maintenance_tool_bin,
+                                "@TargetDir@/MaintenanceTool.exe",
                                 "@StartMenuDir@/Qt Maintenance Tool.lnk",
                                 "workingDirectory=@TargetDir@" );
     }
