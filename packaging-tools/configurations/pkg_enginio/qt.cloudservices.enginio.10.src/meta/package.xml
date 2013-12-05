@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt Enginio Src</DisplayName>
+    <Description>Qt Enginio Source Package.</Description>
+    <Version>%QTENGINIO_VERSION%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Default>%PACKAGE_DEFAULT_TAG%</Default>
+    <Script>installscript.qs</Script>
+    <SortingPriority>10</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+
