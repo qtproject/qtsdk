@@ -52,7 +52,11 @@ function Component()
         }
     }
 
-    gui.pageWidgetByObjectName("LicenseAgreementPage").entered.connect(changeLicenseLabels);
+    try {
+        gui.pageWidgetByObjectName("LicenseAgreementPage").entered.connect(changeLicenseLabels);
+    } catch(e) {
+        // "gui" will not be defined for --checkupdates
+    }
 }
 
 changeLicenseLabels = function()
