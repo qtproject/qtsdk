@@ -240,7 +240,7 @@ Component.prototype.createOperations = function()
 
     var settingsFile = installer.value("QtCreatorInstallerSettingsFile");
     if (!installer.isOfflineOnly()) {
-        // Configure & enable UpdateInfo plugin
+        // Configure UpdateInfo plugin
         component.addOperation("Settings", "path="+settingsFile, "method=set",
                                "key=Updater/Application",
                                "value="+maintenanceToolPath);
@@ -250,9 +250,6 @@ Component.prototype.createOperations = function()
         component.addOperation("Settings", "path="+settingsFile, "method=set",
                                "key=Updater/CheckOnlyArgument",
                                "value=--checkupdates");
-        component.addOperation("Settings", "path="+settingsFile,
-                               "method=add_array_value",
-                               "key=Plugins/ForceEnabled", "value=UpdateInfo");
     }
 }
 
