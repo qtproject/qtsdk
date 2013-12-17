@@ -43,7 +43,7 @@
 [qt.cloudservices.enginio.10.android_x86]
 archives:               cloudservices.enginio.10.android_armv7
 target_install_base:    /@QT_VERSION@/android_x86
-version:                1.0.0
+version:                1.0.1
 version_tag:            %ENGINIO_VERSION%
 package_default:        false
 [cloudservices.enginio.10.android_armv7]

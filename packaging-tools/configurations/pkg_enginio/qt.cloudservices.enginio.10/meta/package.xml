@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt Enginio</DisplayName>
     <Description>Qt Enginio</Description>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <SortingPriority>100</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>

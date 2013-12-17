@@ -43,7 +43,7 @@
 [qt.cloudservices.enginio.10.clang_64]
 archives:               cloudservices.enginio.10.clang_64
 target_install_base:    /@QT_VERSION@/clang_64
-version:                1.0.0
+version:                1.0.1
 version_tag:            %ENGINIO_VERSION%
 package_default:        false
 [cloudservices.enginio.10.clang_64]

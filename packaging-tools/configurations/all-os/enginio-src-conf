@@ -47,7 +47,7 @@
 [qt.cloudservices.enginio.10.src]
 archives:               enginio.10.src
 target_install_base:    /CloudServices/Enginio/1.0/Src
-version:                1.0.0
+version:                1.0.1
 version_tag:            %QTENGINIO_VERSION%
 package_default:        false
 [enginio.10.src]
