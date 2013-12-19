@@ -756,7 +756,7 @@ def clone_repository(repo_url, repo_branch_or_tag, destination_folder):
 ###############################
 # function
 ###############################
-def extract_file(path, to_directory='.'):
+def extract_file(path, to_directory='.', get_output=False):
     cmd_args = []
     if path.endswith('.tar'):
         cmd_args = ['tar', '-xf', path]
@@ -766,14 +766,19 @@ def extract_file(path, to_directory='.'):
         cmd_args = ['tar', '-xjf', path]
     elif path.endswith('.7z') or path.endswith('.zip'):
         cmd_args = ['7z', 'x', path]
-        # 7z does not have silent operation so eat the subprocess output
-        do_execute_sub_process(cmd_args, to_directory, True, True)
-        return True
     else:
         print 'Did not extract the file! Not archived or no appropriate extractor was found: ' + path
         return False
 
-    do_execute_sub_process(cmd_args, to_directory, True)
+    return_code, output = do_execute_sub_process(cmd_args, to_directory, True, True)
+
+    if return_code >= 0:
+        print output
+        return False
+
+    if get_output:
+        print output
+
     return True
 
 
