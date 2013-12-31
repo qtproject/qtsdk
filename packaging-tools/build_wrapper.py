@@ -184,7 +184,23 @@ class BldCommand:
             return False
         if not self.is_valid_cmd():
             print('*** The given build command enum is invalid: {0}'.format(self.options.command))
-        if self.options.command == self.execute_repo_bld:
+        if self.options.command == self.execute_ifw_bld:
+            if not self.options.server:
+                print('*** Package storage server not defined i.e. where the build artifacts will be saved.')
+                return False
+            if not self.options.path:
+                print('*** Base path on package storage server not defined i.e. where the build artifacts will be saved.')
+                return False
+            if not self.options.target_env:
+                print('*** Target environment not defined.')
+                return False
+            if not self.options.time_stamp:
+                print('*** Build time stamp not defined.')
+                return False
+            if not self.options.build_number:
+                print('*** Build number not defined.')
+                return False
+        elif self.options.command == self.execute_repo_bld:
             if len(sys.argv) < 4:
                 return False
         elif self.options.command == self.execute_online_inst_bld:
