@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt</DisplayName>
+    <Description>Qt 5.2.1</Description>
+    <Version>1.0.0</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Name>qt</Name>
+    <Script>installscript.qs</Script>
+    <Licenses>
+        <License name="Qt Installer LGPL Agreement" file="LICENSE.LGPL" />
+        <License name="Qt Installer LGPL Exception Agreement" file="LGPL_EXCEPTION.txt" />
+        <License name="Qt Installer GPL Agreement" file="LICENSE.GPL" />
+        <License name="Qt Installer FDL Agreement" file="LICENSE.FDL" />
+    </Licenses>
+    <SortingPriority>0</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+

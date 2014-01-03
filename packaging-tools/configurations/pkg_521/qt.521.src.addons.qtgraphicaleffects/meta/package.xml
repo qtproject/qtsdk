@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>qtgraphicaleffects</DisplayName>
+    <Description>Qt 5.2.1 Add-Ons Qt Graphical Effects Source Component</Description>
+    <Version>%QT_VERSION%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <!--<Dependencies></Dependencies>--> <!-- Comma-separated list of dependencies - optional -->
+    <!--<Default></Default>-->
+    <!--<AutoSelectOn></AutoSelectOn>-->
+    <Script>installscript.qs</Script>   <!-- File name of a script being loaded - optional. -->
+    <!--<Forced></Forced>-->
+    <!--<Virtual></Virtual>--> <!-- Set to true if this is a virtual component not showing up in the installer -->
+    <!--<Important></Important>-->    <!-- The package is marked as important. This is relevant for updates found with UpdateAgent. -->
+    <!--<SortingPriority>0</SortingPriority>--> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+
