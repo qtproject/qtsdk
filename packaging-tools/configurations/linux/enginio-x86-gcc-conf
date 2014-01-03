@@ -41,7 +41,7 @@
 
 
 [qt.cloudservices.enginio.10.gcc]
-archives:               cloudservices.enginio.10.gcc
+archives:               cloudservices.enginio.10.gcc, cloudservices.enginio.10.gcc_examples
 target_install_base:    /@QT_VERSION@/gcc
 version:                1.0.1
 version_tag:            %ENGINIO_VERSION%
@@ -51,3 +51,8 @@ archive_uri:            /qtenginio/@QTENGINIO_VERSION@/latest/linux_gcc_32_ubunt
 package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:           /lib
+[cloudservices.enginio.10.gcc_examples]
+archive_uri:            qtenginio/@QTENGINIO_VERSION@/latest/src/examples_injection/examples_qtenginio.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     0
+target_install_dir:     /
+rpath_target:

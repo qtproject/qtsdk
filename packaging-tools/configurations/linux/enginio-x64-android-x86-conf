@@ -41,7 +41,7 @@
 
 
 [qt.cloudservices.enginio.10.android_x86]
-archives:               cloudservices.enginio.10.android_armv7
+archives:               cloudservices.enginio.10.android_armv7, cloudservices.enginio.10.android_x86_examples
 target_install_base:    /@QT_VERSION@/android_x86
 version:                1.0.1
 version_tag:            %ENGINIO_VERSION%
@@ -49,5 +49,10 @@ package_default:        false
 [cloudservices.enginio.10.android_armv7]
 archive_uri:            /qtenginio/@QTENGINIO_VERSION@/latest/android_x86/linux_x64/qt5_qtenginio.7z
 package_strip_dirs:     1
+target_install_dir:     /
+rpath_target:
+[cloudservices.enginio.10.android_x86_examples]
+archive_uri:            qtenginio/@QTENGINIO_VERSION@/latest/src/examples_injection/examples_qtenginio.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:
