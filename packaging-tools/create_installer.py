@@ -100,6 +100,7 @@ STRICT_MODE                 = True
 ARCHIVE_SERVER_BASE_URL     = ''
 INSTALLER_FRAMEWORK_TOOLS   = ''
 INSTALLER_OUTPUT_DIR        = 'installer_output'
+IFW_TOOLS_DIR_NAME          = 'ifwt'
 
 INSTALLER_NAMING_SCHEME_COMPILER    = ''
 INSTALLER_NAMING_SCHEME_TARGET_ARCH = ''
@@ -491,7 +492,7 @@ def init_data():
             PACKAGES_DIR_NAME_LIST.append(os.path.normpath(CONFIGURATIONS_DIR + os.sep + package_template_dir))
 
     if not DEVELOPMENT_MODE:
-        tools_dir_name = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'InstallerFrameworkTools')['name']
+        tools_dir_name = IFW_TOOLS_DIR_NAME
         IFW_TOOLS_DIR = SCRIPT_ROOT_DIR + os.sep + tools_dir_name
         IFW_TOOLS_DIR = os.path.normpath(IFW_TOOLS_DIR)
 
@@ -934,8 +935,7 @@ def install_ifw_tools():
         tools_dir_temp = bld_ifw_tools.build_ifw(options)
         tools_bin_path = SCRIPT_ROOT_DIR + os.sep + tools_dir_temp
     elif not os.path.exists(IFW_TOOLS_DIR):
-        tools_dir_name = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'InstallerFrameworkTools')['name']
-        tools_dir_name = os.path.normpath(tools_dir_name)
+        tools_dir_name = os.path.normpath(IFW_TOOLS_DIR_NAME)
         if INSTALLER_FRAMEWORK_TOOLS:
             package_url = INSTALLER_FRAMEWORK_TOOLS
         else:

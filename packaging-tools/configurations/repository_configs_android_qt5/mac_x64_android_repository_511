@@ -71,7 +71,3 @@ template_name:          config.xml.template.mac.qt5-sdk
 [WorkingDirectories]
 packages_dir:           pkg_511
 
-[InstallerFrameworkTools]
-name:                   ifwt
-package_url:
-

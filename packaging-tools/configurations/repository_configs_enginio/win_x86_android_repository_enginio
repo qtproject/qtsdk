@@ -74,8 +74,3 @@ template_name:          config.xml.template.windows.qt5-sdk
 [WorkingDirectories]
 packages_dir:           pkg_enginio
 
-[InstallerFrameworkTools]
-name:                   ifwt
-package_url:
-
-

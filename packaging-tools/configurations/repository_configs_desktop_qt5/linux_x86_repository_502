@@ -71,7 +71,3 @@ template_name:          config.xml.template.linux-x86.qt5-sdk
 [WorkingDirectories]
 packages_dir:           pkg_tools, pkg_502
 
-[InstallerFrameworkTools]
-name:                   ifwt
-package_url:
-
