@@ -53,7 +53,7 @@ base_path:
 [PackageIgnoreList]
 packages:               foo.bar, foo.bar2, foo.bar3
 
-[ExtraPackageConfigurationFiles]
+[PackageConfigurationFiles]
 file_list:              qt502-src-conf, x86_64-qt502-clang-conf
 
 [OfflinePackageExcludeList]
@@ -71,6 +71,6 @@ template_name:          config_qt5
 [ConfigXml]
 template_name:          config.xml.template.mac.qt5-sdk
 
-[WorkingDirectories]
-packages_dir:           pkg_tools, pkg_502
+[PackageTemplates]
+template_dirs:          pkg_tools, pkg_502
 

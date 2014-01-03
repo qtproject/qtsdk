@@ -44,7 +44,7 @@
 [PackageIgnoreList]
 packages:
 
-[ExtraPackageConfigurationFiles]
+[PackageConfigurationFiles]
 file_list:
 
 

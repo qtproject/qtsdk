@@ -214,7 +214,7 @@
         packages:               foo.bar, foo.bar2, foo.bar3                     # E.g. if you choose to make test installer build and want to exclude one component put the component name here
                                                                                 # e.g. qt.sdk.desktop.500_beta.gcc_64
 
-        [ExtraPackageConfigurationFiles]
+        [PackageConfigurationFiles]
         file_list:                                                              # if you have sub-configuration files e.g. in '/configurations/linux' directory, put the name of the file here.
                                                                                 # multiple files can be included when separated by comma
 
@@ -238,8 +238,8 @@
         template_name:          config.xml.template.linux.qt5-beta              # Filename for the chosen config.xml template to be used. E.g. if your [PlatformIdentifier] is linux then
                                                                                 # the script will try to locate the file from '/configurations/linux/'
 
-        [WorkingDirectories]
-        packages_dir:           pkg_beta                                        # The script needs the location where to load the templates. Now it points to:
+        [PackageTemplates]
+        template_dirs:          pkg_beta                                        # The script needs the location where to load the templates. Now it points to:
                                                                                 # '/configurations/pkg_beta'
 
         [InstallerFrameworkTools]                                               # If you choose to use pre-build Installer-Framework binaries & tools you can give the full package url here
@@ -299,7 +299,7 @@
     Things to remember and notice!
 
     1) Each used component [qt.sdk.XXXXXXXXXX] must have corresponding template under
-       'packages_dir' that was defined in the main configuration file.
+       'template_dirs' that was defined in the main configuration file.
        E.g. for this arbitrary component you should have
             '/configurations/pkg_beta/qt.sdk.XXXXXXXXXX'
             '/configurations/pkg_beta/qt.sdk.XXXXXXXXXX/meta'

@@ -1,4 +1,4 @@
-[ExtraPackageConfigurationFiles]
+[PackageConfigurationFiles]
 file_list:              tools-maintenancetool-icons-conf
 
 [qt.tools.maintenance]

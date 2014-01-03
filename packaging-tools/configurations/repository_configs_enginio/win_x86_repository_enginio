@@ -53,7 +53,7 @@ base_path:
 [PackageIgnoreList]
 packages:
 
-[ExtraPackageConfigurationFiles]
+[PackageConfigurationFiles]
 file_list:              enginio-x86-mingw48_32-conf,
                         enginio-x86-msvc2010_32-conf,
                         enginio-x86-msvc2010_32-opengl-conf,
@@ -74,8 +74,8 @@ template_name:          config_qt5
 [ConfigXml]
 template_name:          config.xml.template.windows.qt5-sdk
 
-[WorkingDirectories]
-packages_dir:           pkg_enginio
+[PackageTemplates]
+template_dirs:          pkg_enginio
 
 
 

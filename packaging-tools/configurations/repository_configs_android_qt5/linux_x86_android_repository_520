@@ -52,7 +52,7 @@ base_path:
 [PackageIgnoreList]
 packages:
 
-[ExtraPackageConfigurationFiles]
+[PackageConfigurationFiles]
 file_list:              android-x86-qt520-x86-conf, android-x86-qt520-armv5-conf, android-x86-qt520-armv7-conf
 
 [OfflinePackageExcludeList]
@@ -67,6 +67,6 @@ template_name:          config_qt5
 [ConfigXml]
 template_name:          config.xml.template.linux-x86.qt5-sdk
 
-[WorkingDirectories]
-packages_dir:           pkg_520
+[PackageTemplates]
+template_dirs:          pkg_520
 

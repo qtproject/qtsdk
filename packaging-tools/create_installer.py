@@ -469,7 +469,7 @@ def init_data():
     PLATFORM_IDENTIFIER = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'PlatformIdentifier')['identifier']
     check_platform_identifier(PLATFORM_IDENTIFIER)
     CONFIG_DIR_DST      = os.path.normpath(SCRIPT_ROOT_DIR + os.sep + 'config')
-    PACKAGES_DIR_NAME   = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'WorkingDirectories')['packages_dir']
+    PACKAGES_DIR_NAME   = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'PackageTemplates')['template_dirs']
     PACKAGES_DIR_NAME   = os.path.normpath(PACKAGES_DIR_NAME)
     SDK_NAME            = bldinstallercommon.config_section_map(CONFIG_PARSER_COMMON,'SdkCommon')['name']
     if not LICENSE_TYPE:
@@ -478,7 +478,7 @@ def init_data():
     PACKAGE_NAMESPACE   = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'PackageNamespace')['name']
 
     PACKAGES_FULL_PATH_DST = os.path.normpath(SCRIPT_ROOT_DIR + os.sep + PACKAGES_FULL_PATH_DST)
-    packages_list_raw      = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'WorkingDirectories')['packages_dir']
+    packages_list_raw      = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'PackageTemplates')['template_dirs']
     packages_list_raw      = packages_list_raw.replace(' ', '')
     packages_list          = packages_list_raw.split(',')
     for package_template_dir in packages_list:
@@ -691,7 +691,7 @@ def parse_component_data(configuration_file, configurations_base_path):
                             print '!!! Ignored component in non-strict mode (missing archive data or metadata?): ' + section
                             SDK_COMPONENT_LIST_SKIPPED.append(sdk_component)
     # check for extra configuration files if defined
-    extra_conf_list = bldinstallercommon.safe_config_key_fetch(configuration, 'ExtraPackageConfigurationFiles', 'file_list')
+    extra_conf_list = bldinstallercommon.safe_config_key_fetch(configuration, 'PackageConfigurationFiles', 'file_list')
     if extra_conf_list:
         extra_conf_list = extra_conf_list.rstrip(',\n')
         file_list = extra_conf_list.split(',')

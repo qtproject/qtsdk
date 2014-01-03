@@ -53,7 +53,7 @@ base_path:
 [PackageIgnoreList]
 packages:
 
-[ExtraPackageConfigurationFiles]
+[PackageConfigurationFiles]
 file_list:              x86-tools-maintenancetool-conf
 
 [OfflinePackageExcludeList]
@@ -68,6 +68,6 @@ template_name:          config_qt5
 [ConfigXml]
 template_name:          config.xml.template.windows.qt5-sdk
 
-[WorkingDirectories]
-packages_dir:           pkg_tools
+[PackageTemplates]
+template_dirs:          pkg_tools
 

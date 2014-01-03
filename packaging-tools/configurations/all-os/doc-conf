@@ -44,7 +44,7 @@
 [PackageIgnoreList]
 packages:               foo.bar, foo.bar2, foo.bar3
 
-[ExtraPackageConfigurationFiles]
+[PackageConfigurationFiles]
 file_list:
 
 [qt.500.doc]

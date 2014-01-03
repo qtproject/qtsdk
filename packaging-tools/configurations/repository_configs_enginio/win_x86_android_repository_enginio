@@ -53,7 +53,7 @@ base_path:
 [PackageIgnoreList]
 packages:
 
-[ExtraPackageConfigurationFiles]
+[PackageConfigurationFiles]
 file_list:              enginio-x86-android-armv5-conf,
                         enginio-x86-android-armv7-conf,
                         enginio-x86-android-x86-conf
@@ -71,6 +71,6 @@ template_name:          config_qt5
 [ConfigXml]
 template_name:          config.xml.template.windows.qt5-sdk
 
-[WorkingDirectories]
-packages_dir:           pkg_enginio
+[PackageTemplates]
+template_dirs:          pkg_enginio
 

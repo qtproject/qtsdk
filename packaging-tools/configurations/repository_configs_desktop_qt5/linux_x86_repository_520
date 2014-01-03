@@ -52,7 +52,7 @@ base_path:
 [PackageIgnoreList]
 packages:
 
-[ExtraPackageConfigurationFiles]
+[PackageConfigurationFiles]
 file_list:              qt520-src-conf, x86-qt520-gcc-conf
 
 [OfflinePackageExcludeList]
@@ -67,6 +67,6 @@ template_name:          config_qt5
 [ConfigXml]
 template_name:          config.xml.template.linux-x86.qt5-sdk
 
-[WorkingDirectories]
-packages_dir:           pkg_tools, pkg_520
+[PackageTemplates]
+template_dirs:          pkg_tools, pkg_520
 
