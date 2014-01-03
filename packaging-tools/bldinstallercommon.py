@@ -483,13 +483,23 @@ def create_dirs(path_to_be_created):
 # Function
 ###############################
 def locate_executable(directory, file_name):
+    match = locate_file(directory, file_name)
+    if match and is_executable(match):
+        return match
+    print '*** Warning! Unable to locate executable: [' + file_name + '] from:' + directory
+    return ''
+
+
+###############################
+# Function
+###############################
+def locate_file(directory, file_name):
     for root, dirs, files in os.walk(directory):
         for basename in files:
             if fnmatch.fnmatch(basename, file_name):
                 filename = os.path.join(root, basename)
-                if is_executable(filename):
-                    # return the first match
-                    return filename
+                # return the first match
+                return filename
     print '*** Warning! Unable to locate: [' + file_name + '] from:' + directory
     return ''
 

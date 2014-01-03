@@ -658,9 +658,19 @@ def parse_component_data(configuration_file, configurations_base_path):
     global SDK_COMPONENT_LIST
     global SDK_COMPONENT_LIST_SKIPPED
     global SDK_COMPONENT_IGNORE_LIST
-    print ' -> Reading target configuration file: ' + configuration_file
+    file_full_path = configuration_file
+    if not os.path.isfile(file_full_path):
+        file_full_path = bldinstallercommon.locate_file(configurations_base_path, configuration_file)
+    if not file_full_path:
+        # check the 'all-os' directory
+        allos_conf_file_dir = os.path.normpath(CONFIGURATIONS_DIR + os.sep + COMMON_CONFIG_DIR_NAME)
+        file_full_path = bldinstallercommon.locate_file(allos_conf_file_dir, configuration_file)
+    if not file_full_path:
+        print '*** Aborting, unable to locate the specified file. Check the configuration files for possible error(s).'
+        sys.exit(-1)
+    print ' -> Reading target configuration file: ' + file_full_path
     configuration = ConfigParser.ConfigParser()
-    configuration.readfp(open(configuration_file))
+    configuration.readfp(open(file_full_path))
 
     # parse package ignore list first
     sdk_component_exclude_list = bldinstallercommon.safe_config_key_fetch(configuration, 'PackageIgnoreList', 'packages')
@@ -697,14 +707,8 @@ def parse_component_data(configuration_file, configurations_base_path):
         file_list = extra_conf_list.split(',')
         for extra_conf_file in file_list:
             extra_conf_file = extra_conf_file.strip()
-            extra_conf_file_path = os.path.normpath(configurations_base_path + os.sep + extra_conf_file)
-            if not os.path.isfile(extra_conf_file_path):
-                # then the file should exist in common (all-os) directory
-                extra_conf_file_path = os.path.normpath(CONFIGURATIONS_DIR + os.sep + COMMON_CONFIG_DIR_NAME + os.sep + extra_conf_file)
-                if not os.path.isfile(extra_conf_file_path):
-                    print '*** Error! Unable to locate configuration file: ' + extra_conf_file_path
             # recursive call
-            parse_component_data(extra_conf_file_path, configurations_base_path)
+            parse_component_data(extra_conf_file, configurations_base_path)
 
 
 ##############################################################
