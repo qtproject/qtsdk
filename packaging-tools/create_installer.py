@@ -1106,7 +1106,7 @@ def create_offline_repository():
             print '(legacy syntax)'
             repogen_args = [REPOGEN_TOOL, '-p', PACKAGES_FULL_PATH_DST, '-c', CONFIG_DIR_DST, REPO_OUTPUT_DIR, ROOT_COMPONENT_NAME, '-v']
         else:
-            repogen_args = [REPOGEN_TOOL, '-p', PACKAGES_FULL_PATH_DST, '-c', CONFIG_DIR_DST + os.sep + 'config.xml', REPO_OUTPUT_DIR]
+            repogen_args = [REPOGEN_TOOL, '-p', PACKAGES_FULL_PATH_DST, REPO_OUTPUT_DIR]
         # create repository
         bldinstallercommon.do_execute_sub_process(repogen_args, SCRIPT_ROOT_DIR, True)
         if not os.path.exists(REPO_OUTPUT_DIR):
