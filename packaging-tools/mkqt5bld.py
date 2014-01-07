@@ -87,7 +87,6 @@ QT5_ESSENTIALS                      = [ 'qtbase', 'qtdeclarative', 'qtdoc', \
                                         'qtscript', 'qttools', 'qtwebkit', \
                                         'qtwebkit-examples', 'qtxmlpatterns' ]
 ORIGINAL_QMAKE_QT_PRFXPATH          = ''
-PADDING                             = '______________________________PADDING______________________________'
 FILES_TO_REMOVE_LIST                = ['Makefile', 'Makefile.Release', 'Makefile.Debug', \
                                        '.o', '.obj', '.moc', \
                                        '.qhp', \
