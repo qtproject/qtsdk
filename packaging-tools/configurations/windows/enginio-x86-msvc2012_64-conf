@@ -52,7 +52,7 @@ package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:
 [cloudservices.enginio.10.win64_msvc2012_64_examples]
-archive_uri:            qtenginio/@QTENGINIO_VERSION@/latest/src/examples_injection/examples_qtenginio.@SRC_ARCHIVE_TYPE@
+archive_uri:            qtenginio/@QTENGINIO_VERSION@/latest/src/examples_injection/examples_qtenginio.7z
 package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:
