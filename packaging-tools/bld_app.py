@@ -325,6 +325,10 @@ makeCommandArguments = 'install INSTALL_ROOT=' + qtApplicationInstallDirectory
 runCommand("{0} {1}".format(makeCommand, makeCommandArguments), currentWorkingDirectory = qtApplicationBuildDirectory,
         callerArguments = callerArguments, init_environment = environment)
 
+# patch .so filenames on Windows/Android
+if bldinstallercommon.is_win_platform() and os.environ.get('DO_PATCH_ANDROID_SONAME_FILES'):
+    bldinstallercommon.rename_android_soname_files(qtApplicationInstallDirectory)
+
 #charts doc collection
 if callerArguments.collectDocs:
     doc_list = bldinstallercommon.make_files_list(qtApplicationSourceDirectory, '\\.qch')

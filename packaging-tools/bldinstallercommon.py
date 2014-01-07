@@ -825,4 +825,39 @@ def create_mac_disk_image(execution_path, file_directory, file_base_name, image_
     bldinstallercommon.do_execute_sub_process(cmd_args, execution_path, True)
 
 
+###############################
+# function
+###############################
+def rename_android_soname_files(qt5_base_path):
+    print '---------- Renaming .so name files in ' + lib_dir + ' ----------------'
+    ## QTBUG-33793
+    # temporary solution for Android on Windows compilations
+    ## rename the .so files for Android on Windows
+    # find the lib directory under the install directory for essentials
+    print 'Trying to locate /lib from: ' + qt5_base_path
+    lib_dir = locate_directory(qt5_base_path, 'lib')
+    print 'Match found: ' + lib_dir
+    # regex for Qt version, eg. 5.2.0
+    # assuming that Qt version will always have one digit, eg, 5.2.0
+    p = re.compile(r'\d\.\d\.\d')
+    if os.path.exists(lib_dir):
+        # just list the files with a pattern like 'libQt5Core.so.5.2.0'
+        files = [f for f in os.listdir(lib_dir) if re.match(r'lib.*\.so\..*', f)]
+        for name in files:
+            # if name is something like 'libQt5Core.so.5.2.0' then
+            # filename, so, version = ['libQt5Core', 'so', '5.2.0']
+            filename, so, version = name.split(os.extsep, 2)
+            # let's just rename the appropriate files
+            if filename.startswith('lib') and so == 'so' and p.match(version) != None:
+                old_filepath = os.path.join(lib_dir, name)
+                new_filepath = os.path.join(lib_dir, filename + '.so')
+                os.rename(old_filepath, new_filepath)
+                print '---> Old file name : ' + old_filepath
+                print '---> New file name : ' + new_filepath
+            else:
+                print '*** Warning! The file : ' + filename + ' does not match the pattern'
+    else:
+        print '*** Error! Directory does not exist: ' + lib_dir
+        sys.exit(-1)
+
 
