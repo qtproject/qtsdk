@@ -396,7 +396,7 @@ def build_qmlpuppets():
     # QT_INSTALL_BINS, but within a INSTALL_ROOT
     prfx_path = ORIGINAL_QMAKE_QT_PRFXPATH
     if bldinstallercommon.is_win_platform():
-           prfx_path = prfx_path[2:].replace('/', '\\')
+        prfx_path = prfx_path[2:].replace('/', '\\')
     install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + prfx_path
     qmake_executable_path = [qmake_executable_path, '-after', 'DESTDIR=' + os.path.join(install_root_path, 'bin')]
 
