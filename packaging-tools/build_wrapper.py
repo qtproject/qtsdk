@@ -774,6 +774,17 @@ def handle_qt5_application_release_build():
     if bldinstallercommon.is_win_platform():
         remote_target_dir += '/'
     remote_copy_archives(remote_target_dir, os.path.join(SCRIPT_ROOT_DIR, 'module_archives'))
+    # copy archived doc files to network drive if exists
+    doc_target_dir = LATEST_DIR + '/' + 'src' + '/' + 'doc'
+    if not bldinstallercommon.remote_path_exists(PKG_SERVER_ADDR, doc_target_dir, SSH_COMMAND):
+        local_docs_dir = os.path.join(SCRIPT_ROOT_DIR, 'doc_archives')
+        if os.path.exists(local_docs_dir):
+            # create remote doc dir
+            create_remote_dirs(PKG_SERVER_ADDR, doc_target_dir)
+            doc_target_dir = PKG_SERVER_ADDR + ':' + LATEST_DIR + '/' + 'src' + '/' + 'doc'
+            if bldinstallercommon.is_win_platform():
+                doc_target_dir += '/'
+            remote_copy_archives(doc_target_dir, local_docs_dir)
 
 
 ###############################

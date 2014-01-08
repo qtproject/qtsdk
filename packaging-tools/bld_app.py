@@ -345,6 +345,12 @@ if callerArguments.makeDocs:
     # then make install those
     makeCommandArguments = '-j1 install_docs INSTALL_ROOT=' + qtApplicationInstallDirectory
     runCommand("{0} {1}".format(makeCommand, makeCommandArguments), currentWorkingDirectory = qtApplicationBuildDirectory, callerArguments = callerArguments, init_environment = environment)
+    # make separate "doc.7z" for later use if needed
+    doc_dir = bldinstallercommon.locate_directory(qtApplicationInstallDirectory, 'doc')
+    if doc_dir:
+        archive_name = os.environ['APPLICATION_NAME'] + '-' + os.environ['LICENSE'] + '-doc-' + os.environ['APPLICATION_VERSION'] + '.7z'
+        archive_cmd = '7z a ' + 'doc_archives' + os.sep + archive_name + ' ' + doc_dir
+        runCommand("{0}".format(archive_cmd), currentWorkingDirectory = os.path.dirname(os.path.realpath(__file__)) )
 
 # try to figure out where the actual exported content is
 dir_to_archive = os.path.dirname(bldinstallercommon.locate_directory(qtApplicationInstallDirectory, 'lib'))
