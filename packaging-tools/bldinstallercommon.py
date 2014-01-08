@@ -829,7 +829,7 @@ def create_mac_disk_image(execution_path, file_directory, file_base_name, image_
 # function
 ###############################
 def rename_android_soname_files(qt5_base_path):
-    print '---------- Renaming .so name files in ' + lib_dir + ' ----------------'
+    print '---------- Renaming .so name files in ' + qt5_base_path + ' ----------------'
     ## QTBUG-33793
     # temporary solution for Android on Windows compilations
     ## rename the .so files for Android on Windows
