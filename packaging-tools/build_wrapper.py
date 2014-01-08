@@ -396,7 +396,7 @@ def handle_ifw_build():
     if LICENSE == 'enterprise':
         cmd_args += ['--product_key_checker_url=' + WORK_DIR + '/qtsdk-enterprise/productkeycheck/qt_product_key_checker.pri']
     if (os.environ.get('IFW_DEBUG_BUILD')):
-        cmd_arg += ['--debug']
+        cmd_args += ['--debug']
     # execute
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
