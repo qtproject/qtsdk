@@ -92,7 +92,7 @@ IFW_GIT_URL                 = 'git://gitorious.org/installer-framework/installer
 SRC_URL_PREFIX              = 'http://qt-rnd.it.local/packages/jenkins'
 SRC_URL                     = ''
 PLATFORM                    = ''
-SRC_DEST_DIRS               = ['src', 'src/submodules', 'src/examples_injection', 'src/licheck']
+SRC_DEST_DIRS               = ['src', 'src/submodules', 'src/doc', 'src/single', 'src/examples_injection']
 INSTALLER_BUILD_OUTPUT_DIR  = 'build_artifacts'
 # TODO: target directories hard coded, should be figured out from somewhere!
 BIN_TARGET_DIRS             = \
@@ -144,6 +144,7 @@ MAKE_INSTALL_PADDING        = ''
 ###########################################
 class BldCommand:
     init_build_cycle            = 'init'
+    init_app_build_cycle        = 'init_app'
     execute_qt5_src_pkg         = 'build_src'
     execute_qt5_bin_bld         = 'build_bin'
     execute_qt5_app_bld         = 'build_qt5_app'
@@ -162,6 +163,7 @@ class BldCommand:
     ###########################################
     def is_valid_cmd(self):
         commands = [self.init_build_cycle]
+        commands += [self.init_app_build_cycle]
         commands += [self.execute_qt5_src_pkg]
         commands += [self.execute_qt5_bin_bld]
         commands += [self.execute_qt5_app_bld]
@@ -349,32 +351,20 @@ def sign_mac_executable(file_path, working_dir, abort_on_fail):
     cmd_args = ['codesign', '-r', '/Users/qt/csreq.txt', '-s', s_arg, file_path]
     bldinstallercommon.do_execute_sub_process(cmd_args, working_dir, abort_on_fail)
 
-
 ###############################
-# init_qt_build_cycle
+# initialize_build
 ###############################
-def init_qt_build_cycle():
+def initialize_build():
     sanity_check_packaging_server()
-    # create dir structures in network drive
-    # TODO: Figure out correct path + check parameters!
     for dir_name in SRC_DEST_DIRS:
-        if dir_name != 'src/licheck':
-            dir_path = REMOTE_DIR + '/' + dir_name
-            create_remote_dirs(PKG_SERVER_ADDR, dir_path)
-        elif LICENSE == 'enterprise':
-            dir_path = REMOTE_DIR + '/' + dir_name
-            create_remote_dirs(PKG_SERVER_ADDR, dir_path)
-
-    # Create directories for targets
-    # for dir_name in BIN_TARGET_DIRS:
-    #    dir_path = os.path.join(REMOTE_DIR, dir_name)
-    #    create_remote_dirs(PKG_SERVER_ADDR, dir_path)
-
+        dir_path = REMOTE_DIR + '/' + dir_name
+        create_remote_dirs(PKG_SERVER_ADDR, dir_path)
+    if LICENSE == 'enterprise':
+        dir_path = REMOTE_DIR + '/' + 'src/licheck'
+        create_remote_dirs(PKG_SERVER_ADDR, dir_path)
     # Update latest link
     cmd_args = [SSH_COMMAND, PKG_SERVER_ADDR, 'ln -sfn', REMOTE_DIR, LATEST_DIR]
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
-
-
 
 ###############################
 # handle_ifw_build()
@@ -776,15 +766,13 @@ def handle_qt5_application_release_build():
     remote_copy_archives(remote_target_dir, os.path.join(SCRIPT_ROOT_DIR, 'module_archives'))
     # copy archived doc files to network drive if exists
     doc_target_dir = LATEST_DIR + '/' + 'src' + '/' + 'doc'
-    if not bldinstallercommon.remote_path_exists(PKG_SERVER_ADDR, doc_target_dir, SSH_COMMAND):
-        local_docs_dir = os.path.join(SCRIPT_ROOT_DIR, 'doc_archives')
-        if os.path.exists(local_docs_dir):
-            # create remote doc dir
-            create_remote_dirs(PKG_SERVER_ADDR, doc_target_dir)
-            doc_target_dir = PKG_SERVER_ADDR + ':' + LATEST_DIR + '/' + 'src' + '/' + 'doc'
-            if bldinstallercommon.is_win_platform():
-                doc_target_dir += '/'
-            remote_copy_archives(doc_target_dir, local_docs_dir)
+    local_docs_dir = os.path.join(SCRIPT_ROOT_DIR, 'doc_archives')
+    if os.path.exists(local_docs_dir):
+        # create remote doc dir
+        doc_target_dir = PKG_SERVER_ADDR + ':' + LATEST_DIR + '/' + 'src' + '/' + 'doc'
+        if bldinstallercommon.is_win_platform():
+            doc_target_dir += '/'
+        remote_copy_archives(doc_target_dir, local_docs_dir)
 
 
 ###############################
@@ -1439,11 +1427,11 @@ def main():
 
     parse_cmd_line()
     if COMMAND == BldCommand.init_build_cycle:
-        init_qt_build_cycle()
+        initialize_build()
     elif COMMAND == BldCommand.execute_qt5_src_pkg:
-        if LICENSE == 'opensource':
-            init_qt_build_cycle()
         handle_qt_src_package_build()
+    elif COMMAND == BldCommand.init_app_build_cycle:
+        initialize_build()
     elif COMMAND == BldCommand.execute_qt5_bin_bld:
         handle_qt_release_build()
     elif COMMAND == BldCommand.execute_qt5_app_bld:
