@@ -43,10 +43,10 @@ use Text::Wrap;
 my %log;
 
 sub help {
-    print "Usage: header-diff <revision-range> [srcdir]\n" .
+    print "Usage: create-changelog <srcdir> <revision-range>\n" .
         "\n" .
-        "revision-range          arguments to git log, like v5.0.0..v5.1.0-rc1\n" .
-        "srcdir                  the source qtsdk directory, "." if not provided\n" .
+        "srcdir                  the qt source directory\n" .
+        "revision-range          arguments to git log, like v5.0.0..v5.1.0-rc1\n";
     exit 0;
 }
 
@@ -120,6 +120,8 @@ sub print_entry($%) {
     }
     print "\n";
 }
+
+help() unless scalar @ARGV;
 
 # Now print the output
 collect_entries();
