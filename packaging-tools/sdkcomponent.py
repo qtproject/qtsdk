@@ -54,13 +54,14 @@ class SdkComponent:
     class DownloadableArchive:
         """DownloadableArchive subclass contains all required info about data packages for one SDK component"""
         def __init__(self, archive, package_name, archive_server_name, target_config, archive_location_resolver, key_value_substitution_list):
-            self.archive_uri        = bldinstallercommon.config_section_map(target_config, archive)['archive_uri']
-            self.extract_archive    = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'extract_archive')
-            self.package_strip_dirs = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'package_strip_dirs')
-            self.target_install_dir = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'target_install_dir') # todo, is needed?
-            self.rpath_target       = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'rpath_target')
+            self.archive_uri            = bldinstallercommon.config_section_map(target_config, archive)['archive_uri']
+            self.extract_archive        = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'extract_archive')
+            self.package_strip_dirs     = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'package_strip_dirs')
+            self.package_finalize_items = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'package_finalize_items')
+            self.target_install_dir     = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'target_install_dir') # todo, is needed?
+            self.rpath_target           = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'rpath_target')
             self.nomalize_archive_uri(package_name, archive_server_name, archive_location_resolver)
-            self.archive_name       = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'archive_name')
+            self.archive_name           = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'archive_name')
             if not self.archive_name:
                 self.archive_name = self.path_leaf(self.archive_uri)
                 if not self.archive_name.endswith('.7z'):

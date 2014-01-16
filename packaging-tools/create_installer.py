@@ -779,6 +779,7 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
 
     if package_raw_name.endswith('.7z') \
        and archive.package_strip_dirs == '0' \
+       and not archive.package_finalize_items \
        and not archive.rpath_target \
        and sdk_component.target_install_base == '/' \
        and package_raw_name == archive.archive_name:
@@ -815,6 +816,10 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
         while(count < iterations):
             count = count + 1
             move_directory_one_layer_up(install_dir)
+        # perform package finalization tasks for the given archive
+        if 'docs' in archive.package_finalize_items:
+            doc_dir = bldinstallercommon.locate_directory(install_dir, 'doc')
+            cleanup_docs(doc_dir)
 
     if archive.rpath_target:
         if not archive.rpath_target.startswith(os.sep):
@@ -910,6 +915,38 @@ def create_target_components(target_config):
             bldinstallercommon.remove_tree(sdk_component.temp_data_dir)
             # substitute downloadable archive names in installscript.qs
             substitute_component_tags(sdk_component.generate_downloadable_archive_list(), sdk_component.meta_dir_dest)
+
+
+##############################################################
+# Cleanup helper
+##############################################################
+def cleanup_docs(doc_dir):
+    if not os.path.isdir(doc_dir):
+        print '*** Given docs directory is not valid path: ' + doc_dir
+        print '*** Archive not cleaned'
+        return
+    submodule_list = []
+    # populate subdirectory list from under /doc
+    for name in os.listdir(doc_dir):
+        dir_name = os.path.join(doc_dir, name)
+        if os.path.isdir(dir_name):
+            submodule_list.append(dir_name)
+    # iterate list
+    for submodule in submodule_list:
+        # remove unnecessary subdirectories first
+        dirs_to_delete = ['images', 'scripts', 'style', 'template', 'externalsites']
+        for item in [os.path.join(submodule, i) for i in dirs_to_delete]:
+            if os.path.isdir(item):
+                print 'Cleaning up -> deleting directory: ' + item
+                shutil.rmtree(item)
+        # then remove unnecessary files
+        for filename in os.listdir(submodule):
+            if filename.endswith(('.qdocconf', '.index', '.sha1', '.tags', '.html')):
+                full_filename = os.path.join(submodule, filename)
+                if os.path.isfile(full_filename):
+                    print 'Cleaning up -> deleting file: ' + full_filename
+                    os.remove(full_filename)
+
 
 ##############################################################
 # Install Installer-Framework tools

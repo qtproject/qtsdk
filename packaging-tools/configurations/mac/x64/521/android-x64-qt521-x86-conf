@@ -57,6 +57,7 @@ package_default:        true
 [521.android_x86.essentials]
 archive_uri:            /qt/5.2.1/latest/android_x86/mac_x64/qt5_essentials.7z
 package_strip_dirs:
+package_finalize_items: docs
 target_install_dir:     /
 rpath_target:
 archive_name:           android_x86_qt5_essentials.7z

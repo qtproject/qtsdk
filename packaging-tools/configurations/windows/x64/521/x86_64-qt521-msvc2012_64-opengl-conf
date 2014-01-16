@@ -52,6 +52,7 @@ package_default:        true
 [521.msvc2012_64_opengl.essentials]
 archive_uri:            /qt/5.2.1/latest/windows_vs2012_64_opengl/qt5_essentials.7z
 package_strip_dirs:
+package_finalize_items: docs
 target_install_dir:     /
 rpath_target:
 archive_name:           msvc2012_64_opengl_essentials.7z
