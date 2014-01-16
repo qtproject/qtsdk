@@ -55,8 +55,8 @@ packages:
 
 [PackageConfigurationFiles]
 file_list:              qt-conf,
-                        qt520-src-conf,
-                        x86_64-qt520-msvc2012_64-opengl-conf,
+                        qt521-src-conf,
+                        x86_64-qt521-msvc2012_64-opengl-conf,
                         x86-tools-qtcreator-conf,
                         x86-tools-vcredist_32-conf,
                         x86_64-tools-vcredist_64-conf,
@@ -75,5 +75,5 @@ template_name:          config_qt5
 template_name:          config.xml.template.windows.qt5
 
 [PackageTemplates]
-template_dirs:          pkg_520, pkg_tools
+template_dirs:           pkg_521, pkg_tools
 

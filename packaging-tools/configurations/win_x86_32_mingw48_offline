@@ -55,8 +55,8 @@ packages:
 
 [PackageConfigurationFiles]
 file_list:              qt-conf,
-                        qt520-src-conf,
-                        x86-qt520-mingw48_32-conf,
+                        qt521-src-conf,
+                        x86-qt521-mingw48_32-conf,
                         x86-tools-mingw48-conf,
                         x86-tools-qtcreator-conf,
                         x86-tools-vcredist_32-conf,
@@ -75,5 +75,5 @@ template_name:          config_qt5
 template_name:          config.xml.template.windows.qt5
 
 [PackageTemplates]
-template_dirs:          pkg_520, pkg_tools
+template_dirs:           pkg_521, pkg_tools
 

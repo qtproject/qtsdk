@@ -39,32 +39,37 @@
 ##
 #############################################################################
 
-[qt.520.ios]
-version:                5.2.0
+[qt.521.android_qtcreator_settings]
+version:                5.2
+version_tag:            %ANDROID_QTCREATOR_SETTINGS_VERSION%
+
+
+[qt.521.android_armv5]
+version:                5.2.1
 version_tag:            %QT_VERSION%
 
-[qt.520.ios.essentials]
-archives:               520.ios.essentials
-target_install_base:    /@QT_VERSION@/ios
-version:                5.2.0
+[qt.521.android_armv5.essentials]
+archives:               521.android_armv5.essentials
+target_install_base:    /@QT_VERSION@/android_armv5
+version:                5.2.1
 version_tag:            %QT_VERSION%
 package_default:        true
-[520.ios.essentials]
-archive_uri:            /qt/5.2.0/latest/ios/mac_x64/qt5_essentials.7z
+[521.android_armv5.essentials]
+archive_uri:            /qt/5.2.1/latest/android_armv5/linux_x64/qt5_essentials.7z
 package_strip_dirs:
 target_install_dir:     /
 rpath_target:
-archive_name:           ios_qt5_essentials.7z
+archive_name:           android_armv5_qt5_essentials.7z
 
-[qt.520.ios.addons]
-archives:               520.ios.addons
-target_install_base:    /@QT_VERSION@/ios
-version:                5.2.0
+[qt.521.android_armv5.addons]
+archives:               521.android_armv5.addons
+target_install_base:    /@QT_VERSION@/android_armv5
+version:                5.2.1
 version_tag:            %QT_VERSION%
 package_default:        true
-[520.ios.addons]
-archive_uri:            /qt/5.2.0/latest/ios/mac_x64/qt5_addons.7z
+[521.android_armv5.addons]
+archive_uri:            /qt/5.2.1/latest/android_armv5/linux_x64/qt5_addons.7z
 package_strip_dirs:
 target_install_dir:     /
 rpath_target:
-archive_name:           ios_qt5_addons.7z
+archive_name:           android_armv5_qt5_addons.7z

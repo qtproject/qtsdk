@@ -54,7 +54,7 @@ base_path:
 packages:               foo.bar, foo.bar2, foo.bar3
 
 [PackageConfigurationFiles]
-file_list:              qt-conf, qt520-src-conf, x86_64-qt520-clang-conf, ios-x64-qt520-conf, x86_64-tools-qtcreator-conf, installer-readme-conf
+file_list:              qt-conf, qt521-src-conf, x86_64-qt521-clang-conf, ios-x64-qt521-conf, x86_64-tools-qtcreator-conf, installer-readme-conf
 
 [OfflinePackageExcludeList]
 package_list:
@@ -72,5 +72,5 @@ template_name:          config_qt5
 template_name:          config.xml.template.mac.qt5
 
 [PackageTemplates]
-template_dirs:          pkg_520, pkg_tools
+template_dirs:           pkg_521, pkg_tools
 

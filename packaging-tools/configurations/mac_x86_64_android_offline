@@ -55,11 +55,11 @@ packages:
 
 [PackageConfigurationFiles]
 file_list:              qt-conf,
-                        qt520-src-conf,
-                        x86_64-qt520-clang-conf,
-                        android-x64-qt520-armv5-conf,
-                        android-x64-qt520-armv7-conf,
-                        android-x64-qt520-x86-conf,
+                        qt521-src-conf,
+                        x86_64-qt521-clang-conf,
+                        android-x64-qt521-armv5-conf,
+                        android-x64-qt521-armv7-conf,
+                        android-x64-qt521-x86-conf,
                         x86_64-tools-qtcreator-conf,
                         installer-readme-conf
 
@@ -79,5 +79,5 @@ template_name:          config_qt5
 template_name:          config.xml.template.mac.qt5
 
 [PackageTemplates]
-template_dirs:          pkg_520, pkg_tools
+template_dirs:           pkg_521, pkg_tools
 

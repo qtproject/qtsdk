@@ -39,33 +39,38 @@
 ##
 #############################################################################
 
-[qt.501.patcher]
+[PackageNamespace]
+name:                   qt
 
-[qt.501.clang_64]
+[PlatformIdentifier]
+identifier:             linux
 
-[qt.501.clang_64.essentials]
-archives:               501.clang_64.essentials
-target_install_base:    /5.0.1/clang_64
-version:                5.0.1
-version_tag:            %QT_VERSION%
-package_default:        true
-[501.clang_64.essentials]
-archive_uri:            /qt/5.0.1_opensource/mac_cocoa_10.7/qt5_essentials.7z
-package_strip_dirs:
-target_install_dir:     /
-rpath_target:
-archive_name:           clang_64_mac_qt5_essentials.7z
+[ArchiveRemoteLocation.default]
+base_url:
+base_path:
 
-[qt.501.clang_64.addons]
-archives:               501.clang_64.addons
-target_install_base:    /5.0.1/clang_64
-version:                5.0.1
-version_tag:            %QT_VERSION%
-package_default:        true
-[501.clang_64.addons]
-archive_uri:            /qt/5.0.1_opensource/mac_cocoa_10.7/qt5_addons.7z
-package_strip_dirs:
-target_install_dir:     /
-rpath_target:
-archive_name:           clang_64_mac_qt5_addons.7z
+[PackageIgnoreList]
+packages:
+
+[PackageConfigurationFiles]
+file_list:              android-x64-qt521-x86-conf, android-x64-qt521-armv5-conf, android-x64-qt521-armv7-conf
+
+[OfflinePackageExcludeList]
+package_list:
+
+[SdkUpdateRepository]
+repository_url_release:
+
+[ConfigDir]
+template_name:          config_qt5
+
+[ConfigXml]
+template_name:          config.xml.template.linux-x64.qt5-sdk
+
+[PackageTemplates]
+template_dirs:           pkg_521
+
+[InstallerFrameworkTools]
+name:                   ifwt
+package_url:
 

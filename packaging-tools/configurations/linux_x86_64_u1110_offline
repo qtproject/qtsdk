@@ -55,8 +55,8 @@ packages:
 
 [PackageConfigurationFiles]
 file_list:              qt-conf,
-                        qt520-src-conf,
-                        x86_64-qt520-gcc-conf,
+                        qt521-src-conf,
+                        x86_64-qt521-gcc-conf,
                         x86_64-tools-qtcreator-conf,
                         installer-readme-conf
 
@@ -73,5 +73,5 @@ template_name:          config_qt5
 template_name:          config.xml.template.linux.qt5
 
 [PackageTemplates]
-template_dirs:          pkg_520, pkg_tools
+template_dirs:           pkg_521, pkg_tools
 

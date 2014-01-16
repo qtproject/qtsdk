@@ -69,5 +69,5 @@ template_name:          config_qt5
 template_name:          config.xml.template.windows.qt5-sdk
 
 [PackageTemplates]
-template_dirs:          pkg_tools
+template_dirs:           pkg_tools
 

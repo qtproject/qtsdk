@@ -39,44 +39,45 @@
 ##
 #############################################################################
 
-[qt.500.patcher]
 
-[qt.500.win64_msvc2010_64]
+[qt.521.win32_msvc2012]
+version:                5.2.1
+version_tag:            %QT_VERSION%
 
-[qt.500.win64_msvc2010_64.essentials]
-archives:               500.msvc2010_64.essentials, icu_49.win_64, msvc2010_64.essentials.d3d_compiler_43.x64
-target_install_base:    /5.0.0/msvc2010_64
-version:                5.0.0
+[qt.521.win32_msvc2012.essentials]
+archives:               521.msvc2012.essentials, 521.msvc2012.icu_51_release.win_32, msvc2012.essentials.d3d_compiler_46.x86
+target_install_base:    /@QT_VERSION@/msvc2012
+version:                5.2.1
 version_tag:            %QT_VERSION%
 package_default:        true
-[500.msvc2010_64.essentials]
-archive_uri:            /qt/5.0.0_opensource/windows_vs2010_64/qt5_essentials.7z
-package_strip_dirs:     5
+[521.msvc2012.essentials]
+archive_uri:            /qt/5.2.1/latest/windows_vs2012_32/qt5_essentials.7z
+package_strip_dirs:
 target_install_dir:     /
 rpath_target:
-archive_name:           msvc2010_64_essentials.7z
-[icu_49.win_64]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/msvc2010/icu_49_win_64_release.7z
+archive_name:           msvc2012_32_essentials.7z
+[521.msvc2012.icu_51_release.win_32]
+archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/msvc2012/icu_51_1_msvc_2012_32.7z
 package_strip_dirs:     0
 target_install_dir:     /bin
 rpath_target:
-archive_name:           icu_49_win_64.7z
-[msvc2010_64.essentials.d3d_compiler_43.x64]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/d3dcompiler/msvc2010/D3DCompiler_43-x64.dll.7z
+archive_name:           icu_51_1_msvc_2012_32.7z
+[msvc2012.essentials.d3d_compiler_46.x86]
+archive_uri:            http://download.qt-project.org/development_releases/prebuilt/d3dcompiler/msvc2012/d3dcompiler_46_32.dll.7z
 package_strip_dirs:     0
 target_install_dir:     /bin
 rpath_target:
-archive_name:           D3DCompiler_43-x64.7z
+archive_name:           d3dcompiler_46_32.dll.7z
 
-[qt.500.win64_msvc2010_64.addons]
-archives:               500.msvc2010_64.addons, icu_49.win_64
-target_install_base:    /5.0.0/msvc2010_64
-version:                5.0.0
+[qt.521.win32_msvc2012.addons]
+archives:               521.msvc2012.addons
+target_install_base:    /@QT_VERSION@/msvc2012
+version:                5.2.1
 version_tag:            %QT_VERSION%
 package_default:        true
-[500.msvc2010_64.addons]
-archive_uri:            /qt/5.0.0_opensource/windows_vs2010_64/qt5_addons.7z
-package_strip_dirs:     5
+[521.msvc2012.addons]
+archive_uri:            /qt/5.2.1/latest/windows_vs2012_32/qt5_addons.7z
+package_strip_dirs:
 target_install_dir:     /
 rpath_target:
-archive_name:           msvc2010_64_addons.7z
+archive_name:           msvc2012_32_addons.7z

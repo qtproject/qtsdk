@@ -39,25 +39,38 @@
 ##
 #############################################################################
 
+[PackageNamespace]
+name:                   qt
 
-[qt.cloudservices.enginio.10.android_x86]
-archives:               cloudservices.enginio.10.android_armv7, cloudservices.enginio.10.android_x86_examples, cloudservices.enginio.10.android_x86_docs
-target_install_base:    /@QT_VERSION@/android_x86
-version:                1.0.1
-version_tag:            %ENGINIO_VERSION%
-package_default:        false
-[cloudservices.enginio.10.android_armv7]
-archive_uri:            /qtenginio/@QTENGINIO_VERSION@/latest/android_x86/linux_x64/qt5_qtenginio.7z
-package_strip_dirs:     1
-target_install_dir:     /
-rpath_target:
-[cloudservices.enginio.10.android_x86_examples]
-archive_uri:            qtenginio/@QTENGINIO_VERSION@/latest/src/examples_injection/examples_qtenginio.@SRC_ARCHIVE_TYPE@
-package_strip_dirs:     0
-target_install_dir:     /
-rpath_target:
-[cloudservices.enginio.10.android_x86_docs]
-archive_uri:            qtenginio/@QTENGINIO_VERSION@/latest/src/doc/qtenginio-@LICENSE@-doc-@QTENGINIO_VERSION@.7z
-package_strip_dirs:     0
-target_install_dir:     /
-rpath_target:
+[PlatformIdentifier]
+identifier:             mac
+
+[ArchiveRemoteLocation.default]
+base_url:
+base_path:
+
+[PackageIgnoreList]
+packages:
+
+[PackageConfigurationFiles]
+file_list:              ios-x64-qt521-conf
+
+[OfflinePackageExcludeList]
+package_list:
+
+[SdkUpdateRepository]
+repository_url_release:
+
+[ConfigDir]
+template_name:          config_qt5
+
+[ConfigXml]
+template_name:          config.xml.template.mac.qt5-sdk
+
+[PackageTemplates]
+template_dirs:           pkg_521
+
+[InstallerFrameworkTools]
+name:                   ifwt
+package_url:
+
