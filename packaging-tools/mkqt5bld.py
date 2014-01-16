@@ -100,9 +100,11 @@ CONFIGURE_OPTIONS                   = '-confirm-license -debug-and-release -rele
 ANDROID_BUILD                       = False
 EXTRA_ENV                           = dict(os.environ)
 QT_BUILD_OPTIONS                    = 0
+DESKTOP_BUILD                       = True
 
 # init
 bldinstallercommon.init_common_module(SCRIPT_ROOT_DIR)
+
 
 
 class MultipleOption(Option):
@@ -693,10 +695,12 @@ def archive_submodules():
         run_in = os.path.normpath(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX)
         bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), run_in, True, True)
 
-        # Also archive docs in a separated qt5_docs.7z file
-        cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_docs' + '.7z *'
-        run_in = os.path.normpath(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX + os.sep + 'doc')
-        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), run_in, True, True)
+        if DESKTOP_BUILD:
+            # Also archive docs in a separate qt5_docs.7z file
+            print_wrap('---------- Archiving qt5_docs.7z')
+            cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_docs' + '.7z *'
+            run_in = os.path.normpath(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX + os.sep + 'doc')
+            bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), run_in, True, True)
     else:
         print_wrap(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> essentials not archived!')
 
@@ -901,6 +905,7 @@ def use_custom_icu():
 def parse_cmd_line():
     print_wrap('---------------- Parsing commandline arguments ---------------------')
     global QT_BUILD_OPTIONS
+
     setup_option_parser()
 
     arg_count = len(sys.argv)
@@ -988,6 +993,7 @@ def main_call_parameters():
     global CONFIGURE_OPTIONS
     global ANDROID_BUILD
     global EXTRA_ENV
+    global DESKTOP_BUILD
 
     if QT_BUILD_OPTIONS.make_cmd:
         MAKE_INSTALL_CMD    = QT_BUILD_OPTIONS.make_cmd + ' install'
@@ -1046,6 +1052,9 @@ def main_call_parameters():
         CONFIGURE_OPTIONS += ' ' + '-prefix' + ' ' + QT_BUILD_OPTIONS.prefix
     if QT_BUILD_OPTIONS.runtime_path:
         CONFIGURE_OPTIONS += ' ' + '-R' + ' ' + QT_BUILD_OPTIONS.runtime_path
+
+    if ANDROID_BUILD or 'ios' in CONFIGURE_OPTIONS.lower():
+        DESKTOP_BUILD = False
 
     CONFIGURE_OPTIONS = CONFIGURE_OPTIONS.replace('  ', ' ')
     # Starting the build

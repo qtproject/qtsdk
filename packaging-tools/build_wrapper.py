@@ -95,6 +95,7 @@ SRC_URL                     = ''
 PLATFORM                    = ''
 SRC_DEST_DIRS               = ['src', 'src/submodules', 'src/doc', 'src/single', 'src/examples_injection']
 INSTALLER_BUILD_OUTPUT_DIR  = 'build_artifacts'
+QT5_DOCS_ARCHIVE_NAME       = 'qt5_docs.7z'
 # TODO: target directories hard coded, should be figured out from somewhere!
 BIN_TARGET_DIRS             = \
 {'linux-g++-Ubuntu11.10-x86_Android-armv5':'android_armv5/linux_x86'\
@@ -854,24 +855,24 @@ def handle_qt_release_build():
         handle_qt_desktop_release_build()
         handle_examples_injection()
 
+    remote_dir = LATEST_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV]
+    srv_and_remote_dir = PKG_SERVER_ADDR + ':' + remote_dir
     # Create target directory
-    create_remote_dirs(PKG_SERVER_ADDR, LATEST_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV])
+    create_remote_dirs(PKG_SERVER_ADDR, remote_dir)
 
-    dir_list = os.listdir(os.path.join(WORK_DIR, 'module_archives'))
+    local_archives_dir = os.path.join(WORK_DIR, 'module_archives')
+    dir_list = os.listdir(local_archives_dir)
     print(dir_list)
     for file_name in dir_list:
-        print(file_name)
-        if file_name.endswith(".7z"):
-            print(file_name)
-            if bldinstallercommon.is_linux_platform():
-                cmd_args = [SCP_COMMAND, os.path.join(WORK_DIR, 'module_archives', file_name), PKG_SERVER_ADDR + ':' + LATEST_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV]]
-            elif bldinstallercommon.is_win_platform():
-                cmd_args = [SCP_COMMAND, file_name, PKG_SERVER_ADDR + ':' + LATEST_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV] + '/']
-            else:
-                cmd_args = ['rsync', os.path.join(WORK_DIR, 'module_archives', file_name), PKG_SERVER_ADDR + ':' + LATEST_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV]]
-            bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
+        if file_name.endswith('.7z'):
+            cmd_args = [SCP_COMMAND, file_name, srv_and_remote_dir + '/']
+            bldinstallercommon.do_execute_sub_process(cmd_args, local_archives_dir, True)
+            if QT5_DOCS_ARCHIVE_NAME in file_name:
+                doc_archive_on_remote_disk = LATEST_DIR + '/src/doc/' + QT5_DOCS_ARCHIVE_NAME
+                if not bldinstallercommon.remote_path_exists(PKG_SERVER_ADDR, doc_archive_on_remote_disk, SSH_COMMAND):
+                    cmd_args = [SCP_COMMAND, file_name, PKG_SERVER_ADDR + ':' + LATEST_DIR + '/src/doc/']
+                    bldinstallercommon.do_execute_sub_process(cmd_args, local_archives_dir, True)
 
-    # TODO: Missing_modules.txt upload
 
 ###############################
 # handle_qt_creator_build
