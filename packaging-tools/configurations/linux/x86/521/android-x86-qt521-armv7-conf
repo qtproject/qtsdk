@@ -48,7 +48,7 @@ version:                5.2.1
 version_tag:            %QT_VERSION%
 
 [qt.521.android_armv7.essentials]
-archives:               521.android_armv7.essentials
+archives:               521.android_armv7.essentials, 521.android_armv7.docs
 target_install_base:    /@QT_VERSION@/android_armv7
 version:                5.2.1
 version_tag:            %QT_VERSION%
@@ -59,6 +59,11 @@ package_strip_dirs:
 target_install_dir:     /
 rpath_target:
 archive_name:           android_armv7_qt5_essentials.7z
+[521.android_armv7.docs]
+archive_uri:            /qt/5.2.1/latest/src/doc/qt5_docs.7z
+package_strip_dirs:
+target_install_dir:     /doc
+rpath_target:
 
 [qt.521.android_armv7.addons]
 archives:               521.android_armv7.addons

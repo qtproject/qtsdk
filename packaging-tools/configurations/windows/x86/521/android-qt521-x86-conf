@@ -49,7 +49,7 @@ version:                5.2.1
 version_tag:            %QT_VERSION%
 
 [qt.521.android_x86.essentials]
-archives:               521.android_x86.essentials, 521.android_x86.icu_51.mingw_32, 521.android_x86.mingw48.runtime
+archives:               521.android_x86.essentials, 521.android_x86.icu_51.mingw_32, 521.android_x86.mingw48.runtime, 521.android_x86.docs
 target_install_base:    /@QT_VERSION@/android_x86
 version:                5.2.1
 version_tag:            %QT_VERSION%
@@ -60,6 +60,12 @@ package_strip_dirs:
 target_install_dir:     /
 rpath_target:
 archive_name:           android_x86_essentials_mingw_host.7z
+[521.android_x86.docs]
+archive_uri:            /qt/5.2.1/latest/src/doc/qt5_docs.7z
+package_strip_dirs:
+target_install_dir:     /doc
+rpath_target:
+
 [521.android_x86.icu_51.mingw_32]
 archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/mingw/icu_51_1_mingw_builds_4_8_0_posix_dwarf_32.7z
 package_strip_dirs:     0

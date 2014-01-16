@@ -44,7 +44,7 @@ version:                5.2.1
 version_tag:            %QT_VERSION%
 
 [qt.521.ios.essentials]
-archives:               521.ios.essentials
+archives:               521.ios.essentials, 521.ios.docs
 target_install_base:    /@QT_VERSION@/ios
 version:                5.2.1
 version_tag:            %QT_VERSION%
@@ -54,6 +54,12 @@ archive_uri:            /qt/5.2.1/latest/ios/mac_x64/qt5_essentials.7z
 package_strip_dirs:
 target_install_dir:     /
 rpath_target:
+[521.ios.docs]
+archive_uri:            /qt/5.2.1/latest/src/doc/qt5_docs.7z
+package_strip_dirs:
+target_install_dir:     /doc
+rpath_target:
+
 
 [qt.521.ios.addons]
 archives:               521.ios.addons
