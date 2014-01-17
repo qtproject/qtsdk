@@ -79,7 +79,7 @@ rta_key_list:               Qt5_RTA_opensource_installer_tests_mac_ios_android
 arg_configurations_file:    win_x86_32_mingw48_offline
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-windows-opensource-%GLOBAL_VERSION%-mingw48_opengl-x86-offline
-rta_key_list:               Qt5_RTA_opensource_installer_windows_tests_mingw
+rta_key_list:               Qt5_RTA_opensource_installer_tests_windows_mingw
 
 [release.521.offline.windows.x86.msvc2010_angle]
 arg_configurations_file:    win_x86_32_msvc2010_offline
