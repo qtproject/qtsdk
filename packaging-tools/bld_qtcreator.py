@@ -54,6 +54,7 @@ from urlparse import urlparse
 from threadedwork import Task, ThreadedWork
 from bld_utils import download, gitSHA, removeDir, runBuildCommand, runCommand, runInstallCommand, stripVars
 import bldinstallercommon
+from patch_qmake_qt_key import replace_key
 
 def createDownloadExtract7zTask(url, target_path, temp_path, caller_arguments):
     fileNameFromUrl = os.path.basename(urlparse(url).path)
@@ -213,6 +214,14 @@ if not os.path.lexists(callerArguments.qt5path):
     if sys.platform.startswith('linux'):
         bldinstallercommon.init_common_module(os.getcwd())
         bldinstallercommon.handle_component_rpath(callerArguments.qt5path, 'lib')
+    corelib = callerArguments.qt5path
+    if sys.platform.startswith('linux'):
+        corelib += "/lib/libQt5Core.so.5"
+    elif sys.platform == "darwin":
+        corelib += "/lib/QtCore.framework/Versions/Current/QtCore"
+    else:
+        corelib += "\\bin\\Qt5Core.dll"
+    replace_key(corelib, "qt_instdate", " ")
     print("##### {0} ##### ... done".format("patch Qt"))
     runCommand(qmakeBinary + " -query", qtCreatorBuildDirectory, callerArguments)
 ### lets start building
