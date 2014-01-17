@@ -1178,8 +1178,9 @@ def create_installer():
     if not INCREMENTAL_MODE:
         clean_work_dirs()
     # set config templates
-    set_config_directory()
-    set_config_xml()
+    if CREATE_ONLINE_INSTALLER or CREATE_OFFLINE_INSTALLER:
+        set_config_directory()
+        set_config_xml()
     # install Installer Framework tools
     install_ifw_tools()
     # parse SDK components

@@ -62,12 +62,6 @@ package_list:
 [SdkUpdateRepository]
 repository_url_release:
 
-[ConfigDir]
-template_name:          config_qt5
-
-[ConfigXml]
-template_name:          config.xml.template.linux-x86.qt5-sdk
-
 [PackageTemplates]
 template_dirs:          pkg_tools, pkg_511
 

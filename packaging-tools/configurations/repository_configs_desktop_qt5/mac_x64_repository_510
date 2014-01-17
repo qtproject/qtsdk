@@ -65,12 +65,6 @@ package_url:            http://download.qt-project.org/development_releases/preb
 [SdkUpdateRepository]
 repository_url_release:
 
-[ConfigDir]
-template_name:          config_qt5
-
-[ConfigXml]
-template_name:          config.xml.template.mac.qt5-sdk
-
 [PackageTemplates]
 template_dirs:          pkg_tools, pkg_510
 
