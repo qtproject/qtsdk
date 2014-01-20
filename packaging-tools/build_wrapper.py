@@ -206,6 +206,8 @@ class BldCommand:
                 return False
         elif self.options.command == self.execute_repo_bld:
             if len(sys.argv) < 4:
+                print('*** Insufficient arguments for repo build!')
+                print('*** You must at least do: build_wrapper.py -c repo_build -license <LICENSE>')
                 return False
         elif self.options.command == self.execute_online_inst_bld:
             if len(sys.argv) < 4:
