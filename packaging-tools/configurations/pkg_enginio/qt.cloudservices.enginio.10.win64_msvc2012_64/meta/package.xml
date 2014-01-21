@@ -4,7 +4,7 @@
     <Description>With Enginio, you can create stunning Qt applications, add a scalable and powerful Qt cloud backend as a service in no time and deploy in minutes without ever bothering about backend servers or scalability problems.</Description>
     <Version>%ENGINIO_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Dependencies>qt.520.win64_msvc2012_64.essentials</Dependencies>
+    <Dependencies>qt.521.win64_msvc2012_64.essentials</Dependencies>
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
     <Script>installscript.qs</Script>
     <SortingPriority>650</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
