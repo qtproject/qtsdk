@@ -43,7 +43,7 @@
 [qt.cloudservices.enginio.10.win32_msvc2010_opengl]
 archives:               cloudservices.enginio.10.win32_msvc2010_opengl, cloudservices.enginio.10.win32_msvc2010_opengl_examples
 target_install_base:    /@QT_VERSION@/msvc2010_opengl
-version:                1.0.1
+version:                1.0.2
 version_tag:            %ENGINIO_VERSION%
 package_default:        false
 [cloudservices.enginio.10.win32_msvc2010_opengl]

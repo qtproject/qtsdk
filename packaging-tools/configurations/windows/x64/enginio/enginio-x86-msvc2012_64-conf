@@ -43,7 +43,7 @@
 [qt.cloudservices.enginio.10.win64_msvc2012_64]
 archives:               cloudservices.enginio.10.win64_msvc2012_64, cloudservices.enginio.10.win64_msvc2012_64_examples
 target_install_base:    /@QT_VERSION@/msvc2012_64
-version:                1.0.1
+version:                1.0.2
 version_tag:            %ENGINIO_VERSION%
 package_default:        false
 [cloudservices.enginio.10.win64_msvc2012_64]

@@ -43,7 +43,7 @@
 [qt.cloudservices.enginio.10.gcc_64]
 archives:               cloudservices.enginio.10.gcc_64, cloudservices.enginio.10.gcc_64_examples
 target_install_base:    /@QT_VERSION@/gcc_64
-version:                1.0.1
+version:                1.0.2
 version_tag:            %ENGINIO_VERSION%
 package_default:        false
 [cloudservices.enginio.10.gcc_64]
