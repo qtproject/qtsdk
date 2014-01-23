@@ -19,10 +19,12 @@ version_tag:
 [release.onlineclient.online.linux.x86]
 arg_configurations_file:    linux_x86_online
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+installer_name:             qt-opensource-linux-x86-%GLOBAL_VERSION%-online
 
 [release.onlineclient.online.linux.x64]
 arg_configurations_file:    linux_x64_online
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+installer_name:             qt-opensource-linux-x64-%GLOBAL_VERSION%-online
 
 
 ################################################################################
@@ -31,6 +33,7 @@ arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
 [release.onlineclient.online.windows.x86]
 arg_configurations_file:    win_x86_online
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+installer_name:             qt-opensource-windows-x86-%GLOBAL_VERSION%-online
 
 
 ################################################################################
@@ -39,4 +42,5 @@ arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 [release.onlineclient.online.mac.x64]
 arg_configurations_file:    mac_x64_online
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+installer_name:             qt-opensource-mac-x64-%GLOBAL_VERSION%-online
 
