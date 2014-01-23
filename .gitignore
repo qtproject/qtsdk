@@ -1,3 +1,10 @@
 Makefile
 .qmake.super
 *.pyc
+packaging-tools/qt-bld
+packaging-tools/qt-src
+packaging-tools/ifw-src
+packaging-tools/ifw-bld
+packaging-tools/ifwt
+packaging-tools/repository
+packaging-tools/pkg
