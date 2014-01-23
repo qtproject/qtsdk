@@ -1,0 +1,99 @@
+################################################################################
+## Define build targets for the release and associated metadata for the build system
+##  build_target_dir:       Build system will create package destination directory
+##                          with this name
+##                          e.g. build_target_dir: linux_gcc_32_ubuntu1110 ->
+##                            <server_base_dir>/license/qt/<version>/time_stamp/linux_gcc_32_ubuntu1110
+##                            <server_base_dir>/license/qt/<version>/time_stamp/linux_gcc_32_ubuntu1110/qt5_essentials.7z
+##                            <server_base_dir>/license/qt/<version>/time_stamp/linux_gcc_32_ubuntu1110/qt5_addons.7z
+##
+## build_node_labels:       Matching build node labels (build slave) where the build is executed
+################################################################################
+[meta.linux.x86.gcc]
+build_target_dir:           linux_gcc_32_ubuntu1110
+build_node_labels:          linux-g++-Ubuntu11.10-x86, linux-g++-Ubuntu_11.10_x86
+
+[meta.linux.x86.android_armv5]
+build_target_dir:           android_armv5/linux_x86
+build_node_labels:          linux-g++-Ubuntu11.10-x86_Android-armv5
+
+[meta.linux.x86.android_armv7]
+build_target_dir:           android_armv7/linux_x86
+build_node_labels:          linux-g++-Ubuntu11.10-x86_Android-armv7
+
+[meta.linux.x86.android_x86]
+build_target_dir:           android_x86/linux_x86
+build_node_labels:          linux-g++-Ubuntu11.10-x86_Android-x86
+
+[meta.linux.x64.gcc]
+build_target_dir:           linux_gcc_64_ubuntu1110
+build_node_labels:          linux-g++-Ubuntu11.10-x64, linux-g++-Ubuntu_11.10_x64
+
+[meta.linux.x64.android_armv5]
+build_target_dir:           android_armv5/linux_x64
+build_node_labels:          linux-g++-Ubuntu11.10-x64_Android-armv5
+
+[meta.linux.x64.android_armv7]
+build_target_dir:           android_armv7/linux_x64
+build_node_labels:          linux-g++-Ubuntu11.10-x64_Android-armv7
+
+[meta.linux.x64.android_x86]
+build_target_dir:           android_x86/linux_x64
+build_node_labels:          linux-g++-Ubuntu11.10-x64_Android-x86
+
+[meta.windows.x86.mingw48]
+build_target_dir:           windows_mingw
+build_node_labels:          win-MinGW4.8-Windows7-x86_OpenGL
+
+[meta.windows.x86.msvc2010_32_angle]
+build_target_dir:           windows_vs2010_32
+build_node_labels:          win-msvc2010-Windows7-x86_ANGLE, win32-msvc2010_Windows_7, pkg-win7-x86-01
+
+[meta.windows.x86.msvc2010_32_opengl]
+build_target_dir:           windows_vs2010_32_opengl
+build_node_labels:          win-msvc2010-Windows7-x86_OpenGL
+
+[meta.windows.x86.msvc2012_32_angle]
+build_target_dir:           windows_vs2012_32
+build_node_labels:          win-msvc2012-Windows8-x86_ANGLE
+
+[meta.windows.x64.msvc2012_64_angle]
+build_target_dir:           windows_vs2012_64
+build_node_labels:          win-msvc2012-Windows8-x64_ANGLE, win64-msvc2012_Windows_8
+
+[meta.windows.x64.msvc2012_64_opengl]
+build_target_dir:           windows_vs2012_64_opengl
+build_node_labels:          win-msvc2012-Windows8-x64_OpenGL
+
+[meta.windows.x86.android_armv5]
+build_target_dir:           android_armv5/mingw_x86
+build_node_labels:          win-MinGW4.8-Windows7-x86_Android-armv5
+
+[meta.windows.x86.android_armv7]
+build_target_dir:           android_armv7/mingw_x86
+build_node_labels:          win-MinGW4.8-Windows7-x86_Android-armv7
+
+[meta.windows.x86.android_x86]
+build_target_dir:           android_x86/mingw_x86
+build_node_labels:          win-MinGW4.8-Windows7-x86_Android-x86
+
+[meta.mac.x64.clang]
+build_target_dir:           mac_cocoa_10.7
+build_node_labels:          mac-clang-OSX_10.7_x64, mac-clang-10.8-x64, macx-clang_OSX_10.7, pkg-osx107-x64-01, mac-clang-10.7-x64
+
+[meta.mac.x64.android_armv5]
+build_target_dir:           android_armv5/mac_x64
+build_node_labels:          mac-clang-10.7-x64_Android-armv5
+
+[meta.mac.x64.android_armv7]
+build_target_dir:           android_armv7/mac_x64
+build_node_labels:          mac-clang-10.7-x64_Android-armv7
+
+[meta.mac.x64.android_x86]
+build_target_dir:           android_x86/mac_x64
+build_node_labels:          mac-clang-10.7-x64_Android-x86
+
+[meta.mac.x64.ios]
+build_target_dir:           ios/mac_x64
+build_node_labels:          mac-clang-10.8-x64_iOS
+

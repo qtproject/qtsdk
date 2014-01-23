@@ -96,49 +96,12 @@ PLATFORM                    = ''
 SRC_DEST_DIRS               = ['src', 'src/submodules', 'src/doc', 'src/single', 'src/examples_injection']
 INSTALLER_BUILD_OUTPUT_DIR  = 'build_artifacts'
 QT5_DOCS_ARCHIVE_NAME       = 'qt5_docs.7z'
-# TODO: target directories hard coded, should be figured out from somewhere!
-BIN_TARGET_DIRS             = \
-{'linux-g++-Ubuntu11.10-x86_Android-armv5':'android_armv5/linux_x86'\
-,'linux-g++-Ubuntu11.10-x64_Android-armv5':'android_armv5/linux_x64'\
-,'mac-clang-10.7-x64_Android-armv5':'android_armv5/mac_x64'\
-,'win-MinGW4.8-Windows7-x86_Android-armv5':'android_armv5/mingw_x86'\
-,'linux-g++-Ubuntu11.10-x86_Android-armv7':'android_armv7/linux_x86'\
-,'linux-g++-Ubuntu11.10-x64_Android-armv7':'android_armv7/linux_x64'\
-,'mac-clang-10.7-x64_Android-armv7':'android_armv7/mac_x64'\
-,'win-MinGW4.8-Windows7-x86_Android-armv7':'android_armv7/mingw_x86'\
-,'linux-g++-Ubuntu11.10-x86_Android-mips':'android_mips/linux_x86'\
-,'linux-g++-Ubuntu11.10-x64_Android-mips':'android_mips/linux_x64'\
-,'mac-clang-10.7-x64_Android-mips':'android_mips/mac_x64'\
-,'win-MinGW4.8-Windows7-x86_Android-mips':'android_mips/mingw_x86'\
-,'linux-g++-Ubuntu11.10-x86_Android-x86':'android_x86/linux_x86'\
-,'linux-g++-Ubuntu11.10-x64_Android-x86':'android_x86/linux_x64'\
-,'mac-clang-10.7-x64_Android-x86':'android_x86/mac_x64'\
-,'win-MinGW4.8-Windows7-x86_Android-x86':'android_x86/mingw_x86'\
-,'mac-clang-10.8-x64_iOS':'ios/mac_x64'\
-,'mac-clang-10.8-x64_iOS-iphoneos':'ios_armv7/mac_x64'\
-,'mac-clang-10.8-x64_iOS-iphonesimulator':'ios_x86/mac_x64'\
-,'linux-g++-Ubuntu11.10-x86':'linux_gcc_32_ubuntu1110'\
-,'linux-g++-Ubuntu11.10-x64':'linux_gcc_64_ubuntu1110'\
-,'linux-g++-Ubuntu_11.10_x86':'linux_gcc_32_ubuntu1110'\
-,'linux-g++-Ubuntu_11.10_x64':'linux_gcc_64_ubuntu1110'\
-,'mac-clang-OSX_10.7_x64':'mac_cocoa_10.7'\
-,'mac-clang-10.8-x64':'mac_cocoa_10.7'\
-,'win-MinGW4.8-Windows7-x86_OpenGL':'windows_mingw'\
-,'win-msvc2010-Windows7-x86_ANGLE':'windows_vs2010_32'\
-,'win-msvc2010-Windows7-x86_OpenGL':'windows_vs2010_32_opengl'\
-,'win-msvc2012-Windows8-x86_ANGLE':'windows_vs2012_32'\
-,'win-msvc2012-Windows8-x64_ANGLE':'windows_vs2012_64'\
-,'win-msvc2012-Windows8-x64_OpenGL':'windows_vs2012_64_opengl'\
-,'win32-msvc2010_Windows_7':'windows_vs2010_32'\
-,'win64-msvc2012_Windows_8':'windows_vs2012_64'\
-,'macx-clang_OSX_10.7':'mac_cocoa_10.7'\
-,'pkg-osx107-x64-01':'mac_cocoa_10.7'\
-,'mac-clang-10.7-x64':'mac_cocoa_10.7'\
-,'pkg-win7-x86-01':'windows_vs2010_32'}
+BIN_TARGET_DIRS             = {} # dictionary populated based on the /packaging-tools/releases/release-<version>
 REMOTE_DIR                  = ''
 LATEST_DIR                  = ''
 EXTRA_ENV                   = dict(os.environ)
 MAKE_INSTALL_PADDING        = ''
+BUILD_META_INFO_FILE        = 'releases/build-meta'
 
 
 ###########################################
@@ -844,6 +807,36 @@ def handle_examples_injection():
 
 
 ###############################
+# Generate binary target dictionary
+###############################
+def generate_bin_target_dictionary():
+    global BIN_TARGET_DIRS
+    # parse module exclude list from release description file
+    conf_file_base_path = os.path.join(SCRIPT_ROOT_DIR, BUILD_META_INFO_FILE)
+    if not os.path.isfile(conf_file_base_path):
+        print('*** Not a valid release description file: {0}'.format(conf_file_base_path))
+        sys.exit(-1)
+    parser = ConfigParser.ConfigParser()
+    parser.readfp(open(conf_file_base_path))
+    # parse
+    for s in parser.sections():
+        section_parts = s.split('.')
+        if section_parts[0] != 'meta':
+            continue
+        build_target_dir = bldinstallercommon.safe_config_key_fetch(parser, s, 'build_target_dir')
+        build_node_labels = bldinstallercommon.safe_config_key_fetch(parser, s, 'build_node_labels').replace(' ', '')
+        label_list = build_node_labels.split(',')
+        if not build_target_dir:
+            print('*** No build target directory defined for: {0}'.format(s))
+            sys.exit(-1)
+        if not label_list:
+            print('*** No build slave label defined for: {0}'.format(s))
+            sys.exit(-1)
+        for label in label_list:
+            BIN_TARGET_DIRS[label] = build_target_dir
+
+
+###############################
 # handle_qt_release_build
 ###############################
 def handle_qt_release_build():
@@ -1423,6 +1416,10 @@ def init_env():
     RM_COMMAND           = '%RM%'    if bldinstallercommon.is_win_platform() else 'rm'
     SSH_COMMAND          = '%SSH%'   if bldinstallercommon.is_win_platform() else 'ssh'
     SCP_COMMAND          = '%SCP%'   if bldinstallercommon.is_win_platform() else 'scp'
+
+    # generate build slave label/build result target dir dictionary
+    generate_bin_target_dictionary()
+
 
 ###############################
 # Main
