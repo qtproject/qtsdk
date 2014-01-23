@@ -1007,7 +1007,7 @@ def handle_online_installer_build():
 def save_latest_successful_installer(offline_installer, installer_name, installer_name_final, ls_installer_dir, installer_output):
     # check installer type
     if offline_installer:
-        regex = re.compile('.*offline')
+        regex = re.compile('.*' + QT_FULL_VERSION)
     else:
         regex = re.compile('.*online')
     installer_base_name = "".join(regex.findall(installer_name_final))
