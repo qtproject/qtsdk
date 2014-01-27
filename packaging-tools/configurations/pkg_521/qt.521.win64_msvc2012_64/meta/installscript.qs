@@ -44,14 +44,11 @@ function Component()
 {
 }
 
-Component.prototype.createOperations = function()
+Component.prototype.isDefault = function()
 {
-    component.createOperations();
-    component.addOperation("QtPatch",
-                            "windows",
-                            "@TargetDir@" + "%TARGET_INSTALL_DIR%",
-                            "QmakeOutputInstallerKey=" + qmakeOutputInstallerKey(component),
-                            "qt5");
+    if (installer.environmentVariable("VS120COMNTOOLS")) {
+        return true;
+    }
+    return false;
 }
-
 

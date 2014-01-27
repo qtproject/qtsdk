@@ -44,16 +44,6 @@ function Component()
 {
 }
 
-
-Component.prototype.isDefault = function()
-{
-    if (installer.environmentVariable("VS110COMNTOOLS")) {
-        return true;
-    }
-    return false;
-}
-
-
 Component.prototype.createOperations = function()
 {
     component.createOperations();

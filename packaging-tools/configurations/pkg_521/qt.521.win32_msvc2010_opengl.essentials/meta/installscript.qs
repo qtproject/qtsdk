@@ -44,14 +44,6 @@ function Component()
 {
 }
 
-Component.prototype.isDefault = function()
-{
-    if (installer.environmentVariable("VS100COMNTOOLS")) {
-        return true;
-    }
-    return false;
-}
-
 function createShortcuts()
 {
     var qtStringVersion = "5.2.1";
