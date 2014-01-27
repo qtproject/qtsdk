@@ -353,9 +353,9 @@ if callerArguments.makeDocs:
         runCommand("{0}".format(archive_cmd), currentWorkingDirectory = os.path.dirname(os.path.realpath(__file__)) )
 
 # try to figure out where the actual exported content is
-dir_to_archive = os.path.dirname(bldinstallercommon.locate_directory(qtApplicationInstallDirectory, 'lib'))
+dir_to_archive = os.path.dirname(bldinstallercommon.locate_directory(qtApplicationInstallDirectory, 'qt5_package_dir'))
 
 # create 7z archive
-archive_cmd = '7z a ' + 'module_archives' + os.sep + 'qt5_' + os.environ['APPLICATION_NAME'] + '.7z' + ' ' + dir_to_archive
+archive_cmd = '7z a ' + 'module_archives' + os.sep + 'qt5_' + os.environ['APPLICATION_NAME'] + '.7z' + ' ' + dir_to_archive + os.sep + 'qt5_package_dir'
 runCommand("{0}".format(archive_cmd), currentWorkingDirectory = os.path.dirname(os.path.realpath(__file__)) )
 
