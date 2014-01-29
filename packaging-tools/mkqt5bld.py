@@ -719,43 +719,6 @@ def archive_submodules():
 ###############################
 # function
 ###############################
-def rename_android_soname_files():
-    ## QTBUG-33793
-    # temporary solution for Android on Windows compilations
-    if ANDROID_BUILD and bldinstallercommon.is_win_platform():
-        install_path = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
-        install_path = 'C' + install_path[1:]
-
-        ## rename the .so files for Android on Windows
-        # find the lib directory under the install directory for essentials
-        lib_path_essentials = os.path.normpath(install_path + os.sep + INSTALL_PREFIX + os.sep + 'lib')
-        print_wrap('---------- Renaming .so name files in ' + lib_path_essentials + ' ----------------')
-        # regex for Qt version, eg. 5.2.0
-        # assuming that Qt version will always have one digit, eg, 5.2.0
-        p = re.compile(r'\d\.\d\.\d')
-        if os.path.exists(lib_path_essentials):
-            # just list the files with a pattern like 'libQt5Core.so.5.2.0'
-            files = [f for f in os.listdir(lib_path_essentials) if re.match(r'libQt5.*\.so\..*', f)]
-            for name in files:
-                # if name is something like 'libQt5Core.so.5.2.0' then
-                # filename, so, version = ['libQt5Core', 'so', '5.2.0']
-                filename, so, version = name.split(os.extsep, 2)
-                # let's just rename the appropriate files
-                if filename.startswith('libQt5') and so == 'so' and p.match(version) != None:
-                    old_filepath = os.path.join(lib_path_essentials, name)
-                    new_filepath = os.path.join(lib_path_essentials, filename + '.so')
-                    os.rename(old_filepath, new_filepath)
-                    print_wrap('--->            Old file name : ' + old_filepath)
-                    print_wrap('--->            New file name : ' + new_filepath)
-                else:
-                    print_wrap('*** Warning! The file : ' + filename + ' does not match the pattern')
-        else:
-            print_wrap('*** Warning! Unable to locate /lib directory under: ' + install_path + os.sep + INSTALL_PREFIX)
-
-
-###############################
-# function
-###############################
 def patch_android_prl_files():
     ## QTBUG-33660
     # remove references to absolute path of the NDK on the build machine
@@ -811,7 +774,11 @@ def patch_build():
     # fix qmake prl build fir references
     erase_qmake_prl_build_dir()
     if ANDROID_BUILD:
-        rename_android_soname_files()
+        if bldinstallercommon.is_win_platform():
+            install_path = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
+            install_path = 'C' + install_path[1:]
+            lib_path_essentials = os.path.normpath(install_path + os.sep + INSTALL_PREFIX + os.sep)
+            bldinstallercommon.rename_android_soname_files(lib_path_essentials)
         patch_android_prl_files()
     # patch RPath if requested
     if QT_BUILD_OPTIONS.replace_rpath:

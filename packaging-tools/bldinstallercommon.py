@@ -857,7 +857,5 @@ def rename_android_soname_files(qt5_base_path):
             else:
                 print '*** Warning! The file : ' + filename + ' does not match the pattern'
     else:
-        print '*** Error! Directory does not exist: ' + lib_dir
-        sys.exit(-1)
-
-
+        print('*** No .so files found to be renamed. Skipping.')
+        return
