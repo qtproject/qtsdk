@@ -42,17 +42,6 @@
 // constructor
 function Component()
 {
-    // if 32bit windows hide the 64bit packages
-    if ( installer.environmentVariable("ProgramFiles(x86)") == "" ) {
-        installer.componentByName("qt.521.win64_msvc2012_64").setValue("Virtual", "true")
-        installer.componentByName("qt.521.win64_msvc2012_64").setValue("Default", "false")
-        installer.componentByName("qt.521.win64_msvc2012_64.essentials").setValue("Virtual", "true")
-        installer.componentByName("qt.521.win64_msvc2012_64.essentials").setValue("Default", "false")
-        installer.componentByName("qt.521.win64_msvc2012_64.addons").setValue("Virtual", "true")
-        installer.componentByName("qt.521.win64_msvc2012_64.addons").setValue("Default", "false")
-    } else {
-        // all ok
-    }
 }
 
 function createShortcuts()

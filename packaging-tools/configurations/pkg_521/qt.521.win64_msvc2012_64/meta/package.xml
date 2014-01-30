@@ -7,7 +7,7 @@
     <!--<Dependencies></Dependencies>-->
     <Default>script</Default>
     <!--<AutoSelectOn></AutoSelectOn>-->
-    <!--<Script>installscript.qs</Script>-->   <!-- File name of a script being loaded - optional. -->
+    <Script>installscript.qs</Script>
     <!--<Forced></Forced>-->
     <!--<Virtual></Virtual>--> <!-- Set to true if this is a virtual component not showing up in the installer -->
     <!--<Important></Important>-->    <!-- The package is marked as important. This is relevant for updates found with UpdateAgent. -->

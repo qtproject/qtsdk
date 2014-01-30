@@ -42,17 +42,6 @@
 // constructor
 function Component()
 {
-    // if 32bit windows hide the 64bit packages
-    if ( installer.environmentVariable("ProgramFiles(x86)") == "" ) {
-        installer.componentByName("qt.521.win64_msvc2012_64_opengl").setValue("Virtual", "true")
-        installer.componentByName("qt.521.win64_msvc2012_64_opengl").setValue("Default", "false")
-        installer.componentByName("qt.521.win64_msvc2012_64_opengl.essentials").setValue("Virtual", "true")
-        installer.componentByName("qt.521.win64_msvc2012_64_opengl.essentials").setValue("Default", "false")
-        installer.componentByName("qt.521.win64_msvc2012_64_opengl.addons").setValue("Virtual", "true")
-        installer.componentByName("qt.521.win64_msvc2012_64_opengl.addons").setValue("Default", "false")
-    } else {
-        // all ok
-    }
 }
 
 function createShortcuts()

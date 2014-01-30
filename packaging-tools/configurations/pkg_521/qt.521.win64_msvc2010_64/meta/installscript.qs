@@ -42,6 +42,11 @@
 // constructor
 function Component()
 {
+    // if 32bit windows hide the 64bit packages
+    if (installer.environmentVariable("ProgramFiles(x86)") == "" ) {
+        component.setValue("Virtual", "true");
+        component.setValue("Default", "false");
+    }
 }
 
 Component.prototype.isDefault = function()
