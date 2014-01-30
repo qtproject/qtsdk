@@ -517,10 +517,6 @@ def clean_work_dirs():
     if os.path.exists(PACKAGES_FULL_PATH_DST):
         bldinstallercommon.remove_tree(PACKAGES_FULL_PATH_DST)
         print ' -> deleted old existing directory: ' + PACKAGES_FULL_PATH_DST
-    # delete "/ifw-tools"
-    if os.path.exists(IFW_TOOLS_DIR):
-        bldinstallercommon.remove_tree(IFW_TOOLS_DIR)
-        print ' -> deleted old existing directory: ' + IFW_TOOLS_DIR
     # delete "/repositories"
     if os.path.exists(REPO_OUTPUT_DIR):
         bldinstallercommon.remove_tree(REPO_OUTPUT_DIR)
@@ -960,8 +956,9 @@ def install_ifw_tools():
     global BINARYCREATOR_TOOL
     global INSTALLERBASE_TOOL
     global REPOGEN_TOOL
-    package_save_as_temp = None
 
+    package_save_as_temp = None
+    tools_bin_path = IFW_TOOLS_DIR # default
     # if "devmode" mode used, then build IFW from sources
     if DEVELOPMENT_MODE:
         # create options object
@@ -1019,7 +1016,6 @@ def install_ifw_tools():
                 sys.stderr.write('*** Unsupported dir structure for installer-framework-tools package?!')
                 sys.stderr.write('*** Abort!')
                 sys.exit(-1)
-            tools_bin_path = IFW_TOOLS_DIR
 
     executable_suffix = bldinstallercommon.get_executable_suffix()
     ARCHIVEGEN_TOOL = bldinstallercommon.locate_executable(tools_bin_path, 'archivegen' + executable_suffix)
