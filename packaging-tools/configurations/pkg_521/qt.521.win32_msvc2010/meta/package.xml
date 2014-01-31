@@ -5,7 +5,7 @@
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <!--<Dependencies></Dependencies>-->
-    <Default>script</Default>
+    <Default>true</Default>
     <!--<AutoSelectOn></AutoSelectOn>-->
     <Script>installscript.qs</Script>
     <!--<Forced></Forced>-->
