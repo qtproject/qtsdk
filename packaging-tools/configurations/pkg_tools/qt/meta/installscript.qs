@@ -52,6 +52,70 @@ function Component()
         }
     }
 
+    if ((installer.value("os") == "win")
+                && !installer.isOfflineOnly()) {
+
+        // sanity check that qt.521 exists before trying to use the packages
+        if (!installer.componentByName("qt.521"))
+            return;
+
+        // Enable the right toolchains
+        var msvc2010 = !!installer.environmentVariable("VS100COMNTOOLS");
+        var msvc2012 = !!installer.environmentVariable("VS110COMNTOOLS");
+
+        // first reset the latest Qt5.x.x package default values to false
+        installer.componentByName("qt.521.win32_mingw48").setValue("Default", "false");
+        installer.componentByName("qt.521.win32_mingw48.essentials").setValue("Default", "false");
+        installer.componentByName("qt.521.win32_mingw48.addons").setValue("Default", "false");
+
+        installer.componentByName("qt.521.win32_msvc2010").setValue("Default", "false")
+        installer.componentByName("qt.521.win32_msvc2010.essentials").setValue("Default", "false");
+        installer.componentByName("qt.521.win32_msvc2010.addons").setValue("Default", "false");
+
+        installer.componentByName("qt.521.win32_msvc2010_opengl").setValue("Default", "false")
+        installer.componentByName("qt.521.win32_msvc2010_opengl.essentials").setValue("Default", "false");
+        installer.componentByName("qt.521.win32_msvc2010_opengl.addons").setValue("Default", "false");
+
+        installer.componentByName("qt.521.win32_msvc2012").setValue("Default", "false")
+        installer.componentByName("qt.521.win32_msvc2012.essentials").setValue("Default", "false");
+        installer.componentByName("qt.521.win32_msvc2012.addons").setValue("Default", "false");
+
+        installer.componentByName("qt.521.win64_msvc2012").setValue("Default", "false")
+        installer.componentByName("qt.521.win64_msvc2012.essentials").setValue("Default", "false");
+        installer.componentByName("qt.521.win64_msvc2012.addons").setValue("Default", "false");
+
+        installer.componentByName("qt.521.win64_msvc2012_opengl").setValue("Default", "false")
+        installer.componentByName("qt.521.win64_msvc2012_opengl.essentials").setValue("Default", "false");
+        installer.componentByName("qt.521.win64_msvc2012_opengl.addons").setValue("Default", "false");
+
+        // if 32bit windows hide the 64bit packages
+        if (installer.environmentVariable("ProgramFiles(x86)") == "" ) {
+            installer.componentByName("qt.521.win64_msvc2012").setValue("Virtual", "true");
+            installer.componentByName("qt.521.win64_msvc2012.essentials").setValue("Virtual", "true");
+            installer.componentByName("qt.521.win64_msvc2012.addons").setValue("Virtual", "true");
+
+            installer.componentByName("qt.521.win64_msvc2012_opengl").setValue("Virtual", "true");
+            installer.componentByName("qt.521.win64_msvc2012_opengl.essentials").setValue("Virtual", "true");
+            installer.componentByName("qt.521.win64_msvc2012_opengl.addons").setValue("Virtual", "true");
+        }
+
+        // now try to determine which tool chains to select by default
+        if (msvc2010) {
+            installer.componentByName("qt.521.win32_msvc2010.essentials").setValue("Default", "true");
+            installer.componentByName("qt.521.win32_msvc2010.addons").setValue("Default", "true");
+        }
+
+        if (msvc2012) {
+            installer.componentByName("qt.521.win32_msvc2012.essentials").setValue("Default", "true");
+            installer.componentByName("qt.521.win32_msvc2012.addons").setValue("Default", "true");
+        }
+
+        if (!msvc2010 && !msvc2012) {
+            installer.componentByName("qt.521.win32_mingw48.essentials").setValue("Default", "true");
+            installer.componentByName("qt.521.win32_mingw48.addons").setValue("Default", "true");
+        }
+    }
+
     try {
         gui.pageWidgetByObjectName("LicenseAgreementPage").entered.connect(changeLicenseLabels);
     } catch(e) {
