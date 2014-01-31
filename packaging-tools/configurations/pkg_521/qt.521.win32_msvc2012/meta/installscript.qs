@@ -46,7 +46,7 @@ function Component()
 
 Component.prototype.isDefault = function()
 {
-    if (installer.environmentVariable("VS120COMNTOOLS")) {
+    if (installer.environmentVariable("VS110COMNTOOLS")) {
         return true;
     }
     return false;
