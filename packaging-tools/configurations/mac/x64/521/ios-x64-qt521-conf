@@ -44,7 +44,7 @@ version:                5.2.1
 version_tag:            %QT_VERSION%
 
 [qt.521.ios.essentials]
-archives:               521.ios.essentials, 521.ios.docs
+archives:               521.ios.essentials, 521.ios.essentials.docs, 521.ios.essentials.examples
 target_install_base:    /@QT_VERSION@/ios
 version:                5.2.1
 version_tag:            %QT_VERSION%
@@ -55,15 +55,20 @@ package_strip_dirs:
 package_finalize_items: docs
 target_install_dir:     /
 rpath_target:
-[521.ios.docs]
+[521.ios.essentials.docs]
 archive_uri:            /qt/5.2.1/latest/src/doc/qt5_docs.7z
 package_strip_dirs:
 target_install_dir:     /doc
 rpath_target:
+[521.ios.essentials.examples]
+archive_uri:            /qt/5.2.1/latest/src/examples_injection/examples_essentials.7z
+package_strip_dirs:
+target_install_dir:     /examples
+rpath_target:
 
 
 [qt.521.ios.addons]
-archives:               521.ios.addons
+archives:               521.ios.addons, 521.ios.addons.examples
 target_install_base:    /@QT_VERSION@/ios
 version:                5.2.1
 version_tag:            %QT_VERSION%
@@ -72,5 +77,10 @@ package_default:        true
 archive_uri:            /qt/5.2.1/latest/ios/mac_x64/qt5_addons.7z
 package_strip_dirs:
 target_install_dir:     /
+rpath_target:
+[521.ios.addons.examples]
+archive_uri:            /qt/5.2.1/latest/src/examples_injection/examples_addons.7z
+package_strip_dirs:
+target_install_dir:     /examples
 rpath_target:
 
