@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<Installer>
+    <Name>Qt (Test client)</Name>
+    <Version>1.0.1</Version>
+    <Title>Qt (Test client)</Title>
+    <Publisher>Digia Plc</Publisher>
+    <Logo>logo.png</Logo>
+    <InstallerWindowIcon>logo-small</InstallerWindowIcon>
+    <InstallerApplicationIcon>logo-small</InstallerApplicationIcon>
+    <Watermark>watermark.png</Watermark>
+    <StartMenuDir>Qt (Test client)</StartMenuDir>
+    <ProductUrl>http://qt-project.org/</ProductUrl>
+    <UninstallerName>MaintenanceTool</UninstallerName>
+    <DependsOnLocalInstallerBinary>true</DependsOnLocalInstallerBinary>
+    <RemoteRepositories>
+        <!-- Root repository-->
+        <Repository>
+            <Url>http://it-ap144-hki/opensource/qtsdkrepository/windows_x86/root/qt</Url>
+            <Enabled>1</Enabled>
+            <DisplayName>Online Test Server: Qt Windows-x86 root online repository</DisplayName>
+        </Repository>
+    </RemoteRepositories>
+    <!-- @homeDir@ and @rootDir@ are some of the supported vars -->
+    <TargetDir>@rootDir@/Qt</TargetDir>
+</Installer>

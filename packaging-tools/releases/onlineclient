@@ -21,11 +21,22 @@ arg_configurations_file:    linux_x86_online
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
 installer_name:             qt-opensource-linux-x86-%GLOBAL_VERSION%-online
 
+[release.onlineclient.online.linux.x86.testclient]
+arg_configurations_file:    linux_x86_online_testclient
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+installer_name:             qt-opensource-testclient-linux-x86-%GLOBAL_VERSION%-online
+rta_key_list:
+
 [release.onlineclient.online.linux.x64]
 arg_configurations_file:    linux_x64_online
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
 installer_name:             qt-opensource-linux-x64-%GLOBAL_VERSION%-online
 
+[release.onlineclient.online.linux.x64.testclient]
+arg_configurations_file:    linux_x64_online_testclient
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+installer_name:             qt-opensource-testclient-linux-x64-%GLOBAL_VERSION%-online
+rta_key_list:
 
 ################################################################################
 ## Windows online client
@@ -35,6 +46,11 @@ arg_configurations_file:    win_x86_online
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-%GLOBAL_VERSION%-online
 
+[release.onlineclient.online.windows.x86.testclient]
+arg_configurations_file:    win_x86_online_testclient
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+installer_name:             qt-opensource-testclient-windows-x86-%GLOBAL_VERSION%-online
+rta_key_list:
 
 ################################################################################
 ## Mac online client
@@ -44,3 +60,8 @@ arg_configurations_file:    mac_x64_online
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
 installer_name:             qt-opensource-mac-x64-%GLOBAL_VERSION%-online
 
+[release.onlineclient.online.mac.x64.testclient]
+arg_configurations_file:    mac_x64_online_testclient
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+installer_name:             qt-opensource-testclient-mac-x64-%GLOBAL_VERSION%-online
+rta_key_list:
