@@ -923,12 +923,12 @@ def handle_qt_creator_build():
     if bldinstallercommon.is_linux_platform():
         cmd_args.extend(['--icu7z', ICU_LIBS])
         if TARGET_ENV.find('64') != -1:
-            cmd_args.extend(['--installerbase7z', 'http://it-dl241-hki/packages/jenkins/' + LICENSE + '/ifw/1.5/installer-framework-build-linux-x64.7z'])
+            cmd_args.extend(['--installerbase7z', 'http://ci-files02-hki.ci.local/packages/jenkins/' + LICENSE + '/ifw/1.5/installer-framework-build-linux-x64.7z'])
         else:
-            cmd_args.extend(['--installerbase7z', 'http://it-dl241-hki/packages/jenkins/' + LICENSE + '/ifw/1.5/installer-framework-build-linux-x86.7z'])
+            cmd_args.extend(['--installerbase7z', 'http://ci-files02-hki.ci.local/packages/jenkins/' + LICENSE + '/ifw/1.5/installer-framework-build-linux-x86.7z'])
     elif bldinstallercommon.is_mac_platform():
         cmd_args.extend(['--installcommand', 'make -j1',
-                         '--installerbase7z', 'http://it-dl241-hki/packages/jenkins/' + LICENSE + '/ifw/1.5/installer-framework-build-mac-x64.7z',
+                         '--installerbase7z', 'http://ci-files02-hki.ci.local/packages/jenkins/' + LICENSE + '/ifw/1.5/installer-framework-build-mac-x64.7z',
                          '--keychain_unlock_script', '/Users/qt/unlock-keychain.sh'])
     else:
         cmd_args.extend(['--buildcommand', os.path.normpath('C:/Utils/jom/jom.exe'),
@@ -937,7 +937,7 @@ def handle_qt_creator_build():
                          '--sevenzippath', os.path.normpath('C:/Utils/sevenzip'),
                          '--gitpath', os.path.normpath('C:/Program Files/Git/bin'),
                          '--d3dcompiler7z', 'http://download.qt-project.org/development_releases/prebuilt/d3dcompiler/msvc2010/D3DCompiler_43-x86.dll.7z',
-                         '--installerbase7z', 'http://it-dl241-hki/packages/jenkins/' + LICENSE + '/ifw/1.5/installer-framework-build-win-x86.7z',
+                         '--installerbase7z', 'http://ci-files02-hki.ci.local/packages/jenkins/' + LICENSE + '/ifw/1.5/installer-framework-build-win-x86.7z',
                          '--environment_batch', os.path.normpath('C:/Program Files/Microsoft Visual Studio 10.0/VC/vcvarsall.bat'),
                          '--environment_batch_argument', 'x86'])
 
