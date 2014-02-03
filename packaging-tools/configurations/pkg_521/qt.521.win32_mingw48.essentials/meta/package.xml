@@ -5,7 +5,7 @@
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.tools.qtcreator->=2.8.0, qt.tools.win32_mingw48</Dependencies>
-    <Default>%PACKAGE_DEFAULT_TAG%</Default>
+    <Default>true</Default>
     <!--<AutoSelectOn></AutoSelectOn>-->
     <Script>installscript.qs</Script>   <!-- File name of a script being loaded - optional. -->
     <!--<Forced></Forced>-->

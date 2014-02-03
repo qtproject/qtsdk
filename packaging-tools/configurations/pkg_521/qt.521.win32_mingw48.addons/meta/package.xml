@@ -5,7 +5,7 @@
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.521.win32_mingw48.essentials</Dependencies> <!-- Comma-separated list of dependencies - optional -->
-    <Default>%PACKAGE_DEFAULT_TAG%</Default>
+    <Default>true</Default>
     <!--<AutoSelectOn></AutoSelectOn>-->
     <Script>installscript.qs</Script>   <!-- File name of a script being loaded - optional. -->
     <!--<Forced></Forced>-->

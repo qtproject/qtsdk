@@ -6,6 +6,7 @@
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.tools.qtcreator, qt.tools.vcredist_64</Dependencies>
     <!--<AutoSelectOn></AutoSelectOn>-->
+    <Default>true</Default>
     <Script>installscript.qs</Script>   <!-- File name of a script being loaded - optional. -->
     <!--<Forced></Forced>-->
     <!--<Virtual></Virtual>--> <!-- Set to true if this is a virtual component not showing up in the installer -->
