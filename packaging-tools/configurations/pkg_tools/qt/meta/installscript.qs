@@ -80,23 +80,23 @@ function Component()
         installer.componentByName("qt.521.win32_msvc2012.essentials").setValue("Default", "false");
         installer.componentByName("qt.521.win32_msvc2012.addons").setValue("Default", "false");
 
-        installer.componentByName("qt.521.win64_msvc2012").setValue("Default", "false")
-        installer.componentByName("qt.521.win64_msvc2012.essentials").setValue("Default", "false");
-        installer.componentByName("qt.521.win64_msvc2012.addons").setValue("Default", "false");
+        installer.componentByName("qt.521.win64_msvc2012_64").setValue("Default", "false")
+        installer.componentByName("qt.521.win64_msvc2012_64.essentials").setValue("Default", "false");
+        installer.componentByName("qt.521.win64_msvc2012_64.addons").setValue("Default", "false");
 
-        installer.componentByName("qt.521.win64_msvc2012_opengl").setValue("Default", "false")
-        installer.componentByName("qt.521.win64_msvc2012_opengl.essentials").setValue("Default", "false");
-        installer.componentByName("qt.521.win64_msvc2012_opengl.addons").setValue("Default", "false");
+        installer.componentByName("qt.521.win64_msvc2012_64_opengl").setValue("Default", "false")
+        installer.componentByName("qt.521.win64_msvc2012_64_opengl.essentials").setValue("Default", "false");
+        installer.componentByName("qt.521.win64_msvc2012_64_opengl.addons").setValue("Default", "false");
 
         // if 32bit windows hide the 64bit packages
         if (installer.environmentVariable("ProgramFiles(x86)") == "" ) {
-            installer.componentByName("qt.521.win64_msvc2012").setValue("Virtual", "true");
-            installer.componentByName("qt.521.win64_msvc2012.essentials").setValue("Virtual", "true");
-            installer.componentByName("qt.521.win64_msvc2012.addons").setValue("Virtual", "true");
+            installer.componentByName("qt.521.win64_msvc2012_64").setValue("Virtual", "true");
+            installer.componentByName("qt.521.win64_msvc2012_64.essentials").setValue("Virtual", "true");
+            installer.componentByName("qt.521.win64_msvc2012_64.addons").setValue("Virtual", "true");
 
-            installer.componentByName("qt.521.win64_msvc2012_opengl").setValue("Virtual", "true");
-            installer.componentByName("qt.521.win64_msvc2012_opengl.essentials").setValue("Virtual", "true");
-            installer.componentByName("qt.521.win64_msvc2012_opengl.addons").setValue("Virtual", "true");
+            installer.componentByName("qt.521.win64_msvc2012_64_opengl").setValue("Virtual", "true");
+            installer.componentByName("qt.521.win64_msvc2012_64_opengl.essentials").setValue("Virtual", "true");
+            installer.componentByName("qt.521.win64_msvc2012_64_opengl.addons").setValue("Virtual", "true");
         }
 
         // now try to determine which tool chains to select by default
