@@ -5,7 +5,6 @@
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.521.win32_msvc2010.essentials</Dependencies>
-    <Default>true</Default>
     <!--<AutoSelectOn></AutoSelectOn>-->
     <Default>true</Default>
     <Script>installscript.qs</Script>   <!-- File name of a script being loaded - optional. -->
