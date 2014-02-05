@@ -4,7 +4,7 @@
     <Description>Qt Enginio</Description>
     <Version>1.0.2</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <SortingPriority>100</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
+    <SortingPriority>100</SortingPriority> <!-- Priority of this component when visible in the tree. Highest priority number is on top. -->
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
 

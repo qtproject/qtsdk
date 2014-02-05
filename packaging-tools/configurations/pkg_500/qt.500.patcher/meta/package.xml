@@ -7,7 +7,7 @@
     <Script>installscript.qs</Script>   <!-- File name of a script being loaded - optional. -->
     <Virtual>true</Virtual>
     <AutoDependOn>qt.500</AutoDependOn>
-    <SortingPriority>0</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
+    <SortingPriority>0</SortingPriority> <!-- Priority of this component when visible in the tree. Highest priority number is on top. -->
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
 

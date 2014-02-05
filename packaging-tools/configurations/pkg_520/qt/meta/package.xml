@@ -12,7 +12,7 @@
         <License name="Qt Installer GPL Agreement" file="LICENSE.GPL" />
         <License name="Qt Installer FDL Agreement" file="LICENSE.FDL" />
     </Licenses>
-    <SortingPriority>0</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
+    <SortingPriority>0</SortingPriority> <!-- Priority of this component when visible in the tree. Highest priority number is on top. -->
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
 

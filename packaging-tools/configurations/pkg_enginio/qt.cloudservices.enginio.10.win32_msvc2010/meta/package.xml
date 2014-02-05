@@ -7,7 +7,7 @@
     <Dependencies>qt.521.win32_msvc2010.essentials</Dependencies>
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
     <Script>installscript.qs</Script>
-    <SortingPriority>400</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
+    <SortingPriority>400</SortingPriority> <!-- Priority of this component when visible in the tree. Highest priority number is on top. -->
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
 

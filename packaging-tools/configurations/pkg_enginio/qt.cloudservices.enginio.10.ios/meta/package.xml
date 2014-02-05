@@ -7,7 +7,7 @@
     <Dependencies>qt.521.ios.essentials</Dependencies>
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
     <Script>installscript.qs</Script>
-    <SortingPriority>1500</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
+    <SortingPriority>1500</SortingPriority> <!-- Priority of this component when visible in the tree. Highest priority number is on top. -->
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
 
