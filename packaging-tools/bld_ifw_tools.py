@@ -82,7 +82,7 @@ class IfwOptions:
     default_qt_configure_options_mac            = '-silent -nomake plugins -qt-zlib -qt-libtiff -qt-libpng -qt-libmng -qt-libjpeg -no-svg -no-nis -no-cups -no-audio-backend -openssl'
     default_qt_configure_options_windows        = '-openssl-linked OPENSSL_LIBS="-lssleay32MD -llibeay32MD -lcrypt32"'
     default_qt_installer_framework_url          = 'git://gitorious.org/installer-framework/installer-framework.git'
-    default_qt_installer_framework_branch       = '1.4'
+    default_qt_installer_framework_branch       = '1.5'
     default_qt_installer_framework_qmake_args   = '-config release -config static -r'
 
     def __init__(self,
