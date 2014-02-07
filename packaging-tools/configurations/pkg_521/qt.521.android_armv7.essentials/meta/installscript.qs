@@ -45,10 +45,7 @@ function Component()
     // add dynamic dependency for mingw48 TC for Android packages on Windows
     if (installer.value("os") == "win") {
         var mingw_tc_component = "qt.tools.win32_mingw48";
-        if (installer.componentByName(mingw_tc_component) &&
-            installer.componentByName(mingw_tc_component).installationRequested()) {
-            component.addDependency(mingw_tc_component);
-        }
+        component.addDependency(mingw_tc_component);
     }
 }
 
