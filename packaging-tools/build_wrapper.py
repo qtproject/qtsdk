@@ -1010,7 +1010,10 @@ def save_latest_successful_installer(offline_installer, installer_name, installe
     if offline_installer:
         regex = re.compile('.*' + QT_FULL_VERSION)
     else:
-        regex = re.compile('.*online')
+        if "embedded" in installer_name:
+            regex = re.compile('.*online(?:(?!_\d{4}).)*')
+        else:
+            regex = re.compile('.*online')
     installer_base_name = "".join(regex.findall(installer_name_final))
     if not installer_base_name:
         print('*** Empty installer base name string')
