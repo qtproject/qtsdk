@@ -1,1 +1,1 @@
--opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -no-pkg-config -platform macx-clang -sysconfdir /Library/Preferences/Qt -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -plugin-sql-odbc -openssl -no-c++11
+-opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -no-pkg-config -platform macx-clang -sysconfdir /Library/Preferences/Qt -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -plugin-sql-odbc -openssl -no-c++11 -dbus
