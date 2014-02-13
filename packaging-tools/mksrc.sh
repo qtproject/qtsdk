@@ -85,16 +85,22 @@ function create_main_file()
   # This will cause it to compress simultaneously, though
   # at the rate of the slowest of the processes (e.g.,
   # with xz at 100% CPU, and gzip 15%)
-  tar cf - $PACKAGE_NAME/ | \
+(  tar cf - $PACKAGE_NAME/ | \
       tee \
          >(xz -9 > $PACKAGE_NAME.tar.xz) | \
       gzip -9 > $PACKAGE_NAME.tar.gz
 
-  echo " - Creating single 7z file - "
-  7z a $PACKAGE_NAME.7z $PACKAGE_NAME/ > /dev/null
-
-  echo " - Creating single win zip - "
+  echo " - Created tar.xz and tar.gz - "
+) &
+(  7z a $PACKAGE_NAME.7z $PACKAGE_NAME/ > /dev/null
+  echo " - Created 7z - "
+) &
+(
   $SCRIPT_DIR/winzipdir.sh $PACKAGE_NAME.zip $PACKAGE_NAME
+  echo " - Created single win zip - "
+) &
+wait
+echo " - Done creating archives - "
 }
 
 function create_and_delete_submodule()
@@ -104,15 +110,20 @@ function create_and_delete_submodule()
   cd $PACKAGE_NAME
   while read submodule submodule_sha1; do
     _file=$submodule-$LICENSE-src-$QTVER
-    echo " - tarring $_file -"
     mv $submodule $_file
-    tar c $_file | tee \
-        >(xz -9 > ../submodules_tar/$_file.tar.xz) | \
-        gzip -9 > ../submodules_tar/$_file.tar.gz
-    echo " - 7zipping $_file - "
-    7z a ../submodules_zip/$_file.7z $_file/ > /dev/null
-    echo " - zipping $_file -"
-    $SCRIPT_DIR/winzipdir.sh ../submodules_zip/$_file.zip $_file
+    echo " - Creating archives - "
+    (   tar c $_file | tee \
+            >(xz -9 > ../submodules_tar/$_file.tar.xz) | \
+            gzip -9 > ../submodules_tar/$_file.tar.gz
+        echo " - Done tarring $_file -"
+    ) &
+    (    7z a ../submodules_zip/$_file.7z $_file/ > /dev/null
+        echo " - Done 7zipping $_file - "
+    ) &
+    (    $SCRIPT_DIR/winzipdir.sh ../submodules_zip/$_file.zip $_file
+        echo " - Done zipping $_file -"
+    ) &
+    wait
   done < $MODULES
   cd ..
 }
