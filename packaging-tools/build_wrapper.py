@@ -1321,13 +1321,10 @@ def parse_cmd_line():
         SRC_URL           = options.src_url
         QT_VERSION_TAG    = options.version_tag
         QTCREATOR_VERSION = options.qtcreator_version
+        QTCREATOR_VERSION_DESCRIPTION = options.qtcreator_version_description
         QT_FULL_VERSION   = QT_VERSION
         if QT_VERSION_TAG:
             QT_FULL_VERSION += '-' + QT_VERSION_TAG
-        if options.qtcreator_set_description:
-            QTCREATOR_VERSION_DESCRIPTION = QTCREATOR_VERSION
-        else:
-            QTCREATOR_VERSION_DESCRIPTION = ''
     else:
         OPTION_PARSER.print_help()
         sys.exit(-1)
@@ -1397,10 +1394,10 @@ def setup_option_parser():
                       help="Version tag e.g. alpha, beta, rc1")
     OPTION_PARSER.add_option("--qtcreator-version",
                       action="store", type="string", dest="qtcreator_version", default="",
-                      help="Qt Creator version, e.g. 3.0.0-rc, used in file names and for --qtcreator-set-description")
-    OPTION_PARSER.add_option("--qtcreator-set-description",
-                      action="store_true", dest="qtcreator_set_description", default=False,
-                      help="Sets Qt Creator's version description to the value given in --qtcreator-version")
+                      help="Qt Creator version, e.g. '3.0.0-rc', used in file names")
+    OPTION_PARSER.add_option("--qtcreator-version-description",
+                      action="store", dest="qtcreator_version_description", default="",
+                      help="Qt Creator's version description, e.g. '3.0.0-rc-enterprise', or 'opensource', shown in Qt Creator's about dialog in addition to the version")
     OPTION_PARSER.add_option("--snapshot-server",
                       action="store", type="string", dest="snapshot_server", default="",
                       help="Additional snapshot upload server <user>@<host> (is uploaded from upload server)")
