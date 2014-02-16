@@ -1,4 +1,4 @@
-/****************************************************************************
+/*****************************************************************************
 **
 ** Copyright (C) 2014 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
@@ -37,48 +37,49 @@
 **
 ** $QT_END_LICENSE$
 **
-****************************************************************************/
-
+*****************************************************************************/
 
 // constructor
 function Component()
 {
-    installer.valueChanged.connect( this, Component.prototype.reactOnTargetDirChange );
-    // set the default values to MINGW482_DIR
-    Component.prototype.reactOnTargetDirChange("TargetDir", installer.value("TargetDir"));
 }
 
-Component.prototype.reactOnTargetDirChange = function(key, value)
+Component.prototype.beginInstallation = function()
 {
-    if (key == "TargetDir") {
-        var path = value + "%TARGET_INSTALL_DIR%";
-        path = path.replace(/\//g, "\\");
-        installer.setValue("MINGW482_DIR", path);
-    }
+    installer.setValue(component.name + "_qtpath", "@TargetDir@" + "%TARGET_INSTALL_DIR%");
 }
 
 Component.prototype.createOperations = function()
 {
     component.createOperations();
 
-    if (installer.value("os") == "win") {
-        try {
-            if (installer.value("SDKToolBinary") == "")
-                return;
+    var qmakeBinary = "";
+    var platform = "";
+    if (installer.value("os") == "mac") {
+        qmakeBinary = "@TargetDir@" + "%TARGET_INSTALL_DIR%/bin/qmake";
+        platform = "mac";
+    }
 
-            var tcId = "ProjectExplorer.ToolChain.Mingw:" + component.name;
-            installer.setValue("MINGW482_TCID", tcId);
-            component.addOperation("Execute",
-                                   ["{0,2}", "@SDKToolBinary@", "addTC",
-                                    "--id", tcId,
-                                    "--name", "MinGW 4.8.2 32bit",
-                                    "--path", "@MINGW482_DIR@\\bin\\g++.exe",
-                                    "--abi", "x86-windows-msys-pe-32bit",
-                                    "--supportedAbis", "x86-windows-msys-pe-32bit",
-                                    , "UNDOEXECUTE",
-                                    "@SDKToolBinary@", "rmTC", "--id", tcId];
-        } catch( e ) {
-            print( e );
-        }
+    var qtPath = "@TargetDir@" + "%TARGET_INSTALL_DIR%";
+    addInitQtPatchOperation(component, platform, qtPath, qmakeBinary, "emb-arm-qt5");
+
+    if (installer.value("SDKToolBinary") == "")
+        return;
+
+    // add Qt into QtCreator
+    component.addOperation("Execute",
+                           ["@SDKToolBinary@", "addQt",
+                            "--id", component.name,
+                            "--name", "Qt 5.3.0 for iOS",
+                            "--type", "Qt4ProjectManager.QtVersion.Ios",
+                            "--qmake", qmakeBinary,
+                            "UNDOEXECUTE",
+                            "@SDKToolBinary@", "rmQt", "--id", component.name]);
+    if (installer.value("os") == "mac") {
+        var settingsFile = installer.value("QtCreatorInstallerSettingsFile");
+        if (settingsFile == "")
+            return;
+        component.addOperation("Settings", "path="+settingsFile, "method=add_array_value",
+            "key=Plugins/ForceEnabled", "value=Ios");
     }
 }

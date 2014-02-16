@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Windows Phone 8 arm (BETA)</DisplayName>
+    <Description>Qt 5.3.0 Prebuilt Components for Windows Phone 8 arm (BETA)</Description>
+    <Version>%QT_VERSION%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Dependencies>qt.tools.qtcreator, qt.tools.vcredist</Dependencies>
+    <Default>true</Default>
+    <Script>installscript.qs</Script>
+    <SortingPriority>530</SortingPriority>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+

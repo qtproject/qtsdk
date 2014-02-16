@@ -1,4 +1,4 @@
-/****************************************************************************
+/*****************************************************************************
 **
 ** Copyright (C) 2014 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
@@ -37,48 +37,49 @@
 **
 ** $QT_END_LICENSE$
 **
-****************************************************************************/
-
+*****************************************************************************/
 
 // constructor
 function Component()
 {
-    installer.valueChanged.connect( this, Component.prototype.reactOnTargetDirChange );
-    // set the default values to MINGW482_DIR
-    Component.prototype.reactOnTargetDirChange("TargetDir", installer.value("TargetDir"));
 }
 
-Component.prototype.reactOnTargetDirChange = function(key, value)
+Component.prototype.beginInstallation = function()
 {
-    if (key == "TargetDir") {
-        var path = value + "%TARGET_INSTALL_DIR%";
-        path = path.replace(/\//g, "\\");
-        installer.setValue("MINGW482_DIR", path);
-    }
+    installer.setValue(component.name + "_qtpath", "@TargetDir@" + "%TARGET_INSTALL_DIR%");
 }
 
 Component.prototype.createOperations = function()
 {
     component.createOperations();
 
-    if (installer.value("os") == "win") {
-        try {
-            if (installer.value("SDKToolBinary") == "")
-                return;
+    if (installer.value("os") == "x11") {
+        var qtPath = "@TargetDir@" + "%TARGET_INSTALL_DIR%";
+        var qmakeBinary = "@TargetDir@" + "%TARGET_INSTALL_DIR%/bin/qmake";
+        addInitQtPatchOperation(component, "linux", qtPath, qmakeBinary, "qt5");
 
-            var tcId = "ProjectExplorer.ToolChain.Mingw:" + component.name;
-            installer.setValue("MINGW482_TCID", tcId);
-            component.addOperation("Execute",
-                                   ["{0,2}", "@SDKToolBinary@", "addTC",
-                                    "--id", tcId,
-                                    "--name", "MinGW 4.8.2 32bit",
-                                    "--path", "@MINGW482_DIR@\\bin\\g++.exe",
-                                    "--abi", "x86-windows-msys-pe-32bit",
-                                    "--supportedAbis", "x86-windows-msys-pe-32bit",
-                                    , "UNDOEXECUTE",
-                                    "@SDKToolBinary@", "rmTC", "--id", tcId];
-        } catch( e ) {
-            print( e );
-        }
+        if (installer.value("SDKToolBinary") == "")
+            return;
+
+        component.addOperation("Execute",
+                               ["@SDKToolBinary@", "addQt",
+                                "--id", component.name,
+                                "--name", "Qt 5.3.0 GCC 32bit",
+                                "--type", "Qt4ProjectManager.QtVersion.Desktop",
+                                "--qmake", qmakeBinary,
+                                "UNDOEXECUTE",
+                                "@SDKToolBinary@", "rmQt", "--id", component.name]);
+
+        var kitName = component.name + "_kit";
+        component.addOperation("Execute",
+                               ["@SDKToolBinary@", "addKit",
+                                "--id", kitName,
+                                "--name", "Desktop Qt 5.3.0 GCC 32bit",
+                                "--toolchain", "x86-linux-generic-elf-32bit",
+                                "--qt", component.name,
+                                "--debuggerengine", "1",
+                                "--devicetype", "Desktop",
+                                "UNDOEXECUTE",
+                                "@SDKToolBinary@", "rmKit", "--id", kitName]);
     }
 }

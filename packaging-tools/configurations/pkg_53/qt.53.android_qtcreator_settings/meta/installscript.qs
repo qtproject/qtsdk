@@ -39,46 +39,32 @@
 **
 ****************************************************************************/
 
-
 // constructor
 function Component()
 {
-    installer.valueChanged.connect( this, Component.prototype.reactOnTargetDirChange );
-    // set the default values to MINGW482_DIR
-    Component.prototype.reactOnTargetDirChange("TargetDir", installer.value("TargetDir"));
-}
-
-Component.prototype.reactOnTargetDirChange = function(key, value)
-{
-    if (key == "TargetDir") {
-        var path = value + "%TARGET_INSTALL_DIR%";
-        path = path.replace(/\//g, "\\");
-        installer.setValue("MINGW482_DIR", path);
-    }
 }
 
 Component.prototype.createOperations = function()
 {
+    if (installer.value("os") != "win")
+        return
     component.createOperations();
 
-    if (installer.value("os") == "win") {
-        try {
-            if (installer.value("SDKToolBinary") == "")
-                return;
-
-            var tcId = "ProjectExplorer.ToolChain.Mingw:" + component.name;
-            installer.setValue("MINGW482_TCID", tcId);
-            component.addOperation("Execute",
-                                   ["{0,2}", "@SDKToolBinary@", "addTC",
-                                    "--id", tcId,
-                                    "--name", "MinGW 4.8.2 32bit",
-                                    "--path", "@MINGW482_DIR@\\bin\\g++.exe",
-                                    "--abi", "x86-windows-msys-pe-32bit",
-                                    "--supportedAbis", "x86-windows-msys-pe-32bit",
-                                    , "UNDOEXECUTE",
-                                    "@SDKToolBinary@", "rmTC", "--id", tcId];
-        } catch( e ) {
-            print( e );
-        }
+    if (installer.value("SDKToolBinary") == "") {
+        QMessageBox["warning"]("SDKToolBinaryError",
+                               qsTr("No SDKToolBinary variable found!"),
+                               qsTr("Setting up Android target properly in QtCreator requires that SdkTool is set properly!.\n"));
+        return;
     }
+    if (installer.value("MINGW48_DIR") == "") {
+        QMessageBox["warning"]("MINGW48_DIR_Error",
+                               qsTr("No MINGW48_DIR variable found!"),
+                               qsTr("Setting up Android target properly in QtCreator requires that MinGW 4.8 is installed properly first.\n"));
+        return;
+    }
+
+    // this is only needed under windows
+    component.addOperation("Execute",
+                           ["{0,4}", "@SDKToolBinary@", "addKeys",
+                            "android", "MakeExtraSearchDirectory", "QString:@MINGW48_DIR@\\bin"]);
 }
