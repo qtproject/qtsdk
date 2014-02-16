@@ -2,15 +2,11 @@
 <Package>
     <DisplayName>gcc 64-bit</DisplayName>
     <Description>Qt 5.3.0 Prebuilt Components for gcc 64-bit </Description>
-    <Version>%QT_VERSION%</Version>
+    <Version>5.3.0</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Dependencies>qt.tools.qtcreator</Dependencies>
-    <Default>%PACKAGE_DEFAULT_TAG%</Default>
-    <!--<AutoSelectOn></AutoSelectOn>-->
+    <Dependencies>qt.tools.qtcreator, qt.53.doc</Dependencies>
+    <Default>true</Default>
     <Script>installscript.qs</Script>   <!-- File name of a script being loaded - optional. -->
-    <!--<Forced></Forced>-->
-    <!--<Virtual></Virtual>--> <!-- Set to true if this is a virtual component not showing up in the installer -->
-    <!--<Important></Important>-->    <!-- The package is marked as important. This is relevant for updates found with UpdateAgent. -->
     <SortingPriority>700</SortingPriority> <!-- Priority of this component when visible in the tree. Highest priority number is on top. -->
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>

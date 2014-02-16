@@ -75,8 +75,8 @@ Component.prototype.beginInstallation = function()
 Component.prototype.createOperations = function()
 {
     component.createOperations();
-    var qtStringVersion = "5.3.0";
 
+    var qtStringVersion = "5.3.0";
     if (installer.value("os") == "win") {
         try {
             var qtPath = "@TargetDir@" + "%TARGET_INSTALL_DIR%";
@@ -109,8 +109,15 @@ Component.prototype.createOperations = function()
                                     "--devicetype", "Desktop",
                                     "UNDOEXECUTE",
                                     "@SDKToolBinary@", "rmKit", "--id", kitName]);
+
+            // patch/register docs and examples
+            var installationPath = installer.value("TargetDir") + "%TARGET_INSTALL_DIR%";
+            print("Register documentation and examples for: " + installationPath);
+            patchQtExamplesAndDoc(component, installationPath, "Qt-5.3");
+
         } catch( e ) {
             print( e );
         }
     }
 }
+

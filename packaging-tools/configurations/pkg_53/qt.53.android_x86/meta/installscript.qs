@@ -58,6 +58,7 @@ Component.prototype.createOperations = function()
 {
     component.createOperations();
 
+    var qtStringVersion = "5.3.0";
     var qmakeBinary = "";
     var platform = "";
     if (installer.value("os") == "x11") {
@@ -83,9 +84,15 @@ Component.prototype.createOperations = function()
     component.addOperation("Execute",
                            ["@SDKToolBinary@", "addQt",
                             "--id", component.name,
-                            "--name", "Qt 5.3.0 for Android x86",
+                            "--name", "Qt " + qtStringVersion + " for Android x86",
                             "--type", "Qt4ProjectManager.QtVersion.Android",
                             "--qmake", qmakeBinary,
                             "UNDOEXECUTE",
                             "@SDKToolBinary@", "rmQt", "--id", component.name]);
+
+    // patch/register docs and examples
+    var installationPath = installer.value("TargetDir") + "%TARGET_INSTALL_DIR%";
+    print("Register documentation and examples for: " + installationPath);
+    patchQtExamplesAndDoc(component, installationPath, "Qt-5.3");
 }
+

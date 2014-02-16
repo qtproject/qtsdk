@@ -1,6 +1,6 @@
 #############################################################################
 ##
-## Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+## Copyright (C) 2014 Digia Plc and/or its subsidiary(-ies).
 ## Contact: http://www.qt-project.org/legal
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -49,17 +49,17 @@ identifier:             windows
 base_url:
 base_path:
 
-# for testing purposes
 [PackageIgnoreList]
 packages:
 
 [PackageConfigurationFiles]
-file_list:              qt-conf,
-                        qt521-src-conf,
-                        x86-qt521-msvc2010_32-conf,
-                        x86-tools-qtcreator-conf,
-                        x86-tools-vcredist_32-conf,
-                        installer-readme-conf
+file_list:              qt53-src-conf,
+                        x86-qt53-msvc2010_32-conf,
+                        x86-qt53-mingw48_32-conf,
+                        x86-qt53-msvc2010_32-opengl-conf,
+                        x86-qt53-msvc2012_32-opengl-conf,
+                        x86_64-qt53-msvc2013_64-conf,
+                        x86_64-qt53-msvc2013_64-opengl-conf
 
 [OfflinePackageExcludeList]
 package_list:
@@ -67,12 +67,5 @@ package_list:
 [SdkUpdateRepository]
 repository_url_release:
 
-[ConfigDir]
-template_name:          config_qt5
-
-[ConfigXml]
-template_name:          config.xml.template.windows.qt5
-
 [PackageTemplates]
-template_dirs:           pkg_521, pkg_tools
-
+template_dirs:          pkg_tools, pkg_53

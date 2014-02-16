@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>qtgraphicaleffects</DisplayName>
     <Description>Qt 5.3.0 Add-Ons Qt Graphical Effects Source Component</Description>
-    <Version>%QT_VERSION%</Version>
+    <Version>5.3.0</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <!--<Dependencies></Dependencies>--> <!-- Comma-separated list of dependencies - optional -->
     <!--<Default></Default>-->

@@ -77,6 +77,10 @@ Component.prototype.createOperations = function()
                                     "--supportedAbis", "x86-windows-msys-pe-32bit",
                                     , "UNDOEXECUTE",
                                     "@SDKToolBinary@", "rmTC", "--id", tcId];
+
+            component.addOperation("Execute",
+                                   ["{0,4}", "@SDKToolBinary@", "addKeys",
+                                    "android", "MakeExtraSearchDirectory", "QString:@MINGW482_DIR@\\bin"]);
         } catch( e ) {
             print( e );
         }

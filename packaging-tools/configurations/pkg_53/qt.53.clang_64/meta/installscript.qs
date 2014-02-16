@@ -53,6 +53,7 @@ Component.prototype.createOperations = function()
 {
     component.createOperations();
     try {
+        var qtStringVersion = "5.3.0";
         var qtPath = "@TargetDir@" + "%TARGET_INSTALL_DIR%";
         var qmakeBinary = "@TargetDir@" + "%TARGET_INSTALL_DIR%/bin/qmake";
         addInitQtPatchOperation(component, "mac", qtPath, qmakeBinary, "qt5");
@@ -63,7 +64,7 @@ Component.prototype.createOperations = function()
         component.addOperation("Execute",
                                ["@SDKToolBinary@", "addQt",
                                 "--id", component.name,
-                                "--name", "Qt 5.3.0 clang 64bit",
+                                "--name", "Qt " + qtStringVersion + " clang 64bit",
                                 "--type", "Qt4ProjectManager.QtVersion.Desktop",
                                 "--qmake", qmakeBinary,
                                 "UNDOEXECUTE",
@@ -73,14 +74,21 @@ Component.prototype.createOperations = function()
         component.addOperation("Execute",
                                ["@SDKToolBinary@", "addKit",
                                 "--id", kitName,
-                                "--name", "Desktop Qt 5.3.0 clang 64bit",
+                                "--name", "Desktop Qt " + qtStringVersion + " clang 64bit",
                                 "--toolchain", "x86-macos-generic-mach_o-64bit",
                                 "--qt", component.name,
                                 "--debuggerengine", "1",
                                 "--devicetype", "Desktop",
                                 "UNDOEXECUTE",
                                 "@SDKToolBinary@", "rmKit", "--id", kitName]);
+
+        // patch/register docs and examples
+        var installationPath = installer.value("TargetDir") + "%TARGET_INSTALL_DIR%";
+        print("Register documentation and examples for: " + installationPath);
+        patchQtExamplesAndDoc(component, installationPath, "Qt-5.3");
+
     } catch(e) {
         print(e);
     }
 }
+

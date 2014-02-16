@@ -1,4 +1,4 @@
-/****************************************************************************
+/*****************************************************************************
 **
 ** Copyright (C) 2014 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
@@ -37,7 +37,7 @@
 **
 ** $QT_END_LICENSE$
 **
-****************************************************************************/
+*****************************************************************************/
 
 // constructor
 function Component()
@@ -46,25 +46,8 @@ function Component()
 
 Component.prototype.createOperations = function()
 {
-    if (installer.value("os") != "win")
-        return
     component.createOperations();
-
-    if (installer.value("SDKToolBinary") == "") {
-        QMessageBox["warning"]("SDKToolBinaryError",
-                               qsTr("No SDKToolBinary variable found!"),
-                               qsTr("Setting up Android target properly in QtCreator requires that SdkTool is set properly!.\n"));
-        return;
-    }
-    if (installer.value("MINGW48_DIR") == "") {
-        QMessageBox["warning"]("MINGW48_DIR_Error",
-                               qsTr("No MINGW48_DIR variable found!"),
-                               qsTr("Setting up Android target properly in QtCreator requires that MinGW 4.8 is installed properly first.\n"));
-        return;
-    }
-
-    // this is only needed under windows
-    component.addOperation("Execute",
-                           ["{0,4}", "@SDKToolBinary@", "addKeys",
-                            "android", "MakeExtraSearchDirectory", "QString:@MINGW48_DIR@\\bin"]);
+    registerQtCreatorDocumentation(component, "%TARGET_INSTALL_DIR%");
 }
+
+
