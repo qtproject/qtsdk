@@ -200,7 +200,7 @@ def is_valid_job_type(job_type_specifier):
 # parse build jobs for given platform and architecture
 #<branch>.<qt_version>.<offline/repository>.<host_os>.<architecture>.<package_type>
 def get_job_list(conf_file, job_type_specifier, license_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag):
-    print('Get build job list for: {0}'.format(platform + '-' + arch))
+    print('Get [{0}] build job list for: {1}'.format(job_type_specifier, platform + '-' + arch))
     if not os.path.isfile(conf_file):
         print('*** Fatal error! Given file does not exist: {0}'.format(conf_file))
         sys.exit(-1)
@@ -282,20 +282,9 @@ def get_repo_job_list(conf_file, license_type, branch, platform, arch, conf_file
     return get_job_list(conf_file, 'repository', license_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
 
 
-# parse offline installer build jobs for given platform and architecture
-#<branch>.<qt_version>.<offline/repository>.<host_os>.<architecture>.<package_type>
-def get_offline_job_list(conf_file, license_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag):
-    return get_job_list(conf_file, 'offline', license_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
-
-# parse online installer build jobs for given platform and architecture
-#<branch>.<qt_version>.<offline/repository>.<host_os>.<architecture>.<package_type>
-def get_online_job_list(conf_file, license_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag):
-    return get_job_list(conf_file, 'online', license_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
-
-
 # execute
 # - online installer build(s)
-def handle_online_installer_build(conf_file, license_type, branch, platform, arch, packages_base_url):
+def handle_installer_build(conf_file, installer_type, license_type, branch, platform, arch, packages_base_url):
     if not os.path.isfile(conf_file):
         print('*** Fatal error! Given file does not exist: {0}'.format(conf_file))
         sys.exit(-1)
@@ -312,40 +301,9 @@ def handle_online_installer_build(conf_file, license_type, branch, platform, arc
         print('*** Fatal error! Invalid values in {0} -> {1}'.format(conf_file, section_name))
         sys.exit(-1)
     # parse build jobs
-    job_list = get_online_job_list(conf_file, license_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
+    job_list = get_job_list(conf_file, installer_type, license_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
     if (len(job_list) == 0):
-        print('*** Fatal error! No online installer build jobs found. Probably an error?'.format(conf_file, section_name))
-        sys.exit(-1)
-    output_dir = os.path.join(SCRIPT_ROOT_DIR, 'installer_output')
-    # handle build jobs
-    for job in job_list:
-        create_online_installer(job, packages_base_url)
-    if not os.listdir(output_dir):
-        print('*** Fatal error! No online installers generated into: {0}'.format(output_dir))
-        sys.exit(-1)
-
-# execute
-# - offline installer build(s)
-def handle_offline_installer_build(conf_file, license_type, branch, platform, arch, packages_base_url):
-    if not os.path.isfile(conf_file):
-        print('*** Fatal error! Given file does not exist: {0}'.format(conf_file))
-        sys.exit(-1)
-    init_env()
-    conf_file_base_dir  = CONFIGURATIONS_FILE_BASE_DIR
-    ifw_base_url        = IFW_TOOLS_BASE_URL
-    # parse conf file
-    parser = ConfigParser.ConfigParser()
-    parser.readfp(open(conf_file))
-    section_name        = branch + '.' + 'global'
-    global_version      = bldinstallercommon.safe_config_key_fetch(parser, section_name, 'version')
-    global_version_tag  = bldinstallercommon.safe_config_key_fetch(parser, section_name, 'version_tag')
-    if not global_version:
-        print('*** Fatal error! Invalid values in {0} -> {1}'.format(conf_file, section_name))
-        sys.exit(-1)
-    # parse build jobs
-    job_list = get_offline_job_list(conf_file, license_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
-    if (len(job_list) == 0):
-        print('*** Fatal error! No offline build jobs found. Probably an error?'.format(conf_file, section_name))
+        print('*** Fatal error! No [{0}] installer build jobs found from: {1}. Probably an error?'.format(installer_type, conf_file))
         sys.exit(-1)
     output_dir = os.path.join(SCRIPT_ROOT_DIR, 'installer_output')
     # create rta description file
@@ -354,7 +312,9 @@ def handle_offline_installer_build(conf_file, license_type, branch, platform, ar
     rta_description_file_name = os.path.join(output_dir, RTA_DESCRIPTION_FILE + '-' + plat_suffix + '-' + architecture + '.txt')
     # handle build jobs
     for job in job_list:
-        creation_ok = create_offline_installer(job, packages_base_url)
+        # create installer
+        type_arg = '--online'  if 'online' in installer_type.lower() else '--offline'
+        creation_ok = create_installer(job, packages_base_url, type_arg)
         # write the rta description file only if installer creation was ok
         if (creation_ok):
             rta_description_file = open(rta_description_file_name, 'a')
@@ -362,17 +322,8 @@ def handle_offline_installer_build(conf_file, license_type, branch, platform, ar
             rta_description_file.close()
     # if "/installer_output" directory is empty -> error
     if not os.listdir(output_dir):
-        print('*** Fatal error! No offline installers generated into: {0}'.format(output_dir))
+        print('*** Fatal error! No installers generated into: {0}'.format(output_dir))
         sys.exit(-1)
-
-# helper function/wrapper to create offline installer
-def create_offline_installer(job, packages_base_url):
-    return create_installer(job, packages_base_url, '-o')
-
-
-# helper function/wrapper to create online installer
-def create_online_installer(job, packages_base_url):
-    return create_installer(job, packages_base_url, '-O')
 
 
 # helper function/wrapper to create online installer
