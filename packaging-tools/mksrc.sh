@@ -124,6 +124,7 @@ function create_and_delete_submodule()
         echo " - Done zipping $_file -"
     ) &
     wait
+    rm -rf $_file
   done < $MODULES
   cd ..
 }
@@ -411,6 +412,17 @@ if [ $MULTIPACK = yes -a $SINGLEMODULE = no ]; then
   mv $PACKAGE_NAME.* single/
   echo " -- Creating archives per submodule -- "
   create_and_delete_submodule
+  echo " -- Creating archive from super repository"
+  create_main_file
+  for POSTFIX in "7z" "zip" "tar.gz" "tar.xz"; do
+    if [ -f $PACKAGE_NAME.$POSTFIX ]; then
+      if [[ $POSTFIX == *"tar"* ]]; then
+        mv $PACKAGE_NAME.$POSTFIX submodules_tar/$REPO_NAME-$LICENSE-src-$QTVER.$POSTFIX
+      else
+        mv $PACKAGE_NAME.$POSTFIX submodules_zip/$REPO_NAME-$LICENSE-src-$QTVER.$POSTFIX
+      fi
+    fi
+  done
 fi
 cleanup
 
