@@ -46,12 +46,12 @@ name:                   qt
 identifier:             linux
 
 [ArchiveRemoteLocation.default]
-base_url:               http://add.your.archive.url
+base_url:
 base_path:
 
 # for testing purposes
 [PackageIgnoreList]
-packages:               foo.bar, foo.bar2, foo.bar3
+packages:
 
 [PackageConfigurationFiles]
 file_list:              qt502-src-conf, x86-qt502-gcc-conf

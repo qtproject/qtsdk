@@ -17,26 +17,6 @@ module_exclude_list:        qlalr, qt3d, qtdocgallery, qtfeedback, qtjsondb, qtp
 
 
 ################################################################################
-## Define addition information for the builds used by the build system.
-################################################################################
-[release.521.meta.linux.x86]
-build_target_dir:           /linux_gcc_32_ubuntu1110
-build_node_labels:          linux-g++-Ubuntu11.10-x86, linux-g++-Ubuntu_11.10_x86
-
-[release.521.meta.linux.x86.android_armv5]
-build_target_dir:           /android_armv5/linux_x86
-
-[release.521.meta.linux.x86.android_armv7]
-build_target_dir:           /android_armv7/linux_x86
-
-[release.521.meta.linux.x86.android_x86]
-build_target_dir:           /android_x86/linux_x86
-
-
-[release.521.meta.linux.x64]
-build_target_dir:           /linux_gcc_64_ubuntu1110
-
-################################################################################
 ## Linux offline
 ################################################################################
 [release.521.offline.linux.x86]
