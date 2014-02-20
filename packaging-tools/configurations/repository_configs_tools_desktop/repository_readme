@@ -1,6 +1,6 @@
 #############################################################################
 ##
-## Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+## Copyright (C) 2014 Digia Plc and/or its subsidiary(-ies).
 ## Contact: http://www.qt-project.org/legal
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -39,25 +39,29 @@
 ##
 #############################################################################
 
+[PackageNamespace]
+name:                   qt
 
-[qt.tools]
+[PlatformIdentifier]
+identifier:             all-os
 
-[qt.readme]
-archives:               readme, qtprojecturl
-target_install_base:    /
-version:
-version_tag:
-package_default:        true
-[readme]
-archive_uri:            http://qt.gitorious.org/qtsdk/qtsdk/raw/packaging-tools/dist/README.txt
-package_strip_dirs:     0
-target_install_dir:     /
-rpath_target:
-archive_name:           readme.7z
-[qtprojecturl]
-archive_uri:            qt-project-url.7z
-package_strip_dirs:     0
-target_install_dir:     /
-rpath_target:
-archive_name:           qt-project-url.7z
+[ArchiveRemoteLocation.default]
+base_url:
+base_path:
+
+# for testing purposes
+[PackageIgnoreList]
+packages:
+
+[PackageConfigurationFiles]
+file_list:              installer-readme-conf
+
+[OfflinePackageExcludeList]
+package_list:
+
+[SdkUpdateRepository]
+repository_url_release:
+
+[PackageTemplates]
+template_dirs:          pkg_tools
 
