@@ -41,6 +41,38 @@ build_node_labels:          linux-g++-Ubuntu11.10-x64_Android-armv7
 build_target_dir:           android_x86/linux_x64
 build_node_labels:          linux-g++-Ubuntu11.10-x64_Android-x86
 
+[meta.linux_rhel65.x86.gcc]
+build_target_dir:           linux_gcc_32_rhel65
+build_node_labels:          linux-g++-Rhel6.5-x86
+
+[meta.linux_rhel65.x86.android_armv5]
+build_target_dir:           android_armv5/linux_rhel65_x86
+build_node_labels:          linux-g++-Rhel6.5-x86_Android-armv5
+
+[meta.linux_rhel65.x86.android_armv7]
+build_target_dir:           android_armv7/linux_rhel65_x86
+build_node_labels:          linux-g++-Rhel6.5-x86_Android-armv7
+
+[meta.linux_rhel65.x86.android_x86]
+build_target_dir:           android_x86/linux_rhel65_x86
+build_node_labels:          linux-g++-Rhel6.5-x86_Android-x86
+
+[meta.linux_rhel65.x64.gcc]
+build_target_dir:           linux_gcc_64_rhel65
+build_node_labels:          linux-g++-Rhel6.5-x64
+
+[meta.linux_rhel65.x64.android_armv5]
+build_target_dir:           android_armv5/linux_rhel65_x64
+build_node_labels:          linux-g++-Rhel6.5-x64_Android-armv5
+
+[meta.linux_rhel65.x64.android_armv7]
+build_target_dir:           android_armv7/linux_rhel65_x64
+build_node_labels:          linux-g++-Rhel6.5-x64_Android-armv7
+
+[meta.linux_rhel65.x64.android_x86]
+build_target_dir:           android_x86/linux_rhel65_x64
+build_node_labels:          linux-g++-Rhel6.5-x64_Android-x86
+
 [meta.windows.x86.mingw48]
 build_target_dir:           windows_mingw
 build_node_labels:          win-MinGW4.8-Windows7-x86_OpenGL
@@ -77,6 +109,43 @@ build_node_labels:          win-MinGW4.8-Windows7-x86_Android-armv7
 build_target_dir:           android_x86/mingw_x86
 build_node_labels:          win-MinGW4.8-Windows7-x86_Android-x86
 
+
+[meta.windows.x86.msvc2013_32_opengl]
+build_target_dir:           windows_vs2013_32_opengl
+build_node_labels:          win-msvc2013-Windows8.1-x86_OpenGL
+
+[meta.windows.x86.msvc2013_32_angle]
+build_target_dir:           windows_vs2013_32
+build_node_labels:          win-msvc2013-Windows8.1-x86_ANGLE
+
+[meta.windows.x64.msvc2013_64_angle]
+build_target_dir:           windows_vs2013_64
+build_node_labels:          win-msvc2013-Windows8.1-x64_ANGLE
+
+[meta.windows.x64.msvc2013_64_opengl]
+build_target_dir:           windows_vs2013_64_opengl
+build_node_labels:          win-msvc2013-Windows8.1-x64_OpenGL
+
+[meta.windows.x86.mingw482]
+build_target_dir:           windows_mingw482_x86
+build_node_labels:          win-MinGW4.8.2-Windows7-x86_OpenGL
+
+[meta.windows.x64.mingw482]
+build_target_dir:           windows_mingw482_x64
+build_node_labels:          win-MinGW4.8.2-Windows7-x64_OpenGL
+
+[meta.windows.x64.msvc2013_WinRT]
+build_target_dir:           windows_vs2013_winrt_x64
+build_node_labels:          win-msvc2013-Windows8.1-x64_WinRT
+
+[meta.windows.x86.msvc2012_winphone8_x86]
+build_target_dir:           winphone8/x86
+build_node_labels:          win-msvc2012-Windows8.1-x86_Winphone8_x86
+
+[meta.windows.x86.msvc2013_winphone8_arm]
+build_target_dir:           winphone8/arm
+build_node_labels:          win-msvc2012-Windows8.1-x86_Winphone8_arm
+
 [meta.mac.x64.clang]
 build_target_dir:           mac_cocoa_10.7
 build_node_labels:          mac-clang-OSX_10.7_x64, mac-clang-10.8-x64, macx-clang_OSX_10.7, pkg-osx107-x64-01, mac-clang-10.7-x64
@@ -96,4 +165,24 @@ build_node_labels:          mac-clang-10.7-x64_Android-x86
 [meta.mac.x64.ios]
 build_target_dir:           ios/mac_x64
 build_node_labels:          mac-clang-10.8-x64_iOS
+
+[meta.mac_109.x64.clang]
+build_target_dir:           mac_x64_109
+build_node_labels:          mac-clang-10.9-x64
+
+[meta.mac_109.x64.android_armv5]
+build_target_dir:           android_armv5/mac_109_x64
+build_node_labels:          mac-clang-10.9-x64_Android-armv5
+
+[meta.mac_109.x64.android_armv7]
+build_target_dir:           android_armv7/mac_109_x64
+build_node_labels:          mac-clang-10.9-x64_Android-armv7
+
+[meta.mac_109.x64.android_x86]
+build_target_dir:           android_x86/mac_109_x64
+build_node_labels:          mac-clang-10.9-x64_Android-x86
+
+[meta.mac_109.x64.ios]
+build_target_dir:           ios/mac_109_x64
+build_node_labels:          mac-clang-10.9-x64_iOS
 
