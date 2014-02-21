@@ -2,12 +2,12 @@
 <Package>
     <DisplayName>Qt Enginio for Android armv7</DisplayName>
     <Description>With Enginio, you can create stunning Qt applications, add a scalable and powerful Qt cloud backend as a service in no time and deploy in minutes without ever bothering about backend servers or scalability problems.</Description>
-    <Version>%ENGINIO_VERSION%</Version>
+    <Version>1.0.2-1</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Dependencies>qt.521.android_armv7.essentials</Dependencies>
-    <Default>%PACKAGE_DEFAULT_TAG%</Default>
+    <AutoDependOn>qt.cloudservices.enginio.10, qt.521.android_armv7.essentials</AutoDependOn>
+    <Virtual>true</Virtual>
     <Script>installscript.qs</Script>
-    <SortingPriority>1100</SortingPriority> <!-- Priority of this component when visible in the tree. Highest priority number is on top. -->
+    <SortingPriority>1100</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
 

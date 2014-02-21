@@ -47,22 +47,7 @@ function Component()
 
 function resolveQt5EssentialsDependency()
 {
-    // resolve correct qt component key on the fly from dependencies
-    var component_dep = "";
-    dependencies = component.dependencies;
-    for (var i = 0; i < dependencies.length; i++) {
-        dependency = dependencies[i];
-        if (dependency.lastIndexOf("essential") != -1) {
-            // try to find the parent
-            if (dependency.lastIndexOf(".") !== -1) {
-                component_dep = dependency.slice(0, dependency.lastIndexOf("."));
-                break;
-            }
-        }
-    }
-
-    component_dep += "_qmakeoutput";
-    return component_dep;
+    return "qt.521.android_armv5" + "_qmakeoutput";
 }
 
 

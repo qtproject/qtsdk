@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>Qt Enginio</DisplayName>
-    <Description>Qt Enginio</Description>
-    <Version>1.0.2</Version>
+    <DisplayName>Qt Enginio 1.0</DisplayName>
+    <Description>With Enginio, you can create stunning Qt applications, add a scalable and powerful Qt cloud backend as a service in no time and deploy in minutes without ever bothering about backend servers or scalability problems.</Description>
+    <Version>1.0.3</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <SortingPriority>100</SortingPriority> <!-- Priority of this component when visible in the tree. Highest priority number is on top. -->
+    <SortingPriority>100</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
 
