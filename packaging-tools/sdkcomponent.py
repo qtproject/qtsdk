@@ -94,7 +94,7 @@ class SdkComponent:
         self.package_name                = section_name
         self.packages_full_path_list     = packages_full_path_list
         self.archives                    = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'archives')
-        self.archives                    = self.archives.replace(' ', '')
+        self.archives                    = self.archives.replace(' ', '').replace(os.linesep, '')
         self.archive_server_name         = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'archive_server_name')
         self.downloadable_archive_list   = []
         self.target_install_base         = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'target_install_base')
