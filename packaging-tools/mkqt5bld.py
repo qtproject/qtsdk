@@ -607,19 +607,9 @@ def clean_up(install_dir):
         else:
             print_wrap('*** Warning! Unable to locate \\lib directory under: ' + base_path_addon)
 
-    # ensure that we do not ship prebuilt examples in binary packages
-    # essentials install
-    examples_path_essentials = bldinstallercommon.locate_directory(base_path_essentials, 'examples')
-    if examples_path_essentials:
-        bldinstallercommon.remove_tree(os.path.normpath(examples_path_essentials))
-    else:
-        print_wrap('*** Warning! Unable to locate examples directory under: ' + examples_path_essentials)
-    # addons install
-    examples_path_addons = bldinstallercommon.locate_directory(base_path_addon, 'examples')
-    if examples_path_addons:
-        bldinstallercommon.remove_tree(os.path.normpath(examples_path_addons))
-    else:
-        print_wrap('*** Warning! Unable to locate examples directory under: ' + examples_path_addons)
+    # remove examples and docs from binary packages
+    bldinstallercommon.remove_directories_by_type(MAKE_INSTALL_ROOT_DIR, 'examples')
+    bldinstallercommon.remove_directories_by_type(MAKE_INSTALL_ROOT_DIR, 'doc')
     print_wrap('--------------------------------------------------------------------')
 
 
@@ -651,6 +641,12 @@ def build_docs():
     doc_install_args = make_cmd + ' -j1 install_docs INSTALL_ROOT=' + install_root_path
     #do not abort on fail, if the doc build fails, we still want to get the binary package
     bldinstallercommon.do_execute_sub_process(doc_install_args.split(' '), QT_SOURCE_DIR, False)
+
+    # Also archive docs in a separate qt5_docs.7z file
+    print_wrap('    Archiving qt5_docs.7z')
+    cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_docs' + '.7z *'
+    run_in = os.path.normpath(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX + os.sep + 'doc')
+    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), run_in, True, True)
 
     print_wrap('--------------------------------------------------------------------')
 
@@ -694,13 +690,6 @@ def archive_submodules():
         cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_essentials' + '.7z *'
         run_in = os.path.normpath(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX)
         bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), run_in, True, True)
-
-        if DESKTOP_BUILD:
-            # Also archive docs in a separate qt5_docs.7z file
-            print_wrap('---------- Archiving qt5_docs.7z')
-            cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_docs' + '.7z *'
-            run_in = os.path.normpath(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX + os.sep + 'doc')
-            bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), run_in, True, True)
     else:
         print_wrap(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> essentials not archived!')
 

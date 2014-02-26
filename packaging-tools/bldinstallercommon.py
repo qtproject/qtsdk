@@ -859,3 +859,16 @@ def rename_android_soname_files(qt5_base_path):
     else:
         print('*** No .so files found to be renamed. Skipping.')
         return
+
+
+###############################
+# function
+###############################
+def remove_directories_by_type(base_path, search_pattern):
+    while True:
+        tmp_path = locate_directory(base_path, search_pattern)
+        if tmp_path:
+            shutil.rmtree(tmp_path)
+        else:
+            break
+
