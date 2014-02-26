@@ -822,7 +822,7 @@ def create_mac_disk_image(execution_path, file_directory, file_base_name, image_
                 '-format', 'UDBZ', \
                 os.path.join(file_directory, file_base_name + '.dmg'), \
                 '-ov', '-scrub', '-size', image_size]
-    bldinstallercommon.do_execute_sub_process(cmd_args, execution_path, True)
+    do_execute_sub_process(cmd_args, execution_path, True)
 
 
 ###############################
