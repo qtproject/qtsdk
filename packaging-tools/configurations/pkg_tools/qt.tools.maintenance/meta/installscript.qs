@@ -71,18 +71,29 @@ Component.prototype.createOperations = function()
 
     if ( installer.value("os") == "win" )
     {
-        // create shortcut
+        // only for online installer
+        if (!installer.isOfflineOnly()) {
+            // create shortcut
+            component.addOperation( "CreateShortcut",
+                                    "@TargetDir@/MaintenanceTool.exe",
+                                    "@StartMenuDir@/" + installer.value("QT_EDITION_NAME")  + " Maintenance Tool.lnk",
+                                    "workingDirectory=@TargetDir@" );
+        }
+
         component.addOperation( "CreateShortcut",
                                 "@TargetDir@/MaintenanceTool.exe",
-                                "@StartMenuDir@/Qt Maintenance Tool.lnk",
-                                "workingDirectory=@TargetDir@" );
+                                "@StartMenuDir@/Uninstall " + installer.value("QT_EDITION_NAME")  + ".lnk",
+                                " --uninstall");
     }
     if ( installer.value("os") == "x11" )
     {
-        component.addOperation( "CreateDesktopEntry",
-                                "QtOpensource-MaintenanceTool.desktop",
-                                "Type=Application\nExec=@TargetDir@/MaintenanceTool\nPath=@TargetDir@\nName=Qt Maintenance Tool (Opensource)\nGenericName=Install or uninstall Qt components.\nIcon=QtIcon\nTerminal=false\nCategories=Development;Qt;"
-                               );
+        // only for online installer
+        if (!installer.isOfflineOnly()) {
+            component.addOperation( "CreateDesktopEntry",
+                                    installer.value("QT_EDITION_NAME")  + "-MaintenanceTool.desktop",
+                                    "Type=Application\nExec=@TargetDir@/MaintenanceTool\nPath=@TargetDir@\nName=" + installer.value("QT_EDITION_NAME")  + " Maintenance Tool\nGenericName=Install or uninstall Qt components.\nIcon=QtIcon\nTerminal=false\nCategories=Development;Qt;"
+                                   );
+        }
     }
 }
 

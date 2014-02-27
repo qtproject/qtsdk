@@ -41,11 +41,11 @@
 
 
 [qt.53.win64_msvc2013_64]
-archives:               53.msvc2013_64.essentials,
-                        53.msvc2013_64.addons,
+archives:               53.win64_msvc2013_64.essentials,
+                        53.win64_msvc2013_64.addons,
                         53.win64_msvc2013_64.icu_521_release.win_64,
                         53.win64_msvc2013_64.d3d_compiler_46.x64
-target_install_base:    /53/msvc2013_64
+target_install_base:    /5.3/msvc2013_64
 [53.win64_msvc2013_64.essentials]
 archive_uri:            /qt/5.3.0/latest/windows_vs2013_64/qt5_essentials.7z
 [53.win64_msvc2013_64.addons]

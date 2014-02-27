@@ -2,9 +2,9 @@
 <Package>
     <DisplayName>msvc2013 64-bit</DisplayName>
     <Description>Qt 5.3.0 Prebuilt Components for msvc2013 64-bit</Description>
-    <Version>5.3.0</Version>
+    <Version>5.3.0-0-%PACKAGE_CREATION_DATE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Dependencies>qt.tools.qtcreator, qt.tools.vcredist_64, qt.53.doc</Dependencies>
+    <Dependencies>qt.tools.qtcreator, qt.tools.vcredist_64</Dependencies>
     <Default>true</Default>
     <Script>installscript.qs</Script>   <!-- File name of a script being loaded - optional. -->
     <SortingPriority>530</SortingPriority> <!-- Priority of this component when visible in the tree. Highest priority number is on top. -->

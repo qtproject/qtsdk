@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>qtsvg</DisplayName>
     <Description>Qt 5.3.0 Add-Ons Qt Svg Source Component</Description>
-    <Version>5.3.0</Version>
+    <Version>5.3.0-0-%PACKAGE_CREATION_DATE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Script>installscript.qs</Script>   <!-- File name of a script being loaded - optional. -->
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>

@@ -43,9 +43,9 @@
 [qt.53.clang_64]
 archives:               53.clang_64.essentials,
                         53.clang_64.addons
-target_install_base:    /53/clang_64
+target_install_base:    /5.3/clang_64
 [53.clang_64.essentials]
-archive_uri:            /qt/5.3.0/latest/mac_cocoa_10.9/qt5_essentials.7z
+archive_uri:            /qt/5.3.0/latest/mac_x64_108/qt5_essentials.7z
 [53.clang_64.addons]
-archive_uri:            /qt/5.3.0/latest/mac_cocoa_10.9/qt5_addons.7z
+archive_uri:            /qt/5.3.0/latest/mac_x64_108/qt5_addons.7z
 

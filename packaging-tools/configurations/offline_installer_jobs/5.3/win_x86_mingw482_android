@@ -39,21 +39,30 @@
 ##
 #############################################################################
 
+[PackageNamespace]
+name:                   qt
 
-[qt.53.win32_mingw48]
-archives:               53.win32_mingw48.essentials,
-                        53.win32_mingw48.addons,
-                        53.win32_mingw48.icu_521.mingw_32,
-                        53.win32_mingw48.runtime
-target_install_base:    /53/mingw48_32
-[53.win32_mingw48.essentials]
-archive_uri:            /qt/5.3.0/latest/windows_mingw/qt5_essentials.7z
-[53.win32_mingw48.addons]
-archive_uri:            /qt/5.3.0/latest/windows_mingw/qt5_addons.7z
-[53.win32_mingw48.icu_521.mingw_32]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/mingw/icu_52_1_mingw_builds_32_4_8_2_posix_dwarf.7z
-target_install_dir:     /bin
-[53.win32_mingw48.runtime]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/mingw_32/TODO
-target_install_dir:     /bin
+[PlatformIdentifier]
+identifier:             windows
+
+[PackageConfigurationFiles]
+file_list:              qt-conf,
+                        qt53-src-conf,
+                        x86-qt53-mingw482_32-conf,
+                        android-qt53-armv5-conf,
+                        android-qt53-armv7-conf,
+                        android-qt53-x86-conf,
+                        x86-tools-mingw482-conf,
+                        x86-tools-qtcreator-conf,
+                        x86-tools-vcredist_32-conf,
+                        installer-readme-conf
+
+[ConfigDir]
+template_name:          config_qt5
+
+[ConfigXml]
+template_name:          config.xml.template.windows.qt5
+
+[PackageTemplates]
+template_dirs:          pkg_53, pkg_tools
 

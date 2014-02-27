@@ -39,21 +39,17 @@
 ##
 #############################################################################
 
+[PackageNamespace]
+name:                   qt
 
-[qt.53.win64_mingw48]
-archives:               53.win64_mingw48.essentials,
-                        53.win64_mingw48.addons,
-                        53.win64_mingw48.icu_521.mingw_32,
-                        53.win64_mingw48.runtime
-target_install_base:    /53/mingw48_64
-[53.win64_mingw48.essentials]
-archive_uri:            /qt/5.3.0/latest/windows_mingw_64/qt5_essentials.7z
-[53.win64_mingw48.addons]
-archive_uri:            /qt/5.3.0/latest/windows_mingw_64/qt5_addons.7z
-[53.win64_mingw48.icu_521.mingw_64]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/mingw/TODO
-target_install_dir:     /bin
-[53.win64_mingw48.runtime]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/mingw_64/TODO
-target_install_dir:     /bin
+[PlatformIdentifier]
+identifier:             windows
+
+[PackageConfigurationFiles]
+file_list:              x86_64-qt53-msvc2013-winrt_x64-conf,
+                        x86_64-qt53-msvc2012-winphone_arm-conf,
+                        x86_64-qt53-msvc2012-winphone_x86-conf
+
+[PackageTemplates]
+template_dirs:          pkg_53
 

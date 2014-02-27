@@ -43,7 +43,7 @@
 [qt.53.ios]
 archives:               53.ios.essentials,
                         53.ios.addons
-target_install_base:    /53/ios
+target_install_base:    /5.3/ios
 [53.ios.essentials]
 archive_uri:            /qt/5.3.0/latest/ios/mac_x64/qt5_essentials.7z
 [53.ios.addons]

@@ -49,3 +49,5 @@ package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:
 archive_name:           ThirdPartySoftware_Listing.7z
+
+[qt.tools]

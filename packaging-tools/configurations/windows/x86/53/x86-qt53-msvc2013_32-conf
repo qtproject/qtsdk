@@ -45,7 +45,7 @@ archives:               53.win32_msvc2013.essentials,
                         53.win32_msvc2013.addons,
                         53.win32_msvc2013.icu_521_release.win_32,
                         53.win32_msvc2013.d3d_compiler_46.x86
-target_install_base:    /53/msvc2013
+target_install_base:    /5.3/msvc2013
 [53.win32_msvc2013.essentials]
 archive_uri:            /qt/5.3.0/latest/windows_vs2013_32/qt5_essentials.7z
 [53.win32_msvc2013.addons]

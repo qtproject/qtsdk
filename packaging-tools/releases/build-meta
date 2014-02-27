@@ -109,6 +109,7 @@ build_node_labels:          win-MinGW4.8-Windows7-x86_Android-armv7
 build_target_dir:           android_x86/mingw_x86
 build_node_labels:          win-MinGW4.8-Windows7-x86_Android-x86
 
+
 [meta.windows.x86.msvc2013_32_opengl]
 build_target_dir:           windows_vs2013_32_opengl
 build_node_labels:          win-msvc2013-Windows8.1-x86_OpenGL
@@ -124,10 +125,6 @@ build_node_labels:          win-msvc2013-Windows8.1-x64_ANGLE
 [meta.windows.x64.msvc2013_64_opengl]
 build_target_dir:           windows_vs2013_64_opengl
 build_node_labels:          win-msvc2013-Windows8.1-x64_OpenGL
-
-[meta.windows_81.x86.msvc2012_32_opengl]
-build_target_dir:           windows_81_vs2012_32_opengl
-build_node_labels:          win-msvc2012-Windows8.1-x86_OpenGL
 
 [meta.windows.x86.mingw482]
 build_target_dir:           windows_mingw482_x86
@@ -150,8 +147,8 @@ build_target_dir:           winphone8/arm
 build_node_labels:          win-msvc2012-Windows8.1-x86_Winphone8_arm
 
 [meta.mac.x64.clang]
-build_target_dir:           mac_x64_108
-build_node_labels:          mac-clang-10.8-x64
+build_target_dir:           mac_cocoa_10.7
+build_node_labels:          mac-clang-OSX_10.7_x64, mac-clang-10.8-x64, macx-clang_OSX_10.7, pkg-osx107-x64-01, mac-clang-10.7-x64
 
 [meta.mac.x64.android_armv5]
 build_target_dir:           android_armv5/mac_x64

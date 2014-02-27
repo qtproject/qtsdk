@@ -44,7 +44,7 @@
 archives:               53.win32_msvc2013_opengl.essentials,
                         53.win32_msvc2013_opengl.addons,
                         53.win32_msvc2013_opengl.icu_521_release.win_32
-target_install_base:    /53/msvc2013_opengl
+target_install_base:    /5.3/msvc2013_opengl
 [53.win32_msvc2013_opengl.essentials]
 archive_uri:            /qt/5.3.0/latest/windows_vs2013_32_opengl/qt5_essentials.7z
 [53.win32_msvc2013_opengl.addons]

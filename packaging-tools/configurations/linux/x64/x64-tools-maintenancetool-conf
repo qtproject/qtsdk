@@ -4,7 +4,7 @@ file_list:              tools-maintenancetool-icons-conf
 [qt.tools.maintenance]
 archives:               tools.maintenance
 target_install_base:    /
-version:                1.5.0-3
+version:                1.6.0
 version_tag:            %MAINTENANCE_TOOL_VERSION%
 package_default:        true
 [tools.maintenance]

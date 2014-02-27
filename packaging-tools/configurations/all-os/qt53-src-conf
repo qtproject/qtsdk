@@ -40,21 +40,9 @@
 #############################################################################
 
 
-# for testing purposes
-[PackageIgnoreList]
-packages:
-
-[PackageConfigurationFiles]
-file_list:
-
-
 [qt.53]
-version:                5.3.0
-version_tag:            %QT_VERSION%
 
 [qt.53.src]
-version:                5.3.0
-version_tag:            %QT_VERSION%
 
 
 #################################
@@ -63,7 +51,7 @@ version_tag:            %QT_VERSION%
 
 [qt.53.src.essentials]
 archives:               src.qt5, src.essentials.qtbase, src.essentials.qtdeclarative, src.essentials.qtdoc, src.essentials.qtquick1, src.essentials.qtscript, src.essentials.qttools, src.essentials.qtwebkit, src.essentials.qtwebkitexamples, src.essentials.qtxmlpatterns, src.essentials.qtmultimedia, src.essentials.qtquickcontrols
-target_install_base:    /53/Src/
+target_install_base:    /5.3/Src/
 [src.qt5]
 archive_uri:            /qt/5.3.0/latest/src/submodules/qt5-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
@@ -120,149 +108,102 @@ target_install_dir:     /qtquickcontrols
 #################################
 
 [qt.53.src.addons]
-version:                5.3.0
-version_tag:            %QT_VERSION%
 
 [qt.53.src.addons.qtactiveqt]
 archives:               src.addons.qtactiveqt
-target_install_base:    /53/Src/qtactiveqt
-version:                5.3.0
-version_tag:            %QT_VERSION%
-package_default:        true
+target_install_base:    /5.3/Src/qtactiveqt
 [src.addons.qtactiveqt]
 archive_uri:            /qt/5.3.0/latest/src/submodules/qtactiveqt-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
-target_install_dir:     /
 
 [qt.53.src.addons.qtandroidextras]
 archives:               src.addons.qtandroidextras
-target_install_base:    /53/Src/qtandroidextras
-version:                5.3.0
-version_tag:            %QT_VERSION%
-package_default:        false
+target_install_base:    /5.3/Src/qtandroidextras
 [src.addons.qtandroidextras]
 archive_uri:            /qt/5.3.0/latest/src/submodules/qtandroidextras-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
-target_install_dir:     /
 
 [qt.53.src.addons.qtconnectivity]
 archives:               src.addons.qtconnectivity
-target_install_base:    /53/Src/qtconnectivity
-version:                5.3.0
-version_tag:            %QT_VERSION%
-package_default:        false
+target_install_base:    /5.3/Src/qtconnectivity
 [src.addons.qtconnectivity]
 archive_uri:            /qt/5.3.0/latest/src/submodules/qtconnectivity-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
-target_install_dir:     /
 
 [qt.53.src.addons.qtgraphicaleffects]
 archives:               src.addons.qtgraphicaleffects
-target_install_base:    /53/Src/qtgraphicaleffects
-version:                5.3.0
-version_tag:            %QT_VERSION%
-package_default:        true
+target_install_base:    /5.3/Src/qtgraphicaleffects
 [src.addons.qtgraphicaleffects]
 archive_uri:            /qt/5.3.0/latest/src/submodules/qtgraphicaleffects-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
-target_install_dir:     /
 
 [qt.53.src.addons.qtimageformats]
 archives:               src.addons.qtimageformats
-target_install_base:    /53/Src/qtimageformats
-version:                5.3.0
-version_tag:            %QT_VERSION%
-package_default:        true
+target_install_base:    /5.3/Src/qtimageformats
 [src.addons.qtimageformats]
 archive_uri:            /qt/5.3.0/latest/src/submodules/qtimageformats-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
-target_install_dir:     /
 
 [qt.53.src.addons.qtlocation]
 archives:               src.addons.qtlocation
-target_install_base:    /53/Src/qtlocation
-version:                5.3.0
-version_tag:            %QT_VERSION%
-package_default:        false
+target_install_base:    /5.3/Src/qtlocation
 [src.addons.qtlocation]
 archive_uri:            /qt/5.3.0/latest/src/submodules/qtlocation-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
-target_install_dir:     /
 
 [qt.53.src.addons.qtmacextras]
 archives:               src.addons.qtmacextras
-target_install_base:    /53/Src/qtmacextras
-version:                5.3.0
-version_tag:            %QT_VERSION%
-package_default:        false
+target_install_base:    /5.3/Src/qtmacextras
 [src.addons.qtmacextras]
 archive_uri:            /qt/5.3.0/latest/src/submodules/qtmacextras-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
-target_install_dir:     /
 
 [qt.53.src.addons.qtsvg]
 archives:               src.addons.qtsvg
-target_install_base:    /53/Src/qtsvg
-version:                5.3.0
-version_tag:            %QT_VERSION%
-package_default:        true
+target_install_base:    /5.3/Src/qtsvg
 [src.addons.qtsvg]
 archive_uri:            /qt/5.3.0/latest/src/submodules/qtsvg-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
-target_install_dir:     /
 
 [qt.53.src.addons.qttranslations]
 archives:               src.addons.qttranslations
-target_install_base:    /53/Src/qttranslations
-version:                5.3.0
-version_tag:            %QT_VERSION%
-package_default:        true
+target_install_base:    /5.3/Src/qttranslations
 [src.addons.qttranslations]
 archive_uri:            /qt/5.3.0/latest/src/submodules/qttranslations-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
-target_install_dir:     /
 
 [qt.53.src.addons.qtsensors]
 archives:               src.addons.qtsensors
-target_install_base:    /53/Src/qtsensors
-version:                5.3.0
-version_tag:            %QT_VERSION%
-package_default:        false
+target_install_base:    /5.3/Src/qtsensors
 [src.addons.qtsensors]
 archive_uri:            /qt/5.3.0/latest/src/submodules/qtsensors-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
-target_install_dir:     /
 
 [qt.53.src.addons.qtserialport]
 archives:               src.addons.qtserialport
-target_install_base:    /53/Src/qtserialport
-version:                5.3.0
-version_tag:            %QT_VERSION%
-package_default:        false
+target_install_base:    /5.3/Src/qtserialport
 [src.addons.qtserialport]
 archive_uri:            /qt/5.3.0/latest/src/submodules/qtserialport-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
-target_install_dir:     /
 
 [qt.53.src.addons.qtwinextras]
 archives:               src.addons.qtwinextras
-target_install_base:    /53/Src/qtwinextras
-version:                5.3.0
-version_tag:            %QT_VERSION%
-package_default:        false
+target_install_base:    /5.3/Src/qtwinextras
 [src.addons.qtwinextras]
 archive_uri:            /qt/5.3.0/latest/src/submodules/qtwinextras-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
-target_install_dir:     /
 
 [qt.53.src.addons.qtx11extras]
 archives:               src.addons.qtx11extras
-target_install_base:    /53/Src/qtx11extras
-version:                5.3.0
-version_tag:            %QT_VERSION%
-package_default:        false
+target_install_base:    /5.3/Src/qtx11extras
 [src.addons.qtx11extras]
 archive_uri:            /qt/5.3.0/latest/src/submodules/qtx11extras-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
-target_install_dir:     /
+
+[qt.53.src.addons.qtwebsockets]
+archives:               src.addons.qtwebsockets
+target_install_base:    /5.3/Src/qtwebsockets
+[src.addons.qtwebsockets]
+archive_uri:            /qt/5.3.0/latest/src/submodules/qtwebsockets-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
 

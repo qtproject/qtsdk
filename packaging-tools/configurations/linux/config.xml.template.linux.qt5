@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <Installer>
-    <Name>Qt 5.3.0</Name>
+    <Name>Qt 5.3.0 Beta</Name>
     <Version>5.3.0</Version>
-    <Title>Qt 5.3.0</Title>
+    <Title>Qt 5.3.0 Beta</Title>
     <Publisher>Digia Plc</Publisher>
     <Logo>logo.png</Logo>
     <InstallerWindowIcon>logo-small</InstallerWindowIcon>
     <InstallerApplicationIcon>logo-small</InstallerApplicationIcon>
     <Watermark>watermark.png</Watermark>
-    <StartMenuDir>Qt 5.3.0</StartMenuDir>
+    <StartMenuDir>Qt 5.3.0 Beta</StartMenuDir>
     <ProductUrl>http://qt-project.org/</ProductUrl>
     <!--<Background>background.png</Background>-->
     <UninstallerName>MaintenanceTool</UninstallerName>

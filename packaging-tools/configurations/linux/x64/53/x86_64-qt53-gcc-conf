@@ -44,7 +44,7 @@
 archives:               53.gcc_64.essentials,
                         53.gcc_64.addons,
                         53.gcc_64.icu_521
-target_install_base:    /53/gcc_64
+target_install_base:    /5.3/gcc_64
 [53.gcc_64.essentials]
 archive_uri:            /qt/5.3.0/latest/linux_gcc_64_ubuntu1110/qt5_essentials.7z
 rpath_target:           /lib
@@ -52,6 +52,6 @@ rpath_target:           /lib
 archive_uri:            /qt/5.3.0/latest/linux_gcc_64_ubuntu1110/qt5_addons.7z
 rpath_target:           /lib
 [53.gcc_64.icu_521]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/ubuntu1110/icu_51_1_ubuntu_11_10_64.7z
+archive_uri:            http://master.qt-project.org/development_releases/prebuilt/icu/prebuilt/ubuntu1110/icu_52_1_ubuntu_11_10_64.7z
 target_install_dir:     /lib
 

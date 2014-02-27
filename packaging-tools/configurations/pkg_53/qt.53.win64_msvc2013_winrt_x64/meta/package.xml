@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>Windows Phone 8 x86 (BETA)</DisplayName>
-    <Description>Qt 5.3.0 Prebuilt Components for Windows Phone 8 x86 Emulator (BETA)</Description>
-    <Version>5.3.0</Version>
+    <DisplayName>Windows Runtime (BETA)</DisplayName>
+    <Description>Qt 5.3.0 Prebuilt Components for Windows Runtime (BETA)</Description>
+    <Version>5.3.0-0-%PACKAGE_CREATION_DATE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Dependencies>qt.tools.qtcreator, qt.tools.vcredist, qt.53.doc</Dependencies>
+    <Dependencies>qt.tools.qtcreator, qt.tools.vcredist</Dependencies>
     <Default>true</Default>
     <Script>installscript.qs</Script>
     <SortingPriority>530</SortingPriority>

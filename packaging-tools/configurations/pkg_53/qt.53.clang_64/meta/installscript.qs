@@ -42,6 +42,22 @@
 // constructor
 function Component()
 {
+    if ((installer.value("os") == "mac") {
+        var xcodeVersion = installer.execute("/usr/bin/xcodebuild", new Array("-version"))[0];
+        if (xcodeVersion) {
+            var version = xcodeVersion.replace( /\D+/g, '');
+            if (parseInt(version) >= parseInt(400) && parseInt(version) <= parseInt(500)) {
+                QMessageBox["warning"]("XcodeVersionError",
+                        qsTr("You need to update Xcode to latest version!"),
+                        qsTr("It is recommeneded to have Xcode version greater than 4.0.0 and smaller than 5.0.0 for Qt5.3 compilations with clang."));
+            }
+        }
+        else {
+            QMessageBox["warning"]("XcodeError",
+                qsTr("Xcode installation not found!"),
+                qsTr("You need to install Xcode version 5.0.0. Download Xcode from https://developer.apple.com/xcode\n"));
+        }
+    }
 }
 
 Component.prototype.beginInstallation = function()
