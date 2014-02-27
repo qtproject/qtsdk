@@ -572,7 +572,7 @@ def set_config_xml():
     shutil.copy(config_template_source, config_template_dest)
     print ' -> copied [' + config_template_source + '] into [' + config_template_dest + ']'
 
-    update_repository_url = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'SdkUpdateRepository')['repository_url_release']
+    update_repository_url = bldinstallercommon.safe_config_key_fetch(CONFIG_PARSER_TARGET, 'SdkUpdateRepository', 'repository_url_release')
 
     fileslist = [config_template_dest]
     bldinstallercommon.replace_in_files(fileslist, SDK_VERSION_NUM_TAG, INSTALLER_NAMING_SCHEME_VERSION_NUM)
@@ -680,10 +680,6 @@ def parse_component_data(configuration_file, configurations_base_path):
         if section.startswith(PACKAGE_NAMESPACE + '.') or section == PACKAGE_NAMESPACE:
             if section not in SDK_COMPONENT_IGNORE_LIST:
                 sdk_component = SdkComponent(section, configuration, PACKAGES_DIR_NAME_LIST, ARCHIVE_LOCATION_RESOLVER, KEY_SUBSTITUTION_LIST)
-                # if online installer, we are interested only about the root component!
-                if CREATE_ONLINE_INSTALLER and not sdk_component.is_root_component():
-                    continue
-
                 # validate component
                 if not ARCHIVE_DOWNLOAD_SKIP:
                     sdk_component.validate()
@@ -851,10 +847,6 @@ def create_target_components(target_config):
         # check first for top level component
         if sdk_component.root_component == 'yes':
             ROOT_COMPONENT_NAME = sdk_component.package_name
-        # for online installer handle only the root component, nothing else
-        if CREATE_ONLINE_INSTALLER and not sdk_component.root_component == 'yes':
-            continue
-
         # check if static component or not
         if sdk_component.static_component:
             create_offline_static_component(sdk_component)
