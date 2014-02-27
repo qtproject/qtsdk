@@ -79,8 +79,8 @@ QT5_MODULES_LIST                    = [ 'qt3d', 'qlalr', 'qtactiveqt', 'qtandroi
                                         'qtquickcontrols', 'qtrepotools', 'qtscript', \
                                         'qtsensors', 'qtserialport', 'qtsvg', 'qtsystems', \
                                         'qttools', 'qttranslations', 'qtwayland', \
-                                        'qtwebkit', 'qtwebkit-examples', 'qtwinextras', \
-                                        'qtxmlpatterns', 'qtx11extras' ]
+                                        'qtwebkit', 'qtwebkit-examples', 'qtwebsockets', \
+                                        'qtwinextras', 'qtxmlpatterns', 'qtx11extras' ]
 QT5_ESSENTIALS                      = [ 'qtbase', 'qtdeclarative', 'qtdoc', \
                                         'qtmultimedia', 'qtquick1', 'qtquickcontrols', \
                                         'qtscript', 'qttools', 'qtwebkit', \
