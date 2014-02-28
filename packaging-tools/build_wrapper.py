@@ -109,6 +109,7 @@ BUILD_META_INFO_FILE        = 'releases/build-meta'
 ###########################################
 class BldCommand:
     init_build_cycle            = 'init'
+    init_qtcreator_build_cycle  = 'init_qtcreator'
     init_app_build_cycle        = 'init_app'
     execute_qt5_src_pkg         = 'build_src'
     execute_qt5_bin_bld         = 'build_bin'
@@ -128,6 +129,7 @@ class BldCommand:
     ###########################################
     def is_valid_cmd(self):
         commands = [self.init_build_cycle]
+        commands += [self.init_qtcreator_build_cycle]
         commands += [self.init_app_build_cycle]
         commands += [self.execute_qt5_src_pkg]
         commands += [self.execute_qt5_bin_bld]
@@ -178,6 +180,8 @@ class BldCommand:
                 return False
         elif self.options.command == self.execute_qt5_app_bld:
             return self.validate_qt5_app_build_args()
+        elif self.options.command == self.init_qtcreator_build_cycle:
+            return self.validate_init_qtcreator_build_cycle_args()
         else:
             if len(sys.argv) < 15:
                 return False
@@ -238,6 +242,27 @@ class BldCommand:
             print('*** Qt5 app build missing command line argument: --path')
             sys.exit(-1)
 
+        return True
+
+    ###########################################
+    # Validate build args for QtCreator init
+    ###########################################
+    def validate_init_qtcreator_build_cycle_args(self):
+        if not self.options.license:
+            print('*** QtCreator init is missing command line argument: --license')
+            sys.exit(-1)
+        if not self.options.time_stamp:
+            print('*** QtCreator init is missing command line argument: --time_stamp')
+            sys.exit(-1)
+        if not self.options.build_number:
+            print('*** QtCreator init is missing command line argument: --build_number')
+            sys.exit(-1)
+        if not self.options.server:
+            print('*** QtCreator init is missing command line argument: --server')
+            sys.exit(-1)
+        if not self.options.path:
+            print('*** QtCreator init is missing command line argument: --path')
+            sys.exit(-1)
         return True
 
     ###########################################
@@ -332,6 +357,22 @@ def initialize_build():
     # Update latest link
     cmd_args = [SSH_COMMAND, PKG_SERVER_ADDR, 'ln -sfn', REMOTE_DIR, LATEST_DIR]
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+
+
+###############################
+# initialize_build
+###############################
+def initialize_qtcreator_build():
+    sanity_check_packaging_server()
+    # Qt Creator directory
+    remote_base_dir = PATH + '/' + LICENSE + '/' + 'qtcreator'
+    remote_dest_dir = remote_base_dir + '/' + TIME_STAMP[:10] + '_' + BUILD_NUMBER
+    remote_latest_dir = remote_base_dir + '/' + 'latest'
+    # remote destination directory
+    create_remote_dirs(PKG_SERVER_ADDR, remote_dest_dir)
+    # 'latest' symlink pointing to remote destination directory
+    update_latest_link(remote_dest_dir, remote_latest_dir)
+
 
 ###############################
 # handle_ifw_build()
@@ -876,10 +917,6 @@ def handle_qt_creator_build():
     sanity_check_packaging_server()
 
     # Qt Creator directory
-    dir_path = PATH + '/' + LICENSE + '/' + 'qtcreator'
-    create_remote_dirs(PKG_SERVER_ADDR, dir_path + '/' + TIME_STAMP[:10] + '_' + BUILD_NUMBER)
-    cmd_args = [SSH_COMMAND, PKG_SERVER_ADDR, 'ln -sfn', dir_path + '/' + TIME_STAMP[:10] + '_' + BUILD_NUMBER, dir_path + '/' + 'latest']
-    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
     dir_path = PATH + LICENSE + '/qtcreator/latest'
 
     # snapshot directory
@@ -1449,6 +1486,8 @@ def main():
     parse_cmd_line()
     if COMMAND == BldCommand.init_build_cycle:
         initialize_build()
+    elif COMMAND == BldCommand.init_qtcreator_build_cycle:
+        initialize_qtcreator_build()
     elif COMMAND == BldCommand.execute_qt5_src_pkg:
         handle_qt_src_package_build()
     elif COMMAND == BldCommand.init_app_build_cycle:
