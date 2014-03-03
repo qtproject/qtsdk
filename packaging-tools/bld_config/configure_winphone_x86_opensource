@@ -1,0 +1,1 @@
+-opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -xplatform winphone-x86-msvc2012

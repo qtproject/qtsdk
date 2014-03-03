@@ -1,0 +1,1 @@
+-commercial -confirm-license -debug-and-release -release -nomake tests -nomake examples -xplatform winrt-x64-msvc2013
