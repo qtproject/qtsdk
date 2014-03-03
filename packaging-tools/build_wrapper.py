@@ -1029,7 +1029,6 @@ def handle_installer_build(installer_type):
         print('*** The given file does not exist: {0}'.format(conf_file))
         sys.exit(-1)
     branch = 'release' # TODO
-    platform = PLATFORM
     if TARGET_ENV.find('64') != -1:
         arch = 'x64'
     else:
