@@ -889,7 +889,6 @@ def handle_qt_release_build():
         handle_qt_ios_release_build()
     else:
         handle_qt_desktop_release_build()
-        handle_examples_injection()
 
     remote_dir = LATEST_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV]
     srv_and_remote_dir = PKG_SERVER_ADDR + ':' + remote_dir
