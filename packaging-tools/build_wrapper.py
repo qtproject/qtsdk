@@ -902,7 +902,7 @@ def handle_qt_release_build():
         if file_name.endswith('.7z'):
             cmd_args = [SCP_COMMAND, file_name, srv_and_remote_dir + '/']
             bldinstallercommon.do_execute_sub_process(cmd_args, local_archives_dir, True)
-            if QT5_DOCS_ARCHIVE_NAME in file_name:
+            if QT5_DOCS_ARCHIVE_NAME in file_name and bldinstallercommon.is_linux_platform():
                 doc_archive_on_remote_disk = LATEST_DIR + '/src/doc/' + QT5_DOCS_ARCHIVE_NAME
                 if not bldinstallercommon.remote_path_exists(PKG_SERVER_ADDR, doc_archive_on_remote_disk, SSH_COMMAND):
                     cmd_args = [SCP_COMMAND, file_name, PKG_SERVER_ADDR + ':' + LATEST_DIR + '/src/doc/']
