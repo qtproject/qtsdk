@@ -1,1 +1,1 @@
--opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -xplatform winrt-x64-msvc2013
+-opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -skip qtenginio -xplatform winrt-x64-msvc2013

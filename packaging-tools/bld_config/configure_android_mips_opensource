@@ -1,1 +1,1 @@
--opensource -confirm-license -release -xplatform android-g++ -opengl es2 -android-arch mips -nomake tests -nomake examples -skip qtserialport -skip qtwebkit -skip qtwebkit-examples -skip qtx11extras -sysconfdir /etc/xdg -no-icu -openssl
+-opensource -confirm-license -release -xplatform android-g++ -opengl es2 -android-arch mips -nomake tests -nomake examples -skip qtserialport -skip qtwebkit -skip qtwebkit-examples -skip qtx11extras -skip qtenginio -sysconfdir /etc/xdg -no-icu -openssl

@@ -207,3 +207,10 @@ target_install_base:    /5.3/Src/qtwebsockets
 archive_uri:            /qt/5.3.0/latest/src/submodules/qtwebsockets-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 
+[qt.53.src.addons.qtenginio]
+archives:               src.addons.qtenginio
+target_install_base:    /5.3/Src/qtenginio
+[src.addons.qtenginio]
+archive_uri:            /qt/5.3.0/latest/src/submodules/qtenginio-@LICENSE@-src-@QT_VERSION@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+

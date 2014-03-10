@@ -1,1 +1,1 @@
--commercial -confirm-license -debug-and-release -release -nomake tests -nomake examples -xplatform winphone-x86-msvc2012
+-commercial -confirm-license -debug-and-release -release -nomake tests -nomake examples -skip qtenginio -xplatform winphone-x86-msvc2012
