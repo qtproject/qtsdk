@@ -85,37 +85,37 @@ rta_key_list:               Qt5_RTA_opensource_installer_tests_windows_mingw
 arg_configurations_file:    offline_installer_jobs/5.3/win_x86_msvc2010_opengl
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-msvc2010_opengl-%GLOBAL_VERSION%
-rta_key_list:               Qt5_RTA_opensource_installer_tests_windows_msvc2010_32bit
+rta_key_list:               Qt5_RTA_opensource_installer_tests_windows_msvc2010
 
 [release.53.offline.windows.x86.msvc2012_opengl]
 arg_configurations_file:    offline_installer_jobs/5.3/win_x86_msvc2012_opengl
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-msvc2012_opengl-%GLOBAL_VERSION%
-rta_key_list:               Qt5_RTA_opensource_installer_tests_windows_msvc2010_opengl_32bit
+rta_key_list:               Qt5_RTA_opensource_installer_tests_windows_msvc2012
 
 [release.53.offline.windows.x86.msvc2013_angle]
 arg_configurations_file:    offline_installer_jobs/5.3/win_x86_msvc2013
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-msvc2013-%GLOBAL_VERSION%
-rta_key_list:               Qt5_RTA_opensource_installer_tests_windows_msvc2012_32bit
+rta_key_list:               Qt5_RTA_opensource_installer_tests_windows_msvc2013_angle_32bit
 
 [release.53.offline.windows.x86.msvc2013_opengl]
 arg_configurations_file:    offline_installer_jobs/5.3/win_x86_msvc2013_opengl
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-msvc2013_opengl-%GLOBAL_VERSION%
-rta_key_list:               Qt5_RTA_opensource_installer_tests_windows_msvc2012_64bit
+rta_key_list:               Qt5_RTA_opensource_installer_tests_windows_msvc2013_opengl_32bit
 
 [release.53.offline.windows.x86.x64-msvc2013_angle]
 arg_configurations_file:    offline_installer_jobs/5.3/win_x64_msvc2013
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-msvc2013_64-%GLOBAL_VERSION%
-rta_key_list:               Qt5_RTA_opensource_installer_tests_windows_msvc2012_opengl_64bit
+rta_key_list:               Qt5_RTA_opensource_installer_tests_windows_msvc2013_angle_64bit
 
 [release.53.offline.windows.x86.x64-msvc2013_opengl]
 arg_configurations_file:    offline_installer_jobs/5.3/win_x64_msvc2013_opengl
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-msvc2013_64_opengl-%GLOBAL_VERSION%
-rta_key_list:               Qt5_RTA_opensource_installer_tests_windows_android
+rta_key_list:               Qt5_RTA_opensource_installer_tests_windows_msvc2013_opengl_64bit
 
 [release.53.offline.windows.x86.mingw482.android]
 arg_configurations_file:    offline_installer_jobs/5.3/win_x86_mingw482_android
@@ -127,7 +127,7 @@ rta_key_list:               Qt5_RTA_opensource_installer_tests_windows_android
 arg_configurations_file:    offline_installer_jobs/5.3/win_x64_winrt
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-winrt-%GLOBAL_VERSION%
-rta_key_list:
+rta_key_list:               Qt5_RTA_opensource_installer_tests_windows_winrt
 
 
 ################################################################################
