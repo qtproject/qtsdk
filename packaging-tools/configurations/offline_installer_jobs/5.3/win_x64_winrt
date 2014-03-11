@@ -48,6 +48,7 @@ identifier:             windows
 [PackageConfigurationFiles]
 file_list:              qt-conf,
                         qt53-src-conf,
+                        qt53-doc-examples-conf,
                         x86_64-qt53-msvc2013-winrt_x64-conf,
                         x86_64-qt53-msvc2012-winphone_arm-conf,
                         x86_64-qt53-msvc2012-winphone_x86-conf,

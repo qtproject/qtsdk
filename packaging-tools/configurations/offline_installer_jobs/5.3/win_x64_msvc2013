@@ -48,6 +48,7 @@ identifier:             windows
 [PackageConfigurationFiles]
 file_list:              qt-conf,
                         qt53-src-conf,
+                        qt53-doc-examples-conf,
                         x86_64-qt53-msvc2013_64-conf,
                         x86-tools-qtcreator-conf,
                         x86-tools-vcredist_32-conf,

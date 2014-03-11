@@ -54,7 +54,8 @@ base_path:
 packages:
 
 [PackageConfigurationFiles]
-file_list:              qt53-doc-examples-conf
+file_list:              qt53-src-conf,
+                        qt53-doc-examples-conf
 
 [OfflinePackageExcludeList]
 package_list:

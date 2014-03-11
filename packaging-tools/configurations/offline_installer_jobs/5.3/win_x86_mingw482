@@ -48,6 +48,7 @@ identifier:             windows
 [PackageConfigurationFiles]
 file_list:              qt-conf,
                         qt53-src-conf,
+                        qt53-doc-examples-conf,
                         x86-qt53-mingw482_32-conf,
                         x86-tools-mingw482-conf,
                         x86-tools-qtcreator-conf,

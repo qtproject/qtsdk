@@ -48,6 +48,7 @@ identifier:             linux
 [PackageConfigurationFiles]
 file_list:              qt-conf,
                         qt53-src-conf,
+                        qt53-doc-examples-conf,
                         x86_64-qt53-gcc-conf,
                         x86_64-tools-qtcreator-conf,
                         installer-readme-conf

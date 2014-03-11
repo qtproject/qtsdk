@@ -54,8 +54,7 @@ base_path:
 packages:
 
 [PackageConfigurationFiles]
-file_list:              qt53-src-conf,
-                        x86_64-qt53-clang-conf
+file_list:              x86_64-qt53-clang-conf
 
 [OfflinePackageExcludeList]
 package_list:

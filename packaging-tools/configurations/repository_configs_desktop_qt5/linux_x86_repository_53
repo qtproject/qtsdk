@@ -53,8 +53,7 @@ base_path:
 packages:
 
 [PackageConfigurationFiles]
-file_list:              qt53-src-conf,
-                        x86-qt53-gcc-conf
+file_list:              x86-qt53-gcc-conf
 
 [OfflinePackageExcludeList]
 package_list:

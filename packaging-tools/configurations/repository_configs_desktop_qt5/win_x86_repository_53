@@ -53,8 +53,7 @@ base_path:
 packages:
 
 [PackageConfigurationFiles]
-file_list:              qt53-src-conf,
-                        x86-qt53-msvc2010_32-conf,
+file_list:              x86-qt53-msvc2010_32-conf,
                         x86-qt53-mingw48_32-conf,
                         x86-qt53-msvc2010_32-opengl-conf,
                         x86-qt53-msvc2012_32-opengl-conf,
