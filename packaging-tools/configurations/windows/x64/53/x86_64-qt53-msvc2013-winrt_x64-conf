@@ -43,18 +43,14 @@
 [qt.53.win64_msvc2013_winrt_x64]
 archives:               53.win64_msvc2013_winrt_x64.essentials,
                         53.win64_msvc2013_winrt_x64.addons,
-                        53.win64_msvc2013_64.icu_521_release.win_64,
-                        53.win64_msvc2013_64.d3d_compiler_46.x64
+                        53.win64_msvc2013_winrt_x64.d3d_compiler_47.x64
 target_install_base:    /5.3/winrt_x64
 
 [53.win64_msvc2013_winrt_x64.essentials]
 archive_uri:            /qt/5.3.0/latest/windows_vs2013_winrt_x64/qt5_essentials.7z
 [53.win64_msvc2013_winrt_x64.addons]
 archive_uri:            /qt/5.3.0/latest/windows_vs2013_winrt_x64/qt5_addons.7z
-[53.win64_msvc2013_64.icu_521_release.win_64]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/msvc2013/icu_52_1_msvc_2013_64.7z
-target_install_dir:     /bin
-[53.win64_msvc2013_winrt_x64.d3d_compiler_46.x64]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/d3dcompiler/msvc2013/TODO
+[53.win64_msvc2013_winrt_x64.d3d_compiler_47.x64]
+archive_uri:            http://download.qt-project.org/development_releases/prebuilt/d3dcompiler/msvc2013/d3dcompiler_47-x64.7z
 target_install_dir:     /bin
 

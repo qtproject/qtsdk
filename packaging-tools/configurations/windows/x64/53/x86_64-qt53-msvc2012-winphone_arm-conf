@@ -42,19 +42,11 @@
 
 [qt.53.win64_msvc2012_winphone_arm]
 archives:               53.win64_msvc2012_winphone_arm.essentials,
-                        53.win64_msvc2012_winphone_arm.addons,
-                        53.win64_msvc2012_64.icu_521_release.win_64,
-                        53.win64_msvc2012_64.d3d_compiler_46.x64
+                        53.win64_msvc2012_winphone_arm.addons
 target_install_base:    /5.3/winphone_arm
 
 [53.win64_msvc2012_winphone_arm.essentials]
 archive_uri:            /qt/5.3.0/latest/winphone8/arm/qt5_essentials.7z
 [53.win64_msvc2012_winphone_arm.addons]
 archive_uri:            /qt/5.3.0/latest/winphone8/arm/qt5_addons.7z
-[53.win64_msvc2012_winphone_arm.icu_521_release.win_64]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/msvc2012/icu_52_1_msvc_2012_64.7z
-target_install_dir:     /bin
-[53.win64_msvc2012_winphone_arm.d3d_compiler_46.x64]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/d3dcompiler/msvc2012/TODO
-target_install_dir:     /bin
 
