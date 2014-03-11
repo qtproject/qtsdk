@@ -47,8 +47,8 @@ version:                4.8.2
 version_tag:            %MINGW482_VERSION%
 package_default:        false
 [tools.win32_mingw482]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/mingw_32/i686-4.8.2-release-posix-dwarf-rt_v3-rev2.7z
+archive_uri:            http://download.qt-project.org/development_releases/prebuilt/mingw_32/i686-4.8.2-release-posix-dwarf-rt_v3-rev3.7z
 package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:
-archive_name:           i686-4.8.2-release-posix-dwarf-rt_v3-rev2.7z
+archive_name:           i686-4.8.2-release-posix-dwarf-rt_v3-rev3.7z

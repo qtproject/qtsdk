@@ -50,6 +50,6 @@ archive_uri:            /qt/5.3.0/latest/android_armv7/mingw_x86/qt5_essentials.
 [53.android_armv7.icu_521.mingw_32]
 archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/mingw/icu_52_1_mingw_builds_32_4_8_2_posix_dwarf.7z
 [53.android_armv7.mingw482.runtime]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/mingw_32/i686-4.8.2-release-posix-dwarf-rt_v3-rev2-runtime.7z
+archive_uri:            http://download.qt-project.org/development_releases/prebuilt/mingw_32/i686-4.8.2-release-posix-dwarf-rt_v3-rev3-runtime.7z
 target_install_dir:     /bin
 
