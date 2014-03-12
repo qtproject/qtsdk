@@ -115,6 +115,8 @@ UPDATE_REPOSITORY_URL_TAG           = '%UPDATE_REPOSITORY_URL%'
 PACKAGE_CREATION_DATE_TAG           = '%PACKAGE_CREATION_DATE%'
 INSTALL_PRIORITY_TAG                = '%INSTALL_PRIORITY%'
 SORTING_PRIORITY_TAG                = '%SORTING_PRIORITY%'
+VERSION_NUMBER_AUTO_INCREASE_TAG    = '%VERSION_NUMBER_AUTO_INCREASE%'
+VERSION_NUMBER_AUTO_INCREASE_VALUE  = ''
 
 KEY_SUBSTITUTION_LIST               = []
 PREFERRED_INSTALLER_NAME            = ''
@@ -286,6 +288,10 @@ def setup_option_parser():
     OPTION_PARSER.add_option("--add-substitution",
                       action="extend", type="string", dest="global_key_value_substitution_list",
                       help="E.g. $LICENSE$=opensource -> will replace all occurrences in configuration files.")
+    # forced version number bump for components
+    OPTION_PARSER.add_option("--force-version-number-increase",
+                      action="store_true", dest="force_version_number_increase", default=False,
+                      help="If you wish to enable forced version number bump for components that have %VERSION_NUMBER_AUTO_INCREASE% tag in package.xml file(s)")
 
 
 ##############################################################
@@ -362,6 +368,7 @@ def parse_cmd_line():
 
     global KEY_SUBSTITUTION_LIST
     global PREFERRED_INSTALLER_NAME
+    global VERSION_NUMBER_AUTO_INCREASE_VALUE
 
     CONFIGURATIONS_DIR                  = options.configurations_dir
     MAIN_CONFIG_NAME                    = options.configuration_file
@@ -391,6 +398,9 @@ def parse_cmd_line():
     INSTALLER_FRAMEWORK_OPENSSL                     = options.installer_framework_openssl
 
     PREFERRED_INSTALLER_NAME                        = options.preferred_installer_name
+
+    if options.force_version_number_increase:
+        VERSION_NUMBER_AUTO_INCREASE_VALUE = '-' + strftime('%Y%m%d%H%M', gmtime())
 
     # key value substitution list init
     delimeter = '='
@@ -584,10 +594,11 @@ def set_config_xml():
 ##############################################################
 def substitute_global_tags():
     """ Substitute common version numbers etc., match against tags """
-    print ' ----------------------------------------'
-    print ' Substituting global tags:'
-    print '    %PACKAGE_CREATION_DATE% = ' + BUILD_TIMESTAMP
-    print '    %SDK_VERSION_NUM%       = ' + INSTALLER_NAMING_SCHEME_VERSION_NUM
+    print '----------------------------------------'
+    print 'Substituting global tags:'
+    print '%PACKAGE_CREATION_DATE%        = ' + BUILD_TIMESTAMP
+    print '%SDK_VERSION_NUM%              = ' + INSTALLER_NAMING_SCHEME_VERSION_NUM
+    print '%VERSION_NUMBER_AUTO_INCREASE% = ' + VERSION_NUMBER_AUTO_INCREASE_VALUE
 
     # initialize the file list
     fileslist = []
@@ -599,6 +610,7 @@ def substitute_global_tags():
 
     bldinstallercommon.replace_in_files(fileslist, SDK_VERSION_NUM_TAG, INSTALLER_NAMING_SCHEME_VERSION_NUM)
     bldinstallercommon.replace_in_files(fileslist, PACKAGE_CREATION_DATE_TAG, BUILD_TIMESTAMP)
+    bldinstallercommon.replace_in_files(fileslist, VERSION_NUMBER_AUTO_INCREASE_TAG, VERSION_NUMBER_AUTO_INCREASE_VALUE)
 
 
 ##############################################################

@@ -388,9 +388,13 @@ def handle_repo_build(conf_file, license_type, branch, platform, arch, packages_
         sys.exit(-1)
     # init repo dirs
     init_repositories(repo_job_list)
+    # is this snapshot build? Then enable component version number forced update
+    forced_version_number_bump = False
+    if update_staging_repo and not update_production_repo:
+        forced_version_number_bump = True
     # handle repo build jobs
     for job in repo_job_list:
-        create_online_repository(job, packages_base_url)
+        create_online_repository(job, packages_base_url, forced_version_number_bump)
         # determine testination path on test server
         dest_path_repository, dest_path_pkg = generate_repo_dest_path_pending(job)
         # copy repo content to test server
@@ -406,7 +410,7 @@ def handle_repo_build(conf_file, license_type, branch, platform, arch, packages_
 
 
 # helper function to create online repository
-def create_online_repository(build_job, packages_base_url):
+def create_online_repository(build_job, packages_base_url, forced_version_number_bump):
     # ensure the string ends with '/'
     if not packages_base_url.endswith('/'):
         packages_base_url += '/'
@@ -419,6 +423,8 @@ def create_online_repository(build_job, packages_base_url):
                 '--version-number=' + build_job.version_number, \
                 '-u', urlparse.urljoin(packages_base_url, build_job.license), \
                 '--ifw-tools='+ build_job.ifw_tools]
+    if forced_version_number_bump:
+        cmd_args += ['--force-version-number-increase']
     if (len(build_job.substitution_arg_list) > 0):
         for item in build_job.substitution_arg_list:
             cmd_args = cmd_args + [item]
