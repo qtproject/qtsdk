@@ -42,7 +42,7 @@
 // constructor
 function Component()
 {
-    if ((installer.value("os") == "mac") {
+    if (installer.value("os") == "mac") {
         var xcodeVersion = installer.execute("/usr/bin/xcodebuild", new Array("-version"))[0];
         if (xcodeVersion) {
             var version = xcodeVersion.replace( /\D+/g, '');
