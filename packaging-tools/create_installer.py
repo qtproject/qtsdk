@@ -46,6 +46,7 @@ import ConfigParser
 import os
 import shutil
 import sys
+import re
 from time import gmtime, strftime
 from optparse import OptionParser, Option
 import multiprocessing # to get the cpu core count
@@ -824,6 +825,9 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
         if 'docs' in archive.package_finalize_items:
             doc_dir = bldinstallercommon.locate_directory(install_dir, 'doc')
             cleanup_docs(doc_dir)
+        if 'qml_examples_only' in archive.package_finalize_items:
+            examples_dir = bldinstallercommon.locate_directory(install_dir, 'examples')
+            qml_examples_only(examples_dir)
 
     if archive.rpath_target:
         if not archive.rpath_target.startswith(os.sep):
@@ -915,6 +919,41 @@ def create_target_components(target_config):
             bldinstallercommon.remove_tree(sdk_component.temp_data_dir)
             # substitute downloadable archive names in installscript.qs
             substitute_component_tags(sdk_component.generate_downloadable_archive_list(), sdk_component.meta_dir_dest)
+
+
+##############################################################
+# Cleanup examples
+##############################################################
+def qml_examples_only(examples_dir):
+    if not os.path.isdir(examples_dir):
+        print '*** Given examples directory is not valid path: ' + examples_dir
+        print '*** Archive not cleaned'
+        return
+    subdir_list = []
+    regex = re.compile('^qml\S.*')
+    for root, dirs, files in os.walk(examples_dir):
+        for basename in dirs:
+            if regex.search(basename):
+                root_dir = root
+                break
+        else:
+            continue
+        break
+
+    # populate subdirectory list from under examples
+    for name in os.listdir(root_dir):
+        dir_name = os.path.join(root_dir, name)
+        if os.path.isdir(dir_name):
+            subdir_list.append(name)
+
+    for submodule in subdir_list:
+        # remove unwanted subdirectories
+        if regex.search(submodule):
+            print "QML example package: " + submodule
+        else:
+            delete_dir = os.path.join(root_dir, submodule)
+            print "Delete non qml examples directory" + delete_dir
+            shutil.rmtree(delete_dir)
 
 
 ##############################################################
