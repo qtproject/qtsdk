@@ -75,7 +75,7 @@ Component.prototype.createOperations = function()
                                     "--path", "@MINGW482_DIR@\\bin\\g++.exe",
                                     "--abi", "x86-windows-msys-pe-32bit",
                                     "--supportedAbis", "x86-windows-msys-pe-32bit",
-                                    , "UNDOEXECUTE",
+                                    "UNDOEXECUTE",
                                     "@SDKToolBinary@", "rmTC", "--id", tcId];
 
             component.addOperation("Execute",
