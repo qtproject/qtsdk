@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package>
     <DisplayName>MinGW 4.8.2</DisplayName>
-    <Description>MinGW-builds 4.8.2 rev2 32 bit toolchain.</Description>
+    <Description>MinGW-builds 4.8.2 rev3 32 bit toolchain.</Description>
     <Version>%MINGW482_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Default>%PACKAGE_DEFAULT_TAG%</Default>
