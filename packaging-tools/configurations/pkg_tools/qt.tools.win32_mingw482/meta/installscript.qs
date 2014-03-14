@@ -76,7 +76,7 @@ Component.prototype.createOperations = function()
                                     "--abi", "x86-windows-msys-pe-32bit",
                                     "--supportedAbis", "x86-windows-msys-pe-32bit",
                                     "UNDOEXECUTE",
-                                    "@SDKToolBinary@", "rmTC", "--id", tcId];
+                                    "@SDKToolBinary@", "rmTC", "--id", tcId]);
 
             component.addOperation("Execute",
                                    ["{0,4}", "@SDKToolBinary@", "addKeys",
