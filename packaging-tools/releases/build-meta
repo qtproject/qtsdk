@@ -141,13 +141,13 @@ build_node_labels:          win-MinGW4.8.2-Windows7-x64_OpenGL
 build_target_dir:           windows_vs2013_winrt_x64
 build_node_labels:          win-msvc2013-Windows8.1-x64_WinRT
 
-[meta.windows.x86.msvc2012_winphone8_x86]
+[meta.windows.x64.msvc2012_winphone8_x86]
 build_target_dir:           winphone8/x86
-build_node_labels:          win-msvc2012-Windows8.1-x86_Winphone8_x86
+build_node_labels:          win-msvc2012-Windows8.1-x64_Winphone8_x86
 
-[meta.windows.x86.msvc2013_winphone8_arm]
+[meta.windows.x64.msvc2013_winphone8_arm]
 build_target_dir:           winphone8/arm
-build_node_labels:          win-msvc2012-Windows8.1-x86_Winphone8_arm
+build_node_labels:          win-msvc2012-Windows8.1-x64_Winphone8_arm
 
 [meta.mac.x64.clang]
 build_target_dir:           mac_x64_108
