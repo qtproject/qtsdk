@@ -16,17 +16,17 @@ version_tag:
 ## Linux repository
 ################################################################################
 [release.tools.repository.linux.x86]
-arg_configurations_file:    repository_configs_tools_desktop/repository_readme
+arg_configurations_file:    repository_configs_tools_desktop/repository_generic
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
-repo_content_type:          qt_readme
-repo_components_to_update:  qt.readme
+repo_content_type:          tools_generic
+repo_components_to_update:  qt.readme,qt.tools
 repo_url_specifier:         linux_x86/desktop/tools_generic
 
 [release.tools.repository.linux.x64]
-arg_configurations_file:    repository_configs_tools_desktop/repository_readme
+arg_configurations_file:    repository_configs_tools_desktop/repository_generic
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
-repo_content_type:          qt_readme
-repo_components_to_update:  qt.readme
+repo_content_type:          tools_generic
+repo_components_to_update:  qt.readme,qt.tools
 repo_url_specifier:         linux_x64/desktop/tools_generic
 
 
@@ -34,10 +34,10 @@ repo_url_specifier:         linux_x64/desktop/tools_generic
 ## Windows repository
 ################################################################################
 [release.tools.repository.windows.x86]
-arg_configurations_file:    repository_configs_tools_desktop/repository_readme
+arg_configurations_file:    repository_configs_tools_desktop/repository_generic
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
-repo_content_type:          qt_readme
-repo_components_to_update:  qt.readme
+repo_content_type:          tools_generic
+repo_components_to_update:  qt.readme,qt.tools
 repo_url_specifier:         windows_x86/desktop/tools_generic
 
 
@@ -45,10 +45,10 @@ repo_url_specifier:         windows_x86/desktop/tools_generic
 ## Mac repository
 ################################################################################
 [release.tools.repository.mac.x64]
-arg_configurations_file:    repository_configs_tools_desktop/repository_readme
+arg_configurations_file:    repository_configs_tools_desktop/repository_generic
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
-repo_content_type:          qt_readme
-repo_components_to_update:  qt.readme
+repo_content_type:          tools_generic
+repo_components_to_update:  qt.readme,qt.tools
 repo_url_specifier:         mac_x64/desktop/tools_generic
 
 

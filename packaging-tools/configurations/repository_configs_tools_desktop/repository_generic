@@ -65,3 +65,5 @@ repository_url_release:
 [PackageTemplates]
 template_dirs:          pkg_tools
 
+[qt.tools]
+
