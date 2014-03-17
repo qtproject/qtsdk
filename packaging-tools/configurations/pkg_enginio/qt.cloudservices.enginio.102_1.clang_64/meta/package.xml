@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt Enginio for clang 64-bit</DisplayName>
+    <Description>With Enginio, you can create stunning Qt applications, add a scalable and powerful Qt cloud backend as a service in no time and deploy in minutes without ever bothering about backend servers or scalability problems.</Description>
+    <Version>1.0.2</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <AutoDependOn>qt.cloudservices.enginio.10, qt.53.clang_64</AutoDependOn>
+    <Virtual>true</Virtual>
+    <Script>installscript.qs</Script>
+    <SortingPriority>100</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+

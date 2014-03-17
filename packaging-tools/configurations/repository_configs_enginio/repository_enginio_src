@@ -54,7 +54,7 @@ base_path:
 packages:
 
 [PackageConfigurationFiles]
-file_list:              enginio-src-conf
+file_list:              enginio-102-src-conf
 
 [OfflinePackageExcludeList]
 package_list:
@@ -64,4 +64,8 @@ repository_url_release:
 
 [PackageTemplates]
 template_dirs:          pkg_enginio
+
+
+[qt.cloudservices]
+[qt.cloudservices.enginio.10]
 
