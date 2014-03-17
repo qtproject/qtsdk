@@ -1041,7 +1041,7 @@ def run_build():
     # install
     install_qt()
     # build qmlpuppets into Qt install
-    if not ANDROID_BUILD:
+    if DESKTOP_BUILD:
         build_qmlpuppets()
     # build docs and copy to essentials install dir
     if not ANDROID_BUILD:
