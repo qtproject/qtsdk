@@ -79,41 +79,6 @@ if [ -z "$cfg" ]; then
   exit $E_BADARGS
 fi
 
-if [ $cfg == "mac-clang-10.8-x64" ]; then
-  export QT5_ESSENTIALS_LIB_PACKAGE_URI=$QT5_LIB_PATH_HTTP/mac_x64_108/qt5_essentials.7z
-  export QT5_ADDONS_LIB_PACKAGE_URI=$QT5_LIB_PATH_HTTP/mac_x64_108/qt5_addons.7z
-elif [ $cfg == "mac-clang-10.9-x64" ]; then
-  export QT5_ESSENTIALS_LIB_PACKAGE_URI=$QT5_LIB_PATH_HTTP/mac_x64_109/qt5_essentials.7z
-  export QT5_ADDONS_LIB_PACKAGE_URI=$QT5_LIB_PATH_HTTP/mac_x64_109/qt5_addons.7z
-elif [ $cfg == "mac-clang-10.7-x64_Android-armv7" ]; then
-  export QT5_ESSENTIALS_LIB_PACKAGE_URI=$QT5_LIB_PATH_HTTP/android_armv7/mac_x64/qt5_essentials.7z
-  export QT5_ADDONS_LIB_PACKAGE_URI=$QT5_LIB_PATH_HTTP/android_armv7/mac_x64/qt5_addons.7z
-elif [ $cfg == "mac-clang-10.7-x64_Android-armv5" ]; then
-  export QT5_ESSENTIALS_LIB_PACKAGE_URI=$QT5_LIB_PATH_HTTP/android_armv5/mac_x64/qt5_essentials.7z
-  export QT5_ADDONS_LIB_PACKAGE_URI=$QT5_LIB_PATH_HTTP/android_armv5/mac_x64/qt5_addons.7z
-elif [ $cfg == "mac-clang-10.7-x64_Android-x86" ]; then
-  export QT5_ESSENTIALS_LIB_PACKAGE_URI=$QT5_LIB_PATH_HTTP/android_x86/mac_x64/qt5_essentials.7z
-  export QT5_ADDONS_LIB_PACKAGE_URI=$QT5_LIB_PATH_HTTP/android_x86/mac_x64/qt5_addons.7z
-elif [ $cfg == "mac-clang-10.9-x64_Android-armv7" ]; then
-  export QT5_ESSENTIALS_LIB_PACKAGE_URI=$QT5_LIB_PATH_HTTP/android_armv7/mac_109_x64/qt5_essentials.7z
-  export QT5_ADDONS_LIB_PACKAGE_URI=$QT5_LIB_PATH_HTTP/android_armv7/mac_109_x64/qt5_addons.7z
-elif [ $cfg == "mac-clang-10.9-x64_Android-armv5" ]; then
-  export QT5_ESSENTIALS_LIB_PACKAGE_URI=$QT5_LIB_PATH_HTTP/android_armv5/mac_109_x64/qt5_essentials.7z
-  export QT5_ADDONS_LIB_PACKAGE_URI=$QT5_LIB_PATH_HTTP/android_armv5/mac_109_x64/qt5_addons.7z
-elif [ $cfg == "mac-clang-10.9-x64_Android-x86" ]; then
-  export QT5_ESSENTIALS_LIB_PACKAGE_URI=$QT5_LIB_PATH_HTTP/android_x86/mac_109_x64/qt5_essentials.7z
-  export QT5_ADDONS_LIB_PACKAGE_URI=$QT5_LIB_PATH_HTTP/android_x86/mac_109_x64/qt5_addons.7z
-elif [ $cfg == "mac-clang-10.8-x64_iOS" ]; then
-  export QT5_ESSENTIALS_LIB_PACKAGE_URI=$QT5_LIB_PATH_HTTP/ios/mac_x64/qt5_essentials.7z
-  export QT5_ADDONS_LIB_PACKAGE_URI=$QT5_LIB_PATH_HTTP/ios/mac_x64/qt5_addons.7z
-elif [ $cfg == "mac-clang-10.9-x64_iOS" ]; then
-  export QT5_ESSENTIALS_LIB_PACKAGE_URI=$QT5_LIB_PATH_HTTP/ios/mac_109_x64/qt5_essentials.7z
-  export QT5_ADDONS_LIB_PACKAGE_URI=$QT5_LIB_PATH_HTTP/ios/mac_109_x64/qt5_addons.7z
-fi
-
-echo "Qt5 essentials lib: $QT5_ESSENTIALS_LIB_PACKAGE_URI"
-echo "Qt5 addons lib: $QT5_ADDONS_LIB_PACKAGE_URI"
-
 export QT5_APPLICATION_BUILD_CMD="make -j1"
 export QT5_APPLICATION_INSTALL_CMD="make -j1"
 export IFW_INSTALLERBASE_URI=$PACKAGE_STORAGE_BASE_URL/$LICENSE/ifw/latest/installer-framework-build-mac-x64.7z
