@@ -1009,7 +1009,7 @@ def main_call_parameters():
     if QT_BUILD_OPTIONS.runtime_path:
         CONFIGURE_OPTIONS += ' ' + '-R' + ' ' + QT_BUILD_OPTIONS.runtime_path
 
-    if ANDROID_BUILD or 'ios' in CONFIGURE_OPTIONS.lower():
+    if ANDROID_BUILD or any(substr in CONFIGURE_OPTIONS.lower() for substr in ['ios', 'winrt', 'winphone']):
         DESKTOP_BUILD = False
 
     CONFIGURE_OPTIONS = CONFIGURE_OPTIONS.replace('  ', ' ')
