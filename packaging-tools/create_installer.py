@@ -822,6 +822,11 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
             count = count + 1
             move_directory_one_layer_up(install_dir)
         # perform package finalization tasks for the given archive
+        if 'erase_doc' in archive.package_finalize_items:
+            doc_dir = bldinstallercommon.locate_directory(install_dir, 'doc')
+            if os.path.exists(doc_dir):
+                print 'Erasing doc: ' + doc_dir
+                shutil.rmtree(doc_dir)
         if 'docs' in archive.package_finalize_items:
             doc_dir = bldinstallercommon.locate_directory(install_dir, 'doc')
             cleanup_docs(doc_dir)

@@ -46,6 +46,8 @@ archives:               53.ios.essentials,
 target_install_base:    /5.3/ios
 [53.ios.essentials]
 archive_uri:            /qt/5.3.0/latest/ios/mac_x64/qt5_essentials.7z
+package_finalize_items: erase_doc
 [53.ios.addons]
 archive_uri:            /qt/5.3.0/latest/ios/mac_x64/qt5_addons.7z
+package_finalize_items: erase_doc
 

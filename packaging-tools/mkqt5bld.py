@@ -607,9 +607,8 @@ def clean_up(install_dir):
         else:
             print_wrap('*** Warning! Unable to locate \\lib directory under: ' + base_path_addon)
 
-    # remove examples and docs from binary packages
+    # remove examples from binary packages
     bldinstallercommon.remove_directories_by_type(MAKE_INSTALL_ROOT_DIR, 'examples')
-    bldinstallercommon.remove_directories_by_type(MAKE_INSTALL_ROOT_DIR, 'doc')
     print_wrap('--------------------------------------------------------------------')
 
 

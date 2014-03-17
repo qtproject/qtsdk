@@ -48,9 +48,11 @@ target_install_base:    /5.3/gcc_64
 [53.gcc_64.essentials]
 archive_uri:            /qt/5.3.0/latest/linux_gcc_64_ubuntu1110/qt5_essentials.7z
 rpath_target:           /lib
+package_finalize_items: erase_doc
 [53.gcc_64.addons]
 archive_uri:            /qt/5.3.0/latest/linux_gcc_64_ubuntu1110/qt5_addons.7z
 rpath_target:           /lib
+package_finalize_items: erase_doc
 [53.gcc_64.icu_521]
 archive_uri:            http://master.qt-project.org/development_releases/prebuilt/icu/prebuilt/ubuntu1110/icu_52_1_ubuntu_11_10_64.7z
 target_install_dir:     /lib
