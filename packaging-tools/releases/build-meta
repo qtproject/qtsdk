@@ -110,7 +110,7 @@ build_target_dir:           android_x86/mingw_x86
 build_node_labels:          win-MinGW4.8-Windows7-x86_Android-x86
 
 [meta.windows_81.x86.msvc2012_32_opengl]
-build_target_dir:           windows_vs2012_32_opengl
+build_target_dir:           windows_81_vs2012_32_opengl
 build_node_labels:          win-msvc2012-Windows8.1-x86_OpenGL
 
 [meta.windows.x86.msvc2013_32_opengl]
@@ -145,7 +145,7 @@ build_node_labels:          win-msvc2013-Windows8.1-x64_WinRT
 build_target_dir:           winphone8/x86
 build_node_labels:          win-msvc2012-Windows8.1-x64_Winphone8_x86
 
-[meta.windows.x64.msvc2013_winphone8_arm]
+[meta.windows.x64.msvc2012_winphone8_arm]
 build_target_dir:           winphone8/arm
 build_node_labels:          win-msvc2012-Windows8.1-x64_Winphone8_arm
 
