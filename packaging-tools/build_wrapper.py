@@ -364,8 +364,12 @@ def initialize_build():
 ###############################
 def initialize_qtcreator_build():
     sanity_check_packaging_server()
+    qtcreator_edition_name = os.environ.get('QT_CREATOR_EDITION_NAME')
+    dir_name = 'qtcreator'
+    if qtcreator_edition_name:
+        dir_name += '_' + qtcreator_edition_name
     # Qt Creator directory
-    remote_base_dir = PATH + '/' + LICENSE + '/' + 'qtcreator'
+    remote_base_dir = PATH + '/' + LICENSE + '/' + dir_name
     remote_dest_dir = remote_base_dir + '/' + TIME_STAMP[:10] + '_' + BUILD_NUMBER
     remote_latest_dir = remote_base_dir + '/' + 'latest'
     # remote destination directory
