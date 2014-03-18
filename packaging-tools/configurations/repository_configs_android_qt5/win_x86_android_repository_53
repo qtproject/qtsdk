@@ -54,7 +54,7 @@ packages:
 
 [PackageConfigurationFiles]
 file_list:              android-qt53-x86-conf,
-#                        android-qt53-armv5-conf,
+                        android-qt53-armv5-conf,
                         android-qt53-armv7-conf
 
 [OfflinePackageExcludeList]
