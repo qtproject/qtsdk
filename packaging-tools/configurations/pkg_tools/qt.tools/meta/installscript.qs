@@ -76,9 +76,12 @@ changeInstallerLicenseLabels = function()
 qmakeOutputInstallerKey = function(aComponent)
 {
     var qmakeOutputInstallerKey = aComponent.name;
-    // try to find the parent
-    if (qmakeOutputInstallerKey.lastIndexOf(".") !== -1) {
-        qmakeOutputInstallerKey = qmakeOutputInstallerKey.slice(0, qmakeOutputInstallerKey.lastIndexOf("."));
+    // if installing packages 5.0.2 - 5.2.x, in later releases the addons/essentials split is removed from packages
+    if (qmakeOutputInstallerKey.match("essentials$") || qmakeOutputInstallerKey.match("addons$")) {
+        // try to find the parent
+        if (qmakeOutputInstallerKey.lastIndexOf(".") !== -1) {
+            qmakeOutputInstallerKey = qmakeOutputInstallerKey.slice(0, qmakeOutputInstallerKey.lastIndexOf("."));
+        }
     }
     qmakeOutputInstallerKey += "_qmakeoutput";
     return qmakeOutputInstallerKey;
