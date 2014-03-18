@@ -920,7 +920,10 @@ def handle_qt_creator_build():
     sanity_check_packaging_server()
 
     # Qt Creator directory
+    qtcreator_edition_name = os.environ.get('QT_CREATOR_EDITION_NAME')
     dir_path = PATH + LICENSE + '/qtcreator/latest'
+    if qtcreator_edition_name:
+        dir_path = PATH + LICENSE + '/qtcreator' + '_' + qtcreator_edition_name + '/latest'
 
     # snapshot directory
     snapshot_path = SNAPSHOT_PATH
