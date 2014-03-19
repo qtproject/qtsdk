@@ -62,8 +62,6 @@ your home directory, but you can specify another directory (<install_dir>). On
 Windows, however, the default top-level installation directory is "C:\Qt\Qt<version>".
 Each Qt version is installed in the <install_dir>/<version> directory. This directory
 contains subdirectories for the Qt libraries (<compiler>) and sources (Src).
-The <compiler> directory contains subdirectories for development tools (bin) and
-examples.
 
 
 Starting Development Tools
@@ -95,7 +93,7 @@ Running Example Applications
 
 You can open most example applications in the Qt Creator Welcome mode to build
 and run them. Additional examples can be opened by browsing
-<install_dir>/<version>/<compiler>/examples.
+<install_dir>/Examples.
 
 Building Qt 5 from Source
 -------------------------
