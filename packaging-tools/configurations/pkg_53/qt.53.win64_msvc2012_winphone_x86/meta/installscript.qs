@@ -65,6 +65,11 @@ function createShortcuts()
     component.addOperation( "CreateShortcut",
                             component_root_path + "/bin/linguist.exe",
                             "@StartMenuDir@/" + qtStringVersion + "/Windows Phone 8 (x86 Emulator) MSVC 2012 (32-bit)/Linguist.lnk");
+
+    // qtd3dservice
+    component.addOperation( "CreateShortcut",
+                            component_root_path + "/bin/qtd3dservice.exe",
+                            "@StartMenuDir@/" + qtStringVersion + "/Windows Phone 8 (x86 Emulator) MSVC 2012 (32-bit)/qtd3dservice.lnk");
 }
 
 Component.prototype.beginInstallation = function()
