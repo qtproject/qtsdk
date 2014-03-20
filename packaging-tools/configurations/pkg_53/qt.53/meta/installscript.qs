@@ -48,7 +48,7 @@ function Component()
         // Enable the right toolchains
         var msvc2010 = !!installer.environmentVariable("VS100COMNTOOLS");
         var msvc2012 = !!installer.environmentVariable("VS110COMNTOOLS");
-        var msvc2013 = !!installer.environmentVariable("VS110COMNTOOLS");
+        var msvc2013 = !!installer.environmentVariable("VS120COMNTOOLS");
 
         // first reset the latest Qt5.x.x package default values to false
         installer.componentByName("qt.53.win32_mingw482").setValue("Default", "false");
