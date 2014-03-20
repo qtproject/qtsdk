@@ -105,7 +105,6 @@ Component.prototype.createOperations = function()
                                     "--name", "Qt " + qtStringVersion + " for Windows Phone 8 x86 MSVC2012 32bit (Emulator)",
                                     "--toolchain", "x86-windows-msvc2012-pe-32bit",
                                     "--qt", component.name,
-                                    "--debuggerengine", "4",
                                     "--devicetype", "WinRt.Device.Emulator",
                                     "UNDOEXECUTE",
                                     "@SDKToolBinary@", "rmKit", "--id", kitName]);
