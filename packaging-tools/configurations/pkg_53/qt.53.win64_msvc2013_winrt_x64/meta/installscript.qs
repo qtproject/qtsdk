@@ -93,7 +93,7 @@ Component.prototype.createOperations = function()
                                    ["@SDKToolBinary@", "addQt",
                                     "--id", component.name,
                                     "--name", "Qt " + qtStringVersion + " for Windows Runtime 64bit",
-                                    "--type", "WinRt.QtVersion.WindowsRT",
+                                    "--type", "WinRt.QtVersion.WindowsRuntime",
                                     "--qmake", qmakeBinary,
                                     "UNDOEXECUTE",
                                     "@SDKToolBinary@", "rmQt", "--id", component.name]);
@@ -106,7 +106,7 @@ Component.prototype.createOperations = function()
                                     "--toolchain", "x86-windows-msvc2013-pe-64bit",
                                     "--qt", component.name,
                                     "--debuggerengine", "4",
-                                    "--devicetype", "Desktop",
+                                    "--devicetype", "WinRt.Device.Local",
                                     "UNDOEXECUTE",
                                     "@SDKToolBinary@", "rmKit", "--id", kitName]);
 

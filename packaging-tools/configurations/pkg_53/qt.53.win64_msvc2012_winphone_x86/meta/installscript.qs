@@ -93,7 +93,7 @@ Component.prototype.createOperations = function()
                                    ["@SDKToolBinary@", "addQt",
                                     "--id", component.name,
                                     "--name", "Qt " + qtStringVersion + " for Windows Phone 8 x86 (Emulator)",
-                                    "--type", "WinRt.QtVersion.WindowsRT",
+                                    "--type", "WinRt.QtVersion.WindowsPhone",
                                     "--qmake", qmakeBinary,
                                     "UNDOEXECUTE",
                                     "@SDKToolBinary@", "rmQt", "--id", component.name]);
@@ -106,7 +106,7 @@ Component.prototype.createOperations = function()
                                     "--toolchain", "x86-windows-msvc2012-pe-32bit",
                                     "--qt", component.name,
                                     "--debuggerengine", "4",
-                                    "--devicetype", "Desktop",
+                                    "--devicetype", "WinRt.Device.Emulator",
                                     "UNDOEXECUTE",
                                     "@SDKToolBinary@", "rmKit", "--id", kitName]);
 

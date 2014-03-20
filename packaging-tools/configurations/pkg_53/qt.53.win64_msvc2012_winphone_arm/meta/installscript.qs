@@ -93,7 +93,7 @@ Component.prototype.createOperations = function()
                                    ["@SDKToolBinary@", "addQt",
                                     "--id", component.name,
                                     "--name", "Qt " + qtStringVersion + " for Windows Phone 8 arm",
-                                    "--type", "WinRt.QtVersion.WindowsRT",
+                                    "--type", "WinRt.QtVersion.WindowsPhone",
                                     "--qmake", qmakeBinary,
                                     "UNDOEXECUTE",
                                     "@SDKToolBinary@", "rmQt", "--id", component.name]);
@@ -103,10 +103,10 @@ Component.prototype.createOperations = function()
                                    ["@SDKToolBinary@", "addKit",
                                     "--id", kitName,
                                     "--name", "Qt " + qtStringVersion + " for Windows Phone 8 arm MSVC2012 32bit",
-                                    "--toolchain", "x86-windows-msvc2012-pe-32bit",
+                                    "--toolchain", "arm-windows-msvc2012-pe-32bit",
                                     "--qt", component.name,
                                     "--debuggerengine", "4",
-                                    "--devicetype", "Desktop",
+                                    "--devicetype", "WinRt.Device.Phone",
                                     "UNDOEXECUTE",
                                     "@SDKToolBinary@", "rmKit", "--id", kitName]);
 
