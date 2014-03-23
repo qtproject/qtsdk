@@ -3,6 +3,7 @@
     <DisplayName>Qt Enginio 1.0</DisplayName>
     <Description>With Enginio, you can create stunning Qt applications, add a scalable and powerful Qt cloud backend as a service in no time and deploy in minutes without ever bothering about backend servers or scalability problems.</Description>
     <Version>1.0.3</Version>
+    <Default>true</Default>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <SortingPriority>100</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
