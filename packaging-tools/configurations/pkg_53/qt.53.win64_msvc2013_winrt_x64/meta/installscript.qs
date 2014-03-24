@@ -51,6 +51,21 @@ function createShortcuts()
     var component_root_path = installer.value("TargetDir") + "%TARGET_INSTALL_DIR%";
     component_root_path = component_root_path.replace(/\//g, "\\");
 
+    var batchFileName = component_root_path + "\\" + "bin" + "\\" + "qtenv2.bat";
+    var contentString = "echo off\r\n";
+    contentString += "echo Setting up environment for Qt usage...\r\n";
+    contentString += "set PATH="  + component_root_path + "\\bin;%PATH%\r\n";
+    contentString += "cd /D " + component_root_path + "\r\n";
+    contentString += "echo Remember to call vcvarsall.bat to complete environment setup!\r\n";
+    // Dump batch file
+    component.addOperation("AppendFile", batchFileName, contentString);
+
+    var windir = installer.environmentVariable("WINDIR");
+    if (windir == "") {
+        QMessageBox["warning"]( "Error" , "Error", "Could not find windows installation directory");
+        return;
+    }
+
     // Assistant
     component.addOperation( "CreateShortcut",
                             component_root_path + "/bin/assistant.exe",
@@ -122,6 +137,13 @@ Component.prototype.createOperations = function()
 
         } catch( e ) {
             print( e );
+        }
+        if (installer.value("os") == "win") {
+            var settingsFile = installer.value("QtCreatorInstallerSettingsFile");
+            if (settingsFile == "")
+                return;
+            component.addOperation("Settings", "path="+settingsFile, "method=add_array_value",
+            "key=Plugins/ForceEnabled", "value=WinRt");
         }
     }
 }
