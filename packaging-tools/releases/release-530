@@ -139,6 +139,7 @@ arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=ta
 repo_content_type:          53
 repo_components_to_update:  qt.53.*
 repo_url_specifier:         linux_x86/desktop/qt5_53
+rta_key_list:               Qt5_RTA_opensource_onlineInstaller_tests_linux_32bit_LatestQt
 
 [release.53.repository.linux.x86.src_doc_examples]
 arg_configurations_file:    repository_configs_desktop_qt5/repository_53_src_doc_examples
@@ -153,6 +154,7 @@ arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=ta
 repo_content_type:          53
 repo_components_to_update:  qt.53.*
 repo_url_specifier:         linux_x86/android/qt5_53
+rta_key_list:               Qt5_RTA_opensource_onlineInstaller_tests_linux_android_32bit_LatestQt
 
 [release.53.repository.linux.x64]
 arg_configurations_file:    repository_configs_desktop_qt5/linux_x64_repository_53
@@ -160,6 +162,7 @@ arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=ta
 repo_content_type:          53
 repo_components_to_update:  qt.53.*
 repo_url_specifier:         linux_x64/desktop/qt5_53
+rta_key_list:               Qt5_RTA_opensource_onlineInstaller_tests_linux_64bit_LatestQt
 
 [release.53.repository.linux.x64.src_doc_examples]
 arg_configurations_file:    repository_configs_desktop_qt5/repository_53_src_doc_examples
@@ -174,6 +177,7 @@ arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=ta
 repo_content_type:          53
 repo_components_to_update:  qt.53.*
 repo_url_specifier:         linux_x64/android/qt5_53
+rta_key_list:               Qt5_RTA_opensource_onlineInstaller_tests_linux_android_64bit_LatestQt
 
 
 ################################################################################
@@ -185,6 +189,7 @@ arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zi
 repo_content_type:          53
 repo_components_to_update:  qt.53.*
 repo_url_specifier:         windows_x86/desktop/qt5_53
+rta_key_list:               Qt5_RTA_opensource_onlineInstaller_tests_windows_mingw_LatestQt, Qt5_RTA_opensource_onlineInstaller_tests_windows_vc2010_LatestQt, Qt5_RTA_opensource_onlineInstaller_tests_windows_vc2012_LatestQt, Qt5_RTA_opensource_onlineInstaller_tests_windows_vc2013_angle_32bit_LatestQt, Qt5_RTA_opensource_onlineInstaller_tests_windows_vc2013_opengl_32bit_LatestQt, Qt5_RTA_opensource_onlineInstaller_tests_windows_vc2013_angle_64bit_LatestQt, Qt5_RTA_opensource_onlineInstaller_tests_windows_vc2013_opengl_64bit_LatestQt
 
 [release.53.repository.windows.x86.src_doc_examples]
 arg_configurations_file:    repository_configs_desktop_qt5/repository_53_src_doc_examples
@@ -199,6 +204,7 @@ arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zi
 repo_content_type:          53
 repo_components_to_update:  qt.53.*
 repo_url_specifier:         windows_x86/android/qt5_53
+rta_key_list:               Qt5_RTA_opensource_onlineInstaller_tests_windows_android_LatestQt
 
 [release.53.repository.windows.x86.winrt]
 arg_configurations_file:    repository_configs_winrt_qt5/win_x64_winrt_repository_53
@@ -217,6 +223,7 @@ arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=ta
 repo_content_type:          53
 repo_components_to_update:  qt.53.*
 repo_url_specifier:         mac_x64/desktop/qt5_53
+rta_key_list:               Qt5_RTA_opensource_onlineInstaller_tests_mac_LatestQt
 
 [release.53.repository.mac.x64.src_doc_examples]
 arg_configurations_file:    repository_configs_desktop_qt5/repository_53_src_doc_examples
@@ -231,6 +238,7 @@ arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=ta
 repo_content_type:          53
 repo_components_to_update:  qt.53.*
 repo_url_specifier:         mac_x64/android/qt5_53
+rta_key_list:               Qt5_RTA_opensource_onlineInstaller_tests_mac_android_LatestQt
 
 [release.53.repository.mac.x64.ios]
 arg_configurations_file:    repository_configs_ios_qt5/mac_x64_ios_repository_53
@@ -238,4 +246,5 @@ arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=ta
 repo_content_type:          53
 repo_components_to_update:  qt.53.*
 repo_url_specifier:         mac_x64/ios/qt5_53
+rta_key_list:               Qt5_RTA_opensource_onlineInstaller_tests_mac_ios_LatestQt
 
