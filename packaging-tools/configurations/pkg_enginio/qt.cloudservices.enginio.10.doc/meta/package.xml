@@ -4,7 +4,7 @@
     <Description>Qt Enginio Doc Package.</Description>
     <Version>1.0.2-1</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Dependencies>qt.tools</Dependencies>
+    <Dependencies>qt.tools, qt.tools.qtcreator</Dependencies>
     <AutoDependOn>qt.cloudservices.enginio.10</AutoDependOn>
     <Virtual>true</Virtual>
     <Script>installscript.qs</Script>
