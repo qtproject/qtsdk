@@ -57,7 +57,7 @@ from optparse import OptionParser, Option
 
 import bldinstallercommon
 import release_build_handler
-
+import pkg_constants
 
 # ----------------------------------------------------------------------
 # external commands
@@ -1121,13 +1121,16 @@ def handle_installer_build(installer_type):
 
     #Update latest link
     update_latest_link(remote_dest_dir, latest_dir)
-    # copy rta description file(s)
-    for file_name in dir_list:
-        if file_name.endswith('.txt'):
+
+    # copy rta description file(s) to network drive
+    rta_descr_output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.RTA_DESCRIPTION_FILE_DIR_NAME)
+    for file_name in rta_descr_output_dir:
+        if file_name.startswith(pkg_constants.RTA_DESCRIPTION_FILE_NAME_BASE):
             cmd_args = [SCP_COMMAND, file_name, PKG_SERVER_ADDR + ':' + remote_dest_dir + '/' + file_name]
             bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
     # (3) trigger rta cases
-    trigger_rta(installer_output_dir)
+    rta_descr_output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.RTA_DESCRIPTION_FILE_DIR_NAME)
+    trigger_rta(rta_descr_output_dir)
 
 
 ###############################
@@ -1198,42 +1201,46 @@ def update_latest_link(remote_dest_dir, latest_dir):
 ###############################
 # Trigger RTA cases
 ###############################
-def trigger_rta(installer_output_dir):
+def trigger_rta(rta_description_files_dir):
+    # check if rta cases define for this build job
+    if not os.path.isdir(rta_description_files_dir):
+        print('*** Error - Given rta_description_files_dir does not exist: {0}'.format(rta_description_files_dir))
+        sys.exit(-1)
+    dir_list = os.listdir(rta_description_files_dir)
+    matching = [s for s in dir_list if pkg_constants.RTA_DESCRIPTION_FILE_NAME_BASE in s]
+    if not matching:
+        print('No RTA cases defined for this build job.')
+        return
     # obtain RTA server base url
     if not os.environ.get('RTA_SERVER_BASE_URL'):
-        print('*** Error - RTA server base url is not defined. Unable to proceed!')
-        sys.exit(-1)
+        print('*** Error - RTA_SERVER_BASE_URL env. variable is not defined. Unable to proceed! RTA not run for this build job!')
+        return
     rta_server_base_url = os.environ['RTA_SERVER_BASE_URL']
     if not (rta_server_base_url.endswith('/')):
         rta_server_base_url += '/'
-
-    if not os.path.isdir(installer_output_dir):
-        print('*** Error - Given installer_output_dir does not exist: {0}'.format(installer_output_dir))
-        sys.exit(-1)
-    dir_list = os.listdir(installer_output_dir)
-    matching = [s for s in dir_list if 'rta_description_file' in s]
-    # sanity check, should contain only one rta test case file
-    if len(matching) != 1:
-        print('*** Warning - Given installer_output_dir contained {0} rta description files?'.format(len(matching)))
-        return
-    rta_file = os.path.join(installer_output_dir, matching[0])
-    f = open(rta_file)
-    for line in iter(f):
-        line_split = line.split(' ')
-        if len(line_split) != 2:
-            print('*** Error - Invalid format in rta description file {0}, line: {1}'.format(rta_file, line))
-            sys.exit(-1)
-        rta_keys = line_split[1].split(',')
-        for item in rta_keys:
-            url = rta_server_base_url + item.rstrip() + '/build?token=JENKINS_SQUISH'
-            print('Triggering RTA case: {0}'.format(url))
-            urllib.urlretrieve(url)
-    f.close()
+    # iterate rta description files
+    for rta_description_file in matching:
+        print('Reading RTA description file: {0}'.format(os.path.join(rta_description_files_dir, rta_description_file)))
+        rta_file = os.path.join(rta_description_files_dir, rta_description_file)
+        f = open(rta_file)
+        for line in iter(f):
+            line_split = line.split(' ')
+            if len(line_split) != 2:
+                print('*** Error - Invalid format in rta description file {0}, line: {1}'.format(rta_file, line))
+                sys.exit(-1)
+            rta_keys = line_split[1].split(',')
+            for item in rta_keys:
+                item = item.rstrip().replace(' ', '')
+                if item:
+                    url = rta_server_base_url + item + '/build?token=JENKINS_SQUISH'
+                    print('Triggering RTA case: {0}'.format(url))
+                    urllib.urlretrieve(url)
+        f.close()
 
 
-#def handle_online_installer_build(license, ....):
-
-
+################################
+# Handle online repository build
+################################
 def handle_online_repository_build():
     conf_file = os.environ['RELEASE_BUILD_CONF_FILE']
     if not os.path.exists(conf_file):
@@ -1257,6 +1264,9 @@ def handle_online_repository_build():
         if update.lower() in ['yes', 'true', '1']:
             update_production_repo = True
     release_build_handler.handle_repo_build(conf_file, LICENSE, 'release', PLATFORM, arch, packages_base_url, update_staging_repo, update_production_repo)
+    # (3) trigger rta cases
+    rta_descr_output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.RTA_DESCRIPTION_FILE_DIR_NAME)
+    trigger_rta(rta_descr_output_dir)
 
 
 ###############################

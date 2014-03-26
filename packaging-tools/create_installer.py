@@ -54,6 +54,7 @@ import multiprocessing # to get the cpu core count
 from threadedwork import ThreadedWork
 import bld_utils
 import bldinstallercommon
+import pkg_constants
 import bld_ifw_tools
 from bld_ifw_tools import IfwOptions
 from archiveresolver import ArchiveLocationResolver

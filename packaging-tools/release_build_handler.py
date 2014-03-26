@@ -45,6 +45,7 @@ from __future__ import print_function
 import sys
 import os
 import bldinstallercommon
+import pkg_constants
 import ConfigParser
 import urlparse
 import tarfile
@@ -74,7 +75,7 @@ PROD_SRV_REPO_PENDING_AREA_DIR          = ''
 PKG_SERVER_URL                          = ''
 # search/replace tags in configuration files
 GLOBAL_VERSION_TAG                      = '%GLOBAL_VERSION%'
-RTA_DESCRIPTION_FILE                    = 'rta_description_file'
+
 
 # container for online repository build job parameters
 class BuildJob:
@@ -305,11 +306,13 @@ def handle_installer_build(conf_file, installer_type, license_type, branch, plat
     if (len(job_list) == 0):
         print('*** Fatal error! No [{0}] installer build jobs found from: {1}. Probably an error?'.format(installer_type, conf_file))
         sys.exit(-1)
-    output_dir = os.path.join(SCRIPT_ROOT_DIR, 'installer_output')
+    installer_output_dir = os.path.join(SCRIPT_ROOT_DIR, 'installer_output')
+    rta_descr_output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.RTA_DESCRIPTION_FILE_DIR_NAME)
+    bldinstallercommon.create_dirs(rta_descr_output_dir)
     # create rta description file
     architecture = bldinstallercommon.get_architecture()
     plat_suffix = bldinstallercommon.get_platform_suffix()
-    rta_description_file_name = os.path.join(output_dir, RTA_DESCRIPTION_FILE + '-' + plat_suffix + '-' + architecture + '.txt')
+    rta_description_file_name = os.path.join(rta_descr_output_dir, pkg_constants.RTA_DESCRIPTION_FILE_NAME_BASE + '-' + plat_suffix + '-' + architecture + '.txt')
     # handle build jobs
     for job in job_list:
         # create installer
@@ -321,8 +324,8 @@ def handle_installer_build(conf_file, installer_type, license_type, branch, plat
             rta_description_file.write(job.installer_name + ' ' + job.rta_key_list + '\n')
             rta_description_file.close()
     # if "/installer_output" directory is empty -> error
-    if not os.listdir(output_dir):
-        print('*** Fatal error! No installers generated into: {0}'.format(output_dir))
+    if not os.listdir(installer_output_dir):
+        print('*** Fatal error! No installers generated into: {0}'.format(installer_output_dir))
         sys.exit(-1)
 
 
@@ -392,6 +395,13 @@ def handle_repo_build(conf_file, license_type, branch, platform, arch, packages_
     forced_version_number_bump = False
     if update_staging_repo and not update_production_repo:
         forced_version_number_bump = True
+    # create rta description file
+    rta_descr_output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.RTA_DESCRIPTION_FILE_DIR_NAME)
+    bldinstallercommon.create_dirs(rta_descr_output_dir)
+    architecture = bldinstallercommon.get_architecture()
+    plat_suffix = bldinstallercommon.get_platform_suffix()
+    rta_description_file_name = os.path.join( rta_descr_output_dir, pkg_constants.RTA_DESCRIPTION_FILE_NAME_BASE + '-' + plat_suffix + '-' + architecture + '-repo.txt')
+
     # handle repo build jobs
     for job in repo_job_list:
         create_online_repository(job, packages_base_url, forced_version_number_bump)
@@ -406,7 +416,12 @@ def handle_repo_build(conf_file, license_type, branch, platform, arch, packages_
         bldinstallercommon.remove_tree(source_path_repository)
         bldinstallercommon.remove_tree(source_path_pkg)
         # update repo in testing area
-        update_online_repo(job, update_staging_repo, update_production_repo)
+        staging_repo_updated, prod_pending_repo_updated = update_online_repo(job, update_staging_repo, update_production_repo)
+        # write the rta description file only if staging repository creation was ok
+        if (staging_repo_updated):
+            rta_description_file = open(rta_description_file_name, 'a')
+            rta_description_file.write(job.repo_url_specifier + ' ' + job.rta_key_list + '\n')
+            rta_description_file.close()
 
 
 # helper function to create online repository
@@ -525,6 +540,8 @@ def update_online_repo(job, update_staging_repo, update_production_repo):
     # determine paths on test server
     staging_source_repo, staging_source_pkg = generate_repo_dest_path_pending(job)
     repo_components_to_update = job.repo_components_to_update
+    staging_repo_updated = False
+    production_pending_repo_updated = False
 
     # do we update the staging repository
     if update_staging_repo:
@@ -538,6 +555,7 @@ def update_online_repo(job, update_staging_repo, update_production_repo):
         cmd_args = cmd_args + ['--target_repo=' + staging_target_repo]
         cmd_args = cmd_args + ['--components_to_update=' + repo_components_to_update]
         bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+        staging_repo_updated = True
 
     # do we also update the production repository?
     if update_production_repo:
@@ -595,6 +613,9 @@ def update_online_repo(job, update_staging_repo, update_production_repo):
         cmd_args = cmd_args_log_to_staging + ['rsync', '-r', staging_prod_repo_temp_path, prod_dest_path]
         bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
         print('Repository [{0}] updated and pushed into production server pending area successfully.'.format(job.repo_url_specifier))
+        production_pending_repo_updated = True
+
+    return staging_repo_updated, production_pending_repo_updated
 
 
 # init environment
