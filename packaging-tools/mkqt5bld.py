@@ -107,6 +107,9 @@ bldinstallercommon.init_common_module(SCRIPT_ROOT_DIR)
 
 
 
+###############################
+# Class MultipleOption
+###############################
 class MultipleOption(Option):
     ACTIONS = Option.ACTIONS + ("extend",)
     STORE_ACTIONS = Option.STORE_ACTIONS + ("extend",)
@@ -119,11 +122,11 @@ class MultipleOption(Option):
         else:
             Option.take_action(self, action, dest, opt, value, values, parser)
 
+
 ###############################
 # Qt5 build options class
 ###############################
 class MkQtBuildOptions:
-
     def __init__(self):
         self.src_url                = ''
         self.qt_creator_src_dir     = ''
@@ -179,12 +182,13 @@ class MkQtBuildOptions:
         if option_parser.android_ndk_home:
             self.android_ndk_home       = option_parser.android_ndk_home
 
+
+
 ###############################
 # function
 ###############################
 def print_wrap(text):
     print 'QT5BLD: ' + text
-
 
 
 ###############################
@@ -193,6 +197,7 @@ def print_wrap(text):
 def exit_script():
     print_wrap(' *** Exiting...')
     sys.exit(-1)
+
 
 ###############################
 # function
@@ -207,7 +212,6 @@ def init_mkqt5bld():
     #do not edit configure options, if configure options are overridden from commandline options
     if bldinstallercommon.is_unix_platform():
         CONFIGURE_CMD = './'
-
     if QT_BUILD_OPTIONS.silent_build and not bldinstallercommon.is_win_platform():
         CONFIGURE_OPTIONS += ' -silent'
     # add required configuration arguments if Android build
@@ -253,7 +257,6 @@ def init_mkqt5bld():
     print_wrap('  Build    : ' + QT_BUILD_OPTIONS.make_cmd)
     print_wrap('  Install  : ' + MAKE_INSTALL_CMD)
     print_wrap('  Configure: ' + CONFIGURE_OPTIONS)
-
     print_wrap('--------------------------------------------------------------------')
 
 
@@ -311,7 +314,6 @@ def extract_src_package():
         if os.path.exists(QT_SOURCE_DIR + os.sep + ignore):
             print_wrap('    Removing ' + ignore)
             bldinstallercommon.remove_tree(QT_SOURCE_DIR + os.sep + ignore)
-
     print_wrap('--------------------------------------------------------------------')
 
 
@@ -328,7 +330,6 @@ def configure_qt():
     else:
         print_wrap(' configure found from ' + QT_SOURCE_DIR + os.sep + 'qtbase')
         bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR + os.sep + 'qtbase', True, False, EXTRA_ENV)
-
     print_wrap('--------------------------------------------------------------------')
 
 
@@ -343,7 +344,6 @@ def save_install_prefix():
     if not qmake_executable_path:
         print_wrap('*** Error! qmake executable not found? Looks like the build has failed in previous step?')
         exit_script()
-
     query_args = qmake_executable_path + ' -query'
     return_code, output = bldinstallercommon.do_execute_sub_process(query_args.split(' '), '.', True, True)
     data = output.split('\n')
@@ -359,7 +359,6 @@ def save_install_prefix():
             INSTALL_PREFIX = INSTALL_PREFIX.strip()
             print_wrap('INSTALL_PREFIX = ' + INSTALL_PREFIX)
             break
-
     print_wrap('--------------------------------------------------------------------')
 
 
@@ -369,7 +368,6 @@ def save_install_prefix():
 def create_submodule_list():
     global QT5_MODULES_LIST
     print_wrap('-------- Creating ordered list of submodules -----------------------')
-
     #create list of modules in default make order
     regex = re.compile('^make_first:.*') #search line starting with 'make_first:'
     submodule_list = []
@@ -398,7 +396,6 @@ def create_submodule_list():
     else:
         print_wrap('*** Error! Main Makefile not found. Build failed!')
         sys.exit(-1)
-
     print_wrap('--------------------------------------------------------------------')
 
 
@@ -417,7 +414,6 @@ def build_qt():
     if bldinstallercommon.is_unix_platform():
         cmd_args += ' -j' + str(QT_BUILD_OPTIONS.make_thread_count)
     bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, QT_BUILD_OPTIONS.strict_mode, False, EXTRA_ENV)
-
     print_wrap('--------------------------------------------------------------------')
 
 
@@ -428,7 +424,6 @@ def build_qmlpuppets():
     if not QT_BUILD_OPTIONS.qt_creator_src_dir:
         return
     print_wrap('---------------- Building QML Puppets -------------------------------')
-
     qmake_executable_path = bldinstallercommon.locate_executable(QT_SOURCE_DIR, 'qmake' + bldinstallercommon.get_executable_suffix())
     if not qmake_executable_path:
         print_wrap('*** Error! qmake executable not found? Looks like the build has failed in previous step?')
@@ -453,7 +448,6 @@ def build_qmlpuppets():
 
     bldinstallercommon.do_execute_sub_process(qmake_executable_path, qmlpuppet_dir, QT_BUILD_OPTIONS.strict_mode)
     bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), qmlpuppet_dir, QT_BUILD_OPTIONS.strict_mode)
-
     print_wrap('--------------------------------------------------------------------')
 
 
@@ -462,7 +456,6 @@ def build_qmlpuppets():
 ###############################
 def install_qt():
     print_wrap('---------------- Installing Qt -------------------------------------')
-
     # temporary solution for installing cross compiled Qt for Android on Windows host
     if ANDROID_BUILD and bldinstallercommon.is_win_platform():
         install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
@@ -474,7 +467,6 @@ def install_qt():
         print_wrap('                -> in: ' + QT_SOURCE_DIR)
         return_code, output = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, QT_BUILD_OPTIONS.strict_mode)
         return
-
     #make install for each module with INSTALL_ROOT
     print_wrap('    Install modules to separate INSTALL_ROOT')
     for module_name in QT5_MODULES_LIST:
@@ -500,7 +492,6 @@ def install_qt():
             file_handle = open(MISSING_MODULES_FILE, 'a')
             file_handle.write('\nFailed to build ' + module_name)
             file_handle.close()
-
     print_wrap('--------------------------------------------------------------------')
 
 
@@ -577,6 +568,7 @@ def replace_system_paths():
         else:
             print line,
     print_wrap('--------------------------------------------------------------------')
+
 
 ###############################
 # function
@@ -668,7 +660,6 @@ def replace_rpath():
 def archive_submodules():
     print_wrap('---------------- Archiving submodules ------------------------------')
     bldinstallercommon.create_dirs(MODULE_ARCHIVE_DIR)
-
     # temporary solution for Android on Windows compilations
     if ANDROID_BUILD and bldinstallercommon.is_win_platform():
         print_wrap('---------- Archiving Qt modules')
@@ -681,7 +672,6 @@ def archive_submodules():
         else:
             print_wrap(install_path + os.sep + SINGLE_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> Qt not archived!')
         return
-
     # Essentials
     print_wrap('---------- Archiving essential modules')
     if os.path.exists(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME):
@@ -691,7 +681,6 @@ def archive_submodules():
         bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), run_in, True, True)
     else:
         print_wrap(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> essentials not archived!')
-
     # Add-ons
     print_wrap('---------- Archiving add-on modules')
     if os.path.exists(MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME):
@@ -700,7 +689,6 @@ def archive_submodules():
         bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), run_in, True, True)
     else:
         print_wrap(MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> add-ons not archived!')
-
     print_wrap('---------------------------------------------------------------------')
 
 
@@ -860,19 +848,14 @@ def use_custom_icu():
 def parse_cmd_line():
     print_wrap('---------------- Parsing commandline arguments ---------------------')
     global QT_BUILD_OPTIONS
-
     setup_option_parser()
-
     arg_count = len(sys.argv)
     if arg_count < 2:
         OPTION_PARSER.print_help()
         sys.exit(-1)
-
     (options, args) = OPTION_PARSER.parse_args()
-
     QT_BUILD_OPTIONS = MkQtBuildOptions()
     QT_BUILD_OPTIONS.set_args(options)
-
     print_wrap('---------------------------------------------------------------------')
     return True
 
@@ -939,11 +922,11 @@ def setup_option_parser():
                       help="Path to Android NDK home.")
     print_wrap('---------------------------------------------------------------------')
 
+
 ##############################################################
 # main_call_parameters
 ##############################################################
 def main_call_parameters():
-
     global MAKE_INSTALL_CMD
     global CONFIGURE_OPTIONS
     global ANDROID_BUILD
@@ -1015,6 +998,7 @@ def main_call_parameters():
     # Starting the build
     run_build()
 
+
 ###############################
 # run_build()
 ###############################
@@ -1052,6 +1036,7 @@ def run_build():
     # archive each submodule
     archive_submodules()
 
+
 ###############################
 # execute_build
 ###############################
@@ -1060,6 +1045,7 @@ def execute_build():
     parse_cmd_line()
     # Start the build
     main_call_parameters()
+
 
 ###############################
 # function
