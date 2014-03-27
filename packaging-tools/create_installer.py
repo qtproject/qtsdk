@@ -101,7 +101,6 @@ USE_LEGACY_IFW              = False
 STRICT_MODE                 = True
 ARCHIVE_SERVER_BASE_URL     = ''
 INSTALLER_FRAMEWORK_TOOLS   = ''
-INSTALLER_OUTPUT_DIR        = 'installer_output'
 IFW_TOOLS_DIR_NAME          = 'ifwt'
 
 INSTALLER_NAMING_SCHEME_COMPILER    = ''
@@ -1159,7 +1158,7 @@ def create_installer_binary():
         bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
     # move results to dedicated directory
-    output_dir = os.path.join(SCRIPT_ROOT_DIR, INSTALLER_OUTPUT_DIR)
+    output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.INSTALLER_OUTPUT_DIR_NAME)
     bldinstallercommon.create_dirs(output_dir)
     file_name = os.path.join(SCRIPT_ROOT_DIR, SDK_NAME)
     old_existing_file_name = os.path.join(output_dir, SDK_NAME)
@@ -1215,10 +1214,10 @@ def create_mac_disk_image():
 
     # create disk image
     cmd_args = ['hdiutil', 'create', '-srcfolder', \
-                os.path.join(SCRIPT_ROOT_DIR, INSTALLER_OUTPUT_DIR, SDK_NAME + '.app'), \
+                os.path.join(SCRIPT_ROOT_DIR, pkg_constants.INSTALLER_OUTPUT_DIR_NAME, SDK_NAME + '.app'), \
                 '-volname', SDK_NAME, \
                 '-format', 'UDBZ', \
-                os.path.join(SCRIPT_ROOT_DIR, INSTALLER_OUTPUT_DIR, SDK_NAME + '.dmg'), \
+                os.path.join(SCRIPT_ROOT_DIR, pkg_constants.INSTALLER_OUTPUT_DIR_NAME, SDK_NAME + '.dmg'), \
                 '-ov', '-scrub', '-size', '2g']
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 

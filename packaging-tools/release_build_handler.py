@@ -306,7 +306,7 @@ def handle_installer_build(conf_file, installer_type, license_type, branch, plat
     if (len(job_list) == 0):
         print('*** Fatal error! No [{0}] installer build jobs found from: {1}. Probably an error?'.format(installer_type, conf_file))
         sys.exit(-1)
-    installer_output_dir = os.path.join(SCRIPT_ROOT_DIR, 'installer_output')
+    installer_output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.INSTALLER_OUTPUT_DIR_NAME)
     rta_descr_output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.RTA_DESCRIPTION_FILE_DIR_NAME)
     bldinstallercommon.create_dirs(rta_descr_output_dir)
     # create rta description file

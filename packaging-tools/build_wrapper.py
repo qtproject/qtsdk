@@ -94,7 +94,6 @@ SRC_URL_PREFIX              = 'http://qt-rnd.it.local/packages/jenkins'
 SRC_URL                     = ''
 PLATFORM                    = ''
 SRC_DEST_DIRS               = ['src', 'src/submodules', 'src/doc', 'src/single', 'src/examples_injection']
-INSTALLER_BUILD_OUTPUT_DIR  = 'build_artifacts'
 QT5_DOCS_ARCHIVE_NAME       = 'qt5_docs.7z'
 BIN_TARGET_DIRS             = {} # dictionary populated based on the /packaging-tools/releases/release-<version>
 REMOTE_DIR                  = ''
@@ -418,14 +417,14 @@ def handle_ifw_build():
         bldinstallercommon.do_execute_sub_process(cmd_args_mkdir_ext, SCRIPT_ROOT_DIR, True)
 
     if bldinstallercommon.is_win_platform():
-        file_list = os.listdir(SCRIPT_ROOT_DIR+'/' + INSTALLER_BUILD_OUTPUT_DIR)
+        file_list = os.listdir(SCRIPT_ROOT_DIR+'/' + pkg_constants.IFW_BUILD_OUTPUT_DIR)
         for file_name in file_list:
             if file_name.endswith(".7z"):
                 cmd_args = [SCP_COMMAND, file_name, PKG_SERVER_ADDR + ':' + PATH + '/' + LICENSE + '/ifw/' + ifw_dest_dir_name + '/']
-                bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + '/' + INSTALLER_BUILD_OUTPUT_DIR, True)
+                bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + '/' + pkg_constants.IFW_BUILD_OUTPUT_DIR, True)
     else:
         cmd_args = ['rsync', '-r', './', PKG_SERVER_ADDR + ':' + PATH + '/' + LICENSE + '/ifw/' + ifw_dest_dir_name + '/']
-        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + '/' + INSTALLER_BUILD_OUTPUT_DIR, True)
+        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + '/' + pkg_constants.IFW_BUILD_OUTPUT_DIR, True)
 
     # copy ifw snapshot to public server
     if LICENSE == 'opensource':
@@ -1066,7 +1065,7 @@ def handle_installer_build(installer_type):
     # Internal server address
     packages_base_url = os.environ['PKG_SERVER_URL']
     # determine local installer output directory
-    installer_output_dir = os.path.join(SCRIPT_ROOT_DIR, 'installer_output')
+    installer_output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.INSTALLER_OUTPUT_DIR_NAME)
     # (1) create all installers for this host
     release_build_handler.handle_installer_build(conf_file, installer_type, LICENSE, branch, PLATFORM, arch, packages_base_url)
     temp_path = '/' + installer_type + '_installers/'
