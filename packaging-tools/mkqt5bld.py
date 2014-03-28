@@ -441,7 +441,7 @@ def build_qmlpuppets():
     shutil.copy(os.path.join(QT_SOURCE_DIR, ".qmake.super"),
                 QT_BUILD_OPTIONS.qt_creator_src_dir)
 
-    qmlpuppet_dir = os.path.join(QT_BUILD_OPTIONS.qt_creator_src_dir, 'share', 'qtcreator', 'qml', 'qmlpuppet', 'qml2puppet')
+    qmlpuppet_dir = os.path.join(QT_BUILD_OPTIONS.qt_creator_src_dir, 'src', 'tools', 'qml2puppet', 'qml2puppet')
 
     # override DESTDIR because DESTDIR in qml2puppet.pro doesn't handle that Qt is not installed in
     # QT_INSTALL_BINS, but within a INSTALL_ROOT
