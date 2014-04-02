@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
     <DisplayName>Qt Cloud Services</DisplayName>
-    <Description>Qt Cloud Services</Description>
+    <Description>Libraries and SDKs for using Qt Cloud Services cloud platform.</Description>
     <Version>1.0.0</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <SortingPriority>30</SortingPriority>

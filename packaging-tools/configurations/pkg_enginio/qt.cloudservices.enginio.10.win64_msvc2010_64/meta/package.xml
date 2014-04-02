@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
     <DisplayName>Qt Enginio for msvc2010 64-bit</DisplayName>
-    <Description>With Enginio, you can create stunning Qt applications, add a scalable and powerful Qt cloud backend as a service in no time and deploy in minutes without ever bothering about backend servers or scalability problems.</Description>
+    <Description></Description>
     <Version>1.0.2-1</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <AutoDependOn>qt.cloudservices.enginio.10, qt.521.win64_msvc2010_64.essentials</AutoDependOn>
