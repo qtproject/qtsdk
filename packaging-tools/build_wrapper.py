@@ -2,6 +2,7 @@
 #############################################################################
 ##
 ## Copyright (C) 2014 Digia Plc and/or its subsidiary(-ies).
+## Copyright (C) 2014 BlackBerry Limited. All rights reserved.
 ## Contact: http://www.qt-project.org/legal
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -725,6 +726,35 @@ def handle_qt_ios_release_build():
 
 
 ###############################
+# handle_qt_qnx6_release_build
+###############################
+def handle_qt_qnx6_release_build():
+    cmd_args = ''
+    script_path = os.path.join(SCRIPT_ROOT_DIR, 'mkqt5bld.py')
+    source_url = SRC_URL + '/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
+    configure_files_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_config', '')
+
+    qt_configure_options_file = os.environ['RELEASE_BUILD_QT_CONFIGURE_OPTIONS_FILE']
+    configure_extra_options   = os.environ['EXTRA_QT_CONFIGURE_OPTIONS'] if os.environ.get('EXTRA_QT_CONFIGURE_OPTIONS') else ''
+    extension = '.tar.gz'
+    if bldinstallercommon.is_win_platform():
+        extension = '.zip'
+
+    cmd_args = ['python', '-u', script_path, '-u', source_url + extension]
+    if bldinstallercommon.is_win_platform():
+        cmd_args += ['-m', 'mingw32-make']
+    cmd_args += ['-c', configure_files_path + qt_configure_options_file]
+    if bldinstallercommon.is_linux_platform():
+        cmd_args += ['--replace-rpath']
+    cmd_args += ['-a', configure_extra_options + ' -prefix ' + os.path.join(WORK_DIR,  MAKE_INSTALL_PADDING)]
+    if bldinstallercommon.is_linux_platform():
+        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
+    elif bldinstallercommon.is_win_platform():
+        exec_dir = os.getcwd()
+        bldinstallercommon.do_execute_sub_process(cmd_args, exec_dir, True)
+
+
+###############################
 # handle_qt_desktop_release_build
 ###############################
 def handle_qt_desktop_release_build():
@@ -946,6 +976,8 @@ def handle_qt_release_build():
         handle_qt_android_release_build()
     elif TARGET_ENV.find("iOS") >= 1:
         handle_qt_ios_release_build()
+    elif TARGET_ENV.find("QNX") >= 1:
+        handle_qt_qnx6_release_build()
     else:
         handle_qt_desktop_release_build()
 

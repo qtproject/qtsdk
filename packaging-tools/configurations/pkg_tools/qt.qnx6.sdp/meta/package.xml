@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>QNX 6.6</DisplayName>
+    <Description>Qt 5.3.0 Prebuilt Components for QNX 6.6</Description>
+    <Version>5.3.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Script>installscript.qs</Script>   <!-- File name of a script being loaded - optional. -->
+    <UserInterfaces>
+        <UserInterface>setpathforsdpform.ui</UserInterface>
+    </UserInterfaces>
+    <ForcedInstallation>true</ForcedInstallation>
+    <Virtual>true</Virtual> <!-- Set to true if this is a virtual component not showing up in the installer -->
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+
