@@ -560,10 +560,10 @@ def update_online_repo(job, update_staging_repo, update_production_repo):
     # do we also update the production repository?
     if update_production_repo:
         # (1) pull repo from production into staging server 'temp' location
-        production_repo = PROD_USER + '@' + PROD_ADDR + ':'
+        production_repo = PROD_USER + '@' + PROD_ADDR
         production_repo_path = PROD_SRV_REPO_BASE_PATH + '/' + REPOSITORY_BASE_NAME + '/' + job.repo_url_specifier
         production_repo_path = ensure_unix_paths(production_repo_path)
-        prod_url = production_repo + production_repo_path
+        prod_url = production_repo + ":" + production_repo_path
         staging_prod_repo_temp_path = REPO_STAGING_SERVER_TEST_REPO_DIST_WORK + '/' + job.license + '/' + REPOSITORY_BASE_NAME + '/' + job.repo_url_specifier
         # delete old existing 'temp' paths
         delete_online_repo_paths(staging_server_addr, staging_prod_repo_temp_path)
@@ -575,9 +575,13 @@ def update_online_repo(job, update_staging_repo, update_production_repo):
             remote_copy_path = remote_copy_path[:len(remote_copy_path) - 1]
         remote_copy_path = os.path.dirname(remote_copy_path)
         remote_copy_path = ensure_unix_paths(remote_copy_path)
-        print('Pulling production repository: {0}'.format(prod_url))
-        cmd_args = [SSH_COMMAND, '-t', '-t', staging_server_addr, 'rsync', '-rk', prod_url, remote_copy_path]
-        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+        # test if production repository exists
+        cmd_args = [SSH_COMMAND, '-t', '-t', staging_server_addr, 'ssh', '-t', '-t', production_repo, 'test', '-d', production_repo_path]
+        return_code, output = bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, False)
+        if return_code == -1:
+            print('Pulling production repository: {0}'.format(prod_url))
+            cmd_args = [SSH_COMMAND, '-t', '-t', staging_server_addr, 'rsync', '-rk', prod_url, remote_copy_path]
+            bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
         # (2) update
         cmd_args = [SSH_COMMAND, '-t', '-t', staging_server_addr]
         cmd_args = cmd_args + ['python', script]
@@ -604,7 +608,7 @@ def update_online_repo(job, update_staging_repo, update_production_repo):
         cmd_args_mkdirp = cmd_args_log_to_prod + ['mkdir', '-p', prod_server_pending_area_dir]
         bldinstallercommon.do_execute_sub_process(cmd_args_mkdirp, SCRIPT_ROOT_DIR, True)
         # chop out the last path component for remote copy as it would result in duplicate nested subdirectory
-        prod_dest_path = production_repo + PROD_SRV_REPO_PENDING_AREA_DIR + '/' + REPOSITORY_BASE_NAME + '/' + job.repo_url_specifier
+        prod_dest_path = production_repo + ':' + PROD_SRV_REPO_PENDING_AREA_DIR + '/' + REPOSITORY_BASE_NAME + '/' + job.repo_url_specifier
         if (prod_dest_path.endswith('/')):
             prod_dest_path = prod_dest_path[:len(prod_dest_path) - 1]
         prod_dest_path = os.path.dirname(prod_dest_path)
