@@ -47,7 +47,7 @@ version:                3.1.0
 version_tag:            %QTCREATOR_VERSION%
 package_default:        true
 [tools.qtcreator]
-archive_uri:            /qtcreator/latest/qtcreator_linux_gcc_32_ubuntu1110.7z
+archive_uri:            /qtcreator/installer_package/qtcreator_linux_gcc_32_ubuntu1110.7z
 package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:
