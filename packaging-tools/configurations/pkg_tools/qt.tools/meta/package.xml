@@ -5,7 +5,7 @@
     <Version>1.0.3</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Script>installscript.qs</Script>
-    <Essential>true</Esssential>
+    <Essential>true</Essential>
     <SortingPriority>40</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
