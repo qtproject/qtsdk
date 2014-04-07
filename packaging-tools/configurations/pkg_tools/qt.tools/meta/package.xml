@@ -4,13 +4,8 @@
     <Description>IDE, Internationalization, Design and other tools to accelerate development.</Description>
     <Version>1.0.3</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <!--<Dependencies></Dependencies>--> <!-- Comma-separated list of dependencies - optional -->
-    <!--<Default></Default>-->
-    <!--<AutoSelectOn></AutoSelectOn>-->
     <Script>installscript.qs</Script>
-    <!--<Forced></Forced>-->
-    <!--<Virtual></Virtual>--> <!-- Set to true if this is a virtual component not showing up in the installer -->
-    <!--<Important></Important>-->    <!-- The package is marked as important. This is relevant for updates found with UpdateAgent. -->
+    <Essential>true</Esssential>
     <SortingPriority>40</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
