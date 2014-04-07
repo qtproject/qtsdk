@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #############################################################################
 ##
-## Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+## Copyright (C) 2014 Digia Plc and/or its subsidiary(-ies).
 ## Contact: http://www.qt-project.org/legal
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -396,7 +396,8 @@ def handle_ifw_build():
     qt_src_pkg += extension
     cmd_args = ['python', '-u', 'bld_ifw_tools.py', '--qt_archive_uri=' + qt_src_pkg, '--ifw_url=' + ifw_url, '--ifw_branch=' + ifw_branch]
     if LICENSE == 'enterprise':
-        cmd_args += ['--product_key_checker_url=' + WORK_DIR + '/qtsdk-enterprise/productkeycheck/qt_product_key_checker.pri']
+        product_key_checker = os.environ['PRODUCT_KEY_CHECKER_URI']
+        cmd_args += ['--product_key_checker_url=' + product_key_checker]
     if (os.environ.get('IFW_DEBUG_BUILD')):
         cmd_args += ['--debug']
     # execute
