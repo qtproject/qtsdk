@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Tools</DisplayName>
     <Description>IDE, Internationalization, Design and other tools to accelerate development.</Description>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <!--<Dependencies></Dependencies>--> <!-- Comma-separated list of dependencies - optional -->
     <!--<Default></Default>-->
