@@ -606,15 +606,13 @@ def handle_qt_android_release_build():
     configure_files_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_config', '')
 
     qt_configure_options_file = os.environ['RELEASE_BUILD_QT_CONFIGURE_OPTIONS_FILE']
+    configure_extra_options   = os.environ['EXTRA_QT_CONFIGURE_OPTIONS'] if os.environ.get('EXTRA_QT_CONFIGURE_OPTIONS') else ''
+
     android_ndk_host          = os.environ['ANDROID_NDK_HOST']
     android_toolchain_version = os.environ['ANDROID_TOOLCHAIN_VERSION']
     android_api_version       = os.environ['ANDROID_API_VERSION']
     android_sdk_home          = os.environ['ANDROID_SDK_HOME']
     android_ndk_home          = os.environ['ANDROID_NDK_HOME']
-    if os.environ.get('EXTRA_QT_CONFIGURE_OPTIONS'):
-        configure_extra_options = os.environ['EXTRA_QT_CONFIGURE_OPTIONS']
-    else:
-        configure_extra_options = ''
     extension = '.tar.gz'
     if bldinstallercommon.is_win_platform():
         extension = '.zip'
@@ -643,13 +641,14 @@ def handle_qt_android_release_build():
 # handle_qt_ios_release_build
 ###############################
 def handle_qt_ios_release_build():
-    qt_configure_options_file = os.environ['RELEASE_BUILD_QT_CONFIGURE_OPTIONS_FILE']
-    configure_extra_options   = os.environ['EXTRA_QT_CONFIGURE_OPTIONS']
-
     cmd_args = ''
     script_path = os.path.join(SCRIPT_ROOT_DIR, 'mkqt5bld.py')
     source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
     configure_files_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_config', '')
+
+    qt_configure_options_file = os.environ['RELEASE_BUILD_QT_CONFIGURE_OPTIONS_FILE']
+    configure_extra_options   = os.environ['EXTRA_QT_CONFIGURE_OPTIONS'] if os.environ.get('EXTRA_QT_CONFIGURE_OPTIONS') else ''
+
     if bldinstallercommon.is_mac_platform():
         if TARGET_ENV.find("x64") >= 1:
             cmd_args = ['python', '-u', script_path, '-u', source_url + '.tar.gz', '-c', configure_files_path + qt_configure_options_file, '-a', configure_extra_options + ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
