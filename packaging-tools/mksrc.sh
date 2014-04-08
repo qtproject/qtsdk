@@ -362,6 +362,8 @@ if [ $SKIPSYNCQT = no ]; then
   echo "Running syncqt.pl"
   if [ $SINGLEMODULE = no ]; then
     while read submodule; do
+      RESULT=$(grep "MODULE_VERSION = " $PACKAGE_DIR/$submodule/.qmake.conf)
+      QTSYNCQTVER=$(echo $RESULT | cut -d ' ' -f3)
       echo " - Running syncqt.pl for $submodule with -version $QTSYNCQTVER"
       if [ $submodule = qtwebkit ]; then
         SYNC_PROFILE_DIR=$PACKAGE_DIR/$submodule/Source
@@ -371,6 +373,9 @@ if [ $SKIPSYNCQT = no ]; then
       $PACKAGE_DIR/qtbase/bin/syncqt.pl -version $QTSYNCQTVER -outdir $PACKAGE_DIR/$submodule $SYNC_PROFILE_DIR
     done < $MODULES
   else
+    # determine submodule version
+    RESULT=$(grep "MODULE_VERSION = " $PACKAGE_DIR/.qmake.conf)
+    QTSYNCQTVER=$(echo $RESULT | cut -d ' ' -f3)
     echo " - Running syncqt.pl for $REPO_NAME with -version $QTSYNCQTVER"
     $CUR_DIR/../qtbase/bin/syncqt.pl -version $QTSYNCQTVER -outdir $PACKAGE_DIR $PACKAGE_DIR
   fi
