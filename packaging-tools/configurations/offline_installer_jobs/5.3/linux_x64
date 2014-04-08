@@ -50,8 +50,6 @@ file_list:              qt-conf,
                         qt53-src-conf,
                         qt53-doc-examples-conf,
                         x86_64-qt53-gcc-conf,
-                        enginio-102-src-conf,
-                        enginio-102_1-x64-gcc-conf,
                         x86_64-tools-qtcreator-conf,
                         installer-readme-conf
 
@@ -62,5 +60,5 @@ template_name:          config_qt5
 template_name:          config.xml.template.linux.qt5
 
 [PackageTemplates]
-template_dirs:          pkg_53, pkg_tools, pkg_enginio
+template_dirs:          pkg_53, pkg_tools
 

@@ -50,10 +50,7 @@ file_list:              qt-conf,
                         qt53-src-conf,
                         qt53-doc-examples-conf,
                         x86_64-qt53-clang-conf,
-                        enginio-102-src-conf,
-                        enginio-102_1-x64-clang-conf,
                         ios-x64-qt53-conf,
-                        enginio-102_1-x64-ios-conf,
                         x86_64-tools-qtcreator-conf,
                         installer-readme-conf
 
@@ -67,5 +64,5 @@ template_name:          config_qt5
 template_name:          config.xml.template.mac.qt5
 
 [PackageTemplates]
-template_dirs:          pkg_53, pkg_tools, pkg_enginio
+template_dirs:          pkg_53, pkg_tools
 

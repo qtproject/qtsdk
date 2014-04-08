@@ -1,1 +1,1 @@
--opensource -confirm-license -debug-and-release -nomake tests -nomake examples -skip qtenginio -qt-zlib -qt-libjpeg -qt-libpng -no-pkg-config -xplatform macx-ios-clang -no-sql-mysql
+-opensource -confirm-license -debug-and-release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -no-pkg-config -xplatform macx-ios-clang -no-sql-mysql
