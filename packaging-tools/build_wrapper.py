@@ -693,10 +693,7 @@ def handle_qt_desktop_release_build():
     if os.path.exists(os.path.join(WORK_DIR, 'qt-creator')):
         qt5BuildOptions.qt_creator_src_dir = os.path.join(WORK_DIR, 'qt-creator')
 
-    if os.environ.get('EXTRA_QT_CONFIGURE_OPTIONS'):
-        ext_args = os.environ['EXTRA_QT_CONFIGURE_OPTIONS']
-    else:
-        ext_args = ''
+    ext_args = os.environ['EXTRA_QT_CONFIGURE_OPTIONS'] if os.environ.get('EXTRA_QT_CONFIGURE_OPTIONS') else ''
     # on windows we build with jom instead of make
     if bldinstallercommon.is_win_platform():
         qt5BuildOptions.make_cmd = 'jom'
