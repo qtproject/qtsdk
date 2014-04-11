@@ -119,6 +119,7 @@ class BldCommand:
     init_extra_module_binary_build_cycle = 'init_app_binary'
     execute_qt5_src_pkg         = 'build_src'
     execute_qt5_bin_bld         = 'build_bin'
+    execute_extra_module_src_bld = 'build_qt5_app_src'
     execute_extra_module_bld    = 'build_qt5_app'
     execute_ifw_bld             = 'ifw'
     execute_creator_bld         = 'build_creator'
@@ -140,6 +141,7 @@ class BldCommand:
         commands += [self.init_extra_module_binary_build_cycle]
         commands += [self.execute_qt5_src_pkg]
         commands += [self.execute_qt5_bin_bld]
+        commands += [self.execute_extra_module_src_bld]
         commands += [self.execute_extra_module_bld]
         commands += [self.execute_ifw_bld]
         commands += [self.execute_creator_bld]
@@ -189,6 +191,9 @@ class BldCommand:
             return self.validate_extra_module_build_args()
         elif self.options.command == self.init_qtcreator_build_cycle:
             return self.validate_init_qtcreator_build_cycle_args()
+        elif self.options.command == self.execute_extra_module_src_bld:
+            if len(sys.argv) < 4:
+                return False
         else:
             if len(sys.argv) < 15:
                 return False
@@ -376,11 +381,39 @@ def initialize_extra_module_build():
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
 ###############################
+# build_extra_module_src_pkg
+###############################
+def build_extra_module_src_pkg():
+    sanity_check_packaging_server()
+    #create dir
+    application_dir = os.path.join(WORK_DIR, os.environ['APPLICATION_NAME'])
+    bldinstallercommon.create_dirs(application_dir)
+    #clone repo
+    bldinstallercommon.clone_repository(os.environ['GIT_APPLICATION_REPO'], os.environ['GIT_APPLICATION_REPO_BRANCH'], application_dir)
+    if os.environ.get('APPLICATION_SHA1'):
+        cmd_args = ['git', 'checkout', os.environ['APPLICATION_SHA1']]
+        bldinstallercommon.do_execute_sub_process(cmd_args, application_dir, True)
+    #make src package
+    cmd_args = ['../qtsdk/packaging-tools/mksrc.sh', '-v', os.environ['APPLICATION_VERSION'], '-l', LICENSE, '--single-module']
+    bldinstallercommon.do_execute_sub_process(cmd_args, application_dir, True)
+    #extract examples
+    cmd_args = ['../qtsdk/packaging-tools/extract_examples.sh', '-n', os.environ['APPLICATION_NAME'], '-l', LICENSE, '-v', os.environ['APPLICATION_VERSION'], '-u', os.environ['PACKAGE_STORAGE_SERVER_USER'], '-s', os.environ['PACKAGE_STORAGE_SERVER'], '-d', os.environ['PACKAGE_STORAGE_SERVER_BASE_DIR'], '-i', os.environ['BUILD_ID'], '-b', os.environ['BUILD_NUMBER']]
+    bldinstallercommon.do_execute_sub_process(cmd_args, application_dir, True)
+    #Copy src package to the server
+    file_list = os.listdir(application_dir)
+    for file_name in file_list:
+        if file_name.startswith(os.environ['APPLICATION_NAME'] + '-' + LICENSE + '-src-' + os.environ['APPLICATION_VERSION']):
+            cmd_args = ['scp', file_name, os.environ['PACKAGE_STORAGE_SERVER_USER'] + '@' + os.environ['PACKAGE_STORAGE_SERVER'] + ':' + os.environ['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + LICENSE + '/' + os.environ['APPLICATION_NAME'] + '/' + os.environ['APPLICATION_VERSION'] + '/latest/src']
+            bldinstallercommon.do_execute_sub_process(cmd_args, application_dir, True)
+
+###############################
 # initialize_extra_module_binary_build
 ###############################
 def initialize_extra_module_binary_build():
     # initialize extra module binary directory hierarchy
     sanity_check_packaging_server()
+    #Create binary upload folder
+    create_remote_dirs(PKG_SERVER_ADDR, REMOTE_EXTRA_MODULE_BINARY_DIR)
     # Update latest link
     cmd_args = [SSH_COMMAND, PKG_SERVER_ADDR, 'ln -sfn', REMOTE_EXTRA_MODULE_BINARY_DIR, LATEST_EXTRA_MODULE_BINARY_DIR]
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
@@ -1545,6 +1578,8 @@ def main():
         handle_qt_src_package_build()
     elif COMMAND == BldCommand.init_extra_module_build_cycle:
         initialize_extra_module_build()
+    elif COMMAND == BldCommand.execute_extra_module_src_bld:
+        build_extra_module_src_pkg()
     elif COMMAND == BldCommand.init_extra_module_binary_build_cycle:
         initialize_extra_module_binary_build()
     elif COMMAND == BldCommand.execute_qt5_bin_bld:

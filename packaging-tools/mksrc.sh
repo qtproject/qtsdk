@@ -375,10 +375,8 @@ if [ $SKIPSYNCQT = no ]; then
       $PACKAGE_DIR/qtbase/bin/syncqt.pl -version $QTSYNCQTVER -outdir $PACKAGE_DIR/$submodule $SYNC_PROFILE_DIR
     done < $MODULES
   else
-    if [ $submodule != qtbase ]; then
-      RESULT=$(grep "MODULE_VERSION = " $PACKAGE_DIR/.qmake.conf)
-      QTSYNCQTVER=$(echo $RESULT | cut -d ' ' -f3)
-    fi
+    RESULT=$(grep "MODULE_VERSION = " $PACKAGE_DIR/.qmake.conf)
+    QTSYNCQTVER=$(echo $RESULT | cut -d ' ' -f3)
     echo " - Running syncqt.pl for $REPO_NAME with -version $QTSYNCQTVER"
     $CUR_DIR/../qtbase/bin/syncqt.pl -version $QTSYNCQTVER -outdir $PACKAGE_DIR $PACKAGE_DIR
   fi
