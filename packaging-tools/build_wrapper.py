@@ -101,8 +101,8 @@ REMOTE_QT5_DIR                  = ''
 LATEST_QT5_DIR                  = ''
 REMOTE_EXTRA_MODULE_DIR         = ''
 LATEST_EXTRA_MODULE_DIR         = ''
-REMOTE_EXTRA_BINARY_MODULE_DIR  = ''
-LATEST_EXTRA_BINARY_MODULE_DIR  = ''
+REMOTE_EXTRA_MODULE_BINARY_DIR  = ''
+LATEST_EXTRA_MODULE_BINARY_DIR  = ''
 EXTRA_ENV                   = dict(os.environ)
 MAKE_INSTALL_PADDING        = ''
 BUILD_META_INFO_FILE        = 'releases/build-meta'
@@ -782,11 +782,11 @@ def handle_extra_module_release_build():
     if bldinstallercommon.is_mac_platform():
         cmd_args += ['--installerbase7z', os.environ['IFW_INSTALLERBASE_URI']]
     # init result directories
-    create_remote_dirs(PKG_SERVER_ADDR, LATEST_EXTRA_BINARY_MODULE_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV])
+    create_remote_dirs(PKG_SERVER_ADDR, LATEST_EXTRA_MODULE_BINARY_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV])
     # execute build
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
     # copy 7z files to network drive
-    remote_target_dir = PKG_SERVER_ADDR + ':' + LATEST_EXTRA_BINARY_MODULE_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV]
+    remote_target_dir = PKG_SERVER_ADDR + ':' + LATEST_EXTRA_MODULE_BINARY_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV]
     if bldinstallercommon.is_win_platform():
         remote_target_dir += '/'
     remote_copy_archives(remote_target_dir, os.path.join(SCRIPT_ROOT_DIR, 'module_archives'))
@@ -1366,8 +1366,8 @@ def parse_cmd_line():
     global LATEST_QT5_DIR
     global REMOTE_EXTRA_MODULE_DIR
     global LATEST_EXTRA_MODULE_DIR
-    global REMOTE_EXTRA_BINARY_MODULE_DIR
-    global LATEST_EXTRA_BINARY_MODULE_DIR
+    global REMOTE_EXTRA_MODULE_BINARY_DIR
+    global LATEST_EXTRA_MODULE_BINARY_DIR
     global PLATFORM
     global QT_VERSION_TAG
     global QT_FULL_VERSION
@@ -1424,8 +1424,8 @@ def parse_cmd_line():
     REMOTE_EXTRA_MODULE_DIR = PATH + '/' + LICENSE + '/'
     LATEST_EXTRA_MODULE_DIR = PATH + '/' + LICENSE + '/'
     # define LATEST directories for extra module binary packages
-    REMOTE_EXTRA_BINARY_MODULE_DIR = PATH + '/' + LICENSE + '/'
-    LATEST_EXTRA_BINARY_MODULE_DIR = PATH + '/' + LICENSE + '/'
+    REMOTE_EXTRA_MODULE_BINARY_DIR = PATH + '/' + LICENSE + '/'
+    LATEST_EXTRA_MODULE_BINARY_DIR = PATH + '/' + LICENSE + '/'
 
     if bld_cmd_validator.is_qt5_release_build():
         REMOTE_QT5_DIR += 'qt' + '/' + QT_VERSION + '/' + TIME_STAMP + '-' + BUILD_NUMBER
