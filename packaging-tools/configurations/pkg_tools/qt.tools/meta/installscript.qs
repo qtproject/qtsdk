@@ -43,17 +43,17 @@
 function Component()
 {
     if (installer.value("os") == "mac") {
-        var installNameToolCheck = installer.execute("/usr/bin/which", new Array("install_name_tool"))[0];
-        if (!installNameToolCheck) {
+        var installNameToolCheck = installer.execute("/usr/bin/xcrun", ["-f", "install_name_tool"])[1];
+        if (installNameToolCheck !== 0) {
             QMessageBox["warning"]("installNameToolCheckError",
                     qsTr("No install_name_tool found!"),
-                    qsTr("You need to install Xcode command line tools. Command line tools can be installed via Xcode. Please check Xcode documentation for more details\n"));
+                    qsTr("You need to install Xcode (https://developer.apple.com/xcode/). If you already have Xcode installed, you need to set the active developer directory with 'xcode-select'.\n"));
         }
-        var otoolCheck = installer.execute("/usr/bin/which", new Array("otool"))[0];
-        if (!otoolCheck) {
+        var otoolCheck = installer.execute("/usr/bin/xcrun", ["-f", "otool"])[1];
+        if (otoolCheck !== 0) {
             QMessageBox["warning"]("otoolCheckError",
                     qsTr("No otool found!"),
-                    qsTr("You need to install Xcode command line tools. Command line tools can be installed via Xcode. Please check Xcode documentation for more details\n"));
+                    qsTr("You need to install Xcode (https://developer.apple.com/xcode/). If you already have Xcode installed, you need to set the active developer directory with 'xcode-select'.\n"));
         }
     }
 
