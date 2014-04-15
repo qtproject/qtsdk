@@ -97,6 +97,7 @@ SRC_DEST_DIRS               = ['src', 'src/submodules', 'src/doc', 'src/single',
 EXTRA_MODULE_DEST_DIRS      = ['src', 'doc', 'examples']
 QT5_DOCS_ARCHIVE_NAME       = 'qt5_docs.7z'
 BIN_TARGET_DIRS             = {} # dictionary populated based on the /packaging-tools/releases/release-<version>
+QT5_DIR                         = ''
 REMOTE_QT5_DIR                  = ''
 LATEST_QT5_DIR                  = ''
 REMOTE_EXTRA_MODULE_DIR         = ''
@@ -363,6 +364,9 @@ def initialize_qt5_build():
     # Update latest link
     cmd_args = [SSH_COMMAND, PKG_SERVER_ADDR, 'ln -sfn', REMOTE_QT5_DIR, LATEST_QT5_DIR]
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+    #Create latest_available_package
+    latest_available_pkg = QT5_DIR + '/latest_available_package'
+    create_remote_dirs(PKG_SERVER_ADDR, latest_available_pkg)
 
 ###############################
 # initialize_extra_module_build
@@ -908,8 +912,14 @@ def handle_qt_release_build():
 
     remote_dir = LATEST_QT5_DIR + '/' + BIN_TARGET_DIRS[TARGET_ENV]
     srv_and_remote_dir = PKG_SERVER_ADDR + ':' + remote_dir
-    # Create target directory
+
+    #Upload file also into latest_available_package
+    latest_available_pkg = QT5_DIR + '/latest_available_package/' + BIN_TARGET_DIRS[TARGET_ENV]
+    srv_and_latest_available_pkg = PKG_SERVER_ADDR + ':' + latest_available_pkg
+
+    # Create target directories
     create_remote_dirs(PKG_SERVER_ADDR, remote_dir)
+    create_remote_dirs(PKG_SERVER_ADDR, latest_available_pkg)
 
     local_archives_dir = os.path.join(WORK_DIR, 'module_archives')
     dir_list = os.listdir(local_archives_dir)
@@ -917,6 +927,8 @@ def handle_qt_release_build():
     for file_name in dir_list:
         if file_name.endswith('.7z'):
             cmd_args = [SCP_COMMAND, file_name, srv_and_remote_dir + '/']
+            bldinstallercommon.do_execute_sub_process(cmd_args, local_archives_dir, True)
+            cmd_args = [SCP_COMMAND, file_name, srv_and_latest_available_pkg + '/']
             bldinstallercommon.do_execute_sub_process(cmd_args, local_archives_dir, True)
             if QT5_DOCS_ARCHIVE_NAME in file_name and bldinstallercommon.is_linux_platform():
                 doc_archive_on_remote_disk = LATEST_QT5_DIR + '/src/doc/' + QT5_DOCS_ARCHIVE_NAME
@@ -1362,6 +1374,7 @@ def parse_cmd_line():
     global TARGET_ENV
     global ICU_LIBS
     global SRC_URL
+    global QT5_DIR
     global REMOTE_QT5_DIR
     global LATEST_QT5_DIR
     global REMOTE_EXTRA_MODULE_DIR
@@ -1418,6 +1431,7 @@ def parse_cmd_line():
         PLATFORM = 'windows'
 
     # define LATEST directories
+    QT5_DIR = PATH + '/' + LICENSE + '/qt/' + QT_VERSION
     REMOTE_QT5_DIR = PATH + '/' + LICENSE + '/'
     LATEST_QT5_DIR = PATH + '/' + LICENSE + '/'
     # define LATEST directories for extra module src & doc & examples packages
