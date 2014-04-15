@@ -752,18 +752,21 @@ def handle_qt_desktop_release_build():
 def handle_extra_module_release_build():
     script_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_app.py')
     icu7z_package = os.environ.get('ICU7Z')
+    pkg_storage_server = os.environ['PACKAGE_STORAGE_SERVER_PATH_HTTP']
     build_command = os.environ.get('QT5_APPLICATION_BUILD_CMD')
     install_command = os.environ.get('QT5_APPLICATION_INSTALL_CMD')
     collect_docs_command = os.environ.get('QT5_APPLICATION_COLLECT_DOCS_CMD')
     make_docs_command = os.environ.get('QT5_APPLICATION_MAKE_DOCS_CMD')
-    qt5_essentials_lib_package_uri = QT5_DIR + '/latest_available_package/' + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_essentials.7z'
-    qt5_addons_lib_package_uri = QT5_DIR + '/latest_available_package/' + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_addons.7z'
+    qt5_essentials_lib_package_uri = pkg_storage_server + '/' + LICENSE + '/' + 'qt' + '/' + QT_VERSION + '/latest_available_package/' + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_essentials.7z'
+    qt5_addons_lib_package_uri = pkg_storage_server + '/' + LICENSE + '/' + 'qt' + '/' + QT_VERSION + '/latest_available_package/' + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_addons.7z'
+    extra_module_src_uri = pkg_storage_server + '/' + LICENSE + '/' + os.environ.get('APPLICATION_NAME') + '/' + os.environ.get('APPLICATION_VERSION') + '/latest/src/' + os.environ.get('APPLICATION_NAME') + '-' + LICENSE + '-src-' + os.environ.get('APPLICATION_VERSION') + '.7z'
+
     # build command
     cmd_args = ['python', '-u', script_path, '--clean']
     cmd_args += ['--qt5path', 'qt5_package_dir']
     cmd_args += ['--qt5_essentials7z', qt5_essentials_lib_package_uri]
     cmd_args += ['--qt5_addons7z', qt5_addons_lib_package_uri]
-    cmd_args += ['--application7z', os.environ['QT5_APPLICATION_SRC_URI']]
+    cmd_args += ['--application7z', extra_module_src_uri]
     if icu7z_package:
         cmd_args += ['--icu7z', icu7z_package]
     if build_command:
