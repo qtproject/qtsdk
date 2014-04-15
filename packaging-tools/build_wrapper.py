@@ -195,7 +195,7 @@ class BldCommand:
         return True
 
     ###########################################
-    # Validate build args for Qt5 app build
+    # Validate build args for Qt5 extra module build
     ###########################################
     def validate_extra_module_build_args(self):
         print(self.options)
@@ -208,12 +208,6 @@ class BldCommand:
             sys.exit(-1)
         if not os.environ.get('QT5_APPLICATION_SRC_URI'):
             print('*** Qt5 app build missing environment variable: {0}'.format('QT5_APPLICATION_SRC_URI'))
-            sys.exit(-1)
-        if not os.environ.get('QT5_ESSENTIALS_LIB_PACKAGE_URI'):
-            print('*** Qt5 app build missing environment variable: {0}'.format('QT5_ESSENTIALS_LIB_PACKAGE_URI'))
-            sys.exit(-1)
-        if not os.environ.get('QT5_ADDONS_LIB_PACKAGE_URI'):
-            print('*** Qt5 app build missing environment variable: {0}'.format('QT5_ADDONS_LIB_PACKAGE_URI'))
             sys.exit(-1)
         if bldinstallercommon.is_win_platform():
             if not os.environ.get('QT5_APPLICATION_BUILD_CMD'):
@@ -758,17 +752,17 @@ def handle_qt_desktop_release_build():
 def handle_extra_module_release_build():
     script_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_app.py')
     icu7z_package = os.environ.get('ICU7Z')
-    qt5_addons_lib_package_uri = os.environ.get('QT5_ADDONS_LIB_PACKAGE_URI')
     build_command = os.environ.get('QT5_APPLICATION_BUILD_CMD')
     install_command = os.environ.get('QT5_APPLICATION_INSTALL_CMD')
     collect_docs_command = os.environ.get('QT5_APPLICATION_COLLECT_DOCS_CMD')
     make_docs_command = os.environ.get('QT5_APPLICATION_MAKE_DOCS_CMD')
+    qt5_essentials_lib_package_uri = QT5_DIR + '/latest_available_package/' + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_essentials.7z'
+    qt5_addons_lib_package_uri = QT5_DIR + '/latest_available_package/' + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_addons.7z'
     # build command
     cmd_args = ['python', '-u', script_path, '--clean']
     cmd_args += ['--qt5path', 'qt5_package_dir']
-    cmd_args += ['--qt5_essentials7z', os.environ['QT5_ESSENTIALS_LIB_PACKAGE_URI']]
-    if qt5_addons_lib_package_uri:
-        cmd_args += ['--qt5_addons7z', qt5_addons_lib_package_uri]
+    cmd_args += ['--qt5_essentials7z', qt5_essentials_lib_package_uri]
+    cmd_args += ['--qt5_addons7z', qt5_addons_lib_package_uri]
     cmd_args += ['--application7z', os.environ['QT5_APPLICATION_SRC_URI']]
     if icu7z_package:
         cmd_args += ['--icu7z', icu7z_package]
