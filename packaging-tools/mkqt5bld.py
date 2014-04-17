@@ -417,6 +417,8 @@ def build_qt():
     cmd_args = QT_BUILD_OPTIONS.make_cmd
     if bldinstallercommon.is_unix_platform():
         cmd_args += ' -j' + str(QT_BUILD_OPTIONS.make_thread_count)
+    elif bldinstallercommon.is_win_platform() and 'mingw32-make' in QT_BUILD_OPTIONS.make_cmd:
+        cmd_args += ' -j' + str(QT_BUILD_OPTIONS.make_thread_count)
     bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, QT_BUILD_OPTIONS.strict_mode, False, EXTRA_ENV)
     print_wrap('--------------------------------------------------------------------')
 
