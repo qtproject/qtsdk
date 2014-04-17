@@ -40,6 +40,14 @@
 **
 *****************************************************************************/
 
+var Dir = new function () {
+    this.toNativeSparator = function (path) {
+        if (installer.value("os") == "win")
+            return path.replace(/\//g, '\\');
+        return path;
+    }
+};
+
 // constructor
 function Component()
 {
@@ -59,10 +67,12 @@ Component.prototype.createOperations = function()
 {
     component.createOperations();
 
-    var qtStringVersion = "5.3.0";
-    var qmakeBinary = "";
     var platform = "";
+    var qtStringVersion = "5.3.0";
+    var qmakeBinary = "@TargetDir@" + "%TARGET_INSTALL_DIR%/bin/qmake";
     var sdpDirectoryPath = "@HomeDir@" + "/qnx660";
+    var sdpQnxHostPath = "";
+    var sdpQnxToolsExtension = "";
     var widget = gui.pageWidgetByObjectName("DynamicSetPathForSDPForm");
 
     if (widget != null)
@@ -70,18 +80,17 @@ Component.prototype.createOperations = function()
             sdpDirectoryPath = widget.SDPdirectory.text;
 
     if (installer.value("os") == "x11") {
-        qmakeBinary = "@TargetDir@" + "%TARGET_INSTALL_DIR%/bin/qmake";
         platform = "linux";
-        sdpDirectoryPath.replace(/\/$/, "");
+        sdpQnxHostPath = sdpDirectoryPath + "/host/linux/x86";
     }
     if (installer.value("os") == "win") {
-        qmakeBinary = "@TargetDir@" + "%TARGET_INSTALL_DIR%/bin/qmake.exe";
         platform = "windows";
-        sdpDirectoryPath.replace(/\\$/, "");
+        sdpQnxHostPath = sdpDirectoryPath + "/host/win32/x86";
+        sdpQnxToolsExtension = ".exe";
     }
 
     var qtPath = "@TargetDir@" + "%TARGET_INSTALL_DIR%";
-    addInitQtPatchOperation(component, platform, qtPath, qmakeBinary, "emb-arm-qt5");
+    addInitQtPatchOperation(component, platform, qtPath, Dir.toNativeSparator(qmakeBinary + sdpQnxToolsExtension), "emb-arm-qt5");
 
     if (installer.value("SDKToolBinary") == "")
         return;
@@ -91,10 +100,10 @@ Component.prototype.createOperations = function()
                            ["@SDKToolBinary@", "addTC",
                             "--id", "Qnx.QccToolChain:opt_qnx660_qcc_device",
                             "--name", "QCC for QNX 6.6.0 Device",
-                            "--path", sdpDirectoryPath + "/host/linux/x86/usr/bin/qcc",
+                            "--path", Dir.toNativeSparator(sdpQnxHostPath + "/usr/bin/qcc" + sdpQnxToolsExtension),
                             "--abi", "arm-linux-generic-elf-32bit",
                             "--supportedAbis", "arm-linux-generic-elf-32bit,x86-linux-generic-elf-32bit",
-                            "Qnx.QnxToolChain.NDKPath", "QString:" + sdpDirectoryPath,
+                            "Qnx.QnxToolChain.NDKPath", "QString:" + Dir.toNativeSparator(sdpDirectoryPath),
                             "UNDOEXECUTE",
                             "@SDKToolBinary@", "rmTC", "--id", "Qnx.QccToolChain:opt_qnx660_qcc_device"]);
 
@@ -104,7 +113,7 @@ Component.prototype.createOperations = function()
                             "--id", "opt_qnx660_debugger_device",
                             "--name", "Debugger for QNX 6.6.0 Device",
                             "--engine", "1",
-                            "--binary", sdpDirectoryPath + "/host/linux/x86/usr/bin/ntoarmv7-gdb",
+                            "--binary", Dir.toNativeSparator(sdpQnxHostPath + "/usr/bin/ntoarmv7-gdb" + sdpQnxToolsExtension),
                             "--abis", "arm-linux-generic-elf-32bit",
                             "UNDOEXECUTE",
                             "@SDKToolBinary@", "rmDebugger", "--id", "opt_qnx660_debugger_device"]);
@@ -115,8 +124,8 @@ Component.prototype.createOperations = function()
                             "--id", component.name,
                             "--name", "Qt " + qtStringVersion + " for QNX 6.6.0 Device",
                             "--type", "Qt4ProjectManager.QtVersion.QNX.QNX",
-                            "--qmake", qmakeBinary,
-                            "SDKPath", "QString:" + sdpDirectoryPath,
+                            "--qmake", Dir.toNativeSparator(qmakeBinary + sdpQnxToolsExtension),
+                            "SDKPath", "QString:" + Dir.toNativeSparator(sdpDirectoryPath),
                             "UNDOEXECUTE",
                             "@SDKToolBinary@", "rmQt", "--id", component.name]);
 
@@ -127,10 +136,10 @@ Component.prototype.createOperations = function()
                             "--name", "Qt " + qtStringVersion + " for QNX 6.6.0 Device",
                             "--debuggerid", "opt_qnx660_debugger_device",
                             "--devicetype", "QnxOsType",
-                            "--sysroot", sdpDirectoryPath + "/target/qnx6",
+                            "--sysroot", Dir.toNativeSparator(sdpDirectoryPath + "/target/qnx6"),
                             "--toolchain", "Qnx.QccToolChain:opt_qnx660_qcc_device",
                             "--qt", component.name,
-                            "--mkspec", "qnx-armv7le-qcc",
+                            "--mkspec", "qnx-armle-v7-qcc",
                             "UNDOEXECUTE",
                             "@SDKToolBinary@", "rmKit", "--id", component.name + ".kit"]);
 

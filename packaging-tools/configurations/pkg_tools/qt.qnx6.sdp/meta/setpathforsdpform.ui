@@ -52,8 +52,8 @@
      </property>
      <item>
       <widget class="QLineEdit" name="SDPdirectory">
-       <property name="text">
-        <string>/opt/qnx660</string>
+       <property name="readOnly">
+        <bool>true</bool>
        </property>
       </widget>
      </item>

@@ -50,9 +50,10 @@ var Dir = new function () {
 
 validateSDPDirectory = function(path)
 {
-    if (path != "")
-        if (installer.fileExists(path + "/qnx660-env.sh"))
+    if (path != "") {
+        if (installer.fileExists(path + installer.value("QNX660_ENV_FILE")))
             return true;
+    }
     return false;
 }
 
@@ -62,11 +63,11 @@ function Component()
     // Add a user interface file called SetPathForSDPForm
     component.loaded.connect(this, Component.prototype.loaded);
 
-    // add dynamic dependency for mingw482 TC for QNX packages on Windows
-    if (installer.value("os") == "win") {
-        var mingw_tc_component = "qt.tools.win32_mingw482";
-        component.addDependency(mingw_tc_component);
-    }
+    // use the right env file on x11 and win
+    if (installer.value("os") == "x11")
+        installer.setValue("QNX660_ENV_FILE", "/qnx660-env.sh");
+    else if (installer.value("os") == "win")
+        installer.setValue("QNX660_ENV_FILE", "/qnx660-env.bat");
 }
 
 Component.prototype.loaded = function ()
@@ -74,9 +75,17 @@ Component.prototype.loaded = function ()
     if (installer.addWizardPage( component, "SetPathForSDPForm", QInstaller.ComponentSelection )) {
         var widget = gui.pageWidgetByObjectName("DynamicSetPathForSDPForm");
         if (widget != null) {
-            widget.complete = validateSDPDirectory(widget.SDPdirectory.text);
             widget.SDPchooser.clicked.connect(this, Component.prototype.dirRequested);
             widget.SDPdirectory.textChanged.connect(this, Component.prototype.textChanged);
+
+            // set the initial by default directory
+            if (installer.value("os") == "x11")
+                widget.SDPdirectory.text = Dir.toNativeSparator("/opt/qnx660");
+            else if (installer.value("os") == "win")
+                widget.SDPdirectory.text = Dir.toNativeSparator("c:/qnx660");
+
+            // validate whether the initial by default directory is good enough
+            widget.complete = validateSDPDirectory(widget.SDPdirectory.text);
         }
     }
 }
