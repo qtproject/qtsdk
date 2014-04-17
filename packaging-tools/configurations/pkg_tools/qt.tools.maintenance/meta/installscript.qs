@@ -69,21 +69,14 @@ Component.prototype.createOperations = function()
     // Call the base createOperations and afterwards set some registry settings (unpacking ...)
     component.createOperations();
 
-    if ( installer.value("os") == "win" )
+    // only for windows online installer
+    if ( installer.value("os") == "win" && !installer.isOfflineOnly() )
     {
-        // only for online installer
-        if (!installer.isOfflineOnly()) {
-            // create shortcut
-            component.addOperation( "CreateShortcut",
-                                    "@TargetDir@/MaintenanceTool.exe",
-                                    "@StartMenuDir@/" + installer.value("QT_EDITION_NAME")  + " Maintenance Tool.lnk",
-                                    "workingDirectory=@TargetDir@" );
-        }
-
+        // create shortcut
         component.addOperation( "CreateShortcut",
                                 "@TargetDir@/MaintenanceTool.exe",
-                                "@StartMenuDir@/Uninstall " + installer.value("QT_EDITION_NAME")  + ".lnk",
-                                " --uninstall");
+                                "@StartMenuDir@/" + installer.value("QT_EDITION_NAME")  + " Maintenance Tool.lnk",
+                                "workingDirectory=@TargetDir@" );
     }
     if ( installer.value("os") == "x11" )
     {

@@ -158,8 +158,17 @@ patchQt4ExamplesAndDoc = function(aComponent, aComponentRootPath, aQtInstallatio
 Component.prototype.createOperations = function()
 {
     component.createOperations();
-}
 
+    if (installer.isInstaller() &&
+        installer.value("os") == "win") {
+
+        // shortcut to uninstaller
+        component.addOperation( "CreateShortcut",
+                                "@TargetDir@/MaintenanceTool.exe",
+                                "@StartMenuDir@/Uninstall " + installer.value("QT_EDITION_NAME")  + ".lnk",
+                                " --uninstall");
+    }
+}
 
 
 
