@@ -52,6 +52,7 @@ import re
 from time import gmtime, strftime
 import urllib
 import mkqt5bld
+import build_doc
 
 from optparse import OptionParser, Option
 
@@ -405,6 +406,15 @@ def build_extra_module_src_pkg():
         if file_name.startswith(os.environ['APPLICATION_NAME'] + '-' + LICENSE + '-src-' + os.environ['APPLICATION_VERSION']):
             cmd_args = ['scp', file_name, os.environ['PACKAGE_STORAGE_SERVER_USER'] + '@' + os.environ['PACKAGE_STORAGE_SERVER'] + ':' + os.environ['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + LICENSE + '/' + os.environ['APPLICATION_NAME'] + '/' + os.environ['APPLICATION_VERSION'] + '/latest/src']
             bldinstallercommon.do_execute_sub_process(cmd_args, application_dir, True)
+    # handle doc package creation
+    build_doc.handle_extra_module_doc_build()
+    # copy archived doc files to network drive if exists, we use Linux only to generate doc archives
+    local_docs_dir = os.path.join(SCRIPT_ROOT_DIR, 'doc_archives')
+    if os.path.exists(local_docs_dir):
+        # create remote doc dir
+        doc_target_dir = PKG_SERVER_ADDR + ':' + LATEST_EXTRA_MODULE_DIR + '/' + 'doc'
+        remote_copy_archives(doc_target_dir, local_docs_dir)
+
 
 ###############################
 # initialize_extra_module_binary_build
