@@ -101,6 +101,7 @@ ANDROID_BUILD                       = False
 EXTRA_ENV                           = dict(os.environ)
 QT_BUILD_OPTIONS                    = 0
 DESKTOP_BUILD                       = True
+QNX_BUILD                           = False
 
 # init
 bldinstallercommon.init_common_module(SCRIPT_ROOT_DIR)
@@ -245,6 +246,10 @@ def init_mkqt5bld():
             if QT_BUILD_OPTIONS.silent_build:
                 QT_BUILD_OPTIONS.make_cmd += ' -s -nologo'
                 MAKE_INSTALL_CMD += ' -s -nologo'
+        ## QTBUG-38555: make install INSTALL_ROOT=\some\path does not work on Windows
+        # always use 'make' for 'make install', 'mingw32-make install' does not work atm
+        elif QT_BUILD_OPTIONS.make_cmd == 'mingw32-make' and bldinstallercommon.is_win_platform() and QNX_BUILD:
+            MAKE_INSTALL_CMD = 'make install'
 
     #remove old working dirs
     if os.path.exists(WORK_DIR):
@@ -467,6 +472,21 @@ def install_qt():
         print_wrap('                -> in: ' + QT_SOURCE_DIR)
         return_code, output = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, QT_BUILD_OPTIONS.strict_mode)
         return
+
+    ## QTBUG-38555: make install INSTALL_ROOT=\some\path does not work on Windows
+    if QNX_BUILD and bldinstallercommon.is_win_platform():
+        install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
+        # do not use drive letter when running make install [because of c:$(INSTALL_ROOT)/$(PREFIX)]
+        install_root_path = install_root_path[2:]
+        # apply the workaround from QTBUG-38555
+        install_root_path = install_root_path.replace('\\','/').replace('/', '\\', 1)
+        cmd_args = MAKE_INSTALL_CMD + ' ' + 'INSTALL_ROOT=' + install_root_path
+        print_wrap('    Installing module: Qt top level')
+        print_wrap('          -> cmd args: ' + cmd_args)
+        print_wrap('                -> in: ' + QT_SOURCE_DIR)
+        return_code, output = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, QT_BUILD_OPTIONS.strict_mode)
+        return
+
     #make install for each module with INSTALL_ROOT
     print_wrap('    Install modules to separate INSTALL_ROOT')
     for module_name in QT5_MODULES_LIST:
@@ -660,8 +680,8 @@ def replace_rpath():
 def archive_submodules():
     print_wrap('---------------- Archiving submodules ------------------------------')
     bldinstallercommon.create_dirs(MODULE_ARCHIVE_DIR)
-    # temporary solution for Android on Windows compilations
-    if ANDROID_BUILD and bldinstallercommon.is_win_platform():
+    # temporary solution for Android/QNX on Windows compilations
+    if (ANDROID_BUILD or QNX_BUILD) and bldinstallercommon.is_win_platform():
         print_wrap('---------- Archiving Qt modules')
         install_path = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
         install_path = 'C' + install_path[1:]
@@ -672,6 +692,7 @@ def archive_submodules():
         else:
             print_wrap(install_path + os.sep + SINGLE_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> Qt not archived!')
         return
+
     # Essentials
     print_wrap('---------- Archiving essential modules')
     if os.path.exists(MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME):
@@ -745,7 +766,7 @@ def patch_build():
     # replace build directory paths in install_root locations
     replace_build_paths(MAKE_INSTALL_ROOT_DIR)
     # remove system specific paths from qconfig.pri
-    if not ANDROID_BUILD:
+    if not ANDROID_BUILD and not QNX_BUILD:
         replace_system_paths()
     # fix qmake prl build fir references
     erase_qmake_prl_build_dir()
@@ -932,6 +953,7 @@ def main_call_parameters():
     global ANDROID_BUILD
     global EXTRA_ENV
     global DESKTOP_BUILD
+    global QNX_BUILD
 
     if QT_BUILD_OPTIONS.make_cmd:
         MAKE_INSTALL_CMD    = QT_BUILD_OPTIONS.make_cmd + ' install'
@@ -969,6 +991,10 @@ def main_call_parameters():
         print_wrap('*** Invalid arguments for Android build. Please check them.')
         sys.exit(-1)
 
+    # check whether this is a QNX build
+    if 'qnx' in CONFIGURE_OPTIONS.lower():
+        QNX_BUILD = True
+
     if QT_BUILD_OPTIONS.icu_uri:
         icu_install_base_path = use_custom_icu()
         print_wrap('Using custom ICU from path: ' + icu_install_base_path)
@@ -991,7 +1017,7 @@ def main_call_parameters():
     if QT_BUILD_OPTIONS.runtime_path:
         CONFIGURE_OPTIONS += ' ' + '-R' + ' ' + QT_BUILD_OPTIONS.runtime_path
 
-    if ANDROID_BUILD or any(substr in CONFIGURE_OPTIONS.lower() for substr in ['ios', 'winrt', 'winphone']):
+    if ANDROID_BUILD or QNX_BUILD or any(substr in CONFIGURE_OPTIONS.lower() for substr in ['ios', 'winrt', 'winphone']):
         DESKTOP_BUILD = False
 
     CONFIGURE_OPTIONS = CONFIGURE_OPTIONS.replace('  ', ' ')
@@ -1027,7 +1053,7 @@ def run_build():
     if DESKTOP_BUILD:
         build_qmlpuppets()
     # build docs and copy to essentials install dir
-    if not ANDROID_BUILD:
+    if not ANDROID_BUILD and not QNX_BUILD:
         build_docs()
     #cleanup files that are not needed in binary packages
     clean_up(MAKE_INSTALL_ROOT_DIR)
