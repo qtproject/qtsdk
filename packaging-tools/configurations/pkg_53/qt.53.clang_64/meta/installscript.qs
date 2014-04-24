@@ -103,8 +103,33 @@ Component.prototype.createOperations = function()
         print("Register documentation and examples for: " + installationPath);
         patchQtExamplesAndDoc(component, installationPath, "Qt-5.3");
 
+        //QTBUG-37650
+        patchQtAssistant(component, installationPath, "Qt-5.3");
+
     } catch(e) {
         print(e);
+    }
+}
+
+//QTBUG-37650
+function patchQtAssistant(aComponent, aComponentRootPath, aQtInstallationName)
+{
+    if (installer.value("os") == "mac") {
+        print("Patching qt.conf for Assistant to: " + aComponentRootPath);
+        var fileName = aComponentRootPath + "/bin/Assistant.app/Contents/Resources/" + "qt.conf";
+        print("qt.conf file: " + fileName);
+
+        aComponent.addOperation("Settings",
+            "path=" + fileName,
+            "method=add_array_value",
+            "key=Paths/Prefix",
+            "value=../../..");
+
+        aComponent.addOperation("Settings",
+        "path=" + fileName,
+        "method=add_array_value",
+        "key=Paths/Documentation",
+        "value=../../Docs/" + aQtInstallationName);
     }
 }
 
