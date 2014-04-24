@@ -74,7 +74,7 @@ PROD_SRV_REPO_PENDING_AREA_DIR          = ''
 
 PKG_SERVER_URL                          = ''
 # search/replace tags in configuration files
-GLOBAL_VERSION_TAG                      = '%GLOBAL_VERSION%'
+GLOBAL_VERSION_AND_TAG                  = '%GLOBAL_VERSION_AND_TAG%'
 
 
 # container for online repository build job parameters
@@ -109,7 +109,7 @@ class BuildJob:
         self.repo_content_type          = repo_content_type
         self.repo_components_to_update  = repo_components_to_update
         self.repo_url_specifier         = repo_url_specifier
-        self.installer_name             = preformat_global_version_number(installer_name, version_number, version_number_tag)
+        self.installer_name             = preformat_global_version_and_tag(installer_name, version_number, version_number_tag)
         self.rta_key_list               = rta_keys.replace(' ', '')
         self.format_substitution_list(substitution_list)
 
@@ -181,11 +181,11 @@ class BuildJob:
             return items[5]
 
 
-def preformat_global_version_number(arg_substitution_list, global_version, global_version_tag):
+def preformat_global_version_and_tag(arg_substitution_list, global_version, global_version_tag):
     version = global_version
     if global_version_tag:
         version = version + '-' + global_version_tag
-    temp = arg_substitution_list.replace(GLOBAL_VERSION_TAG, version)
+    temp = arg_substitution_list.replace(GLOBAL_VERSION_AND_TAG, version)
     return temp
 
 
@@ -254,7 +254,7 @@ def get_job_list(conf_file, job_type_specifier, license_type, branch, platform, 
             installer_name = bldinstallercommon.safe_config_key_fetch(parser, s, 'installer_name')
             arg_substitution_list = bldinstallercommon.safe_config_key_fetch(parser, s, 'arg_substitution_list').rstrip(',\n')
             arg_substitution_list += ',' + global_arg_substitution_list
-            arg_substitution_list = preformat_global_version_number(arg_substitution_list, global_version, global_version_tag)
+            arg_substitution_list = preformat_global_version_and_tag(arg_substitution_list, global_version, global_version_tag)
             repo_content_type           = ''
             repo_components_to_update   = ''
             repo_url_specifier          = ''
