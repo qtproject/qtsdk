@@ -19,23 +19,23 @@ version_tag:
 [release.onlineclient.online.linux.x86]
 arg_configurations_file:    linux_x86_online
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
-installer_name:             qt-opensource-linux-x86-%GLOBAL_VERSION%-online
+installer_name:             qt-opensource-linux-x86-%GLOBAL_VERSION_AND_TAG%-online
 
 [release.onlineclient.online.linux.x86.testclient]
 arg_configurations_file:    linux_x86_online_testclient
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
-installer_name:             qt-opensource-testclient-linux-x86-%GLOBAL_VERSION%-online
+installer_name:             qt-opensource-testclient-linux-x86-%GLOBAL_VERSION_AND_TAG%-online
 rta_key_list:               Qt5_RTA_opensource_onlineInstaller_tests_linux_32bit_LatestQt, Qt5_RTA_opensource_onlineInstaller_tests_linux_android_32bit_LatestQt
 
 [release.onlineclient.online.linux.x64]
 arg_configurations_file:    linux_x64_online
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
-installer_name:             qt-opensource-linux-x64-%GLOBAL_VERSION%-online
+installer_name:             qt-opensource-linux-x64-%GLOBAL_VERSION_AND_TAG%-online
 
 [release.onlineclient.online.linux.x64.testclient]
 arg_configurations_file:    linux_x64_online_testclient
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
-installer_name:             qt-opensource-testclient-linux-x64-%GLOBAL_VERSION%-online
+installer_name:             qt-opensource-testclient-linux-x64-%GLOBAL_VERSION_AND_TAG%-online
 rta_key_list:               Qt5_RTA_opensource_onlineInstaller_tests_linux_64bit_LatestQt, Qt5_RTA_opensource_onlineInstaller_tests_linux_android_64bit_LatestQt
 
 ################################################################################
@@ -44,12 +44,12 @@ rta_key_list:               Qt5_RTA_opensource_onlineInstaller_tests_linux_64bit
 [release.onlineclient.online.windows.x86]
 arg_configurations_file:    win_x86_online
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
-installer_name:             qt-opensource-windows-x86-%GLOBAL_VERSION%-online
+installer_name:             qt-opensource-windows-x86-%GLOBAL_VERSION_AND_TAG%-online
 
 [release.onlineclient.online.windows.x86.testclient]
 arg_configurations_file:    win_x86_online_testclient
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
-installer_name:             qt-opensource-testclient-windows-x86-%GLOBAL_VERSION%-online
+installer_name:             qt-opensource-testclient-windows-x86-%GLOBAL_VERSION_AND_TAG%-online
 rta_key_list:               Qt5_RTA_opensource_onlineInstaller_tests_windows_android_LatestQt, Qt5_RTA_opensource_onlineInstaller_tests_windows_mingw_LatestQt, Qt5_RTA_opensource_onlineInstaller_tests_windows_vc2010_LatestQt, Qt5_RTA_opensource_onlineInstaller_tests_windows_vc2012_LatestQt, Qt5_RTA_opensource_onlineInstaller_tests_windows_vc2013_angle_32bit_LatestQt, Qt5_RTA_opensource_onlineInstaller_tests_windows_vc2013_opengl_32bit_LatestQt, Qt5_RTA_opensource_onlineInstaller_tests_windows_vc2013_angle_64bit_LatestQt, Qt5_RTA_opensource_onlineInstaller_tests_windows_vc2013_opengl_64bit_LatestQt
 
 ################################################################################
@@ -58,10 +58,10 @@ rta_key_list:               Qt5_RTA_opensource_onlineInstaller_tests_windows_and
 [release.onlineclient.online.mac.x64]
 arg_configurations_file:    mac_x64_online
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
-installer_name:             qt-opensource-mac-x64-%GLOBAL_VERSION%-online
+installer_name:             qt-opensource-mac-x64-%GLOBAL_VERSION_AND_TAG%-online
 
 [release.onlineclient.online.mac.x64.testclient]
 arg_configurations_file:    mac_x64_online_testclient
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
-installer_name:             qt-opensource-testclient-mac-x64-%GLOBAL_VERSION%-online
+installer_name:             qt-opensource-testclient-mac-x64-%GLOBAL_VERSION_AND_TAG%-online
 rta_key_list:               Qt5_RTA_opensource_onlineInstaller_tests_mac_LatestQt, Qt5_RTA_opensource_onlineInstaller_tests_mac_ios_LatestQt, Qt5_RTA_opensource_onlineInstaller_tests_mac_android_LatestQt
