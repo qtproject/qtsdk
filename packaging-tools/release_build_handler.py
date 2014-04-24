@@ -226,7 +226,7 @@ def get_job_list(conf_file, job_type_specifier, license_type, branch, platform, 
     if job_type_specifier == 'repository':
         is_repo_job = True
     # first read global arg substitution list applicable for all build jobs in this file
-    global_arg_substitution_list = bldinstallercommon.safe_config_key_fetch(parser, 'release.global', 'arg_substitution_list')
+    global_arg_substitution_list = bldinstallercommon.safe_config_key_fetch(parser, 'release.global', 'arg_substitution_list').rstrip(',\n')
     # parse
     job_list = []
     for s in parser.sections():
@@ -252,7 +252,7 @@ def get_job_list(conf_file, job_type_specifier, license_type, branch, platform, 
             rta_key_list = bldinstallercommon.safe_config_key_fetch(parser, s, 'rta_key_list')
             # preferred installer name
             installer_name = bldinstallercommon.safe_config_key_fetch(parser, s, 'installer_name')
-            arg_substitution_list = bldinstallercommon.safe_config_key_fetch(parser, s, 'arg_substitution_list')
+            arg_substitution_list = bldinstallercommon.safe_config_key_fetch(parser, s, 'arg_substitution_list').rstrip(',\n')
             arg_substitution_list += ',' + global_arg_substitution_list
             arg_substitution_list = preformat_global_version_number(arg_substitution_list, global_version, global_version_tag)
             repo_content_type           = ''
