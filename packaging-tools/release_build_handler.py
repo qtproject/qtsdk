@@ -186,8 +186,7 @@ def preformat_global_version_and_tag(arg_substitution_list, global_version, glob
     version = global_version
     if global_version_tag:
         version = version + '-' + global_version_tag
-    temp = arg_substitution_list.replace(GLOBAL_VERSION_AND_TAG, version)
-    temp = arg_substitution_list.replace(GLOBAL_VERSION, global_version)
+    temp = arg_substitution_list.replace(GLOBAL_VERSION_AND_TAG, version).replace(GLOBAL_VERSION, global_version)
     return temp
 
 
