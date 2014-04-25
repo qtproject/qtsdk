@@ -762,6 +762,44 @@ def patch_android_prl_files():
 ###############################
 # function
 ###############################
+def patch_qnx6_prl_files():
+    # remove references to absolute path of the SDP on the build machine
+    if QNX_BUILD:
+        install_path_essent = MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME
+        install_path_addons = MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME
+        # temporary solution for QNX on Windows compilations
+        if bldinstallercommon.is_win_platform():
+            install_path_essent = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
+            install_path_essent = 'C' + install_path_essent[1:]
+
+        # find the lib directory under the install directory for essentials and addons
+        lib_path_essent = os.path.normpath(install_path_essent + os.sep + INSTALL_PREFIX + os.sep + 'lib')
+        lib_path_addons = os.path.normpath(install_path_addons + os.sep + INSTALL_PREFIX + os.sep + 'lib')
+
+        # just list the files with a pattern like 'libQt5Core.prl'
+        for lib_path_final in [lib_path_essent, lib_path_addons]:
+            print_wrap('---------- Remove references to hard coded paths of the SDP under ' + lib_path_final + ' ----------------')
+            if os.path.exists(lib_path_final):
+                print_wrap('*** Replacing hard coded paths to SDP under : ' + lib_path_final)
+                prl_files = [f for f in os.listdir(lib_path_final) if re.match(r'libQt5.*\.prl', f)]
+                for prl_name in prl_files:
+                    # let's just remove the undesired string for QMAKE_PRL_LIBS
+                    prl_name_path = os.path.join(lib_path_final, prl_name)
+                    if os.path.isfile(prl_name_path):
+                        regex = re.compile(r'-L[^ ]* ')
+                        for line in fileinput.FileInput(prl_name_path, inplace=1):
+                            if line.startswith('QMAKE_PRL_LIBS'):
+                                line = regex.sub('', line)
+                            print line,
+                    else:
+                        print_wrap('*** Warning! The file : ' + prl_name_path + ' does not exist')
+            else:
+                print_wrap('*** Warning! Unable to locate ' + lib_path_final + ' directory')
+
+
+###############################
+# function
+###############################
 def patch_build():
     # replace build directory paths in install_root locations
     replace_build_paths(MAKE_INSTALL_ROOT_DIR)
@@ -777,6 +815,8 @@ def patch_build():
             lib_path_essentials = os.path.normpath(install_path + os.sep + INSTALL_PREFIX + os.sep)
             bldinstallercommon.rename_android_soname_files(lib_path_essentials)
         patch_android_prl_files()
+    if QNX_BUILD:
+        patch_qnx6_prl_files()
     # patch RPath if requested
     if QT_BUILD_OPTIONS.replace_rpath:
         replace_rpath()
