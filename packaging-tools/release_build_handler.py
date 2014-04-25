@@ -74,6 +74,7 @@ PROD_SRV_REPO_PENDING_AREA_DIR          = ''
 
 PKG_SERVER_URL                          = ''
 # search/replace tags in configuration files
+GLOBAL_VERSION                          = '%GLOBAL_VERSION%'
 GLOBAL_VERSION_AND_TAG                  = '%GLOBAL_VERSION_AND_TAG%'
 
 
@@ -186,6 +187,7 @@ def preformat_global_version_and_tag(arg_substitution_list, global_version, glob
     if global_version_tag:
         version = version + '-' + global_version_tag
     temp = arg_substitution_list.replace(GLOBAL_VERSION_AND_TAG, version)
+    temp = arg_substitution_list.replace(GLOBAL_VERSION, global_version)
     return temp
 
 
