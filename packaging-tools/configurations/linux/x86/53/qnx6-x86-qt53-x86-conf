@@ -42,13 +42,8 @@
 
 
 [qt.53.qnx6_x86]
-archives:               53.qnx6_x86.essentials,
-                        53.qnx6_x86.addons
+archives:               53.qnx6_x86.essentials
 target_install_base:    /5.3/qnx6-x86
 [53.qnx6_x86.essentials]
 archive_uri:            /qt/5.3.0/latest/qnx6_x86/linux_x86/qt5_essentials.7z
 package_finalize_items: erase_doc
-[53.qnx6_x86.addons]
-archive_uri:            /qt/5.3.0/latest/qnx6_x86/linux_x86/qt5_addons.7z
-package_finalize_items: erase_doc
-

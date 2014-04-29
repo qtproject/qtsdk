@@ -472,13 +472,13 @@ def install_qt():
         return_code, output = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, QT_BUILD_OPTIONS.strict_mode)
         return
 
-    ## QTBUG-38555: make install INSTALL_ROOT=\some\path does not work on Windows
-    if QNX_BUILD and bldinstallercommon.is_win_platform():
+    if QNX_BUILD:
         install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
-        # do not use drive letter when running make install [because of c:$(INSTALL_ROOT)/$(PREFIX)]
-        install_root_path = install_root_path[2:]
-        # apply the workaround from QTBUG-38555
-        install_root_path = install_root_path.replace('\\','/').replace('/', '\\', 1)
+        if bldinstallercommon.is_win_platform():
+            # do not use drive letter when running make install [because of c:$(INSTALL_ROOT)/$(PREFIX)]
+            install_root_path = install_root_path[2:]
+            # apply the workaround from QTBUG-38555
+            install_root_path = install_root_path.replace('\\','/').replace('/', '\\', 1)
         cmd_args = MAKE_INSTALL_CMD + ' ' + 'INSTALL_ROOT=' + install_root_path
         print_wrap('    Installing module: Qt top level')
         print_wrap('          -> cmd args: ' + cmd_args)
@@ -669,6 +669,8 @@ def replace_rpath():
         print_wrap('*** Warning! RPath patching enabled only for Linux platforms')
         return
     dest_path_lib = bldinstallercommon.locate_directory(os.path.join(MAKE_INSTALL_ROOT_DIR, ESSENTIALS_INSTALL_DIR_NAME), 'lib')
+    if QNX_BUILD:
+        dest_path_lib = bldinstallercommon.locate_directory(os.path.join(MAKE_INSTALL_ROOT_DIR, SINGLE_INSTALL_DIR_NAME), 'lib')
     component_root_path = os.path.dirname(dest_path_lib)
     bldinstallercommon.handle_component_rpath(component_root_path, '/lib')
 
@@ -679,11 +681,24 @@ def replace_rpath():
 def archive_submodules():
     print_wrap('---------------- Archiving submodules ------------------------------')
     bldinstallercommon.create_dirs(MODULE_ARCHIVE_DIR)
-    # temporary solution for Android/QNX on Windows compilations
-    if (ANDROID_BUILD or QNX_BUILD) and bldinstallercommon.is_win_platform():
+    # temporary solution for Android on Windows compilations
+    if ANDROID_BUILD and bldinstallercommon.is_win_platform():
         print_wrap('---------- Archiving Qt modules')
         install_path = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
         install_path = 'C' + install_path[1:]
+        if os.path.exists(install_path):
+            cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_essentials' + '.7z *'
+            run_in = os.path.normpath(install_path + os.sep + INSTALL_PREFIX)
+            bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), run_in, True, True)
+        else:
+            print_wrap(install_path + os.sep + SINGLE_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> Qt not archived!')
+        return
+
+    if QNX_BUILD:
+        print_wrap('---------- Archiving Qt modules')
+        install_path = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
+        if bldinstallercommon.is_win_platform():
+            install_path = 'C' + install_path[1:]
         if os.path.exists(install_path):
             cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_essentials' + '.7z *'
             run_in = os.path.normpath(install_path + os.sep + INSTALL_PREFIX)
@@ -764,36 +779,31 @@ def patch_android_prl_files():
 def patch_qnx6_prl_files():
     # remove references to absolute path of the SDP on the build machine
     if QNX_BUILD:
-        install_path_essent = MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME
-        install_path_addons = MAKE_INSTALL_ROOT_DIR + os.sep + ADDONS_INSTALL_DIR_NAME
-        # temporary solution for QNX on Windows compilations
+        install_path_final = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
         if bldinstallercommon.is_win_platform():
-            install_path_essent = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
-            install_path_essent = 'C' + install_path_essent[1:]
+            install_path_final = 'C' + install_path_final[1:]
 
-        # find the lib directory under the install directory for essentials and addons
-        lib_path_essent = os.path.normpath(install_path_essent + os.sep + INSTALL_PREFIX + os.sep + 'lib')
-        lib_path_addons = os.path.normpath(install_path_addons + os.sep + INSTALL_PREFIX + os.sep + 'lib')
+        # find the lib directory under the install directory
+        lib_path_final = os.path.normpath(install_path_final + os.sep + INSTALL_PREFIX + os.sep + 'lib')
 
         # just list the files with a pattern like 'libQt5Core.prl'
-        for lib_path_final in [lib_path_essent, lib_path_addons]:
-            print_wrap('---------- Remove references to hard coded paths of the SDP under ' + lib_path_final + ' ----------------')
-            if os.path.exists(lib_path_final):
-                print_wrap('*** Replacing hard coded paths to SDP under : ' + lib_path_final)
-                prl_files = [f for f in os.listdir(lib_path_final) if re.match(r'libQt5.*\.prl', f)]
-                for prl_name in prl_files:
-                    # let's just remove the undesired string for QMAKE_PRL_LIBS
-                    prl_name_path = os.path.join(lib_path_final, prl_name)
-                    if os.path.isfile(prl_name_path):
-                        regex = re.compile(r'-L[^ ]* ')
-                        for line in fileinput.FileInput(prl_name_path, inplace=1):
-                            if line.startswith('QMAKE_PRL_LIBS'):
-                                line = regex.sub('', line)
-                            print line,
-                    else:
-                        print_wrap('*** Warning! The file : ' + prl_name_path + ' does not exist')
-            else:
-                print_wrap('*** Warning! Unable to locate ' + lib_path_final + ' directory')
+        print_wrap('---------- Remove references to hard coded paths of the SDP under ' + lib_path_final + ' ----------------')
+        if os.path.exists(lib_path_final):
+            print_wrap('*** Replacing hard coded paths to SDP under : ' + lib_path_final)
+            prl_files = [f for f in os.listdir(lib_path_final) if re.match(r'libQt5.*\.prl', f)]
+            for prl_name in prl_files:
+                # let's just remove the undesired string for QMAKE_PRL_LIBS
+                prl_name_path = os.path.join(lib_path_final, prl_name)
+                if os.path.isfile(prl_name_path):
+                    regex = re.compile(r'-L[^ ]* ')
+                    for line in fileinput.FileInput(prl_name_path, inplace=1):
+                        if line.startswith('QMAKE_PRL_LIBS'):
+                            line = regex.sub('', line)
+                        print line,
+                else:
+                    print_wrap('*** Warning! The file : ' + prl_name_path + ' does not exist')
+        else:
+            print_wrap('*** Warning! Unable to locate ' + lib_path_final + ' directory')
 
 
 ###############################
