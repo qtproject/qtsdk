@@ -117,6 +117,7 @@ if (sys.platform != "darwin"):
 # if we are on windows, maybe we want some other arguments
 if os.name == 'nt':
     parser.add_argument('--d3dcompiler7z', help="a file or url where it get d3dcompiler lib")
+    parser.add_argument('--openssl7z', help="a file or url where to get the openssl libs as 7z")
     parser.add_argument('--environment_batch', help="batch file that sets up environment")
     parser.add_argument('--environment_batch_argument', help="if the batch file needs an argument just add it with this argument")
     parser.add_argument('--sevenzippath', help="path where the 7zip binary is located")
@@ -191,6 +192,9 @@ if not os.path.lexists(callerArguments.qt5path):
         targetPath = os.path.join(callerArguments.qt5path, 'bin')
         myGetQtBinaryWork.addTaskObject(
             createDownloadExtract7zTask(callerArguments.d3dcompiler7z, targetPath, tempPath, callerArguments))
+        if callerArguments.openssl7z:
+            myGetQtBinaryWork.addTaskObject(
+                createDownloadExtract7zTask(callerArguments.openssl7z, targetPath, tempPath, callerArguments))
 
 ### add get installer base task
     myGetQtBinaryWork.addTaskObject(

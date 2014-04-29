@@ -90,6 +90,7 @@ SNAPSHOT_SERVER             = ''
 SNAPSHOT_PATH               = ''
 TARGET_ENV                  = ''
 ICU_LIBS                    = 'http://download.qt-project.org/development_releases/prebuilt/icu/src/icu4c-51_1-src.tgz'
+OPENSSL_LIBS                = ''
 QT_SRC_FOR_IFW_PREPARED     = 'http://download.qt-project.org/development_releases/prebuilt/qt-src-for-ifw/qt-everywhere-opensource-src-4.8.5-ifw-patch'
 IFW_GIT_URL                 = 'git://gitorious.org/installer-framework/installer-framework.git'
 SRC_URL_PREFIX              = 'http://qt-rnd.it.local/packages/jenkins'
@@ -1071,6 +1072,8 @@ def handle_qt_creator_build():
                          '--installerbase7z', 'http://ci-files02-hki.ci.local/packages/jenkins/' + LICENSE + '/ifw/1.5/installer-framework-build-win-x86.7z',
                          '--environment_batch', os.path.normpath('C:/Program Files/Microsoft Visual Studio 10.0/VC/vcvarsall.bat'),
                          '--environment_batch_argument', 'x86'])
+        if OPENSSL_LIBS:
+            cmd_args.extend(['--openssl7z', OPENSSL_LIBS])
 
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
@@ -1444,6 +1447,7 @@ def parse_cmd_line():
     global PATH
     global TARGET_ENV
     global ICU_LIBS
+    global OPENSSL_LIBS
     global SRC_URL
     global QT5_DIR
     global REMOTE_QT5_DIR
@@ -1481,6 +1485,7 @@ def parse_cmd_line():
         SNAPSHOT_PATH     = options.snapshot_path
         TARGET_ENV        = options.target_env
         ICU_LIBS          = options.icu_libs
+        OPENSSL_LIBS      = options.openssl_libs
         SRC_URL           = options.src_url
         QT_VERSION_TAG    = options.version_tag
         QTCREATOR_VERSION = options.qtcreator_version
@@ -1560,6 +1565,9 @@ def setup_option_parser():
     OPTION_PARSER.add_option("-i", "--icu_libs",
                       action="store", type="string", dest="icu_libs", default="",
                       help="Url for pre-compiled icu libraries")
+    OPTION_PARSER.add_option("-o", "--openssl_libs",
+                      action="store", type="string", dest="openssl_libs", default="",
+                      help="Url for pre-compiled openssl libraries")
     OPTION_PARSER.add_option("-u", "--src_url",
                       action="store", type="string", dest="src_url", default="",
                       help="Url for source code")
