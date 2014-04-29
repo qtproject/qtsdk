@@ -51,11 +51,6 @@ var Dir = new function () {
 // constructor
 function Component()
 {
-    // add dynamic dependency for mingw482 TC for QNX packages on Windows
-    if (installer.value("os") == "win") {
-        var mingw_tc_component = "qt.tools.win32_mingw482";
-        component.addDependency(mingw_tc_component);
-    }
 }
 
 Component.prototype.beginInstallation = function()
