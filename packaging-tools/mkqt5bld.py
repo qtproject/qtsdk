@@ -715,6 +715,22 @@ def archive_submodules():
 ###############################
 # function
 ###############################
+def add_qt_conf_file():
+    print_wrap('---------------- Adding qt.conf file to /bin directory ------------------------------')
+    if QNX_BUILD:
+        install_path = os.path.normpath(MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME + os.sep + INSTALL_PREFIX)
+        if bldinstallercommon.is_win_platform():
+            install_path = 'C' + install_path[1:]
+        print_wrap('---------- Adding qt.conf to ' + install_path + ' ----------------')
+        qtConfFile = open(os.path.join(install_path, 'bin', 'qt.conf'), "w")
+        qtConfFile.write("[Paths]" + os.linesep)
+        qtConfFile.write("Prefix=.." + os.linesep)
+        qtConfFile.close()
+
+
+###############################
+# function
+###############################
 def patch_android_prl_files():
     ## QTBUG-33660
     # remove references to absolute path of the NDK on the build machine
@@ -1098,6 +1114,9 @@ def run_build():
     clean_up(MAKE_INSTALL_ROOT_DIR)
     # patch files after build
     patch_build()
+    # add qt.conf file to bin directory
+    if QNX_BUILD:
+        add_qt_conf_file()
     # archive each submodule
     archive_submodules()
 
