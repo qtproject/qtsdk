@@ -381,7 +381,7 @@ if [ $SKIPSYNCQT = no ]; then
     else
       echo "*** WARNING .qmake.conf not found *** - not running syncqt.pl ***"
     fi
-    if [ -f $PACKAGE_DIR/"sync.profile" && $QTSYNCQTVER ]; then
+    if [[ -f $PACKAGE_DIR/"sync.profile" && $QTSYNCQTVER ]]; then
       echo " - Running syncqt.pl for $REPO_NAME with -version $QTSYNCQTVER"
       $CUR_DIR/../qtbase/bin/syncqt.pl -version $QTSYNCQTVER -outdir $PACKAGE_DIR $PACKAGE_DIR
     else
