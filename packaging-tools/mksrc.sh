@@ -347,6 +347,10 @@ else
 
   #archive the single repo
   git archive --format=tar $REPO_TAG | tar -x -C $_TMP_DIR
+  if [ $LICENSE = enterprise ]; then
+      git submodule update --init
+      git submodule foreach "git archive HEAD | tar -x -C $_TMP_DIR/\$path"
+  fi
   _SHA=`git rev-parse $REPO_TAG`
   SINGLEMODULE_SHA=$_SHA
 
