@@ -83,7 +83,7 @@ class IfwOptions:
     default_qt_configure_options_windows        = '-openssl-linked OPENSSL_LIBS="-lssleay32MD -llibeay32MD -lcrypt32"'
     default_qt_installer_framework_url          = 'git://gitorious.org/installer-framework/installer-framework.git'
     default_qt_installer_framework_branch       = '1.5'
-    default_qt_installer_framework_qmake_args   = '-config release -config static -r'
+    default_qt_installer_framework_qmake_args   = ['-config', 'release', '-config', 'static']
 
     def __init__(self,
                  qt_source_package_uri,
@@ -130,12 +130,13 @@ class IfwOptions:
         self.product_key_checker_source_dir             = ''
         if product_key_checker_url:
             if os.path.isfile(product_key_checker_url):
-                self.qt_installer_framework_qmake_args      += ' PRODUCTKEYCHECK_PRI_FILE=' + self.product_key_checker_url
+                self.qt_installer_framework_qmake_args      += ['-r', 'PRODUCTKEYCHECK_PRI_FILE=' + self.product_key_checker_url]
             else:
                 self.product_key_checker_source_dir         = os.path.normpath(ROOT_DIR + os.sep + 'product_key_checker')
-                self.qt_installer_framework_qmake_args      += ' PRODUCTKEYCHECK_PRI_FILE=' + self.product_key_checker_source_dir + os.sep + 'qt_product_key_checker.pri'
+                self.qt_installer_framework_qmake_args      += ['-r', 'PRODUCTKEYCHECK_PRI_FILE=' + self.product_key_checker_source_dir + os.sep + 'qt_product_key_checker.pri']
         if bldinstallercommon.is_mac_platform():
-            self.qt_installer_framework_qmake_args += ' QT_MENU_NIB_DIR=' + self.qt_source_dir + os.sep + 'src/gui/mac/qt_menu.nib'
+            self.qt_installer_framework_qmake_args += ['QT_MENU_NIB_DIR=' + self.qt_source_dir + os.sep + 'src/gui/mac/qt_menu.nib']
+            self.qt_installer_framework_qmake_args += ['-r', '"LIBS+=-framework IOKit"']
         # sanity check
         self.sanity_check()
 
@@ -302,7 +303,6 @@ def prepare_installer_framework(options):
     # clone repos
     bldinstallercommon.clone_repository(options.qt_installer_framework_url, options.qt_installer_framework_branch, options.installer_framework_source_dir)
 
-
 ###############################
 # function
 ###############################
@@ -341,8 +341,11 @@ def build_installer_framework(options):
         sys.exit(-1)
     if not os.path.exists(options.installer_framework_build_dir):
         bldinstallercommon.create_dirs(options.installer_framework_build_dir)
-    cmd_args = qmake_bin + ' ' + options.qt_installer_framework_qmake_args + ' ' + options.installer_framework_source_dir
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), options.installer_framework_build_dir, True)
+#    cmd_args = qmake_bin + ' ' + options.qt_installer_framework_qmake_args + ' ' + options.installer_framework_source_dir
+    cmd_args = [qmake_bin]
+    cmd_args += options.qt_installer_framework_qmake_args
+    cmd_args += [options.installer_framework_source_dir]
+    bldinstallercommon.do_execute_sub_process(cmd_args, options.installer_framework_build_dir, True)
     cmd_args = options.make_cmd
     bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), options.installer_framework_build_dir, True)
 
