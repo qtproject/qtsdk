@@ -47,10 +47,7 @@ target_install_base:    /Docs/Qt-5.3/
 archive_uri:            /qt/5.3.1/latest/src/doc/qt5_docs.7z
 
 [qt.53.examples]
-archives:               53.examples.essentials, 53.examples.addons
+archives:               53.examples
 target_install_base:    /Examples/Qt-5.3/
-[53.examples.essentials]
-archive_uri:            /qt/5.3.1/latest/src/examples_injection/examples_essentials.7z
-[53.examples.addons]
-archive_uri:            /qt/5.3.1/latest/src/examples_injection/examples_addons.7z
-
+[53.examples]
+archive_uri:            /qt/5.3.1/latest/src/examples_injection/qt5_examples.7z

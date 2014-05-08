@@ -544,8 +544,6 @@ def handle_qt_src_package_build():
     bldinstallercommon.do_execute_sub_process(cmd_args, package_path, True)
     essentials_path = os.path.join(WORK_DIR, 'src_pkg', 'examples_essentials')
     bldinstallercommon.create_dirs(essentials_path)
-    addons_path = os.path.join(WORK_DIR, 'src_pkg', 'examples_addons')
-    bldinstallercommon.create_dirs(addons_path)
 
     src_dirs = os.listdir(os.path.join(package_path, package_name))
     current_path = os.getcwd()
@@ -580,18 +578,8 @@ def handle_qt_src_package_build():
     if os.path.exists(os.path.join(essentials_path, 'location')):
         shutil.rmtree(os.path.join(essentials_path, 'location'))
 
-    shutil.move(os.path.join(essentials_path, 'activeqt'), addons_path)
-    shutil.move(os.path.join(essentials_path, 'svg'), addons_path)
-
-    cmd_args = ['7z', 'a', os.path.join('..', 'examples_essentials.7z'), '*']
+    cmd_args = ['7z', 'a', os.path.join('..', 'qt5_examples.7z'), '*']
     bldinstallercommon.do_execute_sub_process(cmd_args, essentials_path, True)
-    cmd_args = [os.path.join(SCRIPT_ROOT_DIR, 'winzipdir.sh'), os.path.join('..', 'examples_essentials.zip'), '.' ]
-    bldinstallercommon.do_execute_sub_process(cmd_args, essentials_path, True)
-
-    cmd_args = ['7z', 'a', os.path.join('..', 'examples_addons.7z'), '*']
-    bldinstallercommon.do_execute_sub_process(cmd_args, addons_path, True)
-    cmd_args = [os.path.join(SCRIPT_ROOT_DIR, 'winzipdir.sh'), os.path.join('..', 'examples_addons.zip'), '.' ]
-    bldinstallercommon.do_execute_sub_process(cmd_args, addons_path, True)
 
 
     # Create necessary directories
@@ -610,10 +598,7 @@ def handle_qt_src_package_build():
 
     file_list = os.listdir(package_path)
     for file_name in file_list:
-        if file_name.startswith("examples_addons."):
-            cmd_args = ['scp', file_name, PKG_SERVER_ADDR + ':' + os.path.join(LATEST_QT5_DIR, 'src', 'examples_injection')]
-            bldinstallercommon.do_execute_sub_process(cmd_args, package_path, True)
-        if file_name.startswith("examples_essentials."):
+        if file_name.startswith("qt5_examples."):
             cmd_args = ['scp', file_name, PKG_SERVER_ADDR + ':' + os.path.join(LATEST_QT5_DIR, 'src', 'examples_injection')]
             bldinstallercommon.do_execute_sub_process(cmd_args, package_path, True)
 
@@ -896,14 +881,10 @@ def remote_copy_archives(remote_target, from_where_path):
 def handle_examples_injection():
     # Inject examples
     if bldinstallercommon.is_linux_platform():
-        cmd_args = ['wget', SRC_URL + '/examples_injection/examples_essentials.7z']
-        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR + '/module_archives', True)
-        cmd_args = ['wget', SRC_URL + '/examples_injection/examples_addons.7z']
+        cmd_args = ['wget', SRC_URL + '/examples_injection/qt5_examples.7z']
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR + '/module_archives', True)
     else:
-        cmd_args = [CURL_COMMAND, '-O', SRC_URL + '/examples_injection/examples_essentials.7z']
-        bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-        cmd_args = [CURL_COMMAND, '-O', SRC_URL + '/examples_injection/examples_addons.7z']
+        cmd_args = [CURL_COMMAND, '-O', SRC_URL + '/examples_injection/qt5_examples.7z']
         bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
     bldinstallercommon.create_dirs(os.path.join(WORK_DIR, 'module_archives', 'essentials'))
@@ -912,12 +893,12 @@ def handle_examples_injection():
     # essentials
     cmd_args = ['7z', 'x', 'qt5_essentials.7z', '-oessentials']
     bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-    cmd_args = ['7z', 'x', 'examples_essentials.7z', os.path.join('-oessentials', 'examples'), '-y']
+    cmd_args = ['7z', 'x', 'qt5_examples.7z', os.path.join('-oessentials', 'examples'), '-y']
     bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
     cmd_args = [RM_COMMAND, 'qt5_essentials.7z']
     bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-    cmd_args = [RM_COMMAND, 'examples_essentials.7z']
+    cmd_args = [RM_COMMAND, 'qt5_examples.7z']
     bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
     cmd_args = ['7z', 'a', os.path.join('..', 'qt5_essentials.7z'), '*']
@@ -926,12 +907,8 @@ def handle_examples_injection():
     # addons
     cmd_args = ['7z', 'x', 'qt5_addons.7z', '-oaddons']
     bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-    cmd_args = ['7z', 'x', 'examples_addons.7z', os.path.join('-oaddons', 'examples'), '-y']
-    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
     cmd_args = [RM_COMMAND, 'qt5_addons.7z']
-    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
-    cmd_args = [RM_COMMAND, 'examples_addons.7z']
     bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
     cmd_args = ['7z', 'a', os.path.join('..', 'qt5_addons.7z'), '*']
