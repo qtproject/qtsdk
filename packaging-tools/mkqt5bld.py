@@ -785,27 +785,21 @@ def patch_qnx6_prl_files():
         if bldinstallercommon.is_win_platform():
             install_path_final = 'C' + install_path_final[1:]
 
-        # find the lib directory under the install directory
-        lib_path_final = os.path.normpath(install_path_final + os.sep + INSTALL_PREFIX + os.sep + 'lib')
+        # find the 'lib' directory under the install directory
+        path_final = bldinstallercommon.locate_directory(install_path_final, 'lib')
 
         # just list the files with a pattern like 'libQt5Core.prl'
-        print_wrap('---------- Remove references to hard coded paths of the SDP under ' + lib_path_final + ' ----------------')
-        if os.path.exists(lib_path_final):
-            print_wrap('*** Replacing hard coded paths to SDP under : ' + lib_path_final)
-            prl_files = [f for f in os.listdir(lib_path_final) if re.match(r'libQt5.*\.prl', f)]
-            for prl_name in prl_files:
-                # let's just remove the undesired string for QMAKE_PRL_LIBS
-                prl_name_path = os.path.join(lib_path_final, prl_name)
-                if os.path.isfile(prl_name_path):
-                    regex = re.compile(r'-L[^ ]* ')
-                    for line in fileinput.FileInput(prl_name_path, inplace=1):
-                        if line.startswith('QMAKE_PRL_LIBS'):
-                            line = regex.sub('', line)
-                        print line,
-                else:
-                    print_wrap('*** Warning! The file : ' + prl_name_path + ' does not exist')
-        else:
-            print_wrap('*** Warning! Unable to locate ' + lib_path_final + ' directory')
+        print_wrap('---------- Remove references to hard coded paths of the SDP under ' + path_final + ' ----------------')
+        print_wrap('*** Replacing hard coded paths to SDP under : ' + path_final)
+        files_to_patch = [f for f in os.listdir(path_final) if re.match(r'libQt5.*\.prl', f)]
+        for name_to_patch in files_to_patch:
+            # let's just remove the undesired string for QMAKE_PRL_LIBS
+            name_path = os.path.join(path_final, name_to_patch)
+            regex = re.compile(r'-L[^ ]* ')
+            for line in fileinput.FileInput(name_path, inplace=1):
+                if line.startswith('QMAKE_PRL_LIBS'):
+                    line = regex.sub('', line)
+                print line,
 
 
 ###############################
