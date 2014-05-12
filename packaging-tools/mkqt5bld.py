@@ -778,26 +778,27 @@ def patch_android_prl_files():
 ###############################
 # function
 ###############################
-def patch_qnx6_prl_files():
+def patch_qnx6_files(dir_tofind, regex_filename, line_toreplace, regex_toreplace):
     # remove references to absolute path of the SDP on the build machine
     if QNX_BUILD:
         install_path_final = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
         if bldinstallercommon.is_win_platform():
             install_path_final = 'C' + install_path_final[1:]
 
-        # find the 'lib' directory under the install directory
-        path_final = bldinstallercommon.locate_directory(install_path_final, 'lib')
+        # find the 'dir_tofind' directory under the install directory
+        path_final = bldinstallercommon.locate_directory(install_path_final, dir_tofind)
 
-        # just list the files with a pattern like 'libQt5Core.prl'
+        # just list the files with a pattern matching 'expression'
         print_wrap('---------- Remove references to hard coded paths of the SDP under ' + path_final + ' ----------------')
         print_wrap('*** Replacing hard coded paths to SDP under : ' + path_final)
-        files_to_patch = [f for f in os.listdir(path_final) if re.match(r'libQt5.*\.prl', f)]
+        files_to_patch = [f for f in os.listdir(path_final) if re.match(regex_filename, f)]
+        # let's replace the 'regex_toreplace' string
+        regex = re.compile(regex_toreplace)
         for name_to_patch in files_to_patch:
-            # let's just remove the undesired string for QMAKE_PRL_LIBS
+            # let's just replace the line containing the 'line_toreplace' string
             name_path = os.path.join(path_final, name_to_patch)
-            regex = re.compile(r'-L[^ ]* ')
             for line in fileinput.FileInput(name_path, inplace=1):
-                if line.startswith('QMAKE_PRL_LIBS'):
+                if line.startswith(line_toreplace):
                     line = regex.sub('', line)
                 print line,
 
@@ -821,7 +822,7 @@ def patch_build():
             bldinstallercommon.rename_android_soname_files(lib_path_essentials)
         patch_android_prl_files()
     if QNX_BUILD:
-        patch_qnx6_prl_files()
+        patch_qnx6_files('lib', 'libQt5.*\.prl', 'QMAKE_PRL_LIBS', '-L[^ ]* ')
     # patch RPath if requested
     if QT_BUILD_OPTIONS.replace_rpath:
         replace_rpath()
