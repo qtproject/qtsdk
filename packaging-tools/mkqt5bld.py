@@ -753,27 +753,21 @@ def patch_android_prl_files():
             print_wrap('---------- Remove references to a static library in the NDK under ' + lib_path_final + ' ----------------')
             if os.path.exists(lib_path_final):
                 prl_files = [f for f in os.listdir(lib_path_final) if re.match(r'libQt5.*\.prl', f)]
+                # let's replace the ' .*libgcc.a' string
+                regex = re.compile(' .*libgcc.a')
                 for prl_name in prl_files:
                     # let's just remove the undesired string for QMAKE_PRL_LIBS
                     prl_name_path = os.path.join(lib_path_final, prl_name)
+                    print_wrap('---> Replacing regex .*libgcc.a in file: ' + prl_name_path)
                     if os.path.isfile(prl_name_path):
                         for line in fileinput.FileInput(prl_name_path, inplace=1):
                             if line.startswith('QMAKE_PRL_LIBS'):
-                                line = line.replace(' /opt/android/ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86/bin/../lib/gcc/arm-linux-androideabi/4.8/libgcc.a', '')
-                                line = line.replace(' /opt/android/ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/../lib/gcc/arm-linux-androideabi/4.8/libgcc.a', '')
-                                line = line.replace(' /opt/android/ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/darwin-x86_64/bin/../lib/gcc/arm-linux-androideabi/4.8/libgcc.a', '')
-                                line = line.replace(' c:/utils/android/ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/windows/bin/../lib/gcc/arm-linux-androideabi/4.8/libgcc.a', '')
-                                print line,
-                            else:
-                                print line,
+                                line = regex.sub('', line)
+                            print line,
                     else:
                         print_wrap('*** Warning! The file : ' + prl_name_path + ' does not exist')
             else:
                 print_wrap('*** Warning! Unable to locate ' + lib_path_final + ' directory')
-        print_wrap('--->            String to remove : /opt/android/ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86/bin/../lib/gcc/arm-linux-androideabi/4.8/libgcc.a')
-        print_wrap('--->            String to remove : /opt/android/ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin/../lib/gcc/arm-linux-androideabi/4.8/libgcc.a')
-        print_wrap('--->            String to remove : /opt/android/ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/darwin-x86_64/bin/../lib/gcc/arm-linux-androideabi/4.8/libgcc.a')
-        print_wrap('--->            String to remove : c:/utils/android/ndk/toolchains/arm-linux-androideabi-4.8/prebuilt/windows/bin/../lib/gcc/arm-linux-androideabi/4.8/libgcc.a')
 
 
 ###############################
