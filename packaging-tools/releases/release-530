@@ -12,7 +12,7 @@ mac-x64:                    installer-framework-build-mac-x64.7z
 
 [release.global]
 version:                    5.3.0
-version_tag:                RC
+version_tag:
 module_exclude_list:        qt3d, qtdocgallery, qtfeedback, qtjsondb, qtpim, qtqa, qtrepotools, qtsystems, qtwayland
 arg_substitution_list:      @QT_VERSION_AND_TAG@=%GLOBAL_VERSION_AND_TAG%,
                             @QT_INSTALL_DIR_NAME@=5.3
