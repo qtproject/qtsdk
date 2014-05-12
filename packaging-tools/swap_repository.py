@@ -48,7 +48,6 @@ import argparse
 import difflib
 import binascii
 import shutil
-from time import gmtime, strftime
 import bldinstallercommon
 
 QT_SDK_REPOSITORY_NAME = 'qtsdkrepository'
@@ -98,7 +97,7 @@ def get_directory_list(base_dir, search_match):
 ###############################
 # function
 ###############################
-def determine_dest_dir(item, destination_base_dir, component_name):
+def determine_dest_dir(item, destination_base_dir):
     start_index = item.index(QT_SDK_REPOSITORY_NAME)
     remainder = item[start_index:]
     dest_start_index = destination_base_dir.index(QT_SDK_REPOSITORY_NAME)
@@ -133,7 +132,7 @@ def generate_match_list(source_match_list, dest_match_list, component_name, dest
            not matches[0].endswith(component_name) or \
            not is_platform_match(item, matches[0]):
             print('*** No match found? Is this the first time the repo is being copied?')
-            dest_dir = determine_dest_dir(item, destination_base_dir, component_name)
+            dest_dir = determine_dest_dir(item, destination_base_dir)
         else:
             dest_dir = matches[0]
         swap_operation = SwapOperation()
