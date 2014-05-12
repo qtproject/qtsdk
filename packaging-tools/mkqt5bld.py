@@ -823,6 +823,8 @@ def patch_build():
         patch_android_prl_files()
     if QNX_BUILD:
         patch_qnx6_files('lib', 'libQt5.*\.prl', 'QMAKE_PRL_LIBS', '-L[^ ]* ')
+        patch_qnx6_files('lib', 'libQt5.*\.la', 'dependency_libs', '-L[^ ]* ')
+        patch_qnx6_files('pkgconfig', 'Qt5.*\.pc', 'Libs.private', '-L[^ ]* ')
     # patch RPath if requested
     if QT_BUILD_OPTIONS.replace_rpath:
         replace_rpath()
