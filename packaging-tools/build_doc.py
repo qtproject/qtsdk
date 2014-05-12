@@ -85,7 +85,7 @@ def handle_extra_module_doc_build():
     bldinstallercommon.create_dirs(extra_module_src_path)
     bldinstallercommon.create_dirs(qt5_icu_path)
     # fetch extra module src package
-    raw_name_extra_module_src_package = extra_module_src_package_uri.rsplit('/',1)[-1] # get last item from array
+    raw_name_extra_module_src_package = extra_module_src_package_uri.rsplit('/', 1)[-1] # get last item from array
     downloaded_extra_module_archive = os.path.join(current_path, raw_name_extra_module_src_package)
     if os.path.lexists(downloaded_extra_module_archive):
         print('*** Deleted existing extra module src package: [{0}] before fetching the new one.{0}'.format(downloaded_extra_module_archive))
@@ -94,7 +94,7 @@ def handle_extra_module_doc_build():
     bldinstallercommon.retrieve_url(extra_module_src_package_uri, downloaded_extra_module_archive)
     bldinstallercommon.extract_file(downloaded_extra_module_archive, extra_module_src_path)
     # fetch qt5 binary package
-    raw_name_qt5_bin_package = extra_module_doc_build_qt5_package_uri.rsplit('/',1)[-1] # get last item from array
+    raw_name_qt5_bin_package = extra_module_doc_build_qt5_package_uri.rsplit('/', 1)[-1] # get last item from array
     downloaded_qt5_bin_archive = os.path.join(current_path, raw_name_qt5_bin_package)
     if os.path.lexists(downloaded_qt5_bin_archive):
         print('*** Deleted existing qt5 binary package: [{0}] before fetching the new one.'.format(downloaded_qt5_bin_archive))
@@ -103,7 +103,7 @@ def handle_extra_module_doc_build():
     bldinstallercommon.retrieve_url(extra_module_doc_build_qt5_package_uri, downloaded_qt5_bin_archive)
     bldinstallercommon.extract_file(downloaded_qt5_bin_archive, qt5_package_path)
     # fetch qt5 icu binary package
-    raw_name_qt5_icu_package = extra_module_doc_build_qt5_icu_package_uri.rsplit('/',1)[-1] # get last item from array
+    raw_name_qt5_icu_package = extra_module_doc_build_qt5_icu_package_uri.rsplit('/', 1)[-1] # get last item from array
     downloaded_qt5_icu_archive = os.path.join(current_path, raw_name_qt5_icu_package)
     if os.path.lexists(downloaded_qt5_icu_archive):
         print('*** Deleted existing qt5 icu package: [{0}] before fetching the new one.'.format(downloaded_qt5_icu_archive))
