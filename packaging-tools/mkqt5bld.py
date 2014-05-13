@@ -778,7 +778,7 @@ def patch_android_prl_files():
 ###############################
 # function
 ###############################
-def patch_qnx6_files(dir_tofind, regex_filename, line_toreplace, regex_toreplace):
+def patch_qnx6_files(dir_tofind, regex_filename, line_toreplace, regex_toreplace, replace_with=''):
     # remove references to absolute path of the SDP on the build machine
     if QNX_BUILD:
         install_path_final = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
@@ -799,7 +799,7 @@ def patch_qnx6_files(dir_tofind, regex_filename, line_toreplace, regex_toreplace
             name_path = os.path.join(path_final, name_to_patch)
             for line in fileinput.FileInput(name_path, inplace=1):
                 if line.startswith(line_toreplace):
-                    line = regex.sub('', line)
+                    line = regex.sub(replace_with, line)
                 print line,
 
 
