@@ -594,6 +594,11 @@ def handle_qt_src_package_build():
     bldinstallercommon.do_execute_sub_process(cmd_args, addons_path, True)
 
 
+    # Create necessary directories
+    create_remote_dirs(PKG_SERVER_ADDR, os.path.join(LATEST_QT5_DIR, 'src', 'single', ''))
+    create_remote_dirs(PKG_SERVER_ADDR, os.path.join(LATEST_QT5_DIR, 'src', 'submodules', ''))
+    create_remote_dirs(PKG_SERVER_ADDR, os.path.join(LATEST_QT5_DIR, 'src', 'examples_injection', ''))
+
     # Upload packages
     exec_path = SCRIPT_ROOT_DIR
     cmd_args = ['rsync', '-r', '../../src_pkg/single/', PKG_SERVER_ADDR + ':' + os.path.join(LATEST_QT5_DIR, 'src', 'single', '')]
