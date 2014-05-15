@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>qtsensors</DisplayName>
     <Description>Qt 5.3.0 Add-Ons Qt Sensors Source Component</Description>
-    <Version>5.3.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.3.0-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Script>installscript.qs</Script>   <!-- File name of a script being loaded - optional. -->
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
