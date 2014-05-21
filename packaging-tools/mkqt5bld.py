@@ -670,12 +670,10 @@ def build_docs():
 # function
 ###############################
 def replace_rpath():
-    if not bldinstallercommon.is_linux_platform():
-        print_wrap('*** Warning! RPath patching enabled only for Linux platforms')
+    if not bldinstallercommon.is_linux_platform() or not DESKTOP_BUILD:
+        print_wrap('*** Warning! RPath patching enabled only for Linux platforms and Desktop builds')
         return
     dest_path_lib = bldinstallercommon.locate_directory(os.path.join(MAKE_INSTALL_ROOT_DIR, ESSENTIALS_INSTALL_DIR_NAME), 'lib')
-    if QNX_BUILD:
-        dest_path_lib = bldinstallercommon.locate_directory(os.path.join(MAKE_INSTALL_ROOT_DIR, SINGLE_INSTALL_DIR_NAME), 'lib')
     component_root_path = os.path.dirname(dest_path_lib)
     bldinstallercommon.handle_component_rpath(component_root_path, '/lib')
 
