@@ -46,7 +46,7 @@ function Component()
 
 function createShortcuts()
 {
-    var qtStringVersion = "5.3.0";
+    var qtStringVersion = "5.3.1";
     // Create a batch file with the development environment
     var component_root_path = installer.value("TargetDir") + "%TARGET_INSTALL_DIR%";
     component_root_path = component_root_path.replace(/\//g, "\\");
@@ -95,7 +95,7 @@ Component.prototype.beginInstallation = function()
 Component.prototype.createOperations = function()
 {
     component.createOperations();
-    var qtStringVersion = "5.3.0";
+    var qtStringVersion = "5.3.1";
 
     if (installer.value("os") == "win") {
         try {

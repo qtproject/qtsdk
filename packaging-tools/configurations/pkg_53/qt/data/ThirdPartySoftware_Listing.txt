@@ -1,4 +1,4 @@
-Qt 5.3.0
+Qt 5.3.1
 
 The various components of the release include Open Source licensed software components.  These components, listed by the component where such Open Source licensed software appears, are described as follows:
 

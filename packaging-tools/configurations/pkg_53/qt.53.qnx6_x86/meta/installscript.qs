@@ -63,7 +63,7 @@ Component.prototype.createOperations = function()
     component.createOperations();
 
     var platform = "";
-    var qtStringVersion = "5.3.0";
+    var qtStringVersion = "5.3.1";
     var qmakeBinary = "@TargetDir@" + "%TARGET_INSTALL_DIR%/bin/qmake";
     var sdpDirectoryPath = "@HomeDir@" + "/qnx660";
     var sdpQnxHostPath = "";

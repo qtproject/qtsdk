@@ -58,7 +58,7 @@ Component.prototype.createOperations = function()
 {
     component.createOperations();
 
-    var qtStringVersion = "5.3.0";
+    var qtStringVersion = "5.3.1";
     var qmakeBinary = "";
     var platform = "";
     if (installer.value("os") == "x11") {

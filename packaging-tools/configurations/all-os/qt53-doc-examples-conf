@@ -44,13 +44,13 @@
 archives:               53.doc
 target_install_base:    /Docs/Qt-5.3/
 [53.doc]
-archive_uri:            /qt/5.3.0/latest/src/doc/qt5_docs.7z
+archive_uri:            /qt/5.3.1/latest/src/doc/qt5_docs.7z
 
 [qt.53.examples]
 archives:               53.examples.essentials, 53.examples.addons
 target_install_base:    /Examples/Qt-5.3/
 [53.examples.essentials]
-archive_uri:            /qt/5.3.0/latest/src/examples_injection/examples_essentials.7z
+archive_uri:            /qt/5.3.1/latest/src/examples_injection/examples_essentials.7z
 [53.examples.addons]
-archive_uri:            /qt/5.3.0/latest/src/examples_injection/examples_addons.7z
+archive_uri:            /qt/5.3.1/latest/src/examples_injection/examples_addons.7z
 

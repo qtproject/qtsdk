@@ -46,9 +46,9 @@ archives:               53.win64_msvc2012_winphone_x86.essentials,
 target_install_base:    /5.3/winphone_x86
 
 [53.win64_msvc2012_winphone_x86.essentials]
-archive_uri:            /qt/5.3.0/latest/winphone8/x86/qt5_essentials.7z
+archive_uri:            /qt/5.3.1/latest/winphone8/x86/qt5_essentials.7z
 package_finalize_items: erase_doc
 [53.win64_msvc2012_winphone_x86.addons]
-archive_uri:            /qt/5.3.0/latest/winphone8/x86/qt5_addons.7z
+archive_uri:            /qt/5.3.1/latest/winphone8/x86/qt5_addons.7z
 package_finalize_items: erase_doc
 
