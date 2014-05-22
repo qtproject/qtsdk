@@ -41,7 +41,7 @@
 
 
 [qt.tools.qtcreator]
-archives:               tools.qtcreator, tools.qtcreator.d3d_compiler_43.x86
+archives:               tools.qtcreator
 target_install_base:    /Tools/QtCreator
 version:                3.1.0
 version_tag:            %QTCREATOR_VERSION%
@@ -52,10 +52,3 @@ package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:
 archive_name:           qt-creator-opensource-vs2010-32.7z
-[tools.qtcreator.d3d_compiler_43.x86]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/d3dcompiler/msvc2010/D3DCompiler_43-x86.dll.7z
-package_strip_dirs:     0
-target_install_dir:     /bin
-rpath_target:
-archive_name:           D3DCompiler_43-x86.7z
-
