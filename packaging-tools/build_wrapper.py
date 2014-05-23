@@ -701,8 +701,6 @@ def handle_qt_android_release_build():
     cmd_args += ['--android-api-version=' + android_api_version]    # e.g. "android-10"
     cmd_args += ['--android-sdk-home=' + android_sdk_home]          # e.g. "/opt/android/sdk"
     cmd_args += ['--android-ndk-home=' + android_ndk_home]          # e.g. "/opt/android/ndk"
-    if bldinstallercommon.is_linux_platform():
-        cmd_args += ['--replace-rpath']
     cmd_args += ['-a', configure_extra_options + ' -prefix ' + os.path.join(WORK_DIR,  MAKE_INSTALL_PADDING)]
     cmd_args += [' -android-toolchain-version ' + android_toolchain_version]    # e.g. "4.8"
 
@@ -750,8 +748,6 @@ def handle_qt_qnx6_release_build():
     if bldinstallercommon.is_win_platform():
         cmd_args += ['-m', 'mingw32-make']
     cmd_args += ['-c', configure_files_path + qt_configure_options_file]
-    if bldinstallercommon.is_linux_platform():
-        cmd_args += ['--replace-rpath']
     cmd_args += ['-a', configure_extra_options + ' -prefix ' + os.path.join(WORK_DIR,  MAKE_INSTALL_PADDING)]
     if bldinstallercommon.is_linux_platform():
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
