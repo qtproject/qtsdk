@@ -52,6 +52,7 @@ import multiprocessing
 import patch_qmake_qt_key
 from optparse import OptionParser, Option
 import fnmatch
+import shlex
 
 SCRIPT_ROOT_DIR                     = os.getcwd()
 WORK_DIR_NAME                       = 'qt5_workdir'
@@ -327,13 +328,15 @@ def extract_src_package():
 def configure_qt():
     print_wrap('---------------- Configuring Qt ------------------------------------')
     cmd_args = CONFIGURE_CMD + ' ' + CONFIGURE_OPTIONS
+    # shlex does not like backslashes
+    cmd_args = cmd_args.replace('\\', '/')
     print_wrap('    Configure line: ' + cmd_args)
     if os.path.exists(QT_SOURCE_DIR + os.sep + CONFIGURE_CMD):
         print_wrap(' configure found from ' + QT_SOURCE_DIR)
-        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, True, False, EXTRA_ENV)
+        bldinstallercommon.do_execute_sub_process(shlex.split(cmd_args), QT_SOURCE_DIR, True, False, EXTRA_ENV)
     else:
         print_wrap(' configure found from ' + QT_SOURCE_DIR + os.sep + 'qtbase')
-        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR + os.sep + 'qtbase', True, False, EXTRA_ENV)
+        bldinstallercommon.do_execute_sub_process(shlex.split(cmd_args), QT_SOURCE_DIR + os.sep + 'qtbase', True, False, EXTRA_ENV)
     print_wrap('--------------------------------------------------------------------')
 
 
