@@ -985,7 +985,7 @@ def cleanup_docs(doc_dir):
                 shutil.rmtree(item)
         # then remove unnecessary files
         for filename in os.listdir(submodule):
-            if filename.endswith(('.qdocconf', '.index', '.sha1', '.tags', '.html')):
+            if filename.endswith(('.qdocconf', '.sha1', '.tags', '.html')):
                 full_filename = os.path.join(submodule, filename)
                 if os.path.isfile(full_filename):
                     print 'Cleaning up -> deleting file: ' + full_filename
