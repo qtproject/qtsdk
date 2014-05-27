@@ -64,6 +64,11 @@ class SdkComponent:
             self.archive_name           = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'archive_name')
             if not self.archive_name:
                 self.archive_name = self.path_leaf(self.archive_uri)
+                # Parse unnecessary extensions away from filename (QTBUG-39219)
+                known_archive_types = ['.tar.gz', '.tar', '.zip', '.tar.xz', '.tar.bz2']
+                for item in known_archive_types:
+                    if self.archive_name.endswith(item):
+                        self.archive_name = self.archive_name.replace(item, '')
                 if not self.archive_name.endswith('.7z'):
                     self.archive_name += '.7z'
             # substitute key-value pairs if any
