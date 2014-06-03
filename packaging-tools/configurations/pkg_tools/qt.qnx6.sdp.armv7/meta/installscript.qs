@@ -53,63 +53,42 @@ function Component()
 {
 }
 
-Component.prototype.beginInstallation = function()
-{
-    installer.setValue(component.name + "_qtpath", "@TargetDir@" + "%TARGET_INSTALL_DIR%");
-}
-
 Component.prototype.createOperations = function()
 {
     component.createOperations();
 
-    var platform = "";
-    var qtStringVersion = "5.3.1";
-    var qmakeBinary = "@TargetDir@" + "%TARGET_INSTALL_DIR%/bin/qmake";
     var sdpDirectoryPath = installer.value("QNX660_SDP_PATH");
+    var sdpQnxHostPath = "";
     var sdpQnxToolsExtension = "";
 
     if (installer.value("os") == "x11") {
-        platform = "linux";
+        sdpQnxHostPath = sdpDirectoryPath + "/host/linux/x86";
     }
     if (installer.value("os") == "win") {
-        platform = "windows";
+        sdpQnxHostPath = sdpDirectoryPath + "/host/win32/x86";
         sdpQnxToolsExtension = ".exe";
     }
 
-    var qtPath = "@TargetDir@" + "%TARGET_INSTALL_DIR%";
-    addInitQtPatchOperation(component, platform, qtPath, Dir.toNativeSparator(qmakeBinary + sdpQnxToolsExtension), "emb-arm-qt5");
-
-    if (installer.value("SDKToolBinary") == "")
-        return;
-
-    // add Qt to QtCreator
+    // add QCC (QNX SDP) to QtCreator
     component.addOperation("Execute",
-                           ["@SDKToolBinary@", "addQt",
-                            "--id", component.name,
-                            "--name", "Qt " + qtStringVersion + " for QNX 6.6.0 x86",
-                            "--type", "Qt4ProjectManager.QtVersion.QNX.QNX",
-                            "--qmake", Dir.toNativeSparator(qmakeBinary + sdpQnxToolsExtension),
-                            "SDKPath", "QString:" + Dir.toNativeSparator(sdpDirectoryPath),
+                           ["@SDKToolBinary@", "addTC",
+                            "--id", "Qnx.QccToolChain:opt_qnx660_qcc_armv7",
+                            "--name", "QCC for QNX 6.6.0 armv7",
+                            "--path", Dir.toNativeSparator(sdpQnxHostPath + "/usr/bin/qcc" + sdpQnxToolsExtension),
+                            "--abi", "arm-linux-generic-elf-32bit",
+                            "--supportedAbis", "arm-linux-generic-elf-32bit,x86-linux-generic-elf-32bit",
+                            "Qnx.QnxToolChain.NDKPath", "QString:" + Dir.toNativeSparator(sdpDirectoryPath),
                             "UNDOEXECUTE",
-                            "@SDKToolBinary@", "rmQt", "--id", component.name]);
+                            "@SDKToolBinary@", "rmTC", "--id", "Qnx.QccToolChain:opt_qnx660_qcc_armv7"]);
 
-    // add Kit to QtCreator
+    // add QCC Debugger (QNX SDP) to QtCreator
     component.addOperation("Execute",
-                           ["@SDKToolBinary@", "addKit",
-                            "--id", component.name + ".kit",
-                            "--name", "Qt " + qtStringVersion + " for QNX 6.6.0 x86",
-                            "--debuggerid", "opt_qnx660_debugger_x86",
-                            "--devicetype", "QnxOsType",
-                            "--sysroot", Dir.toNativeSparator(sdpDirectoryPath + "/target/qnx6"),
-                            "--toolchain", "Qnx.QccToolChain:opt_qnx660_qcc_x86",
-                            "--qt", component.name,
-                            "--mkspec", "qnx-x86-qcc",
+                           ["@SDKToolBinary@", "addDebugger",
+                            "--id", "opt_qnx660_debugger_armv7",
+                            "--name", "Debugger for QNX 6.6.0 armv7",
+                            "--engine", "1",
+                            "--binary", Dir.toNativeSparator(sdpQnxHostPath + "/usr/bin/ntoarmv7-gdb" + sdpQnxToolsExtension),
+                            "--abis", "arm-linux-generic-elf-32bit",
                             "UNDOEXECUTE",
-                            "@SDKToolBinary@", "rmKit", "--id", component.name + ".kit"]);
-
-    // patch/register docs and examples
-    var installationPath = installer.value("TargetDir") + "%TARGET_INSTALL_DIR%";
-    print("Register documentation and examples for: " + installationPath);
-    patchQtExamplesAndDoc(component, installationPath, "Qt-5.3");
+                            "@SDKToolBinary@", "rmDebugger", "--id", "opt_qnx660_debugger_armv7"]);
 }
-

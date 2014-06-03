@@ -61,32 +61,43 @@ validateSDPDirectory = function(path)
 function Component()
 {
     // Add a user interface file called SetPathForSDPForm
-    component.loaded.connect(this, Component.prototype.loaded);
+    gui.pageWidgetByObjectName("ComponentSelectionPage").completeChanged.connect(Component.prototype.initPage);
 
-    // use the right env file on x11 and win
-    if (installer.value("os") == "x11")
+    var SDPdirectory;
+    // use the right env file and default sdp path on x11 and win
+    if (installer.value("os") == "x11") {
+        SDPdirectory = Dir.toNativeSparator("/opt/qnx660");
         installer.setValue("QNX660_ENV_FILE", "/qnx660-env.sh");
-    else if (installer.value("os") == "win")
+    } else if (installer.value("os") == "win") {
+        SDPdirectory = Dir.toNativeSparator("c:/qnx660");
         installer.setValue("QNX660_ENV_FILE", "/qnx660-env.bat");
+    }
+
+    if ( !installer.containsValue("QNX660_SDP_PATH") ) {
+        installer.setValue("QNX660_SDP_PATH", SDPdirectory );
+    }
 }
 
-Component.prototype.loaded = function ()
+Component.prototype.initPage = function()
 {
-    if (installer.addWizardPage( component, "SetPathForSDPForm", QInstaller.ComponentSelection )) {
-        var widget = gui.pageWidgetByObjectName("DynamicSetPathForSDPForm");
-        if (widget != null) {
-            widget.SDPchooser.clicked.connect(this, Component.prototype.dirRequested);
-            widget.SDPdirectory.textChanged.connect(this, Component.prototype.textChanged);
+    installer.calculateComponentsToInstall();
 
-            // set the initial by default directory
-            if (installer.value("os") == "x11")
-                widget.SDPdirectory.text = Dir.toNativeSparator("/opt/qnx660");
-            else if (installer.value("os") == "win")
-                widget.SDPdirectory.text = Dir.toNativeSparator("c:/qnx660");
+    if (component.installationRequested()) {
+        if (installer.addWizardPage( component, "SetPathForSDPForm", QInstaller.ReadyForInstallation )) {
+            var widget = gui.pageWidgetByObjectName("DynamicSetPathForSDPForm");
+            if (widget != null) {
+                widget.SDPchooser.clicked.connect(this, Component.prototype.dirRequested);
+                widget.SDPdirectory.textChanged.connect(this, Component.prototype.textChanged);
 
-            // validate whether the initial by default directory is good enough
-            widget.complete = validateSDPDirectory(widget.SDPdirectory.text);
+                // set the initial by default directory
+                widget.SDPdirectory.text = installer.value("QNX660_SDP_PATH");
+
+                // validate whether the initial by default directory is good enough
+                widget.complete = validateSDPDirectory(widget.SDPdirectory.text);
+            }
         }
+    } else {
+        installer.removeWizardPage(component, "SetPathForSDPForm");
     }
 }
 
@@ -104,6 +115,7 @@ Component.prototype.textChanged = function(text) {
         if (text != "")
             if (validateSDPDirectory(text)) {
                 widget.complete = true;
+                installer.setValue("QNX660_SDP_PATH", text);
                 return;
             }
         widget.complete = false;

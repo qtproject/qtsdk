@@ -65,22 +65,14 @@ Component.prototype.createOperations = function()
     var platform = "";
     var qtStringVersion = "5.3.1";
     var qmakeBinary = "@TargetDir@" + "%TARGET_INSTALL_DIR%/bin/qmake";
-    var sdpDirectoryPath = "@HomeDir@" + "/qnx660";
-    var sdpQnxHostPath = "";
+    var sdpDirectoryPath = installer.value("QNX660_SDP_PATH");
     var sdpQnxToolsExtension = "";
-    var widget = gui.pageWidgetByObjectName("DynamicSetPathForSDPForm");
-
-    if (widget != null)
-        if (widget.SDPdirectory.text != "")
-            sdpDirectoryPath = widget.SDPdirectory.text;
 
     if (installer.value("os") == "x11") {
         platform = "linux";
-        sdpQnxHostPath = sdpDirectoryPath + "/host/linux/x86";
     }
     if (installer.value("os") == "win") {
         platform = "windows";
-        sdpQnxHostPath = sdpDirectoryPath + "/host/win32/x86";
         sdpQnxToolsExtension = ".exe";
     }
 
@@ -89,29 +81,6 @@ Component.prototype.createOperations = function()
 
     if (installer.value("SDKToolBinary") == "")
         return;
-
-    // add QCC (QNX SDP) to QtCreator
-    component.addOperation("Execute",
-                           ["@SDKToolBinary@", "addTC",
-                            "--id", "Qnx.QccToolChain:opt_qnx660_qcc_device",
-                            "--name", "QCC for QNX 6.6.0 armv7",
-                            "--path", Dir.toNativeSparator(sdpQnxHostPath + "/usr/bin/qcc" + sdpQnxToolsExtension),
-                            "--abi", "arm-linux-generic-elf-32bit",
-                            "--supportedAbis", "arm-linux-generic-elf-32bit,x86-linux-generic-elf-32bit",
-                            "Qnx.QnxToolChain.NDKPath", "QString:" + Dir.toNativeSparator(sdpDirectoryPath),
-                            "UNDOEXECUTE",
-                            "@SDKToolBinary@", "rmTC", "--id", "Qnx.QccToolChain:opt_qnx660_qcc_device"]);
-
-    // add QCC Debugger (QNX SDP) to QtCreator
-    component.addOperation("Execute",
-                           ["@SDKToolBinary@", "addDebugger",
-                            "--id", "opt_qnx660_debugger_device",
-                            "--name", "Debugger for QNX 6.6.0 armv7",
-                            "--engine", "1",
-                            "--binary", Dir.toNativeSparator(sdpQnxHostPath + "/usr/bin/ntoarmv7-gdb" + sdpQnxToolsExtension),
-                            "--abis", "arm-linux-generic-elf-32bit",
-                            "UNDOEXECUTE",
-                            "@SDKToolBinary@", "rmDebugger", "--id", "opt_qnx660_debugger_device"]);
 
     // add Qt to QtCreator
     component.addOperation("Execute",
@@ -129,10 +98,10 @@ Component.prototype.createOperations = function()
                            ["@SDKToolBinary@", "addKit",
                             "--id", component.name + ".kit",
                             "--name", "Qt " + qtStringVersion + " for QNX 6.6.0 armv7",
-                            "--debuggerid", "opt_qnx660_debugger_device",
+                            "--debuggerid", "opt_qnx660_debugger_armv7",
                             "--devicetype", "QnxOsType",
                             "--sysroot", Dir.toNativeSparator(sdpDirectoryPath + "/target/qnx6"),
-                            "--toolchain", "Qnx.QccToolChain:opt_qnx660_qcc_device",
+                            "--toolchain", "Qnx.QccToolChain:opt_qnx660_qcc_armv7",
                             "--qt", component.name,
                             "--mkspec", "qnx-armle-v7-qcc",
                             "UNDOEXECUTE",

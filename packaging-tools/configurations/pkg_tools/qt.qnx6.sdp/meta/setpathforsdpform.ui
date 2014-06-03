@@ -32,7 +32,7 @@
       <bool>true</bool>
      </property>
      <property name="text">
-      <string>Please specify the folder where your QNX SDP is installed.</string>
+      <string>Please specify the folder where your QNX SDP 6.6 is installed.</string>
      </property>
     </widget>
    </item>
@@ -52,9 +52,6 @@
      </property>
      <item>
       <widget class="QLineEdit" name="SDPdirectory">
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
       </widget>
      </item>
      <item>
