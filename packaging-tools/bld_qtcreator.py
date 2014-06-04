@@ -205,26 +205,29 @@ if not os.path.lexists(callerArguments.qt5path):
     myGetQtBinaryWork.run()
 
     print("##### {0} #####".format("patch Qt"))
+
+    patch_operation_platform = ""
+    corelib = callerArguments.qt5path
     if sys.platform == "darwin":
-        installerbasePath = os.path.join(installerPath, 'bin/installerbase')
+        patch_operation_platform = "mac"
+        corelib += "/lib/QtCore.framework/Versions/Current/QtCore"
+    elif sys.platform.startswith('linux'):
+        patch_operation_platform = "linux"
+        corelib += "/lib/libQt5Core.so.5"
+    else:
+        patch_operation_platform = "windows"
+        corelib += "\\bin\\Qt5Core.dll"
+
+    installerbasePath = os.path.join(installerPath, 'bin', 'installerbase')
+    if os.name != 'nt':
         os.chmod(installerbasePath, 0777)
-        runCommand(installerbasePath + " -v --runoperation QtPatch mac " + callerArguments.qt5path  + " qt5",
-            qtCreatorBuildDirectory, callerArguments)
-    else: # don't use qt.conf file, it has a bug on macos QTBUG-29979
-        qtConfFile = open(os.path.join(callerArguments.qt5path, 'bin', 'qt.conf'), "w")
-        qtConfFile.write("[Paths]" + os.linesep)
-        qtConfFile.write("Prefix=.." + os.linesep)
-        qtConfFile.close()
+    runCommand(installerbasePath + " -v --runoperation QtPatch " + patch_operation_platform + " "
+        + callerArguments.qt5path  + " qt5", qtCreatorBuildDirectory, callerArguments)
+
     if sys.platform.startswith('linux'):
         bldinstallercommon.init_common_module(os.getcwd())
         bldinstallercommon.handle_component_rpath(callerArguments.qt5path, 'lib')
-    corelib = callerArguments.qt5path
-    if sys.platform.startswith('linux'):
-        corelib += "/lib/libQt5Core.so.5"
-    elif sys.platform == "darwin":
-        corelib += "/lib/QtCore.framework/Versions/Current/QtCore"
-    else:
-        corelib += "\\bin\\Qt5Core.dll"
+
     replace_key(corelib, "qt_instdate", " ")
     print("##### {0} ##### ... done".format("patch Qt"))
     runCommand(qmakeBinary + " -query", qtCreatorBuildDirectory, callerArguments)
