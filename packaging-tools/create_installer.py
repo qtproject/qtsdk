@@ -695,19 +695,22 @@ def parse_component_data(configuration_file, configurations_base_path):
     for section in configuration.sections():
         if section.startswith(PACKAGE_NAMESPACE + '.') or section == PACKAGE_NAMESPACE:
             if section not in SDK_COMPONENT_IGNORE_LIST:
-                sdk_component = SdkComponent(section, configuration, PACKAGES_DIR_NAME_LIST, ARCHIVE_LOCATION_RESOLVER, KEY_SUBSTITUTION_LIST)
+                sdk_component = SdkComponent(section, configuration, PACKAGES_DIR_NAME_LIST, ARCHIVE_LOCATION_RESOLVER, KEY_SUBSTITUTION_LIST, CREATE_OFFLINE_INSTALLER)
                 # validate component
                 if not ARCHIVE_DOWNLOAD_SKIP:
                     sdk_component.validate()
                     if sdk_component.is_valid():
                         SDK_COMPONENT_LIST.append(sdk_component)
                     else:
-                        if STRICT_MODE:
-                            print sdk_component.error_msg()
-                            sys.exit(-1)
+                        if CREATE_OFFLINE_INSTALLER and sdk_component.optional_for_offline_installer():
+                            print('*** Warning! The [{0}] was not valid but it was marked optional for offline installers so skipping it.'.format(sdk_component.package_name))
                         else:
-                            print '!!! Ignored component in non-strict mode (missing archive data or metadata?): ' + section
-                            SDK_COMPONENT_LIST_SKIPPED.append(sdk_component)
+                            if STRICT_MODE:
+                                print sdk_component.error_msg()
+                                sys.exit(-1)
+                            else:
+                                print '!!! Ignored component in non-strict mode (missing archive data or metadata?): ' + section
+                                SDK_COMPONENT_LIST_SKIPPED.append(sdk_component)
     # check for extra configuration files if defined
     extra_conf_list = bldinstallercommon.safe_config_key_fetch(configuration, 'PackageConfigurationFiles', 'file_list')
     if extra_conf_list:

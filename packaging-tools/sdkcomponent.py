@@ -93,7 +93,7 @@ class SdkComponent:
             return tail or ntpath.basename(head)
 
 
-    def __init__(self, section_name, target_config, packages_full_path_list, archive_location_resolver, key_value_substitution_list):
+    def __init__(self, section_name, target_config, packages_full_path_list, archive_location_resolver, key_value_substitution_list, is_offline_build):
         self.static_component            = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'static_component')
         self.root_component              = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'root_component')
         self.package_name                = section_name
@@ -108,6 +108,11 @@ class SdkComponent:
         self.package_default             = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'package_default')
         self.install_priority            = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'install_priority')
         self.sorting_priority            = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'sorting_priority')
+        self.optional_for_offline        = False
+        if is_offline_build:
+            tmp = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'optional_for_offline')
+            if tmp.lower() in ['yes', 'true', '1']:
+                self.optional_for_offline = True
         self.downloadable_arch_list_qs   = []
         self.pkg_template_dir            = ''
         self.sanity_check_error_msg      = ''
@@ -174,8 +179,11 @@ class SdkComponent:
         for archive in self.downloadable_archive_list:
             error_msg = archive.check_archive_data()
             if error_msg:
-                self.sanity_check_fail(self.package_name, error_msg)
-                return
+                if self.optional_for_offline:
+                    print('!!! Package: [{0}] Given data archive not found: [{1}] But this component was marked optional -> keep going'.format(self.package_name, archive.archive_uri));
+                else:
+                    self.sanity_check_fail(self.package_name, error_msg)
+                    return
 
 
     def sanity_check_fail(self, component_name, message):
@@ -191,6 +199,10 @@ class SdkComponent:
 
     def error_msg(self):
         return self.sanity_check_error_msg
+
+
+    def optional_for_offline_installer(self):
+        return self.optional_for_offline
 
 
     def parse_archives(self, target_config, archive_location_resolver):
