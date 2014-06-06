@@ -57,6 +57,22 @@ build_node_labels:          linux-g++-Ubuntu11.10-x64_QNX-armv7
 build_target_dir:           qnx6_x86/linux_x64
 build_node_labels:          linux-g++-Ubuntu11.10-x64_QNX-x86
 
+[meta.linux.x86.qnx650_armv7]
+build_target_dir:           qnx650_armv7/linux_x86
+build_node_labels:          linux-g++-Ubuntu11.10-x86_QNX650-armv7
+
+[meta.linux.x86.qnx650_x86]
+build_target_dir:           qnx650_x86/linux_x86
+build_node_labels:          linux-g++-Ubuntu11.10-x86_QNX650-x86
+
+[meta.linux.x64.qnx650_armv7]
+build_target_dir:           qnx650_armv7/linux_x64
+build_node_labels:          linux-g++-Ubuntu11.10-x64_QNX650-armv7
+
+[meta.linux.x64.qnx650_x86]
+build_target_dir:           qnx650_x86/linux_x64
+build_node_labels:          linux-g++-Ubuntu11.10-x64_QNX650-x86
+
 [meta.linux_rhel65.x86.gcc]
 build_target_dir:           linux_gcc_32_rhel65
 build_node_labels:          linux-g++-Rhel6.5-x86
@@ -132,6 +148,14 @@ build_node_labels:          win-MinGW4.8-Windows7-x86_QNX-armv7
 [meta.windows.x86.qnx6_x86]
 build_target_dir:           qnx6_x86/mingw482_x86
 build_node_labels:          win-MinGW4.8-Windows7-x86_QNX-x86
+
+[meta.windows.x86.qnx650_armv7]
+build_target_dir:           qnx650_armv7/mingw482_x86
+build_node_labels:          win-MinGW4.8-Windows7-x86_QNX650-armv7
+
+[meta.windows.x86.qnx650_x86]
+build_target_dir:           qnx650_x86/mingw482_x86
+build_node_labels:          win-MinGW4.8-Windows7-x86_QNX650-x86
 
 [meta.windows_81.x86.msvc2012_32_opengl]
 build_target_dir:           windows_vs2012_32_opengl
