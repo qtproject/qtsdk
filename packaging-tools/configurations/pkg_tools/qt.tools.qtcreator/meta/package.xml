@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>Qt Creator</DisplayName>
+    <DisplayName>Qt Creator 3.1.1</DisplayName>
     <Description>IDE for Qt application development</Description>
     <Version>3.1.1-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
