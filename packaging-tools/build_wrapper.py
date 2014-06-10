@@ -1503,8 +1503,9 @@ def parse_cmd_line():
         app_ver  = os.environ['APPLICATION_VERSION']
         REMOTE_EXTRA_MODULE_DIR += app_name + '/' + app_ver + '/' + TIME_STAMP + '-' + BUILD_NUMBER
         LATEST_EXTRA_MODULE_DIR += app_name + '/' + app_ver + '/' + 'latest'
-        REMOTE_EXTRA_MODULE_BINARY_DIR += app_name + '/' + app_ver + '/' + QT_VERSION + '/' + TIME_STAMP + '-' + BUILD_NUMBER
-        LATEST_EXTRA_MODULE_BINARY_DIR += app_name + '/' + app_ver + '/' + QT_VERSION + '/' + 'latest'
+        # extra module binary builds need only the minor version
+        REMOTE_EXTRA_MODULE_BINARY_DIR += app_name + '/' + app_ver + '/' + QT_VERSION[:3] + '/' + TIME_STAMP + '-' + BUILD_NUMBER
+        LATEST_EXTRA_MODULE_BINARY_DIR += app_name + '/' + app_ver + '/' + QT_VERSION[:3] + '/' + 'latest'
 
     return True
 
