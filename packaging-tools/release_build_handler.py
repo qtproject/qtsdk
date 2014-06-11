@@ -148,9 +148,6 @@ class BuildJob:
         if not self.license:
             print('*** Fatal error! <license> not defined for {0}'.format(self.node_name))
             sys.exit(-1)
-        if not self.version_number:
-            print('*** Fatal error! <version_number> not defined for {0}'.format(self.node_name))
-            sys.exit(-1)
         if not self.configurations_dir:
             print('*** Fatal error! <configurations_dir> not defined for {0}'.format(self.node_name))
             sys.exit(-1)
@@ -388,9 +385,6 @@ def handle_repo_build(conf_file, license_type, branch, platform, arch, packages_
     section_name = branch + '.' + 'global'
     global_version     = bldinstallercommon.safe_config_key_fetch(parser, section_name, 'version')
     global_version_tag = bldinstallercommon.safe_config_key_fetch(parser, section_name, 'version_tag')
-    if not global_version:
-        print('*** Fatal error! Invalid values in {0} -> {1}'.format(conf_file, section_name))
-        sys.exit(-1)
     # parse build jobs
     repo_job_list = get_repo_job_list(conf_file, license_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
     if (len(repo_job_list) == 0):
