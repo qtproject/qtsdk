@@ -43,8 +43,6 @@
 [qt.tools.qtcreator]
 archives:               tools.qtcreator
 target_install_base:    /Tools/QtCreator
-version:                3.1.0
-version_tag:            %QTCREATOR_VERSION%
 package_default:        true
 [tools.qtcreator]
 archive_uri:            /qtcreator/installer_package/qtcreator_linux_gcc_64_ubuntu1110.7z

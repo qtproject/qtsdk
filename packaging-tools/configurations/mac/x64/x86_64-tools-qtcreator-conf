@@ -43,8 +43,6 @@
 [qt.tools.qtcreator]
 archives:               tools.qtcreator
 target_install_base:    /
-version:                3.1.0
-version_tag:            %QTCREATOR_VERSION%
 package_default:        true
 [tools.qtcreator]
 archive_uri:            /qtcreator/installer_package/qtcreator_mac_cocoa_10_7.7z
