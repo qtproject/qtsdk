@@ -53,7 +53,7 @@ Component.prototype.createOperations = function()
 {
     component.createOperations();
 
-    var qtStringVersion = "5.3.1";
+    var qtStringVersion = "5.3";
     var qmakeBinary = "";
     var platform = "";
     if (installer.value("os") == "mac") {

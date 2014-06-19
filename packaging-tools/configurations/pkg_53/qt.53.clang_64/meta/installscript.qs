@@ -69,7 +69,7 @@ Component.prototype.createOperations = function()
 {
     component.createOperations();
     try {
-        var qtStringVersion = "5.3.1";
+        var qtStringVersion = "5.3";
         var qtPath = "@TargetDir@" + "%TARGET_INSTALL_DIR%";
         var qmakeBinary = "@TargetDir@" + "%TARGET_INSTALL_DIR%/bin/qmake";
         addInitQtPatchOperation(component, "mac", qtPath, qmakeBinary, "qt5");
