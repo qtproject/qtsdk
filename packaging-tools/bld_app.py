@@ -342,6 +342,11 @@ if callerArguments.makeDocs:
 # try to figure out where the actual exported content is
 dir_to_archive = os.path.dirname(bldinstallercommon.locate_directory(qtApplicationInstallDirectory, 'qt5_package_dir'))
 
+# if .tag file exists in the source package (sha1) then copy it into the binary archive
+tag_file = bldinstallercommon.locate_file(APPLICATION_SRC_DIR, '.tag')
+if tag_file:
+    shutil.copy2(tag_file, dir_to_archive + os.sep + 'qt5_package_dir')
+
 # create 7z archive
 archive_cmd = '7z a ' + 'module_archives' + os.sep + 'qt5_' + os.environ['APPLICATION_NAME'] + '.7z' + ' ' + dir_to_archive + os.sep + 'qt5_package_dir'
 runCommand("{0}".format(archive_cmd), currentWorkingDirectory = os.path.dirname(os.path.realpath(__file__)) )
