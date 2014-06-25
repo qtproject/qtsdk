@@ -181,8 +181,6 @@ else:
 
 qtApplicationProFile = locate_pro(APPLICATION_SRC_DIR)
 # rip out drive letter from path on Windows
-#if bldinstallercommon.is_win_platform():
-#    qtApplicationProFile = qtApplicationProFile[2:]
 pro_file_base_path = os.path.split(qtApplicationProFile)[0]
 
 qtApplicationBuildDirectory = APPLICATION_SRC_DIR + '_build'
@@ -204,7 +202,6 @@ if sys.platform == "darwin":
 if callerArguments.clean:
     print("##### {0} #####".format("clean old builds"))
     removeDir(callerArguments.qt5path, raiseNoException = True)
-    #removeDir(qtApplicationBuildDirectory, raiseNoException = True)
     removeDir(qtApplicationInstallDirectory, raiseNoException = True)
     removeDir(tempPath, raiseNoException = True)
 
@@ -218,7 +215,7 @@ qmakeBinary = os.path.abspath(os.path.join(callerArguments.qt5path, 'bin', 'qmak
 
 if not os.path.lexists(callerArguments.qt5path):
     myGetQtBinaryWork = ThreadedWork("get and extract Qt 5 binary")
-### add get Qt essentials task
+    ### add get Qt essentials task
     myGetQtBinaryWork.addTaskObject(
         createDownloadExtractTask(callerArguments.qt5_essentials7z, callerArguments.qt5path, tempPath, callerArguments))
 
@@ -247,7 +244,7 @@ if not os.path.lexists(callerArguments.qt5path):
     if sys.platform == "darwin":
         myGetQtBinaryWork.addTaskObject(
             createDownloadExtractTask(callerArguments.installerbase7z, tempPath, tempPath, callerArguments))
-### run get Qt 5 tasks
+    ### run get Qt 5 tasks
     myGetQtBinaryWork.run()
 
     print("##### {0} #####".format("patch Qt"))
@@ -300,27 +297,17 @@ if callerArguments.debug:
 else:
     buildType = 'release'
 
-#qtApplicationProFile = locate_pro(APPLICATION_SRC_DIR)
-# rip out drive letter from path on Windows
-#if bldinstallercommon.is_win_platform():
-#    qtApplicationProFile = qtApplicationProFile[2:]
-
 qmakeCommandArguments = [qmakeBinary]
 if os.environ.get('EXTRA_QMAKE_ARGS'):
     qmakeCommandArguments += [os.environ["EXTRA_QMAKE_ARGS"]]
 qmakeCommandArguments += ["{0}".format(qtApplicationProFile)]
 bldinstallercommon.do_execute_sub_process(qmakeCommandArguments, qtApplicationBuildDirectory, True)
 
-#runBuildCommand(currentWorkingDirectory = qtApplicationBuildDirectory, callerArguments = callerArguments,
-#    init_environment = environment)
 makeCommand = 'make'
 if os.name == 'nt' or sys.platform == "darwin":
     makeCommand = callerArguments.buildcommand
-#runCommand("{0}".format(makeCommand),currentWorkingDirectory = qtApplicationBuildDirectory, callerArguments = callerArguments, init_environment = environment)
 runCommand("{0}".format(makeCommand), currentWorkingDirectory = qtApplicationBuildDirectory)
 
-#runInstallCommand("docs", currentWorkingDirectory = qtApplicationBuildDirectory, callerArguments = callerArguments,
-#    init_environment = environment)
 makeCommandArguments = 'install INSTALL_ROOT=' + qtApplicationInstallDirectory
 runCommand("{0} {1}".format(makeCommand, makeCommandArguments), currentWorkingDirectory = qtApplicationBuildDirectory,
         callerArguments = callerArguments, init_environment = environment)
@@ -329,7 +316,7 @@ runCommand("{0} {1}".format(makeCommand, makeCommandArguments), currentWorkingDi
 if bldinstallercommon.is_win_platform() and os.environ.get('DO_PATCH_ANDROID_SONAME_FILES'):
     bldinstallercommon.rename_android_soname_files(qtApplicationInstallDirectory)
 
-#charts doc collection
+#doc collection
 if callerArguments.collectDocs:
     doc_list = bldinstallercommon.make_files_list(qtApplicationSourceDirectory, '\\.qch')
     doc_install_dir = qtApplicationInstallDirectory + os.sep + 'doc'
