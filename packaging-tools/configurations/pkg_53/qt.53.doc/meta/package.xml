@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt 5.3 Documentation</DisplayName>
     <Description>Qt 5.3 documentation</Description>
-    <Version>5.3.1-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.3.2-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Script>installscript.qs</Script>
     <Dependencies>qt.tools</Dependencies>

@@ -1,0 +1,252 @@
+# Define release content
+
+
+################################################################################
+## Global defines
+################################################################################
+[ifwtools]
+windows-x86:                installer-framework-build-win-x86.7z
+linux-x86:                  installer-framework-build-linux-x86.7z
+linux-x64:                  installer-framework-build-linux-x64.7z
+mac-x64:                    installer-framework-build-mac-x64.7z
+
+[release.global]
+version:                    5.3.2
+version_tag:
+module_exclude_list:        qt3d, qtdocgallery, qtfeedback, qtjsondb, qtpim, qtqa, qtrepotools, qtsystems, qtwayland
+arg_substitution_list:      @QT_VERSION_AND_TAG@=%GLOBAL_VERSION_AND_TAG%,
+                            @QT_INSTALL_DIR_NAME@=5.3
+
+
+################################################################################
+## Linux offline
+################################################################################
+[release.53.offline.linux.x86]
+arg_configurations_file:    offline_installer_jobs/5.3/linux_x86
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+installer_name:             qt-opensource-linux-x86-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt5_RTA_opensource_installer_tests_linux_32bit
+
+[release.53.offline.linux.x86.android]
+arg_configurations_file:    offline_installer_jobs/5.3/linux_x86_android
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+installer_name:             qt-opensource-linux-x86-android-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt5_RTA_opensource_installer_tests_linux_android_32bit
+
+[release.53.offline.linux.x64]
+arg_configurations_file:    offline_installer_jobs/5.3/linux_x64
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+installer_name:             qt-opensource-linux-x64-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt5_RTA_opensource_installer_tests_linux_64bit
+
+[release.53.offline.linux.x64.android]
+arg_configurations_file:    offline_installer_jobs/5.3/linux_x64_android
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+installer_name:             qt-opensource-linux-x64-android-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt5_RTA_opensource_installer_tests_linux_android_64bit
+
+
+################################################################################
+## Mac offline
+################################################################################
+[release.53.offline.mac.x64]
+arg_configurations_file:    offline_installer_jobs/5.3/mac_x64
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+installer_name:             qt-opensource-mac-x64-clang-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt5_RTA_opensource_installer_tests_mac_64bit
+
+[release.53.offline.mac.x64.android]
+arg_configurations_file:    offline_installer_jobs/5.3/mac_x64_android
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+installer_name:             qt-opensource-mac-x64-android-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt5_RTA_opensource_installer_tests_mac_android
+
+[release.53.offline.mac.x64.ios]
+arg_configurations_file:    offline_installer_jobs/5.3/mac_x64_ios
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+installer_name:             qt-opensource-mac-x64-ios-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt5_RTA_opensource_installer_tests_mac_ios
+
+[release.53.offline.mac.x64.android_and_ios]
+arg_configurations_file:    offline_installer_jobs/5.3/mac_x64_android_ios
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+installer_name:             qt-opensource-mac-x64-android-ios-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt5_RTA_opensource_installer_tests_mac_ios_android
+
+
+################################################################################
+## Windows offline
+################################################################################
+[release.53.offline.windows.x86.mingw482]
+arg_configurations_file:    offline_installer_jobs/5.3/win_x86_mingw482
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+installer_name:             qt-opensource-windows-x86-mingw482_opengl-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt5_RTA_opensource_installer_tests_windows_mingw
+
+[release.53.offline.windows.x86.msvc2010_opengl]
+arg_configurations_file:    offline_installer_jobs/5.3/win_x86_msvc2010_opengl
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+installer_name:             qt-opensource-windows-x86-msvc2010_opengl-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt5_RTA_opensource_installer_tests_windows_msvc2010
+
+[release.53.offline.windows.x86.msvc2012_opengl]
+arg_configurations_file:    offline_installer_jobs/5.3/win_x86_msvc2012_opengl
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+installer_name:             qt-opensource-windows-x86-msvc2012_opengl-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt5_RTA_opensource_installer_tests_windows_msvc2012
+
+[release.53.offline.windows.x86.msvc2013_angle]
+arg_configurations_file:    offline_installer_jobs/5.3/win_x86_msvc2013
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+installer_name:             qt-opensource-windows-x86-msvc2013-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt5_RTA_opensource_installer_tests_windows_msvc2013_angle_32bit
+
+[release.53.offline.windows.x86.msvc2013_opengl]
+arg_configurations_file:    offline_installer_jobs/5.3/win_x86_msvc2013_opengl
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+installer_name:             qt-opensource-windows-x86-msvc2013_opengl-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt5_RTA_opensource_installer_tests_windows_msvc2013_opengl_32bit
+
+[release.53.offline.windows.x86.x64-msvc2013_angle]
+arg_configurations_file:    offline_installer_jobs/5.3/win_x64_msvc2013
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+installer_name:             qt-opensource-windows-x86-msvc2013_64-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt5_RTA_opensource_installer_tests_windows_msvc2013_angle_64bit
+
+[release.53.offline.windows.x86.x64-msvc2013_opengl]
+arg_configurations_file:    offline_installer_jobs/5.3/win_x64_msvc2013_opengl
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+installer_name:             qt-opensource-windows-x86-msvc2013_64_opengl-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt5_RTA_opensource_installer_tests_windows_msvc2013_opengl_64bit
+
+[release.53.offline.windows.x86.mingw482.android]
+arg_configurations_file:    offline_installer_jobs/5.3/win_x86_mingw482_android
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+installer_name:             qt-opensource-windows-x86-android-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt5_RTA_opensource_installer_tests_windows_android
+
+[release.53.offline.windows.x86.winrt]
+arg_configurations_file:    offline_installer_jobs/5.3/win_x64_winrt
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+installer_name:             qt-opensource-windows-x86-winrt-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt5_RTA_opensource_installer_tests_windows_winrt
+
+
+################################################################################
+## Linux repository
+################################################################################
+[release.53.repository.linux.x86]
+arg_configurations_file:    repository_configs_desktop_qt5/linux_x86_repository_53
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          53
+repo_components_to_update:  qt.53.*
+repo_url_specifier:         linux_x86/desktop/qt5_53
+rta_key_list:               Qt5_RTA_opensource_onlineInstaller_tests_linux_32bit_LatestQt
+
+[release.53.repository.linux.x86.src_doc_examples]
+arg_configurations_file:    repository_configs_desktop_qt5/repository_53_src_doc_examples
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          src_doc_examples
+repo_components_to_update:  qt.53.*
+repo_url_specifier:         linux_x86/desktop/qt5_53_src_doc_examples
+
+[release.53.repository.linux.x86.android]
+arg_configurations_file:    repository_configs_android_qt5/linux_x86_android_repository_53
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          53
+repo_components_to_update:  qt.53.*
+repo_url_specifier:         linux_x86/android/qt5_53
+rta_key_list:               Qt5_RTA_opensource_onlineInstaller_tests_linux_android_32bit_LatestQt
+
+[release.53.repository.linux.x64]
+arg_configurations_file:    repository_configs_desktop_qt5/linux_x64_repository_53
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          53
+repo_components_to_update:  qt.53.*
+repo_url_specifier:         linux_x64/desktop/qt5_53
+rta_key_list:               Qt5_RTA_opensource_onlineInstaller_tests_linux_64bit_LatestQt
+
+[release.53.repository.linux.x64.src_doc_examples]
+arg_configurations_file:    repository_configs_desktop_qt5/repository_53_src_doc_examples
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          src_doc_examples
+repo_components_to_update:  qt.53.*
+repo_url_specifier:         linux_x64/desktop/qt5_53_src_doc_examples
+
+[release.53.repository.linux.x64.android]
+arg_configurations_file:    repository_configs_android_qt5/linux_x64_android_repository_53
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          53
+repo_components_to_update:  qt.53.*
+repo_url_specifier:         linux_x64/android/qt5_53
+rta_key_list:               Qt5_RTA_opensource_onlineInstaller_tests_linux_android_64bit_LatestQt
+
+
+################################################################################
+## Windows repository
+################################################################################
+[release.53.repository.windows.x86]
+arg_configurations_file:    repository_configs_desktop_qt5/win_x86_repository_53
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+repo_content_type:          53
+repo_components_to_update:  qt.53.*
+repo_url_specifier:         windows_x86/desktop/qt5_53
+rta_key_list:               Qt5_RTA_opensource_onlineInstaller_tests_windows_mingw_LatestQt, Qt5_RTA_opensource_onlineInstaller_tests_windows_vc2010_LatestQt, Qt5_RTA_opensource_onlineInstaller_tests_windows_vc2012_LatestQt, Qt5_RTA_opensource_onlineInstaller_tests_windows_vc2013_angle_32bit_LatestQt, Qt5_RTA_opensource_onlineInstaller_tests_windows_vc2013_opengl_32bit_LatestQt, Qt5_RTA_opensource_onlineInstaller_tests_windows_vc2013_angle_64bit_LatestQt, Qt5_RTA_opensource_onlineInstaller_tests_windows_vc2013_opengl_64bit_LatestQt
+
+[release.53.repository.windows.x86.src_doc_examples]
+arg_configurations_file:    repository_configs_desktop_qt5/repository_53_src_doc_examples
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+repo_content_type:          src_doc_examples
+repo_components_to_update:  qt.53.*
+repo_url_specifier:         windows_x86/desktop/qt5_53_src_doc_examples
+
+[release.53.repository.windows.x86.android]
+arg_configurations_file:    repository_configs_android_qt5/win_x86_android_repository_53
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+repo_content_type:          53
+repo_components_to_update:  qt.53.*
+repo_url_specifier:         windows_x86/android/qt5_53
+rta_key_list:               Qt5_RTA_opensource_onlineInstaller_tests_windows_android_LatestQt
+
+[release.53.repository.windows.x86.winrt]
+arg_configurations_file:    repository_configs_winrt_qt5/win_x64_winrt_repository_53
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+repo_content_type:          53
+repo_components_to_update:  qt.53.*
+repo_url_specifier:         windows_x86/winrt/qt5_53
+
+
+################################################################################
+## Mac repository
+################################################################################
+[release.53.repository.mac.x64]
+arg_configurations_file:    repository_configs_desktop_qt5/mac_x64_repository_53
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          53
+repo_components_to_update:  qt.53.*
+repo_url_specifier:         mac_x64/desktop/qt5_53
+rta_key_list:               Qt5_RTA_opensource_onlineInstaller_tests_mac_LatestQt
+
+[release.53.repository.mac.x64.src_doc_examples]
+arg_configurations_file:    repository_configs_desktop_qt5/repository_53_src_doc_examples
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          src_doc_examples
+repo_components_to_update:  qt.53.*
+repo_url_specifier:         mac_x64/desktop/qt5_53_src_doc_examples
+
+[release.53.repository.mac.x64.android]
+arg_configurations_file:    repository_configs_android_qt5/mac_x64_android_repository_53
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          53
+repo_components_to_update:  qt.53.*
+repo_url_specifier:         mac_x64/android/qt5_53
+rta_key_list:               Qt5_RTA_opensource_onlineInstaller_tests_mac_android_LatestQt
+
+[release.53.repository.mac.x64.ios]
+arg_configurations_file:    repository_configs_ios_qt5/mac_x64_ios_repository_53
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          53
+repo_components_to_update:  qt.53.*
+repo_url_specifier:         mac_x64/ios/qt5_53
+rta_key_list:               Qt5_RTA_opensource_onlineInstaller_tests_mac_ios_LatestQt
+

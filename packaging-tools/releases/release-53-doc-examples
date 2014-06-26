@@ -10,7 +10,7 @@ linux-x64:                  installer-framework-build-linux-x64.7z
 mac-x64:                    installer-framework-build-mac-x64.7z
 
 [release.global]
-version:                    5.3.1
+version:                    5.3.2
 version_tag:
 
 ################################################################################

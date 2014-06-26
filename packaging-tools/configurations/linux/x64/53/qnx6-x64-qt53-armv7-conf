@@ -45,5 +45,5 @@
 archives:               53.qnx6_armv7.essentials
 target_install_base:    /5.3/qnx6-armle-v7
 [53.qnx6_armv7.essentials]
-archive_uri:            /qt/5.3.1/latest/qnx6_armv7/linux_x64/qt5_essentials.7z
+archive_uri:            /qt/@QT_VERSION@/latest/qnx6_armv7/linux_x64/qt5_essentials.7z
 package_finalize_items: erase_doc

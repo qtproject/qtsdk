@@ -46,10 +46,10 @@ archives:               53.win32_msvc2012_opengl.essentials,
                         53.win32_msvc2012_opengl.icu_521_release.win_32
 target_install_base:    /5.3/msvc2012_opengl
 [53.win32_msvc2012_opengl.essentials]
-archive_uri:            /qt/5.3.1/latest/windows_vs2012_32_opengl/qt5_essentials.7z
+archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2012_32_opengl/qt5_essentials.7z
 package_finalize_items: erase_doc
 [53.win32_msvc2012_opengl.addons]
-archive_uri:            /qt/5.3.1/latest/windows_vs2012_32_opengl/qt5_addons.7z
+archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2012_32_opengl/qt5_addons.7z
 package_finalize_items: erase_doc
 [53.win32_msvc2012_opengl.icu_521_release.win_32]
 archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/msvc2012/icu_52_1_msvc_2012_32.7z

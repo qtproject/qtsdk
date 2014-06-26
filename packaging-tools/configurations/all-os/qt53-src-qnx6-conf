@@ -54,39 +54,39 @@
 archives:               src.qt5, src.essentials.qtbase, src.essentials.qtdeclarative, src.essentials.qtdoc, src.essentials.qtscript, src.essentials.qttools, src.essentials.qtxmlpatterns, src.essentials.qtmultimedia, src.essentials.qtquickcontrols
 target_install_base:    /5.3/Src/
 [src.qt5]
-archive_uri:            /qt/5.3.1/latest/src/submodules/qt5-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qt5-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /
 [src.essentials.qtbase]
-archive_uri:            /qt/5.3.1/latest/src/submodules/qtbase-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtbase-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /qtbase
 [src.essentials.qtdeclarative]
-archive_uri:            /qt/5.3.1/latest/src/submodules/qtdeclarative-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtdeclarative-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /qtdeclarative
 [src.essentials.qtdoc]
-archive_uri:            /qt/5.3.1/latest/src/submodules/qtdoc-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtdoc-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /qtdoc
 [src.essentials.qtscript]
-archive_uri:            /qt/5.3.1/latest/src/submodules/qtscript-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtscript-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /qtscript
 [src.essentials.qttools]
-archive_uri:            /qt/5.3.1/latest/src/submodules/qttools-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qttools-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /qttools
 [src.essentials.qtxmlpatterns]
-archive_uri:            /qt/5.3.1/latest/src/submodules/qtxmlpatterns-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtxmlpatterns-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /qtxmlpatterns
 [src.essentials.qtmultimedia]
-archive_uri:            /qt/5.3.1/latest/src/submodules/qtmultimedia-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtmultimedia-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /qtmultimedia
 [src.essentials.qtquickcontrols]
-archive_uri:            /qt/5.3.1/latest/src/submodules/qtquickcontrols-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtquickcontrols-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /qtquickcontrols
 
@@ -102,27 +102,27 @@ target_install_dir:     /qtquickcontrols
 archives:               src.addons.qtgraphicaleffects
 target_install_base:    /5.3/Src/qtgraphicaleffects
 [src.addons.qtgraphicaleffects]
-archive_uri:            /qt/5.3.1/latest/src/submodules/qtgraphicaleffects-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtgraphicaleffects-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 
 [qt.53.src.addons.qtimageformats]
 archives:               src.addons.qtimageformats
 target_install_base:    /5.3/Src/qtimageformats
 [src.addons.qtimageformats]
-archive_uri:            /qt/5.3.1/latest/src/submodules/qtimageformats-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtimageformats-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 
 [qt.53.src.addons.qtsvg]
 archives:               src.addons.qtsvg
 target_install_base:    /5.3/Src/qtsvg
 [src.addons.qtsvg]
-archive_uri:            /qt/5.3.1/latest/src/submodules/qtsvg-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtsvg-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 
 [qt.53.src.addons.qttranslations]
 archives:               src.addons.qttranslations
 target_install_base:    /5.3/Src/qttranslations
 [src.addons.qttranslations]
-archive_uri:            /qt/5.3.1/latest/src/submodules/qttranslations-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qttranslations-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 

@@ -47,10 +47,10 @@ archives:               53.win64_msvc2013_64.essentials,
                         53.win64_msvc2013_64.d3d_compiler_47.x64
 target_install_base:    /5.3/msvc2013_64
 [53.win64_msvc2013_64.essentials]
-archive_uri:            /qt/5.3.1/latest/windows_vs2013_64/qt5_essentials.7z
+archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2013_64/qt5_essentials.7z
 package_finalize_items: erase_doc
 [53.win64_msvc2013_64.addons]
-archive_uri:            /qt/5.3.1/latest/windows_vs2013_64/qt5_addons.7z
+archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2013_64/qt5_addons.7z
 package_finalize_items: erase_doc
 [53.win64_msvc2013_64.icu_521_release.win_64]
 archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/msvc2013/icu_52_1_msvc_2013_64.7z
