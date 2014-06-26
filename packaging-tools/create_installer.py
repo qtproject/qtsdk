@@ -828,8 +828,7 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
                 print 'Erasing doc: ' + doc_dir
                 shutil.rmtree(doc_dir)
         if 'docs' in archive.package_finalize_items:
-            doc_dir = bldinstallercommon.locate_directory(install_dir, 'doc')
-            cleanup_docs(doc_dir)
+            cleanup_docs(install_dir)
         if 'qml_examples_only' in archive.package_finalize_items:
             examples_dir = bldinstallercommon.locate_directory(install_dir, 'examples')
             qml_examples_only(examples_dir)
@@ -962,17 +961,17 @@ def qml_examples_only(examples_dir):
 
 
 ##############################################################
-# Cleanup helper
+# Cleanup unnecessary documentation files
 ##############################################################
-def cleanup_docs(doc_dir):
-    if not os.path.isdir(doc_dir):
-        print '*** Given docs directory is not valid path: ' + doc_dir
+def cleanup_docs(install_dir):
+    if not os.path.isdir(install_dir):
+        print '*** Given docs directory is not valid path: ' + install_dir
         print '*** Archive not cleaned'
         return
     submodule_list = []
     # populate subdirectory list from under /doc
-    for name in os.listdir(doc_dir):
-        dir_name = os.path.join(doc_dir, name)
+    for name in os.listdir(install_dir):
+        dir_name = os.path.join(install_dir, name)
         if os.path.isdir(dir_name):
             submodule_list.append(dir_name)
     # iterate list
