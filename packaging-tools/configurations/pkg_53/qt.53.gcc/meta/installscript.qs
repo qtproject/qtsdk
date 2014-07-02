@@ -59,6 +59,11 @@ Component.prototype.createOperations = function()
         var qmakeBinary = "@TargetDir@" + "%TARGET_INSTALL_DIR%/bin/qmake";
         addInitQtPatchOperation(component, "linux", qtPath, qmakeBinary, "qt5");
 
+        // add Qt to qtchooser configuration
+        if (installer.value("os") == "x11")
+            component.addOperation("Execute", ["qtchooser", "-install", "53-gcc-32", qmakeBinary]);
+
+
         if (installer.value("SDKToolBinary") == "")
             return;
 
