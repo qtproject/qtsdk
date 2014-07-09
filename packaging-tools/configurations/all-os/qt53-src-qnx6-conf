@@ -112,6 +112,13 @@ target_install_base:    /5.3/Src/qtimageformats
 archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtimageformats-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 
+[qt.53.src.addons.qtlocation]
+archives:               src.addons.qtlocation
+target_install_base:    /5.3/Src/qtlocation
+[src.addons.qtlocation]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtlocation-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
 [qt.53.src.addons.qtsvg]
 archives:               src.addons.qtsvg
 target_install_base:    /5.3/Src/qtsvg
@@ -126,3 +133,9 @@ target_install_base:    /5.3/Src/qttranslations
 archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qttranslations-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 
+[qt.53.src.addons.qtsensors]
+archives:               src.addons.qtsensors
+target_install_base:    /5.3/Src/qtsensors
+[src.addons.qtsensors]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtsensors-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
