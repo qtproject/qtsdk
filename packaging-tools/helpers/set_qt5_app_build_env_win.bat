@@ -207,6 +207,42 @@ set QTDIR=
 set "NODE_ARCH=32"
 )
 
+echo %cfg%|findstr /i QNX- >nul:
+if %errorlevel%==0 (
+call c:\qnx660\qnx660-env.bat
+set "PATH=c:\work\build\qtsdk\gnuwin32\bin;c:\mingw482\mingw32\bin;%PATH%;C:\Utils\icu32_52_1_mingw48\bin;C:\Utils\icu32_52_1_mingw48\lib;C:\Utils\pgsql\bin;C:\qnx660\host\win32\x86\usr\bin;C:\qnx660\.qnx\bin"
+set "LIB=C:\Utils\icu32_52_1_mingw482\lib;%LIB%;C:\Utils\pgsql\lib;"
+set "INCLUDE=%INCLUDE%;C:\Utils\icu32_52_1_mingw48\include;C:\Utils\pgsql\include;C:\mingw482\mingw32\include"
+)
+
+echo %cfg%|findstr /i QNX650- >nul:
+if %errorlevel%==0 (
+call c:\qnx650\qnx650-env.bat
+set "PATH=c:\work\build\qtsdk\gnuwin32\bin;c:\mingw482\mingw32\bin;%PATH%;C:\Utils\icu32_52_1_mingw48\bin;C:\Utils\icu32_52_1_mingw48\lib;C:\Utils\pgsql\bin;C:\qnx650\host\win32\x86\usr\bin;C:\qnx650\.qnx\bin"
+set "LIB=C:\Utils\icu32_52_1_mingw482\lib;%LIB%;C:\Utils\pgsql\lib;"
+set "INCLUDE=%INCLUDE%;C:\Utils\icu32_52_1_mingw48\include;C:\Utils\pgsql\include;C:\mingw482\mingw32\include"
+)
+
+echo %cfg%|findstr /i QNX-armv7 >nul:
+if %errorlevel%==0 (
+set RELEASE_BUILD_QT_CONFIGURE_OPTIONS_FILE=configure_qnx_armv7_enterprise
+)
+
+echo %cfg%|findstr /i QNX-x86 >nul:
+if %errorlevel%==0 (
+set RELEASE_BUILD_QT_CONFIGURE_OPTIONS_FILE=configure_qnx_x86_enterprise
+)
+
+echo %cfg%|findstr /i QNX650-armv7 >nul:
+if %errorlevel%==0 (
+set RELEASE_BUILD_QT_CONFIGURE_OPTIONS_FILE=configure_qnx650_armv7_enterprise
+)
+
+echo %cfg%|findstr /i QNX650-x86 >nul:
+if %errorlevel%==0 (
+set RELEASE_BUILD_QT_CONFIGURE_OPTIONS_FILE=configure_qnx650_x86_enterprise
+)
+
 set "ZIP_TOOL_PATH=C:\utils\sevenzip"
 set 7Z_TOOL_PATH="C:\utils\sevenzip"
 
@@ -230,6 +266,11 @@ if %errorlevel%==0 (
   set QT5_APPLICATION_INSTALL_CMD="mingw32-make -j1"
 )
 
+echo %cfg%|findstr /i QNX >nul:
+if %errorlevel%==0 (
+  set QT5_APPLICATION_BUILD_CMD="mingw32-make -j1"
+  set QT5_APPLICATION_INSTALL_CMD="mingw32-make -j1"
+)
 
 echo "Qt5 essentials lib: %QT5_ESSENTIALS_LIB_PACKAGE_URI%"
 echo "Qt5 addons lib: %QT5_ADDONS_LIB_PACKAGE_URI%"
