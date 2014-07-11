@@ -190,6 +190,11 @@ qtApplicationInstallDirectory = APPLICATION_SRC_DIR + '_install'
 if os.name == 'nt':
     qtApplicationInstallDirectory = qtApplicationInstallDirectory[2:]
 
+    # check whether this is a QNX build
+    if 'qnx' in callerArguments.qt5_essentials7z.lower():
+        # apply the workaround from QTBUG-38555
+        qtApplicationInstallDirectory = qtApplicationInstallDirectory.replace('\\','/').replace('/', '\\', 1)
+
 
 ### check mac setup
 if sys.platform == "darwin":
@@ -308,8 +313,12 @@ if os.name == 'nt' or sys.platform == "darwin":
     makeCommand = callerArguments.buildcommand
 runCommand("{0}".format(makeCommand), currentWorkingDirectory = qtApplicationBuildDirectory)
 
-makeCommandArguments = 'install INSTALL_ROOT=' + qtApplicationInstallDirectory
-runCommand("{0} {1}".format(makeCommand, makeCommandArguments), currentWorkingDirectory = qtApplicationBuildDirectory,
+installCommand = 'make'
+if os.name == 'nt' or sys.platform == "darwin":
+    makeCommand = callerArguments.installcommand
+
+installCommandArguments = 'install INSTALL_ROOT=' + qtApplicationInstallDirectory
+runCommand("{0} {1}".format(installCommand, installCommandArguments), currentWorkingDirectory = qtApplicationBuildDirectory,
         callerArguments = callerArguments, init_environment = environment)
 
 # patch .so filenames on Windows/Android
@@ -330,8 +339,8 @@ if callerArguments.makeDocs:
     makeCommandArguments = '-j1 docs'
     runCommand("{0} {1}".format(makeCommand, makeCommandArguments), currentWorkingDirectory = qtApplicationBuildDirectory, callerArguments = callerArguments, init_environment = environment)
     # then make install those
-    makeCommandArguments = '-j1 install_docs INSTALL_ROOT=' + qtApplicationInstallDirectory
-    runCommand("{0} {1}".format(makeCommand, makeCommandArguments), currentWorkingDirectory = qtApplicationBuildDirectory, callerArguments = callerArguments, init_environment = environment)
+    installCommandArguments = '-j1 install_docs INSTALL_ROOT=' + qtApplicationInstallDirectory
+    runCommand("{0} {1}".format(installCommand, installCommandArguments), currentWorkingDirectory = qtApplicationBuildDirectory, callerArguments = callerArguments, init_environment = environment)
     # make separate "doc.7z" for later use if needed
     doc_dir = bldinstallercommon.locate_directory(qtApplicationInstallDirectory, 'doc')
     if doc_dir:

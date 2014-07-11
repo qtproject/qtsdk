@@ -269,7 +269,7 @@ if %errorlevel%==0 (
 echo %cfg%|findstr /i QNX >nul:
 if %errorlevel%==0 (
   set QT5_APPLICATION_BUILD_CMD="mingw32-make -j1"
-  set QT5_APPLICATION_INSTALL_CMD="mingw32-make -j1"
+  set QT5_APPLICATION_INSTALL_CMD="make -j1"
 )
 
 echo "Qt5 essentials lib: %QT5_ESSENTIALS_LIB_PACKAGE_URI%"
