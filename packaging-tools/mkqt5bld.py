@@ -820,8 +820,7 @@ def patch_build():
         patch_qnx6_files('lib', 'libQt5.*\.prl', 'QMAKE_PRL_LIBS', '-L[^ ]* ')
         patch_qnx6_files('lib', 'libQt5.*\.la', 'dependency_libs', '-L[^ ]* ')
         # QT-701: internal qnx bug report
-        if bldinstallercommon.is_win_platform():
-            patch_qnx6_files('common', 'qcc-base-qnx\.conf', 'QMAKE_LFLAGS ', '\n', ' -Wl,-rpath-link,$$[QT_INSTALL_LIBS]')
+        patch_qnx6_files('common', 'qcc-base-qnx\.conf', 'QMAKE_LFLAGS ', '\n', ' -Wl,-rpath-link,$$[QT_INSTALL_LIBS]')
         patch_qnx6_files('pkgconfig', 'Qt5.*\.pc', 'Libs.private', '-L[^ ]* ')
     # patch RPath if requested
     if QT_BUILD_OPTIONS.replace_rpath:
