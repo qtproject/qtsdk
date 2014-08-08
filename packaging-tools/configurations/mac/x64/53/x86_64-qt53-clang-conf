@@ -46,8 +46,8 @@ archives:               53.clang_64.essentials,
 target_install_base:    /5.3/clang_64
 [53.clang_64.essentials]
 archive_uri:            /qt/@QT_VERSION@/latest/mac_x64_108/qt5_essentials.7z
-package_finalize_items: erase_doc
+package_finalize_items: delete_doc_directory
 [53.clang_64.addons]
 archive_uri:            /qt/@QT_VERSION@/latest/mac_x64_108/qt5_addons.7z
-package_finalize_items: erase_doc
+package_finalize_items: delete_doc_directory
 

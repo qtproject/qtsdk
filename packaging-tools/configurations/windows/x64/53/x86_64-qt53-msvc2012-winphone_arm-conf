@@ -47,8 +47,8 @@ target_install_base:    /5.3/winphone_arm
 
 [53.win64_msvc2012_winphone_arm.essentials]
 archive_uri:            /qt/@QT_VERSION@/latest/winphone8/arm/qt5_essentials.7z
-package_finalize_items: erase_doc
+package_finalize_items: delete_doc_directory
 [53.win64_msvc2012_winphone_arm.addons]
 archive_uri:            /qt/@QT_VERSION@/latest/winphone8/arm/qt5_addons.7z
-package_finalize_items: erase_doc
+package_finalize_items: delete_doc_directory
 

@@ -46,4 +46,4 @@ target_install_base:    /@QT_INSTALL_DIR_NAME@/winrt_x64
 [cloudservices.enginio.102_1.win64_msvc2013_winrt_x64]
 archive_uri:            /qtenginio/@QTENGINIO_VERSION@/latest/windows_vs2013_winrt_x64/qt5_qtenginio.7z
 package_strip_dirs:     1
-package_finalize_items: erase_doc
+package_finalize_items: delete_doc_directory

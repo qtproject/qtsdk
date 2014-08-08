@@ -46,5 +46,5 @@ target_install_base:    /@QT_INSTALL_DIR_NAME@/msvc2010_opengl
 [cloudservices.enginio.102_1.win32_msvc2010_opengl]
 archive_uri:            /qtenginio/@QTENGINIO_VERSION@/latest/windows_vs2010_32_opengl/qt5_qtenginio.7z
 package_strip_dirs:     1
-package_finalize_items: erase_doc
+package_finalize_items: delete_doc_directory
 

@@ -53,7 +53,7 @@ package_default:        true
 [521.gcc_64.essentials]
 archive_uri:            /qt/5.2.1/latest/linux_gcc_64_ubuntu1110/qt5_essentials.7z
 package_strip_dirs:
-package_finalize_items: docs
+package_finalize_items: cleanup_doc_directory
 target_install_dir:     /
 rpath_target:           /lib
 archive_name:           gcc_64_qt5_essentials.7z

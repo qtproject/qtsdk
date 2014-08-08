@@ -46,8 +46,8 @@ archives:               53.android_armv7.essentials,
 target_install_base:    /5.3/android_armv7
 [53.android_armv7.essentials]
 archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/linux_x86/qt5_essentials.7z
-package_finalize_items: erase_doc
+package_finalize_items: delete_doc_directory
 [53.android_armv7.addons]
 archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/linux_x86/qt5_addons.7z
-package_finalize_items: erase_doc
+package_finalize_items: delete_doc_directory
 

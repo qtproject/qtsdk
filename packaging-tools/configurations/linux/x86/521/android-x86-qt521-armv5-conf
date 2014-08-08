@@ -57,7 +57,7 @@ package_default:        true
 [521.android_armv5.essentials]
 archive_uri:            /qt/5.2.1/latest/android_armv5/linux_x86/qt5_essentials.7z
 package_strip_dirs:
-package_finalize_items: docs
+package_finalize_items: cleanup_doc_directory
 target_install_dir:     /
 rpath_target:
 archive_name:           android_armv5_qt5_essentials.7z

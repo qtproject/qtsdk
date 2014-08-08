@@ -47,5 +47,5 @@ target_install_base:    /@QT_INSTALL_DIR_NAME@/gcc
 archive_uri:            /qtenginio/@QTENGINIO_VERSION@/latest/linux_gcc_32_ubuntu1110/qt5_qtenginio.7z
 package_strip_dirs:     1
 rpath_target:           /lib
-package_finalize_items: erase_doc
+package_finalize_items: delete_doc_directory
 

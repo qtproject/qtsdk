@@ -46,5 +46,5 @@ target_install_base:    /@QT_INSTALL_DIR_NAME@/ios
 [cloudservices.enginio.102_1.ios]
 archive_uri:            /qtenginio/@QTENGINIO_VERSION@/latest/ios/mac_x64/qt5_qtenginio.7z
 package_strip_dirs:     1
-package_finalize_items: erase_doc
+package_finalize_items: delete_doc_directory
 

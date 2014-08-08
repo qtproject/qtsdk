@@ -46,5 +46,5 @@ target_install_base:    /@QT_INSTALL_DIR_NAME@/clang_64
 [cloudservices.enginio.102_1.clang_64]
 archive_uri:            /qtenginio/@QTENGINIO_VERSION@/latest/mac_x64_108/qt5_qtenginio.7z
 package_strip_dirs:     1
-package_finalize_items: erase_doc
+package_finalize_items: delete_doc_directory
 
