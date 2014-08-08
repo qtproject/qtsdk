@@ -1551,13 +1551,18 @@ def parse_cmd_line():
     if bld_cmd_validator.is_qt5_release_build():
         REMOTE_QT5_DIR += 'qt' + '/' + QT_VERSION + '/' + TIME_STAMP + '-' + BUILD_NUMBER
         LATEST_QT5_DIR += 'qt' + '/' + QT_VERSION + '/' + 'latest'
+    # create output directories for extra module build
     elif os.environ.get('APPLICATION_NAME'):
+        # create directories for extra module src files
         app_name = os.environ['APPLICATION_NAME']
         app_ver  = os.environ['APPLICATION_VERSION']
         REMOTE_EXTRA_MODULE_DIR += app_name + '/' + app_ver + '/' + TIME_STAMP + '-' + BUILD_NUMBER
         LATEST_EXTRA_MODULE_DIR += app_name + '/' + app_ver + '/' + 'latest'
-        REMOTE_EXTRA_MODULE_BINARY_DIR += app_name + '/' + app_ver + '/' + os.environ.get('QT_VERSION_MINOR') + '/' + TIME_STAMP + '-' + BUILD_NUMBER
-        LATEST_EXTRA_MODULE_BINARY_DIR += app_name + '/' + app_ver + '/' + os.environ.get('QT_VERSION_MINOR') + '/' + 'latest'
+        # create directories for extra module binaries
+        # QT_VERSION_MINOR indicates that this is a binary build
+        if os.environ.get('QT_VERSION_MINOR'):
+            REMOTE_EXTRA_MODULE_BINARY_DIR += app_name + '/' + app_ver + '/' + os.environ.get('QT_VERSION_MINOR') + '/' + TIME_STAMP + '-' + BUILD_NUMBER
+            LATEST_EXTRA_MODULE_BINARY_DIR += app_name + '/' + app_ver + '/' + os.environ.get('QT_VERSION_MINOR') + '/' + 'latest'
 
     return True
 
