@@ -77,10 +77,6 @@ Component.prototype.createOperations = function()
     var qtPath = "@TargetDir@" + "%TARGET_INSTALL_DIR%";
     addInitQtPatchOperation(component, platform, qtPath, qmakeBinary, "emb-arm-qt5");
 
-    // add Qt to qtchooser configuration
-    if (installer.value("os") == "x11")
-        component.addOperation("Execute", ["qtchooser", "-install", "53-android-x86", qmakeBinary]);
-
     if (installer.value("SDKToolBinary") == "")
         return;
 
