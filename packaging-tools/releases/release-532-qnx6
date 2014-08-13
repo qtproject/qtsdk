@@ -11,8 +11,9 @@ linux-x64:                  installer-framework-build-linux-x64.7z
 [release.global]
 version:                    5.3.2
 version_tag:
-module_exclude_list:        qt3d, qtactiveqt, qtandroidextras, qtconnectivity, qtdocgallery, qtenginio, qtfeedback, qtjsondb, qtlocation, qtmacextras, qtpim, qtqa, qtquick1, qtrepotools, qtsensors, qtserialport, qtsystems, qtwayland, qtwebkit, qtwebkit-examples, qtwebsockets, qtwinextras, qtx11extras
-arg_substitution_list:      @QT_VERSION_AND_TAG@=%GLOBAL_VERSION_AND_TAG%,
+module_exclude_list:        qt3d, qtactiveqt, qtandroidextras, qtconnectivity, qtdocgallery, qtenginio, qtfeedback, qtjsondb, qtmacextras, qtpim, qtqa, qtquick1, qtrepotools, qtserialport, qtsystems, qtwayland, qtwebkit, qtwebkit-examples, qtwebsockets, qtwinextras, qtx11extras
+arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%,
+                            @QT_VERSION_AND_TAG@=%GLOBAL_VERSION_AND_TAG%,
                             @QT_INSTALL_DIR_NAME@=5.3
 
 ################################################################################
