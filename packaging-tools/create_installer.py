@@ -480,8 +480,6 @@ def init_data():
     PLATFORM_IDENTIFIER = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'PlatformIdentifier')['identifier']
     check_platform_identifier(PLATFORM_IDENTIFIER)
     CONFIG_DIR_DST      = os.path.normpath(SCRIPT_ROOT_DIR + os.sep + 'config')
-    PACKAGES_DIR_NAME   = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'PackageTemplates')['template_dirs']
-    PACKAGES_DIR_NAME   = os.path.normpath(PACKAGES_DIR_NAME)
     SDK_NAME            = bldinstallercommon.config_section_map(CONFIG_PARSER_COMMON,'SdkCommon')['name']
     if not LICENSE_TYPE:
         LICENSE_TYPE        = bldinstallercommon.config_section_map(CONFIG_PARSER_COMMON,'SdkCommon')['license']
@@ -500,8 +498,13 @@ def init_data():
         if os.path.isabs(package_template_dir):
             PACKAGES_DIR_NAME_LIST.append(package_template_dir)
         else:
-            PACKAGES_DIR_NAME_LIST.append(os.path.normpath(CONFIGURATIONS_DIR + os.sep + package_template_dir))
-
+            # first check if the pkg templates are under assumed "/configurations/pkg_templates" directory
+            pkg_template_dir = os.path.join(CONFIGURATIONS_DIR, pkg_constants.PKG_TEMPLATE_BASE_DIR_NAME, package_template_dir)
+            if os.path.exists(pkg_template_dir):
+                PACKAGES_DIR_NAME_LIST.append(pkg_template_dir)
+            # if not then assume the old directory layout is being used
+            else:
+                PACKAGES_DIR_NAME_LIST.append(os.path.join(CONFIGURATIONS_DIR, package_template_dir))
     if not DEVELOPMENT_MODE:
         tools_dir_name = IFW_TOOLS_DIR_NAME
         IFW_TOOLS_DIR = SCRIPT_ROOT_DIR + os.sep + tools_dir_name

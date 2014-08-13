@@ -43,6 +43,7 @@
 import os
 import sys
 import bldinstallercommon
+import pkg_constants
 
 SERVER_NAMESPACE                = 'ArchiveRemoteLocation'
 PACKAGE_REMOTE_LOCATION_RELEASE = 'release'
@@ -141,19 +142,20 @@ class ArchiveLocationResolver:
         for item in self.key_substitution_list:
             temp = archive_uri.replace(item[0], item[1])
             if temp != archive_uri:
-                #print 'Substituted: ' + archive_uri
                 archive_uri = temp
-                #print '       into: ' + archive_uri
         # 1. the file exists, uri points to valid path on file system (or network share)
         if os.path.isfile(archive_uri):
             return archive_uri
         # 2. check if given archive_uri denotes a package under package templates directory
-        base_path = self.configurations_root_dir + os.sep
-        package_path = os.sep + package_name + os.sep + 'data' + os.sep + archive_uri
+        base_path = os.path.join(self.configurations_root_dir, pkg_constants.PKG_TEMPLATE_BASE_DIR_NAME)
+        package_path = package_name + os.sep + 'data' + os.sep + archive_uri
         # find the correct template subdirectory
         for subdir in self.pkg_templates_dir_list:
-            if os.path.isdir(base_path + subdir):
-                temp = base_path + subdir + package_path
+            path_temp = os.path.join(base_path, subdir)
+            if not os.path.isdir(path_temp):
+                path_temp = path_temp.replace(os.sep + pkg_constants.PKG_TEMPLATE_BASE_DIR_NAME, '')
+            if os.path.isdir(path_temp):
+                temp = os.path.join(base_path, subdir, package_path)
                 if os.path.isfile(temp):
                     return temp
         # 3. check if given URI is valid full URL
