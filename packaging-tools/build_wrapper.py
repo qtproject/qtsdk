@@ -60,6 +60,7 @@ from optparse import OptionParser, Option
 import bldinstallercommon
 import release_build_handler
 import pkg_constants
+import random
 
 # ----------------------------------------------------------------------
 # external commands
@@ -111,7 +112,6 @@ LATEST_EXTRA_MODULE_BINARY_DIR  = ''
 EXTRA_ENV                   = dict(os.environ)
 MAKE_INSTALL_PADDING        = ''
 BUILD_META_INFO_FILE        = 'releases/build-meta'
-
 
 ###########################################
 # Define possible commands for this script
@@ -713,9 +713,12 @@ def handle_qt_android_release_build():
     cmd_args = ''
     script_path = os.path.join(SCRIPT_ROOT_DIR, 'mkqt5bld.py')
     source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
-    configure_files_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_config', '')
+    configure_files_path = os.path.join(SCRIPT_ROOT_DIR, '')
 
-    qt_configure_options_file = os.environ['RELEASE_BUILD_QT_CONFIGURE_OPTIONS_FILE']
+    qt_configure_options_file = get_configuration_options()
+    if not qt_configure_options_file:
+        print('*** No valid configutation found!')
+        sys.exit(-1)
     configure_extra_options   = os.environ['EXTRA_QT_CONFIGURE_OPTIONS'] if os.environ.get('EXTRA_QT_CONFIGURE_OPTIONS') else ''
 
     if LICENSE.lower() == 'enterprise':
@@ -759,9 +762,12 @@ def handle_qt_ios_release_build():
     cmd_args = ''
     script_path = os.path.join(SCRIPT_ROOT_DIR, 'mkqt5bld.py')
     source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
-    configure_files_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_config', '')
+    configure_files_path = os.path.join(SCRIPT_ROOT_DIR, '')
 
-    qt_configure_options_file = os.environ['RELEASE_BUILD_QT_CONFIGURE_OPTIONS_FILE']
+    qt_configure_options_file = get_configuration_options()
+    if not qt_configure_options_file:
+        print('*** No valid configutation found!')
+        sys.exit(-1)
     configure_extra_options   = os.environ['EXTRA_QT_CONFIGURE_OPTIONS'] if os.environ.get('EXTRA_QT_CONFIGURE_OPTIONS') else ''
 
     if LICENSE.lower() == 'enterprise':
@@ -781,9 +787,12 @@ def handle_qt_qnx6_release_build():
     cmd_args = ''
     script_path = os.path.join(SCRIPT_ROOT_DIR, 'mkqt5bld.py')
     source_url = SRC_URL + '/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
-    configure_files_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_config', '')
+    configure_files_path = os.path.join(SCRIPT_ROOT_DIR, '')
 
-    qt_configure_options_file = os.environ['RELEASE_BUILD_QT_CONFIGURE_OPTIONS_FILE']
+    qt_configure_options_file = get_configuration_options()
+    if not qt_configure_options_file:
+        print('*** No valid configutation found!')
+        sys.exit(-1)
     configure_extra_options   = os.environ['EXTRA_QT_CONFIGURE_OPTIONS'] if os.environ.get('EXTRA_QT_CONFIGURE_OPTIONS') else ''
 
     if LICENSE.lower() == 'enterprise':
@@ -807,6 +816,40 @@ def handle_qt_qnx6_release_build():
     elif bldinstallercommon.is_win_platform():
         exec_dir = os.getcwd()
         bldinstallercommon.do_execute_sub_process(cmd_args, exec_dir, True)
+
+###############################
+# Get configuration options
+###############################
+def get_configuration_options():
+    tmp = ''
+    tmp_conf = ''
+    qt_configure_options_file = os.environ['RELEASE_BUILD_QT_CONFIGURE_OPTIONS_FILE']
+    target_env = os.environ['TARGET_ENV']
+    # parse qt configuration arguments from release description file
+    if not os.path.isfile(qt_configure_options_file):
+        print('*** Not a valid release description file: {0}'.format(qt_configure_options_file))
+        sys.exit(-1)
+    parser = ConfigParser.ConfigParser()
+    parser.readfp(open(qt_configure_options_file))
+    # parse
+    for s in parser.sections():
+        section_parts = s.split('.')
+        if section_parts[0] != 'release':
+            continue
+        build_node_labels = bldinstallercommon.safe_config_key_fetch(parser, s, 'build_node_labels').replace(' ', '')
+        tmp = bldinstallercommon.safe_config_key_fetch(parser, s, 'configure_options')
+        label_list = build_node_labels.split(',')
+        if target_env in label_list:
+            tmp_conf = 'tmp' + str(random.randint(1,1000))
+            break
+    if not tmp:
+        print('*** No valid configuration for {0} found'.format(target_env))
+        tmp_conf = ''
+    else:
+        f = open(tmp_conf,"w")
+        f.write(tmp)
+        f.close()
+    return tmp_conf
 
 
 ###############################
@@ -835,8 +878,12 @@ def handle_qt_desktop_release_build():
     ## let's build Qt
     # some common variables
     source_url = SRC_URL + '/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
-    configure_files_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_config', '')
-    qt_configure_options_file = os.environ['RELEASE_BUILD_QT_CONFIGURE_OPTIONS_FILE']
+    configure_files_path = os.path.join(SCRIPT_ROOT_DIR, '')
+
+    qt_configure_options_file = get_configuration_options()
+    if not qt_configure_options_file:
+        print('*** No valid configutation found!')
+        sys.exit(-1)
 
     ## common cmd_args for all platforms
     # we need to change the extension to .zip on windows. os x and linux use .tar.gz for the source file (.zip includes configure.exe)
