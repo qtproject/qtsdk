@@ -155,7 +155,7 @@ class ArchiveLocationResolver:
             if not os.path.isdir(path_temp):
                 path_temp = path_temp.replace(os.sep + pkg_constants.PKG_TEMPLATE_BASE_DIR_NAME, '')
             if os.path.isdir(path_temp):
-                temp = os.path.join(base_path, subdir, package_path)
+                temp = os.path.join(path_temp, package_path)
                 if os.path.isfile(temp):
                     return temp
         # 3. check if given URI is valid full URL
