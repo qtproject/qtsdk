@@ -65,6 +65,14 @@ fi
 
 export QT5_LIB_PATH_HTTP=$PACKAGE_STORAGE_BASE_URL/$LICENSE/qt/$QT_VERSION/latest
 
+if [[ "$cfg" == *"_QNX-"* ]]; then
+    . /opt/qnx660/qnx660-env.sh
+fi
+
+if [[ "$cfg" == *"_QNX650-"* ]]; then
+    . /opt/qnx650/qnx650-env.sh
+fi
+
 echo "Set build env for Qt5 Application builds"
 echo "License: $LICENSE"
 echo "Qt version: $QT_VERSION"
