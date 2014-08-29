@@ -315,7 +315,7 @@ runCommand("{0}".format(makeCommand), currentWorkingDirectory = qtApplicationBui
 
 installCommand = 'make'
 if os.name == 'nt' or sys.platform == "darwin":
-    makeCommand = callerArguments.installcommand
+    installCommand = callerArguments.installcommand
 
 installCommandArguments = 'install INSTALL_ROOT=' + qtApplicationInstallDirectory
 runCommand("{0} {1}".format(installCommand, installCommandArguments), currentWorkingDirectory = qtApplicationBuildDirectory,

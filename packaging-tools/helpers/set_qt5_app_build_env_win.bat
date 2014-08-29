@@ -252,7 +252,7 @@ if %errorlevel%==0 (
 set GIT_TOOL_PATH="C:\Program Files (x86)\git\cmd"
 )
 set QT5_APPLICATION_BUILD_CMD="jom"
-set QT5_APPLICATION_INSTALL_CMD="nmake -j1"
+set QT5_APPLICATION_INSTALL_CMD="jom -j1"
 
 echo %cfg%|findstr /i win-MinGW4.8.2-Windows7-x86_OpenGL >nul:
 if %errorlevel%==0 (
