@@ -834,22 +834,23 @@ def handle_qt_desktop_release_build():
     if bldinstallercommon.is_win_platform():
         qt5BuildOptions.make_cmd = 'jom'
 
+    if LICENSE.lower() == 'enterprise':
+        if not 'alpha' in QT_VERSION_TAG.lower():
+            if bldinstallercommon.is_win_platform():
+                ext_args += ' -D QT_EVAL'
+            else:
+                ext_args += ' -DQT_EVAL'
+
     # run mkqt5bld.py with the correct options according to the platform and license being used
     if bldinstallercommon.is_linux_platform():
         icu_lib_prefix_rpath = icu_lib_path + ' -I ' + icu_include_path + ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING) + ' -R ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)
         qt5BuildOptions.configure_options = configure_files_path + qt_configure_options_file
-        if LICENSE == 'enterprise':
-            ext_args += ' -DQT_EVAL'
         ext_args += ' -L ' + icu_lib_prefix_rpath
     elif bldinstallercommon.is_win_platform():
         qt5BuildOptions.configure_options = configure_files_path + qt_configure_options_file
-        if LICENSE == 'enterprise':
-            ext_args += ' -D QT_EVAL'
         ext_args += ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)
     elif bldinstallercommon.is_mac_platform():
         qt5BuildOptions.configure_options = configure_files_path + qt_configure_options_file
-        if LICENSE == 'enterprise':
-            ext_args += ' -DQT_EVAL'
         ext_args += ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)
     qt5BuildOptions.add_configure_option = ext_args
     mkqt5bld.QT_BUILD_OPTIONS = qt5BuildOptions
