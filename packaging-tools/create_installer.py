@@ -984,13 +984,13 @@ def cleanup_docs(install_dir):
         if os.path.isdir(dir_name):
             submodule_list.append(dir_name)
     # iterate list
+    dirs_to_delete = ['images', 'scripts', 'style', 'template', 'externalsites']
     for submodule in submodule_list:
         # remove unnecessary subdirectories first
-        dirs_to_delete = ['images', 'scripts', 'style', 'template', 'externalsites']
         for item in [os.path.join(submodule, i) for i in dirs_to_delete]:
             if os.path.isdir(item):
                 print 'Cleaning up -> deleting directory: ' + item
-                shutil.rmtree(item)
+                shutil.rmtree(item, ignore_errors=True)
         # then remove unnecessary files
         for filename in os.listdir(submodule):
             if filename.endswith(('.qdocconf', '.sha1', '.tags', '.html')):
