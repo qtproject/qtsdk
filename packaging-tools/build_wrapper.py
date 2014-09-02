@@ -718,6 +718,13 @@ def handle_qt_android_release_build():
     qt_configure_options_file = os.environ['RELEASE_BUILD_QT_CONFIGURE_OPTIONS_FILE']
     configure_extra_options   = os.environ['EXTRA_QT_CONFIGURE_OPTIONS'] if os.environ.get('EXTRA_QT_CONFIGURE_OPTIONS') else ''
 
+    if LICENSE.lower() == 'enterprise':
+        if not 'alpha' in QT_VERSION_TAG.lower():
+            if bldinstallercommon.is_win_platform():
+                configure_extra_options += ' -D QT_EVAL'
+            else:
+                configure_extra_options += ' -DQT_EVAL'
+
     android_ndk_host          = os.environ['ANDROID_NDK_HOST']
     android_toolchain_version = os.environ['ANDROID_TOOLCHAIN_VERSION']
     android_api_version       = os.environ['ANDROID_API_VERSION']
@@ -757,6 +764,10 @@ def handle_qt_ios_release_build():
     qt_configure_options_file = os.environ['RELEASE_BUILD_QT_CONFIGURE_OPTIONS_FILE']
     configure_extra_options   = os.environ['EXTRA_QT_CONFIGURE_OPTIONS'] if os.environ.get('EXTRA_QT_CONFIGURE_OPTIONS') else ''
 
+    if LICENSE.lower() == 'enterprise':
+        if not 'alpha' in QT_VERSION_TAG.lower():
+            configure_extra_options += ' -DQT_EVAL'
+
     if bldinstallercommon.is_mac_platform():
         if TARGET_ENV.find("x64") >= 1:
             cmd_args = ['python', '-u', script_path, '-u', source_url + '.tar.gz', '-c', configure_files_path + qt_configure_options_file, '-a', configure_extra_options + ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
@@ -774,6 +785,14 @@ def handle_qt_qnx6_release_build():
 
     qt_configure_options_file = os.environ['RELEASE_BUILD_QT_CONFIGURE_OPTIONS_FILE']
     configure_extra_options   = os.environ['EXTRA_QT_CONFIGURE_OPTIONS'] if os.environ.get('EXTRA_QT_CONFIGURE_OPTIONS') else ''
+
+    if LICENSE.lower() == 'enterprise':
+        if not 'alpha' in QT_VERSION_TAG.lower():
+            if bldinstallercommon.is_win_platform():
+                configure_extra_options += ' -D QT_EVAL'
+            else:
+                configure_extra_options += ' -DQT_EVAL'
+
     extension = '.tar.gz'
     if bldinstallercommon.is_win_platform():
         extension = '.zip'
