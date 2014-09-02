@@ -591,6 +591,9 @@ def set_config_xml():
     fileslist = [config_template_dest]
     bldinstallercommon.replace_in_files(fileslist, SDK_VERSION_NUM_TAG, INSTALLER_NAMING_SCHEME_VERSION_NUM)
     bldinstallercommon.replace_in_files(fileslist, UPDATE_REPOSITORY_URL_TAG, update_repository_url)
+    # substitute values also from global substitution list
+    for item in KEY_SUBSTITUTION_LIST:
+        bldinstallercommon.replace_in_files(fileslist, item[0], item[1])
 
 
 ##############################################################

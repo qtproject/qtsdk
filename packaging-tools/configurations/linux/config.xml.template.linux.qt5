@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <Installer>
-    <Name>Qt 5.3.2</Name>
-    <Version>5.3.2</Version>
-    <Title>Qt 5.3.2</Title>
+    <Name>Qt @QT_VERSION@</Name>
+    <Version>@QT_VERSION@</Version>
+    <Title>Qt @QT_VERSION@</Title>
     <Publisher>Digia Plc</Publisher>
     <Logo>logo.png</Logo>
     <InstallerWindowIcon>logo-small</InstallerWindowIcon>
     <InstallerApplicationIcon>logo-small</InstallerApplicationIcon>
     <Watermark>watermark.png</Watermark>
-    <StartMenuDir>Qt 5.3.2</StartMenuDir>
+    <StartMenuDir>Qt @QT_VERSION@</StartMenuDir>
     <ProductUrl>http://qt-project.org/</ProductUrl>
     <!--<Background>background.png</Background>-->
     <UninstallerName>MaintenanceTool</UninstallerName>
@@ -19,6 +19,6 @@
         </Repository>
     </RemoteRepositories>-->
     <!-- @homeDir@ and @rootDir@ are some of the supported vars -->
-    <TargetDir>@homeDir@/Qt5.3.2</TargetDir>
-    <AdminTargetDir>/opt/Qt5.3.2</AdminTargetDir>
+    <TargetDir>@homeDir@/Qt@QT_VERSION@</TargetDir>
+    <AdminTargetDir>/opt/Qt@QT_VERSION@</AdminTargetDir>
 </Installer>
