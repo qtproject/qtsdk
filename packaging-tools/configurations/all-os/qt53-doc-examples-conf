@@ -45,7 +45,6 @@ archives:               53.doc
 target_install_base:    /Docs/Qt-5.3/
 [53.doc]
 archive_uri:            /qt/@QT_VERSION@/latest/src/doc/qt5_docs.7z
-package_finalize_items: cleanup_doc_directory
 
 [qt.53.examples]
 archives:               53.examples
