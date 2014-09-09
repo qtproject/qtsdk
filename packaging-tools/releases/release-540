@@ -12,7 +12,7 @@ mac-x64:                    installer-framework-build-mac-x64.7z
 
 [release.global]
 version:                    5.4.0
-version_tag:                alpha
+version_tag:                beta
 module_exclude_list:        qt3d, qtdocgallery, qtfeedback, qtjsondb, qtpim, qtqa, qtrepotools, qtsystems
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%,
                             @QT_VERSION_AND_TAG@=%GLOBAL_VERSION_AND_TAG%,
