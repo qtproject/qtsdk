@@ -42,16 +42,19 @@
 // constructor
 function Component()
 {
-    if (installer.value("os") == "win") {
-        component.installerbaseBinaryPath = "@TargetDir@/temp/SDKMaintenanceToolBase.exe";
-    }
-    else if (installer.value("os") == "x11" || installer.value("os") == "mac")
-    {
-        component.installerbaseBinaryPath = "@TargetDir@/.tempSDKMaintenanceTool";
-    }
-    installer.setInstallerBaseBinary(component.installerbaseBinaryPath);
+    installer.installationStarted.connect(this, Component.prototype.onInstallationStarted);
 }
 
+Component.prototype.onInstallationStarted = function()
+{
+    if (component.updateRequested() || component.installationRequested()) {
+        if (installer.value("os") == "win")
+            component.installerbaseBinaryPath = "@TargetDir@/temp/SDKMaintenanceToolBase.exe";
+        else if (installer.value("os") == "x11" || installer.value("os") == "mac")
+            component.installerbaseBinaryPath = "@TargetDir@/.tempSDKMaintenanceTool";
+        installer.setInstallerBaseBinary(component.installerbaseBinaryPath);
+    }
+}
 
 Component.prototype.createOperationsForArchive = function(archive)
 {
