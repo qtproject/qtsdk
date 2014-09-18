@@ -713,13 +713,13 @@ def handle_qt_android_release_build():
     cmd_args = ''
     script_path = os.path.join(SCRIPT_ROOT_DIR, 'mkqt5bld.py')
     source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
-    configure_files_path = os.path.join(SCRIPT_ROOT_DIR, '')
 
-    qt_configure_options_file = get_configuration_options()
-    if not qt_configure_options_file:
-        print('*** No valid configutation found!')
+    qt_configure_options_file = get_qt_configuration_options()
+    if not os.path.isfile(qt_configure_options_file):
+        print('*** No valid qt configutation file found!')
         sys.exit(-1)
-    configure_extra_options   = os.environ['EXTRA_QT_CONFIGURE_OPTIONS'] if os.environ.get('EXTRA_QT_CONFIGURE_OPTIONS') else ''
+
+    configure_extra_options = os.environ['EXTRA_QT_CONFIGURE_OPTIONS'] if os.environ.get('EXTRA_QT_CONFIGURE_OPTIONS') else ''
 
     if LICENSE.lower() == 'enterprise':
         if not 'alpha' in QT_VERSION_TAG.lower():
@@ -740,7 +740,7 @@ def handle_qt_android_release_build():
     cmd_args = ['python', '-u', script_path, '-u', source_url + extension]
     if bldinstallercommon.is_win_platform():
         cmd_args += ['-m', 'mingw32-make']
-    cmd_args += ['-c', configure_files_path + qt_configure_options_file]
+    cmd_args += ['-c', qt_configure_options_file]
     cmd_args += ['--android-ndk-host=' + android_ndk_host]          # "linux-x86" or "linux-x86_64" or "windows" or "darwin-x86_64"
     cmd_args += ['--android-api-version=' + android_api_version]    # e.g. "android-10"
     cmd_args += ['--android-sdk-home=' + android_sdk_home]          # e.g. "/opt/android/sdk"
@@ -762,12 +762,12 @@ def handle_qt_ios_release_build():
     cmd_args = ''
     script_path = os.path.join(SCRIPT_ROOT_DIR, 'mkqt5bld.py')
     source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
-    configure_files_path = os.path.join(SCRIPT_ROOT_DIR, '')
 
-    qt_configure_options_file = get_configuration_options()
-    if not qt_configure_options_file:
-        print('*** No valid configutation found!')
+    qt_configure_options_file = get_qt_configuration_options()
+    if not os.path.isfile(qt_configure_options_file):
+        print('*** No valid qt configutation file found!')
         sys.exit(-1)
+
     configure_extra_options   = os.environ['EXTRA_QT_CONFIGURE_OPTIONS'] if os.environ.get('EXTRA_QT_CONFIGURE_OPTIONS') else ''
 
     if LICENSE.lower() == 'enterprise':
@@ -776,7 +776,7 @@ def handle_qt_ios_release_build():
 
     if bldinstallercommon.is_mac_platform():
         if TARGET_ENV.find("x64") >= 1:
-            cmd_args = ['python', '-u', script_path, '-u', source_url + '.tar.gz', '-c', configure_files_path + qt_configure_options_file, '-a', configure_extra_options + ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
+            cmd_args = ['python', '-u', script_path, '-u', source_url + '.tar.gz', '-c', qt_configure_options_file, '-a', configure_extra_options + ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)]
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
 
 
@@ -787,12 +787,12 @@ def handle_qt_qnx6_release_build():
     cmd_args = ''
     script_path = os.path.join(SCRIPT_ROOT_DIR, 'mkqt5bld.py')
     source_url = SRC_URL + '/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
-    configure_files_path = os.path.join(SCRIPT_ROOT_DIR, '')
 
-    qt_configure_options_file = get_configuration_options()
-    if not qt_configure_options_file:
-        print('*** No valid configutation found!')
+    qt_configure_options_file = get_qt_configuration_options()
+    if not os.path.isfile(qt_configure_options_file):
+        print('*** No valid qt configutation file found!')
         sys.exit(-1)
+
     configure_extra_options   = os.environ['EXTRA_QT_CONFIGURE_OPTIONS'] if os.environ.get('EXTRA_QT_CONFIGURE_OPTIONS') else ''
 
     if LICENSE.lower() == 'enterprise':
@@ -809,7 +809,7 @@ def handle_qt_qnx6_release_build():
     cmd_args = ['python', '-u', script_path, '-u', source_url + extension]
     if bldinstallercommon.is_win_platform():
         cmd_args += ['-m', 'mingw32-make']
-    cmd_args += ['-c', configure_files_path + qt_configure_options_file]
+    cmd_args += ['-c', qt_configure_options_file]
     cmd_args += ['-a', configure_extra_options + ' -prefix ' + os.path.join(WORK_DIR,  MAKE_INSTALL_PADDING)]
     if bldinstallercommon.is_linux_platform():
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
@@ -820,15 +820,15 @@ def handle_qt_qnx6_release_build():
 ###############################
 # Get configuration options
 ###############################
-def get_configuration_options():
+def get_qt_configuration_options():
     tmp = ''
-    tmp_conf = ''
     qt_configure_options_file = os.environ['RELEASE_BUILD_QT_CONFIGURE_OPTIONS_FILE']
     target_env = os.environ['TARGET_ENV']
     # parse qt configuration arguments from release description file
     if not os.path.isfile(qt_configure_options_file):
         print('*** Not a valid release description file: {0}'.format(qt_configure_options_file))
         sys.exit(-1)
+    tmp_conf = os.path.dirname(qt_configure_options_file)
     parser = ConfigParser.ConfigParser()
     parser.readfp(open(qt_configure_options_file))
     # parse
@@ -840,7 +840,7 @@ def get_configuration_options():
         tmp = bldinstallercommon.safe_config_key_fetch(parser, s, 'configure_options')
         label_list = build_node_labels.split(',')
         if target_env in label_list:
-            tmp_conf = 'tmp' + str(random.randint(1,1000))
+            tmp_conf += 'tmp' + str(random.randint(1, 1000))
             break
     if not tmp:
         print('*** No valid configuration for {0} found'.format(target_env))
@@ -878,11 +878,10 @@ def handle_qt_desktop_release_build():
     ## let's build Qt
     # some common variables
     source_url = SRC_URL + '/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
-    configure_files_path = os.path.join(SCRIPT_ROOT_DIR, '')
 
-    qt_configure_options_file = get_configuration_options()
-    if not qt_configure_options_file:
-        print('*** No valid configutation found!')
+    qt_configure_options_file = get_qt_configuration_options()
+    if not os.path.isfile(qt_configure_options_file):
+        print('*** No valid qt configutation file found!')
         sys.exit(-1)
 
     ## common cmd_args for all platforms
@@ -910,14 +909,12 @@ def handle_qt_desktop_release_build():
     # run mkqt5bld.py with the correct options according to the platform and license being used
     if bldinstallercommon.is_linux_platform():
         icu_lib_prefix_rpath = icu_lib_path + ' -I ' + icu_include_path + ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING) + ' -R ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)
-        qt5BuildOptions.configure_options = configure_files_path + qt_configure_options_file
         ext_args += ' -L ' + icu_lib_prefix_rpath
     elif bldinstallercommon.is_win_platform():
-        qt5BuildOptions.configure_options = configure_files_path + qt_configure_options_file
         ext_args += ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)
     elif bldinstallercommon.is_mac_platform():
-        qt5BuildOptions.configure_options = configure_files_path + qt_configure_options_file
         ext_args += ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)
+    qt5BuildOptions.configure_options = qt_configure_options_file
     qt5BuildOptions.add_configure_option = ext_args
     mkqt5bld.QT_BUILD_OPTIONS = qt5BuildOptions
     mkqt5bld.main_call_parameters()
