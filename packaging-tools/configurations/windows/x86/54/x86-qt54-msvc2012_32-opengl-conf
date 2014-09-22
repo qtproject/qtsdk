@@ -1,0 +1,57 @@
+#############################################################################
+##
+## Copyright (C) 2014 Digia Plc and/or its subsidiary(-ies).
+## Contact: http://www.qt-project.org/legal
+##
+## This file is part of the release tools of the Qt Toolkit.
+##
+## $QT_BEGIN_LICENSE:LGPL$
+## Commercial License Usage
+## Licensees holding valid commercial Qt licenses may use this file in
+## accordance with the commercial license agreement provided with the
+## Software or, alternatively, in accordance with the terms contained in
+## a written agreement between you and Digia.  For licensing terms and
+## conditions see http://qt.digia.com/licensing.  For further information
+## use the contact form at http://qt.digia.com/contact-us.
+##
+## GNU Lesser General Public License Usage
+## Alternatively, this file may be used under the terms of the GNU Lesser
+## General Public License version 2.1 as published by the Free Software
+## Foundation and appearing in the file LICENSE.LGPL included in the
+## packaging of this file.  Please review the following information to
+## ensure the GNU Lesser General Public License version 2.1 requirements
+## will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+##
+## In addition, as a special exception, Digia gives you certain additional
+## rights.  These rights are described in the Digia Qt LGPL Exception
+## version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
+##
+## GNU General Public License Usage
+## Alternatively, this file may be used under the terms of the GNU
+## General Public License version 3.0 as published by the Free Software
+## Foundation and appearing in the file LICENSE.GPL included in the
+## packaging of this file.  Please review the following information to
+## ensure the GNU General Public License version 3.0 requirements will be
+## met: http://www.gnu.org/copyleft/gpl.html.
+##
+##
+## $QT_END_LICENSE$
+##
+#############################################################################
+
+
+[qt.54.win32_msvc2012_opengl]
+archives:               54.win32_msvc2012_opengl.essentials,
+                        54.win32_msvc2012_opengl.addons,
+                        54.win32_msvc2012_opengl.icu_531_release.win_32
+target_install_base:    /5.4/msvc2012_opengl
+[54.win32_msvc2012_opengl.essentials]
+archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2012_32_opengl/qt5_essentials.7z
+package_finalize_items: delete_doc_directory
+[54.win32_msvc2012_opengl.addons]
+archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2012_32_opengl/qt5_addons.7z
+package_finalize_items: delete_doc_directory
+[54.win32_msvc2012_opengl.icu_531_release.win_32]
+archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/msvc2012/icu_53_1_msvc_2012_32.7z
+target_install_dir:     /bin
+

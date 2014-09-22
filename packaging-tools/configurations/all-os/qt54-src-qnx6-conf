@@ -1,0 +1,141 @@
+#############################################################################
+##
+## Copyright (C) 2014 Digia Plc and/or its subsidiary(-ies).
+## Copyright (C) 2014 BlackBerry Limited. All rights reserved.
+## Contact: http://www.qt-project.org/legal
+##
+## This file is part of the release tools of the Qt Toolkit.
+##
+## $QT_BEGIN_LICENSE:LGPL$
+## Commercial License Usage
+## Licensees holding valid commercial Qt licenses may use this file in
+## accordance with the commercial license agreement provided with the
+## Software or, alternatively, in accordance with the terms contained in
+## a written agreement between you and Digia.  For licensing terms and
+## conditions see http://qt.digia.com/licensing.  For further information
+## use the contact form at http://qt.digia.com/contact-us.
+##
+## GNU Lesser General Public License Usage
+## Alternatively, this file may be used under the terms of the GNU Lesser
+## General Public License version 2.1 as published by the Free Software
+## Foundation and appearing in the file LICENSE.LGPL included in the
+## packaging of this file.  Please review the following information to
+## ensure the GNU Lesser General Public License version 2.1 requirements
+## will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+##
+## In addition, as a special exception, Digia gives you certain additional
+## rights.  These rights are described in the Digia Qt LGPL Exception
+## version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
+##
+## GNU General Public License Usage
+## Alternatively, this file may be used under the terms of the GNU
+## General Public License version 3.0 as published by the Free Software
+## Foundation and appearing in the file LICENSE.GPL included in the
+## packaging of this file.  Please review the following information to
+## ensure the GNU General Public License version 3.0 requirements will be
+## met: http://www.gnu.org/copyleft/gpl.html.
+##
+##
+## $QT_END_LICENSE$
+##
+#############################################################################
+
+
+[qt.54]
+
+[qt.54.src]
+
+
+#################################
+## Essentials
+#################################
+
+[qt.54.src.essentials]
+archives:               src.qt5, src.essentials.qtbase, src.essentials.qtdeclarative, src.essentials.qtdoc, src.essentials.qtscript, src.essentials.qttools, src.essentials.qtxmlpatterns, src.essentials.qtmultimedia, src.essentials.qtquickcontrols
+target_install_base:    /5.4/Src/
+[src.qt5]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qt5-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /
+[src.essentials.qtbase]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtbase-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qtbase
+[src.essentials.qtdeclarative]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtdeclarative-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qtdeclarative
+[src.essentials.qtdoc]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtdoc-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qtdoc
+[src.essentials.qtscript]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtscript-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qtscript
+[src.essentials.qttools]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qttools-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qttools
+[src.essentials.qtxmlpatterns]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtxmlpatterns-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qtxmlpatterns
+[src.essentials.qtmultimedia]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtmultimedia-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qtmultimedia
+[src.essentials.qtquickcontrols]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtquickcontrols-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qtquickcontrols
+
+
+
+#################################
+## Add-Ons
+#################################
+
+[qt.54.src.addons]
+
+[qt.54.src.addons.qtgraphicaleffects]
+archives:               src.addons.qtgraphicaleffects
+target_install_base:    /5.4/Src/qtgraphicaleffects
+[src.addons.qtgraphicaleffects]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtgraphicaleffects-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.54.src.addons.qtimageformats]
+archives:               src.addons.qtimageformats
+target_install_base:    /5.4/Src/qtimageformats
+[src.addons.qtimageformats]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtimageformats-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.54.src.addons.qtlocation]
+archives:               src.addons.qtlocation
+target_install_base:    /5.4/Src/qtlocation
+[src.addons.qtlocation]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtlocation-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.54.src.addons.qtsvg]
+archives:               src.addons.qtsvg
+target_install_base:    /5.4/Src/qtsvg
+[src.addons.qtsvg]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtsvg-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.54.src.addons.qttranslations]
+archives:               src.addons.qttranslations
+target_install_base:    /5.4/Src/qttranslations
+[src.addons.qttranslations]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qttranslations-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.54.src.addons.qtsensors]
+archives:               src.addons.qtsensors
+target_install_base:    /5.4/Src/qtsensors
+[src.addons.qtsensors]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtsensors-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1

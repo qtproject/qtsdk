@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>qtwebsockets</DisplayName>
+    <Description>Qt 5.4.0 Add-Ons Qt Web Sockets Source Component</Description>
+    <Version>5.4.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Script>installscript.qs</Script>   <!-- File name of a script being loaded - optional. -->
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+

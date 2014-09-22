@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Windows Runtime 8.1 x64 (MSVC2013)</DisplayName>
+    <Description>Qt 5.4.0 Prebuilt Components for Windows Runtime</Description>
+    <Version>5.4.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Dependencies>qt.tools.qtcreator, qt.tools.vcredist</Dependencies>
+    <Default>true</Default>
+    <Script>installscript.qs</Script>
+    <SortingPriority>530</SortingPriority>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+
