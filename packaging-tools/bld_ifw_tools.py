@@ -93,9 +93,9 @@ class IfwOptions:
                  qt_installer_framework_qmake_args,
                  product_key_checker_url,
                  product_key_checker_branch,
-                 openssl_dir):
-        self.development_mode                           = False
-        self.incremental_mode                           = False
+                 openssl_dir,
+                 incremental_build):
+        self.incremental_mode                           = incremental_build
         self.qt_source_dir                              = os.path.normpath(ROOT_DIR + os.sep + 'qt-src')
         self.qt_build_dir                               = os.path.normpath(ROOT_DIR + os.sep + 'qt-bld')
         self.installer_framework_source_dir             = os.path.normpath(ROOT_DIR + os.sep + 'ifw-src')
@@ -195,6 +195,7 @@ def setup_argument_parser():
     parser.add_argument('--product_key_checker_branch', help="Git branch for enterprise product key checker", required=False)
     parser.add_argument('--openssl_dir', help="Path where it can find the openssl installation(libs, includes) on windows.", required=False, default='C:\\OpenSSL')
     parser.add_argument('--debug', help="Build the ifw in debug mode", action='store_true', required=False, default=False)
+    parser.add_argument('--incremental', help="Build the ifw in incremental mode", action='store_true', required=False, default=False)
     return parser
 
 
@@ -223,19 +224,13 @@ def build_ifw(options):
     if bldinstallercommon.is_mac_platform():
         archive_nib(options)
         archive_macdeployqt(options)
-    if options.development_mode:
-        return os.path.basename(options.installer_framework_build_dir)
-    else:
-        return ''
+    os.path.basename(options.installer_framework_build_dir)
 
 
 ###############################
 # function
 ###############################
 def prepare_qt_sources(options):
-    if options.development_mode:
-        if os.path.exists(options.qt_source_dir):
-            return
     if options.incremental_mode and os.path.exists(options.qt_source_dir):
         return
     print('--------------------------------------------------------------------')
@@ -267,11 +262,12 @@ def prepare_qt_sources(options):
 # function
 ###############################
 def build_qt(options):
-    if options.development_mode:
-        if os.path.exists(options.qt_build_dir):
+    if options.incremental_mode:
+        qmake_bin = os.path.join(options.qt_build_dir, 'bin', options.qt_qmake_bin)
+        qt_lib_dir = os.path.join(options.qt_build_dir, 'lib')
+        if os.path.isfile(qmake_bin) and os.path.isdir(qt_lib_dir):
             return
-    if options.incremental_mode and os.path.exists(options.qt_build_dir):
-        return
+
     bldinstallercommon.create_dirs(options.qt_build_dir)
     # configure first
     print('--------------------------------------------------------------------')
@@ -291,9 +287,6 @@ def build_qt(options):
 # function
 ###############################
 def prepare_installer_framework(options):
-    if options.development_mode:
-        if os.path.exists(options.installer_framework_source_dir):
-            return
     if options.incremental_mode and os.path.exists(options.installer_framework_source_dir):
         return
     print('--------------------------------------------------------------------')
@@ -309,9 +302,6 @@ def prepare_installer_framework(options):
 def prepare_product_key_checker(options):
     if not (options.product_key_checker_url and options.product_key_checker_branch):
         return
-    if options.development_mode:
-        if os.path.exists(options.product_key_checker_source_dir):
-            return
     if options.incremental_mode and os.path.exists(options.product_key_checker_source_dir):
         return
     print('--------------------------------------------------------------------')
@@ -327,10 +317,10 @@ def prepare_product_key_checker(options):
 ###############################
 def build_installer_framework(options):
     if options.incremental_mode:
-        print('INCREMENTAL_MODE')
-        print(options.installer_framework_build_dir)
-        if os.path.exists(os.path.join(options.installer_framework_build_dir, 'bin', 'installerbase.exe')):
-            print('exists')
+        file_to_check = os.path.join(options.installer_framework_build_dir, 'bin', 'installerbase')
+        if bldinstallercommon.is_win_platform():
+            file_to_check += '.exe'
+        if os.path.exists(file_to_check):
             return
     print('--------------------------------------------------------------------')
     print('Building Installer Framework')
@@ -354,37 +344,34 @@ def build_installer_framework(options):
 # function
 ###############################
 def clean_build_environment(options):
-    if options.development_mode or options.incremental_mode:
-        return
-    # delete existing stuff if exists
-    if os.path.exists(options.installer_framework_source_dir):
-        bldinstallercommon.remove_tree(options.installer_framework_source_dir)
+    if os.path.isfile(options.installer_framework_archive_name):
+        os.remove(options.installer_framework_archive_name)
+    if os.path.exists(options.build_artifacts_dir):
+        bldinstallercommon.remove_tree(options.build_artifacts_dir)
+    bldinstallercommon.create_dirs(options.build_artifacts_dir)
     if os.path.exists(options.installer_framework_build_dir):
         bldinstallercommon.remove_tree(options.installer_framework_build_dir)
+
+    if options.incremental_mode:
+        return
+
+    if os.path.exists(options.installer_framework_source_dir):
+        bldinstallercommon.remove_tree(options.installer_framework_source_dir)
     if os.path.exists(options.qt_source_dir):
         bldinstallercommon.remove_tree(options.qt_source_dir)
     if os.path.exists(options.qt_build_dir):
         bldinstallercommon.remove_tree(options.qt_build_dir)
-    if os.path.isfile(options.installer_framework_archive_name):
-        os.remove(options.installer_framework_archive_name)
     if os.path.isfile(options.qt_source_package_uri_saveas):
         os.remove(options.qt_source_package_uri_saveas)
-    if os.path.exists(options.build_artifacts_dir):
-        bldinstallercommon.remove_tree(options.build_artifacts_dir)
     if os.path.exists(options.product_key_checker_source_dir):
         bldinstallercommon.remove_tree(options.product_key_checker_source_dir)
-    # create build artifacts directory
-    bldinstallercommon.create_dirs(options.build_artifacts_dir)
+
 
 
 ###############################
 # function
 ###############################
 def archive_installer_framework(options):
-    if options.development_mode or options.incremental_mode:
-        return
-    if options.incremental_mode and os.path.isfile(options.installer_framework_archive_name):
-        return
     print('--------------------------------------------------------------------')
     print('Archive Installer Framework')
     # first strip out all unnecessary files
@@ -401,10 +388,6 @@ def archive_installer_framework(options):
 # function
 ###############################
 def archive_installerbase(options):
-    if options.development_mode:
-        return
-    if options.incremental_mode and os.path.isfile(options.installer_base_archive_name):
-        return
     print('--------------------------------------------------------------------')
     print('Archive Installerbase')
     cmd_args_archive = []
@@ -486,7 +469,8 @@ if __name__ == "__main__":
                          ifw_qmake_args,
                          CALLER_ARGUMENTS.product_key_checker_url,
                          CALLER_ARGUMENTS.product_key_checker_branch,
-                         CALLER_ARGUMENTS.openssl_dir
+                         CALLER_ARGUMENTS.openssl_dir,
+                         CALLER_ARGUMENTS.incremental
                         )
     # build ifw tools
     build_ifw(OPTIONS)
