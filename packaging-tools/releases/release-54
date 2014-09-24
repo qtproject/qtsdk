@@ -47,15 +47,15 @@ build_node_labels:      win-msvc2010-Windows7-x86_ANGLE, win32-msvc2010_Windows_
 configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -angle -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -plugin-sql-odbc -openssl
 
 [release.qt.configure_options.windows_opengl]
-build_node_labels:      win-msvc2012-Windows8.1-x86_OpenGL, win-msvc2013-Windows8.1-x86_OpenGL, win-msvc2013-Windows8.1-x64_OpenGL, win-MinGW4.8.2-Windows7-x86_OpenGL, win-MinGW4.8.2-Windows7-x64_OpenGL
+build_node_labels:      win-msvc2010-Windows7-x86_OpenGL, win-msvc2012-Windows8.1-x86_OpenGL, win-msvc2013-Windows8.1-x86_OpenGL, win-msvc2013-Windows8.1-x64_OpenGL, win-MinGW4.8.2-Windows7-x86_OpenGL, win-MinGW4.8.2-Windows7-x64_OpenGL
 configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -opengl desktop -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -plugin-sql-odbc -openssl
 
 [release.qt.configure_options.winphone8_arm]
-build_node_labels:      win-msvc2013-Windows8.1-x64_Winphone8_arm
+build_node_labels:      win-msvc2013-Windows8.1-x64_Winphone81_arm
 configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -xplatform winphone-arm-msvc2013
 
 [release.qt.configure_options.winphone8_x86]
-build_node_labels:      win-msvc2013-Windows8.1-x64_Winphone8_x86
+build_node_labels:      win-msvc2013-Windows8.1-x64_Winphone81_x86
 configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -xplatform winphone-x86-msvc2013
 
 [release.qt.configure_options.winrt]
