@@ -44,7 +44,8 @@
 archives:               54.win64_msvc2013_64.essentials,
                         54.win64_msvc2013_64.addons,
                         54.win64_msvc2013_64.icu_531_release.win_64,
-                        54.win64_msvc2013_64.d3d_compiler_47.x64
+                        54.win64_msvc2013_64.d3d_compiler_47.x64,
+                        54.win64_msvc2013.opengl32sw.x64
 target_install_base:    /5.4/msvc2013_64
 [54.win64_msvc2013_64.essentials]
 archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2013_64/qt5_essentials.7z
@@ -57,5 +58,8 @@ archive_uri:            http://download.qt-project.org/development_releases/preb
 target_install_dir:     /bin
 [54.win64_msvc2013_64.d3d_compiler_47.x64]
 archive_uri:            http://download.qt-project.org/development_releases/prebuilt/d3dcompiler/msvc2013/d3dcompiler_47-x64.7z
+target_install_dir:     /bin
+[54.win64_msvc2013.opengl32sw.x64]
+archive_uri:            http://download.qt-project.org/development_releases/prebuilt/llvmpipe/windows/opengl32sw-64.7z
 target_install_dir:     /bin
 
