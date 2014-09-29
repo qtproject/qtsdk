@@ -273,6 +273,9 @@ qmakeCommandArguments = "-r {0} QTC_PREFIX={1} DEFINES+=IDE_REVISION={2} CONFIG+
 # hack to ensure plugins depending on declarative are also compiled with 2.7.0/5.0.1
 qmakeCommandArguments += " QT_CONFIG+=declarative"
 
+if sys.platform == "darwin":
+    qmakeCommandArguments += " QMAKE_MAC_SDK=macosx" # work around QTBUG-41238
+
 if callerArguments.versiondescription:
     qmakeCommandArguments += " DEFINES+=IDE_VERSION_DESCRIPTION={0}".format(callerArguments.versiondescription)
 
