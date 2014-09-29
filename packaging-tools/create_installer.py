@@ -981,7 +981,7 @@ def cleanup_docs(install_dir):
     # populate subdirectory list from under /doc
     for name in os.listdir(install_dir):
         dir_name = os.path.join(install_dir, name)
-        if os.path.isdir(dir_name):
+        if os.path.isdir(dir_name) and "global" not in dir_name:
             submodule_list.append(dir_name)
     # iterate list
     dirs_to_delete = ['images', 'scripts', 'style', 'template', 'externalsites']
