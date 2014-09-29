@@ -79,7 +79,7 @@ class IfwOptions:
         default_qt_source_package_uri           = 'http://download.qt-project.org/development_releases/prebuilt/qt-src-for-ifw/qt-everywhere-opensource-src-4.8.6-ifw-patch.zip'
     default_qt_source_package_uri_saveas        = ROOT_DIR + os.sep + os.path.basename(default_qt_source_package_uri)
     default_qt_configure_options_linux          = '-silent -nomake plugins -qt-zlib -qt-libtiff -qt-libpng -qt-libmng -qt-libjpeg -no-svg -no-nis -no-cups -no-audio-backend -no-glib -no-gtkstyle -openssl'
-    default_qt_configure_options_mac            = '-silent -nomake plugins -qt-zlib -qt-libtiff -qt-libpng -qt-libmng -qt-libjpeg -no-svg -no-nis -no-cups -no-audio-backend -openssl'
+    default_qt_configure_options_mac            = '-silent -nomake plugins -qt-zlib -qt-libtiff -qt-libpng -qt-libmng -qt-libjpeg -no-svg -no-nis -no-cups -no-audio-backend -openssl -no-pch  -platform unsupported/macx-clang'
     default_qt_configure_options_windows        = '-openssl-linked OPENSSL_LIBS="-lssleay32MD -llibeay32MD -lcrypt32"'
     default_qt_installer_framework_url          = 'git://gitorious.org/installer-framework/installer-framework.git'
     default_qt_installer_framework_branch       = '1.5'
