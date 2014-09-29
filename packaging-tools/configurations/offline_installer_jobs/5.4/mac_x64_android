@@ -47,6 +47,7 @@ identifier:             mac
 
 [PackageConfigurationFiles]
 file_list:              qt-conf,
+                        qt-licenses,
                         qt54-src-conf,
                         qt54-doc-examples-conf,
                         x86_64-qt54-clang-conf,

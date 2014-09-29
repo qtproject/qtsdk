@@ -39,31 +39,12 @@
 ##
 #############################################################################
 
-[PackageNamespace]
-name:                   qt
+[qt.license.lgplv2]
+archives:               softwarelisting3rdparty
+target_install_base:    /Licenses
+[softwarelisting3rdparty]
+archive_uri:            ThirdPartySoftware_Listing.txt
+package_strip_dirs:     0
+target_install_dir:     /
 
-[PlatformIdentifier]
-identifier:             mac
-
-[PackageConfigurationFiles]
-file_list:              qt-conf,
-                        qt-licenses,
-                        qt54-src-conf,
-                        qt54-doc-examples-conf,
-                        x86_64-qt54-clang-conf,
-                        ios-x64-qt54-conf,
-                        x86_64-tools-qtcreator-conf,
-                        installer-readme-conf
-
-[qtmenunib]
-package_url:            http://download.qt-project.org/development_releases/prebuilt/mac/qt_menu.nib.7z
-
-[ConfigDir]
-template_name:          config_qt5
-
-[ConfigXml]
-template_name:          config.xml.template.mac.qt5
-
-[PackageTemplates]
-template_dirs:          pkg_54, pkg_tools
-
+[qt.license.lgplv3]

@@ -47,6 +47,7 @@ identifier:             linux
 
 [PackageConfigurationFiles]
 file_list:              qt-conf,
+                        qt-licenses,
                         qt53-src-conf,
                         qt53-doc-examples-conf,
                         x86-qt53-gcc-conf,

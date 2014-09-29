@@ -2,10 +2,10 @@
 <Package>
     <DisplayName>Qt 5.4</DisplayName>
     <Description>Qt 5.4.0</Description>
-    <Version>5.4.0</Version>
+    <Version>5.4.0-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Script>installscript.qs</Script>
-    <Dependencies>qt.54.doc, qt.54.examples</Dependencies>
+    <Dependencies>qt.54.doc, qt.54.examples, qt.license.lgplv3</Dependencies>
     <SortingPriority>540</SortingPriority>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>

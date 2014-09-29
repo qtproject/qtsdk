@@ -47,6 +47,7 @@ identifier:             windows
 
 [PackageConfigurationFiles]
 file_list:              qt-conf,
+                        qt-licenses,
                         qt53-src-conf,
                         qt53-doc-examples-conf,
                         x86-qt53-msvc2013_32-opengl-conf,
