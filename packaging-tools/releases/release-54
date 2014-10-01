@@ -62,14 +62,6 @@ configure_options:      -opensource -confirm-license -debug-and-release -release
 build_node_labels:      win-msvc2013-Windows8.1-x64_WinRT
 configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -xplatform winrt-x64-msvc2013
 
-[release.qt.configure_options.qnx6_armv7]
-build_node_labels:      linux-g++-Ubuntu11.10-x86_QNX-armv7, linux-g++-Ubuntu11.10-x64_QNX-armv7, win-MinGW4.8-Windows7-x86_QNX-armv7
-configure_options:      -opensource -confirm-license -release -xplatform qnx-armle-v7-qcc -opengl es2 -nomake examples -nomake tests -nomake tools -qt-sql-sqlite -system-sqlite -system-proxies -iconv -largefile -shared -no-cups -no-sql-db2 -no-sql-ibase -no-sql-mysql -no-sql-oci -no-sql-odbc -no-sql-psql -no-sql-sqlite2 -no-sql-tds -openssl-linked
-
-[release.qt.configure_options.qnx6_x86]
-build_node_labels:      linux-g++-Ubuntu11.10-x86_QNX-x86, linux-g++-Ubuntu11.10-x64_QNX-x86, win-MinGW4.8-Windows7-x86_QNX-x86
-configure_options:      -opensource -confirm-license -release -xplatform qnx-x86-qcc -opengl es2 -nomake examples -nomake tests -nomake tools -qt-sql-sqlite -system-sqlite -system-proxies -iconv -largefile -shared -no-cups -no-sql-db2 -no-sql-ibase -no-sql-mysql -no-sql-oci -no-sql-odbc -no-sql-psql -no-sql-sqlite2 -no-sql-tds -openssl-linked
-
 ################################################################################
 ## Linux offline
 ################################################################################

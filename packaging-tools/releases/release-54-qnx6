@@ -1,0 +1,50 @@
+# Define release content
+
+
+################################################################################
+## Global defines
+################################################################################
+[ifwtools]
+windows-x86:                installer-framework-build-win-x86.7z
+linux-x86:                  installer-framework-build-linux-x86.7z
+linux-x64:                  installer-framework-build-linux-x64.7z
+
+[release.global]
+version:                    5.4.0
+version_tag:                beta
+module_exclude_list:        qt3d, qtactiveqt, qtandroidextras, qtconnectivity, qtdocgallery, qtenginio, qtfeedback, qtjsondb, qtmacextras, qtpim, qtqa, qtquick1, qtrepotools, qtserialport, qtsystems, qtwayland, qtwebchannel, qtwebengine, qtwebkit, qtwebkit-examples, qtwebsockets, qtwinextras, qtx11extras
+arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%,
+                            @QT_VERSION_AND_TAG@=%GLOBAL_VERSION_AND_TAG%,
+                            @QT_INSTALL_DIR_NAME@=5.4
+
+[release.qt.configure_options.qnx6_armv7]
+build_node_labels:      linux-g++-Ubuntu11.10-x86_QNX-armv7, linux-g++-Ubuntu11.10-x64_QNX-armv7, win-MinGW4.8-Windows7-x86_QNX-armv7
+configure_options:      -opensource -confirm-license -release -xplatform qnx-armle-v7-qcc -opengl es2 -nomake examples -nomake tests -nomake tools -qt-sql-sqlite -system-sqlite -system-proxies -iconv -largefile -shared -no-cups -no-sql-db2 -no-sql-ibase -no-sql-mysql -no-sql-oci -no-sql-odbc -no-sql-psql -no-sql-sqlite2 -no-sql-tds -openssl-linked
+
+[release.qt.configure_options.qnx6_x86]
+build_node_labels:      linux-g++-Ubuntu11.10-x86_QNX-x86, linux-g++-Ubuntu11.10-x64_QNX-x86, win-MinGW4.8-Windows7-x86_QNX-x86
+configure_options:      -opensource -confirm-license -release -xplatform qnx-x86-qcc -opengl es2 -nomake examples -nomake tests -nomake tools -qt-sql-sqlite -system-sqlite -system-proxies -iconv -largefile -shared -no-cups -no-sql-db2 -no-sql-ibase -no-sql-mysql -no-sql-oci -no-sql-odbc -no-sql-psql -no-sql-sqlite2 -no-sql-tds -openssl-linked
+
+################################################################################
+## Linux offline
+################################################################################
+[release.54.offline.linux.x86.qnx6]
+arg_configurations_file:    offline_installer_jobs/5.4/linux_x86_qnx6
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+installer_name:             qt-opensource-linux-x86-qnx6-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:
+
+[release.54.offline.linux.x64.qnx6]
+arg_configurations_file:    offline_installer_jobs/5.4/linux_x64_qnx6
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+installer_name:             qt-opensource-linux-x64-qnx6-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:
+
+################################################################################
+## Windows offline
+################################################################################
+[release.54.offline.windows.x86.mingw482.qnx6]
+arg_configurations_file:    offline_installer_jobs/5.4/win_x86_mingw482_qnx6
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+installer_name:             qt-opensource-windows-x86-qnx6-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:
