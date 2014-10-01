@@ -68,8 +68,8 @@ function Component()
 changeInstallerLicenseLabels = function()
 {
     page = gui.pageWidgetByObjectName("LicenseAgreementPage");
-    page.AcceptLicenseLabel.setText("I h<u>a</u>ve read and agree to the following terms contained in the license agreements accompanying the " + installer.value("QT_EDITION_NAME")  + " installer and additional items. I agree that my use of the " + installer.value("QT_EDITION_NAME")  + " installer is governed by the terms and conditions contained in these license agreements.");
-    page.RejectLicenseLabel.setText("I <u>d</u>o not accept the terms and conditions of the above listed license agreements. Please note by checking the box, you must cancel the installation or downloading the " + installer.value("QT_EDITION_NAME")  + " and must destroy all copies, or portions thereof, of the " + installer.value("QT_EDITION_NAME")  + " in your possessions.");
+    page.AcceptLicenseLabel.setText("I h<u>a</u>ve read and agree the terms contained in the license agreements.");
+    page.RejectLicenseLabel.setText("I <u>d</u>o not accept the terms and conditions of the above license agreements.");
 }
 
 
