@@ -216,7 +216,7 @@ Component.prototype.createOperations = function()
     if (installer.value("os") == "win") {
         component.addOperation("CreateShortcut",
                                component.qtCreatorBinaryPath,
-                               "@StartMenuDir@\\Qt Creator.lnk",
+                               "@StartMenuDir@\\Qt Creator (Community).lnk",
                                "workingDirectory=" + path + "bin");
 
         registerWindowsFileTypeExtensions();
@@ -229,8 +229,8 @@ Component.prototype.createOperations = function()
     if (installer.value("os") == "x11") {
         component.addOperation("InstallIcons", path + "share" + native_path_separator + "icons" );
         component.addOperation("CreateDesktopEntry",
-                               "DigiaQtOpenSource-qtcreator.desktop",
-                               "Type=Application\nExec=" + component.qtCreatorBinaryPath + "\nName=Qt Creator (Opensource)\nGenericName=The IDE of choice for Qt development.\nIcon=QtProject-qtcreator\nTerminal=false\nCategories=Development;IDE;Qt;\nMimeType=text/x-c++src;text/x-c++hdr;text/x-xsrc;application/x-designer;application/vnd.qt.qmakeprofile;application/vnd.qt.xml.resource;text/x-qml;text/x-qt.qml;text/x-qt.qbs;");
+                               "DigiaQt-qtcreator-community.desktop",
+                               "Type=Application\nExec=" + component.qtCreatorBinaryPath + "\nName=Qt Creator (Community)\nGenericName=The IDE of choice for Qt development.\nIcon=QtProject-qtcreator\nTerminal=false\nCategories=Development;IDE;Qt;\nMimeType=text/x-c++src;text/x-c++hdr;text/x-xsrc;application/x-designer;application/vnd.qt.qmakeprofile;application/vnd.qt.xml.resource;text/x-qml;text/x-qt.qml;text/x-qt.qbs;");
         maintenanceToolPath = installer.value("TargetDir") + "/MaintenanceTool";
     }
     if (installer.value("os") == "mac") {
