@@ -52,8 +52,7 @@ file_list:              qt-conf,
                         qt54-doc-examples-conf,
                         x86-qt54-msvc2013_32-opengl-conf,
                         x86-tools-qtcreator-conf,
-                        x86-tools-vcredist_32-conf,
-                        installer-readme-conf
+                        x86-tools-vcredist_32-conf
 
 [ConfigDir]
 template_name:          config_qt5

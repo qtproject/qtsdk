@@ -54,7 +54,7 @@ base_path:
 packages:
 
 [PackageConfigurationFiles]
-file_list:              installer-readme-conf
+file_list:
 
 [OfflinePackageExcludeList]
 package_list:

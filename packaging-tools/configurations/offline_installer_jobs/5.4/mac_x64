@@ -51,8 +51,7 @@ file_list:              qt-conf,
                         qt54-src-conf,
                         qt54-doc-examples-conf,
                         x86_64-qt54-clang-conf,
-                        x86_64-tools-qtcreator-conf,
-                        installer-readme-conf
+                        x86_64-tools-qtcreator-conf
 
 [qtmenunib]
 package_url:            http://download.qt-project.org/development_releases/prebuilt/mac/qt_menu.nib.7z

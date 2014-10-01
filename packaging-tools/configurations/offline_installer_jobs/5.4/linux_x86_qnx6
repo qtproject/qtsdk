@@ -55,8 +55,7 @@ file_list:              qt-conf,
                         qnx6-x86-qt54-armv7-conf,
                         qnx6-x86-qt54-x86-conf,
                         x86-tools-qtcreator-conf,
-                        installer-qnx6-sdp-conf,
-                        installer-readme-conf
+                        installer-qnx6-sdp-conf
 
 [ConfigDir]
 template_name:          config_qt5
