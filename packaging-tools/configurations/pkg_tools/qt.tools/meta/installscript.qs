@@ -68,7 +68,7 @@ function Component()
 changeInstallerLicenseLabels = function()
 {
     page = gui.pageWidgetByObjectName("LicenseAgreementPage");
-    page.AcceptLicenseLabel.setText("I h<u>a</u>ve read and agree the terms contained in the license agreements.");
+    page.AcceptLicenseLabel.setText("I h<u>a</u>ve read and agree to the terms contained in the license agreements.");
     page.RejectLicenseLabel.setText("I <u>d</u>o not accept the terms and conditions of the above license agreements.");
 }
 
