@@ -122,19 +122,19 @@ patchQtExamplesAndDoc = function(aComponent, aComponentRootPath, aQtInstallation
 
     aComponent.addOperation("Settings",
         "path=" + fileName,
-        "method=add_array_value",
+        "method=set",
         "key=Paths/Prefix",
         "value=..");
 
     aComponent.addOperation("Settings",
         "path=" + fileName,
-        "method=add_array_value",
+        "method=set",
         "key=Paths/Examples",
         "value=../../Examples/" + aQtInstallationName);
 
     aComponent.addOperation("Settings",
         "path=" + fileName,
-        "method=add_array_value",
+        "method=set",
         "key=Paths/Documentation",
         "value=../../Docs/" + aQtInstallationName);
 }
