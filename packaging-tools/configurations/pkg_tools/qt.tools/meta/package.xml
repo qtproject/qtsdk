@@ -2,9 +2,10 @@
 <Package>
     <DisplayName>Tools</DisplayName>
     <Description>IDE, Internationalization, Design and other tools to accelerate development.</Description>
-    <Version>1.0.4</Version>
+    <Version>1.0.5</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Script>installscript.qs</Script>
+    <Dependencies>qt.license.lgplv2</Dependencies>
     <Essential>true</Essential>
     <SortingPriority>40</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
