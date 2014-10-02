@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>Windows Phone 8 x86 (MSVC2013)</DisplayName>
-    <Description>Qt 5.4.0 Prebuilt Components for Windows Phone 8 x86 Emulator</Description>
+    <DisplayName>Windows Phone x86 (MSVC2013)</DisplayName>
+    <Description>Qt 5.4.0 Prebuilt Components for Windows Phone x86 Emulator</Description>
     <Version>5.4.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.tools.qtcreator, qt.tools.vcredist</Dependencies>

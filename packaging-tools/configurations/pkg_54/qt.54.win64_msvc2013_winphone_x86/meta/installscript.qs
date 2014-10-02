@@ -54,22 +54,22 @@ function createShortcuts()
     // Assistant
     component.addOperation( "CreateShortcut",
                             component_root_path + "/bin/assistant.exe",
-                            "@StartMenuDir@/" + qtStringVersion + "/Windows Phone 8 (x86 Emulator) MSVC 2012 (32-bit)/Assistant.lnk");
+                            "@StartMenuDir@/" + qtStringVersion + "/Windows Phone (x86 Emulator) MSVC 2013 (32-bit)/Assistant.lnk");
 
     // Designer
     component.addOperation( "CreateShortcut",
                             component_root_path + "/bin/designer.exe",
-                            "@StartMenuDir@/" + qtStringVersion + "/Windows Phone 8 (x86 Emulator) MSVC 2012 (32-bit)/Designer.lnk");
+                            "@StartMenuDir@/" + qtStringVersion + "/Windows Phone (x86 Emulator) MSVC 2013 (32-bit)/Designer.lnk");
 
     // Linguist
     component.addOperation( "CreateShortcut",
                             component_root_path + "/bin/linguist.exe",
-                            "@StartMenuDir@/" + qtStringVersion + "/Windows Phone 8 (x86 Emulator) MSVC 2012 (32-bit)/Linguist.lnk");
+                            "@StartMenuDir@/" + qtStringVersion + "/Windows Phone (x86 Emulator) MSVC 2013 (32-bit)/Linguist.lnk");
 
     // qtd3dservice
     component.addOperation( "CreateShortcut",
                             component_root_path + "/bin/qtd3dservice.exe",
-                            "@StartMenuDir@/" + qtStringVersion + "/Windows Phone 8 (x86 Emulator) MSVC 2012 (32-bit)/qtd3dservice.lnk");
+                            "@StartMenuDir@/" + qtStringVersion + "/Windows Phone (x86 Emulator) MSVC 2013 (32-bit)/qtd3dservice.lnk");
 }
 
 Component.prototype.beginInstallation = function()
@@ -97,7 +97,7 @@ Component.prototype.createOperations = function()
             component.addOperation("Execute",
                                    ["@SDKToolBinary@", "addQt",
                                     "--id", component.name,
-                                    "--name", "Qt " + qtStringVersion + " for Windows Phone 8 x86 (Emulator)",
+                                    "--name", "Qt " + qtStringVersion + " for Windows Phone x86 (Emulator)",
                                     "--type", "WinRt.QtVersion.WindowsPhone",
                                     "--qmake", qmakeBinary,
                                     "UNDOEXECUTE",
@@ -107,8 +107,8 @@ Component.prototype.createOperations = function()
             component.addOperation("Execute",
                                    ["@SDKToolBinary@", "addKit",
                                     "--id", kitName,
-                                    "--name", "Qt " + qtStringVersion + " for Windows Phone 8 x86 MSVC2012 32bit (Emulator)",
-                                    "--toolchain", "x86-windows-msvc2012-pe-32bit",
+                                    "--name", "Qt " + qtStringVersion + " for Windows Phone x86 MSVC2013 32bit (Emulator)",
+                                    "--toolchain", "x86-windows-msvc2013-pe-32bit",
                                     "--qt", component.name,
                                     "--devicetype", "WinRt.Device.Emulator",
                                     "UNDOEXECUTE",
