@@ -181,6 +181,8 @@ class SdkComponent:
             if error_msg:
                 if self.optional_for_offline:
                     print('!!! Package: [{0}] Given data archive not found: [{1}] But this component was marked optional -> keep going'.format(self.package_name, archive.archive_uri));
+                    self.sanity_check_fail(self.package_name, 'Given data archive not found: [{0}] But this component was marked optional'.format(archive.archive_uri))
+                    return
                 else:
                     self.sanity_check_fail(self.package_name, error_msg)
                     return
