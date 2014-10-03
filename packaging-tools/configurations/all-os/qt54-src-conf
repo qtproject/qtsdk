@@ -207,6 +207,13 @@ target_install_base:    /5.4/Src/qtwebsockets
 archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtwebsockets-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 
+[qt.54.src.addons.qtwebengine]
+archives:               src.addons.qtwebengine
+target_install_base:    /5.4/Src/qtwebengine
+[src.addons.qtwebengine]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtwebengine-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
 [qt.54.src.addons.qtenginio]
 archives:               src.addons.qtenginio
 target_install_base:    /5.4/Src/qtenginio
