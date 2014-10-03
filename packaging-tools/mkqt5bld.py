@@ -98,7 +98,6 @@ OPTION_PARSER                       = 0
 MAKE_INSTALL_CMD                    = ''
 CONFIGURE_OPTIONS                   = '-confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng'
 ANDROID_BUILD                       = False
-EXTRA_ENV                           = dict(os.environ)
 QT_BUILD_OPTIONS                    = 0
 DESKTOP_BUILD                       = True
 QNX_BUILD                           = False
@@ -146,6 +145,7 @@ class MkQtBuildOptions:
         self.android_api_version    = 'android-10'
         self.android_sdk_home       = ''
         self.android_ndk_home       = ''
+        self.system_env             = dict(os.environ)
 
     def set_args(self, option_parser):
         if option_parser.src_url:
@@ -184,7 +184,6 @@ class MkQtBuildOptions:
             self.android_ndk_home       = option_parser.android_ndk_home
 
 
-
 ###############################
 # function
 ###############################
@@ -207,7 +206,7 @@ def init_mkqt5bld():
     global CONFIGURE_CMD
     global CONFIGURE_OPTIONS
     global MAKE_INSTALL_CMD
-    global EXTRA_ENV
+    global QT_BUILD_OPTIONS
 
     print_wrap('---------------- Initializing build --------------------------------')
     #do not edit configure options, if configure options are overridden from commandline options
@@ -219,8 +218,8 @@ def init_mkqt5bld():
     if ANDROID_BUILD:
         CONFIGURE_OPTIONS += ' -android-ndk ' + QT_BUILD_OPTIONS.android_ndk_home
         CONFIGURE_OPTIONS += ' -android-sdk ' + QT_BUILD_OPTIONS.android_sdk_home
-        EXTRA_ENV['ANDROID_NDK_HOST'] = QT_BUILD_OPTIONS.android_ndk_host
-        EXTRA_ENV['ANDROID_API_VERSION'] = QT_BUILD_OPTIONS.android_api_version
+        QT_BUILD_OPTIONS.system_env['ANDROID_NDK_HOST'] = QT_BUILD_OPTIONS.android_ndk_host
+        QT_BUILD_OPTIONS.system_env['ANDROID_API_VERSION'] = QT_BUILD_OPTIONS.android_api_version
 
     CONFIGURE_CMD += 'configure'
 
@@ -333,10 +332,10 @@ def configure_qt():
     print_wrap('    Configure line: ' + cmd_args)
     if os.path.exists(QT_SOURCE_DIR + os.sep + CONFIGURE_CMD):
         print_wrap(' configure found from ' + QT_SOURCE_DIR)
-        bldinstallercommon.do_execute_sub_process(shlex.split(cmd_args), QT_SOURCE_DIR, True, False, EXTRA_ENV)
+        bldinstallercommon.do_execute_sub_process(shlex.split(cmd_args), QT_SOURCE_DIR, True, False, QT_BUILD_OPTIONS.system_env)
     else:
         print_wrap(' configure found from ' + QT_SOURCE_DIR + os.sep + 'qtbase')
-        bldinstallercommon.do_execute_sub_process(shlex.split(cmd_args), QT_SOURCE_DIR + os.sep + 'qtbase', True, False, EXTRA_ENV)
+        bldinstallercommon.do_execute_sub_process(shlex.split(cmd_args), QT_SOURCE_DIR + os.sep + 'qtbase', True, False, QT_BUILD_OPTIONS.system_env)
     print_wrap('--------------------------------------------------------------------')
 
 
@@ -422,7 +421,7 @@ def build_qt():
         cmd_args += ' -j' + str(QT_BUILD_OPTIONS.make_thread_count)
     elif bldinstallercommon.is_win_platform() and 'mingw32-make' in QT_BUILD_OPTIONS.make_cmd:
         cmd_args += ' -j' + str(QT_BUILD_OPTIONS.make_thread_count)
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, QT_BUILD_OPTIONS.strict_mode, False, EXTRA_ENV)
+    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, QT_BUILD_OPTIONS.strict_mode, False, QT_BUILD_OPTIONS.system_env)
     print_wrap('--------------------------------------------------------------------')
 
 
@@ -1045,13 +1044,6 @@ def main_call_parameters():
         print_wrap('Using custom ICU from path: ' + icu_install_base_path)
         icu_path_lib = os.path.join(icu_install_base_path, 'lib')
         icu_path_inc = os.path.join(icu_install_base_path, 'include')
-        CONFIGURE_OPTIONS += ' ' + '-L' + ' ' + icu_path_lib
-        CONFIGURE_OPTIONS += ' ' + '-I' + ' ' + icu_path_inc
-        if bldinstallercommon.is_linux_platform():
-            env = EXTRA_ENV['LD_LIBRARY_PATH']
-            if env:
-                env = ':' + env
-            EXTRA_ENV['LD_LIBRARY_PATH'] = icu_path_lib + env
         if bldinstallercommon.is_win_platform():
             env = EXTRA_ENV['LIB']
             if env:

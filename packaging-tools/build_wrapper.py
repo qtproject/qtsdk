@@ -90,7 +90,8 @@ PATH                        = '/data/www/packages/jenkins'
 SNAPSHOT_SERVER             = ''
 SNAPSHOT_PATH               = ''
 TARGET_ENV                  = ''
-ICU_LIBS                    = 'http://download.qt-project.org/development_releases/prebuilt/icu/src/icu4c-51_1-src.tgz'
+ICU_LIBS                    = ''
+ICU_SRC                     = ''
 OPENSSL_LIBS                = ''
 QT_SRC_FOR_IFW_PREPARED     = 'http://download.qt-project.org/development_releases/prebuilt/qt-src-for-ifw/qt-everywhere-opensource-src-4.8.6-ifw-patch'
 IFW_GIT_URL                 = 'git://gitorious.org/installer-framework/installer-framework.git'
@@ -665,7 +666,7 @@ def handle_icu_build():
     bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), WORK_DIR, True)
     bldinstallercommon.create_dirs(os.path.join(WORK_DIR, 'icu_install'))
     exec_path = WORK_DIR
-    cmd_args = ['wget', ICU_LIBS]
+    cmd_args = ['wget', ICU_SRC]
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
     dir_list = os.listdir(WORK_DIR)
     for file_name in dir_list:
@@ -705,6 +706,57 @@ def handle_icu_build():
             if file_name != 'icu_install':
                 cmd_args = 'rm -rf ' + file_name
                 bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), WORK_DIR, True)
+
+
+###############################
+# Add ICU to EXTRA_ENV
+###############################
+def set_icu_env(icu_lib_path, icu_include_path):
+    global EXTRA_ENV
+    if not os.path.isdir(icu_lib_path) or not os.path.isdir(icu_include_path):
+        return
+    print('Setting ICU headers and libraries into system environment')
+    ld_library_path = ''
+    if EXTRA_ENV.get('LD_LIBRARY_PATH'):
+        ld_library_path = ':' + EXTRA_ENV.get('LD_LIBRARY_PATH')
+        print('Added ICU library path to LD_LIBRARY_PATH: {0}'.format(ld_library_path))
+    library_path = ''
+    if EXTRA_ENV.get('LIBRARY_PATH'):
+        library_path = ':' + EXTRA_ENV.get('LIBRARY_PATH')
+        print('Added ICU library path to LIBRARY_PATH: {0}'.format(library_path))
+    cplus_include_path = ''
+    if EXTRA_ENV.get('CPLUS_INCLUDE_PATH'):
+        cplus_include_path = ':' + EXTRA_ENV.get('CPLUS_INCLUDE_PATH')
+        print('Added ICU include path to CPLUS_INCLUDE_PATH: {0}'.format(cplus_include_path))
+
+    EXTRA_ENV['LD_LIBRARY_PATH'] = icu_lib_path + ld_library_path
+    EXTRA_ENV['LIBRARY_PATH'] = icu_lib_path + library_path
+    EXTRA_ENV['CPLUS_INCLUDE_PATH'] = icu_include_path + cplus_include_path
+
+
+###############################
+# Add ICU to EXTRA_ENV
+###############################
+def set_custom_icu():
+    if ICU_SRC.strip() and bldinstallercommon.is_linux_platform():
+        handle_icu_build()
+        dir_list = os.listdir(WORK_DIR)
+        for file_name in dir_list:
+            if file_name.startswith("icu"):
+                path_name = os.path.join(WORK_DIR, file_name)
+                if os.path.isdir(path_name):
+                    icu_lib_path = os.path.join(path_name, 'lib')
+                    icu_include_path = os.path.join(path_name, 'include')
+                    set_icu_env(icu_lib_path, icu_include_path)
+                    extra_qt_configure_args = ' -L ' + icu_lib_path
+                    extra_qt_configure_args += ' -I ' + icu_include_path
+                    return extra_qt_configure_args
+    if ICU_LIBS.strip():
+        print('Using pre-built icu libraries for Qt build not supported yet! ICU_LIBS ignored.')
+        print(ICU_LIBS)
+        # TODO, use prebuilt icu libs in the qt build
+    return ''
+
 
 ###############################
 # handle_qt_android_release_build
@@ -856,25 +908,8 @@ def get_qt_configuration_options():
 # handle_qt_desktop_release_build
 ###############################
 def handle_qt_desktop_release_build():
-    # download pre-compiled ICU
-    icu_lib_path = ''
-    icu_include_path = ''
-    if ICU_LIBS != '':
-        handle_icu_build()
-
-    # del os.environ['QTDIR']
-    if ICU_LIBS != '':
-        dir_list = os.listdir(WORK_DIR)
-        print(dir_list)
-        for file_name in dir_list:
-            print(file_name)
-            if file_name.startswith("icu"):
-                print(file_name)
-                if os.path.isdir(os.path.join(WORK_DIR, file_name)):
-                    icu_lib_path = os.path.join(WORK_DIR, file_name, 'lib')
-                    icu_include_path = os.path.join(WORK_DIR, file_name, 'include')
-                    EXTRA_ENV['LD_LIBRARY_PATH'] = icu_lib_path
-
+    # Use custom ICU when required (build from sources or use pre-built icu libs)
+    icu_qt_configure_extra_args = set_custom_icu()
     ## let's build Qt
     # some common variables
     source_url = SRC_URL + '/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
@@ -906,16 +941,20 @@ def handle_qt_desktop_release_build():
             else:
                 ext_args += ' -DQT_EVAL'
 
+    # If custom ICU used
+    if icu_qt_configure_extra_args:
+        ext_args += icu_qt_configure_extra_args
     # run mkqt5bld.py with the correct options according to the platform and license being used
     if bldinstallercommon.is_linux_platform():
-        icu_lib_prefix_rpath = icu_lib_path + ' -I ' + icu_include_path + ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING) + ' -R ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)
-        ext_args += ' -L ' + icu_lib_prefix_rpath
+        ext_args += ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)
+        ext_args += ' -R ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)
     elif bldinstallercommon.is_win_platform():
         ext_args += ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)
     elif bldinstallercommon.is_mac_platform():
         ext_args += ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)
     qt5BuildOptions.configure_options = qt_configure_options_file
     qt5BuildOptions.add_configure_option = ext_args
+    qt5BuildOptions.system_env = EXTRA_ENV
     mkqt5bld.QT_BUILD_OPTIONS = qt5BuildOptions
     mkqt5bld.main_call_parameters()
 
@@ -1540,6 +1579,7 @@ def parse_cmd_line():
     global PATH
     global TARGET_ENV
     global ICU_LIBS
+    global ICU_SRC
     global OPENSSL_LIBS
     global SRC_URL
     global QT5_DIR
@@ -1579,6 +1619,7 @@ def parse_cmd_line():
         SNAPSHOT_PATH     = options.snapshot_path
         TARGET_ENV        = options.target_env
         ICU_LIBS          = options.icu_libs
+        ICU_SRC           = options.icu_src
         OPENSSL_LIBS      = options.openssl_libs
         SRC_URL           = options.src_url
         QT_VERSION_TAG    = options.version_tag
@@ -1665,6 +1706,9 @@ def setup_option_parser():
     OPTION_PARSER.add_option("-i", "--icu_libs",
                       action="store", type="string", dest="icu_libs", default="",
                       help="Url for pre-compiled icu libraries")
+    OPTION_PARSER.add_option("--icu_src",
+                      action="store", type="string", dest="icu_src", default="",
+                      help="Url for icu src package to be used for the Qt build")
     OPTION_PARSER.add_option("-o", "--openssl_libs",
                       action="store", type="string", dest="openssl_libs", default="",
                       help="Url for pre-compiled openssl libraries")
