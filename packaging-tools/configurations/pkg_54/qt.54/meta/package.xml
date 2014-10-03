@@ -5,7 +5,7 @@
     <Version>5.4.0-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Script>installscript.qs</Script>
-    <Dependencies>qt.54.doc, qt.54.examples, qt.license.lgplv3</Dependencies>
+    <Dependencies>qt.54.doc, qt.54.examples, qt.license.lgplv2, qt.license.lgplv3</Dependencies>
     <SortingPriority>540</SortingPriority>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
