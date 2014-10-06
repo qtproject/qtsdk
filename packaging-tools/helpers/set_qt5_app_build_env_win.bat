@@ -114,7 +114,7 @@ set "INCLUDE=C:\utils\postgresql\pgsql\include;C:\utils\mysql\mysql\include;!INC
 call "c:\Program Files (x86)\Microsoft Visual Studio 12.0\vc\vcvarsall.bat" x86
 )
 
-echo %cfg%|findstr /i win-msvc2012-Windows8.1-x64_Winphone8 >nul:
+echo %cfg%|findstr /i win-msvc2013-Windows8.1-x64_Winphone81 >nul:
 if %errorlevel%==0 (
 set "PATH=c:\windows\SysWOW64;c:\work\build\qtsdk\gnuwin32\bin;C:\utils\mysql\mysql\bin;C:\utils\postgresql\pgsql\bin;C:\Python27\;C:\Python27\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\Git\cmd;C:\strawberry\c\bin;C:\strawberry\perl\site\bin;C:\strawberry\perl\bin;C:\Program Files\Microsoft SQL Server\110\Tools\Binn\;C:\openssl\bin;C:\Program Files (x86)\Java\jdk7\bin;C:\mingw\mingw\bin;C:\mingw48\mingw32\bin;C:\Utils\icu32_52_1_mingw482\bin;C:\utils\jom;C:\CMake\in;C:\ruby\bin;C:\utils\sevenzip\;C:\utils\squish\squish\bin;C:\utils\squish\;C:\utils\squish\squish;C:\Program Files (x86)\Notepad++;!PATH!"
 set "LIB=C:\utils\postgresql\pgsql\lib;C:\utils\mysql\mysql\lib;!LIB!"
