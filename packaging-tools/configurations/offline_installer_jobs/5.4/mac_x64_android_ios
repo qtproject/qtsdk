@@ -55,7 +55,13 @@ file_list:              qt-conf,
                         android-x64-qt54-armv7-conf,
                         android-x64-qt54-x86-conf,
                         ios-x64-qt54-conf,
-                        x86_64-tools-qtcreator-conf
+                        x86_64-tools-qtcreator-conf,
+                        qtwebview-src-doc-examples-conf,
+                        qtwebview-qt54-x64-ios-conf,
+                        qtwebview-qt54-x64-clang-conf,
+                        qtwebview-qt54-x64-android-armv7-conf,
+                        qtwebview-qt54-x64-android-armv5-conf,
+                        qtwebview-qt54-x64-android-x86-conf
 
 [qtmenunib]
 package_url:            http://download.qt-project.org/development_releases/prebuilt/mac/qt_menu.nib.7z
@@ -67,5 +73,5 @@ template_name:          config_qt5
 template_name:          config.xml.template.mac.qt5
 
 [PackageTemplates]
-template_dirs:          pkg_54, pkg_tools
+template_dirs:          pkg_54, pkg_tools, pkg_extras
 

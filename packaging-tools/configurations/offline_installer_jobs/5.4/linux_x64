@@ -51,7 +51,9 @@ file_list:              qt-conf,
                         qt54-src-conf,
                         qt54-doc-examples-conf,
                         x86_64-qt54-gcc-conf,
-                        x86_64-tools-qtcreator-conf
+                        x86_64-tools-qtcreator-conf,
+                        qtwebview-qt54-x64-gcc-conf,
+                        qtwebview-src-doc-examples-conf
 
 [ConfigDir]
 template_name:          config_qt5
@@ -60,5 +62,5 @@ template_name:          config_qt5
 template_name:          config.xml.template.linux.qt5
 
 [PackageTemplates]
-template_dirs:          pkg_54, pkg_tools
+template_dirs:          pkg_54, pkg_tools, pkg_extras
 

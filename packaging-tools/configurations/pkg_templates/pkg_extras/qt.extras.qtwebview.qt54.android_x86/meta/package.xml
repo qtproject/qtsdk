@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt WebView for Android x86</DisplayName>
+    <Description></Description>
+    <Version>1.0.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <AutoDependOn>qt.extras.qtwebview, qt.54.android_x86</AutoDependOn>
+    <Dependencies>qt.54.android_x86</Dependencies>
+    <Virtual>true</Virtual>
+    <Script>installscript.qs</Script>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+
