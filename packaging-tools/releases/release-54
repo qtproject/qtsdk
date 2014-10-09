@@ -31,7 +31,7 @@ build_node_labels:      linux-g++-Ubuntu11.10-x86_Android-x86, linux-g++-Ubuntu1
 configure_options:      -opensource -confirm-license -release -xplatform android-g++ -opengl es2 -android-arch x86 -nomake tests -nomake examples -skip qtserialport -skip qtwebkit -skip qtwebkit-examples -skip qtx11extras -sysconfdir /etc/xdg -no-icu -openssl
 
 [release.qt.configure_options.ios]
-build_node_labels:      mac-clang-10.8-x64_iOS
+build_node_labels:      mac-clang-10.8-x64_iOS, mac-clang-10.9-x64_iOS
 configure_options:      -opensource -confirm-license -debug-and-release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -xplatform macx-ios-clang -no-sql-mysql
 
 [release.qt.configure_options.linux]
