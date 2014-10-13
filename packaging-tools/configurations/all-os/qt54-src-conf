@@ -186,6 +186,13 @@ target_install_base:    /5.4/Src/qtserialport
 archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtserialport-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 
+[qt.54.src.addons.qtwayland]
+archives:               src.addons.qtwayland
+target_install_base:    /5.4/Src/qtwayland
+[src.addons.qtwayland]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtwayland-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
 [qt.54.src.addons.qtwinextras]
 archives:               src.addons.qtwinextras
 target_install_base:    /5.4/Src/qtwinextras
