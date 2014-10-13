@@ -263,16 +263,16 @@ def setup_option_parser():
                       help="alternatively define the full installer name excluding the extension (.run, .exe, .app")
     # dev mode i.e. building installer-framework
     OPTION_PARSER.add_option("--installer-framework-qt-archive-uri",
-                      action="store", type="string", dest="installer_framework_qt_archive_uri", default=IfwOptions.default_qt_source_package_uri,
+                      action="store", type="string", dest="installer_framework_qt_archive_uri", default=IfwOptions.default_qt5_src_pkg,
                       help="If you wish to build ifw: qt source package uri for that")
     OPTION_PARSER.add_option("--installer-framework-qt-configure_options",
-                      action="store", type="string", dest="installer_framework_qt_configure_options", default=bld_ifw_tools.get_default_qt_configure_options(),
+                      action="store", type="string", dest="installer_framework_qt_configure_options", default=bld_ifw_tools.get_default_qt5_configure_options(),
                       help="If you wish to build ifw: qt configure optionss for static build")
     OPTION_PARSER.add_option("--installer-framework-url",
                       action="store", type="string", dest="installer_framework_url", default=IfwOptions.default_qt_installer_framework_url,
                       help="If you wish to build ifw: Qt Installer-Framework URL")
     OPTION_PARSER.add_option("--installer-framework-branch",
-                      action="store", type="string", dest="installer_framework_branch", default=IfwOptions.default_qt_installer_framework_branch,
+                      action="store", type="string", dest="installer_framework_branch", default=IfwOptions.default_qt_installer_framework_branch_qt5,
                       help="If you wish to build ifw: Qt Installer-Framework branch")
     OPTION_PARSER.add_option("--installer-framework-qmake-args",
                       action="store", type="string", dest="installer_framework_qmake_args", default=IfwOptions.default_qt_installer_framework_qmake_args,

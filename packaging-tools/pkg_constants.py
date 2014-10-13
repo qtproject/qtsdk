@@ -43,7 +43,7 @@
 RTA_DESCRIPTION_FILE_DIR_NAME  = 'rta_description_files'
 RTA_DESCRIPTION_FILE_NAME_BASE = 'rta_description_file'
 INSTALLER_OUTPUT_DIR_NAME      = 'installer_output'
-IFW_BUILD_OUTPUT_DIR           = 'build_artifacts'
+IFW_BUILD_ARTIFACTS_DIR        = 'ifw_build_artifacts'
 ICU_BUILD_OUTPUT_DIR           = 'icu_build_artifacts'
 ICU_INSTALL_DIR_NAME           = 'icu_install'
 PKG_TEMPLATE_BASE_DIR_NAME     = 'pkg_templates'
