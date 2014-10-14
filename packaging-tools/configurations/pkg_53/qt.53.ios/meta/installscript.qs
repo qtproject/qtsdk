@@ -81,13 +81,5 @@ Component.prototype.createOperations = function()
     var installationPath = installer.value("TargetDir") + "%TARGET_INSTALL_DIR%";
     print("Register documentation and examples for: " + installationPath);
     patchQtExamplesAndDoc(component, installationPath, "Qt-5.3");
-
-    if (installer.value("os") == "mac") {
-        var settingsFile = installer.value("QtCreatorInstallerSettingsFile");
-        if (settingsFile == "")
-            return;
-        component.addOperation("Settings", "path="+settingsFile, "method=add_array_value",
-            "key=Plugins/ForceEnabled", "value=Ios");
-    }
 }
 
