@@ -207,6 +207,13 @@ target_install_base:    /5.4/Src/qtx11extras
 archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtx11extras-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 
+[qt.54.src.addons.qtwebchannel]
+archives:               src.addons.qtwebchannel
+target_install_base:    /5.4/Src/qtwebchannel
+[src.addons.qtwebchannel]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtwebchannel-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
 [qt.54.src.addons.qtwebsockets]
 archives:               src.addons.qtwebsockets
 target_install_base:    /5.4/Src/qtwebsockets
