@@ -193,7 +193,7 @@ build_node_labels:          win-msvc2013-Windows8.1-x64_WinRT
 build_target_dir:           winphone8/x86
 build_node_labels:          win-msvc2012-Windows8.1-x64_Winphone8_x86
 
-[meta.windows.x64.msvc2013_winphone8_x86]
+[meta.windows.x64.msvc2013_winphone81_x86]
 build_target_dir:           winphone81/x86
 build_node_labels:          win-msvc2013-Windows8.1-x64_Winphone81_x86
 
@@ -201,7 +201,7 @@ build_node_labels:          win-msvc2013-Windows8.1-x64_Winphone81_x86
 build_target_dir:           winphone8/arm
 build_node_labels:          win-msvc2012-Windows8.1-x64_Winphone8_arm
 
-[meta.windows.x64.msvc2013_winphone8_arm]
+[meta.windows.x64.msvc2013_winphone81_arm]
 build_target_dir:           winphone81/arm
 build_node_labels:          win-msvc2013-Windows8.1-x64_Winphone81_arm
 
@@ -223,7 +223,7 @@ build_node_labels:          mac-clang-10.7-x64_Android-x86
 
 [meta.mac.x64.ios]
 build_target_dir:           ios/mac_x64
-build_node_labels:          mac-clang-10.8-x64_iOS
+build_node_labels:          mac-clang-10.8-x64_iOS, mac-clang-10.9-x64_iOS
 
 [meta.mac_109.x64.clang]
 build_target_dir:           mac_x64_109
