@@ -54,7 +54,7 @@ base_path:
 packages:
 
 [PackageConfigurationFiles]
-file_list:              x86-tools-mingw-conf, x86-tools-mingw48-conf, x86-tools-mingw482-conf
+file_list:              x86-tools-mingw-conf, x86-tools-mingw48-conf, x86-tools-mingw482-conf, x86-tools-mingw491-conf
 
 [OfflinePackageExcludeList]
 package_list:

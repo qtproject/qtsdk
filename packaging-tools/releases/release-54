@@ -121,10 +121,10 @@ rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_mac_ios_and
 ################################################################################
 ## Windows offline
 ################################################################################
-[release.54.offline.windows.x86.mingw482]
-arg_configurations_file:    offline_installer_jobs/5.4/win_x86_mingw482
+[release.54.offline.windows.x86.mingw491]
+arg_configurations_file:    offline_installer_jobs/5.4/win_x86_mingw491
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
-installer_name:             qt-opensource-windows-x86-mingw482_opengl-%GLOBAL_VERSION_AND_TAG%
+installer_name:             qt-opensource-windows-x86-mingw491_opengl-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_windows_mingw
 
 [release.54.offline.windows.x86.msvc2010_opengl]
@@ -163,8 +163,8 @@ arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-msvc2013_64_opengl-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_windows_msvc2013_opengl_64bit
 
-[release.54.offline.windows.x86.mingw482.android]
-arg_configurations_file:    offline_installer_jobs/5.4/win_x86_mingw482_android
+[release.54.offline.windows.x86.mingw491.android]
+arg_configurations_file:    offline_installer_jobs/5.4/win_x86_mingw491_android
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-android-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_windows_android

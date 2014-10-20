@@ -43,15 +43,15 @@
 [qt.54.android_x86]
 archives:               54.android_x86.essentials,
                         54.android_x86.icu_531.mingw_32,
-                        54.android_x86.mingw482.runtime
+                        54.android_x86.mingw491.runtime
 target_install_base:    /5.4/android_x86
 [54.android_x86.essentials]
 archive_uri:            /qt/@QT_VERSION@/latest/android_x86/mingw_x86/qt5_essentials.7z
 package_finalize_items: delete_doc_directory
 [54.android_x86.icu_531.mingw_32]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/mingw/icu_53_1_mingw_builds_4_8_2_posix_dwarf_32.7z
+archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/mingw/icu_53_1_mingw_builds_4_9_1_posix_dwarf_32.7z
 target_install_dir:     /bin
-[54.android_x86.mingw482.runtime]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/mingw_32/i686-4.8.2-release-posix-dwarf-rt_v3-rev3-runtime.7z
+[54.android_x86.mingw491.runtime]
+archive_uri:            http://download.qt-project.org/development_releases/prebuilt/mingw_32/i686-4.9.1-release-posix-dwarf-rt_v3-rev1-runtime.7z
 target_install_dir:     /bin
 

@@ -43,8 +43,8 @@ rta_key_list:
 ################################################################################
 ## Windows offline
 ################################################################################
-[release.54.offline.windows.x86.mingw482.qnx6]
-arg_configurations_file:    offline_installer_jobs/5.4/win_x86_mingw482_qnx6
+[release.54.offline.windows.x86.mingw491.qnx6]
+arg_configurations_file:    offline_installer_jobs/5.4/win_x86_mingw491_qnx6
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-qnx6-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:

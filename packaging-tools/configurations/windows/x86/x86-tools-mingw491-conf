@@ -40,22 +40,15 @@
 #############################################################################
 
 
-[qt.54.win32_mingw482]
-archives:               54.win32_mingw482.essentials,
-                        54.win32_mingw482.addons,
-                        54.win32_mingw482.icu_531.mingw_32,
-                        54.win32_mingw482.runtime
-target_install_base:    /5.4/mingw482_32
-[54.win32_mingw482.essentials]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_mingw482_x86/qt5_essentials.7z
-package_finalize_items: delete_doc_directory
-[54.win32_mingw482.addons]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_mingw482_x86/qt5_addons.7z
-package_finalize_items: delete_doc_directory
-[54.win32_mingw482.icu_531.mingw_32]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/mingw/icu_53_1_mingw_builds_4_8_2_posix_dwarf_32.7z
-target_install_dir:     /bin
-[54.win32_mingw482.runtime]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/mingw_32/i686-4.8.2-release-posix-dwarf-rt_v3-rev3-runtime.7z
-target_install_dir:     /bin
-
+[qt.tools.win32_mingw491]
+archives:               tools.win32_mingw491
+target_install_base:    /Tools/mingw491_32
+version:                4.9.1
+version_tag:            %MINGW491_VERSION%
+package_default:        false
+[tools.win32_mingw491]
+archive_uri:            http://download.qt-project.org/development_releases/prebuilt/mingw_32/i686-4.9.1-release-posix-dwarf-rt_v3-rev1.7z
+package_strip_dirs:     1
+target_install_dir:     /
+rpath_target:
+archive_name:           i686-4.9.1-release-posix-dwarf-rt_v3-rev1.7z
