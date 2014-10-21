@@ -63,3 +63,13 @@ target_install_dir:     /bin
 archive_uri:            http://download.qt-project.org/development_releases/prebuilt/llvmpipe/windows/opengl32sw-64.7z
 target_install_dir:     /bin
 
+
+# QtWebEngine provided as separate installable component in installer
+[qt.54.qtwebengine]
+[qt.54.qtwebengine.win64_msvc2013_64]
+archives:               54.qtwebengine.win64_msvc2013_64
+target_install_base:    /5.4/msvc2013_64
+[54.qtwebengine.win64_msvc2013_64]
+archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2013_64/qt5_qtwebengine.7z
+package_finalize_items: delete_doc_directory
+

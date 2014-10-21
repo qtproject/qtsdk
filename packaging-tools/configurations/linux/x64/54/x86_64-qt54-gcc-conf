@@ -57,3 +57,14 @@ package_finalize_items: delete_doc_directory
 archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/ubuntu1110/icu_53_1_ubuntu_11_10_64.7z
 target_install_dir:     /lib
 
+
+# QtWebEngine provided as separate installable component in installer
+[qt.54.qtwebengine]
+[qt.54.qtwebengine.gcc_64]
+archives:               54.qtwebengine.gcc_64
+target_install_base:    /5.4/gcc_64
+[54.qtwebengine.gcc_64]
+archive_uri:            /qt/@QT_VERSION@/latest/linux_gcc_64_ubuntu1110/qt5_qtwebengine.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+

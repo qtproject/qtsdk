@@ -51,3 +51,13 @@ package_finalize_items: delete_doc_directory
 archive_uri:            /qt/@QT_VERSION@/latest/mac_x64_108/qt5_addons.7z
 package_finalize_items: delete_doc_directory
 
+
+# QtWebEngine provided as separate installable component in installer
+[qt.54.qtwebengine]
+[qt.54.qtwebengine.clang_64]
+archives:               54.qtwebengine.clang_64
+target_install_base:    /5.4/clang_64
+[54.qtwebengine.clang_64]
+archive_uri:            /qt/@QT_VERSION@/latest/mac_x64_108/qt5_qtwebengine.7z
+package_finalize_items: delete_doc_directory
+
