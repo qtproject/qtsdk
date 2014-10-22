@@ -615,7 +615,7 @@ def clean_up():
     if bldinstallercommon.is_win_platform():
         for name in os.listdir(MAKE_INSTALL_ROOT_DIR):
             dir_name = os.path.join(MAKE_INSTALL_ROOT_DIR, name)
-            lib_path = bldinstallercommon.locate_directory(base_path_essentials, 'lib')
+            lib_path = bldinstallercommon.locate_directory(dir_name, 'lib')
             if lib_path:
                 bldinstallercommon.delete_files_by_type_recursive(lib_path, '\\.dll')
     print_wrap('--------------------------------------------------------------------')
