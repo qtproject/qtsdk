@@ -59,13 +59,3 @@ target_install_dir:     /bin
 archive_uri:            http://download.qt-project.org/development_releases/prebuilt/TODO
 target_install_dir:     /bin
 
-
-# QtWebEngine provided as separate installable component in installer
-[qt.54.qtwebengine]
-[qt.54.qtwebengine.win64_mingw482]
-archives:               54.qtwebengine.win64_mingw482
-target_install_base:    /5.4/mingw482_64
-[54.qtwebengine.win64_mingw482]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_mingw_64/qt5_qtwebengine.7z
-package_finalize_items: delete_doc_directory
-
