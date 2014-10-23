@@ -7,7 +7,7 @@
     <Dependencies>qt.tools.qtcreator, qt.tools.vcredist</Dependencies>
     <Default>true</Default>
     <Script>installscript.qs</Script>
-    <SortingPriority>530</SortingPriority>
+    <SortingPriority>540</SortingPriority>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
 
