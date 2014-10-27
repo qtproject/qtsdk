@@ -5,7 +5,6 @@
     <Version>1.0.5</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Script>installscript.qs</Script>
-    <Dependencies>qt.license.lgplv2</Dependencies>
     <Essential>true</Essential>
     <SortingPriority>40</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>

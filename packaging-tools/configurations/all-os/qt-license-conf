@@ -39,12 +39,15 @@
 ##
 #############################################################################
 
-[qt.license.lgplv2]
+
+[qt.license.lgplv3]
+
+[qt.license.thirdparty]
 archives:               softwarelisting3rdparty
 target_install_base:    /Licenses
 [softwarelisting3rdparty]
 archive_uri:            ThirdPartySoftware_Listing.txt
 package_strip_dirs:     0
 target_install_dir:     /
-
-[qt.license.lgplv3]
+rpath_target:
+archive_name:           ThirdPartySoftware_Listing.7z

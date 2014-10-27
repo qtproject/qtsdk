@@ -2,9 +2,10 @@
 <Package>
     <DisplayName>Qt</DisplayName>
     <Description>Qt</Description>
-    <Version>1.0.5</Version>
+    <Version>1.0.6</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Script>installscript.qs</Script>
+    <Dependencies>qt.license.thirdparty, qt.license.lgplv3</Dependencies>
     <SortingPriority>0</SortingPriority> <!-- Priority of this component when visible in the tree. Highest priority number is on top. -->
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>

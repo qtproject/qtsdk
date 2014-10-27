@@ -47,7 +47,7 @@ identifier:             windows
 
 [PackageConfigurationFiles]
 file_list:              qt-conf,
-                        qt-licenses,
+                        qt-license-conf,
                         qt54-src-conf,
                         qt54-doc-examples-conf,
                         x86_64-qt54-msvc2013-winrt_x64-conf,

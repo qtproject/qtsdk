@@ -1,0 +1,53 @@
+################################################################################
+## Global defines
+################################################################################
+[ifwtools]
+windows-x86:                installer-framework-build-win-x86.7z
+linux-x86:                  installer-framework-build-linux-x86.7z
+linux-x64:                  installer-framework-build-linux-x64.7z
+mac-x64:                    installer-framework-build-mac-x64.7z
+
+[release.global]
+version:                    1.0.0
+version_tag:
+
+
+################################################################################
+## Linux repository
+################################################################################
+[release.tools.repository.linux.x86]
+arg_configurations_file:    repository_configs/licenses/repository_licenses
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          licenses
+repo_components_to_update:  qt.license*
+repo_url_specifier:         linux_x86/licenses
+
+[release.tools.repository.linux.x64]
+arg_configurations_file:    repository_configs/licenses/repository_licenses
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          licenses
+repo_components_to_update:  qt.license*
+repo_url_specifier:         linux_x64/licenses
+
+
+################################################################################
+## Windows repository
+################################################################################
+[release.tools.repository.windows.x86]
+arg_configurations_file:    repository_configs/licenses/repository_licenses
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+repo_content_type:          licenses
+repo_components_to_update:  qt.license*
+repo_url_specifier:         windows_x86/licenses
+
+
+################################################################################
+## Mac repository
+################################################################################
+[release.tools.repository.mac.x64]
+arg_configurations_file:    repository_configs/licenses/repository_licenses
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          licenses
+repo_components_to_update:  qt.license*
+repo_url_specifier:         mac_x64/licenses
+
