@@ -185,6 +185,14 @@ build_node_labels:          win-MinGW4.8.2-Windows7-x86_OpenGL
 build_target_dir:           windows_mingw482_x64
 build_node_labels:          win-MinGW4.8.2-Windows7-x64_OpenGL
 
+[meta.windows.x86.mingw491]
+build_target_dir:           windows_mingw491_x86
+build_node_labels:          win-MinGW4.9.1-Windows7-x86_OpenGL
+
+[meta.windows.x64.mingw491]
+build_target_dir:           windows_mingw491_x64
+build_node_labels:          win-MinGW4.9.1-Windows7-x64_OpenGL
+
 [meta.windows.x64.msvc2013_WinRT]
 build_target_dir:           windows_vs2013_winrt_x64
 build_node_labels:          win-msvc2013-Windows8.1-x64_WinRT
@@ -223,7 +231,7 @@ build_node_labels:          mac-clang-10.7-x64_Android-x86
 
 [meta.mac.x64.ios]
 build_target_dir:           ios/mac_x64
-build_node_labels:          mac-clang-10.8-x64_iOS, mac-clang-10.9-x64_iOS
+build_node_labels:          mac-clang-10.8-x64_iOS, mac-clang-10.9-x64_iOS, mac-clang-10.10-x64_iOS
 
 [meta.mac_109.x64.clang]
 build_target_dir:           mac_x64_109
@@ -241,7 +249,19 @@ build_node_labels:          mac-clang-10.9-x64_Android-armv7
 build_target_dir:           android_x86/mac_109_x64
 build_node_labels:          mac-clang-10.9-x64_Android-x86
 
-[meta.mac_109.x64.ios]
-build_target_dir:           ios/mac_109_x64
-build_node_labels:          mac-clang-10.9-x64_iOS
+[meta.mac_1010.x64.clang]
+build_target_dir:           mac_x64_1010
+build_node_labels:          mac-clang-10.10-x64
+
+[meta.mac_1010.x64.android_armv5]
+build_target_dir:           android_armv5/mac_1010_x64
+build_node_labels:          mac-clang-10.10-x64_Android-armv5
+
+[meta.mac_1010.x64.android_armv7]
+build_target_dir:           android_armv7/mac_1010_x64
+build_node_labels:          mac-clang-10.10-x64_Android-armv7
+
+[meta.mac_1010.x64.android_x86]
+build_target_dir:           android_x86/mac_1010_x64
+build_node_labels:          mac-clang-10.10-x64_Android-x86
 

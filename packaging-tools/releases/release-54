@@ -19,19 +19,19 @@ arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%,
                             @QT_INSTALL_DIR_NAME@=5.4
 
 [release.qt.configure_options.android_armv5]
-build_node_labels:      linux-g++-Ubuntu11.10-x86_Android-armv5,linux-g++-Ubuntu11.10-x64_Android-armv5, linux-g++-Rhel6.5-x86_Android-armv5, linux-g++-Rhel6.5-x64_Android-armv5, win-MinGW4.8-Windows7-x86_Android-armv5, mac-clang-10.7-x64_Android-armv5, mac-clang-10.9-x64_Android-armv5
+build_node_labels:      linux-g++-Ubuntu11.10-x86_Android-armv5,linux-g++-Ubuntu11.10-x64_Android-armv5, linux-g++-Rhel6.5-x86_Android-armv5, linux-g++-Rhel6.5-x64_Android-armv5, win-MinGW4.8-Windows7-x86_Android-armv5, mac-clang-10.7-x64_Android-armv5, mac-clang-10.9-x64_Android-armv5, mac-clang-10.10-x64_Android-armv5
 configure_options:      -opensource -confirm-license -release -xplatform android-g++ -opengl es2 -android-arch armeabi -nomake tests -nomake examples -skip qtserialport -skip qtwebkit -skip qtwebkit-examples -skip qtx11extras -sysconfdir /etc/xdg -no-icu -openssl
 
 [release.qt.configure_options.android_armv7]
-build_node_labels:      linux-g++-Ubuntu11.10-x86_Android-armv7, linux-g++-Ubuntu11.10-x64_Android-armv7, linux-g++-Rhel6.5-x86_Android-armv7, linux-g++-Rhel6.5-x64_Android-armv7, win-MinGW4.8-Windows7-x86_Android-armv7, mac-clang-10.7-x64_Android-armv7, mac-clang-10.9-x64_Android-armv7
+build_node_labels:      linux-g++-Ubuntu11.10-x86_Android-armv7, linux-g++-Ubuntu11.10-x64_Android-armv7, linux-g++-Rhel6.5-x86_Android-armv7, linux-g++-Rhel6.5-x64_Android-armv7, win-MinGW4.8-Windows7-x86_Android-armv7, mac-clang-10.7-x64_Android-armv7, mac-clang-10.9-x64_Android-armv7, mac-clang-10.10-x64_Android-armv7
 configure_options:      -opensource -confirm-license -release -xplatform android-g++ -opengl es2 -android-arch armeabi-v7a -nomake tests -nomake examples -skip qtserialport -skip qtwebkit -skip qtwebkit-examples -skip qtx11extras -sysconfdir /etc/xdg -no-icu -openssl
 
 [release.qt.configure_options.android_x86]
-build_node_labels:      linux-g++-Ubuntu11.10-x86_Android-x86, linux-g++-Ubuntu11.10-x64_Android-x86, linux-g++-Rhel6.5-x86_Android-x86, linux-g++-Rhel6.5-x64_Android-x86, win-MinGW4.8-Windows7-x86_Android-x86, mac-clang-10.7-x64_Android-x86, mac-clang-10.9-x64_Android-x86
+build_node_labels:      linux-g++-Ubuntu11.10-x86_Android-x86, linux-g++-Ubuntu11.10-x64_Android-x86, linux-g++-Rhel6.5-x86_Android-x86, linux-g++-Rhel6.5-x64_Android-x86, win-MinGW4.8-Windows7-x86_Android-x86, mac-clang-10.7-x64_Android-x86, mac-clang-10.9-x64_Android-x86, mac-clang-10.10-x64_Android-x86
 configure_options:      -opensource -confirm-license -release -xplatform android-g++ -opengl es2 -android-arch x86 -nomake tests -nomake examples -skip qtserialport -skip qtwebkit -skip qtwebkit-examples -skip qtx11extras -sysconfdir /etc/xdg -no-icu -openssl
 
 [release.qt.configure_options.ios]
-build_node_labels:      mac-clang-10.8-x64_iOS, mac-clang-10.9-x64_iOS
+build_node_labels:      mac-clang-10.8-x64_iOS, mac-clang-10.9-x64_iOS, mac-clang-10.10-x64
 configure_options:      -opensource -confirm-license -debug-and-release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -xplatform macx-ios-clang -no-sql-mysql
 
 [release.qt.configure_options.linux]
@@ -39,7 +39,7 @@ build_node_labels:      linux-g++-Ubuntu11.10-x86, linux-g++-Ubuntu11.10-x64, li
 configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -qt-xcb -sysconfdir /etc/xdg -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -openssl -dbus -no-libudev -icu
 
 [release.qt.configure_options.mac]
-build_node_labels:      mac-clang-10.8-x64, mac-clang-10.9-x64
+build_node_labels:      mac-clang-10.8-x64, mac-clang-10.9-x64, mac-clang-10.10-x64
 configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -platform macx-clang -sysconfdir /Library/Preferences/Qt -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -plugin-sql-odbc -openssl -dbus -pkg-config
 
 [release.qt.configure_options.windows]
