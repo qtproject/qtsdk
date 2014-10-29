@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt Canvas 3D 1.0</DisplayName>
+    <Description>Qt Canvas 3D.</Description>
+    <Version>1.0.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Dependencies>qt.extras.qtcanvas3d.src, qt.extras.qtcanvas3d.doc, qt.extras.qtcanvas3d.examples</Dependencies>
+    <Default>true</Default>
+    <SortingPriority>6000</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+
