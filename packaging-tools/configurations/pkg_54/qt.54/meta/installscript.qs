@@ -51,7 +51,7 @@ function Component()
         var msvc2013 = !!installer.environmentVariable("VS120COMNTOOLS");
 
         // first reset the latest Qt5.x.x package default values to false
-        installer.componentByName("qt.54.win32_mingw482").setValue("Default", "false");
+        installer.componentByName("qt.54.win32_mingw491").setValue("Default", "false");
 
         installer.componentByName("qt.54.win32_msvc2010_opengl").setValue("Default", "false")
 
@@ -90,7 +90,7 @@ function Component()
 
         // if no msvc toolkits detected, choose mingw by default
         if (!msvc2010 && !msvc2012 && !msvc2013) {
-            installer.componentByName("qt.54.win32_mingw482").setValue("Default", "true");
+            installer.componentByName("qt.54.win32_mingw491").setValue("Default", "true");
         }
     }
 }

@@ -54,7 +54,7 @@ function createShortcuts()
     var batchFileName = component_root_path + "\\" + "bin" + "\\" + "qtenv2.bat";
     var contentString = "echo off\r\n";
     contentString += "echo Setting up environment for Qt usage...\r\n";
-    contentString += "set PATH=" + component_root_path + "\\bin;@MINGW482_DIR@\\bin;%PATH%\r\n";
+    contentString += "set PATH=" + component_root_path + "\\bin;@MINGW491_DIR@\\bin;%PATH%\r\n";
     contentString += "cd /D " + component_root_path + "\r\n";
     //contentString += "echo Remember to call vcvarsall.bat to complete environment setup!\r\n";
     // Dump batch file
@@ -69,22 +69,22 @@ function createShortcuts()
     var cmdLocation = windir + "\\system32\\cmd.exe";
     component.addOperation( "CreateShortcut",
                             cmdLocation,
-                            "@StartMenuDir@/" + qtStringVersion + "/MinGW 4.8 (32-bit)/Qt " + qtStringVersion + " for Desktop (MinGW 4.8 32 bit).lnk",
+                            "@StartMenuDir@/" + qtStringVersion + "/MinGW 4.9 (32-bit)/Qt " + qtStringVersion + " for Desktop (MinGW 4.9 32 bit).lnk",
                             "/A /Q /K " + batchFileName);
     // Assistant
     component.addOperation( "CreateShortcut",
                             component_root_path + "/bin/assistant.exe",
-                            "@StartMenuDir@/" + qtStringVersion + "/MinGW 4.8 (32-bit)/Assistant.lnk");
+                            "@StartMenuDir@/" + qtStringVersion + "/MinGW 4.9 (32-bit)/Assistant.lnk");
 
     // Designer
     component.addOperation( "CreateShortcut",
                             component_root_path + "/bin/designer.exe",
-                            "@StartMenuDir@/" + qtStringVersion + "/MinGW 4.8 (32-bit)/Designer.lnk");
+                            "@StartMenuDir@/" + qtStringVersion + "/MinGW 4.9 (32-bit)/Designer.lnk");
 
     // Linguist
     component.addOperation( "CreateShortcut",
                             component_root_path + "/bin/linguist.exe",
-                            "@StartMenuDir@/" + qtStringVersion + "/MinGW 4.8 (32-bit)/Linguist.lnk");
+                            "@StartMenuDir@/" + qtStringVersion + "/MinGW 4.9 (32-bit)/Linguist.lnk");
 }
 
 Component.prototype.beginInstallation = function()
@@ -123,10 +123,10 @@ Component.prototype.createOperations = function()
                                    ["@SDKToolBinary@", "addKit",
                                     "--id", kitName,
                                     "--name", "Desktop Qt " + qtStringVersion + " MinGW 32bit",
-                                    "--toolchain", "@MINGW482_TCID@",
+                                    "--toolchain", "@MINGW491_TCID@",
                                     "--qt", component.name,
                                     "--debuggerengine", "1",
-                                    "--debugger", "@MINGW482_DIR@\\bin\\gdb.exe",
+                                    "--debugger", "@MINGW491_DIR@\\bin\\gdb.exe",
                                     "--devicetype", "Desktop",
                                     "UNDOEXECUTE",
                                     "@SDKToolBinary@", "rmKit", "--id", kitName]);
