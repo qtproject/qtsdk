@@ -72,13 +72,17 @@ Component.prototype.createOperations = function()
     // Call the base createOperations and afterwards set some registry settings (unpacking ...)
     component.createOperations();
 
+    var editionName = "Qt"
+    if (!(installer.value("QT_EDITION_NAME") === ""))
+        editionName = installer.value("QT_EDITION_NAME");
+
     // only for windows online installer
     if ( installer.value("os") == "win" && !installer.isOfflineOnly() )
     {
         // create shortcut
         component.addOperation( "CreateShortcut",
                                 "@TargetDir@/MaintenanceTool.exe",
-                                "@StartMenuDir@/" + installer.value("QT_EDITION_NAME")  + " Maintenance Tool.lnk",
+                                "@StartMenuDir@/" + editionName + " Maintenance Tool.lnk",
                                 "workingDirectory=@TargetDir@" );
     }
     if ( installer.value("os") == "x11" )
@@ -86,8 +90,8 @@ Component.prototype.createOperations = function()
         // only for online installer
         if (!installer.isOfflineOnly()) {
             component.addOperation( "CreateDesktopEntry",
-                                    installer.value("QT_EDITION_NAME")  + "-MaintenanceTool.desktop",
-                                    "Type=Application\nExec=@TargetDir@/MaintenanceTool\nPath=@TargetDir@\nName=" + installer.value("QT_EDITION_NAME")  + " Maintenance Tool\nGenericName=Install or uninstall Qt components.\nIcon=QtIcon\nTerminal=false\nCategories=Development;Qt;"
+                                    editionName + "-MaintenanceTool.desktop",
+                                    "Type=Application\nExec=@TargetDir@/MaintenanceTool\nPath=@TargetDir@\nName=" + editionName + " Maintenance Tool\nGenericName=Install or uninstall Qt components.\nIcon=QtIcon\nTerminal=false\nCategories=Development;Qt;"
                                    );
         }
     }

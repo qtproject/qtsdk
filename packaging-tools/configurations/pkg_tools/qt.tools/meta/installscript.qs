@@ -162,10 +162,14 @@ Component.prototype.createOperations = function()
     if (installer.isInstaller() &&
         installer.value("os") == "win") {
 
+        var editionName = "Qt"
+        if (!(installer.value("QT_EDITION_NAME") === ""))
+            editionName = installer.value("QT_EDITION_NAME");
+
         // shortcut to uninstaller
         component.addOperation( "CreateShortcut",
                                 "@TargetDir@/MaintenanceTool.exe",
-                                "@StartMenuDir@/Uninstall " + installer.value("QT_EDITION_NAME")  + ".lnk",
+                                "@StartMenuDir@/Uninstall " + editionName + ".lnk",
                                 " --uninstall");
     }
 }
