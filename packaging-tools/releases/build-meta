@@ -131,15 +131,15 @@ build_node_labels:          win-msvc2012-Windows8-x64_OpenGL
 
 [meta.windows.x86.android_armv5]
 build_target_dir:           android_armv5/mingw_x86
-build_node_labels:          win-MinGW4.8-Windows7-x86_Android-armv5
+build_node_labels:          win-MinGW4.8-Windows7-x86_Android-armv5, win-MinGW4.9.1-Windows7-x86_Android-armv5
 
 [meta.windows.x86.android_armv7]
 build_target_dir:           android_armv7/mingw_x86
-build_node_labels:          win-MinGW4.8-Windows7-x86_Android-armv7
+build_node_labels:          win-MinGW4.8-Windows7-x86_Android-armv7, win-MinGW4.9.1-Windows7-x86_Android-armv7
 
 [meta.windows.x86.android_x86]
 build_target_dir:           android_x86/mingw_x86
-build_node_labels:          win-MinGW4.8-Windows7-x86_Android-x86
+build_node_labels:          win-MinGW4.8-Windows7-x86_Android-x86, win-MinGW4.9.1-Windows7-x86_Android-x86
 
 [meta.windows.x86.qnx6_armv7]
 build_target_dir:           qnx6_armv7/mingw_x86
