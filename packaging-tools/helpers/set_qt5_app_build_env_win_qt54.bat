@@ -130,19 +130,19 @@ set "EXTRA_QT_CONFIGURE_OPTIONS=-D QT_EVAL"
 
 echo %cfg%|findstr /i Android >nul:
 if %errorlevel%==0 (
-set "PATH=c:\work\build\qtsdk\gnuwin32\bin;c:\mingw482\mingw32\bin;%PATH%;C:\Utils\icu32_53_1_mingw482\bin;C:\Utils\icu32_53_1_mingw482\lib;C:\Utils\pgsql\bin;C:\temp\openssl-android-master\openssl-android-master\bin"
+set "PATH=c:\work\build\qtsdk\gnuwin32\bin;c:\mingw491\mingw32\bin;%PATH%;C:\Utils\icu32_53_1_mingw482\bin;C:\Utils\icu32_53_1_mingw482\lib;C:\Utils\pgsql\bin;C:\temp\openssl-android-master\openssl-android-master\bin"
 set "LIB=C:\Utils\icu32_53_1_mingw482\lib;%LIB%;C:\Utils\pgsql\lib;C:\temp\opensll-android-master\openssl-android-master\lib"
-set "INCLUDE=%INCLUDE%;C:\Utils\icu32_53_1_mingw482\include;C:\Utils\pgsql\include;C:\temp\openssl-android-master\openssl-android-master\include;C:\mingw482\mingw32\include"
+set "INCLUDE=%INCLUDE%;C:\Utils\icu32_53_1_mingw482\include;C:\Utils\pgsql\include;C:\temp\openssl-android-master\openssl-android-master\include;C:\mingw491\mingw32\include"
 set QTDIR=
 set ANDROID_BUILD_TOOLS_REVISION=21.0.2
 set ANDROID_NDK_HOST=windows
 set ANDROID_NDK_PLATFORM=android-9
 set ANDROID_NDK_ROOT=c:\Utils\android\ndk
 set ANDROID_NDK_TOOLCHAIN_VERSION=4.8
-set ANDROID_SDK_ROOT=c:\Utils\android\sdk\sdk
+set ANDROID_SDK_ROOT=c:\Utils\android\sdk
 set NODE_ARCH=32
 set ANDROID_NDK_HOME=c:\Utils\android\ndk
-set ANDROID_SDK_HOME=c:\Utils\android\sdk\sdk
+set ANDROID_SDK_HOME=c:\Utils\android\sdk
 )
 
 echo %cfg%|findstr /i Android-armv7 >nul:
@@ -200,9 +200,9 @@ set "NODE_ARCH=32"
 
 echo %cfg%|findstr /i win-MinGW4.9.1-Windows7-x86_OpenGL >nul:
 if %errorlevel%==0 (
-set "PATH=c:\work\build\qtsdk\gnuwin32\bin;c:\mingw482\mingw32\bin;C:\Utils\icu32_53_1_mingw482\bin;C:\Utils\icu32_53_1_mingw482\lib;%PATH%;C:\openssl\bin"
-set "LIB=C:\mingw482\mingw32\lib;;C:\Utils\icu32_53_1_mingw482\lib;%LIB%;C:\opensll\lib"
-set "INCLUDE=%INCLUDE%;C:\mingw482\mingw32\include;C:\Utils\icu32_53_1_mingw482\include;C:\openssl\include"
+set "PATH=c:\work\build\qtsdk\gnuwin32\bin;c:\mingw491\mingw32\bin;C:\Utils\icu32_53_1_mingw482\bin;C:\Utils\icu32_53_1_mingw482\lib;%PATH%;C:\openssl\bin"
+set "LIB=C:\mingw491\mingw32\lib;;C:\Utils\icu32_53_1_mingw482\lib;%LIB%;C:\opensll\lib"
+set "INCLUDE=%INCLUDE%;C:\mingw491\mingw32\include;C:\Utils\icu32_53_1_mingw482\include;C:\openssl\include"
 set QTDIR=
 set "NODE_ARCH=32"
 )
@@ -210,17 +210,17 @@ set "NODE_ARCH=32"
 echo %cfg%|findstr /i QNX- >nul:
 if %errorlevel%==0 (
 call c:\qnx660\qnx660-env.bat
-set "PATH=c:\work\build\qtsdk\gnuwin32\bin;c:\mingw482\mingw32\bin;%PATH%;C:\Utils\icu32_53_1_mingw482\bin;C:\Utils\icu32_53_1_mingw482\lib;C:\Utils\pgsql\bin;C:\qnx660\host\win32\x86\usr\bin;C:\qnx660\.qnx\bin"
+set "PATH=c:\work\build\qtsdk\gnuwin32\bin;c:\mingw491\mingw32\bin;%PATH%;C:\Utils\icu32_53_1_mingw482\bin;C:\Utils\icu32_53_1_mingw482\lib;C:\Utils\pgsql\bin;C:\qnx660\host\win32\x86\usr\bin;C:\qnx660\.qnx\bin"
 set "LIB=C:\Utils\icu32_53_1_mingw482\lib;%LIB%;C:\Utils\pgsql\lib;"
-set "INCLUDE=%INCLUDE%;C:\Utils\icu32_53_1_mingw482\include;C:\Utils\pgsql\include;C:\mingw482\mingw32\include"
+set "INCLUDE=%INCLUDE%;C:\Utils\icu32_53_1_mingw482\include;C:\Utils\pgsql\include;C:\mingw491\mingw32\include"
 )
 
 echo %cfg%|findstr /i QNX650- >nul:
 if %errorlevel%==0 (
 call c:\qnx650\qnx650-env.bat
-set "PATH=c:\work\build\qtsdk\gnuwin32\bin;c:\mingw482\mingw32\bin;%PATH%;C:\Utils\icu32_53_1_mingw482\bin;C:\Utils\icu32_53_1_mingw482\lib;C:\Utils\pgsql\bin;C:\qnx650\host\win32\x86\usr\bin;C:\qnx650\.qnx\bin"
+set "PATH=c:\work\build\qtsdk\gnuwin32\bin;c:\mingw491\mingw32\bin;%PATH%;C:\Utils\icu32_53_1_mingw482\bin;C:\Utils\icu32_53_1_mingw482\lib;C:\Utils\pgsql\bin;C:\qnx650\host\win32\x86\usr\bin;C:\qnx650\.qnx\bin"
 set "LIB=C:\Utils\icu32_53_1_mingw482\lib;%LIB%;C:\Utils\pgsql\lib;"
-set "INCLUDE=%INCLUDE%;C:\Utils\icu32_53_1_mingw482\include;C:\Utils\pgsql\include;C:\mingw482\mingw32\include"
+set "INCLUDE=%INCLUDE%;C:\Utils\icu32_53_1_mingw482\include;C:\Utils\pgsql\include;C:\mingw491\mingw32\include"
 )
 
 echo %cfg%|findstr /i QNX-armv7 >nul:
