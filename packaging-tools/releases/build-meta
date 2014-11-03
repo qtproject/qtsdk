@@ -250,18 +250,18 @@ build_target_dir:           android_x86/mac_109_x64
 build_node_labels:          mac-clang-10.9-x64_Android-x86
 
 [meta.mac_1010.x64.clang]
-build_target_dir:           mac_x64_1010
+build_target_dir:           mac_x64
 build_node_labels:          mac-clang-10.10-x64
 
 [meta.mac_1010.x64.android_armv5]
-build_target_dir:           android_armv5/mac_1010_x64
+build_target_dir:           android_armv5/mac_x64
 build_node_labels:          mac-clang-10.10-x64_Android-armv5
 
 [meta.mac_1010.x64.android_armv7]
-build_target_dir:           android_armv7/mac_1010_x64
+build_target_dir:           android_armv7/mac_x64
 build_node_labels:          mac-clang-10.10-x64_Android-armv7
 
 [meta.mac_1010.x64.android_x86]
-build_target_dir:           android_x86/mac_1010_x64
+build_target_dir:           android_x86/mac_x64
 build_node_labels:          mac-clang-10.10-x64_Android-x86
 
