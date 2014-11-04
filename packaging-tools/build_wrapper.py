@@ -122,9 +122,11 @@ BUILD_META_INFO_FILE        = 'releases/build-meta'
 
 
 
-
+###########################################
+# Environment variable combining
+###########################################
 def combine_env_variable(a, b):
-    if plat.startswith('win'):
+    if platform.system().lower().startswith('win'):
         return a + ';' + b
     else :
         return a + ':' + b
@@ -865,7 +867,7 @@ def get_qt_configuration_options():
 def handle_qt_desktop_release_build():
     global EXTRA_ENV
     # Use custom ICU when required (build from sources or use pre-built icu libs)
-    icu_configuration = bld_icu_tools.setup_icu(ICU_SRC, '', EXTRA_ENV)
+    icu_configuration = bld_icu_tools.init_build_icu(ICU_SRC, '', EXTRA_ENV, False)
     ## let's build Qt
     # some common variables
     source_url = SRC_URL + '/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
@@ -1551,7 +1553,7 @@ def handle_icu_build():
         icu_src = os.environ['ICU_SRC_PKG_URL_UNIX']
     icu_version = '' # can be left empty, not cloning from git
     sanity_check_packaging_server()
-    bld_icu_tools.init_build_icu(icu_src, icu_version)
+    bld_icu_tools.init_build_icu(icu_src, icu_version, True)
     # define remote dir where to upload
     remote_snaphot_dir = PATH + '/' + 'icu' + '/' + os.environ['ICU_VERSION'] + '/' + 'latest'
     srv_and_remote_dir = PKG_SERVER_ADDR + ':' + remote_snaphot_dir

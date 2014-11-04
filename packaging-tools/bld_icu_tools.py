@@ -49,13 +49,14 @@ import sys
 import multiprocessing
 import shutil
 import platform
+import fileinput
 from optparse import OptionParser, Option
 import bldinstallercommon
 from pkg_constants import ICU_BUILD_OUTPUT_DIR
+from pkg_constants import ICU_INSTALL_DIR_NAME
 
 SCRIPT_ROOT_DIR            = os.path.dirname(os.path.realpath(__file__))
 ICU_SRC_DIR_NAME           = 'icu-src'
-ICU_INSTALL_DIR_NAME       = 'icu_install'
 QT5_FILES_TO_PATCH_LIST    = ['*.prl', '*.pri', '*.pc', '*.la']
 DEFAULT_ICU_SRC_PKG        = 'http://download.qt-project.org/development_releases/prebuilt/icu/src/icu4c-53_1-src.tgz'
 
@@ -83,7 +84,7 @@ class ICUConfiguration:
 ###############################
 # handle_icu_build
 ###############################
-def build_icu_linux(environment, icu_src_base_dir, archive_icu = True):
+def build_icu_linux(environment, icu_src_base_dir, archive_icu):
     bldinstallercommon.create_dirs(os.path.join(SCRIPT_ROOT_DIR, ICU_INSTALL_DIR_NAME))
     exec_path = icu_src_base_dir
     # configure
@@ -201,32 +202,60 @@ def get_icu_env(icu_lib_path, icu_include_path):
 ###############################
 # function
 ###############################
-def patch_icu_paths_from_qt5(search_path):
-    pattern = re.compile(ICU_INSTALL_DIR_NAME)
-    file_list = []
-    for root, dirnames, filenames in os.walk(search_path):
-        for extensions in QT5_FILES_TO_PATCH_LIST:
-            for filename in fnmatch.filter(filenames, extensions):
-                path = os.path.join(root, filename)
-                readlines = open(path,'r').read()
-                if pattern.search(readlines):
-                    file_list.append(path)
+def patch_icu_paths(search_path):
+    extension_list = ['*.prl', '*.pri', '*.pc', '*.la']
+    search_string = ICU_INSTALL_DIR_NAME
+    file_list = bldinstallercommon.search_for_files(search_path, extension_list, search_string)
+
     for item in file_list:
-        print('Erasing \'' + ICU_INSTALL_DIR_NAME + '\' paths from file: {0}'.format(item))
-        match = 0
+        print('Erasing \'{0}\' paths from file: {1}'.format(search_string, item))
         for line in fileinput.FileInput(item, inplace = 1):
-            keep_going = True
-            formatted_line = ''
-            while keep_going:
-                formatted_line = re.sub('-[I|L](.*?' + ICU_INSTALL_DIR_NAME + ')(.*?)[\" $]', '', line)
-                if formatted_line == line:
-                    keep_going = False
-                else:
-                    match = match + 1
-                    line = formatted_line
-            print(formatted_line.rstrip('\n'))
-        if match:
-            print('Items erased: {0}'.format(str(match)))
+            if not search_string in line:
+                print(line.rstrip('\n'))
+                continue
+            if is_quoted_line(line):
+                patched_line = patch_quoted_line(line, search_string)
+            else:
+                patched_line = patch_line(line, search_string)
+
+            print(patched_line.rstrip('\n'))
+
+
+###############################
+# function
+###############################
+def is_quoted_line(line):
+    if line.rstrip(' \t\n\r').endswith(('\'', '\"')):
+        index = line.index('=')
+        if index:
+            tmp = line[index + 1:].lstrip(' \t\n\r')
+            return tmp.startswith(('-L\"', '\'-L'))
+    return False
+
+
+###############################
+# function
+###############################
+def patch_line(line, search_string):
+    line_items = line.split(' ')
+    line_items[:] = [x for x in line_items if not (search_string in x)]
+    return ' '.join(line_items)
+
+
+###############################
+# function
+###############################
+def patch_quoted_line(line, search_string):
+    index_character = line.rstrip(' \t\n\r')[-1:]
+    string_begin_index = line.index(index_character)
+    string_end_index = line.rindex(index_character)
+    string_to_patch = line[string_begin_index + 1:string_end_index]
+    patched_substring = patch_line(string_to_patch, search_string)
+    if not patched_substring.strip(' \t\n\r'):
+        patched_line = line[:line.index('=') + 1]
+    else:
+        patched_line = line[:string_begin_index + 1] + patched_substring + line[string_end_index:]
+    return patched_line
 
 
 ##############################################################
@@ -240,9 +269,10 @@ def cleanup_icu():
 ##############################################################
 # Execute task(s)
 ##############################################################
-def init_build_icu(icu_src, icu_version = '', environment = dict(os.environ)):
+def init_build_icu(icu_src, icu_version = '', environment = dict(os.environ), archive_icu = False):
     # clean up first
     cleanup_icu()
+    icu_src_dir = os.path.join(SCRIPT_ROOT_DIR, ICU_SRC_DIR_NAME)
     # what to do
     if not icu_src:
         print('*** Error! You asked to build the ICU but did not tell from where to find the sources?')
@@ -251,30 +281,26 @@ def init_build_icu(icu_src, icu_version = '', environment = dict(os.environ)):
         if not icu_version:
             print('*** Error! You asked to clone ICU sources from git repository but did not tell from which branch/tag/sha?')
             sys.exit(-1)
-        bldinstallercommon.clone_repository(icu_src, icu_version, ICU_SRC_DIR_NAME)
+        bldinstallercommon.clone_repository(icu_src, icu_version, icu_src_dir)
     else:
         if not bldinstallercommon.is_content_url_valid(icu_src):
             print('*** Error! The given URL for ICU sources is not valid: {0}'.format(icu_src))
             sys.exit(-1)
         package_save_as_temp = os.path.join(SCRIPT_ROOT_DIR, os.path.basename(icu_src))
-        bldinstallercommon.create_dirs(os.path.join(SCRIPT_ROOT_DIR, ICU_SRC_DIR_NAME))
+        bldinstallercommon.create_dirs(icu_src_dir)
         print('Downloading ICU src package: ' + icu_src)
         bldinstallercommon.retrieve_url(icu_src, package_save_as_temp)
-        bldinstallercommon.extract_file(package_save_as_temp, ICU_SRC_DIR_NAME)
+        bldinstallercommon.extract_file(package_save_as_temp, icu_src_dir)
     # now build the icu
     icu_configuration = None
     if bldinstallercommon.is_linux_platform():
-        icu_configuration = build_icu_linux(environment, os.path.join(SCRIPT_ROOT_DIR, ICU_SRC_DIR_NAME))
+        icu_configuration = build_icu_linux(environment, os.path.join(SCRIPT_ROOT_DIR, icu_src_dir), archive_icu)
     elif bldinstallercommon.is_mac_platform():
         print('*** ICU build for Mac not implemented yet!')
     elif bldinstallercommon.is_win_platform():
         print('*** ICU build for Win not implemented yet!')
     else:
         print('*** Unsupported platform')
-
-
-
-
     # set options for Qt5 build
     extra_qt_configure_args = ' -L ' + icu_configuration.icu_lib_path
     extra_qt_configure_args += ' -I ' + icu_configuration.icu_include_path
@@ -322,7 +348,7 @@ def main():
     bldinstallercommon.init_common_module(SCRIPT_ROOT_DIR)
     options = parse_cmd_line()
     if options.build_icu:
-        init_build_icu(options.icu_src, options.icu_version)
+        init_build_icu(options.icu_src, options.icu_version, True)
     else:
         print('You asked me to do nothing?')
 

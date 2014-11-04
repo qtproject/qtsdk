@@ -48,6 +48,7 @@ import sys
 import urllib
 import fileinput
 import bldinstallercommon
+import bld_icu_tools
 import multiprocessing
 import patch_qmake_qt_key
 from optparse import OptionParser, Option
@@ -809,40 +810,7 @@ def patch_build():
         replace_rpath()
     # patch icu_install paths from files
     if bldinstallercommon.is_linux_platform():
-        patch_icu_paths(MAKE_INSTALL_ROOT_DIR)
-
-
-###############################
-# function
-###############################
-def patch_icu_paths(search_path):
-    extension_list = ['*.prl', '*.pri', '*.pc', '*.la']
-    pattern = re.compile('icu_install')
-    file_list = []
-    for root, dirnames, filenames in os.walk(search_path):
-        for extensions in extension_list:
-            for filename in fnmatch.filter(filenames, extensions):
-                path = os.path.join(root, filename)
-                readlines = open(path,'r').read()
-                if pattern.search(readlines):
-                    file_list.append(path)
-
-    for item in file_list:
-        print_wrap('Erasing \'icu_install\' paths from file: ' + item)
-        match = 0
-        for line in fileinput.FileInput(item, inplace = 1):
-            keep_going = True
-            formatted_line = ''
-            while keep_going:
-                formatted_line = re.sub('-[I|L](.*?icu_install)(.*?)[\" $]', '', line)
-                if formatted_line == line:
-                    keep_going = False
-                else:
-                    match = match + 1
-                    line = formatted_line
-            print formatted_line.rstrip('\n')
-        if match:
-            print_wrap('Items erased: ' + str(match))
+        bld_icu_tools.patch_icu_paths(MAKE_INSTALL_ROOT_DIR)
 
 
 ###############################

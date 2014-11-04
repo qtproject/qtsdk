@@ -221,6 +221,22 @@ def get_executable_suffix():
 ###############################
 # function
 ###############################
+def search_for_files(search_path, file_extension_list, rgx_pattern):
+    pattern = re.compile(rgx_pattern)
+    file_list = []
+    for root, dirnames, filenames in os.walk(search_path):
+        for extension in file_extension_list:
+            for filename in fnmatch.filter(filenames, extension):
+                path = os.path.join(root, filename)
+                readlines = open(path,'r').read()
+                if pattern.search(readlines):
+                    file_list.append(path)
+    return file_list
+
+
+###############################
+# function
+###############################
 def make_files_list(directory, rgxp):
     """Populate and return 'fileslist[]' with all files inside 'directory' matching 'regx'"""
     # if 'directory' is not a directory, exit with error
