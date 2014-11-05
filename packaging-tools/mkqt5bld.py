@@ -460,8 +460,8 @@ def build_qmlpuppets():
     install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + prfx_path
     qmake_executable_path = [qmake_executable_path, '-after', 'DESTDIR=' + os.path.join(install_root_path, 'bin')]
 
-    bldinstallercommon.do_execute_sub_process(qmake_executable_path, qmlpuppet_dir, QT_BUILD_OPTIONS.strict_mode)
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), qmlpuppet_dir, QT_BUILD_OPTIONS.strict_mode)
+    bldinstallercommon.do_execute_sub_process(qmake_executable_path, qmlpuppet_dir, QT_BUILD_OPTIONS.strict_mode, False, QT_BUILD_OPTIONS.system_env)
+    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), qmlpuppet_dir, QT_BUILD_OPTIONS.strict_mode, False, QT_BUILD_OPTIONS.system_env)
     print_wrap('--------------------------------------------------------------------')
 
 

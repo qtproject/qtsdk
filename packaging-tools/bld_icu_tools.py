@@ -302,8 +302,8 @@ def init_build_icu(icu_src, icu_version = '', environment = dict(os.environ), ar
     else:
         print('*** Unsupported platform')
     # set options for Qt5 build
-    extra_qt_configure_args = ' -L ' + icu_configuration.icu_lib_path
-    extra_qt_configure_args += ' -I ' + icu_configuration.icu_include_path
+    extra_qt_configure_args = ' -L' + icu_configuration.icu_lib_path
+    extra_qt_configure_args += ' -I' + icu_configuration.icu_include_path
     icu_configuration.qt_configure_extra_args = extra_qt_configure_args
     icu_configuration.environment = get_icu_env(icu_configuration.icu_lib_path, icu_configuration.icu_include_path)
     return icu_configuration

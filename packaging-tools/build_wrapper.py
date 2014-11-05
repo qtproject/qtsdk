@@ -867,7 +867,8 @@ def get_qt_configuration_options():
 def handle_qt_desktop_release_build():
     global EXTRA_ENV
     # Use custom ICU when required (build from sources or use pre-built icu libs)
-    icu_configuration = bld_icu_tools.init_build_icu(ICU_SRC, '', EXTRA_ENV, False)
+    if platform.system().lower().startswith('linux'):
+        icu_configuration = bld_icu_tools.init_build_icu(ICU_SRC, '', EXTRA_ENV, False)
     ## let's build Qt
     # some common variables
     source_url = SRC_URL + '/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
@@ -900,9 +901,10 @@ def handle_qt_desktop_release_build():
                 ext_args += ' -DQT_EVAL'
 
     # If custom ICU used
-    if icu_configuration.qt_configure_extra_args:
-        ext_args += icu_configuration.qt_configure_extra_args
-        EXTRA_ENV = combine_environment_dicts(EXTRA_ENV, icu_configuration.environment)
+    if platform.system().lower().startswith('linux'):
+        if icu_configuration.qt_configure_extra_args:
+            ext_args += icu_configuration.qt_configure_extra_args
+            EXTRA_ENV = combine_environment_dicts(EXTRA_ENV, icu_configuration.environment)
     # run mkqt5bld.py with the correct options according to the platform and license being used
     if bldinstallercommon.is_linux_platform():
         ext_args += ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)
