@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
     <DisplayName>Android x86</DisplayName>
-    <Description>Please note: LGPLv3 licensed module&lt;br&gt;&lt;br&gt;Qt 5.4.0 Prebuilt Components for Android x86</Description>
+    <Description>License options: LGPLv3, Commercial&lt;br&gt;&lt;br&gt;NOTE: Not licensed under LGPLv2.1&lt;br&gt;&lt;br&gt;Qt 5.4.0 Prebuilt Components for Android x86</Description>
     <Version>5.4.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.tools.qtcreator</Dependencies>
