@@ -479,7 +479,8 @@ def install_qt():
         print_wrap('    Installing module: Qt top level')
         print_wrap('          -> cmd args: ' + cmd_args)
         print_wrap('                -> in: ' + QT_SOURCE_DIR)
-        return_code, output = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, QT_BUILD_OPTIONS.strict_mode)
+        return_code, output = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '),
+            QT_SOURCE_DIR, QT_BUILD_OPTIONS.strict_mode, False, QT_BUILD_OPTIONS.system_env)
         return
 
     if QNX_BUILD:
@@ -491,7 +492,8 @@ def install_qt():
             install_root_path = install_root_path.replace('\\','/').replace('/', '\\', 1)
         cmd_args = MAKE_INSTALL_CMD + ' ' + 'INSTALL_ROOT=' + install_root_path
         print_wrap('Installing module: Qt top level')
-        return_code, output = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, QT_BUILD_OPTIONS.strict_mode)
+        return_code, output = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, QT_BUILD_OPTIONS.strict_mode,
+                False, QT_BUILD_OPTIONS.system_env)
         return
 
     #make install for each module with INSTALL_ROOT
@@ -516,7 +518,8 @@ def install_qt():
         submodule_dir_name = QT_SOURCE_DIR + os.sep + module_name
         cmd_args = MAKE_INSTALL_CMD + ' ' + 'INSTALL_ROOT=' + install_root_path
         print_wrap('Installing module: ' + module_name)
-        return_code, output = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), submodule_dir_name, QT_BUILD_OPTIONS.strict_mode)
+        return_code, output = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), submodule_dir_name, QT_BUILD_OPTIONS.strict_mode,
+            False, QT_BUILD_OPTIONS.system_env)
         if return_code >= 0:
             file_handle = open(MISSING_MODULES_FILE, 'a')
             file_handle.write('\nFailed to install ' + module_name)
@@ -630,17 +633,17 @@ def build_docs():
 
     print_wrap('    Running \'make qmake_all\' ...')
     cmd_args = QT_BUILD_OPTIONS.make_cmd + ' qmake_all'
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, False, False)
+    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, False, False, QT_BUILD_OPTIONS.system_env)
 
     #first we need to do make install for the sources
     print_wrap('    Running make install...')
     install_args = MAKE_INSTALL_CMD
-    bldinstallercommon.do_execute_sub_process(install_args.split(' '), QT_SOURCE_DIR, False, False)
+    bldinstallercommon.do_execute_sub_process(install_args.split(' '), QT_SOURCE_DIR, False, False, QT_BUILD_OPTIONS.system_env)
 
     cmd_args = QT_BUILD_OPTIONS.make_cmd + ' docs'
     print_wrap('    Running make docs in ' + QT_SOURCE_DIR)
     #do not abort on fail, if the doc build fails, we still want to get the binary package
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, False)
+    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, False, False, QT_BUILD_OPTIONS.system_env)
 
     print_wrap('    Running make install_docs in ' + QT_SOURCE_DIR)
     make_cmd = QT_BUILD_OPTIONS.make_cmd
@@ -649,7 +652,7 @@ def build_docs():
         install_root_path = install_root_path[2:]
     doc_install_args = make_cmd + ' -j1 install_docs INSTALL_ROOT=' + install_root_path
     #do not abort on fail, if the doc build fails, we still want to get the binary package
-    bldinstallercommon.do_execute_sub_process(doc_install_args.split(' '), QT_SOURCE_DIR, False)
+    bldinstallercommon.do_execute_sub_process(doc_install_args.split(' '), QT_SOURCE_DIR, False, False, QT_BUILD_OPTIONS.system_env)
 
     # Also archive docs in a separate qt5_docs.7z file
     print_wrap('    Archiving qt5_docs.7z')
