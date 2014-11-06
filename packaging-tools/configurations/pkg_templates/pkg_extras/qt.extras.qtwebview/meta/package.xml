@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>Qt WebView 1.0</DisplayName>
+    <DisplayName>Qt WebView 1.0 (Tech Preview)</DisplayName>
     <Description>Qt WebView. A lightweight native WebView for Android and iOS.</Description>
     <Version>1.0.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>

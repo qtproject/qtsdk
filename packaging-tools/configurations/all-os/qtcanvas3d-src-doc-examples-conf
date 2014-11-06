@@ -41,22 +41,22 @@ file_list:              qtcanvas3d-10-src-conf
 
 [qt.extras.qtcanvas3d.src]
 
-[qt.extras.qtcanvas3d.doc]
-optional_for_offline:   true
-archives:               qtcanvas3d.doc
-target_install_base:    /Docs/QtCanvas3D/1.0/
-[qtcanvas3d.doc]
-archive_uri:            /qtcanvas3d/@QTCANVAS3D_VERSION@/latest_successful/doc/qtcanvas3d-@LICENSE@-doc-@QTCANVAS3D_VERSION@.7z
-target_install_dir:
-package_strip_dirs:     1
-package_finalize_items: cleanup_doc_directory
+#[qt.extras.qtcanvas3d.doc]
+#optional_for_offline:   true
+#archives:               qtcanvas3d.doc
+#target_install_base:    /Docs/QtCanvas3D/1.0/
+#[qtcanvas3d.doc]
+#archive_uri:            /qtcanvas3d/@QTCANVAS3D_VERSION@/latest_successful/doc/qtcanvas3d-@LICENSE@-doc-@QTCANVAS3D_VERSION@.7z
+#target_install_dir:
+#package_strip_dirs:     1
+#package_finalize_items: cleanup_doc_directory
 
-[qt.extras.qtcanvas3d.examples]
-optional_for_offline:   true
-archives:               qtcanvas3d.examples
-target_install_base:    /Examples/QtCanvas3D/1.0/
-[qtcanvas3d.examples]
-archive_uri:            /qtcanvas3d/@QTCANVAS3D_VERSION@/latest_successful/examples/examples_qtcanvas3d.7z
-target_install_dir:
-package_strip_dirs:     2
+#[qt.extras.qtcanvas3d.examples]
+#optional_for_offline:   true
+#archives:               qtcanvas3d.examples
+#target_install_base:    /Examples/QtCanvas3D/1.0/
+#[qtcanvas3d.examples]
+#archive_uri:            /qtcanvas3d/@QTCANVAS3D_VERSION@/latest_successful/examples/examples_qtcanvas3d.7z
+#target_install_dir:
+#package_strip_dirs:     2
 
