@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>Qt Licenses LGPLv3</DisplayName>
+    <DisplayName>Qt License LGPL</DisplayName>
     <Version>1.0.0</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Licenses>
-        <License name="Qt Installer LGPLv3 Agreement" file="LICENSE.LGPLv3" />
+        <License name="Qt Installer LGPL License Agreement" file="LICENSE" />
     </Licenses>
     <Virtual>true</Virtual>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
