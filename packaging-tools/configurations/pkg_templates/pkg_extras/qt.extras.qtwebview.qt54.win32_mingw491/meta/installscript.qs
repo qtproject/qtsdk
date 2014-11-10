@@ -39,7 +39,7 @@ function Component()
 
 function resolveQt5EssentialsDependency()
 {
-    return "qt.54.win32_mingw482" + "_qmakeoutput";
+    return "qt.54.win32_mingw491" + "_qmakeoutput";
 }
 
 

@@ -38,7 +38,7 @@ name:                   qt
 identifier:             windows
 
 [PackageConfigurationFiles]
-file_list:              qtwebview-qt54-x86-mingw482_32-conf,
+file_list:              qtwebview-qt54-x86-mingw491_32-conf,
                         qtwebview-qt54-x86-msvc2010_32-opengl-conf,
                         qtwebview-qt54-x86-msvc2012_32-opengl-conf,
                         qtwebview-qt54-x86-msvc2013_32-conf,
