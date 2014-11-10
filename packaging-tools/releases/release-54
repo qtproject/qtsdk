@@ -41,7 +41,7 @@ configure_options:      -opensource -confirm-license -debug-and-release -release
 
 [release.qt.configure_options.mac]
 build_node_labels:      mac-clang-10.8-x64, mac-clang-10.9-x64, mac-clang-10.10-x64
-configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -platform macx-clang -sysconfdir /Library/Preferences/Qt -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -plugin-sql-odbc -openssl -dbus -I/opt/local/include/dbus-1.0 -I/opt/local/lib/dbus-1.0/include -L/opt/local/lib
+configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -platform macx-clang -sysconfdir /Library/Preferences/Qt -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -openssl -dbus -I/opt/local/include/dbus-1.0 -I/opt/local/lib/dbus-1.0/include -L/opt/local/lib
 
 [release.qt.configure_options.windows]
 build_node_labels:      win-msvc2010-Windows7-x86_ANGLE, win32-msvc2010_Windows_7, win-msvc2012-Windows8-x86_ANGLE, win-msvc2012-Windows8-x64_ANGLE, win64-msvc2012_Windows_8, win-msvc2013-Windows8.1-x86_ANGLE, win-msvc2013-Windows8.1-x64_ANGLE
