@@ -52,6 +52,7 @@ function Component()
 
         // first reset the latest Qt5.x.x package default values to false
         installer.componentByName("qt.54.win32_mingw491").setValue("Default", "false");
+        installer.componentByName("qt.54.android_armv7").setValue("Default", "false");
 
         installer.componentByName("qt.54.win32_msvc2010_opengl").setValue("Default", "false")
 
