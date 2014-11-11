@@ -66,14 +66,6 @@ repo_content_type:          qtwebview
 repo_components_to_update:  qt.extras.qtwebview.qt54*
 repo_url_specifier:         windows_x86/android/extras/qtwebview
 
-[release.qtwebview.repository.windows.x86.winrt]
-arg_configurations_file:    repository_configs_extras/qtwebview/qt5.4/windows_x86/win_x86_winrt_repository_qtwebview
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
-repo_content_type:          qtwebview
-repo_components_to_update:  qt.extras.qtwebview.qt54*
-repo_url_specifier:         windows_x86/winrt/extras/qtwebview
-
-
 
 ################################################################################
 ## Mac repository
