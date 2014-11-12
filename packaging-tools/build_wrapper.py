@@ -120,6 +120,7 @@ BUILD_META_INFO_FILE        = 'releases/build-meta'
 class BldCommand:
     init_build_cycle                        = 'init'
     init_qtcreator_build_cycle              = 'init_qtcreator'
+    execute_configure_exe_bld               = 'configure_exe'
     init_extra_module_build_cycle_src       = 'init_app_src'
     init_extra_module_build_cycle_binary    = 'init_app_binary'
     execute_qt5_src_pkg                     = 'build_src'
@@ -154,6 +155,7 @@ class BldCommand:
         commands += [self.execute_offline_inst_bld]
         commands += [self.execute_online_inst_bld]
         commands += [self.publish_qt5_src_pkg]
+        commands += [self.execute_configure_exe_bld]
         if self.options.command not in commands:
             return False
         return True
@@ -206,6 +208,9 @@ class BldCommand:
         # Qt Creator
         elif cmd == self.init_qtcreator_build_cycle:
             return self.validate_init_qtcreator_build_cycle_args()
+        elif self.options.command == self.execute_configure_exe_bld:
+            if len(sys.argv) < 7:
+                return False
         else:
             if len(sys.argv) < 15:
                 return False
@@ -434,6 +439,29 @@ def initialize_extra_module_build_src():
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
 ###############################
+# handle_qt_configure_exe_build
+###############################
+def handle_qt_configure_exe_build():
+    # create configure.exe and inject it into src package
+    cmd_args = ['python', '-u', WORK_DIR + '\qtsdk\packaging-tools\helpers\create_configure_exe.py', 'src_url=' + SRC_URL + '/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION + '.zip', 'mdl_url=' + SRC_URL + '/submodules/qtbase-' + LICENSE + '-src-' + QT_FULL_VERSION + '.zip', 'do_7z']
+    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
+
+    # upload packages
+    ARTF_UPLOAD_PATH=PKG_SERVER_ADDR + ':' + PATH + '/' + LICENSE + '/' + 'qt/' + QT_VERSION + '/latest/src'
+    temp_file = 'qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION + '.zip'
+    cmd_args = [SCP_COMMAND, temp_file, ARTF_UPLOAD_PATH + '/single/']
+    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
+    temp_file = 'qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION + '.7z'
+    cmd_args = [SCP_COMMAND, temp_file, ARTF_UPLOAD_PATH + '/single/']
+    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
+    temp_file = 'qtbase-' + LICENSE + '-src-' + QT_FULL_VERSION + '.zip'
+    cmd_args = [SCP_COMMAND, temp_file, ARTF_UPLOAD_PATH + '/submodules/']
+    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
+    temp_file = 'qtbase-' + LICENSE + '-src-' + QT_FULL_VERSION + '.7z'
+    cmd_args = [SCP_COMMAND, temp_file, ARTF_UPLOAD_PATH + '/submodules/']
+    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
+
+###############################
 # build_extra_module_src_pkg
 ###############################
 def build_extra_module_src_pkg():
@@ -561,7 +589,9 @@ def handle_ifw_build():
 def handle_qt_src_package_build():
     sanity_check_packaging_server()
     exec_path = os.path.join(WORK_DIR, 'qt5')
-    #bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
+    cmd_args = ['./init-repository', '-f', '--mirror', os.environ['QT5_GIT_MIRROR']]
+    exec_path = os.path.join(WORK_DIR, 'qt5')
+    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
     if LICENSE == 'enterprise':
         cmd_args = ['../patches/apply.sh']
         bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
@@ -875,7 +905,6 @@ def handle_qt_qnx6_release_build():
 def get_qt_configuration_options():
     tmp = ''
     qt_configure_options_file = os.environ['RELEASE_BUILD_QT_CONFIGURE_OPTIONS_FILE']
-    target_env = os.environ['TARGET_ENV']
     # parse qt configuration arguments from release description file
     if not os.path.isfile(qt_configure_options_file):
         print('*** Not a valid release description file: {0}'.format(qt_configure_options_file))
@@ -891,11 +920,11 @@ def get_qt_configuration_options():
         build_node_labels = bldinstallercommon.safe_config_key_fetch(parser, s, 'build_node_labels').replace(' ', '')
         tmp = bldinstallercommon.safe_config_key_fetch(parser, s, 'configure_options')
         label_list = build_node_labels.split(',')
-        if target_env in label_list:
+        if TARGET_ENV in label_list:
             tmp_conf += 'tmp' + str(random.randint(1, 1000))
             break
     if not tmp:
-        print('*** No valid configuration for {0} found'.format(target_env))
+        print('*** No valid configuration for {0} found'.format(TARGET_ENV))
         tmp_conf = ''
     else:
         f = open(tmp_conf,"w")
@@ -1627,7 +1656,7 @@ def parse_cmd_line():
         QTCREATOR_VERSION = options.qtcreator_version
         QTCREATOR_VERSION_DESCRIPTION = options.qtcreator_version_description
         QT_FULL_VERSION   = QT_VERSION
-        if QT_VERSION_TAG:
+        if QT_VERSION_TAG != 'NONE':
             QT_FULL_VERSION += '-' + QT_VERSION_TAG
     else:
         OPTION_PARSER.print_help()
@@ -1797,6 +1826,8 @@ def main():
         handle_offline_installer_build()
     elif COMMAND == BldCommand.execute_online_inst_bld:
         handle_online_installer_build()
+    elif COMMAND == BldCommand.execute_configure_exe_bld:
+        handle_qt_configure_exe_build()
     else:
         print('Unsupported command')
 
