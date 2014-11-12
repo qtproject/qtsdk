@@ -64,7 +64,7 @@ function Component()
         installer.componentByName("qt.54.win64_msvc2013_64_opengl").setValue("Default", "false");
         installer.componentByName("qt.54.win64_msvc2013_winphone_arm").setValue("Default", "false");
         installer.componentByName("qt.54.win64_msvc2013_winphone_x86").setValue("Default", "false");
-        installer.componentByName("qt.54.win64_msvc2013_winrt_x86").setValue("Default", "false");
+        installer.componentByName("qt.54.win64_msvc2013_winrt_x64").setValue("Default", "false");
 
         // if 32bit windows hide the 64bit packages
         if (installer.environmentVariable("ProgramFiles(x86)") == "" ) {
@@ -72,7 +72,7 @@ function Component()
             installer.componentByName("qt.54.win64_msvc2013_64_opengl").setValue("Virtual", "true");
             installer.componentByName("qt.54.win64_msvc2013_winphone_arm").setValue("Virtual", "true");
             installer.componentByName("qt.54.win64_msvc2013_winphone_x86").setValue("Virtual", "true");
-            installer.componentByName("qt.54.win64_msvc2013_winrt_x86").setValue("Virtual", "true");
+            installer.componentByName("qt.54.win64_msvc2013_winrt_x64").setValue("Virtual", "true");
         }
 
         // now try to determine which tool chains to select by default
