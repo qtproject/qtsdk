@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
     <DisplayName>Add-Ons</DisplayName>
-    <Description>License options: LGPLv3, Commercial&lt;br&gt;&lt;br&gt;NOTE: Not licensed under LGPLv2.1&lt;br&gt;&lt;br&gt;Qt 5.4.0 Add-Ons Source Components</Description>
+    <Description>Qt 5.4.0 Add-Ons Source Components</Description>
     <Version>5.4.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <SortingPriority>100</SortingPriority> <!-- Priority of this component when visible in the tree. Highest priority number is on top. -->
