@@ -50,9 +50,13 @@ function Component()
         var msvc2012 = !!installer.environmentVariable("VS110COMNTOOLS");
         var msvc2013 = !!installer.environmentVariable("VS120COMNTOOLS");
 
+        var android_armv7 = installer.componentByName("qt.54.android_armv7");
+        var winphone_arm = installer.componentByName("qt.54.win64_msvc2013_winphone_arm");
+        var winphone_x86 = installer.componentByName("qt.54.win64_msvc2013_winphone_x86");
+        var winrt_x64 = installer.componentByName("qt.54.win64_msvc2013_winrt_x64");
+
         // first reset the latest Qt5.x.x package default values to false
         installer.componentByName("qt.54.win32_mingw491").setValue("Default", "false");
-        installer.componentByName("qt.54.android_armv7").setValue("Default", "false");
 
         installer.componentByName("qt.54.win32_msvc2010_opengl").setValue("Default", "false")
 
@@ -62,17 +66,27 @@ function Component()
         installer.componentByName("qt.54.win32_msvc2013_opengl").setValue("Default", "false");
         installer.componentByName("qt.54.win64_msvc2013_64").setValue("Default", "false");
         installer.componentByName("qt.54.win64_msvc2013_64_opengl").setValue("Default", "false");
-        installer.componentByName("qt.54.win64_msvc2013_winphone_arm").setValue("Default", "false");
-        installer.componentByName("qt.54.win64_msvc2013_winphone_x86").setValue("Default", "false");
-        installer.componentByName("qt.54.win64_msvc2013_winrt_x64").setValue("Default", "false");
+
+        if (android_armv7)
+            android_armv7.setValue("Default", "false");
+        if (winphone_arm)
+            winphone_arm.setValue("Default", "false");
+        if (winphone_x86)
+            winphone_x86.setValue("Default", "false");
+        if (winrt_x64)
+            winrt_x64.setValue("Default", "false");
 
         // if 32bit windows hide the 64bit packages
         if (installer.environmentVariable("ProgramFiles(x86)") == "" ) {
             installer.componentByName("qt.54.win64_msvc2013_64").setValue("Virtual", "true");
             installer.componentByName("qt.54.win64_msvc2013_64_opengl").setValue("Virtual", "true");
-            installer.componentByName("qt.54.win64_msvc2013_winphone_arm").setValue("Virtual", "true");
-            installer.componentByName("qt.54.win64_msvc2013_winphone_x86").setValue("Virtual", "true");
-            installer.componentByName("qt.54.win64_msvc2013_winrt_x64").setValue("Virtual", "true");
+
+            if (winphone_arm)
+                winphone_arm.setValue("Virtual", "true");
+            if (winphone_x86)
+                winphone_x86.setValue("Virtual", "true");
+            if (winrt_x64)
+                winrt_x64.setValue("Virtual", "true");
         }
 
         // now try to determine which tool chains to select by default
