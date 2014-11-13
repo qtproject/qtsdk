@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt Extras</DisplayName>
+    <Description>License options: LGPLv3, Commercial&lt;br&gt;&lt;br&gt;NOTE: Not licensed under LGPLv2.1&lt;br&gt;&lt;br&gt;Extra components in addition to Qt standard packages.</Description>
+    <Version>1.0.0</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Name>qt.extras</Name>
+    <SortingPriority>30</SortingPriority>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+

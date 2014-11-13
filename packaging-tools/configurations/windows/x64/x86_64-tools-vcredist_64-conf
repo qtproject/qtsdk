@@ -1,6 +1,6 @@
 #############################################################################
 ##
-## Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+## Copyright (C) 2014 Digia Plc and/or its subsidiary(-ies).
 ## Contact: http://www.qt-project.org/legal
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -47,8 +47,8 @@ version:                2011-03-03
 version_tag:            %VCREDIST_X64_VERSION%
 package_default:        false
 [tools.vcredist_64]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/vcredist/vcredist_sp1_x64.7z
+archive_uri:            http://download.qt-project.org/development_releases/prebuilt/vcredist/vcredist_x64.7z
 package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:
-archive_name:           vcredist_sp1_x64.7z
+archive_name:           vcredist_x64.7z

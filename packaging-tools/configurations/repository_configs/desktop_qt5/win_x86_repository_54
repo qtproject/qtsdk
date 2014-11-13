@@ -46,7 +46,7 @@ name:                   qt
 identifier:             windows
 
 [PackageConfigurationFiles]
-file_list:              x86-qt54-mingw482_32-conf,
+file_list:              x86-qt54-mingw491_32-conf,
                         x86-qt54-msvc2010_32-opengl-conf,
                         x86-qt54-msvc2012_32-opengl-conf,
                         x86-qt54-msvc2013_32-conf,

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #############################################################################
 ##
-## Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+## Copyright (C) 2014 Digia Plc and/or its subsidiary(-ies).
 ## Contact: http://www.qt-project.org/legal
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -216,6 +216,22 @@ def get_executable_suffix():
         return '.exe'
     else:
         return ''
+
+
+###############################
+# function
+###############################
+def search_for_files(search_path, file_extension_list, rgx_pattern):
+    pattern = re.compile(rgx_pattern)
+    file_list = []
+    for root, dirnames, filenames in os.walk(search_path):
+        for extension in file_extension_list:
+            for filename in fnmatch.filter(filenames, extension):
+                path = os.path.join(root, filename)
+                readlines = open(path,'r').read()
+                if pattern.search(readlines):
+                    file_list.append(path)
+    return file_list
 
 
 ###############################
@@ -756,7 +772,7 @@ def clone_repository(repo_url, repo_branch_or_tag, destination_folder):
     cmd_args = ['git', 'init', destination_folder]
     do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
-    cmd_args = ['git', 'fetch', '--depth', '0', repo_url, repo_branch_or_tag]
+    cmd_args = ['git', 'fetch', repo_url, repo_branch_or_tag]
     do_execute_sub_process(cmd_args, destination_folder, True)
 
     cmd_args = ['git', 'checkout', 'FETCH_HEAD']

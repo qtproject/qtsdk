@@ -26,6 +26,7 @@ set -u
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
+
 CUR_DIR=$PWD
 SCRIPT=$(readlink -f $0)
 SCRIPT_DIR=$(dirname $SCRIPT)
@@ -47,6 +48,8 @@ REPO_TAG=HEAD
 SINGLEMODULE=no
 SKIPSYNCQT=no
 STRICT=1
+NESTED_SUBMODULE_SKIP_LIST=("qtwebengine/src/3rdparty")
+SUBMODULES_WITH_NESTED_SUBMODULES_LIST=("qtwebengine")
 
 function usage()
 {
@@ -74,6 +77,32 @@ function cleanup()
   rm -f _tmp_mod
   rm -f _tmp_shas
   rm -rf $PACKAGE_NAME
+}
+
+function is_skippable_nested_submodule() {
+  module_name=$1
+  for i in "${NESTED_SUBMODULE_SKIP_LIST[@]}"
+  do
+    if [[ "$i" == "$module_name" ]]; then
+      echo "1"
+      return
+    fi
+  done
+
+  echo "0"
+}
+
+function has_nested_submodules() {
+  module_name=$1
+  for i in "${SUBMODULES_WITH_NESTED_SUBMODULES_LIST[@]}"
+  do
+    if [[ "$i" == "$module_name" ]]; then
+      echo "1"
+      return
+    fi
+  done
+
+  echo "0"
 }
 
 function create_main_file()
@@ -109,6 +138,10 @@ function create_and_delete_submodule()
   mkdir submodules_zip
   cd $PACKAGE_NAME
   while read submodule submodule_sha1; do
+    # Check if this submodule was marked to be skipped
+    if [ "$(is_skippable_nested_submodule $submodule)" = "1" ] ; then
+      continue
+    fi
     _file=$submodule-$LICENSE-src-$QTVER
     mv $submodule $_file
     echo " - Creating archives - "
@@ -263,6 +296,19 @@ if [ $SINGLEMODULE = no ]; then
               ;;
       esac
       echo $name $sha1
+      # Check if this submodule has nested submodules that need to handled too
+      if [ "$(has_nested_submodules $name)" = "1" ] ; then
+        cd $name
+        git ls-tree -r $sha1 | while read sub_mode sub_type sub_sha1 sub_name; do
+          test "$sub_type" = "commit" || continue
+          test -d "$sub_name" || {
+            echo >&2 "Warning: submodule '$sub_name' is not present"
+            continue
+          }
+          echo $name/$sub_name $sub_sha1
+        done
+        cd $REPO_DIR
+      fi
   done >> $MODULES
 
   #tag the master repo, maybe
@@ -366,6 +412,10 @@ if [ $SKIPSYNCQT = no ]; then
   echo "Running syncqt.pl"
   if [ $SINGLEMODULE = no ]; then
     while read submodule; do
+    # Check if this submodule was marked to be skipped
+    if [ "$(is_skippable_nested_submodule $submodule)" = "1" ] ; then
+        continue
+      fi
       if [ $submodule != qtbase ]; then
         RESULT=$(grep "MODULE_VERSION" $PACKAGE_DIR/$submodule/.qmake.conf)
         QTSYNCQTVER=$(echo $RESULT | sed 's/.[^=]*=\(.[^ \t]*\)[ \t]*/\1/')

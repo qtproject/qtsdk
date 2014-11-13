@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt WebView for msvc2012 32-bit OpenGL</DisplayName>
+    <Description></Description>
+    <Version>1.0.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <AutoDependOn>qt.extras.qtwebview, qt.54.win32_msvc2012_opengl</AutoDependOn>
+    <Dependencies>qt.54.win32_msvc2012_opengl</Dependencies>
+    <Virtual>true</Virtual>
+    <Script>installscript.qs</Script>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+

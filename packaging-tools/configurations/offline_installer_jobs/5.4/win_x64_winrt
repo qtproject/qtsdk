@@ -55,7 +55,6 @@ file_list:              qt-conf,
                         x86_64-qt54-msvc2013-winphone_x86-conf,
                         x86-tools-qtcreator-conf,
                         x86-tools-vcredist_32-conf,
-                        x86_64-tools-vcredist_64-conf
 
 [ConfigDir]
 template_name:          config_qt5

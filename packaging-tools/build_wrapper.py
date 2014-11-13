@@ -50,6 +50,7 @@ import os
 import shutil
 import sys
 import re
+import platform
 from time import gmtime, strftime
 import urllib
 import mkqt5bld
@@ -59,8 +60,12 @@ from optparse import OptionParser, Option
 
 import bldinstallercommon
 import release_build_handler
+import bld_icu_tools
 import pkg_constants
 import random
+import operator
+from pkg_constants import ICU_BUILD_OUTPUT_DIR
+
 
 # ----------------------------------------------------------------------
 # external commands
@@ -114,6 +119,23 @@ EXTRA_ENV                   = dict(os.environ)
 MAKE_INSTALL_PADDING        = ''
 BUILD_META_INFO_FILE        = 'releases/build-meta'
 
+
+
+
+###########################################
+# Environment variable combining
+###########################################
+def combine_env_variable(a, b):
+    if platform.system().lower().startswith('win'):
+        return a + ';' + b
+    else :
+        return a + ':' + b
+
+def combine_environment_dicts(a, b, op=combine_env_variable):
+    return dict(a.items() + b.items() +
+        [(k, combine_env_variable(a[k], b[k])) for k in set(b) & set(a)])
+
+
 ###########################################
 # Define possible commands for this script
 ###########################################
@@ -133,6 +155,8 @@ class BldCommand:
     execute_offline_inst_bld                = 'offline_installer'
     execute_online_inst_bld                 = 'online_installer'
     publish_qt5_src_pkg                     = 'publish_src_packages'
+    init_icu_bld                            = 'init_icu_bld'
+    execute_icu_bld                         = 'icu_bld'
 
     def __init__(self, options):
         self.options = options
@@ -156,6 +180,8 @@ class BldCommand:
         commands += [self.execute_online_inst_bld]
         commands += [self.publish_qt5_src_pkg]
         commands += [self.execute_configure_exe_bld]
+        commands += [self.init_icu_bld]
+        commands += [self.execute_icu_bld]
         if self.options.command not in commands:
             return False
         return True
@@ -211,6 +237,11 @@ class BldCommand:
         elif self.options.command == self.execute_configure_exe_bld:
             if len(sys.argv) < 7:
                 return False
+        # ICU build
+        elif cmd == self.init_icu_bld:
+            return self.validate_icu_init_args()
+        elif cmd == self.execute_icu_bld:
+            return self.validate_icu_build_args()
         else:
             if len(sys.argv) < 15:
                 return False
@@ -324,6 +355,37 @@ class BldCommand:
         if not self.options.path:
             print('*** QtCreator init is missing command line argument: --path')
             sys.exit(-1)
+        return True
+
+
+    ###########################################
+    # Validate build args for ICU build init
+    ###########################################
+    def validate_icu_init_args(self):
+        if not self.options.server:
+            print('*** ICU build is missing command line argument: --server')
+            sys.exit(-1)
+        if not self.options.time_stamp:
+            print('*** ICU init is missing command line argument: --time_stamp')
+            sys.exit(-1)
+        if not self.options.build_number:
+            print('*** ICU init is missing command line argument: --build_number')
+            sys.exit(-1)
+        if not os.environ.get('ICU_VERSION'):
+            sys.exit('*** ICU init build is missing environment variable: ICU_VERSION')
+        return True
+
+    ###########################################
+    # Validate build args for ICU build
+    ###########################################
+    def validate_icu_build_args(self):
+        if not self.options.server:
+            print('*** ICU build is missing command line argument: --server')
+            sys.exit(-1)
+        if not os.environ.get('ICU_SRC_PKG_URL_UNIX') or not os.environ.get('ICU_SRC_PKG_URL_WIN'):
+            sys.exit('*** ICU build is missing environment variable: ICU_SRC_PKG_URL_[UNIX|WIN]')
+        if not os.environ.get('ICU_VERSION'):
+            sys.exit('*** ICU init build is missing environment variable: ICU_VERSION')
         return True
 
     ###########################################
@@ -682,111 +744,6 @@ def handle_qt_src_package_build():
             cmd_args = ['scp', file_name, PKG_SERVER_ADDR + ':' + os.path.join(LATEST_QT5_DIR, 'src', 'examples_injection')]
             bldinstallercommon.do_execute_sub_process(cmd_args, package_path, True)
 
-###############################
-# handle_icu_build
-###############################
-def handle_icu_build():
-    dir_list = os.listdir(WORK_DIR)
-    for file_name in dir_list:
-        if file_name.startswith("icu"):
-            cmd_args = 'rm -rf ' + file_name
-            bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), WORK_DIR, True)
-
-    cmd_args = 'rm -rf icu*'
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), WORK_DIR, True)
-    bldinstallercommon.create_dirs(os.path.join(WORK_DIR, 'icu_install'))
-    exec_path = WORK_DIR
-    cmd_args = ['wget', ICU_SRC]
-    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
-    dir_list = os.listdir(WORK_DIR)
-    for file_name in dir_list:
-        if file_name.startswith("icu4c"):
-            cmd_args = ['tar', 'xvzf', file_name]
-            bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
-    EXTRA_ENV['LFLAGS'] = '-Wl,-rpath,\$ORIGIN'
-    cmd_args = ['./runConfigureICU', 'Linux', '--enable-rpath', '--prefix=' + os.path.join(WORK_DIR, 'icu_install')]
-    exec_path = os.path.join(WORK_DIR, 'icu', 'source')
-    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True, EXTRA_ENV)
-    cmd_args = ['make', '-j6']
-    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True, EXTRA_ENV)
-    cmd_args = ['make', 'install']
-    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True, EXTRA_ENV)
-
-    cmd_args = 'chrpath -r $ORIGIN libicuuc.so'
-    exec_path = os.path.join(WORK_DIR, 'icu_install', 'lib')
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), exec_path, True, EXTRA_ENV)
-    cmd_args = 'chrpath -r \$ORIGIN libicui18n.so'
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), exec_path, True, EXTRA_ENV)
-    cmd_args = 'chrpath -r \$ORIGIN libicudata.so'
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), exec_path, True, EXTRA_ENV)
-    cmd_args = 'chrpath -r \$ORIGIN libicuio.so'
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), exec_path, True, EXTRA_ENV)
-    cmd_args = 'chrpath -r \$ORIGIN libicule.so'
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), exec_path, True, EXTRA_ENV)
-    cmd_args = 'chrpath -r \$ORIGIN libiculx.so'
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), exec_path, True, EXTRA_ENV)
-    cmd_args = 'chrpath -r \$ORIGIN libicutest.so'
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), exec_path, True, EXTRA_ENV)
-    cmd_args = 'chrpath -r \$ORIGIN libicutu.so'
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), exec_path, True, EXTRA_ENV)
-
-    dir_list = os.listdir(WORK_DIR)
-    for file_name in dir_list:
-        if file_name.startswith("icu"):
-            if file_name != 'icu_install':
-                cmd_args = 'rm -rf ' + file_name
-                bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), WORK_DIR, True)
-
-
-###############################
-# Add ICU to EXTRA_ENV
-###############################
-def set_icu_env(icu_lib_path, icu_include_path):
-    global EXTRA_ENV
-    if not os.path.isdir(icu_lib_path) or not os.path.isdir(icu_include_path):
-        return
-    print('Setting ICU headers and libraries into system environment')
-    ld_library_path = ''
-    if EXTRA_ENV.get('LD_LIBRARY_PATH'):
-        ld_library_path = ':' + EXTRA_ENV.get('LD_LIBRARY_PATH')
-        print('Added ICU library path to LD_LIBRARY_PATH: {0}'.format(ld_library_path))
-    library_path = ''
-    if EXTRA_ENV.get('LIBRARY_PATH'):
-        library_path = ':' + EXTRA_ENV.get('LIBRARY_PATH')
-        print('Added ICU library path to LIBRARY_PATH: {0}'.format(library_path))
-    cplus_include_path = ''
-    if EXTRA_ENV.get('CPLUS_INCLUDE_PATH'):
-        cplus_include_path = ':' + EXTRA_ENV.get('CPLUS_INCLUDE_PATH')
-        print('Added ICU include path to CPLUS_INCLUDE_PATH: {0}'.format(cplus_include_path))
-
-    EXTRA_ENV['LD_LIBRARY_PATH'] = icu_lib_path + ld_library_path
-    EXTRA_ENV['LIBRARY_PATH'] = icu_lib_path + library_path
-    EXTRA_ENV['CPLUS_INCLUDE_PATH'] = icu_include_path + cplus_include_path
-
-
-###############################
-# Add ICU to EXTRA_ENV
-###############################
-def set_custom_icu():
-    if ICU_SRC.strip() and bldinstallercommon.is_linux_platform():
-        handle_icu_build()
-        dir_list = os.listdir(WORK_DIR)
-        for file_name in dir_list:
-            if file_name.startswith("icu"):
-                path_name = os.path.join(WORK_DIR, file_name)
-                if os.path.isdir(path_name):
-                    icu_lib_path = os.path.join(path_name, 'lib')
-                    icu_include_path = os.path.join(path_name, 'include')
-                    set_icu_env(icu_lib_path, icu_include_path)
-                    extra_qt_configure_args = ' -L ' + icu_lib_path
-                    extra_qt_configure_args += ' -I ' + icu_include_path
-                    return extra_qt_configure_args
-    if ICU_LIBS.strip():
-        print('Using pre-built icu libraries for Qt build not supported yet! ICU_LIBS ignored.')
-        print(ICU_LIBS)
-        # TODO, use prebuilt icu libs in the qt build
-    return ''
-
 
 ###############################
 # handle_qt_android_release_build
@@ -937,8 +894,10 @@ def get_qt_configuration_options():
 # handle_qt_desktop_release_build
 ###############################
 def handle_qt_desktop_release_build():
+    global EXTRA_ENV
     # Use custom ICU when required (build from sources or use pre-built icu libs)
-    icu_qt_configure_extra_args = set_custom_icu()
+    if platform.system().lower().startswith('linux'):
+        icu_configuration = bld_icu_tools.init_build_icu(ICU_SRC, '', EXTRA_ENV, False)
     ## let's build Qt
     # some common variables
     source_url = SRC_URL + '/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION
@@ -971,8 +930,10 @@ def handle_qt_desktop_release_build():
                 ext_args += ' -DQT_EVAL'
 
     # If custom ICU used
-    if icu_qt_configure_extra_args:
-        ext_args += icu_qt_configure_extra_args
+    if platform.system().lower().startswith('linux'):
+        if icu_configuration.qt_configure_extra_args:
+            ext_args += icu_configuration.qt_configure_extra_args
+            EXTRA_ENV = combine_environment_dicts(EXTRA_ENV, icu_configuration.environment)
     # run mkqt5bld.py with the correct options according to the platform and license being used
     if bldinstallercommon.is_linux_platform():
         ext_args += ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)
@@ -986,6 +947,7 @@ def handle_qt_desktop_release_build():
     qt5BuildOptions.system_env = EXTRA_ENV
     mkqt5bld.QT_BUILD_OPTIONS = qt5BuildOptions
     mkqt5bld.main_call_parameters()
+
 
 ###############################
 # Handle extra module release build
@@ -1597,6 +1559,45 @@ def create_remote_dirs(server, dir_path):
 
 
 ###############################
+# ICU build init
+###############################
+def initialize_icu_build():
+    sanity_check_packaging_server()
+    remote_snaphot_dir_base = PATH + '/' + 'icu' + '/' + os.environ['ICU_VERSION']
+    remote_snaphot_dir = remote_snaphot_dir_base + '/' + TIME_STAMP + '-' + BUILD_NUMBER
+    remote_latest_dir = remote_snaphot_dir_base + '/' + 'latest'
+    # create remote snapshot dir
+    create_remote_dirs(PKG_SERVER_ADDR, remote_snaphot_dir)
+    # update latest symlink
+    update_latest_link(remote_snaphot_dir, remote_latest_dir)
+
+
+###############################
+# Handle ICU builds
+###############################
+def handle_icu_build():
+    if os.environ.get('ICU_SRC_PKG_URL'):
+        icu_src = os.environ['ICU_SRC_PKG_URL']
+    elif platform.system().lower().startswith('win'):
+        icu_src = os.environ['ICU_SRC_PKG_URL_WIN']
+    else:
+        icu_src = os.environ['ICU_SRC_PKG_URL_UNIX']
+    icu_version = '' # can be left empty, not cloning from git
+    sanity_check_packaging_server()
+    bld_icu_tools.init_build_icu(icu_src, icu_version, True)
+    # define remote dir where to upload
+    remote_snaphot_dir = PATH + '/' + 'icu' + '/' + os.environ['ICU_VERSION'] + '/' + 'latest'
+    srv_and_remote_dir = PKG_SERVER_ADDR + ':' + remote_snaphot_dir
+    # check the build artifacts
+    local_archives_dir = bldinstallercommon.locate_directory(SCRIPT_ROOT_DIR, ICU_BUILD_OUTPUT_DIR)
+    dir_list = os.listdir(local_archives_dir)
+    for file_name in dir_list:
+        if file_name.endswith('.7z'):
+            cmd_args = [SCP_COMMAND, file_name, srv_and_remote_dir + '/']
+            bldinstallercommon.do_execute_sub_process(cmd_args, local_archives_dir, True)
+
+
+###############################
 # parse_cmd_line
 ###############################
 def parse_cmd_line():
@@ -1828,8 +1829,13 @@ def main():
         handle_online_installer_build()
     elif COMMAND == BldCommand.execute_configure_exe_bld:
         handle_qt_configure_exe_build()
+    elif COMMAND == BldCommand.init_icu_bld:
+        initialize_icu_build()
+    elif COMMAND == BldCommand.execute_icu_bld:
+        handle_icu_build()
     else:
         print('Unsupported command')
+
 
 if __name__ == "__main__":
     main()

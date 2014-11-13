@@ -1,0 +1,54 @@
+################################################################################
+## Global defines
+################################################################################
+[ifwtools]
+windows-x86:                installer-framework-build-win-x86.7z
+linux-x86:                  installer-framework-build-linux-x86.7z
+linux-x64:                  installer-framework-build-linux-x64.7z
+mac-x64:                    installer-framework-build-mac-x64.7z
+
+[release.global]
+version:                    1.0.0
+version_tag:
+arg_substitution_list:      @QTWEBVIEW_VERSION@=%GLOBAL_VERSION%
+
+
+################################################################################
+## Linux repository
+################################################################################
+[release.qtwebview.repository.linux.x86.src]
+arg_configurations_file:    repository_configs_extras/qtwebview/repository_qtwebview_src_doc_examples
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          qtwebview_src
+repo_components_to_update:  qt.extras.qtwebview*
+repo_url_specifier:         linux_x86/desktop/extras_src/qtwebview
+
+[release.qtwebview.repository.linux.x64.src]
+arg_configurations_file:    repository_configs_extras/qtwebview/repository_qtwebview_src_doc_examples
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          qtwebview_src
+repo_components_to_update:  qt.extras.qtwebview*
+repo_url_specifier:         linux_x64/desktop/extras_src/qtwebview
+
+
+################################################################################
+## Windows repository
+################################################################################
+[release.qtwebview.repository.windows.x86.src]
+arg_configurations_file:    repository_configs_extras/qtwebview/repository_qtwebview_src_doc_examples
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+repo_content_type:          qtwebview_src
+repo_components_to_update:  qt.extras.qtwebview*
+repo_url_specifier:         windows_x86/desktop/extras_src/qtwebview
+
+
+################################################################################
+## Mac repository
+################################################################################
+[release.qtwebview.repository.mac.x64.src]
+arg_configurations_file:    repository_configs_extras/qtwebview/repository_qtwebview_src_doc_examples
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          qtwebview_src
+repo_components_to_update:  qt.extras.qtwebview*
+repo_url_specifier:         mac_x64/desktop/extras_src/qtwebview
+

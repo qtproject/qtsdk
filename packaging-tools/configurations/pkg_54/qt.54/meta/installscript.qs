@@ -51,7 +51,8 @@ function Component()
         var msvc2013 = !!installer.environmentVariable("VS120COMNTOOLS");
 
         // first reset the latest Qt5.x.x package default values to false
-        installer.componentByName("qt.54.win32_mingw482").setValue("Default", "false");
+        installer.componentByName("qt.54.win32_mingw491").setValue("Default", "false");
+        installer.componentByName("qt.54.android_armv7").setValue("Default", "false");
 
         installer.componentByName("qt.54.win32_msvc2010_opengl").setValue("Default", "false")
 
@@ -61,11 +62,17 @@ function Component()
         installer.componentByName("qt.54.win32_msvc2013_opengl").setValue("Default", "false");
         installer.componentByName("qt.54.win64_msvc2013_64").setValue("Default", "false");
         installer.componentByName("qt.54.win64_msvc2013_64_opengl").setValue("Default", "false");
+        installer.componentByName("qt.54.win64_msvc2013_winphone_arm").setValue("Default", "false");
+        installer.componentByName("qt.54.win64_msvc2013_winphone_x86").setValue("Default", "false");
+        installer.componentByName("qt.54.win64_msvc2013_winrt_x64").setValue("Default", "false");
 
         // if 32bit windows hide the 64bit packages
         if (installer.environmentVariable("ProgramFiles(x86)") == "" ) {
             installer.componentByName("qt.54.win64_msvc2013_64").setValue("Virtual", "true");
             installer.componentByName("qt.54.win64_msvc2013_64_opengl").setValue("Virtual", "true");
+            installer.componentByName("qt.54.win64_msvc2013_winphone_arm").setValue("Virtual", "true");
+            installer.componentByName("qt.54.win64_msvc2013_winphone_x86").setValue("Virtual", "true");
+            installer.componentByName("qt.54.win64_msvc2013_winrt_x64").setValue("Virtual", "true");
         }
 
         // now try to determine which tool chains to select by default
@@ -81,16 +88,14 @@ function Component()
             // if 64bit machine
             if (!(installer.environmentVariable("ProgramFiles(x86)") == "")) {
                 installer.componentByName("qt.54.win64_msvc2013_64").setValue("Default", "true");
-                //installer.componentByName("qt.54.win64_msvc2013_64_opengl").setValue("Default", "true");
             } else {
                 installer.componentByName("qt.54.win32_msvc2013").setValue("Default", "true");
-                //installer.componentByName("qt.54.win32_msvc2013_opengl").setValue("Default", "true");
             }
         }
 
         // if no msvc toolkits detected, choose mingw by default
         if (!msvc2010 && !msvc2012 && !msvc2013) {
-            installer.componentByName("qt.54.win32_mingw482").setValue("Default", "true");
+            installer.componentByName("qt.54.win32_mingw491").setValue("Default", "true");
         }
     }
 }

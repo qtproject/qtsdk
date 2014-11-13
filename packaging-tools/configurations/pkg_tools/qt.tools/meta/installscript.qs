@@ -107,6 +107,19 @@ registerQtCreatorDocumentation = function(aComponent, aPath)
         "value=" + "@TargetDir@" + aPath);
 }
 
+registerQtCreatorExampleSet = function(aComponent, aDisplayName, aDocumentationPath, aExamplesPath)
+{
+    var settingsFile = installer.value("QtCreatorInstallerSettingsFile");
+    if (settingsFile == "")
+        return;
+
+    aComponent.addOperation("Settings",
+        "path=" + settingsFile,
+        "method=add_array_value",
+        "key=Help/InstalledExamples",
+        "value=" + aDisplayName + "|" + "@TargetDir@" + aDocumentationPath + "|" + "@TargetDir@" + aExamplesPath);
+}
+
 /*****
 * Global function to be used by Qt binary packages.
 * This function will write qt.conf to the /bin directory. Examples and documentation paths

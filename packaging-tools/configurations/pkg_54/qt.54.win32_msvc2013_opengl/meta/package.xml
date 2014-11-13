@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <Package>
     <DisplayName>msvc2013 32-bit OpenGL</DisplayName>
-    <Description>Qt 5.4.0 Prebuilt Components for msvc2013 32-bit OpenGL</Description>
+    <Description>License options: LGPLv3, LGPLv2.1, Commercial&lt;br&gt;&lt;br&gt;Qt 5.4.0 Prebuilt Components for msvc2013 32-bit OpenGL</Description>
     <Version>5.4.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Dependencies>qt.tools.qtcreator, qt.tools.vcredist</Dependencies>
+    <Dependencies>qt.tools.qtcreator</Dependencies>
     <!--<AutoSelectOn></AutoSelectOn>-->
     <Default>true</Default>
     <Script>installscript.qs</Script>   <!-- File name of a script being loaded - optional. -->
