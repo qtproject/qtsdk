@@ -189,6 +189,7 @@ def get_icu_env(icu_lib_path, icu_include_path):
         icu_environment['LD_LIBRARY_PATH'] = icu_lib_path
         icu_environment['LIBRARY_PATH'] = icu_lib_path
         icu_environment['CPLUS_INCLUDE_PATH'] = icu_include_path
+        icu_environment['CPATH'] = icu_include_path
     elif bldinstallercommon.is_mac_platform():
         print('*** ICU build for Mac not implemented yet!')
     elif bldinstallercommon.is_win_platform():

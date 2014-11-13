@@ -902,9 +902,7 @@ def handle_qt_desktop_release_build():
 
     # If custom ICU used
     if platform.system().lower().startswith('linux'):
-        if icu_configuration.qt_configure_extra_args:
-            ext_args += icu_configuration.qt_configure_extra_args
-            EXTRA_ENV = combine_environment_dicts(EXTRA_ENV, icu_configuration.environment)
+        EXTRA_ENV = combine_environment_dicts(EXTRA_ENV, icu_configuration.environment)
     # run mkqt5bld.py with the correct options according to the platform and license being used
     if bldinstallercommon.is_linux_platform():
         ext_args += ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)
