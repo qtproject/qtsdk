@@ -15,6 +15,7 @@ version:                    5.4.0
 version_tag:                rc
 module_exclude_list:        qt3d, qtdocgallery, qtfeedback, qtjsondb, qtpim, qtqa, qtrepotools, qtsystems
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%,
+                            @QT_VERSION_MINOR@=5.4,
                             @QT_VERSION_AND_TAG@=%GLOBAL_VERSION_AND_TAG%,
                             @QT_INSTALL_DIR_NAME@=5.4,
                             @QTWEBVIEW_VERSION@=1.0.0,
