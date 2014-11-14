@@ -54,7 +54,8 @@ file_list:              qt-conf,
                         x86_64-qt54-msvc2013-winphone_arm-conf,
                         x86_64-qt54-msvc2013-winphone_x86-conf,
                         x86-tools-qtcreator-conf,
-                        x86-tools-vcredist_32-conf,
+                        x86_64-tools-vcredist_64-conf,
+                        qtcanvas3d-src-doc-examples-conf
 
 [ConfigDir]
 template_name:          config_qt5
@@ -63,5 +64,5 @@ template_name:          config_qt5
 template_name:          config.xml.template.windows.qt5
 
 [PackageTemplates]
-template_dirs:          pkg_54, pkg_tools
+template_dirs:          pkg_54, pkg_tools, pkg_extras
 

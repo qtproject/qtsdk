@@ -59,7 +59,8 @@ file_list:              qt-conf,
                         qtwebview-qt54-x64-clang-conf,
                         qtwebview-qt54-x64-android-armv7-conf,
                         qtwebview-qt54-x64-android-armv5-conf,
-                        qtwebview-qt54-x64-android-x86-conf
+                        qtwebview-qt54-x64-android-x86-conf,
+                        qtcanvas3d-src-doc-examples-conf
 
 
 [qtmenunib]

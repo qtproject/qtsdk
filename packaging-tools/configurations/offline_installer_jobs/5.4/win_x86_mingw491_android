@@ -61,7 +61,8 @@ file_list:              qt-conf,
                         qtwebview-qt54-x86-mingw491_32-conf,
                         qtwebview-qt54-x86-android-armv7-conf,
                         qtwebview-qt54-x86-android-armv5-conf,
-                        qtwebview-qt54-x86-android-x86-conf
+                        qtwebview-qt54-x86-android-x86-conf,
+                        qtcanvas3d-src-doc-examples-conf
 
 [ConfigDir]
 template_name:          config_qt5
