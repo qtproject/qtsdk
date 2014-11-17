@@ -169,6 +169,10 @@ build_node_labels:          win-msvc2013-Windows8.1-x86_OpenGL
 build_target_dir:           windows_vs2013_32
 build_node_labels:          win-msvc2013-Windows8.1-x86_ANGLE
 
+[meta.windows.x86.msvc2013_32_xp]
+build_target_dir:           windows_vs2013_32_xp
+build_node_labels:          win-msvc2013_xp-Windows8.1-x86
+
 [meta.windows.x64.msvc2013_64_angle]
 build_target_dir:           windows_vs2013_64
 build_node_labels:          win-msvc2013-Windows8.1-x64_ANGLE
