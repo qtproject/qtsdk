@@ -2,8 +2,8 @@
 <Package>
     <DisplayName>VCRedist for MSVC 64bit</DisplayName>
     <Description>Needed by all included Qt applications.</Description>
-    <Version>%VCREDIST_X64_VERSION%</Version>
-    <ReleaseDate>%VCREDIST_X64_VERSION%</ReleaseDate>
+    <Version>2011-03-03</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Script>installscript.qs</Script>
     <Virtual>true</Virtual>
     <!--<ForcedInstallation>true</ForcedInstallation>-->
