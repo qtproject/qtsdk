@@ -96,6 +96,7 @@ if os.name == 'nt':
         "--buildcommand C:\\bin\\ibjom.cmd --installcommand nmake --qt5path ..\\..\\qtapplication_qt5 " \
         "--qt5_essentials7z <uri to qt5_essentials.7z> " \
         "--qt5_addons7z <uri to qt5_addons.7z> " \
+        "--qt5_webengine7z <uri to qt5_webengine.7z> " \
         "--application_url <url into application repository>" \
         "--application_branch <application branch>" \
         "--application_dir <Local copy of application>" \
@@ -107,6 +108,7 @@ elif sys.platform == "darwin":
         "--qt5path ../../qtapplication_qt5 " \
         "--qt5_essentials7z <uri to qt5_essentials.7z> " \
         "--qt5_addons7z <uri to qt5_addons.7z> " \
+        "--qt5_webengine7z <uri to qt5_webengine.7z> " \
         "--installerbase7z <uri into installer base>" \
         "--application_url <url into application repository>" \
         "--application_branch <application branch>" \
@@ -118,6 +120,7 @@ else:
         "--qt5path ../../qtapplication_qt5 " \
         "--qt5_essentials7z <uri to qt5_essentials.7z> " \
         "--qt5_addons7z <uri to qt5_addons.7z> " \
+        "--qt5_webengine7z <uri to qt5_webengine.7z> " \
         "--application_url <url into application repository>" \
         "--application_branch <application branch>" \
         "--application_dir <Local copy of application>" \
@@ -131,6 +134,7 @@ parser.add_argument('--installcommand', help="this means usually make", default=
 parser.add_argument('--debug', help="use debug builds", action='store_true', default=False)
 parser.add_argument('--qt5_essentials7z', help="a file or url where it get the built qt5 essential content as 7z")
 parser.add_argument('--qt5_addons7z', help="a file or url where it get the built qt5 addons content as 7z", required=False, default='')
+parser.add_argument('--qt5_webengine7z', help="a file or url where it get the built qt5 webengine content as 7z", required=False, default='')
 parser.add_argument('--application_url', help="Git URL for Qt Application", required=False, default='')
 parser.add_argument('--application_branch', help="Git branch for Qt Application", required=False, default='')
 parser.add_argument('--application_dir', help="Local copy of Qt Application", required=False, default='')
@@ -228,6 +232,16 @@ if not os.path.lexists(callerArguments.qt5path):
     if callerArguments.qt5_addons7z:
         myGetQtBinaryWork.addTaskObject(
             createDownloadExtractTask(callerArguments.qt5_addons7z, callerArguments.qt5path, tempPath, callerArguments))
+
+        if os.name == 'nt':
+            targetPath = os.path.join(callerArguments.qt5path, 'bin')
+        else:
+            targetPath = os.path.join(callerArguments.qt5path, 'lib')
+
+    ### add get Qt webengine task
+    if callerArguments.qt5_webengine7z:
+        myGetQtBinaryWork.addTaskObject(
+            createDownloadExtractTask(callerArguments.qt5_webengine7z, callerArguments.qt5path, tempPath, callerArguments))
 
         if os.name == 'nt':
             targetPath = os.path.join(callerArguments.qt5path, 'bin')
