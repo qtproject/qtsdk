@@ -20,14 +20,14 @@ arg_configurations_file:    repository_configs/licenses/repository_licenses
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
 repo_content_type:          licenses
 repo_components_to_update:  qt.license*
-repo_url_specifier:         linux_x86/licenses
+repo_url_specifier:         linux_x86/desktop/licenses
 
 [release.tools.repository.linux.x64]
 arg_configurations_file:    repository_configs/licenses/repository_licenses
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
 repo_content_type:          licenses
 repo_components_to_update:  qt.license*
-repo_url_specifier:         linux_x64/licenses
+repo_url_specifier:         linux_x64/desktop/licenses
 
 
 ################################################################################
@@ -38,7 +38,7 @@ arg_configurations_file:    repository_configs/licenses/repository_licenses
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 repo_content_type:          licenses
 repo_components_to_update:  qt.license*
-repo_url_specifier:         windows_x86/licenses
+repo_url_specifier:         windows_x86/desktop/licenses
 
 
 ################################################################################
@@ -49,5 +49,5 @@ arg_configurations_file:    repository_configs/licenses/repository_licenses
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
 repo_content_type:          licenses
 repo_components_to_update:  qt.license*
-repo_url_specifier:         mac_x64/licenses
+repo_url_specifier:         mac_x64/desktop/licenses
 
