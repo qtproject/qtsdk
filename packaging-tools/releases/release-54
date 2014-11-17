@@ -53,6 +53,10 @@ configure_options:      -opensource -confirm-license -debug-and-release -release
 build_node_labels:      win-msvc2010-Windows7-x86_OpenGL, win-msvc2012-Windows8.1-x86_OpenGL, win-msvc2013-Windows8.1-x86_OpenGL, win-msvc2013-Windows8.1-x64_OpenGL, win-MinGW4.9.1-Windows7-x86_OpenGL, win-MinGW4.9.1-Windows7-x64_OpenGL
 configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -opengl desktop -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -plugin-sql-odbc -openssl -icu
 
+[release.qt.configure_options.windows_msvc2013_xp]
+build_node_labels:      win-msvc2013_xp-Windows8.1-x86
+configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -opengl dynamic -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -plugin-sql-odbc -openssl -icu -target xp
+
 [release.qt.configure_options.winphone8_arm]
 build_node_labels:      win-msvc2013-Windows8.1-x64_Winphone81_arm
 configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -xplatform winphone-arm-msvc2013
