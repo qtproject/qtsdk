@@ -54,7 +54,8 @@ file_list:              qt-conf,
                         x86-tools-qtcreator-conf,
                         x86-tools-vcredist_32-conf,
                         qtwebview-src-doc-examples-conf,
-                        qtwebview-qt54-x86-msvc2013_64-opengl-conf
+                        qtwebview-qt54-x86-msvc2013_64-opengl-conf,
+                        qtcanvas3d-src-doc-examples-conf
 
 [ConfigDir]
 template_name:          config_qt5

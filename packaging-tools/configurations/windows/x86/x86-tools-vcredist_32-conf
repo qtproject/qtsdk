@@ -43,8 +43,6 @@
 [qt.tools.vcredist]
 archives:               tools.vcredist
 target_install_base:    /vcredist
-version:                2011-03-03
-version_tag:            %VCREDIST_X86_VERSION%
 package_default:        false
 [tools.vcredist]
 archive_uri:            http://download.qt-project.org/development_releases/prebuilt/vcredist/vcredist_x86.7z

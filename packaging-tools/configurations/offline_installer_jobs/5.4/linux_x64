@@ -53,7 +53,8 @@ file_list:              qt-conf,
                         x86_64-qt54-gcc-conf,
                         x86_64-tools-qtcreator-conf,
                         qtwebview-qt54-x64-gcc-conf,
-                        qtwebview-src-doc-examples-conf
+                        qtwebview-src-doc-examples-conf,
+                        qtcanvas3d-src-doc-examples-conf
 
 [ConfigDir]
 template_name:          config_qt5

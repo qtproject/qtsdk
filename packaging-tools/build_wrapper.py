@@ -931,9 +931,7 @@ def handle_qt_desktop_release_build():
 
     # If custom ICU used
     if platform.system().lower().startswith('linux'):
-        if icu_configuration.qt_configure_extra_args:
-            ext_args += icu_configuration.qt_configure_extra_args
-            EXTRA_ENV = combine_environment_dicts(EXTRA_ENV, icu_configuration.environment)
+        EXTRA_ENV = combine_environment_dicts(EXTRA_ENV, icu_configuration.environment)
     # run mkqt5bld.py with the correct options according to the platform and license being used
     if bldinstallercommon.is_linux_platform():
         ext_args += ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)
@@ -964,6 +962,7 @@ def handle_extra_module_release_build():
     qt5_bin_pkg_base_path = pkg_storage_server + '/' + LICENSE + '/' + 'qt' + '/' + qt_version_minor + '/' + BIN_TARGET_DIRS[TARGET_ENV]
     qt5_essentials_lib_package_uri = qt5_bin_pkg_base_path + '/qt5_essentials.7z'
     qt5_addons_lib_package_uri = qt5_bin_pkg_base_path + '/qt5_addons.7z'
+    qt5_webengine_lib_package_url = qt5_bin_pkg_base_path + '/qt5_qtwebengine.7z'
     extra_module_src_uri = pkg_storage_server + '/' + LICENSE + '/' + os.environ.get('APPLICATION_NAME') + '/' + os.environ.get('APPLICATION_VERSION') + '/latest/src/' + os.environ.get('APPLICATION_NAME') + '-' + LICENSE + '-src-' + os.environ.get('APPLICATION_VERSION') + '.7z'
 
     # build command
@@ -972,6 +971,9 @@ def handle_extra_module_release_build():
     cmd_args += ['--qt5_essentials7z', qt5_essentials_lib_package_uri]
     cmd_args += ['--qt5_addons7z', qt5_addons_lib_package_uri]
     cmd_args += ['--application7z', extra_module_src_uri]
+
+    if bldinstallercommon.is_content_url_valid(qt5_webengine_lib_package_url):
+        cmd_args += ['--qt5_webengine7z', qt5_webengine_lib_package_url]
     if icu7z_package:
         cmd_args += ['--icu7z', icu7z_package]
     if build_command:
