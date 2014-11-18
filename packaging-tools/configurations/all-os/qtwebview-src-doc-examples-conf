@@ -54,7 +54,7 @@ package_finalize_items: cleanup_doc_directory
 [qt.extras.qtwebview.examples]
 optional_for_offline:   true
 archives:               qtwebview.examples
-target_install_base:    /Examples/QtWebView/1.0/
+target_install_base:    /Examples/QtWebView/1.0/webview/
 [qtwebview.examples]
 archive_uri:            /qtwebview/@QTWEBVIEW_VERSION@/latest_successful/examples/examples_qtwebview.7z
 target_install_dir:
