@@ -122,6 +122,13 @@ Component.prototype.createOperations = function()
         } catch( e ) {
             print( e );
         }
+        if (installer.value("os") == "win") {
+            var settingsFile = installer.value("QtCreatorInstallerSettingsFile");
+            if (settingsFile == "")
+                return;
+            component.addOperation("Settings", "path="+settingsFile, "method=add_array_value",
+            "key=Plugins/ForceEnabled", "value=WinRt");
+        }
     }
 }
 
