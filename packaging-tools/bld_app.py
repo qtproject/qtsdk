@@ -50,6 +50,7 @@ import os
 import sys
 import fnmatch
 import shutil
+import fileinput
 from urlparse import urlparse
 
 # own imports
@@ -62,6 +63,77 @@ APPLICATION_SRC_DIR_NAME    = 'application_src'
 APPLICATION_SRC_DIR         = os.path.join(SCRIPT_ROOT_DIR, APPLICATION_SRC_DIR_NAME)
 bldinstallercommon.init_common_module(os.getcwd())
 
+###############################
+# function
+###############################
+def patch_archive(base_dir, search_string, qt_install_prefix):
+    erase_qmake_prl_build_dir(base_dir)
+    patch_build_time_paths(base_dir, search_string, qt_install_prefix)
+
+###############################
+# function
+###############################
+def get_qt_install_prefix(qt_path):
+    qmake_executable = 'qmake'
+    qt_install_prefix = ''
+    if os.name == 'nt':
+        qmake_executable += '.exe'
+    qmake_executable = bldinstallercommon.locate_file(qt_path, qmake_executable)
+    if not os.path.isfile(qmake_executable):
+        print('*** Unable to locate qmake executable from: {0}'.format(qt_path))
+        sys.exit(-1)
+    cmd_args = [qmake_executable, '-query']
+    qmakePath = os.path.abspath(os.path.join(callerArguments.qt5path, 'bin'))
+    return_code, output = bldinstallercommon.do_execute_sub_process(cmd_args, qmakePath, True, True)
+    # read output line by line
+    lines = output.splitlines(True)
+    qt_install_prefix_string = 'QT_INSTALL_PREFIX'
+    for line in lines:
+        if 'QT_INSTALL_PREFIX' in line:
+            # save qt_install_prefix
+            qt_install_prefix = line[line.index(':') + 1:]
+            break
+
+    return qt_install_prefix
+
+###############################
+# function
+###############################
+def erase_qmake_prl_build_dir(search_path):
+    print('--- Fix .prl files ---')
+    # fetch all .prl files
+    file_list = bldinstallercommon.make_files_list(search_path, '\\.prl')
+    # erase lines starting with 'QMAKE_PRL_BUILD_DIR' from .prl files
+    for item in file_list:
+        found = False
+        for line in fileinput.FileInput(item, inplace = 1):
+            if line.startswith('QMAKE_PRL_BUILD_DIR'):
+                found = True
+                print(''.rstrip('\n'))
+            else:
+                print(line.rstrip('\n'))
+        if found:
+            print('Erased \'QMAKE_PRL_BUILD_DIR\' from: ' + item)
+
+###############################
+# function
+###############################
+def patch_build_time_paths(search_path, search_string, qt_install_prefix):
+    extension_list = ['*.prl', '*.pri', '*.pc', '*.la']
+    file_list = bldinstallercommon.search_for_files(search_path, extension_list, search_string)
+
+    for item in file_list:
+        print('Replacing \'{0}\' paths from file: {1}'.format(search_string, item))
+        for line in fileinput.FileInput(item, inplace = 1):
+            if not search_string in line:
+                print(line.rstrip('\n'))
+                continue
+            patched_line = line.replace(search_string, qt_install_prefix)
+            print(patched_line.rstrip('\n'))
+
+###############################
+# function
+###############################
 def createDownloadExtractTask(url, target_path, temp_path, caller_arguments):
     fileNameFromUrl = os.path.basename(urlparse(url).path)
     sevenzipFile = os.path.join(temp_path, fileNameFromUrl)
@@ -77,6 +149,9 @@ def createDownloadExtractTask(url, target_path, temp_path, caller_arguments):
             sevenzipFile, target_path), temp_path, caller_arguments)
     return downloadExtractTask
 
+###############################
+# function
+###############################
 def locate_pro(directory):
     print('Trying to locate application .pro file file from: {0}'.format(directory))
     for root, dirs, files in os.walk(directory):
@@ -266,6 +341,9 @@ if not os.path.lexists(callerArguments.qt5path):
     ### run get Qt 5 tasks
     myGetQtBinaryWork.run()
 
+    # Save QT_INSTALL_PREFIX
+    qt_install_prefix = get_qt_install_prefix(callerArguments.qt5path)
+
     print("##### {0} #####".format("patch Qt"))
     if sys.platform == "darwin":
         installerbasePath = os.path.join(tempPath, 'ifw-bld/bin/installerbase')
@@ -369,6 +447,10 @@ dir_to_archive = os.path.dirname(bldinstallercommon.locate_directory(qtApplicati
 tag_file = bldinstallercommon.locate_file(APPLICATION_SRC_DIR, '.tag')
 if tag_file:
     shutil.copy2(tag_file, dir_to_archive + os.sep + 'qt5_package_dir')
+
+# Pre-patch the package for IFW to patch it correctly during installation
+basedir = dir_to_archive + os.sep + 'qt5_package_dir'
+patch_archive(basedir, callerArguments.qt5path, qt_install_prefix)
 
 # create 7z archive
 archive_cmd = '7z a ' + 'module_archives' + os.sep + 'qt5_' + os.environ['APPLICATION_NAME'] + '.7z' + ' ' + dir_to_archive + os.sep + 'qt5_package_dir'
