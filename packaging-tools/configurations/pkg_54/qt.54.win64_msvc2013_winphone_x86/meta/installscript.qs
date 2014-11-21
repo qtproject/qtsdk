@@ -80,7 +80,6 @@ Component.prototype.beginInstallation = function()
 Component.prototype.createOperations = function()
 {
     component.createOperations();
-    var qtStringVersion = "5.4";
 
     if (installer.value("os") == "win") {
         try {
@@ -97,7 +96,7 @@ Component.prototype.createOperations = function()
             component.addOperation("Execute",
                                    ["@SDKToolBinary@", "addQt",
                                     "--id", component.name,
-                                    "--name", "Qt " + qtStringVersion + " for Windows Phone x86 (Emulator)",
+                                    "--name", "Qt %{Qt:Version} for Windows Phone x86 (Emulator)",
                                     "--type", "WinRt.QtVersion.WindowsPhone",
                                     "--qmake", qmakeBinary,
                                     "UNDOEXECUTE",
@@ -107,7 +106,7 @@ Component.prototype.createOperations = function()
             component.addOperation("Execute",
                                    ["@SDKToolBinary@", "addKit",
                                     "--id", kitName,
-                                    "--name", "Qt " + qtStringVersion + " for Windows Phone x86 MSVC2013 32bit (Emulator)",
+                                    "--name", "Qt %{Qt:Version} for Windows Phone x86 MSVC2013 32bit (Emulator)",
                                     "--toolchain", "x86-windows-msvc2013-pe-32bit",
                                     "--qt", component.name,
                                     "--devicetype", "WinRt.Device.Emulator",

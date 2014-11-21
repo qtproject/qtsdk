@@ -53,7 +53,6 @@ Component.prototype.createOperations = function()
 {
     component.createOperations();
 
-    var qtStringVersion = "5.4";
     var qmakeBinary = "";
     var platform = "";
     if (installer.value("os") == "mac") {
@@ -71,7 +70,7 @@ Component.prototype.createOperations = function()
     component.addOperation("Execute",
                            ["@SDKToolBinary@", "addQt",
                             "--id", component.name,
-                            "--name", "Qt " + qtStringVersion + " for iOS",
+                            "--name", "Qt %{Qt:Version} for iOS",
                             "--type", "Qt4ProjectManager.QtVersion.Ios",
                             "--qmake", qmakeBinary,
                             "UNDOEXECUTE",

@@ -63,7 +63,6 @@ Component.prototype.createOperations = function()
     component.createOperations();
 
     var platform = "";
-    var qtStringVersion = "5.4";
     var qmakeBinary = "@TargetDir@" + "%TARGET_INSTALL_DIR%/bin/qmake";
     var sdpDirectoryPath = installer.value("QNX660_SDP_PATH");
     var sdpQnxToolsExtension = "";
@@ -86,7 +85,7 @@ Component.prototype.createOperations = function()
     component.addOperation("Execute",
                            ["@SDKToolBinary@", "addQt",
                             "--id", component.name,
-                            "--name", "Qt " + qtStringVersion + " for QNX 6.6.0 x86",
+                            "--name", "Qt %{Qt:Version} for QNX 6.6.0 x86",
                             "--type", "Qt4ProjectManager.QtVersion.QNX.QNX",
                             "--qmake", Dir.toNativeSparator(qmakeBinary + sdpQnxToolsExtension),
                             "SDKPath", "QString:" + Dir.toNativeSparator(sdpDirectoryPath),
@@ -97,7 +96,7 @@ Component.prototype.createOperations = function()
     component.addOperation("Execute",
                            ["@SDKToolBinary@", "addKit",
                             "--id", component.name + ".kit",
-                            "--name", "Qt " + qtStringVersion + " for QNX 6.6.0 x86",
+                            "--name", "Qt %{Qt:Version} for QNX 6.6.0 x86",
                             "--debuggerid", "opt_qnx660_debugger_x86",
                             "--devicetype", "QnxOsType",
                             "--sysroot", Dir.toNativeSparator(sdpDirectoryPath + "/target/qnx6"),

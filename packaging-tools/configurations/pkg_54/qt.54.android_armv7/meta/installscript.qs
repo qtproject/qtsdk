@@ -58,7 +58,6 @@ Component.prototype.createOperations = function()
 {
     component.createOperations();
 
-    var qtStringVersion = "5.4";
     var qmakeBinary = "";
     var platform = "";
     if (installer.value("os") == "x11") {
@@ -84,7 +83,7 @@ Component.prototype.createOperations = function()
     component.addOperation("Execute",
                            ["@SDKToolBinary@", "addQt",
                             "--id", component.name,
-                            "--name", "Qt " + qtStringVersion + " for Android armv7",
+                            "--name", "Qt %{Qt:Version} for Android armv7",
                             "--type", "Qt4ProjectManager.QtVersion.Android",
                             "--qmake", qmakeBinary,
                             "UNDOEXECUTE",

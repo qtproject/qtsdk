@@ -69,7 +69,6 @@ Component.prototype.createOperations = function()
 {
     component.createOperations();
     try {
-        var qtStringVersion = "5.4";
         var qtPath = "@TargetDir@" + "%TARGET_INSTALL_DIR%";
         var qmakeBinary = "@TargetDir@" + "%TARGET_INSTALL_DIR%/bin/qmake";
         addInitQtPatchOperation(component, "mac", qtPath, qmakeBinary, "qt5");
@@ -80,7 +79,7 @@ Component.prototype.createOperations = function()
         component.addOperation("Execute",
                                ["@SDKToolBinary@", "addQt",
                                 "--id", component.name,
-                                "--name", "Qt " + qtStringVersion + " clang 64bit",
+                                "--name", "Qt %{Qt:Version} clang 64bit",
                                 "--type", "Qt4ProjectManager.QtVersion.Desktop",
                                 "--qmake", qmakeBinary,
                                 "UNDOEXECUTE",
@@ -90,7 +89,7 @@ Component.prototype.createOperations = function()
         component.addOperation("Execute",
                                ["@SDKToolBinary@", "addKit",
                                 "--id", kitName,
-                                "--name", "Desktop Qt " + qtStringVersion + " clang 64bit",
+                                "--name", "Desktop Qt %{Qt:Version} clang 64bit",
                                 "--toolchain", "x86-macos-generic-mach_o-64bit",
                                 "--qt", component.name,
                                 "--debuggerengine", "256", // DebuggerEngineType::LldbEngineType
