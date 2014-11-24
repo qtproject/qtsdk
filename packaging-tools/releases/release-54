@@ -35,7 +35,7 @@ configure_options:      -opensource -confirm-license -release -xplatform android
 
 [release.qt.configure_options.ios]
 build_node_labels:      mac-clang-10.8-x64_iOS, mac-clang-10.9-x64_iOS, mac-clang-10.10-x64_iOS
-configure_options:      -opensource -confirm-license -debug-and-release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -xplatform macx-ios-clang -no-sql-mysql
+configure_options:      -opensource -confirm-license -debug-and-release -nomake tests -nomake examples -qt-libjpeg -qt-libpng -xplatform macx-ios-clang -no-sql-mysql
 
 [release.qt.configure_options.linux]
 build_node_labels:      linux-g++-Ubuntu11.10-x86, linux-g++-Ubuntu11.10-x64, linux-g++-Rhel6.5-x86, linux-g++-Rhel6.5-x64
@@ -43,7 +43,7 @@ configure_options:      -opensource -confirm-license -debug-and-release -release
 
 [release.qt.configure_options.mac]
 build_node_labels:      mac-clang-10.8-x64, mac-clang-10.9-x64, mac-clang-10.10-x64
-configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -platform macx-clang -sysconfdir /Library/Preferences/Qt -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -openssl -dbus
+configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-libjpeg -qt-libpng -platform macx-clang -sysconfdir /Library/Preferences/Qt -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -openssl -dbus
 
 [release.qt.configure_options.windows]
 build_node_labels:      win-msvc2010-Windows7-x86_ANGLE, win32-msvc2010_Windows_7, win-msvc2012-Windows8-x86_ANGLE, win-msvc2012-Windows8-x64_ANGLE, win64-msvc2012_Windows_8, win-msvc2013-Windows8.1-x86_ANGLE, win-msvc2013-Windows8.1-x64_ANGLE
