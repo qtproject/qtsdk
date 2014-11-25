@@ -236,7 +236,7 @@ class BldCommand:
         elif cmd == self.execute_icu_bld:
             return self.validate_icu_build_args()
         else:
-            if len(sys.argv) < 15:
+            if len(sys.argv) < 12:
                 return False
         return True
 
@@ -562,21 +562,22 @@ def initialize_extra_module_build_src():
 ###############################
 def handle_qt_configure_exe_build():
     # create configure.exe and inject it into src package
-    cmd_args = ['python', '-u', WORK_DIR + '\qtsdk\packaging-tools\helpers\create_configure_exe.py', 'src_url=' + SRC_URL + '/single/qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION + '.zip', 'mdl_url=' + SRC_URL + '/submodules/qtbase-' + LICENSE + '-src-' + QT_FULL_VERSION + '.zip', 'do_7z']
+    qt_version, qt_version_tag, qt_full_version = parse_qt_version_and_tag(get_release_description_file())
+    cmd_args = ['python', '-u', WORK_DIR + '\qtsdk\packaging-tools\helpers\create_configure_exe.py', 'src_url=' + SRC_URL + '/single/qt-everywhere-' + LICENSE + '-src-' + qt_full_version + '.zip', 'mdl_url=' + SRC_URL + '/submodules/qtbase-' + LICENSE + '-src-' + qt_full_version + '.zip', 'do_7z']
     bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
 
     # upload packages
-    ARTF_UPLOAD_PATH=PKG_SERVER_ADDR + ':' + PATH + '/' + LICENSE + '/' + 'qt/' + QT_VERSION + '/latest/src'
-    temp_file = 'qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION + '.zip'
+    ARTF_UPLOAD_PATH=PKG_SERVER_ADDR + ':' + PATH + '/' + LICENSE + '/' + 'qt/' + qt_version + '/latest/src'
+    temp_file = 'qt-everywhere-' + LICENSE + '-src-' + qt_full_version + '.zip'
     cmd_args = [SCP_COMMAND, temp_file, ARTF_UPLOAD_PATH + '/single/']
     bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
-    temp_file = 'qt-everywhere-' + LICENSE + '-src-' + QT_FULL_VERSION + '.7z'
+    temp_file = 'qt-everywhere-' + LICENSE + '-src-' + qt_full_version + '.7z'
     cmd_args = [SCP_COMMAND, temp_file, ARTF_UPLOAD_PATH + '/single/']
     bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
-    temp_file = 'qtbase-' + LICENSE + '-src-' + QT_FULL_VERSION + '.zip'
+    temp_file = 'qtbase-' + LICENSE + '-src-' + qt_full_version + '.zip'
     cmd_args = [SCP_COMMAND, temp_file, ARTF_UPLOAD_PATH + '/submodules/']
     bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
-    temp_file = 'qtbase-' + LICENSE + '-src-' + QT_FULL_VERSION + '.7z'
+    temp_file = 'qtbase-' + LICENSE + '-src-' + qt_full_version + '.7z'
     cmd_args = [SCP_COMMAND, temp_file, ARTF_UPLOAD_PATH + '/submodules/']
     bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
 
