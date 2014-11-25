@@ -128,7 +128,7 @@ def patch_build_time_paths(search_path, search_string, qt_install_prefix):
             if not search_string in line:
                 print(line.rstrip('\n'))
                 continue
-            patched_line = line.replace(search_string, qt_install_prefix)
+            patched_line = line.replace(search_string, qt_install_prefix.rstrip('\n'))
             print(patched_line.rstrip('\n'))
 
 ###############################
