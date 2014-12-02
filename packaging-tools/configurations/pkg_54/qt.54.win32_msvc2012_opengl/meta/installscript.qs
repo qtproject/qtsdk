@@ -95,7 +95,6 @@ Component.prototype.beginInstallation = function()
 Component.prototype.createOperations = function()
 {
     component.createOperations();
-    var qtStringVersion = "5.4";
 
     if (installer.value("os") == "win") {
         try {
@@ -112,7 +111,7 @@ Component.prototype.createOperations = function()
             component.addOperation("Execute",
                                    ["@SDKToolBinary@", "addQt",
                                     "--id", component.name,
-                                    "--name", "Qt " + qtStringVersion + " MSVC2012 OpenGL 32bit",
+                                    "--name", "Qt %{Qt:Version} MSVC2012 OpenGL 32bit",
                                     "--type", "Qt4ProjectManager.QtVersion.Desktop",
                                     "--qmake", qmakeBinary,
                                     "UNDOEXECUTE",
@@ -122,7 +121,7 @@ Component.prototype.createOperations = function()
             component.addOperation("Execute",
                                    ["@SDKToolBinary@", "addKit",
                                     "--id", kitName,
-                                    "--name", "Desktop Qt " + qtStringVersion + " MSVC2012 OpenGL 32bit",
+                                    "--name", "Desktop Qt %{Qt:Version} MSVC2012 OpenGL 32bit",
                                     "--toolchain", "x86-windows-msvc2012-pe-32bit",
                                     "--qt", component.name,
                                     "--debuggerengine", "4",

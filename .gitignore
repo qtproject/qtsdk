@@ -1,6 +1,9 @@
 Makefile
 .qmake.super
 *.pyc
+*.7z
+*.gz
+*.zip
 packaging-tools/qt-bld
 packaging-tools/qt-src
 packaging-tools/ifw-src
@@ -8,3 +11,5 @@ packaging-tools/ifw-bld
 packaging-tools/ifwt
 packaging-tools/repository
 packaging-tools/pkg
+packaging-tools/config
+packaging-tools/build_artifacts

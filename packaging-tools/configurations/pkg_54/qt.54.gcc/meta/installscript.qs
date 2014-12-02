@@ -53,7 +53,6 @@ Component.prototype.createOperations = function()
 {
     component.createOperations();
 
-    var qtStringVersion = "5.4";
     if (installer.value("os") == "x11") {
         var qtPath = "@TargetDir@" + "%TARGET_INSTALL_DIR%";
         var qmakeBinary = "@TargetDir@" + "%TARGET_INSTALL_DIR%/bin/qmake";
@@ -65,7 +64,7 @@ Component.prototype.createOperations = function()
         component.addOperation("Execute",
                                ["@SDKToolBinary@", "addQt",
                                 "--id", component.name,
-                                "--name", "Qt " + qtStringVersion + " GCC 32bit",
+                                "--name", "Qt %{Qt:Version} GCC 32bit",
                                 "--type", "Qt4ProjectManager.QtVersion.Desktop",
                                 "--qmake", qmakeBinary,
                                 "UNDOEXECUTE",
@@ -75,7 +74,7 @@ Component.prototype.createOperations = function()
         component.addOperation("Execute",
                                ["@SDKToolBinary@", "addKit",
                                 "--id", kitName,
-                                "--name", "Desktop Qt " + qtStringVersion + " GCC 32bit",
+                                "--name", "Desktop Qt %{Qt:Version} GCC 32bit",
                                 "--toolchain", "x86-linux-generic-elf-32bit",
                                 "--qt", component.name,
                                 "--debuggerengine", "1",

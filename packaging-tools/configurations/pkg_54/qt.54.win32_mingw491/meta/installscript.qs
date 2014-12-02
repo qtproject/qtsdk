@@ -96,7 +96,6 @@ Component.prototype.createOperations = function()
 {
     component.createOperations();
 
-    var qtStringVersion = "5.4";
     if (installer.value("os") == "win") {
         try {
             var qtPath = "@TargetDir@" + "%TARGET_INSTALL_DIR%";
@@ -112,7 +111,7 @@ Component.prototype.createOperations = function()
             component.addOperation("Execute",
                                    ["@SDKToolBinary@", "addQt",
                                     "--id", component.name,
-                                    "--name", "Qt " + qtStringVersion + " MinGW 32bit",
+                                    "--name", "Qt %{Qt:Version} MinGW 32bit",
                                     "--type", "Qt4ProjectManager.QtVersion.Desktop",
                                     "--qmake", qmakeBinary,
                                     "UNDOEXECUTE",
@@ -122,7 +121,7 @@ Component.prototype.createOperations = function()
             component.addOperation("Execute",
                                    ["@SDKToolBinary@", "addKit",
                                     "--id", kitName,
-                                    "--name", "Desktop Qt " + qtStringVersion + " MinGW 32bit",
+                                    "--name", "Desktop Qt %{Qt:Version} MinGW 32bit",
                                     "--toolchain", "@MINGW491_TCID@",
                                     "--qt", component.name,
                                     "--debuggerengine", "1",

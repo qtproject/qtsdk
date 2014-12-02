@@ -81,7 +81,6 @@ Component.prototype.createOperations = function()
 {
     component.createOperations();
 
-    var qtStringVersion = "5.4";
     if (installer.value("os") == "win") {
         try {
             var qtPath = "@TargetDir@" + "%TARGET_INSTALL_DIR%";
@@ -97,7 +96,7 @@ Component.prototype.createOperations = function()
             component.addOperation("Execute",
                                    ["@SDKToolBinary@", "addQt",
                                     "--id", component.name,
-                                    "--name", "Qt " + qtStringVersion + " for Windows Phone arm",
+                                    "--name", "Qt %{Qt:Version} for Windows Phone arm",
                                     "--type", "WinRt.QtVersion.WindowsPhone",
                                     "--qmake", qmakeBinary,
                                     "UNDOEXECUTE",
@@ -107,7 +106,7 @@ Component.prototype.createOperations = function()
             component.addOperation("Execute",
                                    ["@SDKToolBinary@", "addKit",
                                     "--id", kitName,
-                                    "--name", "Qt " + qtStringVersion + " for Windows Phone arm MSVC2013 32bit",
+                                    "--name", "Qt %{Qt:Version} for Windows Phone arm MSVC2013 32bit",
                                     "--toolchain", "arm-windows-msvc2013-pe-32bit",
                                     "--qt", component.name,
                                     "--devicetype", "WinRt.Device.Phone",

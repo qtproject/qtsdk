@@ -1004,6 +1004,10 @@ def handle_qt_desktop_release_build(qt_full_version):
         ext_args += ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)
     elif bldinstallercommon.is_mac_platform():
         ext_args += ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)
+        dbus_environment = dict()
+        dbus_environment['LIBRARY_PATH'] = os.environ.get('MAC_DBUS_LIBRARY_PATH') # d-bus lib path(s)
+        dbus_environment['CPATH'] = os.environ.get('MAC_DBUS_CPATH')               # d-bus include path(s)
+        EXTRA_ENV = combine_environment_dicts(EXTRA_ENV, dbus_environment)
     qt5BuildOptions.configure_options = qt_configure_options_file
     qt5BuildOptions.add_configure_option = ext_args
     qt5BuildOptions.system_env = EXTRA_ENV
