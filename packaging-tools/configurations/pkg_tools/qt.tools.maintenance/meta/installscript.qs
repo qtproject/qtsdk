@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2014 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the release tools of the Qt Toolkit.
@@ -53,6 +53,14 @@ Component.prototype.onInstallationStarted = function()
         else if (installer.value("os") == "x11" || installer.value("os") == "mac")
             component.installerbaseBinaryPath = "@TargetDir@/.tempSDKMaintenanceTool";
         installer.setInstallerBaseBinary(component.installerbaseBinaryPath);
+
+        // update resource file if exists in the archive
+        var updateResourceFilePath = "@TargetDir@/update.rcc";
+        var normalizedUpdateResourceFilePath = updateResourceFilePath.replace(/@TargetDir@/, installer.value("TargetDir"));
+        if (installer.fileExists(normalizedUpdateResourceFilePath)) {
+            print("Updating resource file: " + normalizedUpdateResourceFilePath);
+            installer.setValue("DefaultResourceReplacement", normalizedUpdateResourceFilePath);
+        }
     }
 }
 

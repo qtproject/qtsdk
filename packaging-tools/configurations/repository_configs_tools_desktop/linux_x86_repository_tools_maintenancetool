@@ -45,22 +45,14 @@ name:                   qt
 [PlatformIdentifier]
 identifier:             linux
 
-[ArchiveRemoteLocation.default]
-base_url:
-base_path:
+[ConfigDir]
+template_name:          config_qt5
 
-# for testing purposes
-[PackageIgnoreList]
-packages:
+[ConfigXml]
+template_name:          config.xml.template.linux-x86.qt5-sdk
 
 [PackageConfigurationFiles]
 file_list:              x86-tools-maintenancetool-conf
-
-[OfflinePackageExcludeList]
-package_list:
-
-[SdkUpdateRepository]
-repository_url_release:
 
 [PackageTemplates]
 template_dirs:          pkg_tools

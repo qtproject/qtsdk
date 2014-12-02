@@ -102,6 +102,7 @@ STRICT_MODE                 = True
 ARCHIVE_SERVER_BASE_URL     = ''
 INSTALLER_FRAMEWORK_TOOLS   = ''
 IFW_TOOLS_DIR_NAME          = 'ifwt'
+CREATE_MAINTENANCE_TOOL_RESOURCE_FILE = False
 
 INSTALLER_NAMING_SCHEME_COMPILER    = ''
 INSTALLER_NAMING_SCHEME_TARGET_ARCH = ''
@@ -313,6 +314,7 @@ def print_options():
     print "Create online installer:     %r" % (CREATE_ONLINE_INSTALLER)
     print "Create offline installer:    %r" % (CREATE_OFFLINE_INSTALLER)
     print "Create repository:           %r" % (CREATE_REPOSITORY)
+    print "MaintenanceTool rcc:         %r" % (CREATE_MAINTENANCE_TOOL_RESOURCE_FILE)
     print "Development mode:            %r" % (DEVELOPMENT_MODE)
     print "Incremental mode:            %r" % (INCREMENTAL_MODE)
     print "Archive skip:                %r" % (ARCHIVE_DOWNLOAD_SKIP)
@@ -347,6 +349,7 @@ def parse_cmd_line():
     global CREATE_ONLINE_INSTALLER
     global CREATE_OFFLINE_INSTALLER
     global CREATE_REPOSITORY
+    global CREATE_MAINTENANCE_TOOL_RESOURCE_FILE
     global USE_LEGACY_IFW
     global INSTALLER_NAMING_SCHEME_COMPILER
     global INSTALLER_NAMING_SCHEME_TARGET_ARCH
@@ -388,6 +391,9 @@ def parse_cmd_line():
     INSTALLER_NAMING_SCHEME_VERSION_TAG = options.installer_version_tag
     ARCHIVE_SERVER_BASE_URL             = options.archive_base_url
     INSTALLER_FRAMEWORK_TOOLS           = options.ifw_tools_uri
+
+    if os.environ.get('CREATE_MAINTENANCE_TOOL_RESOURCE_FILE') in ['yes', 'true', '1']:
+        CREATE_MAINTENANCE_TOOL_RESOURCE_FILE = True
 
     INSTALLER_FRAMEWORK_QT_ARCHIVE_URI              = options.installer_framework_qt_archive_uri
     INSTALLER_FRAMEWORK_QT_CONFIGURE_OPTIONS        = options.installer_framework_qt_configure_options
@@ -594,6 +600,7 @@ def set_config_xml():
     # substitute values also from global substitution list
     for item in KEY_SUBSTITUTION_LIST:
         bldinstallercommon.replace_in_files(fileslist, item[0], item[1])
+    return config_template_dest
 
 
 ##############################################################
@@ -1193,6 +1200,11 @@ def create_offline_repository():
     print '= Create offline repository'
     print '=================================================='
 
+    # handle special case if MaintenanceTool repository build and
+    # update.rcc update requeste
+    if CREATE_MAINTENANCE_TOOL_RESOURCE_FILE:
+        create_maintenance_tool_resource_file()
+
     # repogen arguments
     if CREATE_REPOSITORY:
         print 'Creating repository for the SDK ...'
@@ -1209,6 +1221,61 @@ def create_offline_repository():
         if not os.path.exists(REPO_OUTPUT_DIR):
             sys.stderr.write('*** Fatal error! Unable to create repository directory: ' + REPO_OUTPUT_DIR)
             sys.exit(-1)
+
+
+##############################################################
+# Create MaintenanceTool resource file
+##############################################################
+def create_maintenance_tool_resource_file():
+    """Create MaintenanceTool resource file."""
+    print '=================================================='
+    print '= Create MaintenanceTool resource file'
+    print '=================================================='
+    set_config_directory()
+    config_xml = set_config_xml()
+    cmd_args = [BINARYCREATOR_TOOL, '-p', PACKAGES_FULL_PATH_DST, '-c', config_xml, '-rcc']
+    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+    # archive
+    resource_file = os.path.join(SCRIPT_ROOT_DIR, 'update.rcc')
+    installer_base_archive = bldinstallercommon.locate_file(PACKAGES_FULL_PATH_DST, '*installerbase*')
+    if not os.path.isfile(installer_base_archive):
+        print('*** Unable to locate installerbase archive from: {0}'.format(PACKAGES_FULL_PATH_DST))
+        print('*** update.rcc will not be included in the MaintenanceTool repository!')
+        return
+    # inject the resource file to the same archive where installerbase is
+    inject_update_rcc_to_archive(installer_base_archive, resource_file)
+
+
+###############################
+# function
+###############################
+def inject_update_rcc_to_archive(archive_file_path, file_to_be_injected):
+    print('Injecting file [{0}] into [{1}]'.format(file_to_be_injected, archive_file_path))
+    if not os.path.isfile(file_to_be_injected):
+        print('*** Unable to locate file: {0}'.format(file_to_be_injected))
+    if not os.path.isfile(archive_file_path):
+        print('*** Unable to locate file: {0}'.format(archive_file_path))
+    archive_file_name = os.path.basename(archive_file_path)
+    print(archive_file_name)
+    # copy to tmp location
+    tmp_dir = os.path.join(os.path.dirname(archive_file_path), '_tmp')
+    bldinstallercommon.create_dirs(tmp_dir)
+    shutil.copy(archive_file_path, tmp_dir)
+    # extract
+    copied_archive_file = os.path.join(tmp_dir, archive_file_name)
+    bldinstallercommon.extract_file(copied_archive_file, tmp_dir)
+    os.remove(copied_archive_file)
+    # add file
+    shutil.copy(file_to_be_injected, tmp_dir)
+    # re-compress
+    cmd_args_archive = ['7z', 'a', archive_file_name, '*']
+    bldinstallercommon.do_execute_sub_process(cmd_args_archive, tmp_dir, True)
+    # delete original
+    os.remove(archive_file_path)
+    # copy re-compressed package to correct location
+    shutil.copy(os.path.join(tmp_dir, archive_file_name), os.path.dirname(archive_file_path))
+    # delete tmp location
+    bldinstallercommon.shutil.rmtree(tmp_dir)
 
 
 ##############################################################
