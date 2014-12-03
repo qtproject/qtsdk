@@ -84,6 +84,15 @@ Component.prototype.createOperations = function()
     if (!(installer.value("QT_EDITION_NAME") === ""))
         editionName = installer.value("QT_EDITION_NAME");
 
+    // Create uninstall link only for windows
+    if (installer.value("os") == "win")
+    {
+        // shortcut to uninstaller
+        component.addOperation( "CreateShortcut",
+                                "@TargetDir@/MaintenanceTool.exe",
+                                "@StartMenuDir@/Uninstall " + editionName + ".lnk",
+                                " --uninstall");
+    }
     // only for windows online installer
     if ( installer.value("os") == "win" && !installer.isOfflineOnly() )
     {
