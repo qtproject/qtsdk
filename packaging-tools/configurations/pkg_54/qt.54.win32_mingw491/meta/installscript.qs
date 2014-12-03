@@ -124,8 +124,7 @@ Component.prototype.createOperations = function()
                                     "--name", "Desktop Qt %{Qt:Version} MinGW 32bit",
                                     "--toolchain", "@MINGW491_TCID@",
                                     "--qt", component.name,
-                                    "--debuggerengine", "1",
-                                    "--debugger", "@MINGW491_DIR@\\bin\\gdb.exe",
+                                    "--debuggerid", "@MINGW491_DBGID@",
                                     "--devicetype", "Desktop",
                                     "UNDOEXECUTE",
                                     "@SDKToolBinary@", "rmKit", "--id", kitName]);
