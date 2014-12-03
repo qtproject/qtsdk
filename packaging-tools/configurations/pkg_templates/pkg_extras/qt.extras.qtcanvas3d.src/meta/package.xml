@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt Canvas 3D Src</DisplayName>
     <Description></Description>
-    <Version>1.0.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>1.0.0-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Virtual>true</Virtual>
     <Dependencies>qt.extras.qtcanvas3d.10.src</Dependencies>
