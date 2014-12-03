@@ -76,10 +76,16 @@ sub collect_entries {
         # Extract the changelogs from $msg
         my @texts = ( $msg =~ /\[ChangeLog\](.*?)\n(?=\n)/sixg );
         foreach (@texts) {
-            /\[((?:[^]]|\]\[)+)\]\s*(.*)\z/si;
-            my @groups = split(/\]\[/, $1);
-            $entry{text} = $2 =~ s/\s+/ /gr;
-            $entry{text} =~ s/\s+$//;
+            my @groups;
+            if (/\[((?:[^]]|\]\[)+)\]\s*(.*)\z/si) {
+                @groups = split(/\]\[/, $1);
+                $entry{text} = $2 =~ s/\s+/ /gr;
+                $entry{text} =~ s/\s+$//;
+            } else {
+                warn('Malformed line: "' . $_ . "\"\n\n");
+                push(@groups, 'UNSPECIFIED');
+                $entry{text} = $_;
+            }
 
             # Store this entry
             # Each entry in %log is a hash
