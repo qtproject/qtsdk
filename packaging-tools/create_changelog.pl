@@ -53,9 +53,10 @@ sub help {
 sub collect_entries {
     # Run git submodule foreach
     chdir(shift @ARGV) if (scalar @ARGV);
-    open FOREACH, "-|", "git", "submodule", "foreach", "--quiet",
-    "git rev-list --reverse --grep '^\\[ChangeLog\\]' " . $ARGV[0] .
-        " 2> /dev/null | git cat-file --batch || true";
+    my @revListCommand = ("git rev-list --reverse --grep '^\\[ChangeLog\\]' " . $ARGV[0] .
+        " 2> /dev/null | git cat-file --batch || true");
+    unshift(@revListCommand, 'git', 'submodule', 'foreach', '--quiet') if -e '.gitmodules';
+    open FOREACH, '-|', @revListCommand;
 
     # Collect all entries
     while (<FOREACH>) {
