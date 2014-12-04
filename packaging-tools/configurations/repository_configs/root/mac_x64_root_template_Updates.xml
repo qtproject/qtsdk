@@ -1,0 +1,33 @@
+<Updates>
+<ApplicationName>{AnyApplication}</ApplicationName>
+<ApplicationVersion>IFW_REPOSITORY_FORMAT_VERSION</ApplicationVersion>
+<Checksum>true</Checksum>
+    <RepositoryUpdate>
+        <Repository action="add" url="http://download.qt-project.org/online/qtsdkrepository/mac_x64/desktop/licenses" displayname="Qt Mac-x64 Licenses online repository"/>
+        <Repository action="add" url="http://download.qt-project.org/online/qtsdkrepository/mac_x64/desktop/qt5" displayname="Qt Mac-x64 Desktop Qt5 online repository"/>
+        <Repository action="add" url="http://download.qt-project.org/online/qtsdkrepository/mac_x64/desktop/tools_qtcreator" displayname="Qt Mac-x64 Desktop QtCreator online repository"/>
+        <Repository action="add" url="http://download.qt-project.org/online/qtsdkrepository/mac_x64/desktop/tools_maintenance" displayname="Qt Mac-x64 Maintenance Tool online repository"/>
+        <Repository action="add" url="http://download.qt-project.org/online/qtsdkrepository/mac_x64/desktop/tools_generic" displayname="Qt Mac-x64 online Generic Tools repository"/>
+        <Repository action="add" url="http://download.qt-project.org/online/qtsdkrepository/mac_x64/android/qt5" displayname="Qt Mac-x64 Android online repository"/>
+        <Repository action="add" url="http://download.qt-project.org/online/qtsdkrepository/mac_x64/ios/qt5" displayname="Qt Mac-x64 iOS online repository"/>
+        <Repository action="add" url="http://download.qt-project.org/online/qtsdkrepository/mac_x64/desktop/enginio_src" displayname="Qt Mac-x64 Enginio Source Package online repository"/>
+        <Repository action="add" url="http://download.qt-project.org/online/qtsdkrepository/mac_x64/desktop/enginio" displayname="Qt Mac-x64 Enginio for Desktop online repository"/>
+        <Repository action="add" url="http://download.qt-project.org/online/qtsdkrepository/mac_x64/android/enginio" displayname="Qt Mac-x64 Enginio for Android online repository"/>
+        <Repository action="add" url="http://download.qt-project.org/online/qtsdkrepository/mac_x64/ios/enginio" displayname="Qt Mac-x64 Enginio for iOS online repository"/>
+        <Repository action="add" url="http://download.qt-project.org/online/qtsdkrepository/mac_x64/desktop/qt5_53" displayname="Qt Mac-x64 Desktop Qt5 online repository"/>
+        <Repository action="add" url="http://download.qt-project.org/online/qtsdkrepository/mac_x64/desktop/qt5_53_src_doc_examples" displayname="Qt Mac-x64 Qt5 src online repository"/>
+        <Repository action="add" url="http://download.qt-project.org/online/qtsdkrepository/mac_x64/android/qt5_53" displayname="Qt Mac-x64 Android online repository"/>
+        <Repository action="add" url="http://download.qt-project.org/online/qtsdkrepository/mac_x64/ios/qt5_53" displayname="Qt Mac-x64 iOS online repository"/>
+        <Repository action="add" url="http://download.qt-project.org/online/qtsdkrepository/mac_x64/desktop/qt5_54" displayname="Qt Mac-x64 Desktop Qt5.4 online repository"/>
+        <Repository action="add" url="http://download.qt-project.org/online/qtsdkrepository/mac_x64/desktop/qt5_54_src_doc_examples" displayname="Qt Mac-x64 Qt5.4 src online repository"/>
+        <Repository action="add" url="http://download.qt-project.org/online/qtsdkrepository/mac_x64/android/qt5_54" displayname="Qt Mac-x64 Android Qt5.4 online repository"/>
+        <Repository action="add" url="http://download.qt-project.org/online/qtsdkrepository/mac_x64/ios/qt5_54" displayname="Qt Mac-x64 iOS Qt5.4 online repository"/>
+        <!--  Extras repositories START  -->
+        <Repository action="add" url="http://download.qt-project.org/online/qtsdkrepository/mac_x64/desktop/extras_src/qtcanvas3d" displayname="Qt Canvas 3D online repository"/>
+        <Repository action="add" url="http://download.qt-project.org/online/qtsdkrepository/mac_x64/desktop/extras_src/qtwebview" displayname="Qt WebView src online repository"/>
+        <Repository action="add" url="http://download.qt-project.org/online/qtsdkrepository/mac_x64/desktop/extras/qtwebview" displayname="Qt WebViews online repository"/>
+        <Repository action="add" url="http://download.qt-project.org/online/qtsdkrepository/mac_x64/android/extras/qtwebview" displayname="Qt WebView online repository"/>
+        <Repository action="add" url="http://download.qt-project.org/online/qtsdkrepository/mac_x64/ios/extras/qtwebview" displayname="Qt WebView online repository"/>
+        <!--  Extras repositories END  -->
+    </RepositoryUpdate>
+</Updates>
