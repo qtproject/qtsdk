@@ -21,4 +21,5 @@
     <!-- @homeDir@ and @rootDir@ are some of the supported vars -->
     <TargetDir>@homeDir@/Qt@QT_VERSION@</TargetDir>
     <AdminTargetDir>/opt/Qt@QT_VERSION@</AdminTargetDir>
+    <AllowSpaceInPath>false</AllowSpaceInPath>
 </Installer>

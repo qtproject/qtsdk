@@ -20,4 +20,5 @@
     </RemoteRepositories>-->
     <!-- @homeDir@ and @rootDir@ are some of the supported vars -->
     <TargetDir>@homeDir@/Qt@QT_VERSION@</TargetDir>
+    <AllowSpaceInPath>false</AllowSpaceInPath>
 </Installer>
