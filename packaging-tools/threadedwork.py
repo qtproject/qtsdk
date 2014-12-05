@@ -174,7 +174,7 @@ class ThreadedWork():
         print(self.description)
         print(os.linesep.join(self.legend))
 
-        #enableThreadedPrint(True, maxThreads)
+        enableThreadedPrint(True, maxThreads)
         listOfConsumers = []
         for i in range(maxThreads):
             # every Consumer needs a stop/none item
@@ -194,7 +194,7 @@ class ThreadedWork():
                     #catch the KeyboardInterrupt exception
                     sys.exit(0)
         # self.queue.join() <- this ignoring the KeyboardInterrupt
-        #enableThreadedPrint(False)
+        enableThreadedPrint(False)
         print(os.linesep + self.description + ' ... done')
 
 class Consumer(threading.Thread):
