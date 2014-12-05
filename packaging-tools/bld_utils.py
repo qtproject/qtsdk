@@ -52,6 +52,11 @@ import urllib2
 import shutil
 import subprocess
 import traceback
+import threading
+import collections
+
+# 3rd party module to read process output in a convenient way
+from asynchronousfilereader import AsynchronousFileReader
 
 # own imports
 import environmentfrombatchfile
@@ -286,24 +291,66 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None,
         if currentWorkingDirectory and not os.path.lexists(currentWorkingDirectory):
             raise Exception("The current working directory is not existing: %s" % currentWorkingDirectory)
 
-        process = subprocess.Popen(commandAsList,
-            stdout = subprocess.PIPE, stderr = None,
-            cwd = currentWorkingDirectory, bufsize = -1, env = environment)
-        while process.poll() is None:
-            sys.stdout.write(process.stdout.read(512))
+        if threading.currentThread().name == "MainThread":
+            process = subprocess.Popen(commandAsList,
+                cwd = currentWorkingDirectory, bufsize = -1, env = environment)
+        else:
+            process = subprocess.Popen(commandAsList,
+                stdout = subprocess.PIPE, stderr = subprocess.PIPE,
+                cwd = currentWorkingDirectory, bufsize = -1, env = environment)
 
-        process.stdout.close()
+            maxSavedLineNumbers = 100
+            lastStdOutLines = collections.deque(maxlen = maxSavedLineNumbers)
+            lastStdErrLines = collections.deque(maxlen = maxSavedLineNumbers)
 
+            # Launch the asynchronous readers of the process' stdout and stderr.
+            stdout = AsynchronousFileReader(process.stdout)
+            stderr = AsynchronousFileReader(process.stderr)
+
+            # Check the readers if we received some output (until there is nothing more to get).
+            while not stdout.eof() or not stderr.eof():
+                # Show what we received from standard output.
+                for line in stdout.readlines():
+                    lastStdOutLines.append(line)
+                    sys.stdout.write(line)
+
+                # Show what we received from standard error.
+                for line in stderr.readlines():
+                    lastStdErrLines.append(line)
+                    sys.stdout.write(line)
+
+                # Sleep a bit before polling the readers again.
+                time.sleep(1)
+
+            # Let's be tidy and join the threads we've started.
+            stdout.join()
+            stderr.join()
+
+            # Close subprocess' file descriptors.
+            process.stdout.close()
+            process.stderr.close()
+
+        process.wait()
         exitCode = process.returncode
 
         if exitCode != 0:
-            raise Exception("None zero exit code: %d" % exitCode)
-    except:
+            lastOutput = ""
+            if threading.currentThread().name != "MainThread":
+                type = ""
+                if len(lastStdErrLines) != 0:
+                    lastOutput += "".join(lastStdErrLines)
+                    type = "error "
+                elif len(lastStdOutLines) != 0:
+                    lastOutput += "".join(lastStdOutLines)
+            if len(lastOutput) != 0:
+                lastOutput = "{0}last {1}output:{0}{2}".format(os.linesep, type, lastOutput)
+            raise Exception("None zero exit code: {0}{1}".format(exitCode, lastOutput))
+    except Exception as e:
         if abort_on_fail:
             sys.stderr.write(os.linesep + '======================= error =======================' + os.linesep)
             sys.stderr.write("Working Directory: " + currentWorkingDirectory + os.linesep)
             sys.stderr.write("Last command:      " + ' '.join(commandAsList) + os.linesep)
-            sys.stderr.write(traceback.format_exc())
+            sys.stderr.write(e.message)
             # lets keep that for debugging
             #if environment:
             #    for key in sorted(environment):
@@ -311,7 +358,6 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None,
             sys.stderr.write(os.linesep + '======================= error =======================' + os.linesep)
             sys.exit(1)
     return exitCode
-
 
 def runInstallCommand(arguments = 'install', currentWorkingDirectory = None, callerArguments = None, init_environment = None):
     if init_environment is None:
