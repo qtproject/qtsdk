@@ -202,8 +202,11 @@ class Consumer(threading.Thread):
         self.queue = queue
         self.workerThreadId = workerThreadId
         threading.Thread.__init__(self)
-    def run(self):
-        threadData.progressIndicator = itertools.cycle(['|', '/', '-', '\\'])
+    def run(self, stableRunIndicator = True):
+        if stableRunIndicator:
+            threadData.progressIndicator = itertools.cycle(['..'])
+        else:
+            threadData.progressIndicator = itertools.cycle(['|', '/', '-', '\\'])
         threadData.workerThreadId = self.workerThreadId
         # run as long we have something in that queue
         while True:
