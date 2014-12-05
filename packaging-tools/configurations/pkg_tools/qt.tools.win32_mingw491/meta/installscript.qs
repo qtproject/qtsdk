@@ -87,6 +87,7 @@ Component.prototype.createOperations = function()
                                     "--name", "GNU gdb 7.8 for MinGW 4.9.1 32bit",
                                     "--binary", "@MINGW491_DIR@\\bin\\gdb.exe",
                                     "--abis", "x86-windows-msys-pe-32bit",
+                                    "--engine", "1"
                                     "UNDOEXECUTE",
                                     "@SDKToolBinary@", "rmDebugger", "--id", dbgId]);
 
