@@ -108,7 +108,7 @@ def urllib2_response_read(response, file_path, block_size = 8192):
     bytes_count = 0
 
     filename = open(file_path, 'wb')
-    old_percent = 0
+    old_percent = -1
     while 1:
         block = response.read(block_size)
         filename.write(block)
@@ -119,7 +119,7 @@ def urllib2_response_read(response, file_path, block_size = 8192):
 
         percent = min(100, bytes_count * 100 / total_size)
         if percent != old_percent:
-            sys.stdout.write("\r{}% ({})".format(percent, file_path))
+            sys.stdout.write("\r{}%".format(percent))
         old_percent = percent
 
     filename.close()
