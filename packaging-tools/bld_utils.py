@@ -102,8 +102,7 @@ def removeDir(path, raiseNoException = False):
             else:
                 raise
 
-def urllib2_response_read(response, file_path, block_size = 8192):
-    total_size = response.info().getheader('Content-Length').strip()
+def urllib2_response_read(response, file_path, block_size, total_size):
     total_size = int(total_size)
     bytes_count = 0
 
@@ -125,7 +124,7 @@ def urllib2_response_read(response, file_path, block_size = 8192):
     filename.close()
     return bytes_count
 
-def download(url, savefile):
+def download(url, savefile, read_block_size = 1048576):
     try:
         if os.path.lexists(savefile):
             raise Exception("Can not download '{0}' to '{1}' as target. The file already exists.".format(url, savefile))
@@ -147,11 +146,14 @@ def download(url, savefile):
             # use urlopen which raise an error if that file is not existing
             response = urllib2.urlopen(url)
             total_size = response.info().getheader('Content-Length').strip()
-            print("Downloading a file with size {0} bytes to {1}".format(total_size, savefile))
+            print("Downloading file from '{0}' with size {1} bytes to {2}".format(url, total_size, savefile))
             # run the download
-            urllib2_response_read(response, savefile_tmp)
+            received_size = urllib2_response_read(response, savefile_tmp, read_block_size, total_size)
+            if received_size != int(total_size):
+                raise Exception("Broken download, got a wrong size after download from '{0}'(total size: {1}, but {2} received).".format(url, total_size, received_size))
         except urllib2.HTTPError, error:
             raise Exception("Can not download '{0}' to '{1}' as target(error code: '{2}').".format(url, savefile, error.code))
+
         renamed = False
         tryRenameCounter = 0
         while renamed is False :
@@ -174,11 +176,6 @@ def download(url, savefile):
                 else:
                     if not os.path.lexists(savefile):
                         raise Exception("Could not rename {0} to {1}{2}Error: {3}".format(savefile_tmp, savefile, os.linesep, e.message))
-    except Exception as e:
-        # in threadedwork we prevent std so we need to forward the traceback to stderr
-        sys.stderr.write(e.message)
-        # this will stop the complete application even in threaded mode
-        sys.exit(1)
     finally: # this is done before the except code is called
         try:
             os.remove(savefile_tmp)
