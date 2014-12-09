@@ -145,13 +145,16 @@ class Task():
         try:
             for taskFunction in self.listOfFunctions:
                 taskFunction.function(*(taskFunction.arguments))
-        except:
+        except Exception as e:
             print("FAIL")
-            sys.__stdout__.flush()
-            sys.__stderr__.flush()
-            # exit the complete program with code 3, sys.exit would just close the thread
-            os._exit(3)
-
+            with outputLock:
+                # there is no clean exit so we adding linesep here
+                sys.__stdout__.write(os.linesep)
+                sys.__stderr__.write(e.message)
+                sys.__stdout__.flush()
+                sys.__stderr__.flush()
+                # exit the complete program with code 3, sys.exit would just close the thread
+                os._exit(3)
         print("Done")
 
 class ThreadedWork():
