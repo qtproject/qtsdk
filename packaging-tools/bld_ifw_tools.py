@@ -118,7 +118,7 @@ def get_default_qt5_configure_options():
     # Windows
     if plat.startswith('win'):
         options += '-target xp -no-opengl -no-icu '
-        options += '-openssl-linked OPENSSL_LIBS="-lssleay32MD -llibeay32MD -lcrypt32" '
+        options += '-openssl-linked OPENSSL_LIBS="-lssleay32MT -llibeay32MT -lcrypt32 -lgdi32" '
     # Unix
     else:
         options += get_common_unix_qt_configure_options()
@@ -308,7 +308,8 @@ def prepare_qt_sources(options):
     else:
         print('*** Invalid dir structure encountered?!')
         sys.exit(-1)
-
+    if bldinstallercommon.is_win_platform():
+        patch_win32_mkspecs(os.path.join(options.qt_source_dir, "qtbase", "mkspecs"))
 
 ###############################
 # function
@@ -479,6 +480,31 @@ def archive_macdeployqt(options):
         sys.exit(-1)
     shutil.move(options.mac_deploy_qt_archive_name, options.build_artifacts_dir)
 
+###############################
+# Replace all dict keys with values in file
+###############################
+def patch(file, dict):
+    filedata = None
+    print("Patching {0} ...".format(file))
+    with open(file, 'r') as f:
+        filedata = f.read()
+
+    for key in dict:
+        filedata = filedata.replace(key, dict[key])
+
+    with open(file, 'w') as f:
+        f.write(filedata)
+
+###############################
+# Patch win32 mkspecs
+###############################
+def patch_win32_mkspecs(mkspecsdir):
+    print('--------------------------------------------------------------------')
+    print('Patching win32 mkspecs in {0} ...'.format(mkspecsdir))
+    for root, dirs, files in os.walk(mkspecsdir):
+        for file in files:
+            if "win32" in root and file == "qmake.conf":
+                patch(os.path.join(root, file), {"-MD" : "-MT", "embed_manifest_dll" : "", "embed_manifest_exe" : "" })
 
 ###############################
 # Setup argument parser
