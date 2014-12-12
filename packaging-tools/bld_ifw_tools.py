@@ -209,7 +209,7 @@ class IfwOptions:
                 self.qt_installer_framework_qmake_args      += ['-r', 'PRODUCTKEYCHECK_PRI_FILE=' + self.product_key_checker_pri]
         # Mac specific
         if bldinstallercommon.is_mac_platform():
-            if not options.qt5_build:
+            if not qt5_build:
                 self.qt_installer_framework_qmake_args += ['QT_MENU_NIB_DIR=' + self.qt_source_dir + os.sep + 'src/gui/mac/qt_menu.nib']
             self.qt_installer_framework_qmake_args += ['-r', '"LIBS+=-framework IOKit"']
         # sanity check
