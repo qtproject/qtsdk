@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <Package>
     <DisplayName>QNX 6.6 armv7</DisplayName>
-    <Description>License options: LGPLv3, LGPLv2.1, Commercial&lt;br&gt;&lt;br&gt;Qt 5.4.0 Prebuilt Components for QNX 6.6 armv7</Description>
-    <Version>5.4.0-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Description>License options: LGPLv3, LGPLv2.1, Commercial&lt;br&gt;&lt;br&gt;Qt 5.4.1 Prebuilt Components for QNX 6.6 armv7</Description>
+    <Version>5.4.1-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.tools.qtcreator, qt.qnx6.sdp.armv7</Dependencies>
     <Default>true</Default>

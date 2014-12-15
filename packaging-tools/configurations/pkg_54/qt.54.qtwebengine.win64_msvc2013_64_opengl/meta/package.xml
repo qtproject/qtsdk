@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt WebEngine for msvc2013 64-bit OpenGL</DisplayName>
     <Description></Description>
-    <Version>5.4.0-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.4.1-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <AutoDependOn>qt.54.qtwebengine, qt.54.win64_msvc2013_64_opengl</AutoDependOn>
     <Dependencies>qt.54.win64_msvc2013_64_opengl</Dependencies>
