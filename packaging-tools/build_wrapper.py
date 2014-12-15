@@ -570,9 +570,9 @@ def handle_ifw_build():
     # Qt
     qt_src_pkg = os.environ['IFW_QT_SRC_PKG'] # mandatory env variable
     is_qt5_ifw_build = True
-    regex = re.compile('-(5)\.\d.\d')
-    qt_src_pkg = "".join(regex.findall(qt_src_pkg))
-    if not qt_src_pkg:
+    regex = re.compile('-((5)\.\d.\d)')
+    regex_result = regex.findall(qt_src_pkg)
+    if not regex_result:
         is_qt5_ifw_build = False
     qt_configure_options = bld_ifw_tools.get_default_qt_configure_options()
     # Installer-Framework
