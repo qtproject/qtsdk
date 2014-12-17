@@ -150,6 +150,7 @@ class BldCommand:
     publish_qt5_src_pkg                     = 'publish_src_packages'
     init_icu_bld                            = 'init_icu_bld'
     execute_icu_bld                         = 'icu_bld'
+    execute_licheck_bld                     = 'licheck_bld'
 
     def __init__(self, options):
         self.options = options
@@ -175,6 +176,7 @@ class BldCommand:
         commands += [self.execute_configure_exe_bld]
         commands += [self.init_icu_bld]
         commands += [self.execute_icu_bld]
+        commands += [self.execute_licheck_bld]
         if self.options.command not in commands:
             return False
         return True
@@ -558,12 +560,43 @@ def initialize_extra_module_build_src():
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
 ###############################
+# handle_qt_licheck_build
+###############################
+def handle_qt_licheck_build():
+    # Build license checker
+    exe_dir = WORK_DIR + '/qtsdk-enterprise/license-managing/licheck'
+    qt_version, qt_version_tag, qt_full_version = parse_qt_version_and_tag(get_release_description_file())
+    upload_path = PKG_SERVER_ADDR + ':' + PATH + '/' + LICENSE + '/qt/' + qt_version + '/latest/src/licheck/'
+    if TARGET_ENV.lower().startswith("win"):
+        cmd_args = ['c:\Utils\jom\jom.exe', '-f', 'Makefile_win']
+        bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
+        cmd_args = [SCP_COMMAND, 'licheck.exe', upload_path]
+        bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
+    elif TARGET_ENV.lower().startswith("linux"):
+        cmd_args = ['make', '-j6', '-f', 'Makefile_unix']
+        bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
+        cmd_args = ['strip', 'licheck']
+        bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
+        if TARGET_ENV.find("x64") >= 1:
+            cmd_args = ['rsync', '-r', 'licheck', upload_path +'licheck64']
+        else:
+            cmd_args = ['rsync', '-r', 'licheck', upload_path +'licheck32']
+        bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
+    else:
+        cmd_args = ['make', '-j6', '-f', 'Makefile_unix']
+        bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
+        cmd_args = ['strip', 'licheck']
+        bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
+        cmd_args = ['rsync', '-r', 'licheck', upload_path +'licheck_mac']
+        bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
+
+###############################
 # handle_qt_configure_exe_build
 ###############################
 def handle_qt_configure_exe_build():
     # create configure.exe and inject it into src package
     qt_version, qt_version_tag, qt_full_version = parse_qt_version_and_tag(get_release_description_file())
-    cmd_args = ['python', '-u', WORK_DIR + '\qtsdk\packaging-tools\helpers\create_configure_exe.py', 'src_url=' + SRC_URL + '/single/qt-everywhere-' + LICENSE + '-src-' + qt_full_version + '.zip', 'mdl_url=' + SRC_URL + '/submodules/qtbase-' + LICENSE + '-src-' + qt_full_version + '.zip', 'do_7z']
+    cmd_args = ['python', '-u', WORK_DIR + '\qtsdk\packaging-tools\helpers\create_configure_exe.py', 'src_url=' + SRC_URL + '/src/single/qt-everywhere-' + LICENSE + '-src-' + qt_full_version + '.zip', 'mdl_url=' + SRC_URL + '/src/submodules/qtbase-' + LICENSE + '-src-' + qt_full_version + '.zip', 'do_7z']
     bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
 
     # upload packages
@@ -811,7 +844,7 @@ def handle_qt_src_package_build():
 def handle_qt_android_release_build(qt_full_version):
     cmd_args = ''
     script_path = os.path.join(SCRIPT_ROOT_DIR, 'mkqt5bld.py')
-    source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE + '-src-' + qt_full_version
+    source_url = SRC_URL+'/src/single/qt-everywhere-' + LICENSE + '-src-' + qt_full_version
 
     qt_configure_options_file = get_qt_configuration_options()
     if not os.path.isfile(qt_configure_options_file):
@@ -861,7 +894,7 @@ def handle_qt_android_release_build(qt_full_version):
 def handle_qt_ios_release_build(qt_full_version):
     cmd_args = ''
     script_path = os.path.join(SCRIPT_ROOT_DIR, 'mkqt5bld.py')
-    source_url = SRC_URL+'/single/qt-everywhere-' + LICENSE + '-src-' + qt_full_version
+    source_url = SRC_URL+'/src/single/qt-everywhere-' + LICENSE + '-src-' + qt_full_version
 
     qt_configure_options_file = get_qt_configuration_options()
     if not os.path.isfile(qt_configure_options_file):
@@ -887,7 +920,7 @@ def handle_qt_ios_release_build(qt_full_version):
 def handle_qt_qnx6_release_build(qt_full_version):
     cmd_args = ''
     script_path = os.path.join(SCRIPT_ROOT_DIR, 'mkqt5bld.py')
-    source_url = SRC_URL + '/single/qt-everywhere-' + LICENSE + '-src-' + qt_full_version
+    source_url = SRC_URL + '/src/single/qt-everywhere-' + LICENSE + '-src-' + qt_full_version
 
     qt_configure_options_file = get_qt_configuration_options()
     if not os.path.isfile(qt_configure_options_file):
@@ -963,7 +996,7 @@ def handle_qt_desktop_release_build(qt_full_version):
         icu_configuration = bld_icu_tools.init_build_icu(ICU_SRC, '', EXTRA_ENV, False)
     ## let's build Qt
     # some common variables
-    source_url = SRC_URL + '/single/qt-everywhere-' + LICENSE + '-src-' + qt_full_version
+    source_url = SRC_URL + '/src/single/qt-everywhere-' + LICENSE + '-src-' + qt_full_version
 
     qt_configure_options_file = get_qt_configuration_options()
     if not os.path.isfile(qt_configure_options_file):
@@ -1096,10 +1129,10 @@ def remote_copy_archives(remote_target, from_where_path):
 def handle_examples_injection():
     # Inject examples
     if bldinstallercommon.is_linux_platform():
-        cmd_args = ['wget', SRC_URL + '/examples_injection/qt5_examples.7z']
+        cmd_args = ['wget', SRC_URL + '/src/examples_injection/qt5_examples.7z']
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR + '/module_archives', True)
     else:
-        cmd_args = [CURL_COMMAND, '-O', SRC_URL + '/examples_injection/qt5_examples.7z']
+        cmd_args = [CURL_COMMAND, '-O', SRC_URL + '/src/examples_injection/qt5_examples.7z']
         bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
 
     bldinstallercommon.create_dirs(os.path.join(WORK_DIR, 'module_archives', 'essentials'))
@@ -1721,7 +1754,8 @@ def parse_cmd_line():
         ICU_LIBS          = options.icu_libs
         ICU_SRC           = options.icu_src
         OPENSSL_LIBS      = options.openssl_libs
-        SRC_URL           = options.src_url
+        qt_version, qt_version_tag, qt_full_version = parse_qt_version_and_tag(get_release_description_file())
+        SRC_URL           = options.src_url + '/' + options.license + '/qt/' + qt_version + '/latest'
         QTCREATOR_VERSION = options.qtcreator_version
         QTCREATOR_VERSION_DESCRIPTION = options.qtcreator_version_description
     else:
@@ -1884,6 +1918,8 @@ def main():
         initialize_icu_build()
     elif COMMAND == BldCommand.execute_icu_bld:
         handle_icu_build()
+    elif COMMAND == BldCommand.execute_licheck_bld:
+        handle_qt_licheck_build()
     else:
         print('Unsupported command')
 
