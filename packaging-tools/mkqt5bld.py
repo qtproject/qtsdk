@@ -148,7 +148,7 @@ class MkQtBuildOptions:
         self.runtime_path           = ''
         self.prefix                 = ''
         self.android_ndk_host       = ''
-        self.android_api_version    = 'android-10'
+        self.android_api_version    = ''
         self.android_sdk_home       = ''
         self.android_ndk_home       = ''
         self.system_env             = dict(os.environ)
@@ -931,7 +931,7 @@ def setup_option_parser():
                       action="store", type="string", dest="android_ndk_host", default="",
                       help="E.g. linux-x86")
     OPTION_PARSER.add_option("--android-api-version",
-                      action="store", type="string", dest="android_api_version", default="android-10",
+                      action="store", type="string", dest="android_api_version", default="",
                       help="API version for the Android.")
     OPTION_PARSER.add_option("--android-sdk-home",
                       action="store", type="string", dest="android_sdk_home", default="",
