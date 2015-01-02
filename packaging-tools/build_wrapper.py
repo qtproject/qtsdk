@@ -490,7 +490,7 @@ def get_release_description_file():
 ##############################################################
 # Parse Qt version and tag from release description file
 ##############################################################
-def parse_qt_version_and_tag(release_description_file):
+def parse_release_version_and_tag(release_description_file):
     parser = ConfigParser.ConfigParser()
     parser.readfp(open(release_description_file))
     qt_version = ''
@@ -512,7 +512,7 @@ def parse_qt_version_and_tag(release_description_file):
 # Determine the qt build snaphot directory name
 ##############################################################
 def get_qt_snapshot_dir():
-    qt_version, qt_version_tag, qt_full_version = parse_qt_version_and_tag(get_release_description_file())
+    qt_version, qt_version_tag, qt_full_version = parse_release_version_and_tag(get_release_description_file())
     snapshot_qt_dir_base = PATH + '/' + LICENSE + '/qt/' + qt_version
     snapshot_qt_dir      = PATH + '/' + LICENSE + '/' + 'qt' + '/' + qt_version + '/' + TIME_STAMP + '-' + BUILD_NUMBER
     latest_qt_dir        = PATH + '/' + LICENSE + '/' + 'qt' + '/' + qt_version + '/' + 'latest'
@@ -599,7 +599,7 @@ def handle_qt_licheck_build():
 ###############################
 def handle_qt_configure_exe_build():
     # create configure.exe and inject it into src package
-    qt_version, qt_version_tag, qt_full_version = parse_qt_version_and_tag(get_release_description_file())
+    qt_version, qt_version_tag, qt_full_version = parse_release_version_and_tag(get_release_description_file())
     cmd_args = ['python', '-u', WORK_DIR + '\qtsdk\packaging-tools\helpers\create_configure_exe.py', 'src_url=' + SRC_URL + '/src/single/qt-everywhere-' + LICENSE + '-src-' + qt_full_version + '.zip', 'mdl_url=' + SRC_URL + '/src/submodules/qtbase-' + LICENSE + '-src-' + qt_full_version + '.zip', 'do_7z']
     bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
 
@@ -764,7 +764,7 @@ def handle_ifw_build():
 ###############################
 def handle_qt_src_package_build():
     sanity_check_packaging_server()
-    qt_version, qt_version_tag, qt_full_version = parse_qt_version_and_tag(get_release_description_file())
+    qt_version, qt_version_tag, qt_full_version = parse_release_version_and_tag(get_release_description_file())
     exec_path = os.path.join(WORK_DIR, 'qt5')
     cmd_args = ['./init-repository', '-f', '--mirror', os.environ['QT5_GIT_MIRROR']]
     exec_path = os.path.join(WORK_DIR, 'qt5')
@@ -876,7 +876,7 @@ def handle_qt_android_release_build(qt_full_version):
 
     configure_extra_options = os.environ['EXTRA_QT_CONFIGURE_OPTIONS'] if os.environ.get('EXTRA_QT_CONFIGURE_OPTIONS') else ''
 
-    qt_version, qt_version_tag, qt_full_version = parse_qt_version_and_tag(get_release_description_file())
+    qt_version, qt_version_tag, qt_full_version = parse_release_version_and_tag(get_release_description_file())
     if LICENSE.lower() == 'enterprise':
         if not 'alpha' in qt_version_tag.lower():
             if bldinstallercommon.is_win_platform():
@@ -929,7 +929,7 @@ def handle_qt_ios_release_build(qt_full_version):
 
     configure_extra_options   = os.environ['EXTRA_QT_CONFIGURE_OPTIONS'] if os.environ.get('EXTRA_QT_CONFIGURE_OPTIONS') else ''
 
-    qt_version, qt_version_tag, qt_full_version = parse_qt_version_and_tag(get_release_description_file())
+    qt_version, qt_version_tag, qt_full_version = parse_release_version_and_tag(get_release_description_file())
     if LICENSE.lower() == 'enterprise':
         if not 'alpha' in qt_version_tag.lower():
             configure_extra_options += ' -DQT_EVAL'
@@ -955,7 +955,7 @@ def handle_qt_qnx6_release_build(qt_full_version):
 
     configure_extra_options   = os.environ['EXTRA_QT_CONFIGURE_OPTIONS'] if os.environ.get('EXTRA_QT_CONFIGURE_OPTIONS') else ''
 
-    qt_version, qt_version_tag, qt_full_version = parse_qt_version_and_tag(get_release_description_file())
+    qt_version, qt_version_tag, qt_full_version = parse_release_version_and_tag(get_release_description_file())
     if LICENSE.lower() == 'enterprise':
         if not 'alpha' in qt_version_tag.lower():
             if bldinstallercommon.is_win_platform():
@@ -1044,7 +1044,7 @@ def handle_qt_desktop_release_build(qt_full_version):
     if bldinstallercommon.is_win_platform():
         qt5BuildOptions.make_cmd = 'jom'
 
-    qt_version, qt_version_tag, qt_full_version = parse_qt_version_and_tag(get_release_description_file())
+    qt_version, qt_version_tag, qt_full_version = parse_release_version_and_tag(get_release_description_file())
     if LICENSE.lower() == 'enterprise':
         if not 'alpha' in qt_version_tag.lower():
             if bldinstallercommon.is_win_platform():
@@ -1225,7 +1225,7 @@ def generate_bin_target_dictionary():
 ###############################
 def handle_qt_release_build():
     sanity_check_packaging_server()
-    qt_version, qt_version_tag, qt_full_version = parse_qt_version_and_tag(get_release_description_file())
+    qt_version, qt_version_tag, qt_full_version = parse_release_version_and_tag(get_release_description_file())
     # Handle Android build
     if TARGET_ENV.find("Android") >= 1:
         handle_qt_android_release_build(qt_full_version)
@@ -1394,9 +1394,9 @@ def handle_online_installer_build():
 
 
 ###############################
-# save_latest_successful_installer
+# replace_latest_successful_installer
 ###############################
-def save_latest_successful_installer(qt_full_version, installer_name, installer_name_final, ls_installer_dir, installer_output):
+def replace_latest_successful_installer(qt_full_version, installer_name, installer_name_final, ls_installer_dir, installer_output):
     # check installer type
     if 'online' in installer_name_final.lower():
         regex = re.compile('.*online')
@@ -1422,11 +1422,15 @@ def save_latest_successful_installer(qt_full_version, installer_name, installer_
 ###############################
 def handle_installer_build(installer_type):
     sanity_check_packaging_server()
-    qt_version, qt_version_tag, qt_full_version = parse_qt_version_and_tag(get_release_description_file())
+    version, version_tag, full_version = parse_release_version_and_tag(get_release_description_file())
     conf_file = os.environ['RELEASE_BUILD_CONF_FILE']
     if not os.path.exists(conf_file):
         print('*** The given file does not exist: {0}'.format(conf_file))
         sys.exit(-1)
+    export_opensource_offline_installer = False
+    # Is this opensource offline build job?
+    if LICENSE == 'opensource' and installer_type == 'offline':
+        export_opensource_offline_installer = True
     branch = 'release' # TODO
     if TARGET_ENV.find('64') != -1:
         arch = 'x64'
@@ -1434,31 +1438,41 @@ def handle_installer_build(installer_type):
         arch = 'x86'
     # Internal server address
     packages_base_url = os.environ['PKG_SERVER_URL']
-    # determine local installer output directory
+    # Determine local installer output directory
     installer_output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.INSTALLER_OUTPUT_DIR_NAME)
-    # (1) create all installers for this host
+    # Create all installers for this host
     release_build_handler.handle_installer_build(conf_file, installer_type, LICENSE, branch, PLATFORM, arch, packages_base_url)
-    temp_path = '/' + installer_type + '_installers/'
-    # Create remote directories
-    remote_dest_dir = PATH + '/' + LICENSE + temp_path + TIME_STAMP[:10] + '_' + BUILD_NUMBER
-    latest_dir = PATH + '/' + LICENSE + temp_path + 'latest'
-    latest_successful_dir = PATH + '/' + LICENSE + temp_path + 'latest_successful'
-    create_remote_dirs(PKG_SERVER_ADDR, remote_dest_dir)
-    create_remote_dirs(PKG_SERVER_ADDR, latest_successful_dir)
-    # Create remote dirs in opensource distribution server
-    if LICENSE == 'opensource':
+    # Create directories under <LICENSE>/<installer_type>_installers/
+    remote_path_base = PATH + '/' + LICENSE + '/'
+    remote_path_top_level_base              = remote_path_base + '/' + installer_type + '_installers' + '/' + version + '/'
+    remote_path_top_level                   = remote_path_top_level_base + TIME_STAMP[:10] + '_' + BUILD_NUMBER
+    remote_path_top_level_latest            = remote_path_top_level_base + '/' + 'latest'
+    remote_path_top_level_latest_available  = remote_path_top_level_base + '/' + 'latest_available_offline_installers'
+    create_remote_dirs(PKG_SERVER_ADDR, remote_path_top_level)
+    create_remote_dirs(PKG_SERVER_ADDR, remote_path_top_level_latest_available)
+    #Update latest link
+    update_latest_link(remote_path_top_level, remote_path_top_level_latest)
+    # Create remote directories under <LICENSE>/qt/<version>
+    if installer_type == 'offline':
+        remote_path_base_qt              = remote_path_base + 'qt' + '/' + version + '/'
+        remote_path_qt_latest            = remote_path_base_qt + 'latest' + '/' + 'offline_installers'
+        remote_path_qt_latest_available  = remote_path_base_qt + 'latest_available_offline_installers'
+        # create symlinks
+        update_latest_link(remote_path_top_level, remote_path_qt_latest)
+        update_latest_link(remote_path_top_level, remote_path_qt_latest_available)
+
+    # Create remote dirs on opensource distribution server
+    if export_opensource_offline_installer:
         # opensource distribution server address and path
         ext_server_base_url  = os.environ['EXT_SERVER_BASE_URL']
         ext_server_base_path = os.environ['EXT_SERVER_BASE_PATH']
         # opensource distribution server directories
-        ext_dest_dir = ext_server_base_path + '/snapshots/qt/' + qt_version[:3] + '/' + qt_full_version + '/' + TIME_STAMP[:10] + '_' + BUILD_NUMBER
+        ext_dest_dir = ext_server_base_path + '/snapshots/qt/' + version[:3] + '/' + full_version + '/' + TIME_STAMP[:10] + '_' + BUILD_NUMBER
         cmd_args_mkdir_pkg = [SSH_COMMAND, PKG_SERVER_ADDR]
         cmd_args_mkdir_ext = cmd_args_mkdir_pkg + ['ssh', ext_server_base_url, 'mkdir -p', ext_dest_dir]
         bldinstallercommon.do_execute_sub_process(cmd_args_mkdir_ext, SCRIPT_ROOT_DIR, True)
 
-    # (2) copy all installers from 'installer_output_dir' into network disk
-    installer_name = ''
-    installer_name_base = ''
+    # Copy all installers from 'installer_output_dir' into network disk
     dir_list = os.listdir(installer_output_dir)
     for file_name in dir_list:
         installer_name, installer_name_base, installer_name_final = generate_installer_final_name(file_name)
@@ -1467,24 +1481,33 @@ def handle_installer_build(installer_type):
             continue
         # sign
         sign_installer(installer_output_dir, installer_name, installer_name_base)
-        # copy installer to internal server
-        remote_copy_installer(remote_dest_dir, installer_name, installer_output_dir, installer_name_final)
-        # remove old successful and save latest successful installer
-        save_latest_successful_installer(qt_full_version, installer_name, installer_name_final, latest_successful_dir, installer_output_dir)
-        # copy installer to mirror brain server
-        if LICENSE == 'opensource':
-            remote_copy_installer_opensource(remote_dest_dir, ext_server_base_url, ext_dest_dir, installer_name_final)
+        # copy installer(s) to various locations:
+        if installer_type == 'offline':
+            # under:
+            # <LICENSE>/qt/<version>/latest/offline_installers/    i.e. the snapshot directory, may not contain all installers
+            remote_copy_installer(remote_path_qt_latest, installer_name, installer_output_dir, installer_name_final)
+            # <LICENSE>/qt/<version>/latest_available_offline_installers/    may contain installer from different builds, always the latest successful ones
+            replace_latest_successful_installer(full_version, installer_name, installer_name_final, remote_path_qt_latest_available, installer_output_dir)
 
-    #Update latest link
-    update_latest_link(remote_dest_dir, latest_dir)
+        # under:
+        # i.e. separate location where offline installers only reside, separated by version number in path
+        # <LICENSE>/<installer_type>_installers/<version>/<time_stamp>/
+        remote_copy_installer(remote_path_top_level_latest, installer_name, installer_output_dir, installer_name_final)
+        # <LICENSE>/<installer_type>_installers/<version>/latest_available_offline_installers/
+        replace_latest_successful_installer(full_version, installer_name, installer_name_final, remote_path_top_level_latest_available, installer_output_dir)
 
-    # copy rta description file(s) to network drive
+        # copy offline installer to mirror brain server
+        if export_opensource_offline_installer:
+            remote_copy_installer_opensource(remote_path_top_level, ext_server_base_url, ext_dest_dir, installer_name_final)
+
+    # Copy rta description file(s) to network drive
     rta_descr_output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.RTA_DESCRIPTION_FILE_DIR_NAME)
     for file_name in rta_descr_output_dir:
         if file_name.startswith(pkg_constants.RTA_DESCRIPTION_FILE_NAME_BASE):
-            cmd_args = [SCP_COMMAND, file_name, PKG_SERVER_ADDR + ':' + remote_dest_dir + '/' + file_name]
+            cmd_args = [SCP_COMMAND, file_name, PKG_SERVER_ADDR + ':' + remote_path_top_level + '/' + file_name]
             bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
-    # (3) trigger rta cases
+
+    # Trigger rta cases
     rta_descr_output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.RTA_DESCRIPTION_FILE_DIR_NAME)
     trigger_rta(rta_descr_output_dir)
 
@@ -1667,7 +1690,7 @@ def publish_qt5_src_packages():
     ext_server_base_url  = os.environ['EXT_SERVER_BASE_URL']
     ext_server_base_path = os.environ['EXT_SERVER_BASE_PATH']
 
-    qt_version, qt_version_tag, qt_full_version = parse_qt_version_and_tag(get_release_description_file())
+    qt_version, qt_version_tag, qt_full_version = parse_release_version_and_tag(get_release_description_file())
     ext_dest_dir = ext_server_base_path + '/snapshots/qt/' + qt_version[:3] + '/' + qt_full_version + '/' + TIME_STAMP[:10] + '_' + BUILD_NUMBER
 
     # copy source packages to public server
@@ -1781,7 +1804,7 @@ def parse_cmd_line():
         ICU_LIBS          = options.icu_libs
         ICU_SRC           = options.icu_src
         OPENSSL_LIBS      = options.openssl_libs
-        qt_version, qt_version_tag, qt_full_version = parse_qt_version_and_tag(get_release_description_file())
+        qt_version, qt_version_tag, qt_full_version = parse_release_version_and_tag(get_release_description_file())
         SRC_URL           = options.src_url + '/' + options.license + '/qt/' + qt_version + '/latest'
         QTCREATOR_VERSION = options.qtcreator_version
         QTCREATOR_VERSION_DESCRIPTION = options.qtcreator_version_description
