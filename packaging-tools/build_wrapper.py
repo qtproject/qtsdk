@@ -55,6 +55,8 @@ from time import gmtime, strftime
 import urllib
 import mkqt5bld
 import build_doc
+import bld_ifw_tools
+from bld_ifw_tools import IfwOptions
 
 from optparse import OptionParser, Option
 
@@ -95,8 +97,6 @@ TARGET_ENV                  = ''
 ICU_LIBS                    = ''
 ICU_SRC                     = ''
 OPENSSL_LIBS                = ''
-QT_SRC_FOR_IFW_PREPARED     = 'http://download.qt-project.org/development_releases/prebuilt/qt-src-for-ifw/qt-everywhere-opensource-src-4.8.6-ifw-patch'
-IFW_GIT_URL                 = 'git://gitorious.org/installer-framework/installer-framework.git'
 SRC_URL_PREFIX              = 'http://qt-rnd.it.local/packages/jenkins'
 SRC_URL                     = ''
 PLATFORM                    = ''
@@ -686,26 +686,45 @@ def initialize_qtcreator_build():
 def handle_ifw_build():
     sanity_check_packaging_server()
     os.chdir(SCRIPT_ROOT_DIR)
-    extension = '.tar.gz'
-    qt_src_pkg = QT_SRC_FOR_IFW_PREPARED
-    ifw_url = IFW_GIT_URL
-    ifw_branch = os.environ['QT_INSTALLER_FRAMEWORK_VERSION']
+    # Qt
+    qt_src_pkg = os.environ['IFW_QT_SRC_PKG'] # mandatory env variable
+    is_qt5_ifw_build = True
+    regex = re.compile('-((5)\.\d.\d)')
+    regex_result = regex.findall(qt_src_pkg)
+    if not regex_result:
+        is_qt5_ifw_build = False
+    qt_configure_options = bld_ifw_tools.get_default_qt_configure_options()
+    # Installer-Framework
+    ifw_url    = os.environ['IFW_GIT_URL'] # mandatory env variable
+    ifw_branch = os.environ['IFW_GIT_VERSION'] # mandatory env variable
     ifw_dest_dir_name = os.environ.get('IFW_REMOTE_RESULT_DEST_DIR_NAME')
+    # Destination dir name on network disk for build artifacts
     if not ifw_dest_dir_name:
         ifw_dest_dir_name = ifw_branch
-    if bldinstallercommon.is_win_platform():
-        extension = '.zip'
-    qt_src_pkg += extension
-    cmd_args = ['python', '-u', 'bld_ifw_tools.py', '--qt_archive_uri=' + qt_src_pkg, '--ifw_url=' + ifw_url, '--ifw_branch=' + ifw_branch]
+    ifw_qmake_args = IfwOptions.default_qt_installer_framework_qmake_args
+    # check for debug build
+    if os.environ.get('IFW_DEBUG_BUILD'):
+        qt_configure_options = qt_conf_args.replace('-release', '-debug')
+        ifw_qmake_args = ifw_qmake_args.replace('-config release', '-config debug')
+    # Product Key Checker
     if LICENSE == 'enterprise':
-        product_key_checker = os.environ['PRODUCT_KEY_CHECKER_URI']
-        cmd_args += ['--product_key_checker_url=' + product_key_checker]
-    if (os.environ.get('IFW_DEBUG_BUILD')):
-        cmd_args += ['--debug']
-    # execute
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+        product_key_checker_pri = os.environ['PRODUCT_KEY_CHECKER_PRI']
+        temp = bldinstallercommon.locate_file(os.environ['PKG_NODE_ROOT'], product_key_checker_pri)
+        product_key_checker_pri = temp if temp else product_key_checker_pri
+    # OpenSSL
+    openssl_dir = os.environ.get('IFW_OPENSSL_DIR')
 
-    ## create destination dirs
+    # options object for ifw build
+    ifw_bld_options = IfwOptions(is_qt5_ifw_build, qt_src_pkg,
+                                 qt_configure_options,
+                                 ifw_url, ifw_branch,
+                                 ifw_qmake_args,
+                                 product_key_checker_pri,
+                                 openssl_dir)
+    # build ifw tools
+    bld_ifw_tools.build_ifw(ifw_bld_options)
+
+    ## create destination dirs on network disk
     # internal
     create_remote_dirs(PKG_SERVER_ADDR, PATH + '/' + LICENSE + '/ifw/' + ifw_dest_dir_name)
     # public
@@ -720,14 +739,14 @@ def handle_ifw_build():
         bldinstallercommon.do_execute_sub_process(cmd_args_mkdir_ext, SCRIPT_ROOT_DIR, True)
 
     if bldinstallercommon.is_win_platform():
-        file_list = os.listdir(SCRIPT_ROOT_DIR+'/' + pkg_constants.IFW_BUILD_OUTPUT_DIR)
+        file_list = os.listdir(SCRIPT_ROOT_DIR+'/' + pkg_constants.IFW_BUILD_ARTIFACTS_DIR)
         for file_name in file_list:
             if file_name.endswith(".7z"):
                 cmd_args = [SCP_COMMAND, file_name, PKG_SERVER_ADDR + ':' + PATH + '/' + LICENSE + '/ifw/' + ifw_dest_dir_name + '/']
-                bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + '/' + pkg_constants.IFW_BUILD_OUTPUT_DIR, True)
+                bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + '/' + pkg_constants.IFW_BUILD_ARTIFACTS_DIR, True)
     else:
         cmd_args = ['rsync', '-r', './', PKG_SERVER_ADDR + ':' + PATH + '/' + LICENSE + '/ifw/' + ifw_dest_dir_name + '/']
-        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + '/' + pkg_constants.IFW_BUILD_OUTPUT_DIR, True)
+        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + '/' + pkg_constants.IFW_BUILD_ARTIFACTS_DIR, True)
 
     # copy ifw snapshot to public server
     if LICENSE == 'opensource':
@@ -1073,9 +1092,10 @@ def handle_extra_module_release_build():
     cmd_args = ['python', '-u', script_path, '--clean']
     cmd_args += ['--qt5path', 'qt5_package_dir']
     cmd_args += ['--qt5_essentials7z', qt5_essentials_lib_package_uri]
-    cmd_args += ['--qt5_addons7z', qt5_addons_lib_package_uri]
     cmd_args += ['--application7z', extra_module_src_uri]
 
+    if bldinstallercommon.is_content_url_valid(qt5_addons_lib_package_uri):
+        cmd_args += ['--qt5_addons7z', qt5_addons_lib_package_uri]
     if bldinstallercommon.is_content_url_valid(qt5_webengine_lib_package_url):
         cmd_args += ['--qt5_webengine7z', qt5_webengine_lib_package_url]
     if icu7z_package:

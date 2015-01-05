@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2014 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the release tools of the Qt Toolkit.
@@ -53,6 +53,14 @@ Component.prototype.onInstallationStarted = function()
         else if (installer.value("os") == "x11" || installer.value("os") == "mac")
             component.installerbaseBinaryPath = "@TargetDir@/.tempSDKMaintenanceTool";
         installer.setInstallerBaseBinary(component.installerbaseBinaryPath);
+
+        // update resource file if exists in the archive
+        var updateResourceFilePath = "@TargetDir@/update.rcc";
+        var normalizedUpdateResourceFilePath = updateResourceFilePath.replace(/@TargetDir@/, installer.value("TargetDir"));
+        if (installer.fileExists(normalizedUpdateResourceFilePath)) {
+            print("Updating resource file: " + normalizedUpdateResourceFilePath);
+            installer.setValue("DefaultResourceReplacement", normalizedUpdateResourceFilePath);
+        }
     }
 }
 
@@ -76,6 +84,15 @@ Component.prototype.createOperations = function()
     if (!(installer.value("QT_EDITION_NAME") === ""))
         editionName = installer.value("QT_EDITION_NAME");
 
+    // Create uninstall link only for windows
+    if (installer.value("os") == "win")
+    {
+        // shortcut to uninstaller
+        component.addOperation( "CreateShortcut",
+                                "@TargetDir@/MaintenanceTool.exe",
+                                "@StartMenuDir@/Uninstall " + editionName + ".lnk",
+                                " --uninstall");
+    }
     // only for windows online installer
     if ( installer.value("os") == "win" && !installer.isOfflineOnly() )
     {

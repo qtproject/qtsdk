@@ -67,7 +67,10 @@ Component.prototype.createOperations = function()
                 return;
 
             var tcId = "ProjectExplorer.ToolChain.Mingw:" + component.name;
+            var dbgId = "Debugger." + component.name;
             installer.setValue("MINGW491_TCID", tcId);
+            installer.setValue("MINGW491_DBGID", dbgId);
+
             component.addOperation("Execute",
                                    ["{0,2}", "@SDKToolBinary@", "addTC",
                                     "--id", tcId,
@@ -77,6 +80,16 @@ Component.prototype.createOperations = function()
                                     "--supportedAbis", "x86-windows-msys-pe-32bit",
                                     "UNDOEXECUTE",
                                     "@SDKToolBinary@", "rmTC", "--id", tcId]);
+
+            component.addOperation("Execute",
+                                   ["{0,2}", "@SDKToolBinary@", "addDebugger",
+                                    "--id", dbgId,
+                                    "--name", "GNU gdb 7.8 for MinGW 4.9.1 32bit",
+                                    "--binary", "@MINGW491_DIR@\\bin\\gdb.exe",
+                                    "--abis", "x86-windows-msys-pe-32bit",
+                                    "--engine", "1",
+                                    "UNDOEXECUTE",
+                                    "@SDKToolBinary@", "rmDebugger", "--id", dbgId]);
 
             component.addOperation("Execute",
                                    ["{0,4}", "@SDKToolBinary@", "addKeys",

@@ -10,8 +10,8 @@ linux-x86:                  installer-framework-build-linux-x86.7z
 linux-x64:                  installer-framework-build-linux-x64.7z
 
 [release.global]
-version:                    5.4.0
-version_tag:                rc
+version:                    5.4.1
+version_tag:
 module_exclude_list:        qt3d, qtactiveqt, qtandroidextras, qtconnectivity, qtdocgallery, qtenginio, qtfeedback, qtjsondb, qtmacextras, qtpim, qtqa, qtquick1, qtrepotools, qtserialport, qtsystems, qtwayland, qtwebchannel, qtwebengine, qtwebkit, qtwebkit-examples, qtwebsockets, qtwinextras, qtx11extras
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%,
                             @QT_VERSION_AND_TAG@=%GLOBAL_VERSION_AND_TAG%,

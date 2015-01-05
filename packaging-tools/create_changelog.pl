@@ -53,9 +53,10 @@ sub help {
 sub collect_entries {
     # Run git submodule foreach
     chdir(shift @ARGV) if (scalar @ARGV);
-    open FOREACH, "-|", "git", "submodule", "foreach", "--quiet",
-    "git rev-list --reverse --grep '^\\[ChangeLog\\]' " . $ARGV[0] .
-        " 2> /dev/null | git cat-file --batch || true";
+    my @revListCommand = ("git rev-list --reverse --grep '^\\[ChangeLog\\]' " . $ARGV[0] .
+        " 2> /dev/null | git cat-file --batch || true");
+    unshift(@revListCommand, 'git', 'submodule', 'foreach', '--quiet') if -e '.gitmodules';
+    open FOREACH, '-|', @revListCommand;
 
     # Collect all entries
     while (<FOREACH>) {
@@ -76,10 +77,16 @@ sub collect_entries {
         # Extract the changelogs from $msg
         my @texts = ( $msg =~ /\[ChangeLog\](.*?)\n(?=\n)/sixg );
         foreach (@texts) {
-            /\[((?:[^]]|\]\[)+)\]\s*(.*)\z/si;
-            my @groups = split(/\]\[/, $1);
-            $entry{text} = $2 =~ s/\s+/ /gr;
-            $entry{text} =~ s/\s+$//;
+            my @groups;
+            if (/\[((?:[^]]|\]\[)+)\]\s*(.*)\z/si) {
+                @groups = split(/\]\[/, $1);
+                $entry{text} = $2 =~ s/\s+/ /gr;
+                $entry{text} =~ s/\s+$//;
+            } else {
+                warn('Malformed line: "' . $_ . "\"\n\n");
+                push(@groups, 'UNSPECIFIED');
+                $entry{text} = $_;
+            }
 
             # Store this entry
             # Each entry in %log is a hash

@@ -171,20 +171,6 @@ patchQt4ExamplesAndDoc = function(aComponent, aComponentRootPath, aQtInstallatio
 Component.prototype.createOperations = function()
 {
     component.createOperations();
-
-    if (installer.isInstaller() &&
-        installer.value("os") == "win") {
-
-        var editionName = "Qt"
-        if (!(installer.value("QT_EDITION_NAME") === ""))
-            editionName = installer.value("QT_EDITION_NAME");
-
-        // shortcut to uninstaller
-        component.addOperation( "CreateShortcut",
-                                "@TargetDir@/MaintenanceTool.exe",
-                                "@StartMenuDir@/Uninstall " + editionName + ".lnk",
-                                " --uninstall");
-    }
 }
 
 

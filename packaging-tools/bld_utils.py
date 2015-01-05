@@ -254,8 +254,7 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None,
     exitCode = -1
     commandAsList = command[:].split(' ')
 
-    # add some needed pathes and use try to throw away with nothing
-    # if that property is not existing
+    # add some necessary paths
     if hasattr(callerArguments, 'gitpath') and callerArguments.gitpath and commandAsList[0] == 'git':
         commandAsList[0] = os.path.abspath(os.path.join(callerArguments.gitpath, 'git'))
     if hasattr(callerArguments, 'perlpath') and callerArguments.perlpath and commandAsList[0] == 'perl':

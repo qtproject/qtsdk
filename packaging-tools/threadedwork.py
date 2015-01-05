@@ -96,14 +96,10 @@ def threadedPrint(*a, **b):
     with outputLock:
         org_print(*a, **b)
 
-def threadedExit(*a, **b):
-    os._exit(*a, **b)
-
 # this is really a HACK or better only useful in this complicate situation
 __builtin__.org_print = __builtin__.print
 __builtin__.org_stdout = sys.stdout
 __builtin__.org_sterr = sys.stderr
-__builtin__.org_exit = sys.exit
 
 def enableThreadedPrint(enable = True, threadCount = multiprocessing.cpu_count()):
     if enable:
@@ -117,12 +113,10 @@ def enableThreadedPrint(enable = True, threadCount = multiprocessing.cpu_count()
         sys.stdout = StdOutHook()
         sys.stderr = StdErrHook()
         __builtin__.print = threadedPrint
-        sys.exit = threadedExit
     else:
         sys.stdout = __builtin__.org_stdout
         sys.stderr = __builtin__.org_sterr
         __builtin__.print = __builtin__.org_print
-        sys.exit = __builtin__.org_exit
 
 threadData = threading.local()
 
@@ -147,9 +141,17 @@ class Task():
         aFunction = TaskFunction(function, *arguments)
         self.listOfFunctions.append(aFunction)
 
-    def do(self, outputSlot = None, maxOutputSlot = None):
-        for taskFunction in self.listOfFunctions:
-            taskFunction.function(*(taskFunction.arguments))
+    def do(self):
+        try:
+            for taskFunction in self.listOfFunctions:
+                taskFunction.function(*(taskFunction.arguments))
+        except:
+            print("FAIL")
+            sys.__stdout__.flush()
+            sys.__stderr__.flush()
+            # exit the complete program with code 3, sys.exit would just close the thread
+            os._exit(3)
+
         print("Done")
 
 class ThreadedWork():

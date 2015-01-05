@@ -45,25 +45,11 @@ name:                   qt
 [PlatformIdentifier]
 identifier:             all-os
 
-[ArchiveRemoteLocation.default]
-base_url:
-base_path:
-
-# for testing purposes
-[PackageIgnoreList]
-packages:
-
-[PackageConfigurationFiles]
-file_list:
-
-[OfflinePackageExcludeList]
-package_list:
-
-[SdkUpdateRepository]
-repository_url_release:
-
 [PackageTemplates]
 template_dirs:          pkg_tools
+
+
+[qt]
 
 [qt.tools]
 
