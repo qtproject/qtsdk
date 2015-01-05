@@ -563,32 +563,36 @@ def initialize_extra_module_build_src():
 # handle_qt_licheck_build
 ###############################
 def handle_qt_licheck_build():
-    # Build license checker
-    exe_dir = WORK_DIR + '/qtsdk-enterprise/license-managing/licheck'
-    qt_version, qt_version_tag, qt_full_version = parse_qt_version_and_tag(get_release_description_file())
-    upload_path = PKG_SERVER_ADDR + ':' + PATH + '/' + LICENSE + '/qt/' + qt_version + '/latest/src/licheck/'
-    if TARGET_ENV.lower().startswith("win"):
-        cmd_args = ['c:\Utils\jom\jom.exe', '-f', 'Makefile_win']
-        bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
-        cmd_args = [SCP_COMMAND, 'licheck.exe', upload_path]
-        bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
-    elif TARGET_ENV.lower().startswith("linux"):
-        cmd_args = ['make', '-j6', '-f', 'Makefile_unix']
-        bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
-        cmd_args = ['strip', 'licheck']
-        bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
-        if TARGET_ENV.find("x64") >= 1:
-            cmd_args = ['rsync', '-r', 'licheck', upload_path +'licheck64']
+    if LICENSE == 'enterprise':
+        # Build license checker
+        exe_dir = WORK_DIR + '/qtsdk-enterprise/license-managing/licheck'
+        qt_version, qt_version_tag, qt_full_version = parse_qt_version_and_tag(get_release_description_file())
+        upload_path = PKG_SERVER_ADDR + ':' + PATH + '/' + LICENSE + '/qt/' + qt_version + '/latest/src/licheck/'
+        if TARGET_ENV.lower().startswith("win"):
+            cmd_args = ['c:\Utils\jom\jom.exe', '-f', 'Makefile_win']
+            bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
+            cmd_args = [SCP_COMMAND, 'licheck.exe', upload_path]
+            bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
+        elif TARGET_ENV.lower().startswith("linux"):
+            cmd_args = ['make', '-j6', '-f', 'Makefile_unix']
+            bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
+            cmd_args = ['strip', 'licheck']
+            bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
+            if TARGET_ENV.find("x64") >= 1:
+                cmd_args = ['rsync', '-r', 'licheck', upload_path +'licheck64']
+            else:
+                cmd_args = ['rsync', '-r', 'licheck', upload_path +'licheck32']
+            bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
         else:
-            cmd_args = ['rsync', '-r', 'licheck', upload_path +'licheck32']
-        bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
+            cmd_args = ['make', '-j6', '-f', 'Makefile_unix']
+            bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
+            cmd_args = ['strip', 'licheck']
+            bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
+            cmd_args = ['rsync', '-r', 'licheck', upload_path +'licheck_mac']
+            bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
     else:
-        cmd_args = ['make', '-j6', '-f', 'Makefile_unix']
-        bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
-        cmd_args = ['strip', 'licheck']
-        bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
-        cmd_args = ['rsync', '-r', 'licheck', upload_path +'licheck_mac']
-        bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
+        #opensource, do nothing
+        print('*** opensource build, nothing to build ...')
 
 ###############################
 # handle_qt_configure_exe_build
