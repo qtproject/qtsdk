@@ -45,22 +45,8 @@ name:                   qt
 [PlatformIdentifier]
 identifier:             windows
 
-[ArchiveRemoteLocation.default]
-base_url:
-base_path:
-
-# for testing purposes
-[PackageIgnoreList]
-packages:
-
 [PackageConfigurationFiles]
 file_list:              qt-conf
-
-[OfflinePackageExcludeList]
-package_list:
-
-[SdkUpdateRepository]
-repository_url_release:
 
 [PackageTemplates]
 template_dirs:          pkg_tools
