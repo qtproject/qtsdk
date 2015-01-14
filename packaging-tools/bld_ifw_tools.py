@@ -433,11 +433,10 @@ def archive_installerbase(options):
         cmd_args_clean = ['rm', bin_temp]
     if bldinstallercommon.is_win_platform():
         bin_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, 'installerbase.exe')
-        bin_temp = ROOT_DIR + os.sep + 'temp'
-        bldinstallercommon.create_dirs(bin_temp)
-        shutil.copy(bin_path, bin_temp + os.sep + 'SDKMaintenanceToolBase.exe')
+        bin_temp = ROOT_DIR + os.sep + 'tempSDKMaintenanceToolBase.exe'
+        shutil.copy(bin_path, bin_temp)
         cmd_args_archive = ['7z', 'a', options.installer_base_archive_name, bin_temp]
-        cmd_args_clean = ['rmdir' , '/q/s', bin_temp]
+        cmd_args_clean = ['del', bin_temp]
     bldinstallercommon.do_execute_sub_process(cmd_args_archive, ROOT_DIR, True)
     bldinstallercommon.do_execute_sub_process(cmd_args_clean, ROOT_DIR, True)
     if not os.path.isfile(options.installer_base_archive_name):

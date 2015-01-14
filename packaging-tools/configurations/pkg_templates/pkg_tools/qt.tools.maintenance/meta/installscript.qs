@@ -49,7 +49,7 @@ Component.prototype.onInstallationStarted = function()
 {
     if (component.updateRequested() || component.installationRequested()) {
         if (installer.value("os") == "win")
-            component.installerbaseBinaryPath = "@TargetDir@/temp/SDKMaintenanceToolBase.exe";
+            component.installerbaseBinaryPath = "@TargetDir@/tempSDKMaintenanceTool.exe";
         else if (installer.value("os") == "x11" || installer.value("os") == "mac")
             component.installerbaseBinaryPath = "@TargetDir@/.tempSDKMaintenanceTool";
         installer.setInstallerBaseBinary(component.installerbaseBinaryPath);
