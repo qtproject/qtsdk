@@ -54,13 +54,11 @@ Component.prototype.onInstallationStarted = function()
             component.installerbaseBinaryPath = "@TargetDir@/.tempSDKMaintenanceTool";
         installer.setInstallerBaseBinary(component.installerbaseBinaryPath);
 
-        // update resource file if exists in the archive
+        // update resource file
         var updateResourceFilePath = "@TargetDir@/update.rcc";
         var normalizedUpdateResourceFilePath = updateResourceFilePath.replace(/@TargetDir@/, installer.value("TargetDir"));
-        if (installer.fileExists(normalizedUpdateResourceFilePath)) {
-            print("Updating resource file: " + normalizedUpdateResourceFilePath);
-            installer.setValue("DefaultResourceReplacement", normalizedUpdateResourceFilePath);
-        }
+        print("Updating resource file: " + normalizedUpdateResourceFilePath);
+        installer.setValue("DefaultResourceReplacement", normalizedUpdateResourceFilePath);
     }
 }
 
