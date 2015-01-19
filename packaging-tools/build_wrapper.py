@@ -588,6 +588,7 @@ def handle_ifw_build():
         qt_configure_options = qt_conf_args.replace('-release', '-debug')
         ifw_qmake_args = ifw_qmake_args.replace('-config release', '-config debug')
     # Product Key Checker
+    product_key_checker_pri = ''
     if LICENSE == 'enterprise':
         product_key_checker_pri = os.environ['PRODUCT_KEY_CHECKER_PRI']
         temp = bldinstallercommon.locate_file(os.environ['PKG_NODE_ROOT'], product_key_checker_pri)
