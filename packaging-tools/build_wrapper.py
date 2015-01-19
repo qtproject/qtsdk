@@ -574,7 +574,7 @@ def handle_ifw_build():
     regex_result = regex.findall(qt_src_pkg)
     if not regex_result:
         is_qt5_ifw_build = False
-    qt_configure_options = bld_ifw_tools.get_default_qt_configure_options()
+    qt_configure_options = bld_ifw_tools.get_default_qt_configure_options(is_qt5_ifw_build)
     # Installer-Framework
     ifw_url    = os.environ['IFW_GIT_URL'] # mandatory env variable
     ifw_branch = os.environ['IFW_GIT_VERSION'] # mandatory env variable
