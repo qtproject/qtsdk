@@ -566,7 +566,7 @@ def handle_qt_licheck_build():
     if LICENSE == 'enterprise':
         # Build license checker
         exe_dir = WORK_DIR + '/qtsdk-enterprise/license-managing/licheck'
-        qt_version, qt_version_tag, qt_full_version = parse_qt_version_and_tag(get_release_description_file())
+        qt_version, qt_version_tag, qt_full_version = parse_release_version_and_tag(get_release_description_file())
         upload_path = PKG_SERVER_ADDR + ':' + PATH + '/' + LICENSE + '/qt/' + qt_version + '/latest/src/licheck/'
         if TARGET_ENV.lower().startswith("win"):
             cmd_args = ['c:\Utils\jom\jom.exe', '-f', 'Makefile_win']
