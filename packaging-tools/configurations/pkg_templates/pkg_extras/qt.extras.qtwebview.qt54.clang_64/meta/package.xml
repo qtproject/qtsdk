@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt WebView for clang 64-bit</DisplayName>
     <Description></Description>
-    <Version>1.0.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>1.0.0-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <AutoDependOn>qt.extras.qtwebview, qt.54.clang_64</AutoDependOn>
     <Dependencies>qt.54.clang_64</Dependencies>

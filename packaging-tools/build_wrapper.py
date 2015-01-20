@@ -697,7 +697,7 @@ def handle_ifw_build():
     regex_result = regex.findall(qt_src_pkg)
     if not regex_result:
         is_qt5_ifw_build = False
-    qt_configure_options = bld_ifw_tools.get_default_qt_configure_options()
+    qt_configure_options = bld_ifw_tools.get_default_qt_configure_options(is_qt5_ifw_build)
     # Installer-Framework
     ifw_url    = os.environ['IFW_GIT_URL'] # mandatory env variable
     ifw_branch = os.environ['IFW_GIT_VERSION'] # mandatory env variable
@@ -711,6 +711,7 @@ def handle_ifw_build():
         qt_configure_options = qt_conf_args.replace('-release', '-debug')
         ifw_qmake_args = ifw_qmake_args.replace('-config release', '-config debug')
     # Product Key Checker
+    product_key_checker_pri = ''
     if LICENSE == 'enterprise':
         product_key_checker_pri = os.environ['PRODUCT_KEY_CHECKER_PRI']
         temp = bldinstallercommon.locate_file(os.environ['PKG_NODE_ROOT'], product_key_checker_pri)
@@ -1063,10 +1064,7 @@ def handle_qt_desktop_release_build(qt_full_version):
         ext_args += ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)
     elif bldinstallercommon.is_mac_platform():
         ext_args += ' -prefix ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)
-        dbus_environment = dict()
-        dbus_environment['LIBRARY_PATH'] = os.environ.get('MAC_DBUS_LIBRARY_PATH') # d-bus lib path(s)
-        dbus_environment['CPATH'] = os.environ.get('MAC_DBUS_CPATH')               # d-bus include path(s)
-        EXTRA_ENV = combine_environment_dicts(EXTRA_ENV, dbus_environment)
+
     qt5BuildOptions.configure_options = qt_configure_options_file
     qt5BuildOptions.add_configure_option = ext_args
     qt5BuildOptions.system_env = EXTRA_ENV
