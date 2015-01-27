@@ -11,15 +11,16 @@ linux-x64:                  installer-framework-build-linux-x64.7z
 mac-x64:                    installer-framework-build-mac-x64.7z
 
 [release.global]
-version:                    5.5.0
-version_tag:                alpha
-module_exclude_list:        qtdocgallery, qtfeedback, qtjsondb, qtpim, qtqa, qtrepotools, qtsystems
-arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%,
-                            @QT_VERSION_MINOR@=5.5,
-                            @QT_VERSION_AND_TAG@=%GLOBAL_VERSION_AND_TAG%,
-                            @QT_INSTALL_DIR_NAME@=5.5,
-                            @QTWEBVIEW_VERSION@=1.0.0,
-                            @QTCANVAS3D_VERSION@=1.0.0
+version:                        5.5.0
+version_tag:                    alpha
+module_exclude_list:            qt3d, qtdocgallery, qtfeedback, qtjsondb, qtpim, qtqa, qtrepotools, qtsystems
+module_separate_install_list:   qtwebengine, qtwebkit, qtquick1, qtscript
+arg_substitution_list:          @QT_VERSION@=%GLOBAL_VERSION%,
+                                @QT_VERSION_MINOR@=5.5,
+                                @QT_VERSION_AND_TAG@=%GLOBAL_VERSION_AND_TAG%,
+                                @QT_INSTALL_DIR_NAME@=5.5,
+                                @QTWEBVIEW_VERSION@=1.0.0,
+                                @QTCANVAS3D_VERSION@=1.0.0
 
 [release.qt.configure_options.android_armv5]
 build_node_labels:      linux-g++-Rhel6.6-x86_Android-armv5, linux-g++-Rhel6.6-x64_Android-armv5, mac-clang-10.10-x64_Android-armv5, win-MinGW4.9.2-Windows7-x86_Android-armv5

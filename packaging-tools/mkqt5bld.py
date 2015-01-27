@@ -89,8 +89,6 @@ QT5_ESSENTIALS                      = [ 'qtbase', 'qtdeclarative', 'qtdoc', \
                                         'qtwebkit-examples', 'qtxmlpatterns' ]
 # Modules not to be included in final package
 QT5_MODULE_INSTALL_EXCLUDE_LIST     = ['qtwebkit-examples']
-# Modules to be put in separate archive
-QT5_MODULE_INSTALL_SEPARATE_LIST    = ['qtwebengine']
 
 ORIGINAL_QMAKE_QT_PRFXPATH          = ''
 FILES_TO_REMOVE_LIST                = ['Makefile', 'Makefile.Release', 'Makefile.Debug', \
@@ -142,6 +140,7 @@ class MkQtBuildOptions:
         self.make_thread_count      = multiprocessing.cpu_count()+1
         self.silent_build           = False
         self.module_ignore_list     = []
+        self.module_separate_install_list   = []
         self.strict_mode            = True
         self.replace_rpath          = False
         self.icu_uri                = ''
@@ -170,6 +169,8 @@ class MkQtBuildOptions:
             self.silent_build           = option_parser.silent_build
         if option_parser.module_ignore_list:
             self.module_ignore_list     = option_parser.module_ignore_list
+        if option_parser.module_separate_install_list:
+            self.module_separate_install_list = option_parser.module_separate_install_list
         if option_parser.strict_mode:
             self.strict_mode            = option_parser.strict_mode
         if option_parser.replace_rpath:
@@ -507,7 +508,7 @@ def install_qt():
             continue
         # determine into which final archive this module belongs into
         install_dir = ''
-        if module_name in QT5_MODULE_INSTALL_SEPARATE_LIST:
+        if module_name in QT_BUILD_OPTIONS.module_separate_install_list:
             install_dir = module_name
         elif module_name in QT5_ESSENTIALS:
             install_dir = ESSENTIALS_INSTALL_DIR_NAME
@@ -904,6 +905,9 @@ def setup_option_parser():
     OPTION_PARSER.add_option("-i", "--ignore",
                       action="extend", type="string", dest="module_ignore_list",
                       help="do not build module")
+    OPTION_PARSER.add_option("--module-separate-install-list",
+                      action="extend", type="string", dest="module_separate_install_list",
+                      help="Create separate archives from the given Qt modules")
     OPTION_PARSER.add_option("-S", "--non-strict-mode",
                       action="store_false", dest="strict_mode", default=True,
                       help="exit on error, defaults to true.")

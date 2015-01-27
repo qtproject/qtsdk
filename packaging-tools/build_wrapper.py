@@ -1049,6 +1049,14 @@ def handle_qt_desktop_release_build(qt_full_version):
         print('*** No valid qt configutation file found!')
         sys.exit(-1)
 
+    # parse which modules to be archived separately from release description file
+    conf_file_base_path = os.path.join(SCRIPT_ROOT_DIR, 'releases', os.environ['RELEASE_DESCRIPTION_FILE'])
+    parser = ConfigParser.ConfigParser()
+    parser.readfp(open(conf_file_base_path))
+    exclude_list = bldinstallercommon.safe_config_key_fetch(parser, 'release.global', 'module_separate_install_list')
+    #split_exclude_list = exclude_list.split(',').replace(' ', '')
+    split_exclude_list = exclude_list.replace(' ', '').split(',')
+
     ## common cmd_args for all platforms
     # we need to change the extension to .zip on windows. os x and linux use .tar.gz for the source file (.zip includes configure.exe)
     extension = '.tar.gz'
@@ -1086,6 +1094,7 @@ def handle_qt_desktop_release_build(qt_full_version):
 
     qt5BuildOptions.configure_options = qt_configure_options_file
     qt5BuildOptions.add_configure_option = ext_args
+    qt5BuildOptions.module_separate_install_list = split_exclude_list
     qt5BuildOptions.system_env = EXTRA_ENV
     mkqt5bld.QT_BUILD_OPTIONS = qt5BuildOptions
     mkqt5bld.main_call_parameters()
