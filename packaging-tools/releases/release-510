@@ -34,28 +34,28 @@ version_tag:
 ## Linux repository
 ################################################################################
 [release.510.repository.linux.x86]
-arg_configurations_file:    repository_configs_desktop_qt5/linux_x86_repository_510
+arg_configurations_file:    repository_configs/desktop_qt5/linux_x86_repository_510
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz
 repo_content_type:          510
 repo_components_to_update:  qt.510.*
 repo_url_specifier:         linux_x86/desktop/qt5
 
 [release.510.repository.linux.x86.android]
-arg_configurations_file:    repository_configs_android_qt5/linux_x86_android_repository_510
+arg_configurations_file:    repository_configs/android_qt5/linux_x86_android_repository_510
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz
 repo_content_type:          510
 repo_components_to_update:  qt.510.*
 repo_url_specifier:         linux_x86/android/qt5
 
 [release.510.repository.linux.x64]
-arg_configurations_file:    repository_configs_desktop_qt5/linux_x64_repository_510
+arg_configurations_file:    repository_configs/desktop_qt5/linux_x64_repository_510
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz
 repo_content_type:          510
 repo_components_to_update:  qt.510.*
 repo_url_specifier:         linux_x64/desktop/qt5
 
 [release.510.repository.linux.x64.android]
-arg_configurations_file:    repository_configs_android_qt5/linux_x64_android_repository_510
+arg_configurations_file:    repository_configs/android_qt5/linux_x64_android_repository_510
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz
 repo_content_type:          510
 repo_components_to_update:  qt.510.*
@@ -66,14 +66,14 @@ repo_url_specifier:         linux_x64/android/qt5
 ## Windows repository
 ################################################################################
 [release.510.repository.windows.x86]
-arg_configurations_file:    repository_configs_desktop_qt5/win_x86_repository_510
+arg_configurations_file:    repository_configs/desktop_qt5/win_x86_repository_510
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
 repo_content_type:          510
 repo_components_to_update:  qt.510.*
 repo_url_specifier:         windows_x86/desktop/qt5
 
 [release.510.repository.windows.x86.android]
-arg_configurations_file:    repository_configs_android_qt5/win_x86_android_repository_510
+arg_configurations_file:    repository_configs/android_qt5/win_x86_android_repository_510
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
 repo_content_type:          510
 repo_components_to_update:  qt.510.*
@@ -84,7 +84,7 @@ repo_url_specifier:         windows_x86/android/qt5
 ## Mac repository
 ################################################################################
 [release.510.repository.mac.x64]
-arg_configurations_file:    repository_configs_desktop_qt5/mac_x64_repository_510
+arg_configurations_file:    repository_configs/desktop_qt5/mac_x64_repository_510
 arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz
 repo_content_type:          510
 repo_components_to_update:  qt.510.*

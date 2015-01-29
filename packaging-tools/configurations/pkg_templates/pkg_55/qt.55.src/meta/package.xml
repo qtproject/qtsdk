@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Source Components</DisplayName>
+    <Description>Qt 5.5.0 Source Components</Description>
+    <Version>5.5.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <SortingPriority>10</SortingPriority> <!-- Priority of this component when visible in the tree. Highest priority number is on top. -->
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+

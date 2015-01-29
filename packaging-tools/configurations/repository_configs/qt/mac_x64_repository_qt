@@ -45,25 +45,11 @@ name:                   qt
 [PlatformIdentifier]
 identifier:             mac
 
-[ArchiveRemoteLocation.default]
-base_url:
-base_path:
-
-# for testing purposes
-[PackageIgnoreList]
-packages:
-
 [PackageConfigurationFiles]
 file_list:              qt-conf
 
-[OfflinePackageExcludeList]
-package_list:
-
 [qtmenunib]
 package_url:            http://download.qt-project.org/development_releases/prebuilt/mac/qt_menu.nib.7z
-
-[SdkUpdateRepository]
-repository_url_release:
 
 [PackageTemplates]
 template_dirs:          pkg_tools

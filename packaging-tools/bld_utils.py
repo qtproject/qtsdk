@@ -52,6 +52,11 @@ import urllib2
 import shutil
 import subprocess
 import traceback
+import threading
+import collections
+
+# 3rd party module to read process output in a convenient way
+from asynchronousfilereader import AsynchronousFileReader
 
 # own imports
 import environmentfrombatchfile
@@ -102,13 +107,12 @@ def removeDir(path, raiseNoException = False):
             else:
                 raise
 
-def urllib2_response_read(response, file_path, block_size = 8192):
-    total_size = response.info().getheader('Content-Length').strip()
+def urllib2_response_read(response, file_path, block_size, total_size):
     total_size = int(total_size)
     bytes_count = 0
 
     filename = open(file_path, 'wb')
-    old_percent = 0
+    old_percent = -1
     while 1:
         block = response.read(block_size)
         filename.write(block)
@@ -119,13 +123,13 @@ def urllib2_response_read(response, file_path, block_size = 8192):
 
         percent = min(100, bytes_count * 100 / total_size)
         if percent != old_percent:
-            sys.stdout.write("\r{}% ({})".format(percent, file_path))
+            sys.stdout.write("\r{}%".format(percent))
         old_percent = percent
 
     filename.close()
     return bytes_count
 
-def download(url, savefile):
+def download(url, savefile, read_block_size = 1048576):
     try:
         if os.path.lexists(savefile):
             raise Exception("Can not download '{0}' to '{1}' as target. The file already exists.".format(url, savefile))
@@ -147,11 +151,14 @@ def download(url, savefile):
             # use urlopen which raise an error if that file is not existing
             response = urllib2.urlopen(url)
             total_size = response.info().getheader('Content-Length').strip()
-            print("Downloading a file with size {0} bytes to {1}".format(total_size, savefile))
+            print("Downloading file from '{0}' with size {1} bytes to {2}".format(url, total_size, savefile))
             # run the download
-            urllib2_response_read(response, savefile_tmp)
+            received_size = urllib2_response_read(response, savefile_tmp, read_block_size, total_size)
+            if received_size != int(total_size):
+                raise Exception("Broken download, got a wrong size after download from '{0}'(total size: {1}, but {2} received).".format(url, total_size, received_size))
         except urllib2.HTTPError, error:
             raise Exception("Can not download '{0}' to '{1}' as target(error code: '{2}').".format(url, savefile, error.code))
+
         renamed = False
         tryRenameCounter = 0
         while renamed is False :
@@ -174,11 +181,6 @@ def download(url, savefile):
                 else:
                     if not os.path.lexists(savefile):
                         raise Exception("Could not rename {0} to {1}{2}Error: {3}".format(savefile_tmp, savefile, os.linesep, e.message))
-    except Exception as e:
-        # in threadedwork we prevent std so we need to forward the traceback to stderr
-        sys.stderr.write(e.message)
-        # this will stop the complete application even in threaded mode
-        sys.exit(1)
     finally: # this is done before the except code is called
         try:
             os.remove(savefile_tmp)
@@ -289,24 +291,66 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None,
         if currentWorkingDirectory and not os.path.lexists(currentWorkingDirectory):
             raise Exception("The current working directory is not existing: %s" % currentWorkingDirectory)
 
-        process = subprocess.Popen(commandAsList,
-            stdout = subprocess.PIPE, stderr = None,
-            cwd = currentWorkingDirectory, bufsize = -1, env = environment)
-        while process.poll() is None:
-            sys.stdout.write(process.stdout.read(512))
+        if threading.currentThread().name == "MainThread":
+            process = subprocess.Popen(commandAsList,
+                cwd = currentWorkingDirectory, bufsize = -1, env = environment)
+        else:
+            process = subprocess.Popen(commandAsList,
+                stdout = subprocess.PIPE, stderr = subprocess.PIPE,
+                cwd = currentWorkingDirectory, bufsize = -1, env = environment)
 
-        process.stdout.close()
+            maxSavedLineNumbers = 100
+            lastStdOutLines = collections.deque(maxlen = maxSavedLineNumbers)
+            lastStdErrLines = collections.deque(maxlen = maxSavedLineNumbers)
 
+            # Launch the asynchronous readers of the process' stdout and stderr.
+            stdout = AsynchronousFileReader(process.stdout)
+            stderr = AsynchronousFileReader(process.stderr)
+
+            # Check the readers if we received some output (until there is nothing more to get).
+            while not stdout.eof() or not stderr.eof():
+                # Show what we received from standard output.
+                for line in stdout.readlines():
+                    lastStdOutLines.append(line)
+                    sys.stdout.write(line)
+
+                # Show what we received from standard error.
+                for line in stderr.readlines():
+                    lastStdErrLines.append(line)
+                    sys.stdout.write(line)
+
+                # Sleep a bit before polling the readers again.
+                time.sleep(1)
+
+            # Let's be tidy and join the threads we've started.
+            stdout.join()
+            stderr.join()
+
+            # Close subprocess' file descriptors.
+            process.stdout.close()
+            process.stderr.close()
+
+        process.wait()
         exitCode = process.returncode
 
         if exitCode != 0:
-            raise Exception("None zero exit code: %d" % exitCode)
-    except:
+            lastOutput = ""
+            if threading.currentThread().name != "MainThread":
+                type = ""
+                if len(lastStdErrLines) != 0:
+                    lastOutput += "".join(lastStdErrLines)
+                    type = "error "
+                elif len(lastStdOutLines) != 0:
+                    lastOutput += "".join(lastStdOutLines)
+            if len(lastOutput) != 0:
+                lastOutput = "{0}last {1}output:{0}{2}".format(os.linesep, type, lastOutput)
+            raise Exception("None zero exit code: {0}{1}".format(exitCode, lastOutput))
+    except Exception as e:
         if abort_on_fail:
             sys.stderr.write(os.linesep + '======================= error =======================' + os.linesep)
             sys.stderr.write("Working Directory: " + currentWorkingDirectory + os.linesep)
             sys.stderr.write("Last command:      " + ' '.join(commandAsList) + os.linesep)
-            sys.stderr.write(traceback.format_exc())
+            sys.stderr.write(e.message)
             # lets keep that for debugging
             #if environment:
             #    for key in sorted(environment):
@@ -314,7 +358,6 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None,
             sys.stderr.write(os.linesep + '======================= error =======================' + os.linesep)
             sys.exit(1)
     return exitCode
-
 
 def runInstallCommand(arguments = 'install', currentWorkingDirectory = None, callerArguments = None, init_environment = None):
     if init_environment is None:

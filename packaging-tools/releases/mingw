@@ -17,7 +17,7 @@ version_tag:
 ## Windows repository
 ################################################################################
 [release.mingw.repository.windows.x86]
-arg_configurations_file:    repository_configs_tools_desktop/win_x86_repository_tools_mingw
+arg_configurations_file:    repository_configs/tools_desktop/win_x86_repository_tools_mingw
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 repo_content_type:          mingw
 repo_components_to_update:  qt.tools.mingw47,qt.tools.win32_mingw48,qt.tools.win32_mingw482,qt.tools.win32_mingw491
