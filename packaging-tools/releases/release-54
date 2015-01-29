@@ -23,51 +23,51 @@ arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%,
 
 [release.qt.configure_options.android_armv5]
 build_node_labels:      linux-g++-Ubuntu11.10-x86_Android-armv5,linux-g++-Ubuntu11.10-x64_Android-armv5, linux-g++-Rhel6.5-x86_Android-armv5, linux-g++-Rhel6.5-x64_Android-armv5, win-MinGW4.9.1-Windows7-x86_Android-armv5, mac-clang-10.7-x64_Android-armv5, mac-clang-10.9-x64_Android-armv5, mac-clang-10.10-x64_Android-armv5
-configure_options:      -opensource -confirm-license -release -xplatform android-g++ -opengl es2 -android-arch armeabi -nomake tests -nomake examples -skip qtserialport -skip qtwebkit -skip qtwebkit-examples -skip qtx11extras -sysconfdir /etc/xdg -no-icu -openssl
+configure_options:      -opensource -confirm-license -release -xplatform android-g++ -opengl es2 -android-arch armeabi -nomake tests -nomake examples -skip qtserialport -skip qtwebkit -skip qtwebkit-examples -skip qtx11extras -sysconfdir /etc/xdg -no-icu -openssl --dbus=runtime
 
 [release.qt.configure_options.android_armv7]
 build_node_labels:      linux-g++-Ubuntu11.10-x86_Android-armv7, linux-g++-Ubuntu11.10-x64_Android-armv7, linux-g++-Rhel6.5-x86_Android-armv7, linux-g++-Rhel6.5-x64_Android-armv7, win-MinGW4.9.1-Windows7-x86_Android-armv7, mac-clang-10.7-x64_Android-armv7, mac-clang-10.9-x64_Android-armv7, mac-clang-10.10-x64_Android-armv7
-configure_options:      -opensource -confirm-license -release -xplatform android-g++ -opengl es2 -android-arch armeabi-v7a -nomake tests -nomake examples -skip qtserialport -skip qtwebkit -skip qtwebkit-examples -skip qtx11extras -sysconfdir /etc/xdg -no-icu -openssl
+configure_options:      -opensource -confirm-license -release -xplatform android-g++ -opengl es2 -android-arch armeabi-v7a -nomake tests -nomake examples -skip qtserialport -skip qtwebkit -skip qtwebkit-examples -skip qtx11extras -sysconfdir /etc/xdg -no-icu -openssl --dbus=runtime
 
 [release.qt.configure_options.android_x86]
 build_node_labels:      linux-g++-Ubuntu11.10-x86_Android-x86, linux-g++-Ubuntu11.10-x64_Android-x86, linux-g++-Rhel6.5-x86_Android-x86, linux-g++-Rhel6.5-x64_Android-x86, win-MinGW4.9.1-Windows7-x86_Android-x86, mac-clang-10.7-x64_Android-x86, mac-clang-10.9-x64_Android-x86, mac-clang-10.10-x64_Android-x86
-configure_options:      -opensource -confirm-license -release -xplatform android-g++ -opengl es2 -android-arch x86 -nomake tests -nomake examples -skip qtserialport -skip qtwebkit -skip qtwebkit-examples -skip qtx11extras -sysconfdir /etc/xdg -no-icu -openssl
+configure_options:      -opensource -confirm-license -release -xplatform android-g++ -opengl es2 -android-arch x86 -nomake tests -nomake examples -skip qtserialport -skip qtwebkit -skip qtwebkit-examples -skip qtx11extras -sysconfdir /etc/xdg -no-icu -openssl --dbus=runtime
 
 [release.qt.configure_options.ios]
 build_node_labels:      mac-clang-10.8-x64_iOS, mac-clang-10.9-x64_iOS, mac-clang-10.10-x64_iOS
-configure_options:      -opensource -confirm-license -debug-and-release -nomake tests -nomake examples -qt-libjpeg -qt-libpng -xplatform macx-ios-clang -no-sql-mysql
+configure_options:      -opensource -confirm-license -debug-and-release -nomake tests -nomake examples -qt-libjpeg -qt-libpng -xplatform macx-ios-clang -no-sql-mysql --dbus=runtime
 
 [release.qt.configure_options.linux]
 build_node_labels:      linux-g++-Ubuntu11.10-x86, linux-g++-Ubuntu11.10-x64, linux-g++-Rhel6.5-x86, linux-g++-Rhel6.5-x64
-configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -qt-xcb -sysconfdir /etc/xdg -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -openssl -dbus -no-libudev -icu
+configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -qt-xcb -sysconfdir /etc/xdg -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -openssl -no-libudev -icu
 
 [release.qt.configure_options.mac]
 build_node_labels:      mac-clang-10.8-x64, mac-clang-10.9-x64, mac-clang-10.10-x64
-configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-libjpeg -qt-libpng -platform macx-clang -sysconfdir /Library/Preferences/Qt -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -openssl -dbus
+configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-libjpeg -qt-libpng -platform macx-clang -sysconfdir /Library/Preferences/Qt -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -openssl --dbus=runtime
 
 [release.qt.configure_options.windows]
 build_node_labels:      win-msvc2010-Windows7-x86_ANGLE, win32-msvc2010_Windows_7, win-msvc2012-Windows8-x86_ANGLE, win-msvc2012-Windows8-x64_ANGLE, win64-msvc2012_Windows_8, win-msvc2013-Windows8.1-x86_ANGLE, win-msvc2013-Windows8.1-x64_ANGLE
-configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -opengl dynamic -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -plugin-sql-odbc -openssl -icu
+configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -opengl dynamic -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -plugin-sql-odbc -openssl -icu --dbus=runtime
 
 [release.qt.configure_options.windows_opengl]
 build_node_labels:      win-msvc2010-Windows7-x86_OpenGL, win-msvc2012-Windows8.1-x86_OpenGL, win-msvc2013-Windows8.1-x86_OpenGL, win-msvc2013-Windows8.1-x64_OpenGL, win-MinGW4.9.1-Windows7-x86_OpenGL, win-MinGW4.9.1-Windows7-x64_OpenGL
-configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -opengl desktop -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -plugin-sql-odbc -openssl -icu
+configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -opengl desktop -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -plugin-sql-odbc -openssl -icu --dbus=runtime
 
 [release.qt.configure_options.windows_msvc2013_xp]
 build_node_labels:      win-msvc2013_xp-Windows8.1-x86
-configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -opengl dynamic -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -plugin-sql-odbc -openssl -icu -target xp
+configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -opengl dynamic -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -plugin-sql-odbc -openssl -icu -target xp --dbus=runtime
 
 [release.qt.configure_options.winphone8_arm]
 build_node_labels:      win-msvc2013-Windows8.1-x64_Winphone81_arm
-configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -xplatform winphone-arm-msvc2013
+configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -xplatform winphone-arm-msvc2013 --dbus=runtime
 
 [release.qt.configure_options.winphone8_x86]
 build_node_labels:      win-msvc2013-Windows8.1-x64_Winphone81_x86
-configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -xplatform winphone-x86-msvc2013
+configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -xplatform winphone-x86-msvc2013 --dbus=runtime
 
 [release.qt.configure_options.winrt]
 build_node_labels:      win-msvc2013-Windows8.1-x64_WinRT
-configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -xplatform winrt-x64-msvc2013
+configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -xplatform winrt-x64-msvc2013 --dbus=runtime
 
 ################################################################################
 ## Linux offline
