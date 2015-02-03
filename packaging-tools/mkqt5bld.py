@@ -919,7 +919,7 @@ def setup_option_parser():
                       help="patch RPath with relative paths pointing to /lib")
     OPTION_PARSER.add_option("--icu",
                       action="store", type="string", dest="icu_uri", default="",
-                      help="use the given icu for qt5 build, e.g. --icu=http://master.qt-project.org/development_releases/prebuilt/icu/prebuilt/ubuntu1110/icu_51_1_ubuntu_11_10_64_devel.7z")
+                      help="use the given icu for qt5 build, e.g. --icu=http://download.qt.io/development_releases/prebuilt/icu/prebuilt/ubuntu1110/icu_51_1_ubuntu_11_10_64_devel.7z")
     OPTION_PARSER.add_option("--runtime-path",
                       action="store", type="string", dest="runtime_path", default="",
                       help="use the given dynamic runtime path for qt5 build (-R for configure), e.g. --runtime-path=/home/user/my/path/here")
