@@ -55,7 +55,7 @@ template_name:          config.xml.template.mac.qt5-sdk
 file_list:              x64-tools-maintenancetool-conf
 
 [qtmenunib]
-package_url:            http://download.qt-project.org/development_releases/prebuilt/mac/qt_menu.nib.7z
+package_url:            http://download.qt.io/development_releases/prebuilt/mac/qt_menu.nib.7z
 
 [PackageTemplates]
 template_dirs:          pkg_tools

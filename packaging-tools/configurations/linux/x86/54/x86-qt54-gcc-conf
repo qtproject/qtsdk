@@ -54,7 +54,7 @@ archive_uri:            /qt/@QT_VERSION@/latest/linux_gcc_32_ubuntu1110/qt5_addo
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 [54.gcc.icu_531]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/ubuntu1110/icu_53_1_ubuntu_11_10_32.7z
+archive_uri:            http://download.qt.io/development_releases/prebuilt/icu/prebuilt/ubuntu1110/icu_53_1_ubuntu_11_10_32.7z
 target_install_dir:     /lib
 
 

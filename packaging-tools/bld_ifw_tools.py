@@ -143,8 +143,8 @@ def get_default_qt_configure_options(qt5_build = True):
 ###############################
 class IfwOptions:
 
-    default_qt5_src_pkg = 'http://download.qt-project.org/official_releases/qt/5.4/5.4.0/single/qt-everywhere-opensource-src-5.4.0' + ARCH_EXT
-    default_qt4_src_pkg = 'http://download.qt-project.org/development_releases/prebuilt/qt-src-for-ifw/qt-everywhere-opensource-src-4.8.6-ifw-patch' + ARCH_EXT
+    default_qt5_src_pkg = 'http://download.qt.io/official_releases/qt/5.4/5.4.0/single/qt-everywhere-opensource-src-5.4.0' + ARCH_EXT
+    default_qt4_src_pkg = 'http://download.qt.io/development_releases/prebuilt/qt-src-for-ifw/qt-everywhere-opensource-src-4.8.6-ifw-patch' + ARCH_EXT
 
     default_qt_installer_framework_url          = 'git://gitorious.org/installer-framework/installer-framework.git'
 

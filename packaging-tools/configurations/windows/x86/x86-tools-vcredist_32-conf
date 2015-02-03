@@ -45,7 +45,7 @@ archives:               tools.vcredist
 target_install_base:    /vcredist
 package_default:        false
 [tools.vcredist]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/vcredist/vcredist_x86.7z
+archive_uri:            http://download.qt.io/development_releases/prebuilt/vcredist/vcredist_x86.7z
 package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:

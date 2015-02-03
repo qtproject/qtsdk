@@ -60,7 +60,7 @@ file_list:              qt-conf
 package_list:
 
 [qtmenunib]
-package_url:            http://download.qt-project.org/development_releases/prebuilt/mac/qt_menu.nib.7z
+package_url:            http://download.qt.io/development_releases/prebuilt/mac/qt_menu.nib.7z
 
 [SdkUpdateRepository]
 repository_url_release:

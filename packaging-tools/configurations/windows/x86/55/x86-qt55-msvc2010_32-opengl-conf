@@ -52,6 +52,6 @@ package_finalize_items: delete_doc_directory
 archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2010_32_opengl/qt5_addons.7z
 package_finalize_items: delete_doc_directory
 [55.win32_msvc2010_opengl.icu_531_release.win_32]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/msvc2010/icu_53_1_msvc_2010_32.7z
+archive_uri:            http://download.qt.io/development_releases/prebuilt/icu/prebuilt/msvc2010/icu_53_1_msvc_2010_32.7z
 target_install_dir:     /bin
 
