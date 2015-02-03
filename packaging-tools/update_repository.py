@@ -60,9 +60,9 @@ UPDATE_NEW_COMPONENTS_ONLY = False  # default to update all (given) components
 # Setup argument parser
 ###############################
 def setup_argument_parser():
-    parser = argparse.ArgumentParser(prog = os.path.basename(sys.argv[0]),
-              add_help=True, description="Update online repository",
-               formatter_class=argparse.RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(prog=os.path.basename(sys.argv[0]),
+                                     add_help=True, description="Update online repository",
+                                     formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('--repogen_tools', help="Where to fetch repogen tools (.7z, .zip, .tar.gz)", required=True, default="")
     parser.add_argument('--target_repo', help="Repository to be updated", required=True, default="")
     parser.add_argument('--source_repo', help="New repository source. Used only if target repository does not exits i.e. first time usage", required=False, default="")
@@ -137,7 +137,7 @@ def update_repository(source_pkg, target_repo, components_to_update):
     # do we update new components only or all given components no matter
     # what the version numbers are
     repogen_update_cmd = '--update'
-    if (UPDATE_NEW_COMPONENTS_ONLY):
+    if UPDATE_NEW_COMPONENTS_ONLY:
         repogen_update_cmd = '--update-new-components'
     cmd_args = [REPOGEN_TOOL, repogen_update_cmd, '-p', source_pkg]
     if components_to_update[0] and components_to_update[0] == '*':
@@ -269,7 +269,7 @@ def backup_repo(backup_base_dir, directory_to_be_backed_up):
 ###############################
 def parse_components_from_argument(caller_arguments):
     global UPDATE_NEW_COMPONENTS_ONLY
-    if (caller_arguments.update_new_components_only):
+    if caller_arguments.update_new_components_only:
         UPDATE_NEW_COMPONENTS_ONLY = True
 
     components_to_update_list = caller_arguments.components_to_update
