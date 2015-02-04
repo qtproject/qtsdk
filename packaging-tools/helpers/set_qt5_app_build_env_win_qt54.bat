@@ -85,10 +85,10 @@ set SSH="C:\Program Files\Git\bin\ssh.exe"
 
 echo %cfg%|findstr /i msvc2013-Windows8.1-x86 >nul:
 if %errorlevel%==0 (
-set "PATH=c:\work\build\qtsdk\gnuwin32\bin;%PATH_MSVC2013%;!PATH!"
-set "LIB=%LIB_MSVC2013%;C:!LIB!"
-set "LIBPATH=%LIBPATH_MSVC2013;!LIBPATH!"
-set "INCLUDE=%INCLUDE_MSVC2013%;!INCLUDE!"
+set "PATH=c:\work\build\qtsdk\gnuwin32\bin;%PATH_MSVC2013%;%PATH%"
+set "LIB=%LIB_MSVC2013%;%LIB%"
+set "LIBPATH=%LIBPATH_MSVC2013;%LIBPATH%"
+set "INCLUDE=%INCLUDE_MSVC2013%;%INCLUDE%"
 set "CURL=C:\Program Files\Git\bin\curl.exe"
 set RM="C:\Program Files\Git\bin\rm.exe"
 set SCP="C:\Program Files\Git\bin\scp.exe"
