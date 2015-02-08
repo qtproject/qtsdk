@@ -44,7 +44,6 @@ import os
 import sys
 import ntpath
 import bldinstallercommon
-from archiveresolver import ArchiveLocationResolver
 
 ONLINE_ARCHIVE_LIST_TAG  = '<!--ONLINE_ARCHIVE_LIST-->'
 
@@ -136,7 +135,7 @@ class SdkComponent:
         for item in self.packages_full_path_list:
             template_full_path = os.path.normpath(item + os.sep + self.package_name)
             if os.path.exists(template_full_path):
-                if not (found):
+                if not found:
                     # take the first match
                     self.pkg_template_dir = template_full_path
                     found = True
@@ -180,7 +179,7 @@ class SdkComponent:
             error_msg = archive.check_archive_data()
             if error_msg:
                 if self.optional_for_offline:
-                    print('!!! Package: [{0}] Given data archive not found: [{1}] But this component was marked optional -> keep going'.format(self.package_name, archive.archive_uri));
+                    print('!!! Package: [{0}] Given data archive not found: [{1}] But this component was marked optional -> keep going'.format(self.package_name, archive.archive_uri))
                     self.sanity_check_fail(self.package_name, 'Given data archive not found: [{0}] But this component was marked optional'.format(archive.archive_uri))
                     return
                 else:
