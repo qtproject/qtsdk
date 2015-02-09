@@ -948,7 +948,6 @@ def main_call_parameters():
     global MAKE_INSTALL_CMD
     global CONFIGURE_OPTIONS
     global ANDROID_BUILD
-    global EXTRA_ENV
     global DESKTOP_BUILD
     global QNX_BUILD
 
@@ -997,10 +996,10 @@ def main_call_parameters():
         print_wrap('Using custom ICU from path: ' + icu_install_base_path)
         icu_path_lib = os.path.join(icu_install_base_path, 'lib')
         if bldinstallercommon.is_win_platform():
-            env = EXTRA_ENV['LIB']
+            env = QT_BUILD_OPTIONS.system_env['LIB']
             if env:
                 env = ';' + env
-            EXTRA_ENV['LIB'] = icu_path_lib + env
+            QT_BUILD_OPTIONS.system_env['LIB'] = icu_path_lib + env
     if QT_BUILD_OPTIONS.prefix:
         CONFIGURE_OPTIONS += ' ' + '-prefix' + ' ' + QT_BUILD_OPTIONS.prefix
     if QT_BUILD_OPTIONS.runtime_path:
