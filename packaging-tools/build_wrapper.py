@@ -585,7 +585,7 @@ def handle_ifw_build():
     ifw_qmake_args = IfwOptions.default_qt_installer_framework_qmake_args
     # check for debug build
     if os.environ.get('IFW_DEBUG_BUILD'):
-        qt_configure_options = qt_conf_args.replace('-release', '-debug')
+        qt_configure_options = qt_configure_options.replace('-release', '-debug')
         ifw_qmake_args = ifw_qmake_args.replace('-config release', '-config debug')
     # Product Key Checker
     product_key_checker_pri = ''
