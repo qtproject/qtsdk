@@ -586,7 +586,7 @@ def handle_ifw_build():
     # check for debug build
     if os.environ.get('IFW_DEBUG_BUILD'):
         qt_configure_options = qt_configure_options.replace('-release', '-debug')
-        ifw_qmake_args = ifw_qmake_args.replace('-config release', '-config debug')
+        ifw_qmake_args = ' '.join(ifw_qmake_args).replace('-config release', '-config debug').split()
     # Product Key Checker
     product_key_checker_pri = ''
     if LICENSE == 'enterprise':
