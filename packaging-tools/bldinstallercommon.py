@@ -598,7 +598,7 @@ def requires_rpath(file_path):
     if IS_LINUX_PLATFORM or IS_SOLARIS_PLATFORM:
         if not is_executable(file_path):
             return False
-        return (re.search(r':*.RPATH=',
+        return (re.search(r':*.R..PATH=',
             subprocess.Popen(['chrpath', '-l', file_path],
                 stdout=subprocess.PIPE).stdout.read()) is not None)
     return False
@@ -611,7 +611,7 @@ def sanity_check_rpath_max_length(file_path, new_rpath):
     if IS_LINUX_PLATFORM or IS_SOLARIS_PLATFORM:
         if not is_executable(file_path):
             return False
-        result = re.search(r':*.RPATH=.*', subprocess.Popen(['chrpath', '-l', file_path], stdout=subprocess.PIPE).stdout.read())
+        result = re.search(r':*.R..PATH=.*', subprocess.Popen(['chrpath', '-l', file_path], stdout=subprocess.PIPE).stdout.read())
         if not result:
             print '*** No RPath found from given file: ' + file_path
         else:
