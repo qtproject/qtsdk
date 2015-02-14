@@ -338,7 +338,7 @@ def parse_cmd_line():
         parser.print_help()
         sys.exit(-1)
 
-    (options, args) = parser.parse_args()
+    (options, dummy) = parser.parse_args()
     return options
 
 

@@ -407,7 +407,7 @@ def archive_installer_framework(options):
     print('--------------------------------------------------------------------')
     print('Archive Installer Framework')
     # first strip out all unnecessary files
-    for root, dirs, files in os.walk(options.installer_framework_build_dir):
+    for root, dummy, files in os.walk(options.installer_framework_build_dir):
         for filename in files:
             if filename.endswith(('.moc', 'Makefile', '.cpp', '.h', '.o')) or filename == 'Makefile':
                 os.remove(os.path.join(root, filename))
@@ -499,7 +499,7 @@ def patch(file, dict):
 def patch_win32_mkspecs(mkspecsdir):
     print('--------------------------------------------------------------------')
     print('Patching win32 mkspecs in {0} ...'.format(mkspecsdir))
-    for root, dirs, files in os.walk(mkspecsdir):
+    for root, dummy, files in os.walk(mkspecsdir):
         for file in files:
             if "win32" in root and file == "qmake.conf":
                 patch(os.path.join(root, file), {"-MD" : "-MT", "embed_manifest_dll" : "", "embed_manifest_exe" : "" })

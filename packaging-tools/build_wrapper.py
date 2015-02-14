@@ -65,7 +65,6 @@ import release_build_handler
 import bld_icu_tools
 import pkg_constants
 import random
-import operator
 from pkg_constants import ICU_BUILD_OUTPUT_DIR
 
 
@@ -692,7 +691,7 @@ def handle_qt_src_package_build():
 
     # remove documentation source files ('doc' subdirs) from examples
     doc_dir = 'doc'
-    for root, dirs, files in os.walk(essentials_path):
+    for root, dirs, dummy in os.walk(essentials_path):
         if doc_dir in dirs:
             # do not recurse into doc directory
             dirs.remove(doc_dir)
@@ -1633,7 +1632,7 @@ def parse_cmd_line():
         OPTION_PARSER.print_help()
         sys.exit(-1)
 
-    (options, args) = OPTION_PARSER.parse_args()
+    (options, dummy) = OPTION_PARSER.parse_args()
     COMMAND = options.command
     bld_cmd_validator = BldCommand(options)
     if bld_cmd_validator.validate_bld_args():

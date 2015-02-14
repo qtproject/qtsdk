@@ -48,7 +48,6 @@ import bldinstallercommon
 import pkg_constants
 import ConfigParser
 import urlparse
-import tarfile
 
 INIT_DONE                               = False
 SSH_COMMAND                             = 'ssh'
@@ -417,7 +416,7 @@ def handle_repo_build(conf_file, license_type, branch, platform, arch, packages_
         bldinstallercommon.remove_tree(source_path_repository)
         bldinstallercommon.remove_tree(source_path_pkg)
         # update repo in testing area
-        staging_repo_updated, prod_pending_repo_updated = update_online_repo(job, update_staging_repo, update_production_repo)
+        staging_repo_updated, dummy = update_online_repo(job, update_staging_repo, update_production_repo)
         # write the rta description file only if staging repository creation was ok
         if (staging_repo_updated):
             rta_description_file = open(rta_description_file_name, 'a')
@@ -578,7 +577,7 @@ def update_online_repo(job, update_staging_repo, update_production_repo):
         remote_copy_path = ensure_unix_paths(remote_copy_path)
         # test if production repository exists
         cmd_args = [SSH_COMMAND, '-t', '-t', staging_server_addr, 'ssh', '-t', '-t', production_repo, 'test', '-d', production_repo_path]
-        return_code, output = bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, False)
+        return_code, dummy = bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, False)
         if return_code == -1:
             print('Pulling production repository: {0}'.format(prod_url))
             cmd_args = [SSH_COMMAND, '-t', '-t', staging_server_addr, 'rsync', '-rk', prod_url, remote_copy_path]

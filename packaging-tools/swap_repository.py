@@ -86,7 +86,7 @@ def parse_cmd_line_args():
 ###############################
 def get_directory_list(base_dir, search_match):
     matches = []
-    for root, dirs, files in os.walk(base_dir):
+    for root, dirs, dummy in os.walk(base_dir):
         for basename in dirs:
             if basename == search_match:
                 fulldirname = os.path.join(root, basename)

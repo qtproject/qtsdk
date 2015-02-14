@@ -340,7 +340,7 @@ def parse_cmd_line():
     if arg_count < 2:
         return False
     setup_option_parser()
-    (options, args) = OPTION_PARSER.parse_args()
+    (options, dummy) = OPTION_PARSER.parse_args()
 
     global MAIN_CONFIG_NAME
     global DEVELOPMENT_MODE
@@ -617,7 +617,7 @@ def substitute_global_tags():
     # initialize the file list
     fileslist = []
     for directory in GENERAL_TAG_SUBST_LIST:
-        for root, dirs, files in os.walk(directory):
+        for root, dummy, files in os.walk(directory):
             for name in files:
                 path = os.path.join(root, name)
                 fileslist.append(path)
@@ -639,7 +639,7 @@ def substitute_component_tags(tag_pair_list, meta_dir_dest):
     # initialize the file list
     fileslist = []
 
-    for root, dirs, files in os.walk(meta_dir_dest):
+    for root, dummy, files in os.walk(meta_dir_dest):
         for name in files:
             path = os.path.join(root, name)
             fileslist.append(path)
@@ -951,7 +951,7 @@ def qml_examples_only(examples_dir):
         return
     subdir_list = []
     regex = re.compile('^qml\S.*')
-    for root, dirs, files in os.walk(examples_dir):
+    for root, dirs, dummy in os.walk(examples_dir):
         for basename in dirs:
             if regex.search(basename):
                 root_dir = root
@@ -1040,7 +1040,6 @@ def install_ifw_tools():
         tools_dir_temp = bld_ifw_tools.build_ifw(options)
         tools_bin_path = SCRIPT_ROOT_DIR + os.sep + tools_dir_temp
     elif not os.path.exists(IFW_TOOLS_DIR):
-        tools_dir_name = os.path.normpath(IFW_TOOLS_DIR_NAME)
         if INSTALLER_FRAMEWORK_TOOLS:
             package_url = INSTALLER_FRAMEWORK_TOOLS
         else:

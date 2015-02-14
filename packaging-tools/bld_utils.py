@@ -51,7 +51,6 @@ import time
 import urllib2
 import shutil
 import subprocess
-import traceback
 import threading
 import collections
 

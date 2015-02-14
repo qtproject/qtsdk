@@ -52,7 +52,6 @@ import bld_icu_tools
 import multiprocessing
 import patch_qmake_qt_key
 from optparse import OptionParser, Option
-import fnmatch
 import shlex
 
 SCRIPT_ROOT_DIR                     = os.getcwd()
@@ -357,7 +356,7 @@ def save_install_prefix():
         print_wrap('*** Error! qmake executable not found? Looks like the build has failed in previous step?')
         exit_script()
     query_args = qmake_executable_path + ' -query'
-    return_code, output = bldinstallercommon.do_execute_sub_process(query_args.split(' '), '.', True, True)
+    dummy, output = bldinstallercommon.do_execute_sub_process(query_args.split(' '), '.', True, True)
     data = output.split('\n')
 
     for line in data:
@@ -479,7 +478,7 @@ def install_qt():
         print_wrap('    Installing module: Qt top level')
         print_wrap('          -> cmd args: ' + cmd_args)
         print_wrap('                -> in: ' + QT_SOURCE_DIR)
-        return_code, output = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '),
+        return_code, dummy = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '),
             QT_SOURCE_DIR, QT_BUILD_OPTIONS.strict_mode, False, QT_BUILD_OPTIONS.system_env)
         return
 
@@ -553,7 +552,7 @@ def replace_build_paths(path_to_checked):
     print_wrap('------------ Replacing build paths in ' + path_to_checked + '----------------')
     pattern = re.compile(WORK_DIR_NAME)
     qt_source_dir_delimeter_2 = QT_SOURCE_DIR.replace('/', os.sep)
-    for root, dirs, files in os.walk(path_to_checked):
+    for root, dummy, files in os.walk(path_to_checked):
         for name in files:
             path = os.path.join(root, name)
             if not os.path.isdir(path) and not os.path.islink(path):
@@ -609,7 +608,7 @@ def clean_up():
     # remove examples from binary packages
     bldinstallercommon.remove_directories_by_type(MAKE_INSTALL_ROOT_DIR, 'examples')
     # all platforms
-    for root, dirs, files in os.walk(MAKE_INSTALL_ROOT_DIR):
+    for root, dummy, files in os.walk(MAKE_INSTALL_ROOT_DIR):
         for name in files:
             if (any(name.endswith(to_remove) for to_remove in FILES_TO_REMOVE_LIST)):
                 path = os.path.join(root, name)
@@ -872,7 +871,7 @@ def parse_cmd_line():
     if arg_count < 2:
         OPTION_PARSER.print_help()
         sys.exit(-1)
-    (options, args) = OPTION_PARSER.parse_args()
+    (options, dummy) = OPTION_PARSER.parse_args()
     QT_BUILD_OPTIONS = MkQtBuildOptions()
     QT_BUILD_OPTIONS.set_args(options)
     print_wrap('---------------------------------------------------------------------')
@@ -997,7 +996,6 @@ def main_call_parameters():
         icu_install_base_path = use_custom_icu()
         print_wrap('Using custom ICU from path: ' + icu_install_base_path)
         icu_path_lib = os.path.join(icu_install_base_path, 'lib')
-        icu_path_inc = os.path.join(icu_install_base_path, 'include')
         if bldinstallercommon.is_win_platform():
             env = EXTRA_ENV['LIB']
             if env:

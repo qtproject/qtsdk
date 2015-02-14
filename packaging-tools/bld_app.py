@@ -84,10 +84,9 @@ def get_qt_install_prefix(qt_path):
         sys.exit(-1)
     cmd_args = [qmake_executable, '-query']
     qmakePath = os.path.abspath(os.path.join(callerArguments.qt5path, 'bin'))
-    return_code, output = bldinstallercommon.do_execute_sub_process(cmd_args, qmakePath, True, True)
+    dummy, output = bldinstallercommon.do_execute_sub_process(cmd_args, qmakePath, True, True)
     # read output line by line
     lines = output.splitlines(True)
-    qt_install_prefix_string = 'QT_INSTALL_PREFIX'
     for line in lines:
         if 'QT_INSTALL_PREFIX' in line:
             # save qt_install_prefix
@@ -154,7 +153,7 @@ def createDownloadExtractTask(url, target_path, temp_path, caller_arguments):
 ###############################
 def locate_pro(directory):
     print('Trying to locate application .pro file file from: {0}'.format(directory))
-    for root, dirs, files in os.walk(directory):
+    for root, dummy, files in os.walk(directory):
         for basename in files:
             if fnmatch.fnmatch(basename, '*.pro'):
                 filename = os.path.join(root, basename)
