@@ -1,6 +1,6 @@
 /*****************************************************************************
 **
-** Copyright (C) 2014 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2015 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the release tools of the Qt Toolkit.
@@ -56,16 +56,14 @@ function Component()
         var winrt_x64 = installer.componentByName("qt.55.win64_msvc2013_winrt_x64");
 
         // first reset the latest Qt5.x.x package default values to false
-        installer.componentByName("qt.55.win32_mingw491").setValue("Default", "false");
+        installer.componentByName("qt.55.win32_mingw492").setValue("Default", "false");
 
-        installer.componentByName("qt.55.win32_msvc2010_opengl").setValue("Default", "false")
+        installer.componentByName("qt.55.win32_msvc2010").setValue("Default", "false")
 
-        installer.componentByName("qt.55.win32_msvc2012_opengl").setValue("Default", "false")
+        installer.componentByName("qt.55.win32_msvc2012").setValue("Default", "false")
 
         installer.componentByName("qt.55.win32_msvc2013").setValue("Default", "false");
-        installer.componentByName("qt.55.win32_msvc2013_opengl").setValue("Default", "false");
         installer.componentByName("qt.55.win64_msvc2013_64").setValue("Default", "false");
-        installer.componentByName("qt.55.win64_msvc2013_64_opengl").setValue("Default", "false");
 
         if (android_armv7)
             android_armv7.setValue("Default", "false");
@@ -79,7 +77,6 @@ function Component()
         // if 32bit windows hide the 64bit packages
         if (installer.environmentVariable("ProgramFiles(x86)") == "" ) {
             installer.componentByName("qt.55.win64_msvc2013_64").setValue("Virtual", "true");
-            installer.componentByName("qt.55.win64_msvc2013_64_opengl").setValue("Virtual", "true");
 
             if (winphone_arm)
                 winphone_arm.setValue("Virtual", "true");
@@ -91,11 +88,11 @@ function Component()
 
         // now try to determine which tool chains to select by default
         if (msvc2010) {
-            installer.componentByName("qt.55.win32_msvc2010_opengl").setValue("Default", "true")
+            installer.componentByName("qt.55.win32_msvc2010").setValue("Default", "true")
         }
 
         if (msvc2012) {
-            installer.componentByName("qt.55.win32_msvc2012_opengl").setValue("Default", "true");
+            installer.componentByName("qt.55.win32_msvc2012").setValue("Default", "true");
         }
 
         if (msvc2013) {
@@ -109,7 +106,7 @@ function Component()
 
         // if no msvc toolkits detected, choose mingw by default
         if (!msvc2010 && !msvc2012 && !msvc2013) {
-            installer.componentByName("qt.55.win32_mingw491").setValue("Default", "true");
+            installer.componentByName("qt.55.win32_mingw492").setValue("Default", "true");
         }
     }
 }

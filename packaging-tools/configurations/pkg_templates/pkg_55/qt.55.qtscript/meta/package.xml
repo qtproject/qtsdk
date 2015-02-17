@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt Script</DisplayName>
+    <Description>License options: LGPLv3, LGPLv2.1, Commercial&lt;br&gt;&lt;br&gt;Qt 5.5.0 Prebuilt Components for gcc 64-bit</Description>
+    <Version>5.5.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Default>true</Default>
+    <SortingPriority></SortingPriority>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
