@@ -449,7 +449,7 @@ def unlock_keychain():
 # Lock keychain
 ###############################
 def lock_keychain():
-    cmd_args = ['security', 'lock-keychain', 'Developer_ID_Digia.keychain']
+    cmd_args = ['/Users/qt/lock-keychain.sh']
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
 
