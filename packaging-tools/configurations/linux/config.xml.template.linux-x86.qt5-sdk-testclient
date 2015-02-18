@@ -14,7 +14,7 @@
     <RemoteRepositories>
         <!-- Root repository-->
         <Repository>
-            <Url>http://it-ap144-hki/opensource/qtsdkrepository/linux_x86/root/qt</Url>
+            <Url>http://it-ap144-hki.ci.local/opensource/qtsdkrepository/linux_x86/root/qt</Url>
             <Enabled>1</Enabled>
             <DisplayName>Online Test Server: Qt Linux-x86 root online repository</DisplayName>
         </Repository>
