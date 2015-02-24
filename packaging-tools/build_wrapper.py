@@ -376,7 +376,7 @@ class BldCommand:
         if not self.options.server:
             print('*** ICU build is missing command line argument: --server')
             sys.exit(-1)
-        if not os.environ.get('ICU_SRC_PKG_URL_UNIX') or not os.environ.get('ICU_SRC_PKG_URL_WIN'):
+        if not os.environ.get('ICU_SRC_PKG_URL_UNIX') and not os.environ.get('ICU_SRC_PKG_URL_WIN'):
             sys.exit('*** ICU build is missing environment variable: ICU_SRC_PKG_URL_[UNIX|WIN]')
         if not os.environ.get('ICU_VERSION'):
             sys.exit('*** ICU init build is missing environment variable: ICU_VERSION')
@@ -1581,7 +1581,7 @@ def handle_icu_build():
         icu_src = os.environ['ICU_SRC_PKG_URL_UNIX']
     icu_version = '' # can be left empty, not cloning from git
     sanity_check_packaging_server()
-    bld_icu_tools.init_build_icu(icu_src, icu_version, True)
+    bld_icu_tools.init_build_icu(icu_src, icu_version, EXTRA_ENV, True)
     # define remote dir where to upload
     remote_snaphot_dir = PATH + '/' + 'icu' + '/' + os.environ['ICU_VERSION'] + '/' + 'latest'
     srv_and_remote_dir = PKG_SERVER_ADDR + ':' + remote_snaphot_dir

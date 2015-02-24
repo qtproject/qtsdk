@@ -52,13 +52,14 @@ import platform
 import fileinput
 from optparse import OptionParser, Option
 import bldinstallercommon
+import subprocess
 from pkg_constants import ICU_BUILD_OUTPUT_DIR
 from pkg_constants import ICU_INSTALL_DIR_NAME
 
 SCRIPT_ROOT_DIR            = os.path.dirname(os.path.realpath(__file__))
 ICU_SRC_DIR_NAME           = 'icu-src'
 QT5_FILES_TO_PATCH_LIST    = ['*.prl', '*.pri', '*.pc', '*.la']
-DEFAULT_ICU_SRC_PKG        = 'http://download.qt.io/development_releases/prebuilt/icu/src/icu4c-53_1-src.tgz'
+DEFAULT_ICU_SRC_PKG        = 'http://download.qt.io/development_releases/prebuilt/icu/src/icu4c-54_1-src.tgz'
 
 
 class MultipleOption(Option):
@@ -80,6 +81,16 @@ class ICUConfiguration:
         self.icu_lib_path            = ''
         self.qt_configure_extra_args = ''
 
+def check_env():
+    if bldinstallercommon.is_win_platform():
+        print('Checking for 7z ...')
+        subprocess.check_output(['7z', '-h'])
+        print('Checking for bash ...')
+        subprocess.check_output(['bash', '--version'])
+        print('Checking for cygpath ...')
+        subprocess.check_output(['cygpath', '-V'])
+        print('Checking for make ...')
+        subprocess.check_output(['make', '-v'])
 
 ###############################
 # handle_icu_build
@@ -112,6 +123,28 @@ def build_icu_linux(environment, icu_src_base_dir, archive_icu):
         archive_build_artifacts(search_path)
     return icu_configuration
 
+def build_icu_win(environment, icu_src_base_dir, archive_icu):
+    bldinstallercommon.create_dirs(os.path.join(SCRIPT_ROOT_DIR, ICU_INSTALL_DIR_NAME))
+    exec_path = icu_src_base_dir
+    # configure
+    cygpath = subprocess.check_output(['cygpath', os.path.join(SCRIPT_ROOT_DIR, ICU_INSTALL_DIR_NAME)])
+    cmd_args = ['bash', 'runConfigureICU', 'Cygwin/MSVC', '--prefix=' + cygpath]
+    exec_path = os.path.dirname(bldinstallercommon.locate_file(os.path.join(SCRIPT_ROOT_DIR, ICU_SRC_DIR_NAME), 'configure'))
+    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True, environment)
+    # build
+    cmd_args = ['make']
+    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True, environment)
+    cmd_args = ['make', 'install']
+    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True, environment)
+
+    icu_configuration = ICUConfiguration
+    search_path = os.path.join(SCRIPT_ROOT_DIR, ICU_INSTALL_DIR_NAME)
+    icu_configuration.icu_include_path = bldinstallercommon.locate_directory(search_path, 'include')
+    icu_configuration.icu_lib_path = bldinstallercommon.locate_directory(search_path, 'lib')
+    # archive icu build artifacts if requested
+    if archive_icu:
+        archive_build_artifacts(search_path)
+    return icu_configuration
 
 ###############################
 # Archive ICU build artifacts
@@ -193,7 +226,9 @@ def get_icu_env(icu_lib_path, icu_include_path):
     elif bldinstallercommon.is_mac_platform():
         print('*** ICU build for Mac not implemented yet!')
     elif bldinstallercommon.is_win_platform():
-        print('*** ICU build for Win not implemented yet!')
+        icu_environment['PATH'] = icu_lib_path
+        icu_environment['LIB'] = icu_lib_path
+        icu_environment['INCLUDE'] = icu_include_path
     else:
         print('*** Unsupported platform')
 
@@ -299,7 +334,7 @@ def init_build_icu(icu_src, icu_version = '', environment = dict(os.environ), ar
     elif bldinstallercommon.is_mac_platform():
         print('*** ICU build for Mac not implemented yet!')
     elif bldinstallercommon.is_win_platform():
-        print('*** ICU build for Win not implemented yet!')
+        icu_configuration = build_icu_win(environment, os.path.join(SCRIPT_ROOT_DIR, icu_src_dir), archive_icu)
     else:
         print('*** Unsupported platform')
     # set options for Qt5 build
@@ -349,6 +384,7 @@ def main():
     bldinstallercommon.init_common_module(SCRIPT_ROOT_DIR)
     options = parse_cmd_line()
     if options.build_icu:
+        check_env()
         init_build_icu(options.icu_src, options.icu_version, True)
     else:
         print('You asked me to do nothing?')
