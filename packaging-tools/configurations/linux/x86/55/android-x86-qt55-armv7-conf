@@ -1,6 +1,6 @@
 #############################################################################
 ##
-## Copyright (C) 2014 Digia Plc and/or its subsidiary(-ies).
+## Copyright (C) 2015 Digia Plc and/or its subsidiary(-ies).
 ## Contact: http://www.qt-project.org/legal
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -51,3 +51,33 @@ package_finalize_items: delete_doc_directory
 archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/linux_x86/qt5_addons.7z
 package_finalize_items: delete_doc_directory
 
+
+# QtWebKit provided as separate installable component in installer
+[qt.55.qtwebkit]
+[qt.55.qtwebkit.android_armv7]
+archives:               55.qtwebkit.android_armv7
+target_install_base:    /5.5/android_armv7
+[55.qtwebkit.android_armv7]
+archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/linux_x86/qt5_qtwebkit.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+# QtQuick1 provided as separate installable component in installer
+[qt.55.qtquick1]
+[qt.55.qtquick1.android_armv7]
+archives:               55.qtquick1.android_armv7
+target_install_base:    /5.5/android_armv7
+[55.qtquick1.android_armv7]
+archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/linux_x86/qt5_qtquick1.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+# QtScript provided as separate installable component in installer
+[qt.55.qtscript]
+[qt.55.qtscript.android_armv7]
+archives:               55.qtscript.android_armv7
+target_install_base:    /5.5/android_armv7
+[55.qtscript.android_armv7]
+archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/linux_x86/qt5_qtscript.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory

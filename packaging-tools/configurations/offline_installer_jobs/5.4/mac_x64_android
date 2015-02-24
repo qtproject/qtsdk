@@ -64,7 +64,7 @@ file_list:              qt-conf,
 
 
 [qtmenunib]
-package_url:            http://download.qt-project.org/development_releases/prebuilt/mac/qt_menu.nib.7z
+package_url:            http://download.qt.io/development_releases/prebuilt/mac/qt_menu.nib.7z
 
 [ConfigDir]
 template_name:          config_qt5

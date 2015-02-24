@@ -1,6 +1,6 @@
 #############################################################################
 ##
-## Copyright (C) 2014 Digia Plc and/or its subsidiary(-ies).
+## Copyright (C) 2015 Digia Plc and/or its subsidiary(-ies).
 ## Contact: http://www.qt-project.org/legal
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -59,5 +59,35 @@ archives:               55.qtwebengine.clang_64
 target_install_base:    /5.5/clang_64
 [55.qtwebengine.clang_64]
 archive_uri:            /qt/@QT_VERSION@/latest/mac_x64/qt5_qtwebengine.7z
+package_finalize_items: delete_doc_directory
+
+# QtWebKit provided as separate installable component in installer
+[qt.55.qtwebkit]
+[qt.55.qtwebkit.clang_64]
+archives:               55.qtwebkit.clang_64
+target_install_base:    /5.5/clang_64
+[55.qtwebkit.clang_64]
+archive_uri:            /qt/@QT_VERSION@/latest/mac_x64/qt5_qtwebkit.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+# QtQuick1 provided as separate installable component in installer
+[qt.55.qtquick1]
+[qt.55.qtquick1.clang_64]
+archives:               55.qtquick1.clang_64
+target_install_base:    /5.5/clang_64
+[55.qtquick1.clang_64]
+archive_uri:            /qt/@QT_VERSION@/latest/mac_x64/qt5_qtquick1.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+# QtScript provided as separate installable component in installer
+[qt.55.qtscript]
+[qt.55.qtscript.clang_64]
+archives:               55.qtscript.clang_64
+target_install_base:    /5.5/clang_64
+[55.qtscript.clang_64]
+archive_uri:            /qt/@QT_VERSION@/latest/mac_x64/qt5_qtscript.7z
+rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 

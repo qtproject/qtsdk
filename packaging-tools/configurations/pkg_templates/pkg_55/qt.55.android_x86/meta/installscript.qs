@@ -1,6 +1,6 @@
 /*****************************************************************************
 **
-** Copyright (C) 2014 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2015 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the release tools of the Qt Toolkit.
@@ -42,9 +42,9 @@
 // constructor
 function Component()
 {
-    // add dynamic dependency for mingw491 TC for Android packages on Windows
+    // add dynamic dependency for mingw492 TC for Android packages on Windows
     if (installer.value("os") == "win") {
-        var mingw_tc_component = "qt.tools.win32_mingw491";
+        var mingw_tc_component = "qt.tools.win32_mingw492";
         component.addDependency(mingw_tc_component);
     }
 }

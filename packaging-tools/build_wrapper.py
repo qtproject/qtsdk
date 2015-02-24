@@ -463,7 +463,7 @@ def unlock_keychain():
 # Lock keychain
 ###############################
 def lock_keychain():
-    cmd_args = ['security', 'lock-keychain', 'Developer_ID_Digia.keychain']
+    cmd_args = ['/Users/qt/lock-keychain.sh']
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
 
@@ -471,8 +471,8 @@ def lock_keychain():
 # sign windows executable
 ###############################
 def sign_mac_executable(file_path, working_dir, abort_on_fail):
-    s_arg = 'Developer ID Application: Digia Plc'
-    cmd_args = ['codesign', '-r', '/Users/qt/csreq.txt', '-s', s_arg, file_path]
+    s_arg = 'Developer ID Application: The Qt Company Oy'
+    cmd_args = ['codesign', '-r', '/Users/qt/csreq_qt_company.txt', '-s', s_arg, file_path]
     bldinstallercommon.do_execute_sub_process(cmd_args, working_dir, abort_on_fail)
 
 
@@ -708,8 +708,8 @@ def handle_ifw_build():
     ifw_qmake_args = IfwOptions.default_qt_installer_framework_qmake_args
     # check for debug build
     if os.environ.get('IFW_DEBUG_BUILD'):
-        qt_configure_options = qt_conf_args.replace('-release', '-debug')
-        ifw_qmake_args = ifw_qmake_args.replace('-config release', '-config debug')
+        qt_configure_options = qt_configure_options.replace('-release', '-debug')
+        ifw_qmake_args = ' '.join(ifw_qmake_args).replace('-config release', '-config debug').split()
     # Product Key Checker
     product_key_checker_pri = ''
     if LICENSE == 'enterprise':
@@ -1323,7 +1323,7 @@ def handle_qt_creator_build():
                          '--icu7z', ICU_LIBS,
                          '--sevenzippath', os.path.normpath('C:/Utils/sevenzip'),
                          '--gitpath', os.path.normpath('C:/Program Files/Git/bin'),
-                         '--d3dcompiler7z', 'http://download.qt-project.org/development_releases/prebuilt/d3dcompiler/msvc2010/D3DCompiler_43-x86.dll.7z',
+                         '--d3dcompiler7z', 'http://download.qt.io/development_releases/prebuilt/d3dcompiler/msvc2010/D3DCompiler_43-x86.dll.7z',
                          '--installerbase7z', 'http://ci-files02-hki.ci.local/packages/jenkins/' + LICENSE + '/ifw/1.6/installer-framework-build-win-x86.7z',
                          '--environment_batch', os.path.normpath('C:/Program Files/Microsoft Visual Studio 10.0/VC/vcvarsall.bat'),
                          '--environment_batch_argument', 'x86'])

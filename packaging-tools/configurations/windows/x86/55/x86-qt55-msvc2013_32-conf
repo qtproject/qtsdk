@@ -1,6 +1,6 @@
 #############################################################################
 ##
-## Copyright (C) 2014 Digia Plc and/or its subsidiary(-ies).
+## Copyright (C) 2015 Digia Plc and/or its subsidiary(-ies).
 ## Contact: http://www.qt-project.org/legal
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -43,7 +43,7 @@
 [qt.55.win32_msvc2013]
 archives:               55.win32_msvc2013.essentials,
                         55.win32_msvc2013.addons,
-                        55.win32_msvc2013.icu_531_release.win_32,
+                        55.win32_msvc2013.icu_541_release.win_32,
                         55.win32_msvc2013.d3d_compiler_47.x86,
                         55.win32_msvc2013.opengl32sw.x86
 target_install_base:    /5.5/msvc2013
@@ -53,14 +53,14 @@ package_finalize_items: delete_doc_directory
 [55.win32_msvc2013.addons]
 archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2013_32/qt5_addons.7z
 package_finalize_items: delete_doc_directory
-[55.win32_msvc2013.icu_531_release.win_32]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/icu/prebuilt/msvc2013/icu_53_1_msvc_2013_32.7z
+[55.win32_msvc2013.icu_541_release.win_32]
+archive_uri:            http://download.qt.io/development_releases/prebuilt/icu/prebuilt/msvc2013/icu_54_1_msvc_2013_32.7z
 target_install_dir:     /bin
 [55.win32_msvc2013.d3d_compiler_47.x86]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/d3dcompiler/msvc2013/d3dcompiler_47-x86.7z
+archive_uri:            http://download.qt.io/development_releases/prebuilt/d3dcompiler/msvc2013/d3dcompiler_47-x86.7z
 target_install_dir:     /bin
 [55.win32_msvc2013.opengl32sw.x86]
-archive_uri:            http://download.qt-project.org/development_releases/prebuilt/llvmpipe/windows/opengl32sw-32.7z
+archive_uri:            http://download.qt.io/development_releases/prebuilt/llvmpipe/windows/opengl32sw-32.7z
 target_install_dir:     /bin
 
 
@@ -68,8 +68,37 @@ target_install_dir:     /bin
 [qt.55.qtwebengine]
 [qt.55.qtwebengine.win32_msvc2013]
 archives:               55.qtwebengine.win32_msvc2013
-target_install_base:    /5.4/msvc2013
+target_install_base:    /5.5/msvc2013
 [55.qtwebengine.win32_msvc2013]
 archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2013_32/qt5_qtwebengine.7z
 package_finalize_items: delete_doc_directory
 
+# QtWebKit provided as separate installable component in installer
+[qt.55.qtwebkit]
+[qt.55.qtwebkit.win32_msvc2013]
+archives:               55.qtwebkit.win32_msvc2013
+target_install_base:    /5.5/msvc2013
+[55.qtwebkit.win32_msvc2013]
+archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2013_32/qt5_qtwebkit.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+# QtQuick1 provided as separate installable component in installer
+[qt.55.qtquick1]
+[qt.55.qtquick1.win32_msvc2013]
+archives:               55.qtquick1.win32_msvc2013
+target_install_base:    /5.5/msvc2013
+[55.qtquick1.win32_msvc2013]
+archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2013_32/qt5_qtquick1.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+# QtScript provided as separate installable component in installer
+[qt.55.qtscript]
+[qt.55.qtscript.win32_msvc2013]
+archives:               55.qtscript.win32_msvc2013
+target_install_base:    /5.5/msvc2013
+[55.qtscript.win32_msvc2013]
+archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2013_32/qt5_qtscript.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory

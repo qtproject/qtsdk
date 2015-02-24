@@ -1,6 +1,6 @@
 #############################################################################
 ##
-## Copyright (C) 2014 Digia Plc and/or its subsidiary(-ies).
+## Copyright (C) 2015 Digia Plc and/or its subsidiary(-ies).
 ## Contact: http://www.qt-project.org/legal
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -233,5 +233,19 @@ archives:               src.addons.qtenginio
 target_install_base:    /5.5/Src/qtenginio
 [src.addons.qtenginio]
 archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtenginio-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.55.src.addons.qt3d]
+archives:               src.addons.qt3d
+target_install_base:    /5.5/Src/qt3d
+[src.addons.qt3d]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qt3d-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.55.src.addons.qtcanvas3d]
+archives:               src.addons.qtcanvas3d
+target_install_base:    /5.5/Src/qtcanvas3d
+[src.addons.qtcanvas3d]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtcanvas3d-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 

@@ -43,7 +43,7 @@ file_list:              qtcanvas3d-qt54-x64-android-armv5-conf,
                         qtcanvas3d-qt54-x64-android-x86-conf
 
 [qtmenunib]
-package_url:            http://download.qt-project.org/development_releases/prebuilt/mac/qt_menu.nib.7z
+package_url:            http://download.qt.io/development_releases/prebuilt/mac/qt_menu.nib.7z
 
 [PackageTemplates]
 template_dirs:          pkg_extras

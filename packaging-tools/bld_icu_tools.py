@@ -58,7 +58,7 @@ from pkg_constants import ICU_INSTALL_DIR_NAME
 SCRIPT_ROOT_DIR            = os.path.dirname(os.path.realpath(__file__))
 ICU_SRC_DIR_NAME           = 'icu-src'
 QT5_FILES_TO_PATCH_LIST    = ['*.prl', '*.pri', '*.pc', '*.la']
-DEFAULT_ICU_SRC_PKG        = 'http://download.qt-project.org/development_releases/prebuilt/icu/src/icu4c-53_1-src.tgz'
+DEFAULT_ICU_SRC_PKG        = 'http://download.qt.io/development_releases/prebuilt/icu/src/icu4c-53_1-src.tgz'
 
 
 class MultipleOption(Option):

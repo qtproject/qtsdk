@@ -1,0 +1,94 @@
+################################################################################
+## Global defines
+################################################################################
+[ifwtools]
+windows-x86:                installer-framework-build-win-x86.7z
+linux-x86:                  installer-framework-build-linux-x86.7z
+linux-x64:                  installer-framework-build-linux-x64.7z
+mac-x64:                    installer-framework-build-mac-x64.7z
+
+[release.global]
+version:                    1.0.0
+version_tag:
+arg_substitution_list:      @QT_VERSION_MINOR@=5.5,
+                            @QT_INSTALL_DIR_NAME@=5.5,
+                            @QTWEBVIEW_VERSION@=%GLOBAL_VERSION%
+
+
+################################################################################
+## Linux repository
+################################################################################
+
+[release.qtwebview.repository.linux.x86]
+arg_configurations_file:    repository_configs/extras/qtwebview/qt5.5/linux_x86/linux_x86_repository_qtwebview
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          qtwebview_55
+repo_components_to_update:  qt.extras.qtwebview.qt55*
+repo_url_specifier:         linux_x86/desktop/extras/qtwebview
+
+[release.qtwebview.repository.linux.x86.android]
+arg_configurations_file:    repository_configs/extras/qtwebview/qt5.5/linux_x86/linux_x86_android_repository_qtwebview
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          qtwebview_55
+repo_components_to_update:  qt.extras.qtwebview.qt55*
+repo_url_specifier:         linux_x86/android/extras/qtwebview
+
+[release.qtwebview.repository.linux.x64]
+arg_configurations_file:    repository_configs/extras/qtwebview/qt5.5/linux_x64/linux_x64_repository_qtwebview
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          qtwebview_55
+repo_components_to_update:  qt.extras.qtwebview.qt55*
+repo_url_specifier:         linux_x64/desktop/extras/qtwebview
+
+[release.qtwebview.repository.linux.x64.android]
+arg_configurations_file:    repository_configs/extras/qtwebview/qt5.5/linux_x64/linux_x64_android_repository_qtwebview
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          qtwebview_55
+repo_components_to_update:  qt.extras.qtwebview.qt55*
+repo_url_specifier:         linux_x64/android/extras/qtwebview
+
+
+################################################################################
+## Windows repository
+################################################################################
+
+[release.qtwebview.repository.windows.x86]
+arg_configurations_file:    repository_configs/extras/qtwebview/qt5.5/windows_x86/win_x86_repository_qtwebview
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+repo_content_type:          qtwebview_55
+repo_components_to_update:  qt.extras.qtwebview.qt55*
+repo_url_specifier:         windows_x86/desktop/extras/qtwebview
+
+[release.qtwebview.repository.windows.x86.android]
+arg_configurations_file:    repository_configs/extras/qtwebview/qt5.5/windows_x86/win_x86_android_repository_qtwebview
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+repo_content_type:          qtwebview_55
+repo_components_to_update:  qt.extras.qtwebview.qt55*
+repo_url_specifier:         windows_x86/android/extras/qtwebview
+
+
+################################################################################
+## Mac repository
+################################################################################
+
+[release.qtwebview.repository.mac.x64]
+arg_configurations_file:    repository_configs/extras/qtwebview/qt5.5/mac_x64/mac_x64_repository_qtwebview
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          qtwebview_55
+repo_components_to_update:  qt.extras.qtwebview.qt55*
+repo_url_specifier:         mac_x64/desktop/extras/qtwebview
+
+[release.qtwebview.repository.mac.x64.android]
+arg_configurations_file:    repository_configs/extras/qtwebview/qt5.5/mac_x64/mac_x64_android_repository_qtwebview
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          qtwebview_55
+repo_components_to_update:  qt.extras.qtwebview.qt55*
+repo_url_specifier:         mac_x64/android/extras/qtwebview
+
+[release.qtwebview.repository.mac.x64.ios]
+arg_configurations_file:    repository_configs/extras/qtwebview/qt5.5/mac_x64/mac_x64_ios_repository_qtwebview
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+repo_content_type:          qtwebview_55
+repo_components_to_update:  qt.extras.qtwebview.qt55*
+repo_url_specifier:         mac_x64/ios/extras/qtwebview
+

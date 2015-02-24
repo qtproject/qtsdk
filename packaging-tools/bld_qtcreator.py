@@ -77,8 +77,8 @@ if os.name == 'nt':
         "--installerbase7z http://it-dl241-hki.it.local/packages/opensource/ifw/1.4/installer-framework-build-win-x86.7z" \
         "--sevenzippath \"C:\\Program Files\\7-Zip\" " \
         "--gitpath \"C:\\Program Files (x86)\\Git\\cmd\" "\
-        "--icu7z http://origin.releases.qt-project.org/prebuilt/icu_49_win_32_release.7z " \
-        "--d3dcompiler7z http://origin.releases.qt-project.org/prebuilt/D3DCompiler_43-x86.dll.7z " \
+        "--icu7z http://download.qt.io/development_releases/prebuilt/icu/prebuilt/msvc2010/icu_49_win_32_release.7z " \
+        "--d3dcompiler7z http://download.qt.io/development_releases/prebuilt/d3dcompiler/msvc2010/D3DCompiler_43-x86.dll.7z " \
         "--environment_batch \"C:\\Program Files (x86)\\Microsoft Visual Studio 10.0\\VC\\vcvarsall.bat\" " \
         "--environment_batch_argument x86 " \
         "".format(os.path.basename(sys.argv[0]))
