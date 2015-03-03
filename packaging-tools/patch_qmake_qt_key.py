@@ -65,7 +65,7 @@ def replace_key(qmake_file_name, key, new_value):
         print '*** Length for the given new value was: ' + str(len(new_value))
         return False
 
-    filename = open(qmake_file_name, 'rb+')
+    filename = open(qmake_file_name, 'r+b')
     text = ''
     while True:
         temp = filename.read()

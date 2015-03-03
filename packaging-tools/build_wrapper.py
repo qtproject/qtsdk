@@ -1297,6 +1297,9 @@ def handle_qt_creator_build():
         cmd_args.extend(['--additional_plugin', os.path.normpath(WORK_DIR + '/licensechecker'),
                          '--additional_plugin', os.path.normpath(WORK_DIR + '/qmlprofiler'),
                          '--additional_plugin', os.path.normpath(WORK_DIR + '/clangstaticanalyzer'),
+                         '--additional_plugin', os.path.normpath(WORK_DIR + '/perfprofiler'),
+                         '--additional_plugin', os.path.normpath(WORK_DIR + '/autotest-qtcreator-plugin'),
+                         '--additional_plugin', os.path.normpath(WORK_DIR + '/vxworks-qtcreator-plugin'),
                          '--additional_plugin', os.path.normpath(WORK_DIR + '/qtquickdesigner')])
         if bldinstallercommon.is_linux_platform():
             cmd_args.extend(['--additional_plugin', os.path.normpath(WORK_DIR + '/b2qt-qtcreator-plugin')])
