@@ -11,7 +11,7 @@
 ################################################################################
 [meta.linux.x86.gcc]
 build_target_dir:           linux_gcc_32_ubuntu1110
-build_node_labels:          linux-g++-Ubuntu11.10-x86, linux-g++-Ubuntu_11.10_x86
+build_node_labels:          linux-g++-Ubuntu11.10-x86
 
 [meta.linux.x86.android_armv5]
 build_target_dir:           android_armv5/linux_x86
@@ -27,7 +27,7 @@ build_node_labels:          linux-g++-Ubuntu11.10-x86_Android-x86
 
 [meta.linux.x64.gcc]
 build_target_dir:           linux_gcc_64_ubuntu1110
-build_node_labels:          linux-g++-Ubuntu11.10-x64, linux-g++-Ubuntu_11.10_x64
+build_node_labels:          linux-g++-Ubuntu11.10-x64
 
 [meta.linux.x64.android_armv5]
 build_target_dir:           android_armv5/linux_x64
@@ -105,13 +105,45 @@ build_node_labels:          linux-g++-Rhel6.6-x64_Android-armv7
 build_target_dir:           android_x86/linux_rhel66_x64
 build_node_labels:          linux-g++-Rhel6.6-x64_Android-x86
 
+[meta.linux.x86.qnx6_armv7]
+build_target_dir:           qnx6_armv7/linux_x86
+build_node_labels:          linux-g++-Rhel6.6-x86_QNX-armv7
+
+[meta.linux.x86.qnx6_x86]
+build_target_dir:           qnx6_x86/linux_x86
+build_node_labels:          linux-g++-Rhel6.6-x86_QNX-x86
+
+[meta.linux.x64.qnx6_armv7]
+build_target_dir:           qnx6_armv7/linux_x64
+build_node_labels:          linux-g++-Rhel6.6-x64_QNX-armv7
+
+[meta.linux.x64.qnx6_x86]
+build_target_dir:           qnx6_x86/linux_x64
+build_node_labels:          linux-g++-Rhel6.6-x64_QNX-x86
+
+[meta.linux.x86.qnx650_armv7]
+build_target_dir:           qnx650_armv7/linux_x86
+build_node_labels:          linux-g++-Rhel6.6-x86_QNX650-armv7
+
+[meta.linux.x86.qnx650_x86]
+build_target_dir:           qnx650_x86/linux_x86
+build_node_labels:          linux-g++-Rhel6.6-x86_QNX650-x86
+
+[meta.linux.x64.qnx650_armv7]
+build_target_dir:           qnx650_armv7/linux_x64
+build_node_labels:          linux-g++-Ubuntu11.10-x64_QNX650-armv7
+
+[meta.linux.x64.qnx650_x86]
+build_target_dir:           qnx650_x86/linux_x64
+build_node_labels:          linux-g++-Rhel6.6-x64_QNX650-x86
+
 [meta.windows.x86.mingw48]
 build_target_dir:           windows_mingw
 build_node_labels:          win-MinGW4.8-Windows7-x86_OpenGL
 
 [meta.windows.x86.msvc2010_32_angle]
 build_target_dir:           windows_vs2010_32
-build_node_labels:          win-msvc2010-Windows7-x86_ANGLE, win32-msvc2010_Windows_7, pkg-win7-x86-01
+build_node_labels:          win-msvc2010-Windows7-x86_ANGLE
 
 [meta.windows.x86.msvc2010_32]
 build_target_dir:           windows_vs2010_32
@@ -127,7 +159,7 @@ build_node_labels:          win-msvc2012-Windows8-x86_ANGLE
 
 [meta.windows.x64.msvc2012_64_angle]
 build_target_dir:           windows_vs2012_64
-build_node_labels:          win-msvc2012-Windows8-x64_ANGLE, win64-msvc2012_Windows_8
+build_node_labels:          win-msvc2012-Windows8-x64_ANGLE
 
 [meta.windows.x64.msvc2012_64_opengl]
 build_target_dir:           windows_vs2012_64_opengl
@@ -135,31 +167,31 @@ build_node_labels:          win-msvc2012-Windows8-x64_OpenGL
 
 [meta.windows.x86.android_armv5]
 build_target_dir:           android_armv5/mingw_x86
-build_node_labels:          win-MinGW4.8-Windows7-x86_Android-armv5, win-MinGW4.9.1-Windows7-x86_Android-armv5
+build_node_labels:          win-MinGW4.8-Windows7-x86_Android-armv5, win-MinGW4.9.1-Windows7-x86_Android-armv5, win-MinGW4.9.2-Windows7-x86_Android-armv5
 
 [meta.windows.x86.android_armv7]
 build_target_dir:           android_armv7/mingw_x86
-build_node_labels:          win-MinGW4.8-Windows7-x86_Android-armv7, win-MinGW4.9.1-Windows7-x86_Android-armv7
+build_node_labels:          win-MinGW4.8-Windows7-x86_Android-armv7, win-MinGW4.9.1-Windows7-x86_Android-armv7, win-MinGW4.9.2-Windows7-x86_Android-armv7
 
 [meta.windows.x86.android_x86]
 build_target_dir:           android_x86/mingw_x86
-build_node_labels:          win-MinGW4.8-Windows7-x86_Android-x86, win-MinGW4.9.1-Windows7-x86_Android-x86
+build_node_labels:          win-MinGW4.8-Windows7-x86_Android-x86, win-MinGW4.9.1-Windows7-x86_Android-x86, win-MinGW4.9.2-Windows7-x86_Android-x86
 
 [meta.windows.x86.qnx6_armv7]
 build_target_dir:           qnx6_armv7/mingw_x86
-build_node_labels:          win-MinGW4.8-Windows7-x86_QNX-armv7, win-MinGW4.9.1-Windows7-x86_QNX-armv7
+build_node_labels:          win-MinGW4.8-Windows7-x86_QNX-armv7, win-MinGW4.9.1-Windows7-x86_QNX-armv7, win-MinGW4.9.2-Windows7-x86_QNX-armv7
 
 [meta.windows.x86.qnx6_x86]
 build_target_dir:           qnx6_x86/mingw_x86
-build_node_labels:          win-MinGW4.8-Windows7-x86_QNX-x86, win-MinGW4.9.1-Windows7-x86_QNX-x86
+build_node_labels:          win-MinGW4.8-Windows7-x86_QNX-x86, win-MinGW4.9.1-Windows7-x86_QNX-x86, win-MinGW4.9.2-Windows7-x86_QNX-x86
 
 [meta.windows.x86.qnx650_armv7]
 build_target_dir:           qnx650_armv7/mingw_x86
-build_node_labels:          win-MinGW4.8-Windows7-x86_QNX650-armv7, win-MinGW4.9.1-Windows7-x86_QNX650-armv7
+build_node_labels:          win-MinGW4.8-Windows7-x86_QNX650-armv7, win-MinGW4.9.1-Windows7-x86_QNX650-armv7, win-MinGW4.9.2-Windows7-x86_QNX650-armv7
 
 [meta.windows.x86.qnx650_x86]
 build_target_dir:           qnx650_x86/mingw_x86
-build_node_labels:          win-MinGW4.8-Windows7-x86_QNX650-x86, win-MinGW4.9.1-Windows7-x86_QNX650-x86
+build_node_labels:          win-MinGW4.8-Windows7-x86_QNX650-x86, win-MinGW4.9.1-Windows7-x86_QNX650-x86, win-MinGW4.9.2-Windows7-x86_QNX650-x86
 
 [meta.windows_81.x86.msvc2012_32_opengl]
 build_target_dir:           windows_vs2012_32_opengl
