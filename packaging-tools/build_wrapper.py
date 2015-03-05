@@ -1432,7 +1432,7 @@ def handle_installer_build(installer_type):
     else:
         arch = 'x86'
     # Internal server address
-    packages_base_url = os.environ['PKG_SERVER_URL']
+    packages_base_url = os.environ['PACKAGE_STORAGE_SERVER_PATH_HTTP']
     # Determine local installer output directory
     installer_output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.INSTALLER_OUTPUT_DIR_NAME)
     # Create all installers for this host
@@ -1624,7 +1624,7 @@ def handle_online_repository_build():
         arch = 'x64'
     else:
         arch = 'x86'
-    packages_base_url = os.environ['PKG_SERVER_URL']
+    packages_base_url = os.environ['PACKAGE_STORAGE_SERVER_PATH_HTTP']
     # do we update staging repository?
     update_staging_repo = True
     if os.environ.get('DO_UPDATE_STAGING_REPOSITORY'):

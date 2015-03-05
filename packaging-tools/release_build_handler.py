@@ -644,7 +644,7 @@ def init_env():
 
     REPO_STAGING_SERVER             = os.environ['PKG_STAGING_SERVER']
     REPO_STAGING_SERVER_UNAME       = os.environ['PKG_STAGING_SERVER_UNAME']
-    PKG_SERVER_URL                  = os.environ['PKG_SERVER_URL']
+    PKG_SERVER_URL                  = os.environ['PACKAGE_STORAGE_SERVER_PATH_HTTP']
     REPO_STAGING_SERVER_HOME        = os.environ['REPO_STAGING_SERVER_HOME']
     REPO_STAGING_SERVER_HOME_TOOLS  = REPO_STAGING_SERVER_HOME + '/' + REPO_STAGING_SERVER_HOME_TOOLS
     IFW_TOOLS_BASE_URL              = os.environ['IFW_TOOLS_BASE_URL']
