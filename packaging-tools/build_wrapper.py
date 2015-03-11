@@ -1190,6 +1190,7 @@ def handle_qt_creator_build():
                          '--sevenzippath', os.path.normpath('C:/Utils/sevenzip'),
                          '--gitpath', os.path.normpath('C:/Program Files/Git/bin'),
                          '--d3dcompiler7z', 'http://download.qt.io/development_releases/prebuilt/d3dcompiler/msvc2010/D3DCompiler_43-x86.dll.7z',
+                         '--opengl32sw7z', 'http://download.qt.io/development_releases/prebuilt/llvmpipe/windows/opengl32sw-32.7z',
                          '--installerbase7z', 'http://ci-files02-hki.ci.local/packages/jenkins/' + LICENSE + '/ifw/1.6/installer-framework-build-win-x86.7z',
                          '--environment_batch', os.path.normpath('C:/Program Files/Microsoft Visual Studio 12.0/VC/vcvarsall.bat'),
                          '--environment_batch_argument', 'x86'])
