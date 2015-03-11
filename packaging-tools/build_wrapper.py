@@ -132,7 +132,7 @@ def combine_env_variable(a, b):
 
 def combine_environment_dicts(a, b, op=combine_env_variable):
     return dict(a.items() + b.items() +
-        [(k, combine_env_variable(a[k], b[k])) for k in set(b) & set(a)])
+                [(k, combine_env_variable(a[k], b[k])) for k in set(b) & set(a)])
 
 
 ###########################################
@@ -432,7 +432,7 @@ def sanity_check_packaging_server():
 ###############################
 def sign_windows_executable(file_path, working_dir, abort_on_fail):
     cmd_args = ['C:\Utils\sign\signtool.exe', 'sign', '/v', '/du', os.environ['SIGNING_SERVER'], '/p', os.environ['SIGNING_PASSWORD'],
-        '/t', 'http://timestamp.verisign.com/scripts/timestamp.dll', '/f', 'C:\utils\sign\keys.pfx', file_path]
+                '/t', 'http://timestamp.verisign.com/scripts/timestamp.dll', '/f', 'C:\utils\sign\keys.pfx', file_path]
     bldinstallercommon.do_execute_sub_process(cmd_args, working_dir, abort_on_fail)
 
 
@@ -1144,23 +1144,23 @@ def handle_qt_creator_build():
         if QTCREATOR_VERSION:
             snapshot_path += '/' + QTCREATOR_VERSION
         cmd_args = [SSH_COMMAND, PKG_SERVER_ADDR, "ssh", SNAPSHOT_SERVER,
-            'mkdir', '-p', snapshot_path + '/' + TIME_STAMP[:10] + '_' + BUILD_NUMBER]
+                    'mkdir', '-p', snapshot_path + '/' + TIME_STAMP[:10] + '_' + BUILD_NUMBER]
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
         cmd_args = [SSH_COMMAND, PKG_SERVER_ADDR, "ssh", SNAPSHOT_SERVER,
-            'mkdir', '-p', snapshot_path + '/' + TIME_STAMP[:10] + '_' + BUILD_NUMBER + '/installer_source']
+                    'mkdir', '-p', snapshot_path + '/' + TIME_STAMP[:10] + '_' + BUILD_NUMBER + '/installer_source']
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
         cmd_args = [SSH_COMMAND, PKG_SERVER_ADDR, "ssh", SNAPSHOT_SERVER,
-            'ln', '-sfn', snapshot_path + '/' + TIME_STAMP[:10] + '_' + BUILD_NUMBER,
+                    'ln', '-sfn', snapshot_path + '/' + TIME_STAMP[:10] + '_' + BUILD_NUMBER,
                     snapshot_path + '/latest']
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
         snapshot_path += '/latest'
 
     cmd_args = ['python', '-u', 'bld_qtcreator.py',
-        '--clean',
-        '--qt5path', os.path.normpath('../../qt5_install_dir'),
-        '--qt5_essentials7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_essentials.7z',
-        '--qt5_addons7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_addons.7z',
-        '--versiondescription', '"' + QTCREATOR_VERSION_DESCRIPTION + '"']
+                '--clean',
+                '--qt5path', os.path.normpath('../../qt5_install_dir'),
+                '--qt5_essentials7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_essentials.7z',
+                '--qt5_addons7z', SRC_URL + BIN_TARGET_DIRS[TARGET_ENV] + '/qt5_addons.7z',
+                '--versiondescription', '"' + QTCREATOR_VERSION_DESCRIPTION + '"']
 
     if LICENSE == 'enterprise':
         cmd_args.extend(['--additional_plugin', os.path.normpath(WORK_DIR + '/licensechecker'),
@@ -1239,8 +1239,8 @@ def handle_qt_creator_build():
     if SNAPSHOT_SERVER and SNAPSHOT_PATH:
         for source, destination in snapshot_upload_list:
             cmd_args = [SSH_COMMAND, PKG_SERVER_ADDR, "scp",
-                dir_path + '/' + source,
-                SNAPSHOT_SERVER + ':' + snapshot_path + '/' + destination]
+                        dir_path + '/' + source,
+                        SNAPSHOT_SERVER + ':' + snapshot_path + '/' + destination]
             bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
 
 
@@ -1709,56 +1709,56 @@ def setup_option_parser():
     OPTION_PARSER = OptionParser(option_class=MultipleOption)
 
     OPTION_PARSER.add_option("-c", "--command",
-                      action="store", type="string", dest="command", default="",
-                      help="command to be executed: e.g. -c init")
+                             action="store", type="string", dest="command", default="",
+                             help="command to be executed: e.g. -c init")
     OPTION_PARSER.add_option("-l", "--license",
-                      action="store", type="string", dest="license", default="",
-                      help="license type: enterprise or opensource")
+                             action="store", type="string", dest="license", default="",
+                             help="license type: enterprise or opensource")
     OPTION_PARSER.add_option("-v", "--qt_version",
-                      action="store", type="string", dest="qt_version", default="",
-                      help="Qt version e.g. 5.0.2")
+                             action="store", type="string", dest="qt_version", default="",
+                             help="Qt version e.g. 5.0.2")
     OPTION_PARSER.add_option("-t", "--time_stamp",
-                      action="store", type="string", dest="time_stamp", default="",
-                      help="Jenkins build time stamp")
+                             action="store", type="string", dest="time_stamp", default="",
+                             help="Jenkins build time stamp")
     OPTION_PARSER.add_option("-b", "--build_number",
-                      action="store", type="string", dest="build_number", default="",
-                      help="Jenkins build number")
+                             action="store", type="string", dest="build_number", default="",
+                             help="Jenkins build number")
     OPTION_PARSER.add_option("-s", "--server",
-                      action="store", type="string", dest="server", default="",
-                      help="Upload server e.g. <user>@<host>")
+                             action="store", type="string", dest="server", default="",
+                             help="Upload server e.g. <user>@<host>")
     OPTION_PARSER.add_option("-p", "--path",
-                      action="store", type="string", dest="path", default="",
-                      help="Path on server")
+                             action="store", type="string", dest="path", default="",
+                             help="Path on server")
     OPTION_PARSER.add_option("-e", "--target_env",
-                      action="store", type="string", dest="target_env", default="",
-                      help="Target environment: Linux, Linux_64, mac, win")
+                             action="store", type="string", dest="target_env", default="",
+                             help="Target environment: Linux, Linux_64, mac, win")
     OPTION_PARSER.add_option("-i", "--icu_libs",
-                      action="store", type="string", dest="icu_libs", default="",
-                      help="Url for pre-compiled icu libraries")
+                             action="store", type="string", dest="icu_libs", default="",
+                             help="Url for pre-compiled icu libraries")
     OPTION_PARSER.add_option("--icu_src",
-                      action="store", type="string", dest="icu_src", default="",
-                      help="Url for icu src package to be used for the Qt build")
+                             action="store", type="string", dest="icu_src", default="",
+                             help="Url for icu src package to be used for the Qt build")
     OPTION_PARSER.add_option("-o", "--openssl_libs",
-                      action="store", type="string", dest="openssl_libs", default="",
-                      help="Url for pre-compiled openssl libraries")
+                             action="store", type="string", dest="openssl_libs", default="",
+                             help="Url for pre-compiled openssl libraries")
     OPTION_PARSER.add_option("-u", "--src_url",
-                      action="store", type="string", dest="src_url", default="",
-                      help="Url for source code")
+                             action="store", type="string", dest="src_url", default="",
+                             help="Url for source code")
     OPTION_PARSER.add_option("--version-tag",
-                      action="store", type="string", dest="version_tag", default="",
-                      help="Version tag e.g. alpha, beta, rc1")
+                             action="store", type="string", dest="version_tag", default="",
+                             help="Version tag e.g. alpha, beta, rc1")
     OPTION_PARSER.add_option("--qtcreator-version",
-                      action="store", type="string", dest="qtcreator_version", default="",
-                      help="Qt Creator version, e.g. '3.0.0-rc', used in file names")
+                             action="store", type="string", dest="qtcreator_version", default="",
+                             help="Qt Creator version, e.g. '3.0.0-rc', used in file names")
     OPTION_PARSER.add_option("--qtcreator-version-description",
-                      action="store", dest="qtcreator_version_description", default="",
-                      help="Qt Creator's version description, e.g. '3.0.0-rc-enterprise', or 'opensource', shown in Qt Creator's about dialog in addition to the version")
+                             action="store", dest="qtcreator_version_description", default="",
+                             help="Qt Creator's version description, e.g. '3.0.0-rc-enterprise', or 'opensource', shown in Qt Creator's about dialog in addition to the version")
     OPTION_PARSER.add_option("--snapshot-server",
-                      action="store", type="string", dest="snapshot_server", default="",
-                      help="Additional snapshot upload server <user>@<host> (is uploaded from upload server)")
+                             action="store", type="string", dest="snapshot_server", default="",
+                             help="Additional snapshot upload server <user>@<host> (is uploaded from upload server)")
     OPTION_PARSER.add_option("--snapshot-path",
-                      action="store", type="string", dest="snapshot_path", default="",
-                      help="Path on additional snapshot upload server")
+                             action="store", type="string", dest="snapshot_path", default="",
+                             help="Path on additional snapshot upload server")
 
 
 ##############################################################
