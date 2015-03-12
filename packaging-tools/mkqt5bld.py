@@ -479,7 +479,7 @@ def install_qt():
         print_wrap('          -> cmd args: ' + cmd_args)
         print_wrap('                -> in: ' + QT_SOURCE_DIR)
         return_code, dummy = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '),
-            QT_SOURCE_DIR, QT_BUILD_OPTIONS.strict_mode, False, QT_BUILD_OPTIONS.system_env)
+                                                                       QT_SOURCE_DIR, QT_BUILD_OPTIONS.strict_mode, False, QT_BUILD_OPTIONS.system_env)
         return
 
     if QNX_BUILD:
@@ -492,7 +492,7 @@ def install_qt():
         cmd_args = MAKE_INSTALL_CMD + ' ' + 'INSTALL_ROOT=' + install_root_path
         print_wrap('Installing module: Qt top level')
         return_code, output = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, QT_BUILD_OPTIONS.strict_mode,
-                False, QT_BUILD_OPTIONS.system_env)
+                                                                        False, QT_BUILD_OPTIONS.system_env)
         return
 
     #make install for each module with INSTALL_ROOT
@@ -518,7 +518,7 @@ def install_qt():
         cmd_args = MAKE_INSTALL_CMD + ' ' + 'INSTALL_ROOT=' + install_root_path
         print_wrap('Installing module: ' + module_name)
         return_code, output = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), submodule_dir_name, QT_BUILD_OPTIONS.strict_mode,
-            False, QT_BUILD_OPTIONS.system_env)
+                                                                        False, QT_BUILD_OPTIONS.system_env)
         if return_code >= 0:
             file_handle = open(MISSING_MODULES_FILE, 'a')
             file_handle.write('\nFailed to install ' + module_name)
@@ -887,57 +887,57 @@ def setup_option_parser():
     OPTION_PARSER = OptionParser(option_class=MultipleOption)
 
     OPTION_PARSER.add_option("-u", "--src-url",
-                      action="store", type="string", dest="src_url", default="",
-                      help="the url where to fetch the source package")
+                             action="store", type="string", dest="src_url", default="",
+                             help="the url where to fetch the source package")
     OPTION_PARSER.add_option("-m", "--make_cmd",
-                      action="store", type="string", dest="make_cmd", default="",
-                      help="make command (e.g. mingw32-make). On linux defaults to make and on win nmake.")
+                             action="store", type="string", dest="make_cmd", default="",
+                             help="make command (e.g. mingw32-make). On linux defaults to make and on win nmake.")
     OPTION_PARSER.add_option("-j", "--jobs",
-                      action="store", type="int", dest="make_thread_count", default=multiprocessing.cpu_count()+1,
-                      help="make job count, uses the number of available processors plus one by default.")
+                             action="store", type="int", dest="make_thread_count", default=multiprocessing.cpu_count()+1,
+                             help="make job count, uses the number of available processors plus one by default.")
     OPTION_PARSER.add_option("-q", "--silent-build",
-                      action="store_true", dest="silent_build", default=False,
-                      help="suppress command output, show only errors")
+                             action="store_true", dest="silent_build", default=False,
+                             help="suppress command output, show only errors")
     OPTION_PARSER.add_option("-i", "--ignore",
-                      action="extend", type="string", dest="module_ignore_list",
-                      help="do not build module")
+                             action="extend", type="string", dest="module_ignore_list",
+                             help="do not build module")
     OPTION_PARSER.add_option("-S", "--non-strict-mode",
-                      action="store_false", dest="strict_mode", default=True,
-                      help="exit on error, defaults to true.")
+                             action="store_false", dest="strict_mode", default=True,
+                             help="exit on error, defaults to true.")
     OPTION_PARSER.add_option("-c", "--configure",
-                      action="store", type="string", dest="configure_options", default="",
-                      help="options for configure command. In addition option -a can be used to give extra parameters.")
+                             action="store", type="string", dest="configure_options", default="",
+                             help="options for configure command. In addition option -a can be used to give extra parameters.")
     OPTION_PARSER.add_option("-a", "--add-configure-option",
-                      action="store", type="string", dest="add_configure_option", default="",
-                      help="options to be added to configure options not defined in configure options file given with -c, e.g. -a \"-<configure_option> <value>\"")
+                             action="store", type="string", dest="add_configure_option", default="",
+                             help="options to be added to configure options not defined in configure options file given with -c, e.g. -a \"-<configure_option> <value>\"")
     OPTION_PARSER.add_option("--creator-dir",
-                      action="store", type="string", dest="qt_creator_src_dir", default="",
-                      help="path to Qt Creator sources. If given, the Qt Quick Designer processes (qmlpuppet, qml2puppet) will be built and packaged.")
+                             action="store", type="string", dest="qt_creator_src_dir", default="",
+                             help="path to Qt Creator sources. If given, the Qt Quick Designer processes (qmlpuppet, qml2puppet) will be built and packaged.")
     OPTION_PARSER.add_option("--replace-rpath",
-                      action="store_true", dest="replace_rpath", default=False,
-                      help="patch RPath with relative paths pointing to /lib")
+                             action="store_true", dest="replace_rpath", default=False,
+                             help="patch RPath with relative paths pointing to /lib")
     OPTION_PARSER.add_option("--icu",
-                      action="store", type="string", dest="icu_uri", default="",
-                      help="use the given icu for qt5 build, e.g. --icu=http://download.qt.io/development_releases/prebuilt/icu/prebuilt/ubuntu1110/icu_51_1_ubuntu_11_10_64_devel.7z")
+                             action="store", type="string", dest="icu_uri", default="",
+                             help="use the given icu for qt5 build, e.g. --icu=http://download.qt.io/development_releases/prebuilt/icu/prebuilt/ubuntu1110/icu_51_1_ubuntu_11_10_64_devel.7z")
     OPTION_PARSER.add_option("--runtime-path",
-                      action="store", type="string", dest="runtime_path", default="",
-                      help="use the given dynamic runtime path for qt5 build (-R for configure), e.g. --runtime-path=/home/user/my/path/here")
+                             action="store", type="string", dest="runtime_path", default="",
+                             help="use the given dynamic runtime path for qt5 build (-R for configure), e.g. --runtime-path=/home/user/my/path/here")
     OPTION_PARSER.add_option("--prefix",
-                      action="store", type="string", dest="prefix", default="",
-                      help="use the given prefix for qt5 build (-prefix for configure)")
+                             action="store", type="string", dest="prefix", default="",
+                             help="use the given prefix for qt5 build (-prefix for configure)")
     # for Android cross compilations
     OPTION_PARSER.add_option("--android-ndk-host",
-                      action="store", type="string", dest="android_ndk_host", default="",
-                      help="E.g. linux-x86")
+                             action="store", type="string", dest="android_ndk_host", default="",
+                             help="E.g. linux-x86")
     OPTION_PARSER.add_option("--android-api-version",
-                      action="store", type="string", dest="android_api_version", default="android-10",
-                      help="API version for the Android.")
+                             action="store", type="string", dest="android_api_version", default="android-10",
+                             help="API version for the Android.")
     OPTION_PARSER.add_option("--android-sdk-home",
-                      action="store", type="string", dest="android_sdk_home", default="",
-                      help="Path to Android SDK home.")
+                             action="store", type="string", dest="android_sdk_home", default="",
+                             help="Path to Android SDK home.")
     OPTION_PARSER.add_option("--android-ndk-home",
-                      action="store", type="string", dest="android_ndk_home", default="",
-                      help="Path to Android NDK home.")
+                             action="store", type="string", dest="android_ndk_home", default="",
+                             help="Path to Android NDK home.")
     print_wrap('---------------------------------------------------------------------')
 
 
