@@ -50,6 +50,7 @@ SKIPSYNCQT=no
 STRICT=1
 NESTED_SUBMODULE_SKIP_LIST=("qtwebengine/src/3rdparty")
 SUBMODULES_WITH_NESTED_SUBMODULES_LIST=("qtwebengine")
+PRODUCT_NAME=''
 
 function usage()
 {
@@ -67,6 +68,7 @@ function usage()
   echo "--single-module tar any single git repository (that might live outside the supermodule)"
   echo "--skip-syncqt   do not run syncqt by default"
   echo "-S              don't run in strict mode"
+  echo "--product-name  Additional product name for src package"
 }
 
 function cleanup()
@@ -143,6 +145,9 @@ function create_and_delete_submodule()
       continue
     fi
     _file=$submodule-$LICENSE-src-$QTVER
+    if [ $PRODUCT_NAME ]; then
+        _file=$submodule-$PRODUCT_NAME-$LICENSE-src-$QTVER
+    fi
     mv $submodule $_file
     echo " - Creating archives - "
     (   tar c $_file | tee \
@@ -247,6 +252,11 @@ while test $# -gt 0; do
       shift
       STRICT=0
     ;;
+    --product-name)
+      shift
+      PRODUCT_NAME=$1
+      shift
+    ;;
     *)
       echo "Error: Unknown option $1"
       usage
@@ -264,9 +274,17 @@ fi
 REPO_NAME=$(basename $REPO_DIR)
 
 if [ $SINGLEMODULE = no ]; then
-  PACKAGE_NAME=qt-everywhere-$LICENSE-src-$QTVER
+    if [ $PRODUCT_NAME ]; then
+        PACKAGE_NAME=qt-everywhere-$PRODUCT_NAME-$LICENSE-src-$QTVER
+    else
+        PACKAGE_NAME=qt-everywhere-$LICENSE-src-$QTVER
+    fi
 else
-  PACKAGE_NAME=$REPO_NAME-$LICENSE-src-$QTVER
+    if [ $PRODUCT_NAME ]; then
+        PACKAGE_NAME=$REPO_NAME-$PRODUCT_NAME-$LICENSE-src-$QTVER
+    else
+        PACKAGE_NAME=$REPO_NAME-$LICENSE-src-$QTVER
+    fi
 fi
 MODULES=$CUR_DIR/submodules.txt
 _TMP_DIR=$CUR_DIR/$PACKAGE_NAME
@@ -485,9 +503,17 @@ if [ $MULTIPACK = yes -a $SINGLEMODULE = no ]; then
   for POSTFIX in "7z" "zip" "tar.gz" "tar.xz"; do
     if [ -f $PACKAGE_NAME.$POSTFIX ]; then
       if [[ $POSTFIX == *"tar"* ]]; then
-        mv $PACKAGE_NAME.$POSTFIX submodules_tar/$REPO_NAME-$LICENSE-src-$QTVER.$POSTFIX
+        if [ $PRODUCT_NAME ]; then
+            mv $PACKAGE_NAME.$POSTFIX submodules_tar/$REPO_NAME-$PRODUCT_NAME-$LICENSE-src-$QTVER.$POSTFIX
+        else
+            mv $PACKAGE_NAME.$POSTFIX submodules_tar/$REPO_NAME-$LICENSE-src-$QTVER.$POSTFIX
+        fi
       else
-        mv $PACKAGE_NAME.$POSTFIX submodules_zip/$REPO_NAME-$LICENSE-src-$QTVER.$POSTFIX
+        if [ $PRODUCT_NAME ]; then
+            mv $PACKAGE_NAME.$POSTFIX submodules_zip/$REPO_NAME-$PRODUCT_NAME-$LICENSE-src-$QTVER.$POSTFIX
+        else
+            mv $PACKAGE_NAME.$POSTFIX submodules_zip/$REPO_NAME-$LICENSE-src-$QTVER.$POSTFIX
+        fi
       fi
     fi
   done

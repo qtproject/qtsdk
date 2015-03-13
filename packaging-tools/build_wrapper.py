@@ -67,6 +67,7 @@ import pkg_constants
 import random
 import operator
 from pkg_constants import ICU_BUILD_OUTPUT_DIR
+import imp
 
 
 # ----------------------------------------------------------------------
@@ -111,6 +112,7 @@ LATEST_EXTRA_MODULE_BINARY_DIR  = ''
 EXTRA_ENV                   = dict(os.environ)
 MAKE_INSTALL_PADDING        = ''
 BUILD_META_INFO_FILE        = 'releases/build-meta'
+CUSTOM_BUILD            = ''
 
 
 
@@ -600,21 +602,27 @@ def handle_qt_licheck_build():
 def handle_qt_configure_exe_build():
     # create configure.exe and inject it into src package
     qt_version, qt_version_tag, qt_full_version = parse_release_version_and_tag(get_release_description_file())
-    cmd_args = ['python', '-u', WORK_DIR + '\qtsdk\packaging-tools\helpers\create_configure_exe.py', 'src_url=' + SRC_URL + '/src/single/qt-everywhere-' + LICENSE + '-src-' + qt_full_version + '.zip', 'mdl_url=' + SRC_URL + '/src/submodules/qtbase-' + LICENSE + '-src-' + qt_full_version + '.zip', 'do_7z']
+    if CUSTOM_BUILD:
+        src_package_name = 'qt-everywhere-' + CUSTOM_BUILD + '-' + LICENSE + '-src-' + qt_full_version
+        src_module_name = 'qtbase-' + CUSTOM_BUILD + '-' + LICENSE + '-src-' + qt_full_version
+    else:
+        src_package_name = 'qt-everywhere-' + LICENSE + '-src-' + qt_full_version
+        src_module_name = 'qtbase-' + LICENSE + '-src-' + qt_full_version
+    cmd_args = ['python', '-u', WORK_DIR + '\qtsdk\packaging-tools\helpers\create_configure_exe.py', 'src_url=' + SRC_URL + '/src/single/' + src_package_name + '.zip', 'mdl_url=' + SRC_URL + '/src/submodules/' + src_module_name + '.zip', 'do_7z']
     bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
 
     # upload packages
     ARTF_UPLOAD_PATH=PKG_SERVER_ADDR + ':' + PATH + '/' + LICENSE + '/' + 'qt/' + qt_version + '/latest/src'
-    temp_file = 'qt-everywhere-' + LICENSE + '-src-' + qt_full_version + '.zip'
+    temp_file = src_package_name + '.zip'
     cmd_args = [SCP_COMMAND, temp_file, ARTF_UPLOAD_PATH + '/single/']
     bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
-    temp_file = 'qt-everywhere-' + LICENSE + '-src-' + qt_full_version + '.7z'
+    temp_file = src_package_name + '.7z'
     cmd_args = [SCP_COMMAND, temp_file, ARTF_UPLOAD_PATH + '/single/']
     bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
-    temp_file = 'qtbase-' + LICENSE + '-src-' + qt_full_version + '.zip'
+    temp_file = src_module_name + '.zip'
     cmd_args = [SCP_COMMAND, temp_file, ARTF_UPLOAD_PATH + '/submodules/']
     bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
-    temp_file = 'qtbase-' + LICENSE + '-src-' + qt_full_version + '.7z'
+    temp_file = src_module_name + '.7z'
     cmd_args = [SCP_COMMAND, temp_file, ARTF_UPLOAD_PATH + '/submodules/']
     bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
 
@@ -759,7 +767,6 @@ def handle_ifw_build():
         cmd_args_copy_ifw_ext = cmd_args_copy_ifw_pkg + ['scp', PATH + '/' + LICENSE + '/ifw/' + ifw_dest_dir_name + '/' + 'installer-framework-build*.7z', ext_server_base_url + ':' + ext_dest_dir]
         bldinstallercommon.do_execute_sub_process(cmd_args_copy_ifw_ext, SCRIPT_ROOT_DIR, True)
 
-
 ###############################
 # handle_qt_src_package_build
 ###############################
@@ -771,6 +778,18 @@ def handle_qt_src_package_build():
     exec_path = os.path.join(WORK_DIR, 'qt5')
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
     if LICENSE == 'enterprise':
+        if CUSTOM_BUILD != 0:
+            module = None
+            uri = os.path.normpath(os.path.join(os.path.dirname(__file__), os.environ.get('CUSTOM_COMMANDS')))
+            path, fname = os.path.split(uri)
+            mname, ext = os.path.splitext(fname)
+            if os.path.exists(os.path.join(path,mname)+'.py'):
+                module = imp.load_source(mname, uri)
+                print('Running {0} custom commands'.format(CUSTOM_BUILD))
+                module.handle_custom_commands(CUSTOM_BUILD, WORK_DIR)
+            else:
+                print('*** No custom functions found')
+                sys.exit(-1)
         cmd_args = ['../patches/apply.sh']
         bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
 
@@ -791,11 +810,16 @@ def handle_qt_src_package_build():
     cmd_args = [os.path.join(SCRIPT_ROOT_DIR, 'mksrc.sh'), '-u', os.path.join(WORK_DIR, 'qt5')]
     cmd_args += ['-v', qt_full_version, '-m', '-N', '-l', LICENSE]
     cmd_args += module_exclude_list
+    if CUSTOM_BUILD != 0:
+        cmd_args += ['--product-name', CUSTOM_BUILD]
     # create src package
     bldinstallercommon.do_execute_sub_process(cmd_args, package_path, True)
 
     # Example injection
-    package_name = 'qt-everywhere-' + LICENSE + '-src-' + qt_full_version
+    if CUSTOM_BUILD == 0:
+        package_name = 'qt-everywhere-' + LICENSE + '-src-' + qt_full_version
+    else:
+        package_name = 'qt-everywhere-' + CUSTOM_BUILD + '-' + LICENSE + '-src-' + qt_full_version
 
     cmd_args = ['tar', 'xzf', 'single/' + package_name + '.tar.gz']
 
@@ -830,8 +854,9 @@ def handle_qt_src_package_build():
     if os.path.exists(os.path.join(essentials_path, 'README')):
         os.remove(os.path.join(essentials_path, 'README'))
 
-    cmd_args = ['7z', 'a', os.path.join('..', 'qt5_examples.7z'), '*']
-    bldinstallercommon.do_execute_sub_process(cmd_args, essentials_path, True)
+    if CUSTOM_BUILD == 0:
+        cmd_args = ['7z', 'a', os.path.join('..', 'qt5_examples.7z'), '*']
+        bldinstallercommon.do_execute_sub_process(cmd_args, essentials_path, True)
 
 
     # Create necessary directories
@@ -849,12 +874,12 @@ def handle_qt_src_package_build():
     cmd_args = ['rsync', '-r', '../../src_pkg/submodules_zip/', PKG_SERVER_ADDR + ':' + os.path.join(latest_qt_dir, 'src', 'submodules', '')]
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
 
-    file_list = os.listdir(package_path)
-    for file_name in file_list:
-        if file_name.startswith("qt5_examples."):
-            cmd_args = ['scp', file_name, PKG_SERVER_ADDR + ':' + os.path.join(latest_qt_dir, 'src', 'examples_injection')]
-            bldinstallercommon.do_execute_sub_process(cmd_args, package_path, True)
-
+    if CUSTOM_BUILD == 0:
+        file_list = os.listdir(package_path)
+        for file_name in file_list:
+            if file_name.startswith("qt5_examples."):
+                cmd_args = ['scp', file_name, PKG_SERVER_ADDR + ':' + os.path.join(latest_qt_dir, 'src', 'examples_injection')]
+                bldinstallercommon.do_execute_sub_process(cmd_args, package_path, True)
 
 ###############################
 # handle_qt_android_release_build
@@ -1776,6 +1801,7 @@ def parse_cmd_line():
     global QTCREATOR_VERSION_DESCRIPTION
     global SNAPSHOT_SERVER
     global SNAPSHOT_PATH
+    global CUSTOM_BUILD
 
     setup_option_parser()
     arg_count = len(sys.argv)
@@ -1803,6 +1829,7 @@ def parse_cmd_line():
         SRC_URL           = options.src_url + '/' + options.license + '/qt/' + qt_version + '/latest'
         QTCREATOR_VERSION = options.qtcreator_version
         QTCREATOR_VERSION_DESCRIPTION = options.qtcreator_version_description
+        CUSTOM_BUILD = options.custom_build
     else:
         OPTION_PARSER.print_help()
         sys.exit(-1)
@@ -1891,6 +1918,8 @@ def setup_option_parser():
     OPTION_PARSER.add_option("--snapshot-path",
                       action="store", type="string", dest="snapshot_path", default="",
                       help="Path on additional snapshot upload server")
+
+    OPTION_PARSER.add_option("--custom-build", action="store", type="string", dest="custom_build", default=0, help="Custom build option")
 
 
 ##############################################################
