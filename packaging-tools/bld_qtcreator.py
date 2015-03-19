@@ -280,6 +280,9 @@ qmakeCommandArguments += " QT_CONFIG+=declarative"
 if sys.platform == "darwin":
     qmakeCommandArguments += " QMAKE_MAC_SDK=macosx" # work around QTBUG-41238
 
+if sys.platform == "win32":  # allow app to run on Windows XP
+    qmakeCommandArguments += " QMAKE_SUBSYSTEM_SUFFIX=,5.01"
+
 if callerArguments.versiondescription:
     qmakeCommandArguments += " DEFINES+=IDE_VERSION_DESCRIPTION={0}".format(callerArguments.versiondescription)
 
