@@ -1223,7 +1223,7 @@ def handle_qt_creator_build():
         file_upload_list.append(('qt-creator_build/qt-creator-installer-archive.7z', 'qtcreator_windows_vs2013_32.7z'))
         sign_windows_executable('qt-creator_build/qt-creator.exe', WORK_DIR, True)
         file_upload_list.append(('qt-creator_build/qt-creator.exe', 'qt-creator-' + LICENSE + '-windows-x86' + postfix + '.exe'))
-        snapshot_upload_list.append(('qtcreator_windows_vs2010_32.7z', 'installer_source/'))
+        snapshot_upload_list.append(('qtcreator_windows_vs2013_32.7z', 'installer_source/'))
         snapshot_upload_list.append(('qt-creator-' + LICENSE + '-windows-x86' + postfix + '.exe', ''))
 
     # upload files
