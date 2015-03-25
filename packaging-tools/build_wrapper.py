@@ -1164,8 +1164,8 @@ def handle_qt_creator_build():
                          '--additional_plugin', os.path.normpath(WORK_DIR + '/vxworks-qtcreator-plugin'),
                          '--additional_plugin', os.path.normpath(WORK_DIR + '/qtquickdesigner')])
         if bldinstallercommon.is_linux_platform():
-            cmd_args.extend(['--additional_plugin', os.path.normpath(WORK_DIR + '/b2qt-qtcreator-plugin'),
-                             '--additional_plugin', os.path.normpath(WORK_DIR + '/perfprofiler')])
+            cmd_args.extend(['--additional_plugin', os.path.normpath(WORK_DIR + '/perfprofiler'),
+                             '--additional_plugin', os.path.normpath(WORK_DIR + '/b2qt-qtcreator-plugin')])
 
     if bldinstallercommon.is_linux_platform():
         cmd_args.extend(['--icu7z', ICU_LIBS])
