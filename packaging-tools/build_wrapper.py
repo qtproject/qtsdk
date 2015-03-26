@@ -150,6 +150,7 @@ class BldCommand:
     execute_offline_inst_bld                = 'offline_installer'
     execute_online_inst_bld                 = 'online_installer'
     publish_qt5_src_pkg                     = 'publish_src_packages'
+    publish_icu_pkg                         = 'publish_icu_packages'
     init_icu_bld                            = 'init_icu_bld'
     execute_icu_bld                         = 'icu_bld'
     execute_licheck_bld                     = 'licheck_bld'
@@ -176,6 +177,7 @@ class BldCommand:
         commands += [self.execute_online_inst_bld]
         commands += [self.publish_qt5_src_pkg]
         commands += [self.execute_configure_exe_bld]
+        commands += [self.publish_icu_pkg]
         commands += [self.init_icu_bld]
         commands += [self.execute_icu_bld]
         commands += [self.execute_licheck_bld]
@@ -1739,6 +1741,31 @@ def publish_qt5_src_packages():
         bldinstallercommon.do_execute_sub_process(cmd_args_copy_src_to_ext, SCRIPT_ROOT_DIR, True)
 
 
+################################
+# Publish prebuilt ICU packages
+################################
+def publish_icu_packages():
+    # Opensource server address and path
+    ext_server_base_url  = os.environ['EXT_SERVER_BASE_URL']
+    ext_server_base_path = os.environ['EXT_SERVER_BASE_PATH']
+    icu_version          = os.environ['ICU_VERSION']
+    ext_icu_snapshot_dir = os.environ.get('EXT_ICU_SNAPSHOT_DIR')
+    if not ext_icu_snapshot_dir:
+        ext_icu_snapshot_dir = '/development_releases/prebuilt/icu/prebuilt/'
+    else:
+        ext_icu_snapshot_dir = '/' + ext_icu_snapshot_dir + '/'
+        ext_icu_snapshot_dir.replace('//', '/')
+    ext_dest_dir = ext_server_base_path + ext_icu_snapshot_dir + icu_version + '/'
+    # Create remote directories
+    cmd_pkg_login = [SSH_COMMAND, PKG_SERVER_ADDR]
+    cmd_mkdir_ext = cmd_pkg_login + ['ssh', ext_server_base_url, 'mkdir', '-p', ext_dest_dir]
+    bldinstallercommon.do_execute_sub_process(cmd_mkdir_ext, SCRIPT_ROOT_DIR, True)
+    # Copy the pre-built ICU packages to the remote directory
+    print('Starting to copy pre-build icu packages to ext: {0}'.format(ext_dest_dir))
+    cmd_copy_icu_to_ext = cmd_pkg_login + ['scp', '-r', '-v', PATH + '/icu/' + icu_version + '/latest/*', ext_server_base_url + ':' + ext_dest_dir]
+    bldinstallercommon.do_execute_sub_process(cmd_copy_icu_to_ext, SCRIPT_ROOT_DIR, True)
+
+
 ###############################
 # create_remote_dirs
 ###############################
@@ -1971,6 +1998,8 @@ def main():
         handle_qt_release_build()
     elif COMMAND == BldCommand.publish_qt5_src_pkg:
         publish_qt5_src_packages()
+    elif COMMAND == BldCommand.publish_icu_pkg:
+        publish_icu_packages()
     # Extra module specific
     elif COMMAND == BldCommand.init_extra_module_build_cycle_src:
         initialize_extra_module_build_src()
