@@ -51,9 +51,7 @@ file_list:              qt-conf,
                         qt55-src-conf,
                         qt55-doc-examples-conf,
                         x86_64-qt55-gcc-conf,
-                        x86_64-tools-qtcreator-conf,
-                        qtwebview-qt55-x64-gcc-conf,
-                        qtwebview-src-doc-examples-conf
+                        x86_64-tools-qtcreator-conf
 
 [ConfigDir]
 template_name:          config_qt5

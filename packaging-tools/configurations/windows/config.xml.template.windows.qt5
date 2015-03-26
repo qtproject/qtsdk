@@ -11,7 +11,6 @@
     <StartMenuDir>Qt @QT_VERSION@</StartMenuDir>
     <ProductUrl>http://qt-project.org/</ProductUrl>
     <!--<Background>background.png</Background>-->
-    <UninstallerName>MaintenanceTool</UninstallerName>
     <DependsOnLocalInstallerBinary>true</DependsOnLocalInstallerBinary>
     <!--<RemoteRepositories>
         <Repository>

@@ -54,7 +54,8 @@ archive_uri:            /qt/@QT_VERSION@/latest/linux_gcc_32_rhel66/qt5_addons.7
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 [55.gcc.icu_541]
-archive_uri:            http://download.qt.io/development_releases/prebuilt/icu/prebuilt/rhel66/icu_54_1_rhel_6_6_64.7z
+archive_uri:            http://download.qt.io/development_releases/prebuilt/icu/prebuilt/54.1/icu-li
+nux-g++-Rhel6.6-x86.7z
 target_install_dir:     /lib
 
 
