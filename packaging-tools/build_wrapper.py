@@ -553,7 +553,7 @@ def sign_mac_executable(file_path, working_dir, abort_on_fail):
 ##############################################################
 def get_qt_snapshot_dir(bld_command):
     snapshot_qt_dir_base = bld_command.path + '/' + bld_command.license + '/qt/' + bld_command.version
-    snapshot_qt_dir      = bld_command.path + '/' + bld_command.license + '/' + 'qt' + '/' + bld_command.version + '/' + bld_command.time_stamp + '-' + bld_command.build_number
+    snapshot_qt_dir      = bld_command.path + '/' + bld_command.license + '/' + 'qt' + '/' + bld_command.version + '/' + bld_command.build_time_stamp + '-' + bld_command.build_number
     latest_qt_dir        = bld_command.path + '/' + bld_command.license + '/' + 'qt' + '/' + bld_command.version + '/' + 'latest'
     return QtSnapshotDir(snapshot_qt_dir_base, snapshot_qt_dir, latest_qt_dir)
 
