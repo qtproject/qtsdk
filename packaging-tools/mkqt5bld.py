@@ -473,18 +473,6 @@ def build_qmlpuppets():
 ###############################
 def install_qt():
     print_wrap('---------------- Installing Qt -------------------------------------')
-    # temporary solution for installing cross compiled Qt for Android on Windows host
-    if ANDROID_BUILD and bldinstallercommon.is_win_platform():
-        install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
-        # do not use drive letter when running make install
-        install_root_path = install_root_path[2:]
-        cmd_args = MAKE_INSTALL_CMD + ' ' + 'INSTALL_ROOT=' + install_root_path
-        print_wrap('    Installing module: Qt top level')
-        print_wrap('          -> cmd args: ' + cmd_args)
-        print_wrap('                -> in: ' + QT_SOURCE_DIR)
-        return_code, output = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '),
-            QT_SOURCE_DIR, QT_BUILD_OPTIONS.strict_mode, False, QT_BUILD_OPTIONS.system_env)
-        return
 
     if QNX_BUILD:
         install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
@@ -684,18 +672,6 @@ def replace_rpath():
 def archive_submodules():
     print_wrap('---------------- Archiving submodules ------------------------------')
     bldinstallercommon.create_dirs(MODULE_ARCHIVE_DIR)
-    # temporary solution for Android on Windows compilations
-    if ANDROID_BUILD and bldinstallercommon.is_win_platform():
-        print_wrap('---------- Archiving Qt modules')
-        install_path = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
-        install_path = 'C' + install_path[1:]
-        if os.path.exists(install_path):
-            cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_essentials' + '.7z *'
-            run_in = os.path.normpath(install_path + os.sep + INSTALL_PREFIX)
-            bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), run_in, True, True)
-        else:
-            print_wrap(install_path + os.sep + SINGLE_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> Qt not archived!')
-        return
 
     if QNX_BUILD:
         print_wrap('---------- Archiving Qt modules')
