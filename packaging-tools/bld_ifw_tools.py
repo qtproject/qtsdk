@@ -117,7 +117,7 @@ def get_default_qt5_configure_options():
         options += get_common_unix_qt_configure_options()
         # Linux
         if plat.startswith('linux'):
-            options += '-qt-xcb -no-opengl -no-icu '
+            options += '-qt-xcb -no-opengl -no-icu -no-libudev '
             options += '-qt-pcre -qt-freetype -no-glib -no-egl -no-xinput '
             options += '-no-xinput2 -no-sm '
     return options
@@ -407,7 +407,7 @@ def archive_installer_framework(options):
     print('--------------------------------------------------------------------')
     print('Archive Installer Framework')
     # first strip out all unnecessary files
-    for root, dirs, files in os.walk(options.installer_framework_build_dir):
+    for root, dummy, files in os.walk(options.installer_framework_build_dir):
         for filename in files:
             if filename.endswith(('.moc', 'Makefile', '.cpp', '.h', '.o')) or filename == 'Makefile':
                 os.remove(os.path.join(root, filename))
@@ -433,11 +433,10 @@ def archive_installerbase(options):
         cmd_args_clean = ['rm', bin_temp]
     if bldinstallercommon.is_win_platform():
         bin_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, 'installerbase.exe')
-        bin_temp = ROOT_DIR + os.sep + 'temp'
-        bldinstallercommon.create_dirs(bin_temp)
-        shutil.copy(bin_path, bin_temp + os.sep + 'SDKMaintenanceToolBase.exe')
+        bin_temp = ROOT_DIR + os.sep + 'tempSDKMaintenanceToolBase.exe'
+        shutil.copy(bin_path, bin_temp)
         cmd_args_archive = ['7z', 'a', options.installer_base_archive_name, bin_temp]
-        cmd_args_clean = ['rmdir' , '/q/s', bin_temp]
+        cmd_args_clean = ['del', bin_temp]
     bldinstallercommon.do_execute_sub_process(cmd_args_archive, ROOT_DIR, True)
     bldinstallercommon.do_execute_sub_process(cmd_args_clean, ROOT_DIR, True)
     if not os.path.isfile(options.installer_base_archive_name):
@@ -499,7 +498,7 @@ def patch(file, dict):
 def patch_win32_mkspecs(mkspecsdir):
     print('--------------------------------------------------------------------')
     print('Patching win32 mkspecs in {0} ...'.format(mkspecsdir))
-    for root, dirs, files in os.walk(mkspecsdir):
+    for root, dummy, files in os.walk(mkspecsdir):
         for file in files:
             if "win32" in root and file == "qmake.conf":
                 patch(os.path.join(root, file), {"-MD" : "-MT", "embed_manifest_dll" : "", "embed_manifest_exe" : "" })

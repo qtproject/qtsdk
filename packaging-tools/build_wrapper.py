@@ -65,7 +65,6 @@ import release_build_handler
 import bld_icu_tools
 import pkg_constants
 import random
-import operator
 from pkg_constants import ICU_BUILD_OUTPUT_DIR
 import imp
 
@@ -108,7 +107,7 @@ def combine_env_variable(a, b):
 
 def combine_environment_dicts(a, b, op=combine_env_variable):
     return dict(a.items() + b.items() +
-        [(k, combine_env_variable(a[k], b[k])) for k in set(b) & set(a)])
+                [(k, combine_env_variable(a[k], b[k])) for k in set(b) & set(a)])
 
 
 ###########################################
@@ -546,7 +545,7 @@ def sanity_check_packaging_server(bld_command):
 ###############################
 def sign_windows_executable(file_path, working_dir, abort_on_fail):
     cmd_args = ['C:\Utils\sign\signtool.exe', 'sign', '/v', '/du', os.environ['SIGNING_SERVER'], '/p', os.environ['SIGNING_PASSWORD'],
-        '/t', 'http://timestamp.verisign.com/scripts/timestamp.dll', '/f', 'C:\utils\sign\keys.pfx', file_path]
+                '/t', 'http://timestamp.verisign.com/scripts/timestamp.dll', '/f', 'C:\utils\sign\keys.pfx', file_path]
     bldinstallercommon.do_execute_sub_process(cmd_args, working_dir, abort_on_fail)
 
 
@@ -902,7 +901,7 @@ def handle_qt_src_package_build(bld_command):
 
     # remove documentation source files ('doc' subdirs) from examples
     doc_dir = 'doc'
-    for root, dirs, files in os.walk(essentials_path):
+    for root, dirs, dummy in os.walk(essentials_path):
         if doc_dir in dirs:
             # do not recurse into doc directory
             dirs.remove(doc_dir)
@@ -917,7 +916,6 @@ def handle_qt_src_package_build(bld_command):
     if bld_command.custom_build == 0:
         cmd_args = ['7z', 'a', os.path.join('..', 'qt5_examples.7z'), '*']
         bldinstallercommon.do_execute_sub_process(cmd_args, essentials_path, True)
-
 
     # Create necessary directories
     latest_qt_dir = get_qt_snapshot_dir(bld_command).latest_qt_dir
@@ -1264,27 +1262,27 @@ def handle_qt_creator_build(bld_command):
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
         cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, "ssh", bld_command.snapshot_server,
             'ln', '-sfn', snapshot_path + '/' + bld_command.build_time_stamp[:10] + '_' + self.build_number,
+
                     snapshot_path + '/latest']
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
         snapshot_path += '/latest'
-
     cmd_args = ['python', '-u', 'bld_qtcreator.py',
-        '--clean',
-        '--qt5path', os.path.normpath('../../qt5_install_dir'),
-        '--qt5_essentials7z', bld_command.qt_pkg_url_base + BIN_TARGET_DIRS[bld_command.target_env] + '/qt5_essentials.7z',
-        '--qt5_addons7z', bld_command.qt_pkg_url_base + BIN_TARGET_DIRS[bld_command.target_env] + '/qt5_addons.7z',
-        '--versiondescription', '"' + bld_command.qtcreator_version_description + '"']
+                '--clean',
+                '--qt5path', os.path.normpath('../../qt5_install_dir'),
+                '--qt5_essentials7z', bld_command.qt_pkg_url_base + BIN_TARGET_DIRS[bld_command.target_env] + '/qt5_essentials.7z',
+                '--qt5_addons7z', bld_command.qt_pkg_url_base + BIN_TARGET_DIRS[bld_command.target_env] + '/qt5_addons.7z',
+                '--versiondescription', '"' + bld_command.qtcreator_version_description + '"']
 
     if bld_command.license == 'enterprise':
         cmd_args.extend(['--additional_plugin', os.path.normpath(WORK_DIR + '/licensechecker'),
                          '--additional_plugin', os.path.normpath(WORK_DIR + '/qmlprofiler'),
                          '--additional_plugin', os.path.normpath(WORK_DIR + '/clangstaticanalyzer'),
-                         '--additional_plugin', os.path.normpath(WORK_DIR + '/perfprofiler'),
                          '--additional_plugin', os.path.normpath(WORK_DIR + '/autotest-qtcreator-plugin'),
                          '--additional_plugin', os.path.normpath(WORK_DIR + '/vxworks-qtcreator-plugin'),
                          '--additional_plugin', os.path.normpath(WORK_DIR + '/qtquickdesigner')])
         if bldinstallercommon.is_linux_platform():
-            cmd_args.extend(['--additional_plugin', os.path.normpath(WORK_DIR + '/b2qt-qtcreator-plugin')])
+            cmd_args.extend(['--additional_plugin', os.path.normpath(WORK_DIR + '/perfprofiler'),
+                             '--additional_plugin', os.path.normpath(WORK_DIR + '/b2qt-qtcreator-plugin')])
 
     if bldinstallercommon.is_linux_platform():
         cmd_args.extend(['--icu7z', bld_command.icu_libs])
@@ -1303,8 +1301,9 @@ def handle_qt_creator_build(bld_command):
                          '--sevenzippath', os.path.normpath('C:/Utils/sevenzip'),
                          '--gitpath', os.path.normpath('C:/Program Files/Git/bin'),
                          '--d3dcompiler7z', 'http://download.qt.io/development_releases/prebuilt/d3dcompiler/msvc2010/D3DCompiler_43-x86.dll.7z',
-                         '--installerbase7z', 'http://ci-files02-hki.ci.local/packages/jenkins/' + bld_command.license + '/ifw/1.6/installer-framework-build-win-x86.7z',
-                         '--environment_batch', os.path.normpath('C:/Program Files/Microsoft Visual Studio 10.0/VC/vcvarsall.bat'),
+                         '--opengl32sw7z', 'http://download.qt.io/development_releases/prebuilt/llvmpipe/windows/opengl32sw-32.7z',
+                         '--installerbase7z', 'http://ci-files02-hki.ci.local/packages/jenkins/' + LICENSE + '/ifw/1.6/installer-framework-build-win-x86.7z',
+                         '--environment_batch', os.path.normpath('C:/Program Files/Microsoft Visual Studio 12.0/VC/vcvarsall.bat'),
                          '--environment_batch_argument', 'x86'])
         if bld_command.openssl_libs:
             cmd_args.extend(['--openssl7z', bld_command.openssl_libs])
@@ -1338,10 +1337,10 @@ def handle_qt_creator_build(bld_command):
         snapshot_upload_list.append(('qtcreator_mac_cocoa_10_7.7z', 'installer_source/'))
         snapshot_upload_list.append(('qt-creator-' + bld_command.license + '-mac-x86_64' + postfix + '.dmg', ''))
     else: # --> windows
-        file_upload_list.append(('qt-creator_build/qt-creator-installer-archive.7z', 'qtcreator_windows_vs2010_32.7z'))
+        file_upload_list.append(('qt-creator_build/qt-creator-installer-archive.7z', 'qtcreator_windows_vs2013_32.7z'))
         sign_windows_executable('qt-creator_build/qt-creator.exe', WORK_DIR, True)
         file_upload_list.append(('qt-creator_build/qt-creator.exe', 'qt-creator-' + bld_command.license + '-windows-x86' + postfix + '.exe'))
-        snapshot_upload_list.append(('qtcreator_windows_vs2010_32.7z', 'installer_source/'))
+        snapshot_upload_list.append(('qtcreator_windows_vs2013_32.7z', 'installer_source/'))
         snapshot_upload_list.append(('qt-creator-' + bld_command.license + '-windows-x86' + postfix + '.exe', ''))
 
     # upload files
@@ -1353,6 +1352,7 @@ def handle_qt_creator_build(bld_command):
             cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, "scp",
                 dir_path + '/' + source,
                 bld_command.snapshot_server + ':' + snapshot_path + '/' + destination]
+
             bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
 
 
@@ -1768,7 +1768,7 @@ def parse_cmd_line():
         OPTION_PARSER.print_help()
         sys.exit(-1)
 
-    (options, args) = OPTION_PARSER.parse_args()
+    (options, dummy) = OPTION_PARSER.parse_args()
     bld_cmd_validator = BldCommand(options)
 
     if not bld_cmd_validator.validate_bld_args():
@@ -1793,47 +1793,47 @@ def setup_option_parser():
     OPTION_PARSER = OptionParser(option_class=MultipleOption)
 
     OPTION_PARSER.add_option("-c", "--command",
-                      action="store", type="string", dest="command", default="",
-                      help="command to be executed: e.g. -c init")
+                             action="store", type="string", dest="command", default="",
+                             help="command to be executed: e.g. -c init")
     OPTION_PARSER.add_option("-l", "--license",
-                      action="store", type="string", dest="license", default="",
-                      help="license type: enterprise or opensource")
+                             action="store", type="string", dest="license", default="",
+                             help="license type: enterprise or opensource")
     OPTION_PARSER.add_option("-t", "--time_stamp",
-                      action="store", type="string", dest="time_stamp", default="",
-                      help="Jenkins build time stamp")
+                             action="store", type="string", dest="time_stamp", default="",
+                             help="Jenkins build time stamp")
     OPTION_PARSER.add_option("-b", "--build_number",
-                      action="store", type="string", dest="build_number", default="",
-                      help="Jenkins build number")
+                             action="store", type="string", dest="build_number", default="",
+                             help="Jenkins build number")
     OPTION_PARSER.add_option("-s", "--server",
-                      action="store", type="string", dest="server", default="",
-                      help="Upload server e.g. <user>@<host>")
+                             action="store", type="string", dest="server", default="",
+                             help="Upload server e.g. <user>@<host>")
     OPTION_PARSER.add_option("-p", "--path",
-                      action="store", type="string", dest="path", default="",
-                      help="Path on server")
+                             action="store", type="string", dest="path", default="",
+                             help="Path on server")
     OPTION_PARSER.add_option("-e", "--target_env",
-                      action="store", type="string", dest="target_env", default="",
-                      help="Target environment: Linux, Linux_64, mac, win")
+                             action="store", type="string", dest="target_env", default="",
+                             help="Target environment: Linux, Linux_64, mac, win")
     OPTION_PARSER.add_option("-i", "--icu_libs",
-                      action="store", type="string", dest="icu_libs", default="",
-                      help="Url for pre-compiled icu libraries")
+                             action="store", type="string", dest="icu_libs", default="",
+                             help="Url for pre-compiled icu libraries")
     OPTION_PARSER.add_option("--icu_src",
-                      action="store", type="string", dest="icu_src", default="",
-                      help="Url for icu src package to be used for the Qt build")
+                             action="store", type="string", dest="icu_src", default="",
+                             help="Url for icu src package to be used for the Qt build")
     OPTION_PARSER.add_option("-o", "--openssl_libs",
-                      action="store", type="string", dest="openssl_libs", default="",
-                      help="Url for pre-compiled openssl libraries")
+                             action="store", type="string", dest="openssl_libs", default="",
+                             help="Url for pre-compiled openssl libraries")
     OPTION_PARSER.add_option("--qtcreator-version",
-                      action="store", type="string", dest="qtcreator_version", default="",
-                      help="Qt Creator version, e.g. '3.0.0-rc', used in file names")
+                             action="store", type="string", dest="qtcreator_version", default="",
+                             help="Qt Creator version, e.g. '3.0.0-rc', used in file names")
     OPTION_PARSER.add_option("--qtcreator-version-description",
-                      action="store", dest="qtcreator_version_description", default="",
-                      help="Qt Creator's version description, e.g. '3.0.0-rc-enterprise', or 'opensource', shown in Qt Creator's about dialog in addition to the version")
+                             action="store", dest="qtcreator_version_description", default="",
+                             help="Qt Creator's version description, e.g. '3.0.0-rc-enterprise', or 'opensource', shown in Qt Creator's about dialog in addition to the version")
     OPTION_PARSER.add_option("--snapshot-server",
-                      action="store", type="string", dest="snapshot_server", default="",
-                      help="Additional snapshot upload server <user>@<host> (is uploaded from upload server)")
+                             action="store", type="string", dest="snapshot_server", default="",
+                             help="Additional snapshot upload server <user>@<host> (is uploaded from upload server)")
     OPTION_PARSER.add_option("--snapshot-path",
-                      action="store", type="string", dest="snapshot_path", default="",
-                      help="Path on additional snapshot upload server")
+                             action="store", type="string", dest="snapshot_path", default="",
+                             help="Path on additional snapshot upload server")
 
     OPTION_PARSER.add_option("--custom-build", action="store", type="string", dest="custom_build", default=0, help="Custom build option")
 

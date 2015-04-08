@@ -79,6 +79,7 @@ if os.name == 'nt':
         "--gitpath \"C:\\Program Files (x86)\\Git\\cmd\" "\
         "--icu7z http://download.qt.io/development_releases/prebuilt/icu/prebuilt/msvc2010/icu_49_win_32_release.7z " \
         "--d3dcompiler7z http://download.qt.io/development_releases/prebuilt/d3dcompiler/msvc2010/D3DCompiler_43-x86.dll.7z " \
+        "--opengl32sw7z http://download.qt.io/development_releases/prebuilt/llvmpipe/windows/opengl32sw-32.7z " \
         "--environment_batch \"C:\\Program Files (x86)\\Microsoft Visual Studio 10.0\\VC\\vcvarsall.bat\" " \
         "--environment_batch_argument x86 " \
         "".format(os.path.basename(sys.argv[0]))
@@ -117,6 +118,7 @@ if (sys.platform != "darwin"):
 # if we are on windows, maybe we want some other arguments
 if os.name == 'nt':
     parser.add_argument('--d3dcompiler7z', help="a file or url where it get d3dcompiler lib")
+    parser.add_argument('--opengl32sw7z', help="a file or url where it get d3dcompiler lib")
     parser.add_argument('--openssl7z', help="a file or url where to get the openssl libs as 7z")
     parser.add_argument('--environment_batch', help="batch file that sets up environment")
     parser.add_argument('--environment_batch_argument', help="if the batch file needs an argument just add it with this argument")
@@ -192,6 +194,8 @@ if not os.path.lexists(callerArguments.qt5path):
         targetPath = os.path.join(callerArguments.qt5path, 'bin')
         myGetQtBinaryWork.addTaskObject(
             createDownloadExtract7zTask(callerArguments.d3dcompiler7z, targetPath, tempPath, callerArguments))
+        myGetQtBinaryWork.addTaskObject(
+            createDownloadExtract7zTask(callerArguments.opengl32sw7z, targetPath, tempPath, callerArguments))
         if callerArguments.openssl7z:
             myGetQtBinaryWork.addTaskObject(
                 createDownloadExtract7zTask(callerArguments.openssl7z, targetPath, tempPath, callerArguments))
@@ -275,6 +279,9 @@ qmakeCommandArguments += " QT_CONFIG+=declarative"
 
 if sys.platform == "darwin":
     qmakeCommandArguments += " QMAKE_MAC_SDK=macosx" # work around QTBUG-41238
+
+if sys.platform == "win32":  # allow app to run on Windows XP
+    qmakeCommandArguments += " QMAKE_SUBSYSTEM_SUFFIX=,5.01"
 
 if callerArguments.versiondescription:
     qmakeCommandArguments += " DEFINES+=IDE_VERSION_DESCRIPTION={0}".format(callerArguments.versiondescription)

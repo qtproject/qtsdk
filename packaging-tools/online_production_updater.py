@@ -41,14 +41,9 @@
 #############################################################################
 
 import os
-import platform
 import sys
-import shutil
-import glob
 import fnmatch
-import random
 import hashlib
-import string
 import ConfigParser
 import argparse
 from time import gmtime, strftime
@@ -170,7 +165,7 @@ def store_update_job_info(file_name, update_jobs):
 ###############################
 def collect_files(directory, file_name):
     file_list = []
-    for root, dirs, files in os.walk(directory):
+    for root, dummy, files in os.walk(directory):
         for basename in files:
             if fnmatch.fnmatch(basename, file_name):
                 filename = os.path.join(root, basename)
@@ -182,7 +177,7 @@ def collect_files(directory, file_name):
 # Function
 ###############################
 def locate_directory(base_dir, dir_name):
-    for root, dirs, files in os.walk(base_dir):
+    for root, dirs, dummy in os.walk(base_dir):
         for basename in dirs:
             if fnmatch.fnmatch(basename, dir_name):
                 fulldirname = os.path.join(root, basename)
@@ -195,7 +190,7 @@ def locate_directory(base_dir, dir_name):
 # Function
 ###############################
 def locate_file(directory, file_name):
-    for root, dirs, files in os.walk(directory):
+    for root, dummy, files in os.walk(directory):
         for basename in files:
             if fnmatch.fnmatch(basename, file_name):
                 filename = os.path.join(root, basename)

@@ -89,7 +89,6 @@ class ArchiveLocationResolver:
         # get packages tempalates src dir first
         pkg_templates_dir = os.path.normpath(bldinstallercommon.config_section_map(target_config,'PackageTemplates')['template_dirs'])
         self.pkg_templates_dir_list = pkg_templates_dir.replace(' ', '').rstrip(',\n').split(',')
-        server_namespace = os.path.normpath(bldinstallercommon.config_section_map(target_config,'PackageTemplates')['template_dirs'])
         # next read server list
         if server_base_url_override:
             server_obj  = ArchiveLocationResolver.ArchiveRemoteLocation('default_server_name', server_base_url_override, '')

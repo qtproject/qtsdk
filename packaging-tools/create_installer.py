@@ -200,100 +200,100 @@ def setup_option_parser():
     global OPTION_PARSER
     OPTION_PARSER = OptionParser(option_class=MultipleOption)
     OPTION_PARSER.add_option("-c", "--configurations-dir",
-                      action="store", type="string", dest="configurations_dir", default="configurations",
-                      help="define configurations directory where to read installer configuration files")
+                             action="store", type="string", dest="configurations_dir", default="configurations",
+                             help="define configurations directory where to read installer configuration files")
     OPTION_PARSER.add_option("-f", "--configuration-file",
-                      action="store", type="string", dest="configuration_file", default="",
-                      help="define configurations directory where to read installer configuration files")
+                             action="store", type="string", dest="configuration_file", default="",
+                             help="define configurations directory where to read installer configuration files")
 
     OPTION_PARSER.add_option("-d", "--devmode",
-                      action="store_true", dest="devmode", default=False,
-                      help="enable development mode, build static Qt and IFW from sources")
+                             action="store_true", dest="devmode", default=False,
+                             help="enable development mode, build static Qt and IFW from sources")
     OPTION_PARSER.add_option("-i", "--incremental",
-                      action="store_true", dest="incremental", default=False,
-                      help="enable incremental development mode")
+                             action="store_true", dest="incremental", default=False,
+                             help="enable incremental development mode")
     OPTION_PARSER.add_option("-o", "--offline",
-                      action="store_true", dest="offline_installer", default=False,
-                      help="create offline installer")
+                             action="store_true", dest="offline_installer", default=False,
+                             help="create offline installer")
     OPTION_PARSER.add_option("-O", "--online",
-                      action="store_true", dest="online_installer", default=False,
-                      help="create online installer")
+                             action="store_true", dest="online_installer", default=False,
+                             help="create online installer")
     OPTION_PARSER.add_option("-r", "--create-repo",
-                      action="store_true", dest="create_repository", default=False,
-                      help="create offline repository")
+                             action="store_true", dest="create_repository", default=False,
+                             help="create offline repository")
     OPTION_PARSER.add_option("-g", "--legacy-repogen",
-                      action="store_true", dest="legacy_repogen", default=False,
-                      help="use legacy repogen, uses different cmd line syntax")
+                             action="store_true", dest="legacy_repogen", default=False,
+                             help="use legacy repogen, uses different cmd line syntax")
     OPTION_PARSER.add_option("-s", "--strict",
-                      action="store_true", dest="strict_mode", default=True,
-                      help="use strict mode, abort on any error")
+                             action="store_true", dest="strict_mode", default=True,
+                             help="use strict mode, abort on any error")
     OPTION_PARSER.add_option("-S", "--non-strict",
-                      action="store_false", dest="strict_mode", default=True,
-                      help="non strict mode, try to keep on going despite of errors")
+                             action="store_false", dest="strict_mode", default=True,
+                             help="non strict mode, try to keep on going despite of errors")
     OPTION_PARSER.add_option("--archive-skip",
-                      action="store_true", dest="archive_skip", default=False,
-                      help="for testing purposes (faster testing), skip downloading archives")
+                             action="store_true", dest="archive_skip", default=False,
+                             help="for testing purposes (faster testing), skip downloading archives")
     # optional override
     OPTION_PARSER.add_option("-u", "--archive-base-url",
-                      action="store", dest="archive_base_url", default="",
-                      help="define alternative server base url where to look for archives (.7z)")
+                             action="store", dest="archive_base_url", default="",
+                             help="define alternative server base url where to look for archives (.7z)")
     OPTION_PARSER.add_option("--ifw-tools",
-                      action="store", dest="ifw_tools_uri", default="",
-                      help="define alternative location where to fetch prebuilt Installer-Framework tools (.7z)")
+                             action="store", dest="ifw_tools_uri", default="",
+                             help="define alternative location where to fetch prebuilt Installer-Framework tools (.7z)")
     # installer naming scheme options, affects only the filename of the installer executable
     OPTION_PARSER.add_option("-l", "--license-type",
-                      action="store", type="string", dest="license_type", default="opensource",
-                      help="installer file name scheme: define license type")
+                             action="store", type="string", dest="license_type", default="opensource",
+                             help="installer file name scheme: define license type")
     OPTION_PARSER.add_option("-a", "--target-architecture",
-                      action="store", type="string", dest="target_architecture", default="",
-                      help="installer file name scheme: define target architecture name")
+                             action="store", type="string", dest="target_architecture", default="",
+                             help="installer file name scheme: define target architecture name")
     OPTION_PARSER.add_option("-e", "--compiler-name",
-                      action="store", type="string", dest="compiler_name", default="",
-                      help="installer file name scheme: define compile name")
+                             action="store", type="string", dest="compiler_name", default="",
+                             help="installer file name scheme: define compile name")
 
     OPTION_PARSER.add_option("--version-number",
-                      action="store", type="string", dest="installer_version_number", default="",
-                      help="installer file name scheme: define installer version number")
+                             action="store", type="string", dest="installer_version_number", default="",
+                             help="installer file name scheme: define installer version number")
     OPTION_PARSER.add_option("--version-tag",
-                      action="store", type="string", dest="installer_version_tag", default="",
-                      help="installer file name scheme: define installer version tag (in addition to version number)")
+                             action="store", type="string", dest="installer_version_tag", default="",
+                             help="installer file name scheme: define installer version tag (in addition to version number)")
 
     OPTION_PARSER.add_option("--preferred-installer-name",
-                      action="store", type="string", dest="preferred_installer_name", default="",
-                      help="alternatively define the full installer name excluding the extension (.run, .exe, .app")
+                             action="store", type="string", dest="preferred_installer_name", default="",
+                             help="alternatively define the full installer name excluding the extension (.run, .exe, .app")
     # dev mode i.e. building installer-framework
     OPTION_PARSER.add_option("--installer-framework-qt-archive-uri",
-                      action="store", type="string", dest="installer_framework_qt_archive_uri", default=IfwOptions.default_qt5_src_pkg,
-                      help="If you wish to build ifw: qt source package uri for that")
+                             action="store", type="string", dest="installer_framework_qt_archive_uri", default=IfwOptions.default_qt5_src_pkg,
+                             help="If you wish to build ifw: qt source package uri for that")
     OPTION_PARSER.add_option("--installer-framework-qt-configure_options",
-                      action="store", type="string", dest="installer_framework_qt_configure_options", default=bld_ifw_tools.get_default_qt5_configure_options(),
-                      help="If you wish to build ifw: qt configure optionss for static build")
+                             action="store", type="string", dest="installer_framework_qt_configure_options", default=bld_ifw_tools.get_default_qt5_configure_options(),
+                             help="If you wish to build ifw: qt configure optionss for static build")
     OPTION_PARSER.add_option("--installer-framework-url",
-                      action="store", type="string", dest="installer_framework_url", default=IfwOptions.default_qt_installer_framework_url,
-                      help="If you wish to build ifw: Qt Installer-Framework URL")
+                             action="store", type="string", dest="installer_framework_url", default=IfwOptions.default_qt_installer_framework_url,
+                             help="If you wish to build ifw: Qt Installer-Framework URL")
     OPTION_PARSER.add_option("--installer-framework-branch",
-                      action="store", type="string", dest="installer_framework_branch", default=IfwOptions.default_qt_installer_framework_branch_qt5,
-                      help="If you wish to build ifw: Qt Installer-Framework branch")
+                             action="store", type="string", dest="installer_framework_branch", default=IfwOptions.default_qt_installer_framework_branch_qt5,
+                             help="If you wish to build ifw: Qt Installer-Framework branch")
     OPTION_PARSER.add_option("--installer-framework-qmake-args",
-                      action="store", type="string", dest="installer_framework_qmake_args", default=IfwOptions.default_qt_installer_framework_qmake_args,
-                      help="If you wish to build ifw: qmake arguments for Qt Installer-Framework build")
+                             action="store", type="string", dest="installer_framework_qmake_args", default=IfwOptions.default_qt_installer_framework_qmake_args,
+                             help="If you wish to build ifw: qmake arguments for Qt Installer-Framework build")
     OPTION_PARSER.add_option("--installer-framework-product-key-checker-url",
-                      action="store", type="string", dest="installer_framework_product_key_checker_url", default="",
-                      help="If you wish to build ifw with commercial product key checker: URL for product key checker")
+                             action="store", type="string", dest="installer_framework_product_key_checker_url", default="",
+                             help="If you wish to build ifw with commercial product key checker: URL for product key checker")
     OPTION_PARSER.add_option("--installer-framework-product-key-checker-branch",
-                      action="store", type="string", dest="installer_framework_product_key_checker_branch", default="",
-                      help="If you wish to build ifw with commercial product key checker: branch for product key checker")
+                             action="store", type="string", dest="installer_framework_product_key_checker_branch", default="",
+                             help="If you wish to build ifw with commercial product key checker: branch for product key checker")
     OPTION_PARSER.add_option("--installer-framework-openssl",
-                      action="store", type="string", dest="installer_framework_openssl", default="",
-                      help="If you wish to build ifw: optional directory with OpenSSL libraries on Windows")
+                             action="store", type="string", dest="installer_framework_openssl", default="",
+                             help="If you wish to build ifw: optional directory with OpenSSL libraries on Windows")
     # global key-value substitution
     OPTION_PARSER.add_option("--add-substitution",
-                      action="extend", type="string", dest="global_key_value_substitution_list",
-                      help="E.g. $LICENSE$=opensource -> will replace all occurrences in configuration files.")
+                             action="extend", type="string", dest="global_key_value_substitution_list",
+                             help="E.g. $LICENSE$=opensource -> will replace all occurrences in configuration files.")
     # forced version number bump for components
     OPTION_PARSER.add_option("--force-version-number-increase",
-                      action="store_true", dest="force_version_number_increase", default=False,
-                      help="If you wish to enable forced version number bump for components that have %VERSION_NUMBER_AUTO_INCREASE% tag in package.xml file(s)")
+                             action="store_true", dest="force_version_number_increase", default=False,
+                             help="If you wish to enable forced version number bump for components that have %VERSION_NUMBER_AUTO_INCREASE% tag in package.xml file(s)")
 
 
 ##############################################################
@@ -340,7 +340,7 @@ def parse_cmd_line():
     if arg_count < 2:
         return False
     setup_option_parser()
-    (options, args) = OPTION_PARSER.parse_args()
+    (options, dummy) = OPTION_PARSER.parse_args()
 
     global MAIN_CONFIG_NAME
     global DEVELOPMENT_MODE
@@ -617,7 +617,7 @@ def substitute_global_tags():
     # initialize the file list
     fileslist = []
     for directory in GENERAL_TAG_SUBST_LIST:
-        for root, dirs, files in os.walk(directory):
+        for root, dummy, files in os.walk(directory):
             for name in files:
                 path = os.path.join(root, name)
                 fileslist.append(path)
@@ -639,7 +639,7 @@ def substitute_component_tags(tag_pair_list, meta_dir_dest):
     # initialize the file list
     fileslist = []
 
-    for root, dirs, files in os.walk(meta_dir_dest):
+    for root, dummy, files in os.walk(meta_dir_dest):
         for name in files:
             path = os.path.join(root, name)
             fileslist.append(path)
@@ -926,7 +926,7 @@ def create_target_components(target_config):
                     if not os.path.lexists(data_dir_dest):
                         bldinstallercommon.create_dirs(data_dir_dest)
                     getComponentDataWork.addTask("adding {0} to {1}".format(archive.archive_name, sdk_component.package_name),
-                        get_component_data, sdk_component, archive, install_dir, data_dir_dest, compress_content_dir)
+                                                 get_component_data, sdk_component, archive, install_dir, data_dir_dest, compress_content_dir)
 
     # start the work threaded, more then 8 parallel downloads are not so useful
     getComponentDataWork.run(min([8, multiprocessing.cpu_count()]))
@@ -951,7 +951,7 @@ def qml_examples_only(examples_dir):
         return
     subdir_list = []
     regex = re.compile('^qml\S.*')
-    for root, dirs, files in os.walk(examples_dir):
+    for root, dirs, dummy in os.walk(examples_dir):
         for basename in dirs:
             if regex.search(basename):
                 root_dir = root
@@ -1033,14 +1033,13 @@ def install_ifw_tools():
                              INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_URL,
                              INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_BRANCH,
                              INSTALLER_FRAMEWORK_OPENSSL
-                             )
+                            )
 
         options.development_mode = True
         options.incremental_mode = INCREMENTAL_MODE
         tools_dir_temp = bld_ifw_tools.build_ifw(options)
         tools_bin_path = SCRIPT_ROOT_DIR + os.sep + tools_dir_temp
     elif not os.path.exists(IFW_TOOLS_DIR):
-        tools_dir_name = os.path.normpath(IFW_TOOLS_DIR_NAME)
         if INSTALLER_FRAMEWORK_TOOLS:
             package_url = INSTALLER_FRAMEWORK_TOOLS
         else:

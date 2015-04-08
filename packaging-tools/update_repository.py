@@ -172,7 +172,7 @@ def sanity_check(component_list, source_pkg):
         if item == '*':
             break
         if '*' in item:
-            left, right = item.split('*')
+            left, dummy = item.split('*')
             item = left.rstrip('.')
         if item not in source_packages:
             print('*** Sanity check fail!')
@@ -185,9 +185,9 @@ def sanity_check(component_list, source_pkg):
 ###############################
 def expand_wildcard(selection, component_list):
     expanded_list = []
-    left, right = selection.split('*')
+    left, dummy = selection.split('*')
     component = left.rstrip('.')
-    for counter, item in enumerate(component_list):
+    for dummy, item in enumerate(component_list):
         # e.g. if 'qt.502.*' found in 'qt.502.gcc'
         if component in item:
             expanded_list.append(item)
