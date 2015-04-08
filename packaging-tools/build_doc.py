@@ -58,32 +58,32 @@ def handle_extra_module_doc_build():
     if not os.environ.get('EXTRA_MODULE_SRC_PACKAGE_URI'):
         print('*** EXTRA_MODULE_SRC_PACKAGE_URI environment variable not defined. Unable to generate doc for this package.')
         sys.exit(-1)
-    if not os.environ.get('EXTRA_MODULE_DOC_BUILD_QT5_PACKAGE_URI'):
-        print('*** EXTRA_MODULE_DOC_BUILD_QT5_PACKAGE_URI environment variable not defined. Unable to generate doc for this package.')
+    if not os.environ.get('EXTRA_MODULE_DOC_BUILD_QT_PACKAGE_URI'):
+        print('*** EXTRA_MODULE_DOC_BUILD_QT_PACKAGE_URI environment variable not defined. Unable to generate doc for this package.')
         sys.exit(-1)
-    if not os.environ.get('EXTRA_MODULE_DOC_BUILD_QT5_ICU_PACKAGE_URI'):
-        print('*** EXTRA_MODULE_DOC_BUILD_QT5_ICU_PACKAGE_URI environment variable not defined. Unable to generate doc for this package.')
+    if not os.environ.get('EXTRA_MODULE_DOC_BUILD_QT_ICU_PACKAGE_URI'):
+        print('*** EXTRA_MODULE_DOC_BUILD_QT_ICU_PACKAGE_URI environment variable not defined. Unable to generate doc for this package.')
         sys.exit(-1)
     extra_module_src_package_uri = os.environ['EXTRA_MODULE_SRC_PACKAGE_URI']
-    extra_module_doc_build_qt5_package_uri = os.environ['EXTRA_MODULE_DOC_BUILD_QT5_PACKAGE_URI']
-    extra_module_doc_build_qt5_icu_package_uri = os.environ['EXTRA_MODULE_DOC_BUILD_QT5_ICU_PACKAGE_URI']
+    extra_module_doc_build_qt_package_uri = os.environ['EXTRA_MODULE_DOC_BUILD_QT_PACKAGE_URI']
+    extra_module_doc_build_qt_icu_package_uri = os.environ['EXTRA_MODULE_DOC_BUILD_QT_ICU_PACKAGE_URI']
     # define some paths
     current_path = os.path.dirname(os.path.realpath(__file__))
-    qt5_package_path = os.path.join(current_path, 'doc_build_qt5_package')
-    if os.path.exists(qt5_package_path):
-        print('*** Deleted existing qt5 package directory (for doc build) before setting up the new one: '.format(qt5_package_path))
-        shutil.rmtree(qt5_package_path)
-    qt5_icu_path = os.path.join(current_path, 'doc_build_qt5_icu_package')
-    if os.path.exists(qt5_icu_path):
-        print('*** Deleted existing qt5 icu directory (for doc build) before setting up the new one: '.format(qt5_icu_path))
-        shutil.rmtree(qt5_icu_path)
+    qt_package_path = os.path.join(current_path, 'doc_build_qt_package')
+    if os.path.exists(qt_package_path):
+        print('*** Deleted existing qt package directory (for doc build) before setting up the new one: '.format(qt_package_path))
+        shutil.rmtree(qt_package_path)
+    qt_icu_path = os.path.join(current_path, 'doc_build_qt_icu_package')
+    if os.path.exists(qt_icu_path):
+        print('*** Deleted existing qt icu directory (for doc build) before setting up the new one: '.format(qt_icu_path))
+        shutil.rmtree(qt_icu_path)
     extra_module_src_path = os.path.join(current_path, 'extra_module_src_package')
     if os.path.exists(extra_module_src_path):
         print('*** Deleted existing extra module package directory before setting up the new one: '.format(extra_module_src_path))
         shutil.rmtree(extra_module_src_path)
-    bldinstallercommon.create_dirs(qt5_package_path)
+    bldinstallercommon.create_dirs(qt_package_path)
     bldinstallercommon.create_dirs(extra_module_src_path)
-    bldinstallercommon.create_dirs(qt5_icu_path)
+    bldinstallercommon.create_dirs(qt_icu_path)
     # fetch extra module src package
     raw_name_extra_module_src_package = extra_module_src_package_uri.rsplit('/', 1)[-1] # get last item from array
     downloaded_extra_module_archive = os.path.join(current_path, raw_name_extra_module_src_package)
@@ -93,44 +93,44 @@ def handle_extra_module_doc_build():
     print('Starting to download: {0}'.format(extra_module_src_package_uri))
     bldinstallercommon.retrieve_url(extra_module_src_package_uri, downloaded_extra_module_archive)
     bldinstallercommon.extract_file(downloaded_extra_module_archive, extra_module_src_path)
-    # fetch qt5 binary package
-    raw_name_qt5_bin_package = extra_module_doc_build_qt5_package_uri.rsplit('/', 1)[-1] # get last item from array
-    downloaded_qt5_bin_archive = os.path.join(current_path, raw_name_qt5_bin_package)
-    if os.path.lexists(downloaded_qt5_bin_archive):
-        print('*** Deleted existing qt5 binary package: [{0}] before fetching the new one.'.format(downloaded_qt5_bin_archive))
-        os.remove(downloaded_qt5_bin_archive)
-    print('Starting to download: {0}'.format(extra_module_doc_build_qt5_package_uri))
-    bldinstallercommon.retrieve_url(extra_module_doc_build_qt5_package_uri, downloaded_qt5_bin_archive)
-    bldinstallercommon.extract_file(downloaded_qt5_bin_archive, qt5_package_path)
-    # fetch qt5 icu binary package
-    raw_name_qt5_icu_package = extra_module_doc_build_qt5_icu_package_uri.rsplit('/', 1)[-1] # get last item from array
-    downloaded_qt5_icu_archive = os.path.join(current_path, raw_name_qt5_icu_package)
-    if os.path.lexists(downloaded_qt5_icu_archive):
-        print('*** Deleted existing qt5 icu package: [{0}] before fetching the new one.'.format(downloaded_qt5_icu_archive))
-        os.remove(downloaded_qt5_icu_archive)
-    print('Starting to download: {0}'.format(extra_module_doc_build_qt5_icu_package_uri))
-    bldinstallercommon.retrieve_url(extra_module_doc_build_qt5_icu_package_uri, downloaded_qt5_icu_archive)
-    qt5_lib_directory = bldinstallercommon.locate_directory(qt5_package_path, 'lib')
-    bldinstallercommon.extract_file(downloaded_qt5_icu_archive, qt5_lib_directory)
-    # patch Qt5 package
-    qt5_bin_directory = bldinstallercommon.locate_directory(qt5_package_path, 'bin')
-    if not os.path.exists(qt5_bin_directory):
-        print('*** Unable to locate bin directory from: {0}'.format(qt5_bin_directory))
+    # fetch qt binary package
+    raw_name_qt_bin_package = extra_module_doc_build_qt_package_uri.rsplit('/', 1)[-1] # get last item from array
+    downloaded_qt_bin_archive = os.path.join(current_path, raw_name_qt_bin_package)
+    if os.path.lexists(downloaded_qt_bin_archive):
+        print('*** Deleted existing qt binary package: [{0}] before fetching the new one.'.format(downloaded_qt_bin_archive))
+        os.remove(downloaded_qt_bin_archive)
+    print('Starting to download: {0}'.format(extra_module_doc_build_qt_package_uri))
+    bldinstallercommon.retrieve_url(extra_module_doc_build_qt_package_uri, downloaded_qt_bin_archive)
+    bldinstallercommon.extract_file(downloaded_qt_bin_archive, qt_package_path)
+    # fetch qt icu binary package
+    raw_name_qt_icu_package = extra_module_doc_build_qt_icu_package_uri.rsplit('/', 1)[-1] # get last item from array
+    downloaded_qt_icu_archive = os.path.join(current_path, raw_name_qt_icu_package)
+    if os.path.lexists(downloaded_qt_icu_archive):
+        print('*** Deleted existing qt icu package: [{0}] before fetching the new one.'.format(downloaded_qt_icu_archive))
+        os.remove(downloaded_qt_icu_archive)
+    print('Starting to download: {0}'.format(extra_module_doc_build_qt_icu_package_uri))
+    bldinstallercommon.retrieve_url(extra_module_doc_build_qt_icu_package_uri, downloaded_qt_icu_archive)
+    qt_lib_directory = bldinstallercommon.locate_directory(qt_package_path, 'lib')
+    bldinstallercommon.extract_file(downloaded_qt_icu_archive, qt_lib_directory)
+    # patch Qt package
+    qt_bin_directory = bldinstallercommon.locate_directory(qt_package_path, 'bin')
+    if not os.path.exists(qt_bin_directory):
+        print('*** Unable to locate bin directory from: {0}'.format(qt_bin_directory))
         sys.exit(-1)
-    qtConfFile = open(os.path.join(qt5_bin_directory, 'qt.conf'), "w")
+    qtConfFile = open(os.path.join(qt_bin_directory, 'qt.conf'), "w")
     qtConfFile.write("[Paths]" + os.linesep)
     qtConfFile.write("Prefix=.." + os.linesep)
     qtConfFile.close()
-    qt5_directory = os.path.dirname(qt5_bin_directory)
-    bldinstallercommon.handle_component_rpath(qt5_directory, 'lib')
+    qt_directory = os.path.dirname(qt_bin_directory)
+    bldinstallercommon.handle_component_rpath(qt_directory, 'lib')
     # locate tools
-    qmake_binary = bldinstallercommon.locate_executable(qt5_directory, 'qmake')
+    qmake_binary = bldinstallercommon.locate_executable(qt_directory, 'qmake')
     print('Using qmake from: {0}'.format(qmake_binary))
     # locate extra module .pro file
     extra_module_pro_file = bldinstallercommon.locate_file(extra_module_src_path, '*.pro')
     # build extra module
     extra_module_build_environment = dict(os.environ)
-    extra_module_build_environment["LD_LIBRARY_PATH"] = qt5_lib_directory
+    extra_module_build_environment["LD_LIBRARY_PATH"] = qt_lib_directory
     extra_module_build_environment["QMAKESPEC"] = "linux-g++"
     cpu_count = ["-j" + str(multiprocessing.cpu_count() + 1)]
     print('Using .pro file from: {0}'.format(extra_module_pro_file))
