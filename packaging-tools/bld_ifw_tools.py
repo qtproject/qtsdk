@@ -117,7 +117,7 @@ def get_default_qt5_configure_options():
         options += get_common_unix_qt_configure_options()
         # Linux
         if plat.startswith('linux'):
-            options += '-qt-xcb -no-opengl -no-icu '
+            options += '-qt-xcb -no-opengl -no-icu -no-libudev '
             options += '-qt-pcre -qt-freetype -no-glib -no-egl -no-xinput '
             options += '-no-xinput2 -no-sm '
     return options
