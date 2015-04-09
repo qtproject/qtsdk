@@ -707,20 +707,28 @@ def build_extra_module_src_pkg(bld_command):
     cmd_args = ['../qtsdk/packaging-tools/extract_examples.sh', '-n', bld_command.app_name, '-l', bld_command.license, '-v', bld_command.app_version, '-u', bld_command.package_storage_server_user, '-s', bld_command.package_storage_server, '-d', bld_command.package_storage_server_base_dir, '-i', os.environ['BUILD_ID'], '-b', bld_command.build_number]
     bldinstallercommon.do_execute_sub_process(cmd_args, application_dir, True)
     #Copy src package to the server
+    extra_module_src_dir = bld_command.package_storage_server_user + '@' + bld_command.package_storage_server + ':' + bld_command.package_storage_server_base_dir + '/' + bld_command.license + '/' + bld_command.app_name + '/' + bld_command.app_version
+    src_pkg = False;
     file_list = os.listdir(application_dir)
     for file_name in file_list:
         if file_name.startswith(bld_command.app_name + '-' + bld_command.license + '-src-' + bld_command.app_version):
-            cmd_args = ['scp', file_name, bld_command.package_storage_server_user + '@' + bld_command.package_storage_server + ':' + bld_command.package_storage_server_base_dir + '/' + bld_command.license + '/' + bld_command.app_name + '/' + bld_command.app_version + '/latest/src']
+            src_pkg = True
+            cmd_args = ['scp', file_name, extra_module_src_dir + '/latest/src']
             bldinstallercommon.do_execute_sub_process(cmd_args, application_dir, True)
     # handle doc package creation
     build_doc.handle_extra_module_doc_build()
     # copy archived doc files to network drive if exists, we use Linux only to generate doc archives
     local_docs_dir = os.path.join(SCRIPT_ROOT_DIR, 'doc_archives')
+    doc_pkg = False
     if os.path.exists(local_docs_dir):
+        doc_pkg = True
         # create remote doc dir
         doc_target_dir = bld_command.pkg_server_addr + ':' + bld_command.latest_extra_module_dir + '/' + 'doc'
         remote_copy_archives(doc_target_dir, local_docs_dir)
-
+    # if we got here, we have all the packages, update symlink latest_successful -> latest
+    if src_pkg and doc_pkg:
+        latest_successful_dir = bld_command.latest_extra_module_dir + '_successful'
+        update_latest_link(bld_command, bld_command.latest_extra_module_dir, latest_successful_dir)
 
 ###############################
 # initialize_extra_module_binary_build
