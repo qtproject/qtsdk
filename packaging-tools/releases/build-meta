@@ -243,7 +243,7 @@ build_node_labels:          win-MinGW4.9.1-Windows7-x86_OpenGL
 
 [meta.windows.x86.mingw492]
 build_target_dir:           windows_mingw492_x86
-build_node_labels:          win-MinGW4.9.2-Windows7-x86_OpenGL
+build_node_labels:          win-MinGW4.9.2-Windows7-x86_OpenGL, win-MinGW4.9.2-Windows7-x86
 
 [meta.windows.x64.mingw491]
 build_target_dir:           windows_mingw491_x64
