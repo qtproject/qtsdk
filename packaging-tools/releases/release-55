@@ -47,7 +47,7 @@ build_node_labels:      mac-clang-10.10-x64
 configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-libjpeg -qt-libpng -platform macx-clang -sysconfdir /Library/Preferences/Qt -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -openssl --dbus=runtime
 
 [release.qt.configure_options.windows]
-build_node_labels:      win-msvc2010-Windows7-x86_ANGLE, win-msvc2010-Windows7-x86, win-msvc2012-Windows8.1-x86, win-msvc2013-Windows8.1-x86, win-msvc2013-Windows8.1-x64, win-mingw4.9.2-Windows7-x86
+build_node_labels:      win-msvc2010-Windows7-x86_ANGLE, win-msvc2010-Windows7-x86, win-msvc2012-Windows8.1-x86, win-msvc2013-Windows8.1-x86, win-msvc2013-Windows8.1-x64, win-MinGW4.9.2-Windows7-x86
 configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -opengl dynamic -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -plugin-sql-odbc -openssl -dbus
 
 [release.qt.configure_options.windows_msvc2013_xp]
@@ -123,7 +123,7 @@ rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_mac_ios_and
 [release.55.offline.windows.x86.mingw492]
 arg_configurations_file:    offline_installer_jobs/5.5/win_x86_mingw492
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
-installer_name:             qt-opensource-windows-x86-mingw492_opengl-%GLOBAL_VERSION_AND_TAG%
+installer_name:             qt-opensource-windows-x86-mingw492-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_windows_mingw
 
 [release.55.offline.windows.x86.msvc2010]
