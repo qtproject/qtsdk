@@ -708,7 +708,7 @@ def build_extra_module_src_pkg(bld_command):
     bldinstallercommon.do_execute_sub_process(cmd_args, application_dir, True)
     #Copy src package to the server
     extra_module_src_dir = bld_command.package_storage_server_user + '@' + bld_command.package_storage_server + ':' + bld_command.package_storage_server_base_dir + '/' + bld_command.license + '/' + bld_command.app_name + '/' + bld_command.app_version
-    src_pkg = False;
+    src_pkg = False
     file_list = os.listdir(application_dir)
     for file_name in file_list:
         if file_name.startswith(bld_command.app_name + '-' + bld_command.license + '-src-' + bld_command.app_version):
