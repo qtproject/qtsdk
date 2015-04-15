@@ -86,6 +86,7 @@ QTCREATOR_VERSION           = ''
 QTCREATOR_VERSION_DESCRIPTION = ''
 PLATFORM                    = ''
 SRC_DEST_DIRS               = ['src', 'src/submodules', 'src/doc', 'src/single', 'src/examples_injection']
+BIN_DEST_DIRS               = ['android_armv5', 'android_armv7', 'android_x86', 'linux_gcc_64_rhel66', 'linux_gcc_32_rhel66', 'ios', 'mac_64', 'windows_mingw492_x86', 'windows_vs2013_winrt_x64', 'winphone81', 'windows_vs2013_32', 'windows_vs2013_64', 'windows_vs2012_32', 'windows_vs2010_32', 'src/doc']
 EXTRA_MODULE_DEST_DIRS      = ['src', 'doc', 'examples']
 QT5_DOCS_ARCHIVE_NAME       = 'qt5_docs.7z'
 BIN_TARGET_DIRS             = {} # dictionary populated based on the /packaging-tools/releases/release-<version>
@@ -609,6 +610,16 @@ def initialize_qt5_build(bld_command):
     remote_qt_minor_dir = qt_dir_base[:-2]
     cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, 'ln -sfn', latest_available_pkg , remote_qt_minor_dir]
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+    # Create binary links for opensource
+    version_num = int(''.join(re.findall(r'\d+', bld_command.version)))
+    if (version_num >= 550):
+        if bld_command.license == 'opensource':
+            cmd_args = ['rm', '-rf', latest_qt_dir + '/' + 'src/doc']
+            bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+            for dir_name in BIN_DEST_DIRS:
+                link_name = latest_qt_dir + '/' + dir_name
+                remote_dir = link_name.replace('opensource', 'enterprise')
+                update_latest_link(bld_command, remote_dir, link_name)
 
 
 ###############################
