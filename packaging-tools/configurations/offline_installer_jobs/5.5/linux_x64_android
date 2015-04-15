@@ -55,11 +55,7 @@ file_list:              qt-conf,
                         android-x64-qt55-armv7-conf,
                         android-x64-qt55-x86-conf,
                         x86_64-tools-qtcreator-conf,
-                        qtwebview-src-doc-examples-conf,
-                        qtwebview-qt55-x64-gcc-conf,
-                        qtwebview-qt55-x64-android-armv5-conf,
-                        qtwebview-qt55-x64-android-armv7-conf,
-                        qtwebview-qt55-x64-android-x86-conf
+                        qtwebview-src-doc-examples-conf
 
 [ConfigDir]
 template_name:          config_qt5

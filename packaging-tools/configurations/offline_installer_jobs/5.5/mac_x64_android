@@ -54,13 +54,7 @@ file_list:              qt-conf,
                         android-x64-qt55-armv5-conf,
                         android-x64-qt55-armv7-conf,
                         android-x64-qt55-x86-conf,
-                        x86_64-tools-qtcreator-conf,
-                        qtwebview-src-doc-examples-conf,
-                        qtwebview-qt55-x64-clang-conf,
-                        qtwebview-qt55-x64-android-armv7-conf,
-                        qtwebview-qt55-x64-android-armv5-conf,
-                        qtwebview-qt55-x64-android-x86-conf
-
+                        x86_64-tools-qtcreator-conf
 [qtmenunib]
 package_url:            http://download.qt.io/development_releases/prebuilt/mac/qt_menu.nib.7z
 
