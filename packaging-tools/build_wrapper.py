@@ -936,7 +936,7 @@ def handle_qt_desktop_release_build():
 # Handle extra module release build
 ###############################
 def handle_extra_module_release_build():
-    qt_version_minor = os.environ['QT_VERSION_MINOR']
+    qt_version = os.environ['QT_VERSION']
     script_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_app.py')
     icu7z_package = os.environ.get('ICU7Z')
     pkg_storage_server = os.environ['PACKAGE_STORAGE_SERVER_PATH_HTTP']
@@ -944,7 +944,7 @@ def handle_extra_module_release_build():
     install_command = os.environ.get('QT5_APPLICATION_INSTALL_CMD')
     collect_docs_command = os.environ.get('QT5_APPLICATION_COLLECT_DOCS_CMD')
     make_docs_command = os.environ.get('QT5_APPLICATION_MAKE_DOCS_CMD')
-    qt5_bin_pkg_base_path = pkg_storage_server + '/' + LICENSE + '/' + 'qt' + '/' + qt_version_minor + '/' + BIN_TARGET_DIRS[TARGET_ENV]
+    qt5_bin_pkg_base_path = pkg_storage_server + '/' + LICENSE + '/' + 'qt' + '/' + qt_version + '/latest_available_package/' + BIN_TARGET_DIRS[TARGET_ENV]
     qt5_essentials_lib_package_uri = qt5_bin_pkg_base_path + '/qt5_essentials.7z'
     qt5_addons_lib_package_uri = qt5_bin_pkg_base_path + '/qt5_addons.7z'
     qt5_webengine_lib_package_url = qt5_bin_pkg_base_path + '/qt5_qtwebengine.7z'
