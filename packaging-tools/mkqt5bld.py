@@ -53,6 +53,7 @@ import multiprocessing
 import patch_qmake_qt_key
 from optparse import OptionParser, Option
 import shlex
+import time
 
 SCRIPT_ROOT_DIR                     = os.getcwd()
 WORK_DIR_NAME                       = 'qt5_workdir'
@@ -304,6 +305,8 @@ def extract_src_package():
         print_wrap('Into:                      ' + QT_SOURCE_DIR)
         bldinstallercommon.create_dirs(QT_SOURCE_DIR)
         bldinstallercommon.extract_file(QT_PACKAGE_SAVE_AS_TEMP, QT_SOURCE_DIR)
+
+    time.sleep(10)
 
     l = os.listdir(QT_SOURCE_DIR)
     items = len(l)
