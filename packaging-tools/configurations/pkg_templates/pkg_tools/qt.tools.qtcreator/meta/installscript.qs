@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2015 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the tools applications of the Qt Toolkit.
@@ -52,7 +52,7 @@ function Component()
 
     if (installer.value("os") == "win") {
         // Creator needs vcredist 32bit on windows
-        component.addDependency("qt.tools.vcredist");
+        component.addDependency("qt.tools.vcredist_msvc2013_x86");
     }
 
     if (installer.value("os") == "x11") {
