@@ -798,6 +798,9 @@ def handle_ifw_build(bld_command):
     if os.environ.get('IFW_DEBUG_BUILD'):
         qt_configure_options = qt_configure_options.replace('-release', '-debug')
         ifw_qmake_args = ' '.join(ifw_qmake_args).replace('-config release', '-config debug').split()
+    # extra qt configure options for qt/ifw build
+    if os.environ.get('IFW_QT_EXTRA_CONFIGURE_OPTIONS'):
+        qt_configure_options += ' ' + os.environ.get('IFW_QT_EXTRA_CONFIGURE_OPTIONS')
     # Product Key Checker
     product_key_checker_pri = ''
     if bld_command.license == 'enterprise':

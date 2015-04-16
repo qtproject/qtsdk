@@ -185,7 +185,14 @@ class IfwOptions:
         self.mac_deploy_qt_archive_name                 = 'macdeployqt.7z'
         self.mac_qt_menu_nib_archive_name               = 'qt_menu.nib.7z'
         # determine filenames used later on
-        architecture                                    = bldinstallercommon.get_architecture()
+        architecture = ''
+        # if this is cross-compilation attempt to parse the target architecture from the given -platform
+        if '-platform' in qt_configure_options:
+            temp = qt_configure_options.split(' ')
+            plat = temp[temp.index('-platform') + 1]
+            architecture = ''.join(re.findall(r'\d+', plat))
+        if not architecture:
+            architecture = bldinstallercommon.get_architecture()
         plat_suffix                                     = bldinstallercommon.get_platform_suffix()
         self.installer_framework_archive_name           = 'installer-framework-build-' + plat_suffix + '-' + architecture + '.7z'
         self.installer_base_archive_name                = 'installerbase-' + plat_suffix + '-' + architecture + '.7z'
