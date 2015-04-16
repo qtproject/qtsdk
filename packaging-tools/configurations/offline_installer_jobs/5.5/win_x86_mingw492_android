@@ -56,7 +56,7 @@ file_list:              qt-conf,
                         android-qt55-x86-conf,
                         x86-tools-mingw492-conf,
                         x86-tools-qtcreator-conf,
-                        x86-tools-vcredist_32-conf
+                        x86-tools-vcredist_msvc2013-conf
 
 [ConfigDir]
 template_name:          config_qt5
