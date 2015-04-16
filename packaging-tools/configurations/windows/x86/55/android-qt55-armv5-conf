@@ -42,11 +42,15 @@
 
 [qt.55.android_armv5]
 archives:               55.android_armv5.essentials,
+                        55.android_armv5.addons,
                         55.android_armv5.icu_541.mingw_32,
                         55.android_armv5.mingw492.runtime
 target_install_base:    /5.5/android_armv5
 [55.android_armv5.essentials]
 archive_uri:            /qt/@QT_VERSION@/latest/android_armv5/mingw_x86/qt5_essentials.7z
+package_finalize_items: delete_doc_directory
+[55.android_armv5.addons]
+archive_uri:            /qt/@QT_VERSION@/latest/android_armv5/mingw_x86/qt5_addons.7z
 package_finalize_items: delete_doc_directory
 [55.android_armv5.icu_541.mingw_32]
 archive_uri:            http://download.qt.io/development_releases/prebuilt/icu/prebuilt/54.1/icu-wi
