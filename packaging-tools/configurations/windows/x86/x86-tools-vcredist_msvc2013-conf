@@ -39,15 +39,14 @@
 ##
 #############################################################################
 
-[PackageNamespace]
-name:                   qt
 
-[PlatformIdentifier]
-identifier:             windows
-
-[PackageConfigurationFiles]
-file_list:              x86-tools-vcredist_32-conf, x86_64-tools-vcredist_64-conf, x86-tools-vcredist_msvc2013-conf
-
-[PackageTemplates]
-template_dirs:          pkg_tools
-
+[qt.tools.vcredist_msvc2013_x86]
+archives:               tools.vcredist_msvc2013_x86
+target_install_base:    /vcredist
+package_default:        false
+[tools.vcredist_msvc2013_x86]
+archive_uri:            http://download.qt.io/development_releases/prebuilt/vcredist/vcredist_msvc2013_x86.7z
+package_strip_dirs:     0
+target_install_dir:     /
+rpath_target:
+archive_name:           vcredist_msvc2013_x86.7z
