@@ -48,6 +48,7 @@ import os
 import sys
 import multiprocessing
 import shutil
+import fnmatch
 import platform
 import fileinput
 from optparse import OptionParser, Option
@@ -196,13 +197,13 @@ def clean_icu_lib(lib_path):
             else:
                 os.remove(item_path)
     elif plat.startswith('win'):
-        libs_to_save = ['icudt', 'icuin', 'icuuc']
+        libs_to_save = ['icudt??.dll', 'icuin??.dll', 'icuuc??.dll']
         file_list = os.listdir(lib_path)
         for item in file_list:
             item_path = os.path.join(lib_path, item)
             if os.path.isdir(item_path):
                 bldinstallercommon.remove_tree(item_path)
-            elif any(item[:item.index('.')] in s for s in libs_to_save) and item.endswith('.dll'):
+            elif any(fnmatch.fnmatch(item, p) for p in libs_to_save):
                 continue
             else:
                 os.remove(item_path)
