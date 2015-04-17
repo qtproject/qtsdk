@@ -190,7 +190,11 @@ class IfwOptions:
         if '-platform' in qt_configure_options:
             temp = qt_configure_options.split(' ')
             plat = temp[temp.index('-platform') + 1]
-            architecture = ''.join(re.findall(r'\d+', plat))
+            bits = ''.join(re.findall(r'\d+', plat))
+            if bits == '32':
+                architecture = 'x86'
+            else:
+                architecture = 'x64'
         if not architecture:
             architecture = bldinstallercommon.get_architecture()
         plat_suffix                                     = bldinstallercommon.get_platform_suffix()
