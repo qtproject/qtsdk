@@ -431,8 +431,6 @@ def build_qt():
     elif bldinstallercommon.is_win_platform() and 'mingw32-make' in QT_BUILD_OPTIONS.make_cmd:
         cmd_args += ' -j' + str(QT_BUILD_OPTIONS.make_thread_count)
     bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, QT_BUILD_OPTIONS.strict_mode, False, QT_BUILD_OPTIONS.system_env)
-    # Hack for 5.5 alpha & qtlocation
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), os.path.join(QT_SOURCE_DIR, 'qtlocation'), QT_BUILD_OPTIONS.strict_mode, False, QT_BUILD_OPTIONS.system_env)
     print_wrap('--------------------------------------------------------------------')
 
 
