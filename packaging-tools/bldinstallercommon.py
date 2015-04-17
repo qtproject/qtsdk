@@ -762,21 +762,25 @@ def do_execute_sub_process(args, execution_path, abort_on_fail, get_output=False
 ###############################
 # function
 ###############################
-def clone_repository(repo_url, repo_branch_or_tag, destination_folder):
+def clone_repository(repo_url, repo_branch_or_tag, destination_folder, full_clone = False):
     print '--------------------------------------------------------------------'
     print 'Cloning repository: ' + repo_url
     print '        branch/tag: ' + repo_branch_or_tag
     print 'Dest:               ' + destination_folder
     print '--------------------------------------------------------------------'
 
-    cmd_args = ['git', 'init', destination_folder]
-    do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+    if full_clone:
+        cmd_args = ['git', 'clone', repo_url, destination_folder, '-b', repo_branch_or_tag]
+        do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+    else:
+        cmd_args = ['git', 'init', destination_folder]
+        do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
-    cmd_args = ['git', 'fetch', repo_url, repo_branch_or_tag]
-    do_execute_sub_process(cmd_args, destination_folder, True)
+        cmd_args = ['git', 'fetch', repo_url, repo_branch_or_tag]
+        do_execute_sub_process(cmd_args, destination_folder, True)
 
-    cmd_args = ['git', 'checkout', 'FETCH_HEAD']
-    do_execute_sub_process(cmd_args, destination_folder, True)
+        cmd_args = ['git', 'checkout', 'FETCH_HEAD']
+        do_execute_sub_process(cmd_args, destination_folder, True)
 
 
 ###############################

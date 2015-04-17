@@ -707,7 +707,7 @@ def build_extra_module_src_pkg(bld_command):
     application_dir = os.path.join(WORK_DIR, bld_command.app_name)
     bldinstallercommon.create_dirs(application_dir)
     #clone repo
-    bldinstallercommon.clone_repository(os.environ['GIT_APPLICATION_REPO'], os.environ['GIT_APPLICATION_REPO_BRANCH'], application_dir)
+    bldinstallercommon.clone_repository(os.environ['GIT_APPLICATION_REPO'], os.environ['GIT_APPLICATION_REPO_BRANCH'], application_dir, True)
     if os.environ.get('APPLICATION_SHA1'):
         cmd_args = ['git', 'checkout', os.environ['APPLICATION_SHA1']]
         bldinstallercommon.do_execute_sub_process(cmd_args, application_dir, True)
