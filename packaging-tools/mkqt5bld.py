@@ -431,6 +431,10 @@ def build_qt():
     elif bldinstallercommon.is_win_platform() and 'mingw32-make' in QT_BUILD_OPTIONS.make_cmd:
         cmd_args += ' -j' + str(QT_BUILD_OPTIONS.make_thread_count)
     bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, QT_BUILD_OPTIONS.strict_mode, False, QT_BUILD_OPTIONS.system_env)
+
+    # ensure that the modules marked to be installed & archived separately do get build
+    for module_name in QT_BUILD_OPTIONS.module_separate_install_list:
+        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), os.path.join(QT_SOURCE_DIR, module_name), QT_BUILD_OPTIONS.strict_mode, False, QT_BUILD_OPTIONS.system_env)
     print_wrap('--------------------------------------------------------------------')
 
 

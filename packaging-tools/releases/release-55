@@ -40,15 +40,15 @@ configure_options:      -opensource -confirm-license -debug-and-release -nomake 
 
 [release.qt.configure_options.linux]
 build_node_labels:      linux-g++-Rhel6.6-x86, linux-g++-Rhel6.6-x64
-configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -qt-xcb -sysconfdir /etc/xdg -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -openssl -no-libudev -icu -no-egl
+configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -qt-xcb -sysconfdir /etc/xdg -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -openssl -no-libudev -icu -no-egl -skip qtwebkit
 
 [release.qt.configure_options.mac]
 build_node_labels:      mac-clang-10.10-x64
-configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-libjpeg -qt-libpng -platform macx-clang -sysconfdir /Library/Preferences/Qt -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -openssl --dbus=runtime
+configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-libjpeg -qt-libpng -platform macx-clang -sysconfdir /Library/Preferences/Qt -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -openssl --dbus=runtime -skip qtwebkit
 
 [release.qt.configure_options.windows]
 build_node_labels:      win-msvc2010-Windows7-x86_ANGLE, win-msvc2010-Windows7-x86, win-msvc2012-Windows8.1-x86, win-msvc2013-Windows8.1-x86, win-msvc2013-Windows8.1-x64, win-MinGW4.9.2-Windows7-x86
-configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -opengl dynamic -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -plugin-sql-odbc -openssl -dbus
+configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib -qt-libjpeg -qt-libpng -opengl dynamic -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite -plugin-sql-odbc -openssl -dbus -skip qtwebkit
 
 [release.qt.configure_options.windows_msvc2013_xp]
 build_node_labels:      win-msvc2013_xp-Windows8.1-x86
