@@ -130,7 +130,8 @@ def handle_extra_module_doc_build():
     extra_module_pro_file = bldinstallercommon.locate_file(extra_module_src_path, '*.pro')
     # build extra module
     extra_module_build_environment = dict(os.environ)
-    extra_module_build_environment["LD_LIBRARY_PATH"] = qt_lib_directory
+    extra_module_build_environment["LD_LIBRARY_PATH"] = os.pathsep.join([os.path.join(qt_package_path, 'lib')] +
+                                                        os.environ.get("LD_LIBRARY_PATH", "").split(os.pathsep))
     extra_module_build_environment["QMAKESPEC"] = "linux-g++"
     cpu_count = ["-j" + str(multiprocessing.cpu_count() + 1)]
     print('Using .pro file from: {0}'.format(extra_module_pro_file))

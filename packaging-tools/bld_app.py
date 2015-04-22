@@ -373,7 +373,8 @@ environment = {'PATH': os.pathsep.join(pathKeyList)}
 environment["INSTALLER_ARCHIVE"] = os.environ['APPLICATION_NAME'] + '.7z'
 
 if sys.platform.startswith('linux'):
-    environment["LD_LIBRARY_PATH"] = os.path.join(callerArguments.qt5path, 'lib')
+    environment["LD_LIBRARY_PATH"] = os.pathsep.join([os.path.join(callerArguments.qt5path, 'lib')]
++ os.environ.get("LD_LIBRARY_PATH", "").split(os.pathsep))
     environment["QMAKESPEC"] = "linux-g++"
 
 if sys.platform == "darwin":
