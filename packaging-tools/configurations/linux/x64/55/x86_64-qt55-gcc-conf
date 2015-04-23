@@ -68,16 +68,6 @@ archive_uri:            /qt/@QT_VERSION@/latest/linux_gcc_64_rhel66/qt5_qtwebeng
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
-# QtWebKit provided as separate installable component in installer
-[qt.55.qtwebkit]
-[qt.55.qtwebkit.gcc_64]
-archives:               55.qtwebkit.gcc_64
-target_install_base:    /5.5/gcc_64
-[55.qtwebkit.gcc_64]
-archive_uri:            /qt/@QT_VERSION@/latest/linux_gcc_64_rhel66/qt5_qtwebkit.7z
-rpath_target:           /lib
-package_finalize_items: delete_doc_directory
-
 # QtQuick1 provided as separate installable component in installer
 [qt.55.qtquick1]
 [qt.55.qtquick1.gcc_64]

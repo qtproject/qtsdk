@@ -57,16 +57,6 @@ n-msvc2012-Windows8.1-x86.7z
 target_install_dir:     /bin
 
 
-# QtWebKit provided as separate installable component in installer
-[qt.55.qtwebkit]
-[qt.55.qtwebkit.win32_msvc2012]
-archives:               55.qtwebkit.win32_msvc2012
-target_install_base:    /5.5/msvc2012
-[55.qtwebkit.win32_msvc2012]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_msvc2012_32/qt5_qtwebkit.7z
-rpath_target:           /lib
-package_finalize_items: delete_doc_directory
-
 # QtQuick1 provided as separate installable component in installer
 [qt.55.qtquick1]
 [qt.55.qtquick1.win32_msvc2012]

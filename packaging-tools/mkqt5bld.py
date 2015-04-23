@@ -431,19 +431,6 @@ def build_qt():
     elif bldinstallercommon.is_win_platform() and 'mingw32-make' in QT_BUILD_OPTIONS.make_cmd:
         cmd_args += ' -j' + str(QT_BUILD_OPTIONS.make_thread_count)
     bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, QT_BUILD_OPTIONS.strict_mode, False, QT_BUILD_OPTIONS.system_env)
-
-    # Qt5.5 - Qt5.6 a hack for qtwebkit to have it in release packages as a separate installable component
-    # without Assistant having dependencies into it
-    src_pkg_name = QT_BUILD_OPTIONS.src_url.split('/')[-1]
-    version_num = int(''.join(re.findall(r'\d+', src_pkg_name)))
-    if ((version_num >= 550) and (version_num < 560)) and DESKTOP_BUILD:
-        module_name = 'qtwebkit'
-        if ('-skip ' + module_name) in CONFIGURE_OPTIONS:
-            print_wrap('Trying to build module [{0}] separately'.format(module_name))
-            qmake_executable = os.path.join(QT_SOURCE_DIR, 'qtbase', 'bin', 'qmake')
-            module_path = os.path.join(QT_SOURCE_DIR, module_name)
-            bldinstallercommon.do_execute_sub_process(qmake_executable, module_path, True, False, QT_BUILD_OPTIONS.system_env)
-            bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), module_path, True, False, QT_BUILD_OPTIONS.system_env)
     print_wrap('--------------------------------------------------------------------')
 
 
