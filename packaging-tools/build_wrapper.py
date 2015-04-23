@@ -495,7 +495,7 @@ def sign_windows_executable(file_path, working_dir, abort_on_fail):
 ###############################
 def unlock_keychain():
     cmd_args = ['/Users/qt/unlock-keychain.sh']
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
 
 
 ###############################
@@ -503,7 +503,7 @@ def unlock_keychain():
 ###############################
 def lock_keychain():
     cmd_args = ['/Users/qt/lock-keychain.sh']
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
 
 
 ###############################
@@ -542,7 +542,7 @@ def initialize_qt5_build(bld_command):
         create_remote_dirs(bld_command.pkg_server_addr, dir_path)
     # Update latest link
     cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, 'ln -sfn', snapshot_qt_dir, latest_qt_dir]
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
     #Create latest_available_package
     latest_available_pkg = qt_dir_base + '/latest_available_package'
     create_remote_dirs(bld_command.pkg_server_addr, latest_available_pkg)
@@ -551,7 +551,7 @@ def initialize_qt5_build(bld_command):
     if bld_command.custom_build == 0:
         remote_qt_minor_dir = qt_dir_base[:-2]
         cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, 'ln -sfn', latest_available_pkg , remote_qt_minor_dir]
-        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
     # Create binary links for opensource
     version_num = int(''.join(re.findall(r'\d+', bld_command.version)))
     if (version_num >= 550):
@@ -575,7 +575,8 @@ def initialize_extra_module_build_src(bld_command):
         create_remote_dirs(bld_command.pkg_server_addr, dir_path)
     # Update latest link
     cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, 'ln -sfn', bld_command.remote_extra_module_dir, bld_command.latest_extra_module_dir]
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
+
 
 ###############################
 # handle_qt_licheck_build
@@ -654,13 +655,13 @@ def build_extra_module_src_pkg(bld_command):
     bldinstallercommon.clone_repository(os.environ['GIT_APPLICATION_REPO'], os.environ['GIT_APPLICATION_REPO_BRANCH'], application_dir, True)
     if os.environ.get('APPLICATION_SHA1'):
         cmd_args = ['git', 'checkout', os.environ['APPLICATION_SHA1']]
-        bldinstallercommon.do_execute_sub_process(cmd_args, application_dir, True)
+        bldinstallercommon.do_execute_sub_process(cmd_args, application_dir)
     #make src package
     cmd_args = ['../qtsdk/packaging-tools/mksrc.sh', '-v', bld_command.app_version, '-l', bld_command.license, '--single-module']
-    bldinstallercommon.do_execute_sub_process(cmd_args, application_dir, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, application_dir)
     #extract examples
     cmd_args = ['../qtsdk/packaging-tools/extract_examples.sh', '-n', bld_command.app_name, '-l', bld_command.license, '-v', bld_command.app_version, '-u', bld_command.package_storage_server_user, '-s', bld_command.package_storage_server, '-d', bld_command.package_storage_server_base_dir, '-i', os.environ['BUILD_ID'], '-b', bld_command.build_number]
-    bldinstallercommon.do_execute_sub_process(cmd_args, application_dir, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, application_dir)
     #Copy src package to the server
     extra_module_src_dir = bld_command.package_storage_server_user + '@' + bld_command.package_storage_server + ':' + bld_command.package_storage_server_base_dir + '/' + bld_command.license + '/' + bld_command.app_name + '/' + bld_command.app_version
     src_pkg = False
@@ -669,7 +670,7 @@ def build_extra_module_src_pkg(bld_command):
         if file_name.startswith(bld_command.app_name + '-' + bld_command.license + '-src-' + bld_command.app_version):
             src_pkg = True
             cmd_args = ['scp', file_name, extra_module_src_dir + '/latest/src']
-            bldinstallercommon.do_execute_sub_process(cmd_args, application_dir, True)
+            bldinstallercommon.do_execute_sub_process(cmd_args, application_dir)
     # handle doc package creation
     build_doc.handle_extra_module_doc_build()
     # copy archived doc files to network drive if exists, we use Linux only to generate doc archives
@@ -695,7 +696,7 @@ def initialize_extra_module_binary_build(bld_command):
     create_remote_dirs(bld_command.pkg_server_addr, bld_command.remote_extra_module_binary_dir)
     # Update latest link
     cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, 'ln -sfn', bld_command.remote_extra_module_binary_dir, bld_command.latest_extra_module_binary_dir]
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
 
 
 ###############################
@@ -758,23 +759,24 @@ def handle_ifw_build(bld_command):
         ext_dest_dir = ext_server_base_path + '/snapshots/ifw/' + ifw_dest_dir_name + '/' + bld_command.build_time_stamp[:10] + '_' + bld_command.build_number
         cmd_args_mkdir_pkg = [SSH_COMMAND, bld_command.pkg_server_addr]
         cmd_args_mkdir_ext = cmd_args_mkdir_pkg + ['ssh', ext_server_base_url, 'mkdir', '-p', ext_dest_dir]
-        bldinstallercommon.do_execute_sub_process(cmd_args_mkdir_ext, SCRIPT_ROOT_DIR, True)
+        bldinstallercommon.do_execute_sub_process(cmd_args_mkdir_ext, SCRIPT_ROOT_DIR)
 
     if bldinstallercommon.is_win_platform():
         file_list = os.listdir(SCRIPT_ROOT_DIR+'/' + pkg_constants.IFW_BUILD_ARTIFACTS_DIR)
         for file_name in file_list:
             if file_name.endswith(".7z"):
                 cmd_args = [SCP_COMMAND, file_name, bld_command.pkg_server_addr + ':' + bld_command.path + '/' + bld_command.license + '/ifw/' + ifw_dest_dir_name + '/']
-                bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + '/' + pkg_constants.IFW_BUILD_ARTIFACTS_DIR, True)
+                bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + '/' + pkg_constants.IFW_BUILD_ARTIFACTS_DIR)
     else:
         cmd_args = ['rsync', '-r', './', bld_command.pkg_server_addr + ':' + bld_command.path + '/' + bld_command.license + '/ifw/' + ifw_dest_dir_name + '/']
-        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + '/' + pkg_constants.IFW_BUILD_ARTIFACTS_DIR, True)
+        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + '/' + pkg_constants.IFW_BUILD_ARTIFACTS_DIR)
 
     # copy ifw snapshot to public server
     if bld_command.license == 'opensource':
         cmd_args_copy_ifw_pkg = [SSH_COMMAND, bld_command.pkg_server_addr]
         cmd_args_copy_ifw_ext = cmd_args_copy_ifw_pkg + ['scp', bld_command.path + '/' + bld_command.license + '/ifw/' + ifw_dest_dir_name + '/' + 'installer-framework-build*.7z', ext_server_base_url + ':' + ext_dest_dir]
-        bldinstallercommon.do_execute_sub_process(cmd_args_copy_ifw_ext, SCRIPT_ROOT_DIR, True)
+        bldinstallercommon.do_execute_sub_process(cmd_args_copy_ifw_ext, SCRIPT_ROOT_DIR)
+
 
 ###############################
 # handle_qt_src_package_build
@@ -784,7 +786,7 @@ def handle_qt_src_package_build(bld_command):
     exec_path = os.path.join(WORK_DIR, 'qt5')
     cmd_args = ['./init-repository', '-f', '--mirror', os.environ['QT5_GIT_MIRROR']]
     exec_path = os.path.join(WORK_DIR, 'qt5')
-    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path)
     if bld_command.license == 'enterprise':
         if bld_command.custom_build != 0:
             module = None
@@ -800,7 +802,7 @@ def handle_qt_src_package_build(bld_command):
                 sys.exit(-1)
     if bld_command.license == 'enterprise':
         cmd_args = ['../patches/apply.sh']
-        bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
+        bldinstallercommon.do_execute_sub_process(cmd_args, exec_path)
     if bld_command.license == 'enterprise':
         copy_license_checkers(bld_command)
     package_path = os.path.join(WORK_DIR, 'src_pkg')
@@ -820,7 +822,7 @@ def handle_qt_src_package_build(bld_command):
     if bld_command.custom_build != 0:
         cmd_args += ['--product-name', bld_command.custom_build]
     # create src package
-    bldinstallercommon.do_execute_sub_process(cmd_args, package_path, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, package_path)
 
     # Example injection
     if bld_command.custom_build == 0:
@@ -830,7 +832,7 @@ def handle_qt_src_package_build(bld_command):
 
     cmd_args = ['tar', 'xzf', 'single/' + package_name + '.tar.gz']
 
-    bldinstallercommon.do_execute_sub_process(cmd_args, package_path, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, package_path)
     essentials_path = os.path.join(WORK_DIR, 'src_pkg', 'examples_essentials')
     bldinstallercommon.create_dirs(essentials_path)
 
@@ -845,7 +847,7 @@ def handle_qt_src_package_build(bld_command):
                     bldinstallercommon.copy_tree(os.path.join(package_path, package_name, dir_name, example_dir), essentials_path)
     os.chdir(current_path)
     cmd_args = ['cp', '-r', os.path.join(package_name, 'qtbase', 'examples', 'examples.pro'), essentials_path]
-    bldinstallercommon.do_execute_sub_process(cmd_args, package_path, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, package_path)
 
     # remove documentation source files ('doc' subdirs) from examples
     doc_dir = 'doc'
@@ -863,7 +865,7 @@ def handle_qt_src_package_build(bld_command):
 
     if bld_command.custom_build == 0:
         cmd_args = ['7z', 'a', os.path.join('..', 'qt5_examples.7z'), '*']
-        bldinstallercommon.do_execute_sub_process(cmd_args, essentials_path, True)
+        bldinstallercommon.do_execute_sub_process(cmd_args, essentials_path)
 
     # Create necessary directories
     latest_qt_dir = get_qt_snapshot_dir(bld_command).latest_qt_dir
@@ -874,18 +876,18 @@ def handle_qt_src_package_build(bld_command):
     # Upload packages
     exec_path = SCRIPT_ROOT_DIR
     cmd_args = ['rsync', '-r', '../../src_pkg/single/', bld_command.pkg_server_addr + ':' + os.path.join(latest_qt_dir, 'src', 'single', '')]
-    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path)
     cmd_args = ['rsync', '-r', '../../src_pkg/submodules_tar/', bld_command.pkg_server_addr + ':' + os.path.join(latest_qt_dir, 'src', 'submodules', '')]
-    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path)
     cmd_args = ['rsync', '-r', '../../src_pkg/submodules_zip/', bld_command.pkg_server_addr + ':' + os.path.join(latest_qt_dir, 'src', 'submodules', '')]
-    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path)
 
     if bld_command.custom_build == 0:
         file_list = os.listdir(package_path)
         for file_name in file_list:
             if file_name.startswith("qt5_examples."):
                 cmd_args = ['scp', file_name, bld_command.pkg_server_addr + ':' + os.path.join(latest_qt_dir, 'src', 'examples_injection')]
-                bldinstallercommon.do_execute_sub_process(cmd_args, package_path, True)
+                bldinstallercommon.do_execute_sub_process(cmd_args, package_path)
 
 
 #######################################################
@@ -984,7 +986,7 @@ def handle_extra_module_release_build(bld_command):
     # init result directories
     create_remote_dirs(bld_command.pkg_server_addr, bld_command.latest_extra_module_binary_dir + '/' + BIN_TARGET_DIRS[bld_command.target_env])
     # execute build
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
     # copy 7z files to network drive
     remote_target_dir = bld_command.pkg_server_addr + ':' + bld_command.latest_extra_module_binary_dir + '/' + BIN_TARGET_DIRS[bld_command.target_env]
     if bldinstallercommon.is_win_platform():
@@ -1011,7 +1013,7 @@ def remote_copy_archives(remote_target, from_where_path):
     for file_name in dir_list:
         if file_name.endswith(".7z"):
             cmd_args = [remote_copy_cmd, file_name, remote_target]
-            bldinstallercommon.do_execute_sub_process(cmd_args, from_where_path, True)
+            bldinstallercommon.do_execute_sub_process(cmd_args, from_where_path)
 
 
 ###############################
@@ -1021,37 +1023,37 @@ def handle_examples_injection(bld_command):
     # Inject examples
     if bldinstallercommon.is_linux_platform():
         cmd_args = ['wget', bld_command.qt_src_url_base + 'examples_injection/qt5_examples.7z']
-        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR + '/module_archives', True)
+        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR + '/module_archives')
     else:
         cmd_args = [CURL_COMMAND, '-O', bld_command.qt_src_url_base + 'examples_injection/qt5_examples.7z']
-        bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
+        bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'))
 
     bldinstallercommon.create_dirs(os.path.join(WORK_DIR, 'module_archives', 'essentials'))
     bldinstallercommon.create_dirs(os.path.join(WORK_DIR, 'module_archives', 'addons'))
 
     # essentials
     cmd_args = ['7z', 'x', 'qt5_essentials.7z', '-oessentials']
-    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'))
     cmd_args = ['7z', 'x', 'qt5_examples.7z', os.path.join('-oessentials', 'examples'), '-y']
-    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'))
 
     cmd_args = [RM_COMMAND, 'qt5_essentials.7z']
-    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'))
     cmd_args = [RM_COMMAND, 'qt5_examples.7z']
-    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'))
 
     cmd_args = ['7z', 'a', os.path.join('..', 'qt5_essentials.7z'), '*']
-    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives/essentials'), True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives/essentials'))
 
     # addons
     cmd_args = ['7z', 'x', 'qt5_addons.7z', '-oaddons']
-    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'))
 
     cmd_args = [RM_COMMAND, 'qt5_addons.7z']
-    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'), True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives'))
 
     cmd_args = ['7z', 'a', os.path.join('..', 'qt5_addons.7z'), '*']
-    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives/addons'), True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(WORK_DIR, 'module_archives/addons'))
 
 
 ###############################
@@ -1175,14 +1177,14 @@ def handle_qt_release_build(bld_command):
     for file_name in dir_list:
         if file_name.endswith('.7z'):
             cmd_args = [SCP_COMMAND, file_name, srv_and_remote_dir + '/']
-            bldinstallercommon.do_execute_sub_process(cmd_args, local_archives_dir, True)
+            bldinstallercommon.do_execute_sub_process(cmd_args, local_archives_dir)
             cmd_args = [SCP_COMMAND, file_name, srv_and_latest_available_pkg + '/']
-            bldinstallercommon.do_execute_sub_process(cmd_args, local_archives_dir, True)
+            bldinstallercommon.do_execute_sub_process(cmd_args, local_archives_dir)
             if QT5_DOCS_ARCHIVE_NAME in file_name and bldinstallercommon.is_linux_platform():
                 doc_archive_on_remote_disk = latest_qt_dir + '/src/doc/' + QT5_DOCS_ARCHIVE_NAME
                 if not bldinstallercommon.remote_path_exists(bld_command.pkg_server_addr, doc_archive_on_remote_disk, SSH_COMMAND):
                     cmd_args = [SCP_COMMAND, file_name, bld_command.pkg_server_addr + ':' + latest_qt_dir + '/src/doc/']
-                    bldinstallercommon.do_execute_sub_process(cmd_args, local_archives_dir, True)
+                    bldinstallercommon.do_execute_sub_process(cmd_args, local_archives_dir)
 
 
 ###############################
@@ -1237,7 +1239,7 @@ def handle_qt_creator_build(bld_command):
         if bld_command.openssl_libs:
             cmd_args.extend(['--openssl7z', bld_command.openssl_libs])
 
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
 
     if bldinstallercommon.is_mac_platform():
         lock_keychain()
@@ -1300,13 +1302,13 @@ def handle_qt_creator_build(bld_command):
     # upload files
     for source, destination in file_upload_list:
         cmd_args = [SCP_COMMAND, source, bld_command.pkg_server_addr + ':' + dir_path + '/' + destination]
-        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
+        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR)
     if bld_command.snapshot_server and bld_command.snapshot_path:
         for source, destination in snapshot_upload_list:
             cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, "scp",
                 dir_path + '/' + source,
                 bld_command.snapshot_server + ':' + snapshot_path + '/' + destination]
-            bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
+            bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR)
 
 
 ###############################
@@ -1341,10 +1343,10 @@ def replace_latest_successful_installer(bld_command, installer_name, installer_n
         old_installer = ls_installer_dir + '/' + installer_base_name + '*'
         # delete old installer
         cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, 'rm', '-f', old_installer]
-        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, False, True)
+        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, False)
         # save new installer to latest_successful directory
         cmd_args = [SCP_COMMAND, installer_name, bld_command.pkg_server_addr + ':' + ls_installer_dir + '/' + installer_name_final]
-        bldinstallercommon.do_execute_sub_process(cmd_args, installer_output, True)
+        bldinstallercommon.do_execute_sub_process(cmd_args, installer_output)
 
 
 ###############################
@@ -1400,7 +1402,7 @@ def handle_installer_build(installer_type, bld_command):
         ext_dest_dir = ext_server_base_path + '/snapshots/qt/' + bld_command.version[:3] + '/' + bld_command.full_version + '/' + bld_command.build_time_stamp[:10] + '_' + bld_command.build_number
         cmd_args_mkdir_pkg = [SSH_COMMAND, bld_command.pkg_server_addr]
         cmd_args_mkdir_ext = cmd_args_mkdir_pkg + ['ssh', ext_server_base_url, 'mkdir -p', ext_dest_dir]
-        bldinstallercommon.do_execute_sub_process(cmd_args_mkdir_ext, SCRIPT_ROOT_DIR, True)
+        bldinstallercommon.do_execute_sub_process(cmd_args_mkdir_ext, SCRIPT_ROOT_DIR)
 
     # Copy all installers from 'installer_output_dir' into network disk
     dir_list = os.listdir(installer_output_dir)
@@ -1437,7 +1439,7 @@ def handle_installer_build(installer_type, bld_command):
     for file_name in rta_descr_output_dir:
         if file_name.startswith(pkg_constants.RTA_DESCRIPTION_FILE_NAME_BASE):
             cmd_args = [SCP_COMMAND, file_name, bld_command.pkg_server_addr + ':' + remote_path_top_level + '/' + file_name]
-            bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
+            bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir)
 
     # Trigger rta cases
     rta_descr_output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.RTA_DESCRIPTION_FILE_DIR_NAME)
@@ -1452,7 +1454,7 @@ def sign_installer(installer_output_dir, installer_name, installer_name_base):
         unlock_keychain()
         sign_mac_executable(installer_name_base + '.app', installer_output_dir, True)
         cmd_args = ['hdiutil', 'create', '-srcfolder', os.path.join(installer_output_dir, installer_name_base) + '.app', '-volname', installer_name_base, '-format', 'UDBZ', os.path.join(installer_output_dir, installer_name_base) + '.dmg', '-ov', '-scrub', '-size', '3g']
-        bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
+        bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir)
     if installer_name.endswith(".exe"):
         sign_windows_executable(installer_name, installer_output_dir, True)
 
@@ -1462,7 +1464,7 @@ def sign_installer(installer_output_dir, installer_name, installer_name_base):
 ###############################
 def remote_copy_installer(bld_command, remote_dest_dir, file_name, installer_output_dir, installer_name_final):
     cmd_args = [SCP_COMMAND, file_name, bld_command.pkg_server_addr + ':' + remote_dest_dir + '/' + installer_name_final]
-    bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir)
 
 
 ###############################
@@ -1473,7 +1475,7 @@ def remote_copy_installer_opensource(bld_command, remote_dest_dir, ext_server_ba
     if bld_command.license == 'opensource':
         cmd_args_copy_to_pkg = [SSH_COMMAND, bld_command.pkg_server_addr]
         cmd_args_copy_to_ext = cmd_args_copy_to_pkg + ['scp', remote_dest_dir + '/' + installer_name_final, ext_server_base_url + ':' + ext_dest_dir  + '/' + installer_name_final]
-        bldinstallercommon.do_execute_sub_process(cmd_args_copy_to_ext, SCRIPT_ROOT_DIR, True)
+        bldinstallercommon.do_execute_sub_process(cmd_args_copy_to_ext, SCRIPT_ROOT_DIR)
 
 
 ###############################
@@ -1506,7 +1508,7 @@ def generate_installer_final_name(bld_command, file_name):
 ###############################
 def update_latest_link(bld_command, remote_dest_dir, latest_dir):
     cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, 'ln -sfn', remote_dest_dir, latest_dir]
-    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR)
 
 
 ###############################
@@ -1514,7 +1516,7 @@ def update_latest_link(bld_command, remote_dest_dir, latest_dir):
 ###############################
 def delete_remote_directory_tree(bld_command, remote_dir):
     cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, 'rm -rf', remote_dir]
-    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR)
 
 
 ###############################
@@ -1595,13 +1597,13 @@ def copy_license_checkers(bld_command):
     sanity_check_packaging_server(bld_command)
     exec_path = os.path.join(WORK_DIR, 'qt5', 'qtbase', 'bin')
     cmd_args = [SCP_COMMAND, bld_command.pkg_server_addr + ':' + os.path.join(bld_command.path, bld_command.license, 'licheck', 'licheck.exe'), '.']
-    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path)
     cmd_args = [SCP_COMMAND, bld_command.pkg_server_addr + ':' + os.path.join(bld_command.path, bld_command.license, 'licheck', 'licheck32'), '.']
-    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path)
     cmd_args = [SCP_COMMAND, bld_command.pkg_server_addr + ':' + os.path.join(bld_command.path, bld_command.license, 'licheck', 'licheck64'), '.']
-    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path)
     cmd_args = [SCP_COMMAND, bld_command.pkg_server_addr + ':' + os.path.join(bld_command.path, bld_command.license, 'licheck', 'licheck_mac'), '.']
-    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path)
     #change permissions
     os.chdir(os.path.join(WORK_DIR, 'qt5', 'qtbase', 'bin'))
     os.system('chmod u+x licheck32')
@@ -1609,14 +1611,14 @@ def copy_license_checkers(bld_command):
     os.system('chmod u+x licheck_mac')
 
     cmd_args = ['git', 'add', '.']
-    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path)
     cmd_args = ['git', 'commit', '-m', '"Add license checkers into enterprise source package"']
-    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path)
     exec_path = os.path.join(WORK_DIR, 'qt5')
     cmd_args = ['git', 'add', '.']
-    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path)
     cmd_args = ['git', 'commit', '-m', '"Add license checkers into enterprise source package"']
-    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path)
 
     os.chdir(SCRIPT_ROOT_DIR)
 
@@ -1637,15 +1639,15 @@ def publish_qt5_src_packages(bld_command):
         latest_qt_dir = get_qt_snapshot_dir(bld_command).latest_qt_dir
         cmd_args_mkdir_src_pkg = [SSH_COMMAND, bld_command.pkg_server_addr]
         cmd_args_mkdir_src_ext = cmd_args_mkdir_src_pkg + ['ssh', ext_server_base_url, 'mkdir', '-p', ext_dest_dir + '/' + 'single']
-        bldinstallercommon.do_execute_sub_process(cmd_args_mkdir_src_ext, SCRIPT_ROOT_DIR, True)
+        bldinstallercommon.do_execute_sub_process(cmd_args_mkdir_src_ext, SCRIPT_ROOT_DIR)
         cmd_args_mkdir_src_ext = cmd_args_mkdir_src_pkg + ['ssh', ext_server_base_url, 'mkdir', '-p', ext_dest_dir + '/' + 'submodules']
-        bldinstallercommon.do_execute_sub_process(cmd_args_mkdir_src_ext, SCRIPT_ROOT_DIR, True)
+        bldinstallercommon.do_execute_sub_process(cmd_args_mkdir_src_ext, SCRIPT_ROOT_DIR)
         # copy the source packages to the remove directory
         cmd_args_copy_src_to_pkg = [SSH_COMMAND, bld_command.pkg_server_addr]
         cmd_args_copy_src_to_ext = cmd_args_copy_src_to_pkg + ['scp', '-r', latest_qt_dir + '/' + 'src/single/*', ext_server_base_url + ':' + ext_dest_dir + '/' + 'single']
-        bldinstallercommon.do_execute_sub_process(cmd_args_copy_src_to_ext, SCRIPT_ROOT_DIR, True)
+        bldinstallercommon.do_execute_sub_process(cmd_args_copy_src_to_ext, SCRIPT_ROOT_DIR)
         cmd_args_copy_src_to_ext = cmd_args_copy_src_to_pkg + ['scp', '-r', latest_qt_dir + '/' + 'src/submodules/*', ext_server_base_url + ':' + ext_dest_dir + '/' + 'submodules']
-        bldinstallercommon.do_execute_sub_process(cmd_args_copy_src_to_ext, SCRIPT_ROOT_DIR, True)
+        bldinstallercommon.do_execute_sub_process(cmd_args_copy_src_to_ext, SCRIPT_ROOT_DIR)
 
 
 ###############################
@@ -1653,7 +1655,7 @@ def publish_qt5_src_packages(bld_command):
 ###############################
 def create_remote_dirs(server, dir_path):
     cmd_args = [SSH_COMMAND, '-t', '-t', server, 'mkdir -p', dir_path]
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
 
 
 ###############################
@@ -1701,7 +1703,7 @@ def handle_icu_build(bld_command):
     for file_name in dir_list:
         if file_name.endswith('.7z'):
             cmd_args = [SCP_COMMAND, file_name, srv_and_remote_dir + '/']
-            bldinstallercommon.do_execute_sub_process(cmd_args, local_archives_dir, True)
+            bldinstallercommon.do_execute_sub_process(cmd_args, local_archives_dir)
 
 
 ################################

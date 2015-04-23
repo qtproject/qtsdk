@@ -147,22 +147,22 @@ def handle_extra_module_doc_build():
     cpu_count = ["-j" + str(multiprocessing.cpu_count() + 1)]
     print('Using .pro file from: {0}'.format(extra_module_pro_file))
     bld_args = [qmake_binary, extra_module_pro_file]
-    bldinstallercommon.do_execute_sub_process(bld_args, os.path.dirname(extra_module_pro_file), True, False, extra_module_build_environment)
+    bldinstallercommon.do_execute_sub_process(bld_args, os.path.dirname(extra_module_pro_file), extra_env=extra_module_build_environment)
     bld_args = ['make'] + cpu_count
-    bldinstallercommon.do_execute_sub_process(bld_args, os.path.dirname(extra_module_pro_file), True, False, extra_module_build_environment)
+    bldinstallercommon.do_execute_sub_process(bld_args, os.path.dirname(extra_module_pro_file), extra_env=extra_module_build_environment)
     # make docs
     bld_args = ['make', '-j1', 'docs']
-    bldinstallercommon.do_execute_sub_process(bld_args, os.path.dirname(extra_module_pro_file), True, False, extra_module_build_environment)
+    bldinstallercommon.do_execute_sub_process(bld_args, os.path.dirname(extra_module_pro_file), extra_env=extra_module_build_environment)
     # make install docs
     extra_module_doc_install_dir = extra_module_src_path = os.path.join(current_path, 'extra_module_doc_install_dir')
     bld_args = ['make', '-j1', 'install_docs', 'INSTALL_ROOT=' + extra_module_doc_install_dir]
-    bldinstallercommon.do_execute_sub_process(bld_args, os.path.dirname(extra_module_pro_file), True, False, extra_module_build_environment)
+    bldinstallercommon.do_execute_sub_process(bld_args, os.path.dirname(extra_module_pro_file), extra_env=extra_module_build_environment)
     # create archive
     doc_dir = bldinstallercommon.locate_directory(extra_module_doc_install_dir, 'doc')
     archive_name = os.environ['APPLICATION_NAME'] + '-' + os.environ['LICENSE'] + '-doc-' + os.environ['APPLICATION_VERSION'] + '.7z'
     archive_path = os.path.join(current_path, 'doc_archives', archive_name)
     bld_args = ['7z', 'a', archive_path, 'doc']
-    bldinstallercommon.do_execute_sub_process(bld_args, os.path.dirname(doc_dir), True)
+    bldinstallercommon.do_execute_sub_process(bld_args, os.path.dirname(doc_dir))
     if os.path.exists(archive_path):
         print('Doc archive generated successfully: {0}'.format(archive_path))
 

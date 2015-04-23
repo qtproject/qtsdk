@@ -338,11 +338,11 @@ def build_qt(options):
     cmd_args = options.qt_configure_bin + ' ' + configure_options
     # shlex does not like backslashes
     cmd_args = cmd_args.replace('\\', '/')
-    bldinstallercommon.do_execute_sub_process(shlex.split(cmd_args), options.qt_build_dir, True)
+    bldinstallercommon.do_execute_sub_process(shlex.split(cmd_args), options.qt_build_dir)
     print('--------------------------------------------------------------------')
     print('Building Qt')
     cmd_args = options.make_cmd
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), options.qt_build_dir, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), options.qt_build_dir)
 
 
 ###############################
@@ -381,9 +381,9 @@ def build_installer_framework(options):
     cmd_args = [qmake_bin]
     cmd_args += options.qt_installer_framework_qmake_args
     cmd_args += [options.installer_framework_source_dir]
-    bldinstallercommon.do_execute_sub_process(cmd_args, options.installer_framework_build_dir, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, options.installer_framework_build_dir)
     cmd_args = options.make_cmd
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), options.installer_framework_build_dir, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), options.installer_framework_build_dir)
 
 
 ###############################
@@ -423,7 +423,7 @@ def archive_installer_framework(options):
             if filename.endswith(('.moc', 'Makefile', '.cpp', '.h', '.o')) or filename == 'Makefile':
                 os.remove(os.path.join(root, filename))
     cmd_args = ['7z', 'a', options.installer_framework_archive_name, os.path.basename(options.installer_framework_build_dir)]
-    bldinstallercommon.do_execute_sub_process(cmd_args, ROOT_DIR, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, ROOT_DIR)
     shutil.move(options.installer_framework_archive_name, options.build_artifacts_dir)
 
 
@@ -448,8 +448,8 @@ def archive_installerbase(options):
         shutil.copy(bin_path, bin_temp)
         cmd_args_archive = ['7z', 'a', options.installer_base_archive_name, bin_temp]
         cmd_args_clean = ['del', bin_temp]
-    bldinstallercommon.do_execute_sub_process(cmd_args_archive, ROOT_DIR, True)
-    bldinstallercommon.do_execute_sub_process(cmd_args_clean, ROOT_DIR, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args_archive, ROOT_DIR)
+    bldinstallercommon.do_execute_sub_process(cmd_args_clean, ROOT_DIR)
     if not os.path.isfile(options.installer_base_archive_name):
         print('*** Failed to generate archive: {0}'.format(options.installer_base_archive_name))
         sys.exit(-1)
@@ -467,7 +467,7 @@ def archive_nib(options):
     content_parent_path = os.path.normpath(content_parent_path)
     content_root_path = os.path.normpath(content_root_path)
     cmd_args = ['7z', 'a', options.mac_qt_menu_nib_archive_name, content_root_path]
-    bldinstallercommon.do_execute_sub_process(cmd_args, ROOT_DIR, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, ROOT_DIR)
     if not os.path.isfile(options.mac_qt_menu_nib_archive_name):
         print('*** Failed to generate archive: {0}'.format(options.mac_qt_menu_nib_archive_name))
         sys.exit(-1)
@@ -482,7 +482,7 @@ def archive_macdeployqt(options):
     print('Archive macdeployqt')
     content_path = options.qt_build_dir + os.sep + 'tools/macdeployqt/macchangeqt/macchangeqt'
     cmd_args_archive = ['7z', 'a', options.mac_deploy_qt_archive_name, content_path]
-    bldinstallercommon.do_execute_sub_process(cmd_args_archive, ROOT_DIR, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args_archive, ROOT_DIR)
     if not os.path.isfile(options.mac_deploy_qt_archive_name):
         print('*** Failed to generate archive: {0}'.format( options.mac_deploy_qt_archive_name))
         sys.exit(-1)

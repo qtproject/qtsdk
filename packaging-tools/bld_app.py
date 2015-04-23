@@ -84,7 +84,7 @@ def get_qt_install_prefix(qt_path):
         sys.exit(-1)
     cmd_args = [qmake_executable, '-query']
     qmakePath = os.path.abspath(os.path.join(callerArguments.qt5path, 'bin'))
-    dummy, output = bldinstallercommon.do_execute_sub_process(cmd_args, qmakePath, True, True)
+    dummy, output = bldinstallercommon.do_execute_sub_process(cmd_args, qmakePath, get_output=True)
     # read output line by line
     lines = output.splitlines(True)
     for line in lines:
@@ -392,7 +392,7 @@ qmakeCommandArguments = [qmakeBinary]
 if os.environ.get('EXTRA_QMAKE_ARGS'):
     qmakeCommandArguments += [os.environ["EXTRA_QMAKE_ARGS"]]
 qmakeCommandArguments += ["{0}".format(qtApplicationProFile)]
-bldinstallercommon.do_execute_sub_process(qmakeCommandArguments, qtApplicationBuildDirectory, True)
+bldinstallercommon.do_execute_sub_process(qmakeCommandArguments, qtApplicationBuildDirectory)
 
 makeCommand = 'make'
 if os.name == 'nt' or sys.platform == "darwin":

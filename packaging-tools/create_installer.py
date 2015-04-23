@@ -862,7 +862,7 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
 
     saveas = os.path.normpath(data_dir_dest + os.sep + archive.archive_name)
     cmd_args = [ ARCHIVEGEN_TOOL, saveas] + content_list
-    bldinstallercommon.do_execute_sub_process(cmd_args, data_dir_dest, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, data_dir_dest)
 
 
 ##############################################################
@@ -1174,7 +1174,7 @@ def create_installer_binary():
         cmd_args = cmd_args + ['-r', license_resource_file]
 
     # create installer binary
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
 
     # move results to dedicated directory
     output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.INSTALLER_OUTPUT_DIR_NAME)
@@ -1221,7 +1221,7 @@ def create_offline_repository():
         else:
             repogen_args = [REPOGEN_TOOL, '-p', PACKAGES_FULL_PATH_DST, REPO_OUTPUT_DIR]
         # create repository
-        bldinstallercommon.do_execute_sub_process(repogen_args, SCRIPT_ROOT_DIR, True)
+        bldinstallercommon.do_execute_sub_process(repogen_args, SCRIPT_ROOT_DIR)
         if not os.path.exists(REPO_OUTPUT_DIR):
             sys.stderr.write('*** Fatal error! Unable to create repository directory: ' + REPO_OUTPUT_DIR)
             sys.exit(-1)
@@ -1238,7 +1238,7 @@ def create_maintenance_tool_resource_file():
     set_config_directory()
     config_xml = set_config_xml()
     cmd_args = [BINARYCREATOR_TOOL, '-p', PACKAGES_FULL_PATH_DST, '-c', config_xml, '-rcc']
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
     # archive
     resource_file = os.path.join(SCRIPT_ROOT_DIR, 'update.rcc')
     installer_base_archive = bldinstallercommon.locate_file(PACKAGES_FULL_PATH_DST, '*installerbase*')
@@ -1273,7 +1273,7 @@ def inject_update_rcc_to_archive(archive_file_path, file_to_be_injected):
     shutil.copy(file_to_be_injected, tmp_dir)
     # re-compress
     cmd_args_archive = ['7z', 'a', archive_file_name, '*']
-    bldinstallercommon.do_execute_sub_process(cmd_args_archive, tmp_dir, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args_archive, tmp_dir)
     # delete original
     os.remove(archive_file_path)
     # copy re-compressed package to correct location
@@ -1298,7 +1298,7 @@ def create_mac_disk_image():
                 '-format', 'UDBZ', \
                 os.path.join(SCRIPT_ROOT_DIR, pkg_constants.INSTALLER_OUTPUT_DIR_NAME, SDK_NAME + '.dmg'), \
                 '-ov', '-scrub', '-size', '3g']
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
 
 
 ##############################################################

@@ -350,11 +350,11 @@ def remove_tree(source_dir):
         if os.path.exists(source_dir):
             source_dir = win32api.GetShortPathName(source_dir)
             cmd_args = ['rmdir', source_dir, '/S', '/Q']
-            do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+            do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
     else:
         #shutil.rmtree(source_dir)
         cmd_args = ['rm' , '-rf', source_dir]
-        do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+        do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
 
 
 ###############################
@@ -705,13 +705,13 @@ def handle_component_rpath(component_root_path, destination_lib_path):
                         #print '        RPath value: [' + rp + '] for file: [' + file_full_path + ']'
                         cmd_args = ['chrpath', '-r', rp, file_full_path]
                         #force silent operation
-                        do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True, False)
+                        do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
 
 
 ###############################
 # function
 ###############################
-def do_execute_sub_process(args, execution_path, abort_on_fail, get_output=False, extra_env=dict(os.environ)):
+def do_execute_sub_process(args, execution_path, abort_on_fail=True, get_output=False, extra_env=dict(os.environ)):
     print '      --------------------------------------------------------------------'
     print '      Executing:      [' + list_as_string(args) + ']'
     print '      Execution path: [' + execution_path + ']'
@@ -771,16 +771,16 @@ def clone_repository(repo_url, repo_branch_or_tag, destination_folder, full_clon
 
     if full_clone:
         cmd_args = ['git', 'clone', repo_url, destination_folder, '-b', repo_branch_or_tag]
-        do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+        do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
     else:
         cmd_args = ['git', 'init', destination_folder]
-        do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+        do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
 
         cmd_args = ['git', 'fetch', repo_url, repo_branch_or_tag]
-        do_execute_sub_process(cmd_args, destination_folder, True)
+        do_execute_sub_process(cmd_args, destination_folder)
 
         cmd_args = ['git', 'checkout', 'FETCH_HEAD']
-        do_execute_sub_process(cmd_args, destination_folder, True)
+        do_execute_sub_process(cmd_args, destination_folder)
 
 
 ###############################
@@ -800,7 +800,7 @@ def extract_file(path, to_directory='.', get_output=False):
         print 'Did not extract the file! Not archived or no appropriate extractor was found: ' + path
         return False
 
-    return_code, output = do_execute_sub_process(cmd_args, to_directory, True, True)
+    return_code, output = do_execute_sub_process(cmd_args, to_directory, get_output=True)
 
     if return_code >= 0:
         print output
@@ -826,7 +826,7 @@ def list_as_string(argument_list):
 def remote_path_exists(remote_addr, path_to_check, ssh_command = 'ssh'):
     text_to_print = 'REMOTE_PATH_EXISTS'
     cmd_args = [ssh_command, remote_addr, 'bash', '-c', '\"if [ -e ' + path_to_check + ' ] ; then echo ' + text_to_print + ' ; fi\"']
-    output = do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True, True)
+    output = do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, get_output=True)
     check = output[1].rstrip()
     return check == text_to_print
 
@@ -842,7 +842,7 @@ def create_mac_disk_image(execution_path, file_directory, file_base_name, image_
                 '-format', 'UDBZ', \
                 os.path.join(file_directory, file_base_name + '.dmg'), \
                 '-ov', '-scrub', '-size', image_size]
-    do_execute_sub_process(cmd_args, execution_path, True)
+    do_execute_sub_process(cmd_args, execution_path)
 
 
 ###############################

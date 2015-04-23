@@ -103,18 +103,18 @@ def build_icu_linux(environment, icu_src_base_dir, archive_icu):
     environment['LFLAGS'] = '-Wl,-rpath,\$ORIGIN'
     cmd_args = ['./runConfigureICU', 'Linux', '--enable-rpath', '--prefix=' + os.path.join(SCRIPT_ROOT_DIR, ICU_INSTALL_DIR_NAME)]
     exec_path = os.path.dirname(bldinstallercommon.locate_file(os.path.join(SCRIPT_ROOT_DIR, ICU_SRC_DIR_NAME), 'configure'))
-    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True, False, environment)
+    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, extra_env=environment)
     # build
     cmd_args = ['make', '-j' + str(multiprocessing.cpu_count() + 1)]
-    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True, False, environment)
+    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, extra_env=environment)
     cmd_args = ['make', 'install']
-    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True, False, environment)
+    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, extra_env=environment)
     # patch RPath
     exec_path = os.path.join(SCRIPT_ROOT_DIR, ICU_INSTALL_DIR_NAME, 'lib')
     files = bldinstallercommon.make_files_list(exec_path, '.so$')
     for item in files:
         cmd_args = 'chrpath -r $ORIGIN ' + item
-        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), exec_path, True, environment)
+        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), exec_path, extra_env=environment)
     icu_configuration = ICUConfiguration
     search_path = os.path.join(SCRIPT_ROOT_DIR, ICU_INSTALL_DIR_NAME)
     icu_configuration.icu_include_path = bldinstallercommon.locate_directory(search_path, 'include')
@@ -131,12 +131,12 @@ def build_icu_win(environment, icu_src_base_dir, archive_icu):
     cygpath = subprocess.check_output(['cygpath', os.path.join(SCRIPT_ROOT_DIR, ICU_INSTALL_DIR_NAME)])
     cmd_args = ['bash', 'runConfigureICU', 'Cygwin/MSVC', '--prefix=' + cygpath]
     exec_path = os.path.dirname(bldinstallercommon.locate_file(os.path.join(SCRIPT_ROOT_DIR, ICU_SRC_DIR_NAME), 'configure'))
-    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True, environment)
+    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, extra_env=environment)
     # build
     cmd_args = ['make']
-    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True, environment)
+    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, extra_env=environment)
     cmd_args = ['make', 'install']
-    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True, environment)
+    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, extra_env=environment)
 
     icu_configuration = ICUConfiguration
     search_path = os.path.join(SCRIPT_ROOT_DIR, ICU_INSTALL_DIR_NAME)
@@ -167,7 +167,7 @@ def archive_build_artifacts(base_path):
     if os.path.isfile(archive_name):
         os.remove(archive_name)
     cmd_args = ['7z', 'a', archive_name, '*']
-    bldinstallercommon.do_execute_sub_process(cmd_args, base_path, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, base_path)
     shutil.move(os.path.join(base_path, archive_name), output_dir)
     # lib package
     archive_name = archive_name_base + '.7z'
@@ -176,7 +176,7 @@ def archive_build_artifacts(base_path):
     lib_path = bldinstallercommon.locate_directory(base_path, 'lib')
     clean_icu_lib(lib_path)
     cmd_args = ['7z', 'a', archive_name, '*']
-    bldinstallercommon.do_execute_sub_process(cmd_args, lib_path, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, lib_path)
     shutil.move(os.path.join(lib_path, archive_name), output_dir)
 
 

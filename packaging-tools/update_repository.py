@@ -144,7 +144,7 @@ def update_repository(source_pkg, target_repo, components_to_update):
         cmd_args += [target_repo]
     else:
         cmd_args += ['--include', ','.join(components_to_update), target_repo]
-    bldinstallercommon.do_execute_sub_process(cmd_args, source_pkg, True)
+    bldinstallercommon.do_execute_sub_process(cmd_args, source_pkg)
 
 
 ###############################
