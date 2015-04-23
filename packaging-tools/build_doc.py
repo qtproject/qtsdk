@@ -66,6 +66,7 @@ def handle_extra_module_doc_build():
         sys.exit(-1)
     extra_module_src_package_uri = os.environ['EXTRA_MODULE_SRC_PACKAGE_URI']
     extra_module_doc_build_qt_package_uri = os.environ['EXTRA_MODULE_DOC_BUILD_QT_PACKAGE_URI']
+    extra_module_doc_build_qt_dependency_package_uri = os.environ.get('EXTRA_MODULE_DOC_BUILD_QT_DEPENDENCY_PACKAGE_URI', '')
     extra_module_doc_build_qt_icu_package_uri = os.environ['EXTRA_MODULE_DOC_BUILD_QT_ICU_PACKAGE_URI']
     # define some paths
     current_path = os.path.dirname(os.path.realpath(__file__))
@@ -102,6 +103,16 @@ def handle_extra_module_doc_build():
     print('Starting to download: {0}'.format(extra_module_doc_build_qt_package_uri))
     bldinstallercommon.retrieve_url(extra_module_doc_build_qt_package_uri, downloaded_qt_bin_archive)
     bldinstallercommon.extract_file(downloaded_qt_bin_archive, qt_package_path)
+    # fetch qt dependency package (optional)
+    if bldinstallercommon.is_content_url_valid(extra_module_doc_build_qt_dependency_package_uri):
+        raw_name_qt_bin_dependency_package = extra_module_doc_build_qt_dependency_package_uri.rsplit('/', 1)[-1] # get last item from array
+        downloaded_qt_dependency_bin_archive = os.path.join(current_path, raw_name_qt_bin_dependency_package)
+        if os.path.lexists(downloaded_qt_dependency_bin_archive):
+            print('*** Deleted existing qt binary dependency package: [{0}] before fetching the new one.'.format(downloaded_qt_dependency_bin_archive))
+            os.remove(downloaded_qt_dependency_bin_archive)
+        print('Starting to download: {0}'.format(extra_module_doc_build_qt_dependency_package_uri))
+        bldinstallercommon.retrieve_url(extra_module_doc_build_qt_dependency_package_uri, downloaded_qt_dependency_bin_archive)
+        bldinstallercommon.extract_file(downloaded_qt_dependency_bin_archive, qt_package_path)
     # fetch qt icu binary package
     raw_name_qt_icu_package = extra_module_doc_build_qt_icu_package_uri.rsplit('/', 1)[-1] # get last item from array
     downloaded_qt_icu_archive = os.path.join(current_path, raw_name_qt_icu_package)
