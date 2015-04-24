@@ -53,6 +53,9 @@ import shutil
 import subprocess
 import threading
 import collections
+#fix that there was var with name "type" in a calling test for runCommand when trying
+#to use __builtin__.type()
+import __builtin__
 
 # 3rd party module to read process output in a convenient way
 from asynchronousfilereader import AsynchronousFileReader
@@ -247,13 +250,19 @@ def getEnvironment(init_environment = None, callerArguments = None):
             merged_environment[key] = environment[key]
     return merged_environment
 
-def runCommand(command, currentWorkingDirectory, callerArguments = None,
-    abort_on_fail = True, init_environment = None):
+
+def runCommand(command, currentWorkingDirectory, callerArguments = None, init_environment = None, onlyErrorCaseOutput=False, expectedExitCodes=[0]):
+    if __builtin__.type(expectedExitCodes) is not list:
+        raise TypeError("{}({}) is not {}".format("expectedExitCodes", __builtin__.type(expectedExitCodes), list))
+    if __builtin__.type(onlyErrorCaseOutput) is not bool:
+        raise TypeError("{}({}) is not {}".format("onlyErrorCaseOutput", __builtin__.type(onlyErrorCaseOutput), bool))
+
+    if __builtin__.type(command) is list:
+        commandAsList = command
+    else:
+        commandAsList = command[:].split(' ')
 
     environment = getEnvironment(init_environment, callerArguments)
-
-    exitCode = -1
-    commandAsList = command[:].split(' ')
 
     # add some necessary paths
     if hasattr(callerArguments, 'gitpath') and callerArguments.gitpath and commandAsList[0] == 'git':
@@ -279,83 +288,83 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None,
     if currentWorkingDirectory and not os.path.lexists(currentWorkingDirectory):
         os.makedirs(currentWorkingDirectory)
 
-    print('========================== do ... ==========================')
+    print(os.linesep + '========================== do ... ==========================')
     if currentWorkingDirectory:
         print("Working Directory: " + currentWorkingDirectory)
     else:
         print("No currentWorkingDirectory set!")
     print("Last command:      " + ' '.join(commandAsList))
 
-    try:
-        if currentWorkingDirectory and not os.path.lexists(currentWorkingDirectory):
-            raise Exception("The current working directory is not existing: %s" % currentWorkingDirectory)
+    if currentWorkingDirectory and not os.path.lexists(currentWorkingDirectory):
+        raise Exception("The current working directory is not existing: %s" % currentWorkingDirectory)
 
-        if threading.currentThread().name == "MainThread":
-            process = subprocess.Popen(commandAsList,
-                cwd = currentWorkingDirectory, bufsize = -1, env = environment)
+    lastStdOutLines = []
+    lastStdErrLines = []
+    if threading.currentThread().name == "MainThread" and not onlyErrorCaseOutput:
+        process = subprocess.Popen(commandAsList,
+            cwd = currentWorkingDirectory, bufsize = -1, env = environment)
+    else:
+        process = subprocess.Popen(commandAsList,
+            stdout = subprocess.PIPE, stderr = subprocess.PIPE,
+            cwd = currentWorkingDirectory, bufsize = -1, env = environment)
+
+        maxSavedLineNumbers = 100
+        lastStdOutLines = collections.deque(maxlen = maxSavedLineNumbers)
+        lastStdErrLines = collections.deque(maxlen = maxSavedLineNumbers)
+
+        # Launch the asynchronous readers of the process' stdout and stderr.
+        stdout = AsynchronousFileReader(process.stdout)
+        stderr = AsynchronousFileReader(process.stderr)
+
+        # Check the readers if we received some output (until there is nothing more to get).
+        while not stdout.eof() or not stderr.eof():
+            # Show what we received from standard output.
+            for line in stdout.readlines():
+                lastStdOutLines.append(line)
+                if threading.currentThread().name != "MainThread":
+                    sys.stdout.write(line)
+
+            # Show what we received from standard error.
+            for line in stderr.readlines():
+                lastStdErrLines.append(line)
+                if threading.currentThread().name != "MainThread":
+                    sys.stdout.write(line)
+
+            # Sleep a bit before polling the readers again.
+            time.sleep(1)
+
+        # Let's be tidy and join the threads we've started.
+        stdout.join()
+        stderr.join()
+
+        # Close subprocess' file descriptors.
+        process.stdout.close()
+        process.stderr.close()
+
+    process.wait()
+    exitCode = process.returncode
+
+    # lets keep that for debugging
+    #if environment:
+    #    for key in sorted(environment):
+    #        sys.stderr.write("set " + key + "=" + environment[key] + os.linesep)
+    if exitCode not in expectedExitCodes:
+        lastOutput = ""
+        type = ""
+        if threading.currentThread().name != "MainThread" or onlyErrorCaseOutput:
+            if len(lastStdErrLines) != 0:
+                lastOutput += "".join(lastStdErrLines)
+                type = "error "
+            elif len(lastStdOutLines) != 0:
+                lastOutput += "".join(lastStdOutLines)
+        prettyLastOutput = os.linesep + '======================= error =======================' + os.linesep
+        prettyLastOutput += "Working Directory: " + currentWorkingDirectory + os.linesep
+        prettyLastOutput += "Last command:      " + ' '.join(commandAsList) + os.linesep
+        if lastOutput:
+            prettyLastOutput += "last {0}output:{1}{2}".format(type, os.linesep, lastOutput)
         else:
-            process = subprocess.Popen(commandAsList,
-                stdout = subprocess.PIPE, stderr = subprocess.PIPE,
-                cwd = currentWorkingDirectory, bufsize = -1, env = environment)
-
-            maxSavedLineNumbers = 100
-            lastStdOutLines = collections.deque(maxlen = maxSavedLineNumbers)
-            lastStdErrLines = collections.deque(maxlen = maxSavedLineNumbers)
-
-            # Launch the asynchronous readers of the process' stdout and stderr.
-            stdout = AsynchronousFileReader(process.stdout)
-            stderr = AsynchronousFileReader(process.stderr)
-
-            # Check the readers if we received some output (until there is nothing more to get).
-            while not stdout.eof() or not stderr.eof():
-                # Show what we received from standard output.
-                for line in stdout.readlines():
-                    lastStdOutLines.append(line)
-                    sys.stdout.write(line)
-
-                # Show what we received from standard error.
-                for line in stderr.readlines():
-                    lastStdErrLines.append(line)
-                    sys.stdout.write(line)
-
-                # Sleep a bit before polling the readers again.
-                time.sleep(1)
-
-            # Let's be tidy and join the threads we've started.
-            stdout.join()
-            stderr.join()
-
-            # Close subprocess' file descriptors.
-            process.stdout.close()
-            process.stderr.close()
-
-        process.wait()
-        exitCode = process.returncode
-
-        if exitCode != 0:
-            lastOutput = ""
-            if threading.currentThread().name != "MainThread":
-                type = ""
-                if len(lastStdErrLines) != 0:
-                    lastOutput += "".join(lastStdErrLines)
-                    type = "error "
-                elif len(lastStdOutLines) != 0:
-                    lastOutput += "".join(lastStdOutLines)
-            if len(lastOutput) != 0:
-                lastOutput = "{0}last {1}output:{0}{2}".format(os.linesep, type, lastOutput)
-            raise Exception("None zero exit code: {0}{1}".format(exitCode, lastOutput))
-    except Exception as e:
-        if abort_on_fail:
-            sys.stderr.write(os.linesep + '======================= error =======================' + os.linesep)
-            sys.stderr.write("Working Directory: " + currentWorkingDirectory + os.linesep)
-            sys.stderr.write("Last command:      " + ' '.join(commandAsList) + os.linesep)
-            sys.stderr.write(e.message)
-            # lets keep that for debugging
-            #if environment:
-            #    for key in sorted(environment):
-            #        sys.stderr.write("set " + key + "=" + environment[key] + os.linesep)
-            sys.stderr.write(os.linesep + '======================= error =======================' + os.linesep)
-            sys.exit(1)
+            prettyLastOutput += " - no process output caught - "
+        raise Exception("Different exit code then expected({0}): {1}{2}".format(expectedExitCodes, exitCode, prettyLastOutput))
     return exitCode
 
 def runInstallCommand(arguments = 'install', currentWorkingDirectory = None, callerArguments = None, init_environment = None):
