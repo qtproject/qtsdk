@@ -136,6 +136,9 @@ class Task():
         if function:
             firstFunction = TaskFunction(function, *arguments)
             self.listOfFunctions.append(firstFunction)
+        # exit the complete program with code -1, sys.exit would just close the thread
+        self.exitFunction = os._exit
+        self.exitFunctionArguments = [-1]
 
     def addFunction(self, function, *arguments):
         aFunction = TaskFunction(function, *arguments)
@@ -153,8 +156,7 @@ class Task():
                 sys.__stderr__.write(e.message)
                 sys.__stdout__.flush()
                 sys.__stderr__.flush()
-                # exit the complete program with code 3, sys.exit would just close the thread
-                os._exit(3)
+                self.exitFunction(*(self.exitFunctionArguments))
         print("Done")
 
 class ThreadedWork():
@@ -163,12 +165,19 @@ class ThreadedWork():
         self.queue = queue.Queue()
         self.legend = []
         self.taskNumber = 0
+        self.exitFunction = None
+    def setExitFailFunction(self, function, *arguments):
+        self.exitFunction = function
+        self.exitFunctionArguments = arguments
 
     def addTask(self, description, function, *arguments):
         self.addTaskObject(Task(description, function, *arguments))
 
     def addTaskObject(self, task):
         task.taskNumber = self.taskNumber
+        if self.exitFunction:
+            task.exitFunction = self.exitFunction
+            task.exitFunctionArguments = self.exitFunctionArguments
         self.legend.append(("{:d}: " + os.linesep +"\t{}" + os.linesep).format(task.taskNumber, task.description))
         self.queue.put(task)
         self.taskNumber = self.taskNumber + 1
