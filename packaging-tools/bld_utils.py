@@ -98,17 +98,6 @@ def stripVars(sobject, chars):
         if isinstance(value, str):
             setattr(sobject, key, value.strip(chars))
 
-def removeDir(path, raiseNoException = False):
-    if os.path.isdir(path):
-        print("remove directory: ", path)
-        try:
-            shutil.rmtree(path)
-        except:
-            if raiseNoException:
-                pass # just do nothing if raiseNoException is True
-            else:
-                raise
-
 def urllib2_response_read(response, file_path, block_size, total_size):
     total_size = int(total_size)
     bytes_count = 0

@@ -52,7 +52,7 @@ from urlparse import urlparse
 
 # own imports
 from threadedwork import Task, ThreadedWork
-from bld_utils import download, gitSHA, removeDir, runBuildCommand, runCommand, runInstallCommand, stripVars
+from bld_utils import download, gitSHA, runBuildCommand, runCommand, runInstallCommand, stripVars
 import bldinstallercommon
 from patch_qmake_qt_key import replace_key
 
@@ -151,10 +151,10 @@ if sys.platform == "darwin":
 ### clean step
 if callerArguments.clean:
     print("##### {0} #####".format("clean old builds"))
-    removeDir(callerArguments.qt5path, raiseNoException = True)
-    removeDir(qtCreatorBuildDirectory, raiseNoException = True)
-    removeDir(qtCreatorInstallDirectory, raiseNoException = True)
-    removeDir(tempPath, raiseNoException = True)
+    bldinstallercommon.remove_tree(callerArguments.qt5path)
+    bldinstallercommon.remove_tree(qtCreatorBuildDirectory)
+    bldinstallercommon.remove_tree(qtCreatorInstallDirectory)
+    bldinstallercommon.remove_tree(tempPath)
 
 if not os.path.lexists(callerArguments.qt5path) and not callerArguments.qt5_packages_url:
     parser.print_help()

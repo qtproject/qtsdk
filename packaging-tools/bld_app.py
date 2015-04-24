@@ -55,7 +55,7 @@ from urlparse import urlparse
 
 # own imports
 from threadedwork import Task, ThreadedWork
-from bld_utils import download, removeDir, runCommand, stripVars
+from bld_utils import download, runCommand, stripVars
 import bldinstallercommon
 
 SCRIPT_ROOT_DIR             = os.path.dirname(os.path.realpath(__file__))
@@ -284,9 +284,9 @@ if sys.platform == "darwin":
 ### clean step
 if callerArguments.clean:
     print("##### {0} #####".format("clean old builds"))
-    removeDir(callerArguments.qt5path, raiseNoException = True)
-    removeDir(qtApplicationInstallDirectory, raiseNoException = True)
-    removeDir(tempPath, raiseNoException = True)
+    bldinstallercommon.remove_tree(callerArguments.qt5path)
+    bldinstallercommon.remove_tree(qtApplicationInstallDirectory)
+    bldinstallercommon.remove_tree(tempPath)
 
 if not os.path.lexists(callerArguments.qt5path) and not (callerArguments.qt5_essentials7z):
     parser.print_help()
