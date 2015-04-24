@@ -346,16 +346,19 @@ def handle_remove_readonly(func, path, exc):
     else:
         raise
 
-def remove_tree(source_dir):
-    if IS_WIN_PLATFORM:
-        if os.path.exists(source_dir):
-            source_dir = win32api.GetShortPathName(source_dir)
-            cmd_args = ['rmdir', source_dir, '/S', '/Q']
-            do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
-    else:
-        #shutil.rmtree(source_dir)
-        cmd_args = ['rm' , '-rf', source_dir]
-        do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
+def remove_tree(path):
+    if os.path.isdir(path) and os.path.exists(path):
+        if IS_WIN_PLATFORM:
+            path = win32api.GetShortPathName(path)
+            #a funny thing is that rmdir does not set an exitcode it is just using the last set one
+            try:
+                runCommand("rmdir {0} /S /Q".format(path), SCRIPT_ROOT_DIR, onlyErrorCaseOutput=True)
+            except:
+                pass
+        else:
+            #shutil.rmtree(path)
+            runCommand("rm -rf {0}".format(path), SCRIPT_ROOT_DIR, onlyErrorCaseOutput=True)
+    return not os.path.exists(path)
 
 
 ###############################
