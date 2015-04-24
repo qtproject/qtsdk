@@ -55,6 +55,7 @@ import urllib
 import urllib2
 import string
 import fileinput
+from bld_utils import runCommand
 
 
 # need to include this for win platforms as long path names
@@ -786,7 +787,7 @@ def clone_repository(repo_url, repo_branch_or_tag, destination_folder, full_clon
 ###############################
 # function
 ###############################
-def extract_file(path, to_directory='.', get_output=False):
+def extract_file(path, to_directory='.'):
     cmd_args = []
     if path.endswith('.tar'):
         cmd_args = ['tar', '-xf', path]
@@ -800,15 +801,7 @@ def extract_file(path, to_directory='.', get_output=False):
         print 'Did not extract the file! Not archived or no appropriate extractor was found: ' + path
         return False
 
-    return_code, output = do_execute_sub_process(cmd_args, to_directory, get_output=True)
-
-    if return_code >= 0:
-        print output
-        return False
-
-    if get_output:
-        print output
-
+    runCommand(cmd_args, currentWorkingDirectory=to_directory, onlyErrorCaseOutput=True)
     return True
 
 
