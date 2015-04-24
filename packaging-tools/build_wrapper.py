@@ -1516,7 +1516,7 @@ def sign_installer(installer_output_dir, installer_name, installer_name_base):
     if installer_name.endswith(".dmg"):
         unlock_keychain()
         sign_mac_executable(installer_name_base + '.app', installer_output_dir, True)
-        cmd_args = ['hdiutil', 'create', '-srcfolder', os.path.join(installer_output_dir, installer_name_base) + '.app', '-volname', installer_name_base, '-format', 'UDBZ', os.path.join(installer_output_dir, installer_name_base) + '.dmg', '-ov', '-scrub', '-size', '2g']
+        cmd_args = ['hdiutil', 'create', '-srcfolder', os.path.join(installer_output_dir, installer_name_base) + '.app', '-volname', installer_name_base, '-format', 'UDBZ', os.path.join(installer_output_dir, installer_name_base) + '.dmg', '-ov', '-scrub', '-size', '3g']
         bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir, True)
     if installer_name.endswith(".exe"):
         sign_windows_executable(installer_name, installer_output_dir, True)
