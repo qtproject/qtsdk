@@ -161,7 +161,7 @@ class Task():
 
 class ThreadedWork():
     def __init__(self, description):
-        self.description = "##### {} #####".format(description)
+        self.description = os.linesep + "##### {} #####".format(description)
         self.queue = queue.Queue()
         self.legend = []
         self.taskNumber = 0
