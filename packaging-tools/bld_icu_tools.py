@@ -103,12 +103,12 @@ def build_icu_linux(environment, icu_src_base_dir, archive_icu):
     environment['LFLAGS'] = '-Wl,-rpath,\$ORIGIN'
     cmd_args = ['./runConfigureICU', 'Linux', '--enable-rpath', '--prefix=' + os.path.join(SCRIPT_ROOT_DIR, ICU_INSTALL_DIR_NAME)]
     exec_path = os.path.dirname(bldinstallercommon.locate_file(os.path.join(SCRIPT_ROOT_DIR, ICU_SRC_DIR_NAME), 'configure'))
-    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True, environment)
+    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True, False, environment)
     # build
     cmd_args = ['make', '-j' + str(multiprocessing.cpu_count() + 1)]
-    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True, environment)
+    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True, False, environment)
     cmd_args = ['make', 'install']
-    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True, environment)
+    bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True, False, environment)
     # patch RPath
     exec_path = os.path.join(SCRIPT_ROOT_DIR, ICU_INSTALL_DIR_NAME, 'lib')
     files = bldinstallercommon.make_files_list(exec_path, '.so$')
