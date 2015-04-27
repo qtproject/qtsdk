@@ -195,12 +195,10 @@ class BldCommand:
         self.custom_build = options.custom_build
 
         # icu related
-        self.icu_libs = options.icu_libs
-        self.icu_src = options.icu_src
+        self.icu_libs = os.environ.get('ICU_LIBS')
+        self.icu_src = os.environ.get('ICU_SRC_PKG_URI')
         self.icu_version = os.environ.get('ICU_VERSION')
         self.icu_src_pkg_url = os.environ.get('ICU_SRC_PKG_URL')
-        self.icu_src_pkg_url_win = os.environ.get('ICU_SRC_PKG_URL_WIN')
-        self.icu_src_pkg_url_unix = os.environ.get('ICU_SRC_PKG_URL_UNIX')
 
         # openssl
         self.openssl_libs = options.openssl_libs
@@ -311,11 +309,6 @@ class BldCommand:
         elif self.options.command == self.execute_configure_exe_bld:
             if len(sys.argv) < 7:
                 return False
-        # ICU build
-        elif cmd == self.init_icu_bld:
-            return self.validate_icu_init_args()
-        elif cmd == self.execute_icu_bld:
-            return self.validate_icu_build_args()
         else:
             if len(sys.argv) < 12:
                 return False
@@ -429,37 +422,6 @@ class BldCommand:
         if not self.options.path:
             print('*** QtCreator init is missing command line argument: --path')
             sys.exit(-1)
-        return True
-
-
-    ###########################################
-    # Validate build args for ICU build init
-    ###########################################
-    def validate_icu_init_args(self):
-        if not self.options.server:
-            print('*** ICU build is missing command line argument: --server')
-            sys.exit(-1)
-        if not self.options.time_stamp:
-            print('*** ICU init is missing command line argument: --time_stamp')
-            sys.exit(-1)
-        if not self.options.build_number:
-            print('*** ICU init is missing command line argument: --build_number')
-            sys.exit(-1)
-        if not self.options.icu_version:
-            sys.exit('*** ICU init build is missing environment variable: ICU_VERSION')
-        return True
-
-    ###########################################
-    # Validate build args for ICU build
-    ###########################################
-    def validate_icu_build_args(self):
-        if not self.options.server:
-            print('*** ICU build is missing command line argument: --server')
-            sys.exit(-1)
-        if not self.icu_src_pkg_url_unix or not self.icu_src_pkg_url_win:
-            sys.exit('*** ICU build is missing environment variable: ICU_SRC_PKG_URL_[UNIX|WIN]')
-        if not self.icu_version:
-            sys.exit('*** ICU init build is missing environment variable: ICU_VERSION')
         return True
 
     ###########################################
@@ -1706,31 +1668,6 @@ def publish_qt5_src_packages(bld_command):
         bldinstallercommon.do_execute_sub_process(cmd_args_copy_src_to_ext, SCRIPT_ROOT_DIR, True)
 
 
-################################
-# Publish prebuilt ICU packages
-################################
-def publish_icu_packages(bld_command):
-    # Opensource server address and path
-    ext_server_base_url  = os.environ['EXT_SERVER_BASE_URL']
-    ext_server_base_path = os.environ['EXT_SERVER_BASE_PATH']
-    icu_version          = os.environ['ICU_VERSION']
-    ext_icu_snapshot_dir = os.environ.get('EXT_ICU_SNAPSHOT_DIR')
-    if not ext_icu_snapshot_dir:
-        ext_icu_snapshot_dir = '/development_releases/prebuilt/icu/prebuilt/'
-    else:
-        ext_icu_snapshot_dir = '/' + ext_icu_snapshot_dir + '/'
-        ext_icu_snapshot_dir.replace('//', '/')
-    ext_dest_dir = ext_server_base_path + ext_icu_snapshot_dir + icu_version + '/'
-    # Create remote directories
-    cmd_pkg_login = [SSH_COMMAND, bld_command.pkg_server_addr]
-    cmd_mkdir_ext = cmd_pkg_login + ['ssh', ext_server_base_url, 'mkdir', '-p', ext_dest_dir]
-    bldinstallercommon.do_execute_sub_process(cmd_mkdir_ext, SCRIPT_ROOT_DIR, True)
-    # Copy the pre-built ICU packages to the remote directory
-    print('Starting to copy pre-build icu packages to ext: {0}'.format(ext_dest_dir))
-    cmd_copy_icu_to_ext = cmd_pkg_login + ['scp', '-r', '-v', PATH + '/icu/' + icu_version + '/latest/*', ext_server_base_url + ':' + ext_dest_dir]
-    bldinstallercommon.do_execute_sub_process(cmd_copy_icu_to_ext, SCRIPT_ROOT_DIR, True)
-
-
 ###############################
 # create_remote_dirs
 ###############################
@@ -1743,7 +1680,16 @@ def create_remote_dirs(server, dir_path):
 # ICU build init
 ###############################
 def initialize_icu_build(bld_command):
+    # sanity check icu args in bld_command
     sanity_check_packaging_server(bld_command)
+    if not bld_command.icu_version:
+        sys.exit('*** ICU build is missing: icu_version')
+    if not bld_command.path:
+        sys.exit('*** ICU build is missing: path')
+    if not bld_command.build_time_stamp:
+        sys.exit('*** ICU build is missing: build_time_stamp')
+    if not bld_command.build_number:
+        sys.exit('*** ICU build is missing: build_number')
     remote_snaphot_dir_base = bld_command.path + '/' + 'icu' + '/' + bld_command.icu_version
     remote_snaphot_dir = remote_snaphot_dir_base + '/' + bld_command.build_time_stamp + '-' + bld_command.build_number
     remote_latest_dir = remote_snaphot_dir_base + '/' + 'latest'
@@ -1757,15 +1703,15 @@ def initialize_icu_build(bld_command):
 # Handle ICU builds
 ###############################
 def handle_icu_build(bld_command):
-    if bld_command.icu_src_pkg_url:
-        icu_src = bld_command.icu_src_pkg_url
-    elif platform.system().lower().startswith('win'):
-        icu_src = bld_command.icu_src_pkg_url_win
-    else:
-        icu_src = bld_command.icu_src_pkg_url_unix
-    icu_version = '' # can be left empty, not cloning from git
+    # sanity check icu args in bld_command
     sanity_check_packaging_server(bld_command)
-    bld_icu_tools.init_build_icu(icu_src, icu_version, True)
+    if not bld_command.icu_version:
+        sys.exit('*** ICU build is missing: icu_version')
+    if not bld_command.path:
+        sys.exit('*** ICU build is missing: path')
+    if not bld_command.icu_src_pkg_url:
+        sys.exit('*** ICU build is missing: icu_src_pkg_url')
+    bld_icu_tools.init_build_icu(bld_command.icu_src_pkg_url, bld_command.icu_version, True)
     # define remote dir where to upload
     remote_snaphot_dir = bld_command.path + '/' + 'icu' + '/' + bld_command.icu_version + '/' + 'latest'
     srv_and_remote_dir = bld_command.pkg_server_addr + ':' + remote_snaphot_dir
@@ -1776,6 +1722,34 @@ def handle_icu_build(bld_command):
         if file_name.endswith('.7z'):
             cmd_args = [SCP_COMMAND, file_name, srv_and_remote_dir + '/']
             bldinstallercommon.do_execute_sub_process(cmd_args, local_archives_dir, True)
+
+
+################################
+# Publish prebuilt ICU packages
+################################
+def publish_icu_packages(bld_command):
+    # sanity check icu args in bld_command
+    sanity_check_packaging_server(bld_command)
+    if not bld_command.icu_version:
+        sys.exit('*** ICU build is missing: icu_version')
+    # Opensource server address and path
+    ext_server_base_url  = os.environ['EXT_SERVER_BASE_URL']
+    ext_server_base_path = os.environ['EXT_SERVER_BASE_PATH']
+    ext_icu_snapshot_dir = os.environ.get('EXT_ICU_SNAPSHOT_DIR')
+    if not ext_icu_snapshot_dir:
+        ext_icu_snapshot_dir = '/development_releases/prebuilt/icu/prebuilt/'
+    else:
+        ext_icu_snapshot_dir = '/' + ext_icu_snapshot_dir + '/'
+        ext_icu_snapshot_dir.replace('//', '/')
+    ext_dest_dir = ext_server_base_path + ext_icu_snapshot_dir + bld_command.icu_version + '/'
+    # Create remote directories
+    cmd_pkg_login = [SSH_COMMAND, bld_command.pkg_server_addr]
+    cmd_mkdir_ext = cmd_pkg_login + ['ssh', ext_server_base_url, 'mkdir', '-p', ext_dest_dir]
+    bldinstallercommon.do_execute_sub_process(cmd_mkdir_ext, SCRIPT_ROOT_DIR, True)
+    # Copy the pre-built ICU packages to the remote directory
+    print('Starting to copy pre-build icu packages to ext: {0}'.format(ext_dest_dir))
+    cmd_copy_icu_to_ext = cmd_pkg_login + ['scp', '-r', '-v', PATH + '/icu/' + bld_command.icu_version + '/latest/*', ext_server_base_url + ':' + ext_dest_dir]
+    bldinstallercommon.do_execute_sub_process(cmd_copy_icu_to_ext, SCRIPT_ROOT_DIR, True)
 
 
 ###############################
@@ -1835,12 +1809,6 @@ def setup_option_parser():
     OPTION_PARSER.add_option("-e", "--target_env",
                              action="store", type="string", dest="target_env", default="",
                              help="Target environment: Linux, Linux_64, mac, win")
-    OPTION_PARSER.add_option("-i", "--icu_libs",
-                             action="store", type="string", dest="icu_libs", default="",
-                             help="Url for pre-compiled icu libraries")
-    OPTION_PARSER.add_option("--icu_src",
-                             action="store", type="string", dest="icu_src", default="",
-                             help="Url for icu src package to be used for the Qt build")
     OPTION_PARSER.add_option("-o", "--openssl_libs",
                              action="store", type="string", dest="openssl_libs", default="",
                              help="Url for pre-compiled openssl libraries")
@@ -1900,8 +1868,6 @@ def main():
         handle_qt_release_build(bld_command)
     elif bld_command.command == BldCommand.publish_qt5_src_pkg:
         publish_qt5_src_packages(bld_command)
-    elif bld_command.command == BldCommand.publish_icu_pkg:
-        publish_icu_packages(bld_command)
     # Extra module specific
     elif bld_command.command == BldCommand.init_extra_module_build_cycle_src:
         initialize_extra_module_build_src(bld_command)
@@ -1928,6 +1894,8 @@ def main():
         handle_online_installer_build(bld_command)
     elif bld_command.command == BldCommand.execute_configure_exe_bld:
         handle_qt_configure_exe_build(bld_command)
+    elif bld_command.command == BldCommand.publish_icu_pkg:
+        publish_icu_packages(bld_command)
     elif bld_command.command == BldCommand.init_icu_bld:
         initialize_icu_build(bld_command)
     elif bld_command.command == BldCommand.execute_icu_bld:
