@@ -309,9 +309,6 @@ class BldCommand:
         elif self.options.command == self.execute_configure_exe_bld:
             if len(sys.argv) < 7:
                 return False
-        else:
-            if len(sys.argv) < 12:
-                return False
         return True
 
 
