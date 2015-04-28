@@ -306,7 +306,7 @@ def cleanup_icu():
 ##############################################################
 # Execute task(s)
 ##############################################################
-def init_build_icu(icu_src, icu_version = '', environment = dict(os.environ), archive_icu = False):
+def init_build_icu(icu_src, icu_version = '', archive_icu = False, environment = dict(os.environ)):
     # clean up first
     cleanup_icu()
     icu_src_dir = os.path.join(SCRIPT_ROOT_DIR, ICU_SRC_DIR_NAME)
