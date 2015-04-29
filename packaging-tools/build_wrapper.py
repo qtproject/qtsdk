@@ -196,7 +196,6 @@ class BldCommand:
 
         # icu related
         self.icu_libs = os.environ.get('ICU_LIBS')
-        self.icu_src = os.environ.get('ICU_SRC_PKG_URI')
         self.icu_version = os.environ.get('ICU_VERSION')
         self.icu_src_pkg_url = os.environ.get('ICU_SRC_PKG_URL')
 
@@ -929,7 +928,7 @@ def qt_desktop_release_build_extra_configure_options(bld_command):
     # Use custom ICU when required (build from sources or use pre-built icu libs)
     if platform.system().lower().startswith('linux'):
         extra_options = ' -R ' + os.path.join(WORK_DIR, MAKE_INSTALL_PADDING)
-        icu_configuration = bld_icu_tools.init_build_icu(bld_command.icu_src, '', False, EXTRA_ENV)
+        icu_configuration = bld_icu_tools.init_build_icu(bld_command.icu_src_pkg_url, '', False, EXTRA_ENV)
         EXTRA_ENV = combine_environment_dicts(EXTRA_ENV, icu_configuration.environment)
         extra_options += ' ' + icu_configuration.qt_configure_extra_args
         return extra_options
