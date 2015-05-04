@@ -52,8 +52,7 @@ package_finalize_items: delete_doc_directory
 archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2010_32/qt5_addons.7z
 package_finalize_items: delete_doc_directory
 [55.win32_msvc2010.icu_541_release.win_32]
-archive_uri:            http://download.qt.io/development_releases/prebuilt/icu/prebuilt/54.1/icu-wi
-n-MinGW4.9.2-Windows7-x86.7z
+archive_uri:            http://download.qt.io/development_releases/prebuilt/icu/prebuilt/54.1/icu-win-MinGW4.9.2-Windows7-x86.7z
 target_install_dir:     /bin
 
 
