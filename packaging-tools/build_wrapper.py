@@ -572,8 +572,8 @@ def initialize_qt5_build(bld_command):
     version_num = int(''.join(re.findall(r'\d+', bld_command.version)))
     if (version_num >= 550):
         if bld_command.license == 'opensource':
-            cmd_args = ['rm', '-rf', latest_qt_dir + '/' + 'src/doc']
-            bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+            remote_doc_dir = latest_qt_dir + '/' + 'src/doc'
+            delete_remote_directory_tree(bld_command, remote_doc_dir)
             for dir_name in BIN_DEST_DIRS:
                 link_name = latest_qt_dir + '/' + dir_name
                 remote_dir = link_name.replace('opensource', 'enterprise')
@@ -1529,6 +1529,14 @@ def generate_installer_final_name(bld_command, file_name):
 ###############################
 def update_latest_link(bld_command, remote_dest_dir, latest_dir):
     cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, 'ln -sfn', remote_dest_dir, latest_dir]
+    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
+
+
+###############################
+# Delete remote directory tree
+###############################
+def delete_remote_directory_tree(bld_command, remote_dir):
+    cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, 'rm -rf', remote_dir]
     bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
 
 
