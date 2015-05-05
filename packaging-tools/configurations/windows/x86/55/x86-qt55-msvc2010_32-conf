@@ -52,7 +52,7 @@ package_finalize_items: delete_doc_directory
 archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2010_32/qt5_addons.7z
 package_finalize_items: delete_doc_directory
 [55.win32_msvc2010.icu_541_release.win_32]
-archive_uri:            http://download.qt.io/development_releases/prebuilt/icu/prebuilt/54.1/icu-win-MinGW4.9.2-Windows7-x86.7z
+archive_uri:            http://download.qt.io/development_releases/prebuilt/icu/prebuilt/54.1/icu-win-msvc2010-Windows7-x86.7z
 target_install_dir:     /bin
 
 
@@ -62,7 +62,7 @@ target_install_dir:     /bin
 archives:               55.qtquick1.win32_msvc2010
 target_install_base:    /5.5/msvc2010
 [55.qtquick1.win32_msvc2010]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_msvc2010_32/qt5_qtquick1.7z
+archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2010_32/qt5_qtquick1.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -72,6 +72,6 @@ package_finalize_items: delete_doc_directory
 archives:               55.qtscript.win32_msvc2010
 target_install_base:    /5.5/msvc2010
 [55.qtscript.win32_msvc2010]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_msvc2010_32/qt5_qtscript.7z
+archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2010_32/qt5_qtscript.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory

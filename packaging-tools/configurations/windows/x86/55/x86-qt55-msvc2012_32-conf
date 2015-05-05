@@ -62,7 +62,7 @@ target_install_dir:     /bin
 archives:               55.qtquick1.win32_msvc2012
 target_install_base:    /5.5/msvc2012
 [55.qtquick1.win32_msvc2012]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_msvc2012_32/qt5_qtquick1.7z
+archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2012_32/qt5_qtquick1.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -72,6 +72,6 @@ package_finalize_items: delete_doc_directory
 archives:               55.qtscript.win32_msvc2012
 target_install_base:    /5.5/msvc2012
 [55.qtscript.win32_msvc2012]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_msvc2012_32/qt5_qtscript.7z
+archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2012_32/qt5_qtscript.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
