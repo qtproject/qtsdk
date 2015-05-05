@@ -72,8 +72,11 @@ parser = argparse.ArgumentParser(prog = os.path.basename(sys.argv[0]),
 if os.name == 'nt':
     parser.epilog = "example on windows: " + os.linesep + "\tpython {0} --clean " \
         "--buildcommand C:\\bin\\ibjom.cmd --installcommand nmake --qt5path ..\\..\\creator_qt5 " \
-        "--qt5_essentials7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/windows_vs2010_32/qt5_essentials.7z " \
-        "--qt5_addons7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/windows_vs2010_32/qt5_addons.7z " \
+        "--qt5_essentials7z http://it-dl241-hki.it.local/packages/qt/5.5.0-released/windows_vs2013_32/qt5_essentials.7z " \
+        "--qt5_addons7z http://it-dl241-hki.it.local/packages/qt/5.5.0-released/windows_vs2013_32/qt5_addons.7z " \
+        "--qt5_qtscript7z http://it-dl241-hki.it.local/packages/qt/5.5.0-released/windows_vs2013_32/qt5_qtscript.7z " \
+        "--qt5_qtquick17z http://it-dl241-hki.it.local/packages/qt/5.5.0-released/windows_vs2013_32/qt5_qtquick1.7z " \
+        "--qt5_qtwebkit7z http://it-dl241-hki.it.local/packages/qt/5.5.0-released/windows_vs2013_32/qt5_qtwebkit.7z " \
         "--installerbase7z http://it-dl241-hki.it.local/packages/opensource/ifw/1.4/installer-framework-build-win-x86.7z" \
         "--sevenzippath \"C:\\Program Files\\7-Zip\" " \
         "--gitpath \"C:\\Program Files (x86)\\Git\\cmd\" "\
@@ -88,6 +91,9 @@ elif sys.platform == "darwin":
         "--qt5path ../../qtcreator_qt5 " \
         "--qt5_essentials7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/mac_cocoa_10.7/qt5_essentials.7z " \
         "--qt5_addons7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/mac_cocoa_10.7/qt5_addons.7z " \
+        "--qt5_qtscript7z http://it-dl241-hki.it.local/packages/qt/5.5.0-released/mac_cocoa_10.7/qt5_qtscript.7z " \
+        "--qt5_qtquick17z http://it-dl241-hki.it.local/packages/qt/5.5.0-released/mac_cocoa_10.7/qt5_qtquick1.7z " \
+        "--qt5_qtwebkit7z http://it-dl241-hki.it.local/packages/qt/5.5.0-released/mac_cocoa_10.7/qt5_qtwebkit.7z " \
         "--installerbase7z http://it-dl241-hki.it.local/packages/opensource/ifw/1.4/installer-framework-build-mac-x64.7z" \
         "--keychain_unlock_script $HOME/unlock-keychain.sh" \
         "".format(os.path.basename(sys.argv[0]))
@@ -96,6 +102,9 @@ else:
         "--qt5path ../../qtcreator_qt5 " \
         "--qt5_essentials7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/linux_gcc_64_ubuntu1110/qt5_essentials.7z " \
         "--qt5_addons7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/linux_gcc_64_ubuntu1110/qt5_addons.7z " \
+        "--qt5_qtscript7z http://it-dl241-hki.it.local/packages/qt/5.5.0-released/linux_gcc_64_ubuntu1110/qt5_qtscript.7z " \
+        "--qt5_qtquick17z http://it-dl241-hki.it.local/packages/qt/5.5.0-released/linux_gcc_64_ubuntu1110/qt5_qtquick1.7z " \
+        "--qt5_qtwebkit7z http://it-dl241-hki.it.local/packages/qt/5.5.0-released/linux_gcc_64_ubuntu1110/qt5_qtwebkit.7z " \
         "--installerbase7z http://it-dl241-hki.it.local/packages/opensource/ifw/1.4/installer-framework-build-linux-x64.7z" \
         "--icu7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/linux_gcc_64_ubuntu1110/libicu_x86_64_ubuntu1110.7z " \
         "".format(os.path.basename(sys.argv[0]))
@@ -108,6 +117,9 @@ parser.add_argument('--installcommand', help="this means usually make", default=
 parser.add_argument('--debug', help="use debug builds", action='store_true', default=False)
 parser.add_argument('--qt5_essentials7z', help="a file or url where it get the built qt5 essential content as 7z")
 parser.add_argument('--qt5_addons7z', help="a file or url where it get the built qt5 essential content as 7z")
+parser.add_argument('--qt5_qtscript7z', help="a file or url where it get the built qt5 qtscript content as 7z", default="")
+parser.add_argument('--qt5_qtquick17z', help="a file or url where it get the built qt5 qtquick1 content as 7z", default="")
+parser.add_argument('--qt5_qtwebkit7z', help="a file or url where it get the built qt5 qtwebkit content as 7z", default="")
 parser.add_argument('--installerbase7z', help="a file or url where it get installerbase binary as 7z")
 parser.add_argument('--versiondescription', help="version description to be shown in the about dialog, e.g. 'pre-2.7.2")
 parser.add_argument('--additional_plugin', help="path to additional Qt Creator plugin to build", action='append')
@@ -180,6 +192,24 @@ if not os.path.lexists(callerArguments.qt5path):
     myGetQtBinaryWork.addTaskObject(
         createDownloadExtract7zTask(callerArguments.qt5_addons7z, callerArguments.qt5path, tempPath, callerArguments))
 
+    # optional qtmodule
+    if bldinstallercommon.is_content_url_valid(callerArguments.qt5_qtscript7z):
+        ### add get Qt script task
+        myGetQtBinaryWork.addTaskObject(
+            createDownloadExtract7zTask(callerArguments.qt5_qtscript7z, callerArguments.qt5path, tempPath, callerArguments))
+
+    # optional qtmodule
+    if bldinstallercommon.is_content_url_valid(callerArguments.qt5_qtquick17z):
+        ### add get Qt script task
+        myGetQtBinaryWork.addTaskObject(
+            createDownloadExtract7zTask(callerArguments.qt5_qtquick17z, callerArguments.qt5path, tempPath, callerArguments))
+
+    # optional qtmodule
+    if bldinstallercommon.is_content_url_valid(callerArguments.qt5_qtwebkit7z):
+        ### add get Qt script task
+        myGetQtBinaryWork.addTaskObject(
+            createDownloadExtract7zTask(callerArguments.qt5_qtwebkit7z, callerArguments.qt5path, tempPath, callerArguments))
+
 ### add get icu and d3dcompiler lib task
     if os.name == 'nt':
         targetPath = os.path.join(callerArguments.qt5path, 'bin')
@@ -210,31 +240,52 @@ if not os.path.lexists(callerArguments.qt5path):
 
     print("##### {0} #####".format("patch Qt"))
 
-    patch_operation_platform = ""
-    corelib = callerArguments.qt5path
-    if sys.platform == "darwin":
-        patch_operation_platform = "mac"
-        corelib += "/lib/QtCore.framework/Versions/Current/QtCore"
-    elif sys.platform.startswith('linux'):
-        patch_operation_platform = "linux"
-        corelib += "/lib/libQt5Core.so.5"
-    else:
-        patch_operation_platform = "windows"
-        corelib += "\\bin\\Qt5Core.dll"
+    # Save QT_INSTALL_PREFIX
+    #qt_install_prefix = get_qt_install_prefix(callerArguments.qt5path)
 
-    installerbasePath = os.path.join(installerPath, 'bin', 'installerbase')
-    if os.name != 'nt':
-        os.chmod(installerbasePath, 0777)
-    runCommand(installerbasePath + " -v --runoperation QtPatch " + patch_operation_platform + " "
-        + callerArguments.qt5path  + " qt5", qtCreatorBuildDirectory, callerArguments)
-
+    print("##### {0} #####".format("patch Qt"))
+    qtConfFile = open(os.path.join(callerArguments.qt5path, 'bin', 'qt.conf'), "w")
+    qtConfFile.write("[Paths]" + os.linesep)
+    qtConfFile.write("Prefix=.." + os.linesep)
+    qtConfFile.close()
     if sys.platform.startswith('linux'):
-        bldinstallercommon.init_common_module(os.getcwd())
         bldinstallercommon.handle_component_rpath(callerArguments.qt5path, 'lib')
-
-    replace_key(corelib, "qt_instdate", " ")
     print("##### {0} ##### ... done".format("patch Qt"))
     runCommand(qmakeBinary + " -query", qtCreatorBuildDirectory, callerArguments)
+
+
+#    patch_operation_platform = ""
+#    corelib = callerArguments.qt5path
+#    if sys.platform == "darwin":
+#        patch_operation_platform = "mac"
+#        corelib += "/lib/QtCore.framework/Versions/Current/QtCore"
+#    elif sys.platform.startswith('linux'):
+#        patch_operation_platform = "linux"
+#        corelib += "/lib/libQt5Core.so.5"
+#    else:
+#        patch_operation_platform = "windows"
+#        corelib += "\\bin\\Qt5Core.dll"
+#
+#    installer_binary = os.environ['QTC_IFW_PATCH_INSTALLERBINARY']
+#    installer_binary_save_as_temp = os.path.normpath(os.getcwd() + os.sep + os.path.basename(installer_binary))
+#    bldinstallercommon.retrieve_url(installer_binary, installer_binary_save_as_temp)
+#
+#    patcherBasePath = os.path.join(installerPath, 'bin', 'installerbase')
+#    if os.name != 'nt':
+#        os.chmod(patcherBasePath, 0777)
+#        os.chmod(installer_binary_save_as_temp, 0777)
+#
+#    runCommand(installer_binary_save_as_temp + " -v --runoperation QtPatch " + patch_operation_platform + " "
+#        + callerArguments.qt5path  + " qt5 ", qtCreatorBuildDirectory, callerArguments)
+#
+#    if sys.platform.startswith('linux'):
+#        bldinstallercommon.init_common_module(os.getcwd())
+#        bldinstallercommon.handle_component_rpath(callerArguments.qt5path, 'lib')
+#
+#    replace_key(corelib, "qt_instdate", " ")
+#    print("##### {0} ##### ... done".format("patch Qt"))
+#    runCommand(qmakeBinary + " -query", qtCreatorBuildDirectory, callerArguments)
+
 ### lets start building
 
 # prepare the environment for example setting LD_LIBRARY_PATH
