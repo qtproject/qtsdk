@@ -43,5 +43,5 @@ file_list:              qtwebview-qt55-x86-android-armv5-conf,
                         qtwebview-qt55-x86-android-x86-conf
 
 [PackageTemplates]
-template_dirs:          pkg_extras
+template_dirs:          pkg_extras_qt55
 

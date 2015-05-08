@@ -52,7 +52,9 @@ file_list:              qt-conf,
                         qt55-doc-examples-conf,
                         x86_64-qt55-msvc2013_64-conf,
                         x86-tools-qtcreator-conf,
-                        x86-tools-vcredist_msvc2013-conf
+                        x86-tools-vcredist_msvc2013-conf,
+                        qtwebview-src-doc-examples-conf-11,
+                        qtwebview-qt55-x86-msvc2013_64-conf
 
 [ConfigDir]
 template_name:          config_qt5
@@ -61,5 +63,5 @@ template_name:          config_qt5
 template_name:          config.xml.template.windows.qt5
 
 [PackageTemplates]
-template_dirs:          pkg_55, pkg_tools, pkg_extras
+template_dirs:          pkg_55, pkg_tools, pkg_extras_qt55
 

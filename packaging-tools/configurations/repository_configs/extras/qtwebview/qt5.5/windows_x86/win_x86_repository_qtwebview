@@ -38,12 +38,9 @@ name:                   qt
 identifier:             windows
 
 [PackageConfigurationFiles]
-file_list:              qtwebview-qt54-x86-mingw492_32-conf,
-                        qtwebview-qt54-x86-msvc2010_32-conf,
-                        qtwebview-qt54-x86-msvc2012_32-conf,
-                        qtwebview-qt54-x86-msvc2013_32-conf,
-                        qtwebview-qt54-x86-msvc2013_64-conf
+file_list:              qtwebview-qt55-x86-msvc2013_32-conf,
+                        qtwebview-qt55-x86-msvc2013_64-conf
 
 [PackageTemplates]
-template_dirs:          pkg_extras
+template_dirs:          pkg_extras_qt55
 
