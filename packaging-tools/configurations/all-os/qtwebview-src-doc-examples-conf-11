@@ -42,7 +42,7 @@ optional_for_offline:   true
 archives:               qtwebview.11.src
 target_install_base:    /Extras/QtWebView/1.1/Src
 [qtwebview.11.src]
-archive_uri:            /qtwebview/@QTWEBVIEW_VERSION@/latest_successful/src/qtwebview-@LICENSE@-src-@QTWEBVIEW_VERSION@.@SRC_ARCHIVE_TYPE@
+archive_uri:            /qtwebview/@QTWEBVIEW_VERSION@/latest_successful/src/qtwebview-enterprise-src-@QTWEBVIEW_VERSION@.@SRC_ARCHIVE_TYPE@
 target_install_dir:
 package_strip_dirs:     1
 
@@ -51,7 +51,7 @@ optional_for_offline:   true
 archives:               qtwebview.doc
 target_install_base:    /Docs/QtWebView/1.1/
 [qtwebview.doc]
-archive_uri:            /qtwebview/@QTWEBVIEW_VERSION@/latest_successful/doc/qtwebview-@LICENSE@-doc-@QTWEBVIEW_VERSION@.7z
+archive_uri:            /qtwebview/@QTWEBVIEW_VERSION@/latest_successful/doc/qtwebview-enterprise-doc-@QTWEBVIEW_VERSION@.7z
 target_install_dir:
 package_strip_dirs:     1
 package_finalize_items: cleanup_doc_directory
