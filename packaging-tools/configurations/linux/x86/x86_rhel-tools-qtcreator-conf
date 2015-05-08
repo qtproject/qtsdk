@@ -1,6 +1,6 @@
 #############################################################################
 ##
-## Copyright (C) 2015 Digia Plc and/or its subsidiary(-ies).
+## Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
 ## Contact: http://www.qt-project.org/legal
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -39,28 +39,14 @@
 ##
 #############################################################################
 
-[PackageNamespace]
-name:                   qt
 
-[PlatformIdentifier]
-identifier:             linux
-
-[PackageConfigurationFiles]
-file_list:              qt-conf,
-                        qt-license-conf,
-                        qt55-src-conf,
-                        qt55-doc-examples-conf,
-                        x86-qt55-gcc-conf,
-                        x86_rhel-tools-qtcreator-conf,
-                        qtwebview-src-doc-examples-conf-11,
-                        qtwebview-qt55-x86-gcc-conf
-
-[ConfigDir]
-template_name:          config_qt5
-
-[ConfigXml]
-template_name:          config.xml.template.linux.qt5
-
-[PackageTemplates]
-template_dirs:          pkg_55, pkg_tools, pkg_extras_qt55
-
+[qt.tools.qtcreator]
+archives:               tools.qtcreator
+target_install_base:    /Tools/QtCreator
+package_default:        true
+[tools.qtcreator]
+archive_uri:            /qtcreator/installer_package/qtcreator_linux-g++-Rhel6.6-x86.7z
+package_strip_dirs:     0
+target_install_dir:     /
+rpath_target:
+archive_name:           qt-creator-opensource-rhel66-32.7z
