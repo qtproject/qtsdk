@@ -792,6 +792,15 @@ def patch_build():
     # patch icu_install paths from files
     if bldinstallercommon.is_linux_platform():
         bld_icu_tools.patch_icu_paths(MAKE_INSTALL_ROOT_DIR)
+    # make sure the 'fixqt4headers.pl' ends up in final package if it does not exist there already
+    fixqt4headers_filename = 'fixqt4headers.pl'
+    fixqt4headers_file = bldinstallercommon.locate_file(MAKE_INSTALL_ROOT_DIR, fixqt4headers_filename)
+    if not fixqt4headers_file:
+        # copy it from the used src package
+        fixqt4headers_file = bldinstallercommon.locate_file(QT_SOURCE_DIR, fixqt4headers_filename)
+        target_dir = bldinstallercommon.locate_directory(os.path.join(MAKE_INSTALL_ROOT_DIR, ESSENTIALS_INSTALL_DIR_NAME), 'bin')
+        if fixqt4headers_file and target_dir:
+            shutil.copy(fixqt4headers_file, target_dir)
 
 
 ###############################
