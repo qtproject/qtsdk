@@ -108,8 +108,11 @@ class SdkComponent:
         self.install_priority            = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'install_priority')
         self.sorting_priority            = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'sorting_priority')
         self.optional_for_offline        = False
+        self.key_value_substitution_list = key_value_substitution_list
         if is_offline_build:
             tmp = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'optional_for_offline')
+            for item in self.key_value_substitution_list:
+                tmp = tmp.replace(item[0], item[1])
             if tmp.lower() in ['yes', 'true', '1']:
                 self.optional_for_offline = True
         self.downloadable_arch_list_qs   = []
@@ -117,12 +120,10 @@ class SdkComponent:
         self.sanity_check_error_msg      = ''
         self.target_config               = target_config
         self.archive_location_resolver   = archive_location_resolver
-        self.key_value_substitution_list = key_value_substitution_list
         # substitute key-value pairs if any
         for item in self.key_value_substitution_list:
             self.target_install_base = self.target_install_base.replace(item[0], item[1])
             self.version = self.version.replace(item[0], item[1])
-
 
     def is_root_component(self):
         if self.root_component == 'yes' or self.root_component == 'true':
