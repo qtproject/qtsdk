@@ -53,7 +53,7 @@ file_list:              qt-conf,
                         x86-qt54-msvc2013_32-conf,
                         x86-tools-qtcreator-conf,
                         x86-tools-vcredist_msvc2013-conf,
-                        qtwebview-src-doc-examples-conf,
+                        qtwebview-src-doc-examples-conf-10,
                         qtwebview-qt54-x86-msvc2013_32-conf,
                         qtcanvas3d-src-doc-examples-conf
 
