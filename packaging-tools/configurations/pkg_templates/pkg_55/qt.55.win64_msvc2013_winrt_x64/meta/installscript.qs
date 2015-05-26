@@ -65,26 +65,6 @@ function createShortcuts()
         QMessageBox["warning"]( "Error" , "Error", "Could not find windows installation directory");
         return;
     }
-
-    // Assistant
-    component.addOperation( "CreateShortcut",
-                            component_root_path + "/bin/assistant.exe",
-                            "@StartMenuDir@/" + qtStringVersion + "/Windows Runtime MSVC 2013 (64-bit)/Assistant.lnk");
-
-    // Designer
-    component.addOperation( "CreateShortcut",
-                            component_root_path + "/bin/designer.exe",
-                            "@StartMenuDir@/" + qtStringVersion + "/Windows Runtime MSVC 2013 (64-bit)/Designer.lnk");
-
-    // Linguist
-    component.addOperation( "CreateShortcut",
-                            component_root_path + "/bin/linguist.exe",
-                            "@StartMenuDir@/" + qtStringVersion + "/Windows Runtime MSVC 2013 (64-bit)/Linguist.lnk");
-
-    // qtd3dservice
-    component.addOperation( "CreateShortcut",
-                            component_root_path + "/bin/qtd3dservice.exe",
-                            "@StartMenuDir@/" + qtStringVersion + "/Windows Runtime MSVC 2013 (64-bit)/qtd3dservice.lnk");
 }
 
 Component.prototype.beginInstallation = function()
