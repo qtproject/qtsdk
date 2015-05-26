@@ -44,34 +44,6 @@ function Component()
 {
 }
 
-function createShortcuts()
-{
-    var qtStringVersion = "5.4";
-    // Create a batch file with the development environment
-    var component_root_path = installer.value("TargetDir") + "%TARGET_INSTALL_DIR%";
-    component_root_path = component_root_path.replace(/\//g, "\\");
-
-    // Assistant
-    component.addOperation( "CreateShortcut",
-                            component_root_path + "/bin/assistant.exe",
-                            "@StartMenuDir@/" + qtStringVersion + "/Windows Phone (x86 Emulator) MSVC 2013 (32-bit)/Assistant.lnk");
-
-    // Designer
-    component.addOperation( "CreateShortcut",
-                            component_root_path + "/bin/designer.exe",
-                            "@StartMenuDir@/" + qtStringVersion + "/Windows Phone (x86 Emulator) MSVC 2013 (32-bit)/Designer.lnk");
-
-    // Linguist
-    component.addOperation( "CreateShortcut",
-                            component_root_path + "/bin/linguist.exe",
-                            "@StartMenuDir@/" + qtStringVersion + "/Windows Phone (x86 Emulator) MSVC 2013 (32-bit)/Linguist.lnk");
-
-    // qtd3dservice
-    component.addOperation( "CreateShortcut",
-                            component_root_path + "/bin/qtd3dservice.exe",
-                            "@StartMenuDir@/" + qtStringVersion + "/Windows Phone (x86 Emulator) MSVC 2013 (32-bit)/qtd3dservice.lnk");
-}
-
 Component.prototype.beginInstallation = function()
 {
     installer.setValue(component.name + "_qtpath", "@TargetDir@" + "%TARGET_INSTALL_DIR%");
@@ -86,9 +58,6 @@ Component.prototype.createOperations = function()
             var qtPath = "@TargetDir@" + "%TARGET_INSTALL_DIR%";
             var qmakeBinary = "@TargetDir@" + "%TARGET_INSTALL_DIR%/bin/qmake.exe";
             addInitQtPatchOperation(component, "windows", qtPath, qmakeBinary, "qt5");
-
-            // Create a batch file and shortcuts with the development environment
-            createShortcuts();
 
             if (installer.value("SDKToolBinary") == "")
                 return;
