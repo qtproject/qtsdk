@@ -554,9 +554,6 @@ def initialize_qt5_build(bld_command):
     for dir_name in SRC_DEST_DIRS:
         dir_path = snapshot_qt_dir + '/' + dir_name
         create_remote_dirs(bld_command.pkg_server_addr, dir_path)
-    if bld_command.license == 'enterprise':
-        dir_path = snapshot_qt_dir + '/' + 'src/licheck'
-        create_remote_dirs(bld_command.pkg_server_addr, dir_path)
     # Update latest link
     cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, 'ln -sfn', snapshot_qt_dir, latest_qt_dir]
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
@@ -600,7 +597,7 @@ def handle_qt_licheck_build(bld_command):
     if bld_command.license == 'enterprise':
         # Build license checker
         exe_dir = WORK_DIR + '/qtsdk-enterprise/license-managing/licheck'
-        upload_path = bld_command.pkg_server_addr + ':' + bld_command.path + '/' + bld_command.license + '/qt/' + bld_command.version + '/latest/src/licheck/'
+        upload_path = bld_command.pkg_server_addr + ':' + bld_command.path + '/' + bld_command.license + '/licheck/'
         if bld_command.target_env.lower().startswith("win"):
             cmd_args = ['c:\Utils\jom\jom.exe', '-f', 'Makefile_win']
             bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
@@ -1616,15 +1613,14 @@ def handle_online_repository_build(bld_command):
 ###############################
 def copy_license_checkers(bld_command):
     sanity_check_packaging_server(bld_command)
-    latest_qt_dir = get_qt_snapshot_dir(bld_command).latest_qt_dir
     exec_path = os.path.join(WORK_DIR, 'qt5', 'qtbase', 'bin')
-    cmd_args = [SCP_COMMAND, bld_command.pkg_server_addr + ':' + os.path.join(latest_qt_dir, 'src', 'licheck', 'licheck.exe'), '.']
+    cmd_args = [SCP_COMMAND, bld_command.pkg_server_addr + ':' + os.path.join(bld_command.path, bld_command.license, 'licheck', 'licheck.exe'), '.']
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
-    cmd_args = [SCP_COMMAND, bld_command.pkg_server_addr + ':' + os.path.join(latest_qt_dir, 'src', 'licheck', 'licheck32'), '.']
+    cmd_args = [SCP_COMMAND, bld_command.pkg_server_addr + ':' + os.path.join(bld_command.path, bld_command.license, 'licheck', 'licheck32'), '.']
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
-    cmd_args = [SCP_COMMAND, bld_command.pkg_server_addr + ':' + os.path.join(latest_qt_dir, 'src', 'licheck', 'licheck64'), '.']
+    cmd_args = [SCP_COMMAND, bld_command.pkg_server_addr + ':' + os.path.join(bld_command.path, bld_command.license, 'licheck', 'licheck64'), '.']
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
-    cmd_args = [SCP_COMMAND, bld_command.pkg_server_addr + ':' + os.path.join(latest_qt_dir, 'src', 'licheck', 'licheck_mac'), '.']
+    cmd_args = [SCP_COMMAND, bld_command.pkg_server_addr + ':' + os.path.join(bld_command.path, bld_command.license, 'licheck', 'licheck_mac'), '.']
     bldinstallercommon.do_execute_sub_process(cmd_args, exec_path, True)
     #change permissions
     os.chdir(os.path.join(WORK_DIR, 'qt5', 'qtbase', 'bin'))
