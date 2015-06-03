@@ -1,6 +1,6 @@
 #############################################################################
 ##
-## Copyright (C) 2015 Digia Plc and/or its subsidiary(-ies).
+## Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
 ## Contact: http://www.qt-project.org/legal
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -39,34 +39,14 @@
 ##
 #############################################################################
 
-[PackageNamespace]
-name:                   qt
 
-[PlatformIdentifier]
-identifier:             linux
-
-[PackageConfigurationFiles]
-file_list:              qt-conf,
-                        qt-license-conf,
-                        qt55-src-conf,
-                        qt55-doc-examples-conf,
-                        x86_64-qt55-gcc-conf,
-                        android-x64-qt55-armv5-conf,
-                        android-x64-qt55-armv7-conf,
-                        android-x64-qt55-x86-conf,
-                        x86_64_rhel-tools-qtcreator-qt55x-conf,
-                        qtwebview-src-doc-examples-conf-11,
-                        qtwebview-qt55-x64-gcc-conf,
-                        qtwebview-qt55-x64-android-armv5-conf,
-                        qtwebview-qt55-x64-android-armv7-conf,
-                        qtwebview-qt55-x64-android-x86-conf
-
-[ConfigDir]
-template_name:          config_qt5
-
-[ConfigXml]
-template_name:          config.xml.template.linux.qt5
-
-[PackageTemplates]
-template_dirs:          pkg_55, pkg_tools, pkg_extras_qt55
-
+[qt.tools.qtcreator]
+archives:               tools.qtcreator
+target_install_base:    /Tools/QtCreator
+package_default:        true
+[tools.qtcreator]
+archive_uri:            /qtcreator/installer_package_550/qtcreator_win-msvc2013-Windows8.1-x86.7z
+package_strip_dirs:     0
+target_install_dir:     /
+rpath_target:
+archive_name:           qt-creator-opensource-vs2013-32.7z

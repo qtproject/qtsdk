@@ -51,7 +51,7 @@ file_list:              qt-conf,
                         qt54-src-conf,
                         qt54-doc-examples-conf,
                         x86_64-qt54-gcc-conf,
-                        x86_64-tools-qtcreator-conf,
+                        x86_64-tools-qtcreator-qt54x-conf,
                         qtwebview-qt54-x64-gcc-conf,
                         qtwebview-src-doc-examples-conf,
                         qtcanvas3d-src-doc-examples-conf

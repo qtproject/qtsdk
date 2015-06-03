@@ -42,11 +42,12 @@
 
 [qt.tools.qtcreator]
 archives:               tools.qtcreator
-target_install_base:    /Tools/QtCreator
+target_install_base:    /
 package_default:        true
 [tools.qtcreator]
-archive_uri:            /qtcreator/installer_package/qtcreator_linux-g++-Rhel6.6-x64.7z
-package_strip_dirs:     0
+archive_uri:            /qtcreator/installer_package/qtcreator_mac_cocoa_10_7.7z
+package_strip_dirs:
 target_install_dir:     /
 rpath_target:
-archive_name:           qt-creator-opensource-rhel66-64.7z
+archive_name:           qt-creator-opensource-mac-cocoa.7z
+

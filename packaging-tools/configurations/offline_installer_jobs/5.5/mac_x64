@@ -51,7 +51,7 @@ file_list:              qt-conf,
                         qt55-src-conf,
                         qt55-doc-examples-conf,
                         x86_64-qt55-clang-conf,
-                        x86_64-tools-qtcreator-conf,
+                        x86_64-tools-qtcreator-qt55x-conf,
                         qtwebview-src-doc-examples-conf-11,
                         qtwebview-qt55-x64-clang-conf
 
