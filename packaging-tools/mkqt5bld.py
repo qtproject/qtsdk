@@ -314,7 +314,9 @@ def extract_src_package():
     if items == 1:
         print_wrap('    Replacing qt-everywhere-xxx-src-5.0.0 with shorter path names')
         shorter_dir_path = QT_SOURCE_DIR + os.sep + QT_PACKAGE_SHORT_NAME
+        time.sleep(10)
         os.rename(QT_SOURCE_DIR + os.sep + l[0], shorter_dir_path)
+        time.sleep(10)
         print_wrap('    Old source dir: ' + QT_SOURCE_DIR)
         QT_SOURCE_DIR = shorter_dir_path
         print_wrap('    New source dir: ' + QT_SOURCE_DIR)
