@@ -176,23 +176,30 @@ class BldCommand:
         # build command "enum"
         self.command = options.command
 
+        # Custom build
+        self.custom_build = options.custom_build
+
         # release description file
         self.release_description_file = os.getenv('RELEASE_DESCRIPTION_FILE', '')
         if os.path.exists(self.release_description_file):
             print('Using release description file: {0}'.format(self.release_description_file))
             self.parse_release_description_file()
             qt_pkg_url = self.pkg_server_addr_http + '/' + self.license
-            qt_pkg_url +=  '/qt/' + self.version + '/latest/'
+            if self.custom_build != 0:
+                qt_pkg_url +=  '/qt/' + self.version + '-' + self.custom_build + '/latest/'
+            else:
+                qt_pkg_url +=  '/qt/' + self.version + '/latest/'
             self.qt_pkg_url_base = qt_pkg_url
             qt_pkg_url += 'src/'
             self.qt_src_url_base = qt_pkg_url
-            qt_pkg_url += 'single/qt-everywhere-' + self.license + '-src-' + self.full_version
+            if self.custom_build != 0:
+                qt_pkg_url += 'single/qt-everywhere-' + self.custom_build + '-' + self.license + '-src-' + self.full_version
+            else:
+                qt_pkg_url += 'single/qt-everywhere-' + self.license + '-src-' + self.full_version
             qt_pkg_url += '.zip' if bldinstallercommon.is_win_platform() else '.tar.gz'
             self.qt_src_url = qt_pkg_url
         else:
             print('Release description file not used for this build')
-
-        self.custom_build = options.custom_build
 
         # icu related
         self.icu_libs = os.environ.get('ICU_LIBS')
@@ -539,6 +546,10 @@ def get_qt_snapshot_dir(bld_command):
     snapshot_qt_dir_base = bld_command.path + '/' + bld_command.license + '/qt/' + bld_command.version
     snapshot_qt_dir      = bld_command.path + '/' + bld_command.license + '/' + 'qt' + '/' + bld_command.version + '/' + bld_command.build_time_stamp + '-' + bld_command.build_number
     latest_qt_dir        = bld_command.path + '/' + bld_command.license + '/' + 'qt' + '/' + bld_command.version + '/' + 'latest'
+    if bld_command.custom_build != 0:
+        snapshot_qt_dir_base = bld_command.path + '/' + bld_command.license + '/qt/' + bld_command.version + '-' + bld_command.custom_build
+        snapshot_qt_dir      = bld_command.path + '/' + bld_command.license + '/' + 'qt' + '/' + bld_command.version + '-' + bld_command.custom_build + '/' + bld_command.build_time_stamp + '-' + bld_command.build_number
+        latest_qt_dir        = bld_command.path + '/' + bld_command.license + '/' + 'qt' + '/' + bld_command.version + '-' + bld_command.custom_build + '/' + 'latest'
     return QtSnapshotDir(snapshot_qt_dir_base, snapshot_qt_dir, latest_qt_dir)
 
 
@@ -562,9 +573,10 @@ def initialize_qt5_build(bld_command):
     create_remote_dirs(bld_command.pkg_server_addr, latest_available_pkg)
     # Update latest Qt Minor version link
     qt_dir_base = snapshot_path.snapshot_qt_dir_base
-    remote_qt_minor_dir = qt_dir_base[:-2]
-    cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, 'ln -sfn', latest_available_pkg , remote_qt_minor_dir]
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+    if bld_command.custom_build == 0:
+        remote_qt_minor_dir = qt_dir_base[:-2]
+        cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, 'ln -sfn', latest_available_pkg , remote_qt_minor_dir]
+        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
     # Create binary links for opensource
     version_num = int(''.join(re.findall(r'\d+', bld_command.version)))
     if (version_num >= 550):
@@ -640,6 +652,8 @@ def handle_qt_configure_exe_build(bld_command):
 
     # upload packages
     ARTF_UPLOAD_PATH=bld_command.pkg_server_addr + ':' + bld_command.path + '/' + bld_command.license + '/' + 'qt/' + bld_command.version + '/latest/src'
+    if bld_command.custom_build != 0:
+        ARTF_UPLOAD_PATH=bld_command.pkg_server_addr + ':' + bld_command.path + '/' + bld_command.license + '/' + 'qt/' + bld_command.version + '-' + bld_command.custom_build + '/latest/src'
     temp_file = src_package_name + '.zip'
     cmd_args = [SCP_COMMAND, temp_file, ARTF_UPLOAD_PATH + '/single/']
     bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
