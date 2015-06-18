@@ -1253,8 +1253,7 @@ def handle_qt_creator_build(bld_command):
             'mkdir', '-p', snapshot_path + '/' + bld_command.build_time_stamp[:10] + '_' + bld_command.build_number + '/installer_source']
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
         cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, "ssh", bld_command.snapshot_server,
-            'ln', '-sfn', snapshot_path + '/' + bld_command.build_time_stamp[:10] + '_' + self.build_number,
-
+            'ln', '-sfn', snapshot_path + '/' + bld_command.build_time_stamp[:10] + '_' + bld_command.build_number,
                     snapshot_path + '/latest']
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
         snapshot_path += '/latest'
