@@ -1237,9 +1237,10 @@ def handle_qt_creator_build(bld_command):
 
     # Qt Creator directory
     qtcreator_edition_name = os.environ.get('QT_CREATOR_EDITION_NAME')
-    dir_path = bld_command.path + bld_command.license + '/qtcreator/latest'
+    build_id = bld_command.build_time_stamp[:10] + '_' + bld_command.build_number
+    dir_path = bld_command.path + bld_command.license + '/qtcreator/' + build_id
     if qtcreator_edition_name:
-        dir_path = bld_command.path + bld_command.license + '/qtcreator' + '_' + qtcreator_edition_name + '/latest'
+        dir_path = bld_command.path + bld_command.license + '/qtcreator' + '_' + qtcreator_edition_name + '/' + build_id
 
     # snapshot directory
     snapshot_path = bld_command.snapshot_path
@@ -1247,16 +1248,15 @@ def handle_qt_creator_build(bld_command):
         if bld_command.qtcreator_version:
             snapshot_path += '/' + bld_command.qtcreator_version
         cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, "ssh", bld_command.snapshot_server,
-            'mkdir', '-p', snapshot_path + '/' + bld_command.build_time_stamp[:10] + '_' + bld_command.build_number]
+            'mkdir', '-p', snapshot_path + '/' + build_id]
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
         cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, "ssh", bld_command.snapshot_server,
-            'mkdir', '-p', snapshot_path + '/' + bld_command.build_time_stamp[:10] + '_' + bld_command.build_number + '/installer_source']
+            'mkdir', '-p', snapshot_path + '/' + build_id + '/installer_source']
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
         cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, "ssh", bld_command.snapshot_server,
-            'ln', '-sfn', snapshot_path + '/' + bld_command.build_time_stamp[:10] + '_' + bld_command.build_number,
-                    snapshot_path + '/latest']
+            'ln', '-sfn', snapshot_path + '/' + build_id, snapshot_path + '/latest']
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
-        snapshot_path += '/latest'
+        snapshot_path += '/' + build_id
 
     # determine used Qt package base http url
     qt_pkg_base_url = bld_command.pkg_server_addr_http + '/' + bld_command.license + '/qt/'
@@ -1346,7 +1346,6 @@ def handle_qt_creator_build(bld_command):
             cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, "scp",
                 dir_path + '/' + source,
                 bld_command.snapshot_server + ':' + snapshot_path + '/' + destination]
-
             bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
 
 
