@@ -1320,7 +1320,7 @@ def handle_qt_creator_build(bld_command):
     if bldinstallercommon.is_linux_platform():
         file_upload_list.append(('qt-creator_build/qt-creator-installer-archive.7z', 'qtcreator_' + bld_command.target_env + '.7z'))
         file_upload_list.append(('qt-creator_build/qt-creator.run', 'qt-creator-' + bld_command.license + '-' + bld_command.target_env + postfix + '.run'))
-        snapshot_upload_list.append(('qtcreator' + bld_command.target_env + '.7z', 'installer_source/'))
+        snapshot_upload_list.append(('qtcreator_' + bld_command.target_env + '.7z', 'installer_source/'))
         snapshot_upload_list.append(('qt-creator-' + bld_command.license + '-' + bld_command.target_env + postfix + '.run', ''))
     elif bldinstallercommon.is_mac_platform():
         file_upload_list.append(('qt-creator_build/qt-creator-installer-archive.7z', 'qtcreator_' + bld_command.target_env + '.7z'))
