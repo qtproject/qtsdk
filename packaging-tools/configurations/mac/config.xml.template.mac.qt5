@@ -3,13 +3,12 @@
     <Name>Qt @QT_VERSION@</Name>
     <Version>@QT_VERSION@</Version>
     <Title>Qt @QT_VERSION@</Title>
-    <Publisher>Digia Plc</Publisher>
-    <Logo>logo.png</Logo>
+    <Publisher>The Qt Company Ltd</Publisher>
     <InstallerWindowIcon>logo-small</InstallerWindowIcon>
     <InstallerApplicationIcon>logo-small</InstallerApplicationIcon>
     <Watermark>watermark.png</Watermark>
     <StartMenuDir>Qt @QT_VERSION@</StartMenuDir>
-    <ProductUrl>http://qt-project.org/</ProductUrl>
+    <ProductUrl>http://www.qt.io/</ProductUrl>
     <Background>background.png</Background>
     <UninstallerName>MaintenanceTool</UninstallerName>
     <!--<RemoteRepositories>
@@ -20,5 +19,6 @@
     </RemoteRepositories>-->
     <!-- @homeDir@ and @rootDir@ are some of the supported vars -->
     <TargetDir>@homeDir@/Qt@QT_VERSION@</TargetDir>
+    <WizardDefaultHeight>560</WizardDefaultHeight>
     <AllowSpaceInPath>false</AllowSpaceInPath>
 </Installer>
