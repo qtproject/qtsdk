@@ -627,7 +627,7 @@ def handle_qt_licheck_build(bld_command):
                 cmd_args = ['rsync', '-r', 'licheck', upload_path +'licheck32']
             bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
         else:
-            cmd_args = ['make', '-j6', '-f', 'Makefile_unix']
+            cmd_args = ['make', '-j6', '-f', 'Makefile_osx']
             bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
             cmd_args = ['strip', 'licheck']
             bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
