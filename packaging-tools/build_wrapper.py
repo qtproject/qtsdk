@@ -116,7 +116,6 @@ def combine_environment_dicts(a, b, op=combine_env_variable):
 ###########################################
 class BldCommand:
     init_build_cycle                        = 'init'
-    init_qtcreator_build_cycle              = 'init_qtcreator'
     execute_configure_exe_bld               = 'configure_exe'
     init_extra_module_build_cycle_src       = 'init_app_src'
     init_extra_module_build_cycle_binary    = 'init_app_binary'
@@ -243,7 +242,6 @@ class BldCommand:
     ###########################################
     def is_valid_cmd(self):
         commands = [self.init_build_cycle]
-        commands += [self.init_qtcreator_build_cycle]
         commands += [self.init_extra_module_build_cycle_src]
         commands += [self.init_extra_module_build_cycle_binary]
         commands += [self.execute_qt5_src_pkg]
@@ -310,9 +308,6 @@ class BldCommand:
             return self.validate_execute_extra_module_build_cycle_src_args()
         elif cmd == self.execute_extra_module_build_cycle_binary:
             return self.validate_execute_extra_module_build_cycle_binary_args()
-        # Qt Creator
-        elif cmd == self.init_qtcreator_build_cycle:
-            return self.validate_init_qtcreator_build_cycle_args()
         elif self.options.command == self.execute_configure_exe_bld:
             if len(sys.argv) < 7:
                 return False
@@ -405,27 +400,6 @@ class BldCommand:
             sys.exit('*** Qt5 Extra Module build missing command line argument: --target_env')
         if not self.options.path:
             sys.exit('*** Qt5 Extra Module build missing command line argument: --path')
-        return True
-
-    ###########################################
-    # Validate build args for QtCreator init
-    ###########################################
-    def validate_init_qtcreator_build_cycle_args(self):
-        if not self.options.license:
-            print('*** QtCreator init is missing command line argument: --license')
-            sys.exit(-1)
-        if not self.options.time_stamp:
-            print('*** QtCreator init is missing command line argument: --time_stamp')
-            sys.exit(-1)
-        if not self.options.build_number:
-            print('*** QtCreator init is missing command line argument: --build_number')
-            sys.exit(-1)
-        if not self.options.server:
-            print('*** QtCreator init is missing command line argument: --server')
-            sys.exit(-1)
-        if not self.options.path:
-            print('*** QtCreator init is missing command line argument: --path')
-            sys.exit(-1)
         return True
 
     ###########################################
@@ -722,24 +696,6 @@ def initialize_extra_module_binary_build(bld_command):
     # Update latest link
     cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, 'ln -sfn', bld_command.remote_extra_module_binary_dir, bld_command.latest_extra_module_binary_dir]
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
-
-###############################
-# initialize_build
-###############################
-def initialize_qtcreator_build(bld_command):
-    sanity_check_packaging_server(bld_command)
-    qtcreator_edition_name = os.environ.get('QT_CREATOR_EDITION_NAME')
-    dir_name = 'qtcreator'
-    if qtcreator_edition_name:
-        dir_name += '_' + qtcreator_edition_name
-    # Qt Creator directory
-    remote_base_dir = bld_command.path + '/' + bld_command.license + '/' + dir_name
-    remote_dest_dir = remote_base_dir + '/' + bld_command.build_time_stamp[:10] + '_' + bld_command.build_number
-    remote_latest_dir = remote_base_dir + '/' + 'latest'
-    # remote destination directory
-    create_remote_dirs(bld_command.pkg_server_addr, remote_dest_dir)
-    # 'latest' symlink pointing to remote destination directory
-    update_latest_link(bld_command, remote_dest_dir, remote_latest_dir)
 
 
 ###############################
@@ -1297,9 +1253,13 @@ def handle_qt_creator_build(bld_command):
     # Qt Creator directory
     qtcreator_edition_name = os.environ.get('QT_CREATOR_EDITION_NAME')
     build_id = bld_command.build_time_stamp[:10] + '_' + bld_command.build_number
-    dir_path = bld_command.path + bld_command.license + '/qtcreator/' + build_id
+    base_path = bld_command.path + bld_command.license + '/qtcreator/'
     if qtcreator_edition_name:
-        dir_path = bld_command.path + bld_command.license + '/qtcreator' + '_' + qtcreator_edition_name + '/' + build_id
+        base_path = bld_command.path + bld_command.license + '/qtcreator' + '_' + qtcreator_edition_name + '/'
+    dir_path = base_path + build_id
+    latest_path = base_path + 'latest'
+    create_remote_dirs(bld_command.pkg_server_addr, dir_path)
+    update_latest_link(bld_command, dir_path, latest_path)
 
     # snapshot directory
     snapshot_path = bld_command.snapshot_path
@@ -1902,8 +1862,6 @@ def main():
     elif bld_command.command == BldCommand.execute_extra_module_build_cycle_binary:
         handle_extra_module_release_build(bld_command)
     # QtCreator specific
-    elif bld_command.command == BldCommand.init_qtcreator_build_cycle:
-        initialize_qtcreator_build(bld_command)
     elif bld_command.command == BldCommand.execute_creator_bld:
         handle_qt_creator_build(bld_command)
     # Qt Installer-Framework specific
