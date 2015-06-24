@@ -1317,25 +1317,28 @@ def handle_qt_creator_build(bld_command):
         postfix = '-' + bld_command.qtcreator_version
     file_upload_list = [] # pairs (source, dest), source relative to WORK_DIR, dest relative to server + dir_path
     snapshot_upload_list = [] # pairs (source, dest), source relative to server + dir_path, dest relative to snapshot server + snapshot_path
+    bitness = 'x86'
+    if bld_command.target_env.find('64') != -1:
+        bitness = 'x86_64'
     if bldinstallercommon.is_linux_platform():
         file_upload_list.append(('qt-creator_build/qt-creator-installer-archive.7z', 'qtcreator_' + bld_command.target_env + '.7z'))
-        file_upload_list.append(('qt-creator_build/qt-creator.run', 'qt-creator-' + bld_command.license + '-' + bld_command.target_env + postfix + '.run'))
+        file_upload_list.append(('qt-creator_build/qt-creator.run', 'qt-creator-' + bld_command.license + '-linux-' + bitness + postfix + '.run'))
         snapshot_upload_list.append(('qtcreator_' + bld_command.target_env + '.7z', 'installer_source/'))
-        snapshot_upload_list.append(('qt-creator-' + bld_command.license + '-' + bld_command.target_env + postfix + '.run', ''))
+        snapshot_upload_list.append(('qt-creator-' + bld_command.license + '-linux-' + bitness + postfix + '.run', ''))
     elif bldinstallercommon.is_mac_platform():
         file_upload_list.append(('qt-creator_build/qt-creator-installer-archive.7z', 'qtcreator_' + bld_command.target_env + '.7z'))
         if bld_command.license == 'opensource': # opensource gets pure disk image with app and license.txt
-            file_upload_list.append(('qt-creator_build/qt-creator.dmg', 'qt-creator-' + bld_command.license + '-' + bld_command.target_env + postfix + '.dmg'))
+            file_upload_list.append(('qt-creator_build/qt-creator.dmg', 'qt-creator-' + bld_command.license + '-mac-' + bitness + postfix + '.dmg'))
         else: # enterprise gets installer with license check
-            file_upload_list.append(('qt-creator_build/qt-creator-installer.dmg', 'qt-creator-' + bld_command.license + '-' + bld_command.target_env + postfix + '.dmg'))
+            file_upload_list.append(('qt-creator_build/qt-creator-installer.dmg', 'qt-creator-' + bld_command.license + '-mac-' + bitness + postfix + '.dmg'))
         snapshot_upload_list.append(('qtcreator_' + bld_command.target_env + '.7z', 'installer_source/'))
-        snapshot_upload_list.append(('qt-creator-' + bld_command.license + '-' + bld_command.target_env + postfix + '.dmg', ''))
+        snapshot_upload_list.append(('qt-creator-' + bld_command.license + '-mac-' + bitness + postfix + '.dmg', ''))
     else: # --> windows
         file_upload_list.append(('qt-creator_build/qt-creator-installer-archive.7z', 'qtcreator_' + bld_command.target_env + '.7z'))
         sign_windows_executable('qt-creator_build/qt-creator.exe', WORK_DIR, True)
-        file_upload_list.append(('qt-creator_build/qt-creator.exe', 'qt-creator-' + bld_command.license + '-' + bld_command.target_env + postfix + '.exe'))
+        file_upload_list.append(('qt-creator_build/qt-creator.exe', 'qt-creator-' + bld_command.license + '-windows-' + bitness + postfix + '.exe'))
         snapshot_upload_list.append(('qtcreator_' + bld_command.target_env + '.7z', 'installer_source/'))
-        snapshot_upload_list.append(('qt-creator-' + bld_command.license + '-' + bld_command.target_env + postfix + '.exe', ''))
+        snapshot_upload_list.append(('qt-creator-' + bld_command.license + '-windows-' + bitness + postfix + '.exe', ''))
 
     # upload files
     for source, destination in file_upload_list:
