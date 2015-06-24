@@ -358,9 +358,9 @@ if callerArguments.additional_plugin:
         env = environment
         env['QTC_SOURCE'] = qtCreatorSourceDirectory
         env['QTC_BUILD'] = qtCreatorBuildDirectory
-        additionalQmakeArguments = ""
+        additionalQmakeArguments = "CONFIG+=licensechecker"
         if sys.platform == "darwin":
-            additionalQmakeArguments += "QMAKE_MAC_SDK=macosx" # work around QTBUG-41238
+            additionalQmakeArguments += " QMAKE_MAC_SDK=macosx" # work around QTBUG-41238
         runCommand('{0} QTC_PREFIX={1} {2}'.format(qmakeBinary, qtCreatorInstallDirectory,
             additionalQmakeArguments), plugin_dir,
             callerArguments = callerArguments, init_environment = env)
