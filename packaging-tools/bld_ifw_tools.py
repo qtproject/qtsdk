@@ -141,7 +141,7 @@ class IfwOptions:
     default_qt5_src_pkg = 'http://download.qt.io/official_releases/qt/5.4/5.4.0/single/qt-everywhere-opensource-src-5.4.0' + ARCH_EXT
     default_qt4_src_pkg = 'http://download.qt.io/development_releases/prebuilt/qt-src-for-ifw/qt-everywhere-opensource-src-4.8.6-ifw-patch' + ARCH_EXT
 
-    default_qt_installer_framework_url          = 'git://gitorious.org/installer-framework/installer-framework.git'
+    default_qt_installer_framework_url          = 'git://code.qt.io/installer-framework/installer-framework.git'
 
     default_qt_installer_framework_branch_qt4   = '1.6'
     default_qt_installer_framework_branch_qt5   = '2.0'
