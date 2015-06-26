@@ -1263,12 +1263,12 @@ def handle_qt_creator_build(bld_command):
     if bldinstallercommon.is_linux_platform():
         cmd_args.extend(['--icu7z', bld_command.icu_libs])
         if bld_command.target_env.find('64') != -1:
-            cmd_args.extend(['--installerbase7z', 'http://ci-files02-hki.ci.local/packages/jenkins/' + 'opensource' + '/ifw/upstream-1.5/installer-framework-build-linux-x64.7z'])
+            cmd_args.extend(['--installerbase7z', 'http://ci-files02-hki.ci.local/packages/jenkins/' + bld_command.license + '/ifw/1.6/installer-framework-build-linux-x64.7z'])
         else:
-            cmd_args.extend(['--installerbase7z', 'http://ci-files02-hki.ci.local/packages/jenkins/' + 'opensource' + '/ifw/upstream-1.5/installer-framework-build-linux-x86.7z'])
+            cmd_args.extend(['--installerbase7z', 'http://ci-files02-hki.ci.local/packages/jenkins/' + bld_command.license + '/ifw/1.6/installer-framework-build-linux-x86.7z'])
     elif bldinstallercommon.is_mac_platform():
         cmd_args.extend(['--installcommand', 'make -j1',
-                         '--installerbase7z', 'http://ci-files02-hki.ci.local/packages/jenkins/' + 'opensource' + '/ifw/upstream-1.5/installer-framework-build-mac-x64.7z',
+                         '--installerbase7z', 'http://ci-files02-hki.ci.local/packages/jenkins/' + bld_command.license + '/ifw/1.6/installer-framework-build-mac-x64.7z',
                          '--keychain_unlock_script', '/Users/qt/unlock-keychain.sh'])
     else:
         cmd_args.extend(['--buildcommand', os.path.normpath('C:/Utils/jom/jom.exe'),
@@ -1278,7 +1278,7 @@ def handle_qt_creator_build(bld_command):
                          '--gitpath', os.path.normpath('C:/Program Files/Git/bin'),
                          '--d3dcompiler7z', 'http://download.qt.io/development_releases/prebuilt/d3dcompiler/msvc2013/d3dcompiler_47-x86.7z',
                          '--opengl32sw7z', 'http://download.qt.io/development_releases/prebuilt/llvmpipe/windows/opengl32sw-32.7z',
-                         '--installerbase7z', 'http://ci-files02-hki.ci.local/packages/jenkins/' + 'opensource' + '/ifw/upstream-1.5/installer-framework-build-win-x86.7z',
+                         '--installerbase7z', 'http://ci-files02-hki.ci.local/packages/jenkins/' + bld_command.license + '/ifw/1.6/installer-framework-build-win-x86.7z',
                          '--environment_batch', os.path.normpath('C:/Program Files/Microsoft Visual Studio 12.0/VC/vcvarsall.bat'),
                          '--environment_batch_argument', 'x86'])
         if bld_command.openssl_libs:
