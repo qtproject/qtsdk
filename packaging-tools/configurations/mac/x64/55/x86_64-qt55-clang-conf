@@ -81,3 +81,44 @@ archive_uri:            /qt/@QT_VERSION@/latest/mac_x64/qt5_qtscript.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
+
+# QtQuickControls provided as separate installable component in installer
+[qt.55.qtquickcontrols]
+[qt.55.qtquickcontrols.clang_64]
+archives:               55.qtquickcontrols.clang_64
+target_install_base:    /5.5/clang_64
+[55.qtquickcontrols.clang_64]
+archive_uri:            /qt/@QT_VERSION@/latest/mac_x64/qt5_qtquickcontrols.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+# QtLocation provided as separate installable component in installer
+[qt.55.qtlocation]
+[qt.55.qtlocation.clang_64]
+archives:               55.qtlocation.clang_64
+target_install_base:    /5.5/clang_64
+[55.qtlocation.clang_64]
+archive_uri:            /qt/@QT_VERSION@/latest/mac_x64/qt5_qtlocation.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+# Qt3D provided as separate installable component in installer
+[qt.55.qt3d]
+[qt.55.qt3d.clang_64]
+archives:               55.qt3d.clang_64
+target_install_base:    /5.5/clang_64
+[55.qt3d.clang_64]
+archive_uri:            /qt/@QT_VERSION@/latest/mac_x64/qt5_qt3d.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+# QtCanvas3D provided as separate installable component in installer
+[qt.55.qtcanvas3d]
+[qt.55.qtcanvas3d.clang_64]
+archives:               55.qtcanvas3d.clang_64
+target_install_base:    /5.5/clang_64
+[55.qtcanvas3d.clang_64]
+archive_uri:            /qt/@QT_VERSION@/latest/mac_x64/qt5_qtcanvas3d.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+

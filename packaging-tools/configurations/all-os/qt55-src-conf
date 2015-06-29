@@ -50,7 +50,7 @@
 #################################
 
 [qt.55.src.essentials]
-archives:               src.qt5, src.essentials.qtbase, src.essentials.qtdeclarative, src.essentials.qtdoc, src.essentials.qttools, src.essentials.qtwebkit, src.essentials.qtwebkitexamples, src.essentials.qtxmlpatterns, src.essentials.qtmultimedia, src.essentials.qtquickcontrols
+archives:               src.qt5, src.essentials.qtbase, src.essentials.qtdeclarative, src.essentials.qtdoc, src.essentials.qttools, src.essentials.qtwebkit, src.essentials.qtwebkitexamples, src.essentials.qtxmlpatterns, src.essentials.qtmultimedia
 target_install_base:    /5.5/Src/
 [src.qt5]
 archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qt5-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
@@ -88,11 +88,6 @@ target_install_dir:     /qtxmlpatterns
 archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtmultimedia-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /qtmultimedia
-[src.essentials.qtquickcontrols]
-archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtquickcontrols-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
-package_strip_dirs:     1
-target_install_dir:     /qtquickcontrols
-
 
 
 #################################
@@ -253,5 +248,12 @@ archives:               src.addons.qtscript
 target_install_base:    /5.5/Src/qtscript
 [src.addons.qtscript]
 archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtscript-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.55.src.addons.qtquickcontrols]
+archives:               src.addons.qtquickcontrols
+target_install_base:    /5.5/Src/qtquickcontrols
+[src.addons.qtquickcontrols]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtquickcontrols-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 

@@ -71,3 +71,44 @@ target_install_base:    /5.5/ios
 archive_uri:            /qt/@QT_VERSION@/latest/ios/mac_x64/qt5_qtscript.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
+
+
+# QtQuickControls provided as separate installable component in installer
+[qt.55.qtquickcontrols]
+[qt.55.qtquickcontrols.ios]
+archives:               55.qtquickcontrols.ios
+target_install_base:    /5.5/ios
+[55.qtquickcontrols.ios]
+archive_uri:            /qt/@QT_VERSION@/latest/ios/mac_x64/qt5_qtquickcontrols.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+# QtLocation provided as separate installable component in installer
+[qt.55.qtlocation]
+[qt.55.qtlocation.ios]
+archives:               55.qtlocation.ios
+target_install_base:    /5.5/ios
+[55.qtlocation.ios]
+archive_uri:            /qt/@QT_VERSION@/latest/ios/mac_x64/qt5_qtlocation.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+# Qt3D provided as separate installable component in installer
+[qt.55.qt3d]
+[qt.55.qt3d.ios]
+archives:               55.qt3d.ios
+target_install_base:    /5.5/ios
+[55.qt3d.ios]
+archive_uri:            /qt/@QT_VERSION@/latest/ios/mac_x64/qt5_qt3d.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+# QtCanvas3D provided as separate installable component in installer
+[qt.55.qtcanvas3d]
+[qt.55.qtcanvas3d.ios]
+archives:               55.qtcanvas3d.ios
+target_install_base:    /5.5/ios
+[55.qtcanvas3d.ios]
+archive_uri:            /qt/@QT_VERSION@/latest/ios/mac_x64/qt5_qtcanvas3d.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
