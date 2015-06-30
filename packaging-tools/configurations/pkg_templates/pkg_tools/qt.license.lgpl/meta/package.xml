@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
     <DisplayName>Qt License LGPL</DisplayName>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Licenses>
         <License name="Qt Installer LGPL License Agreement" file="LICENSE" />
