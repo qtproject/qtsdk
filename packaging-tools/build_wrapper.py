@@ -1198,11 +1198,7 @@ def handle_qt_creator_build(bld_command):
     cmd_args = ['python', '-u', 'bld_qtcreator.py',
                 '--clean',
                 '--qt5path', os.path.normpath('../../qt5_install_dir'),
-                '--qt5_essentials7z', qt_pkg_base_url + BIN_TARGET_DIRS[bld_command.target_env] + '/qt5_essentials.7z',
-                '--qt5_addons7z', qt_pkg_base_url + BIN_TARGET_DIRS[bld_command.target_env] + '/qt5_addons.7z',
-                '--qt5_qtscript7z', qt_pkg_base_url + BIN_TARGET_DIRS[bld_command.target_env] + '/qt5_qtscript.7z',
-                '--qt5_qtquick17z', qt_pkg_base_url + BIN_TARGET_DIRS[bld_command.target_env] + '/qt5_qtquick1.7z',
-                '--qt5_qtwebkit7z', qt_pkg_base_url + BIN_TARGET_DIRS[bld_command.target_env] + '/qt5_qtwebkit.7z',
+                '--qt5_packages_url', qt_pkg_base_url + BIN_TARGET_DIRS[bld_command.target_env],
                 '--versiondescription', '"' + bld_command.qtcreator_version_description + '"']
 
     if bld_command.license == 'enterprise':

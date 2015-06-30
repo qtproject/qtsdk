@@ -72,11 +72,7 @@ parser = argparse.ArgumentParser(prog = os.path.basename(sys.argv[0]),
 if os.name == 'nt':
     parser.epilog = "example on windows: " + os.linesep + "\tpython {0} --clean " \
         "--buildcommand C:\\bin\\ibjom.cmd --installcommand nmake --qt5path ..\\..\\creator_qt5 " \
-        "--qt5_essentials7z http://it-dl241-hki.it.local/packages/qt/5.5.0-released/windows_vs2013_32/qt5_essentials.7z " \
-        "--qt5_addons7z http://it-dl241-hki.it.local/packages/qt/5.5.0-released/windows_vs2013_32/qt5_addons.7z " \
-        "--qt5_qtscript7z http://it-dl241-hki.it.local/packages/qt/5.5.0-released/windows_vs2013_32/qt5_qtscript.7z " \
-        "--qt5_qtquick17z http://it-dl241-hki.it.local/packages/qt/5.5.0-released/windows_vs2013_32/qt5_qtquick1.7z " \
-        "--qt5_qtwebkit7z http://it-dl241-hki.it.local/packages/qt/5.5.0-released/windows_vs2013_32/qt5_qtwebkit.7z " \
+        "--qt5_packages_url http://it-dl241-hki.it.local/packages/qt/5.5.0-released/windows_vs2013_32/" \
         "--installerbase7z http://it-dl241-hki.it.local/packages/opensource/ifw/1.4/installer-framework-build-win-x86.7z" \
         "--sevenzippath \"C:\\Program Files\\7-Zip\" " \
         "--gitpath \"C:\\Program Files (x86)\\Git\\cmd\" "\
@@ -89,22 +85,14 @@ if os.name == 'nt':
 elif sys.platform == "darwin":
     parser.epilog = "example: " + os.linesep + "\tpython {0} --clean " \
         "--qt5path ../../qtcreator_qt5 " \
-        "--qt5_essentials7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/mac_cocoa_10.7/qt5_essentials.7z " \
-        "--qt5_addons7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/mac_cocoa_10.7/qt5_addons.7z " \
-        "--qt5_qtscript7z http://it-dl241-hki.it.local/packages/qt/5.5.0-released/mac_cocoa_10.7/qt5_qtscript.7z " \
-        "--qt5_qtquick17z http://it-dl241-hki.it.local/packages/qt/5.5.0-released/mac_cocoa_10.7/qt5_qtquick1.7z " \
-        "--qt5_qtwebkit7z http://it-dl241-hki.it.local/packages/qt/5.5.0-released/mac_cocoa_10.7/qt5_qtwebkit.7z " \
+        "--qt5_packages_url http://it-dl241-hki.it.local/packages/qt/5.0.1-released/mac_cocoa_10.7/" \
         "--installerbase7z http://it-dl241-hki.it.local/packages/opensource/ifw/1.4/installer-framework-build-mac-x64.7z" \
         "--keychain_unlock_script $HOME/unlock-keychain.sh" \
         "".format(os.path.basename(sys.argv[0]))
 else:
     parser.epilog = "example: " + os.linesep + "\tpython {0} --clean " \
         "--qt5path ../../qtcreator_qt5 " \
-        "--qt5_essentials7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/linux_gcc_64_ubuntu1110/qt5_essentials.7z " \
-        "--qt5_addons7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/linux_gcc_64_ubuntu1110/qt5_addons.7z " \
-        "--qt5_qtscript7z http://it-dl241-hki.it.local/packages/qt/5.5.0-released/linux_gcc_64_ubuntu1110/qt5_qtscript.7z " \
-        "--qt5_qtquick17z http://it-dl241-hki.it.local/packages/qt/5.5.0-released/linux_gcc_64_ubuntu1110/qt5_qtquick1.7z " \
-        "--qt5_qtwebkit7z http://it-dl241-hki.it.local/packages/qt/5.5.0-released/linux_gcc_64_ubuntu1110/qt5_qtwebkit.7z " \
+        "--qt5_packages_url http://it-dl241-hki.it.local/packages/qt/5.0.1-released/linux_gcc_64_ubuntu1110/" \
         "--installerbase7z http://it-dl241-hki.it.local/packages/opensource/ifw/1.4/installer-framework-build-linux-x64.7z" \
         "--icu7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/linux_gcc_64_ubuntu1110/libicu_x86_64_ubuntu1110.7z " \
         "".format(os.path.basename(sys.argv[0]))
@@ -115,11 +103,7 @@ parser.add_argument('--qt5path', help="here it expects a compiled Qt5", required
 parser.add_argument('--buildcommand', help="this means usually make", default="make")
 parser.add_argument('--installcommand', help="this means usually make", default="make")
 parser.add_argument('--debug', help="use debug builds", action='store_true', default=False)
-parser.add_argument('--qt5_essentials7z', help="a file or url where it get the built qt5 essential content as 7z")
-parser.add_argument('--qt5_addons7z', help="a file or url where it get the built qt5 essential content as 7z")
-parser.add_argument('--qt5_qtscript7z', help="a file or url where it get the built qt5 qtscript content as 7z", default="")
-parser.add_argument('--qt5_qtquick17z', help="a file or url where it get the built qt5 qtquick1 content as 7z", default="")
-parser.add_argument('--qt5_qtwebkit7z', help="a file or url where it get the built qt5 qtwebkit content as 7z", default="")
+parser.add_argument('--qt5_packages_url', help="url/directory where to get the built qt5 modules' content as 7z")
 parser.add_argument('--installerbase7z', help="a file or url where it get installerbase binary as 7z")
 parser.add_argument('--versiondescription', help="version description to be shown in the about dialog, e.g. 'pre-2.7.2")
 parser.add_argument('--additional_plugin', help="path to additional Qt Creator plugin to build", action='append')
@@ -172,43 +156,32 @@ if callerArguments.clean:
     removeDir(qtCreatorInstallDirectory, raiseNoException = True)
     removeDir(tempPath, raiseNoException = True)
 
-if not os.path.lexists(callerArguments.qt5path) and not all(
-    (callerArguments.qt5_essentials7z, callerArguments.qt5_addons7z)):
+if not os.path.lexists(callerArguments.qt5path) and not callerArguments.qt5_packages_url:
     parser.print_help()
-    print(("error: Please add the missing qt5_essentials7z and qt5_addons7z arguments if the {0} does not exist"
+    print(("error: You have to pass the qt5_packages_url argument if the {0} does not exist"
         + os.linesep + os.linesep).format(callerArguments.qt5path))
     sys.exit(1)
 
 qmakeBinary = os.path.abspath(os.path.join(callerArguments.qt5path, 'bin', 'qmake'))
 
 if not os.path.lexists(callerArguments.qt5path):
-
-    myGetQtBinaryWork = ThreadedWork("get and extract Qt 5 binary")
-### add get Qt essentials task
-    myGetQtBinaryWork.addTaskObject(
-        createDownloadExtract7zTask(callerArguments.qt5_essentials7z, callerArguments.qt5path, tempPath, callerArguments))
-
-### add get Qt addons task
-    myGetQtBinaryWork.addTaskObject(
-        createDownloadExtract7zTask(callerArguments.qt5_addons7z, callerArguments.qt5path, tempPath, callerArguments))
-
-    # optional qtmodule
-    if bldinstallercommon.is_content_url_valid(callerArguments.qt5_qtscript7z):
-        ### add get Qt script task
-        myGetQtBinaryWork.addTaskObject(
-            createDownloadExtract7zTask(callerArguments.qt5_qtscript7z, callerArguments.qt5path, tempPath, callerArguments))
-
-    # optional qtmodule
-    if bldinstallercommon.is_content_url_valid(callerArguments.qt5_qtquick17z):
-        ### add get Qt script task
-        myGetQtBinaryWork.addTaskObject(
-            createDownloadExtract7zTask(callerArguments.qt5_qtquick17z, callerArguments.qt5path, tempPath, callerArguments))
-
-    # optional qtmodule
-    if bldinstallercommon.is_content_url_valid(callerArguments.qt5_qtwebkit7z):
-        ### add get Qt script task
-        myGetQtBinaryWork.addTaskObject(
-            createDownloadExtract7zTask(callerArguments.qt5_qtwebkit7z, callerArguments.qt5path, tempPath, callerArguments))
+    myGetQtBinaryWork = ThreadedWork("get and extract Qt 5 binaries")
+    qt_packages = [
+        'qt5_essentials.7z',
+        'qt5_addons.7z',
+        'qt5_qtscript.7z',
+        'qt5_qtquick1.7z', # no longer needed for >= 3.5
+        'qt5_qtwebkit.7z',
+        'qt5_qtlocation.7z',
+        'qt5_qtquickcontrols.7z'
+    ]
+    for package in qt_packages:
+        package_url = callerArguments.qt5_packages_url + '/' + package
+        if bldinstallercommon.is_content_url_valid(package_url):
+            myGetQtBinaryWork.addTaskObject(
+                createDownloadExtract7zTask(package_url, callerArguments.qt5path, tempPath, callerArguments))
+        else:
+            print("warning: could not find {0}".format(package_url))
 
 ### add get icu and d3dcompiler lib task
     if os.name == 'nt':
