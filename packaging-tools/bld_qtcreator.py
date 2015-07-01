@@ -253,39 +253,6 @@ if not os.path.lexists(callerArguments.qt5path):
     print("##### {0} ##### ... done".format("patch Qt"))
     runCommand(qmakeBinary + " -query", qtCreatorBuildDirectory, callerArguments)
 
-
-#    patch_operation_platform = ""
-#    corelib = callerArguments.qt5path
-#    if sys.platform == "darwin":
-#        patch_operation_platform = "mac"
-#        corelib += "/lib/QtCore.framework/Versions/Current/QtCore"
-#    elif sys.platform.startswith('linux'):
-#        patch_operation_platform = "linux"
-#        corelib += "/lib/libQt5Core.so.5"
-#    else:
-#        patch_operation_platform = "windows"
-#        corelib += "\\bin\\Qt5Core.dll"
-#
-#    installer_binary = os.environ['QTC_IFW_PATCH_INSTALLERBINARY']
-#    installer_binary_save_as_temp = os.path.normpath(os.getcwd() + os.sep + os.path.basename(installer_binary))
-#    bldinstallercommon.retrieve_url(installer_binary, installer_binary_save_as_temp)
-#
-#    patcherBasePath = os.path.join(installerPath, 'bin', 'installerbase')
-#    if os.name != 'nt':
-#        os.chmod(patcherBasePath, 0777)
-#        os.chmod(installer_binary_save_as_temp, 0777)
-#
-#    runCommand(installer_binary_save_as_temp + " -v --runoperation QtPatch " + patch_operation_platform + " "
-#        + callerArguments.qt5path  + " qt5 ", qtCreatorBuildDirectory, callerArguments)
-#
-#    if sys.platform.startswith('linux'):
-#        bldinstallercommon.init_common_module(os.getcwd())
-#        bldinstallercommon.handle_component_rpath(callerArguments.qt5path, 'lib')
-#
-#    replace_key(corelib, "qt_instdate", " ")
-#    print("##### {0} ##### ... done".format("patch Qt"))
-#    runCommand(qmakeBinary + " -query", qtCreatorBuildDirectory, callerArguments)
-
 ### lets start building
 
 # prepare the environment for example setting LD_LIBRARY_PATH
