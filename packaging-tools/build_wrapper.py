@@ -1245,11 +1245,11 @@ def handle_qt_creator_build(bld_command):
     # Qt Creator directory
     qtcreator_edition_name = os.environ.get('QT_CREATOR_EDITION_NAME')
     build_id = bld_command.build_time_stamp[:10] + '_' + bld_command.build_number
-    base_path = bld_command.path + bld_command.license + '/qtcreator/'
+    base_path = bld_command.path + '/' + bld_command.license + '/qtcreator/snapshots/' + bld_command.qtcreator_version
     if qtcreator_edition_name:
-        base_path = bld_command.path + bld_command.license + '/qtcreator' + '_' + qtcreator_edition_name + '/'
-    dir_path = base_path + build_id
-    latest_path = base_path + 'latest'
+        base_path += '_' + qtcreator_edition_name
+    dir_path = base_path + '/' + build_id
+    latest_path = base_path + '/latest'
     create_remote_dirs(bld_command.pkg_server_addr, dir_path)
     update_latest_link(bld_command, dir_path, latest_path)
 
