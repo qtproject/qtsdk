@@ -1212,11 +1212,7 @@ def handle_qt_creator_build(bld_command):
             cmd_args.extend(['--additional_plugin', os.path.normpath(WORK_DIR + '/perfprofiler'),
                              '--additional_plugin', os.path.normpath(WORK_DIR + '/b2qt-qtcreator-plugin')])
 
-    ifw_base_path = 'http://ci-files02-hki.ci.local/packages/jenkins/'
-    if bld_command.license == 'enterprise':
-        ifw_base_path += 'enterprise/ifw/unifiedqt'
-    else:
-        ifw_base_path += 'opensource/ifw/2.0'
+    ifw_base_path = 'http://ci-files02-hki.ci.local/packages/jenkins/enterprise/ifw/unifiedqt'
     if bldinstallercommon.is_linux_platform():
         cmd_args.extend(['--icu7z', bld_command.icu_libs])
         if bld_command.target_env.find('64') != -1:
