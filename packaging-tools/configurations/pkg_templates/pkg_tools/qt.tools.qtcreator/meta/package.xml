@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt Creator 3.4.2</DisplayName>
     <Description>IDE for Qt application development</Description>
-    <Version>3.4.2-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>3.4.2-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Script>installscript.qs</Script>
     <UserInterfaces>
