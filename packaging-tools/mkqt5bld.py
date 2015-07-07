@@ -54,7 +54,6 @@ import patch_qmake_qt_key
 from optparse import OptionParser, Option
 import shlex
 import time
-import fnmatch
 
 SCRIPT_ROOT_DIR                     = os.getcwd()
 WORK_DIR_NAME                       = 'qt5_workdir'
@@ -677,9 +676,6 @@ def archive_submodules():
     print_wrap('---------------- Archiving submodules ------------------------------')
     bldinstallercommon.create_dirs(MODULE_ARCHIVE_DIR)
 
-    # archive .pdb files into separate archive if such exists
-    archive_pdb_files(MAKE_INSTALL_ROOT_DIR, MODULE_ARCHIVE_DIR)
-
     if QNX_BUILD:
         print_wrap('---------- Archiving Qt modules')
         install_path = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
@@ -700,24 +696,6 @@ def archive_submodules():
         run_in = os.path.normpath(MAKE_INSTALL_ROOT_DIR + os.sep + item + os.sep + INSTALL_PREFIX)
         bldinstallercommon.do_execute_sub_process(cmd_args, run_in, True, True)
     return
-
-
-###############################
-# function
-###############################
-def archive_pdb_files(search_dir, destination_dir):
-    pdb_tmp_dir = os.path.join(destination_dir, 'pdb_tmp')
-    bldinstallercommon.create_dirs(pdb_tmp_dir)
-    # locate
-    for root, dirnames, filenames in os.walk(search_dir):
-        for filename in fnmatch.filter(filenames, '*.pdb'):
-            shutil.move(os.path.join(root, filename), os.path.join(pdb_tmp_dir, filename))
-    # archive if pdb files found
-    if os.listdir(pdb_tmp_dir):
-        cmd_args = '7z a ' + destination_dir + os.sep + 'qt5_pdb.7z *'
-        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), pdb_tmp_dir, True, True)
-    # remove tmp dir
-    bldinstallercommon.remove_tree(pdb_tmp_dir)
 
 
 ###############################
