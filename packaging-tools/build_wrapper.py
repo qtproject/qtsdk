@@ -1340,8 +1340,8 @@ def replace_latest_successful_installer(bld_command, installer_name, installer_n
     else:
         old_installer = ls_installer_dir + '/' + installer_base_name + '*'
         # delete old installer
-        cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, 'rm', old_installer]
-        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, False)
+        cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, 'rm', '-f', old_installer]
+        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, False, True)
         # save new installer to latest_successful directory
         cmd_args = [SCP_COMMAND, installer_name, bld_command.pkg_server_addr + ':' + ls_installer_dir + '/' + installer_name_final]
         bldinstallercommon.do_execute_sub_process(cmd_args, installer_output, True)
@@ -1375,19 +1375,21 @@ def handle_installer_build(installer_type, bld_command):
     remote_path_top_level_base              = remote_path_base + '/' + installer_type + '_installers' + '/' + bld_command.version + '/'
     remote_path_top_level                   = remote_path_top_level_base + bld_command.build_time_stamp[:10] + '_' + bld_command.build_number
     remote_path_top_level_latest            = remote_path_top_level_base + '/' + 'latest'
-    remote_path_top_level_latest_available  = remote_path_top_level_base + '/' + 'latest_available_offline_installers'
+    remote_path_top_level_latest_available  = remote_path_top_level_base + '/' + 'latest_available_' + installer_type + '_installers'
     create_remote_dirs(bld_command.pkg_server_addr, remote_path_top_level)
     create_remote_dirs(bld_command.pkg_server_addr, remote_path_top_level_latest_available)
     #Update latest link
     update_latest_link(bld_command, remote_path_top_level, remote_path_top_level_latest)
     # Create remote directories under <LICENSE>/qt/<version>
     if installer_type == 'offline':
-        remote_path_base_qt              = remote_path_base + 'qt' + '/' + bld_command.version + '/'
-        remote_path_qt_latest            = remote_path_base_qt + 'latest' + '/' + 'offline_installers'
-        remote_path_qt_latest_available  = remote_path_base_qt + 'latest_available_offline_installers'
-        # create symlinks
-        update_latest_link(bld_command, remote_path_top_level, remote_path_qt_latest)
-        update_latest_link(bld_command, remote_path_top_level, remote_path_qt_latest_available)
+        remote_path_base_qt                     = remote_path_base + 'qt' + '/' + bld_command.version + '/'
+        remote_path_qt_latest                   = remote_path_base_qt + 'latest' + '/' + 'offline_installers' + '/'
+        remote_path_qt_latest_available         = remote_path_base_qt + 'latest_available_offline_installers'
+        remote_path_top_level_latest_successful = remote_path_base + 'offline_installers/latest_successful'
+        # ensure remote directories exist
+        create_remote_dirs(bld_command.pkg_server_addr, remote_path_qt_latest)
+        create_remote_dirs(bld_command.pkg_server_addr, remote_path_qt_latest_available)
+        create_remote_dirs(bld_command.pkg_server_addr, remote_path_top_level_latest_successful)
 
     # Create remote dirs on opensource distribution server
     if export_opensource_offline_installer:
@@ -1416,6 +1418,8 @@ def handle_installer_build(installer_type, bld_command):
             remote_copy_installer(bld_command, remote_path_qt_latest, installer_name, installer_output_dir, installer_name_final)
             # <LICENSE>/qt/<version>/latest_available_offline_installers/    may contain installer from different builds, always the latest successful ones
             replace_latest_successful_installer(bld_command, installer_name, installer_name_final, remote_path_qt_latest_available, installer_output_dir)
+            # <LICENSE>/offline_installers/latest_successful
+            replace_latest_successful_installer(bld_command, installer_name, installer_name_final, remote_path_top_level_latest_successful, installer_output_dir)
 
         # under:
         # i.e. separate location where offline installers only reside, separated by version number in path
