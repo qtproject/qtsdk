@@ -170,7 +170,6 @@ if not os.path.lexists(callerArguments.qt5path):
         'qt5_essentials.7z',
         'qt5_addons.7z',
         'qt5_qtscript.7z',
-        'qt5_qtquick1.7z', # no longer needed for >= 3.5
         'qt5_qtwebkit.7z',
         'qt5_qtlocation.7z',
         'qt5_qtquickcontrols.7z'
