@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt Quick Controls for Android x86</DisplayName>
     <Description></Description>
-    <Version>5.5.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.5.1-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <AutoDependOn>qt.55.qtquickcontrols, qt.55.android_x86</AutoDependOn>
     <Dependencies>qt.55.android_x86</Dependencies>

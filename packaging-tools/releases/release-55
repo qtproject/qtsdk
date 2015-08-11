@@ -11,7 +11,7 @@ linux-x64:                  installer-framework-build-linux-x64.7z
 mac-x64:                    installer-framework-build-mac-x64.7z
 
 [release.global]
-version:                        5.5.0
+version:                        5.5.1
 version_tag:
 module_exclude_list:            qtdocgallery, qtfeedback, qtjsondb, qtpim, qtqa, qtrepotools, qtsystems
 module_separate_install_list:   qtwebengine, qtquick1, qtscript

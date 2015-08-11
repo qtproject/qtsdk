@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt Canvas 3D</DisplayName>
     <Description>License options: LGPLv3, GPLv2.0 or later, Commercial&lt;br&gt;&lt;br&gt;NOTE: Not licensed under LGPLv2.1&lt;br&gt;&lt;br&gt;Qt Canvas 3D module provides a way to make OpenGL-like 3D drawing calls from Qt Quick JavaScript.</Description>
-    <Version>5.5.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.5.1-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.55.qtquickcontrols</Dependencies>
     <Default>true</Default>
