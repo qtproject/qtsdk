@@ -53,7 +53,7 @@ file_list:              qt-conf,
                         x86-qt54-msvc2012_32-opengl-conf,
                         x86-tools-qtcreator-qt54x-conf,
                         x86-tools-vcredist_msvc2013-conf,
-                        qtwebview-src-doc-examples-conf,
+                        qtwebview-src-doc-examples-conf-10,
                         qtwebview-qt54-x86-msvc2012_32-opengl-conf,
                         qtcanvas3d-src-doc-examples-conf
 

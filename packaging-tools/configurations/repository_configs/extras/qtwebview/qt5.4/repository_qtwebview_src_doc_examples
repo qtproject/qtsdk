@@ -31,32 +31,15 @@
 ##
 #############################################################################
 
+[PackageNamespace]
+name:                   qt
+
+[PlatformIdentifier]
+identifier:             all-os
 
 [PackageConfigurationFiles]
-file_list:              qtwebview-10-src-conf
+file_list:              qtwebview-src-doc-examples-conf-10
 
-[qt.extras]
-
-[qt.extras.qtwebview]
-
-[qt.extras.qtwebview.src]
-
-[qt.extras.qtwebview.doc]
-optional_for_offline:   true
-archives:               qtwebview.doc
-target_install_base:    /Docs/QtWebView/1.0/
-[qtwebview.doc]
-archive_uri:            /qtwebview/@QTWEBVIEW_VERSION@/latest_successful/doc/qtwebview-@LICENSE@-doc-@QTWEBVIEW_VERSION@.7z
-target_install_dir:
-package_strip_dirs:     1
-package_finalize_items: cleanup_doc_directory
-
-[qt.extras.qtwebview.examples]
-optional_for_offline:   true
-archives:               qtwebview.examples
-target_install_base:    /Examples/QtWebView/1.0/webview/
-[qtwebview.examples]
-archive_uri:            /qtwebview/@QTWEBVIEW_VERSION@/latest_successful/examples/examples_qtwebview.7z
-target_install_dir:
-package_strip_dirs:     2
+[PackageTemplates]
+template_dirs:          pkg_extras
 

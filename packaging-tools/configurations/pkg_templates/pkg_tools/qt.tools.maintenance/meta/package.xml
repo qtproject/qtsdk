@@ -7,6 +7,7 @@
     <Script>installscript.qs</Script>
     <Essential>true</Essential>
     <Virtual>true</Virtual> <!-- Set to true if this is a virtual component not showing up in the installer -->
+    <ForcedInstallation>true</ForcedInstallation>
     <!--<Default>%PACKAGE_DEFAULT_TAG%</Default>-->
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>

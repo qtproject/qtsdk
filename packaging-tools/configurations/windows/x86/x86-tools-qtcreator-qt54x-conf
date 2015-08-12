@@ -45,8 +45,8 @@ archives:               tools.qtcreator
 target_install_base:    /Tools/QtCreator
 package_default:        true
 [tools.qtcreator]
-archive_uri:            /qtcreator/releases/3.4.1_1/qtcreator_windows_vs2013_32.7z
+archive_uri:            /qtcreator/releases/3.4.2/qtcreator_win-msvc2013-Windows8.1-x86.7z
 package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:
-archive_name:           qt-creator-opensource-vs2013-32.7z
+archive_name:           qtcreator_win-msvc2013-Windows8.1-x86.7z

@@ -133,7 +133,6 @@ class MultipleOption(Option):
 class MkQtBuildOptions:
     def __init__(self):
         self.src_url                = ''
-        self.qt_creator_src_dir     = ''
         self.configure_options      = ''
         self.add_configure_option   = ''
         self.make_cmd               = ''
@@ -155,8 +154,6 @@ class MkQtBuildOptions:
     def set_args(self, option_parser):
         if option_parser.src_url:
             self.src_url = option_parser.src_url
-        if option_parser.qt_creator_src_dir:
-            self.qt_creator_src_dir = option_parser.qt_creator_src_dir
         if option_parser.configure_options:
             self.configure_options      = option_parser.configure_options
         if option_parser.add_configure_option:
@@ -435,40 +432,6 @@ def build_qt():
     elif bldinstallercommon.is_win_platform() and 'mingw32-make' in QT_BUILD_OPTIONS.make_cmd:
         cmd_args += ' -j' + str(QT_BUILD_OPTIONS.make_thread_count)
     bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), QT_SOURCE_DIR, QT_BUILD_OPTIONS.strict_mode, False, QT_BUILD_OPTIONS.system_env)
-    print_wrap('--------------------------------------------------------------------')
-
-
-###############################
-# function
-###############################
-def build_qmlpuppets():
-    if not QT_BUILD_OPTIONS.qt_creator_src_dir:
-        return
-    print_wrap('---------------- Building QML Puppets -------------------------------')
-    qmake_executable_path = bldinstallercommon.locate_executable(QT_SOURCE_DIR, 'qmake' + bldinstallercommon.get_executable_suffix())
-    if not qmake_executable_path:
-        print_wrap('*** Error! qmake executable not found? Looks like the build has failed in previous step?')
-        exit_script()
-
-    cmd_args = QT_BUILD_OPTIONS.make_cmd
-    if bldinstallercommon.is_unix_platform():
-        cmd_args += ' -j' + str(QT_BUILD_OPTIONS.make_thread_count)
-
-    shutil.copy(os.path.join(QT_SOURCE_DIR, ".qmake.super"),
-                QT_BUILD_OPTIONS.qt_creator_src_dir)
-
-    qmlpuppet_dir = os.path.join(QT_BUILD_OPTIONS.qt_creator_src_dir, 'src', 'tools', 'qml2puppet', 'qml2puppet')
-
-    # override DESTDIR because DESTDIR in qml2puppet.pro doesn't handle that Qt is not installed in
-    # QT_INSTALL_BINS, but within a INSTALL_ROOT
-    prfx_path = ORIGINAL_QMAKE_QT_PRFXPATH
-    if bldinstallercommon.is_win_platform():
-        prfx_path = prfx_path[2:].replace('/', '\\')
-    install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + ESSENTIALS_INSTALL_DIR_NAME + prfx_path
-    qmake_executable_path = [qmake_executable_path, '-after', 'DESTDIR=' + os.path.join(install_root_path, 'bin')]
-
-    bldinstallercommon.do_execute_sub_process(qmake_executable_path, qmlpuppet_dir, QT_BUILD_OPTIONS.strict_mode, False, QT_BUILD_OPTIONS.system_env)
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), qmlpuppet_dir, QT_BUILD_OPTIONS.strict_mode, False, QT_BUILD_OPTIONS.system_env)
     print_wrap('--------------------------------------------------------------------')
 
 
@@ -905,9 +868,6 @@ def setup_option_parser():
     OPTION_PARSER.add_option("-a", "--add-configure-option",
                              action="store", type="string", dest="add_configure_option", default="",
                              help="options to be added to configure options not defined in configure options file given with -c, e.g. -a \"-<configure_option> <value>\"")
-    OPTION_PARSER.add_option("--creator-dir",
-                             action="store", type="string", dest="qt_creator_src_dir", default="",
-                             help="path to Qt Creator sources. If given, the Qt Quick Designer processes (qmlpuppet, qml2puppet) will be built and packaged.")
     OPTION_PARSER.add_option("--replace-rpath",
                              action="store_true", dest="replace_rpath", default=False,
                              help="patch RPath with relative paths pointing to /lib")
@@ -965,10 +925,6 @@ def main_call_parameters():
 
     if QT_BUILD_OPTIONS.add_configure_option:
         CONFIGURE_OPTIONS += ' ' + QT_BUILD_OPTIONS.add_configure_option
-
-    if QT_BUILD_OPTIONS.qt_creator_src_dir and not os.path.isdir(QT_BUILD_OPTIONS.qt_creator_src_dir):
-        print_wrap(' *** Error! Could not find directory ' + QT_BUILD_OPTIONS.qt_creator_src_dir)
-        exit_script()
 
     #TODO: android options to global variables (all). Check that paths exists, also other values
     if QT_BUILD_OPTIONS.android_ndk_host:
@@ -1032,9 +988,6 @@ def run_build():
     save_original_qt_prfxpath()
     # install
     install_qt()
-    # build qmlpuppets into Qt install
-    if DESKTOP_BUILD:
-        build_qmlpuppets()
     # build docs and copy to essentials install dir
     if not ANDROID_BUILD and not QNX_BUILD:
         build_docs()
