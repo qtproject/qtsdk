@@ -73,25 +73,25 @@ configure_options:      -opensource -confirm-license -debug-and-release -release
 arg_configurations_file:    offline_installer_jobs/5.5/linux_x86
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
 installer_name:             qt-opensource-linux-x86-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerQtMinor_tests_linux_32bit
+rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_linux_32bit
 
 [release.55.offline.linux.x86.android]
 arg_configurations_file:    offline_installer_jobs/5.5/linux_x86_android
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
 installer_name:             qt-opensource-linux-x86-android-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerQtMinor_tests_linux_android_32bit
+rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_linux_android_32bit
 
 [release.55.offline.linux.x64]
 arg_configurations_file:    offline_installer_jobs/5.5/linux_x64
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
 installer_name:             qt-opensource-linux-x64-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerQtMinor_tests_linux_64bit
+rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_linux_64bit
 
 [release.55.offline.linux.x64.android]
 arg_configurations_file:    offline_installer_jobs/5.5/linux_x64_android
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
 installer_name:             qt-opensource-linux-x64-android-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerQtMinor_tests_linux_android_64bit
+rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_linux_android_64bit
 
 
 ################################################################################
@@ -101,19 +101,19 @@ rta_key_list:               Qt_RTA_opensource_offlineInstallerQtMinor_tests_linu
 arg_configurations_file:    offline_installer_jobs/5.5/mac_x64
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
 installer_name:             qt-opensource-mac-x64-clang-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerQtMinor_tests_mac_64bit
+rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_mac_64bit
 
 [release.55.offline.mac.x64.android]
 arg_configurations_file:    offline_installer_jobs/5.5/mac_x64_android
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
 installer_name:             qt-opensource-mac-x64-android-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerQtMinor_tests_mac_android
+rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_mac_android
 
 [release.55.offline.mac.x64.android_and_ios]
 arg_configurations_file:    offline_installer_jobs/5.5/mac_x64_android_ios
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
 installer_name:             qt-opensource-mac-x64-android-ios-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerQtMinor_tests_mac_ios_android
+rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_mac_ios_android
 
 
 ################################################################################
@@ -123,43 +123,43 @@ rta_key_list:               Qt_RTA_opensource_offlineInstallerQtMinor_tests_mac_
 arg_configurations_file:    offline_installer_jobs/5.5/win_x86_mingw492
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-mingw492_opengl-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerQtMinor_tests_windows_mingw
+rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_windows_mingw
 
 [release.55.offline.windows.x86.msvc2010]
 arg_configurations_file:    offline_installer_jobs/5.5/win_x86_msvc2010
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-msvc2010-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerQtMinor_tests_windows_msvc2010
+rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_windows_msvc2010
 
 [release.55.offline.windows.x86.msvc2012]
 arg_configurations_file:    offline_installer_jobs/5.5/win_x86_msvc2012
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-msvc2012-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerQtMinor_tests_windows_msvc2012
+rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_windows_msvc2012
 
 [release.55.offline.windows.x86.msvc2013]
 arg_configurations_file:    offline_installer_jobs/5.5/win_x86_msvc2013
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-msvc2013-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerQtMinor_tests_windows_msvc2013_32bit
+rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_windows_msvc2013_32bit
 
 [release.55.offline.windows.x86.x64-msvc2013]
 arg_configurations_file:    offline_installer_jobs/5.5/win_x64_msvc2013
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-msvc2013_64-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerQtMinor_tests_windows_msvc2013_64bit
+rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_windows_msvc2013_64bit
 
 [release.55.offline.windows.x86.mingw492.android]
 arg_configurations_file:    offline_installer_jobs/5.5/win_x86_mingw492_android
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-android-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerQtMinor_tests_windows_android
+rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_windows_android
 
 [release.55.offline.windows.x86.winrt]
 arg_configurations_file:    offline_installer_jobs/5.5/win_x64_winrt
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-winrt-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerQtMinor_tests_windows_winrt
+rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_windows_winrt
 
 
 ################################################################################
