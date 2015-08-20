@@ -46,7 +46,7 @@ name:                   qt
 identifier:             linux
 
 [PackageConfigurationFiles]
-file_list:              x86_64-tools-qtcreator-conf
+file_list:              x86_64-tools-qtcreator-online-conf
 
 [PackageTemplates]
 template_dirs:          pkg_tools

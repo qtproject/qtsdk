@@ -42,28 +42,21 @@
 
 [qt.55.android_armv7]
 archives:               55.android_armv7.essentials,
+                        55.android_armv7.addons,
                         55.android_armv7.icu_541.mingw_32,
                         55.android_armv7.mingw492.runtime
 target_install_base:    /5.5/android_armv7
 [55.android_armv7.essentials]
 archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/mingw_x86/qt5_essentials.7z
 package_finalize_items: delete_doc_directory
-[55.android_armv7.icu_541.mingw_32]
-archive_uri:            http://download.qt.io/development_releases/prebuilt/icu/prebuilt/mingw/icu_54_1_mingw_builds_4_9_2_posix_dwarf_32.7z
-[55.android_armv7.mingw492.runtime]
-archive_uri:            http://download.qt.io/development_releases/prebuilt/mingw_32/i686-4.9.2-release-posix-dwarf-rt_v3-rev2-runtime.7z
-target_install_dir:     /bin
-
-
-# QtWebKit provided as separate installable component in installer
-[qt.55.qtwebkit]
-[qt.55.qtwebkit.android_armv7]
-archives:               55.qtwebkit.android_armv7
-target_install_base:    /5.5/android_armv7
-[55.qtwebkit.android_armv7]
-archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/mingw_x86/qt5_qtwebkit.7z
-rpath_target:           /lib
+[55.android_armv7.addons]
+archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/mingw_x86/qt5_addons.7z
 package_finalize_items: delete_doc_directory
+[55.android_armv7.icu_541.mingw_32]
+archive_uri:            http://download.qt.io/development_releases/prebuilt/icu/prebuilt/54.1/icu-win-MinGW4.9.2-Windows7-x86.7z
+[55.android_armv7.mingw492.runtime]
+archive_uri:            http://download.qt.io/development_releases/prebuilt/mingw_32/i686-4.9.2-release-posix-dwarf-rt_v3-rev1-runtime.7z
+target_install_dir:     /bin
 
 # QtQuick1 provided as separate installable component in installer
 [qt.55.qtquick1]
@@ -82,5 +75,46 @@ archives:               55.qtscript.android_armv7
 target_install_base:    /5.5/android_armv7
 [55.qtscript.android_armv7]
 archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/mingw_x86/qt5_qtscript.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+
+# QtQuickControls provided as separate installable component in installer
+[qt.55.qtquickcontrols]
+[qt.55.qtquickcontrols.android_armv7]
+archives:               55.qtquickcontrols.android_armv7
+target_install_base:    /5.5/android_armv7
+[55.qtquickcontrols.android_armv7]
+archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/mingw_x86/qt5_qtquickcontrols.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+# QtLocation provided as separate installable component in installer
+[qt.55.qtlocation]
+[qt.55.qtlocation.android_armv7]
+archives:               55.qtlocation.android_armv7
+target_install_base:    /5.5/android_armv7
+[55.qtlocation.android_armv7]
+archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/mingw_x86/qt5_qtlocation.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+# Qt3D provided as separate installable component in installer
+[qt.55.qt3d]
+[qt.55.qt3d.android_armv7]
+archives:               55.qt3d.android_armv7
+target_install_base:    /5.5/android_armv7
+[55.qt3d.android_armv7]
+archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/mingw_x86/qt5_qt3d.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+# QtCanvas3D provided as separate installable component in installer
+[qt.55.qtcanvas3d]
+[qt.55.qtcanvas3d.android_armv7]
+archives:               55.qtcanvas3d.android_armv7
+target_install_base:    /5.5/android_armv7
+[55.qtcanvas3d.android_armv7]
+archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/mingw_x86/qt5_qtcanvas3d.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory

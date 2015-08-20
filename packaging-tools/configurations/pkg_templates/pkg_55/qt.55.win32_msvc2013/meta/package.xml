@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <Package>
     <DisplayName>msvc2013 32-bit</DisplayName>
-    <Description>License options: LGPLv3, LGPLv2.1, Commercial&lt;br&gt;&lt;br&gt;Qt 5.5.0 Prebuilt Components for msvc2013 32-bit</Description>
-    <Version>5.5.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Description>License options: LGPLv3, LGPLv2.1, Commercial&lt;br&gt;&lt;br&gt;Qt 5.5.1 Prebuilt Components for msvc2013 32-bit</Description>
+    <Version>5.5.1-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.tools.qtcreator</Dependencies>
     <Default>true</Default>

@@ -54,7 +54,7 @@ package_finalize_items: delete_doc_directory
 archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2013_64/qt5_addons.7z
 package_finalize_items: delete_doc_directory
 [55.win64_msvc2013_64.icu_541_release.win_64]
-archive_uri:            http://download.qt.io/development_releases/prebuilt/icu/prebuilt/msvc2013/icu_54_1_msvc_2013_64.7z
+archive_uri:             http://download.qt.io/development_releases/prebuilt/icu/prebuilt/54.1/icu-win-msvc2013-Windows8.1-x64.7z
 target_install_dir:     /bin
 [55.win64_msvc2013_64.d3d_compiler_47.x64]
 archive_uri:            http://download.qt.io/development_releases/prebuilt/d3dcompiler/msvc2013/d3dcompiler_47-x64.7z
@@ -71,16 +71,6 @@ archives:               55.qtwebengine.win64_msvc2013_64
 target_install_base:    /5.5/msvc2013_64
 [55.qtwebengine.win64_msvc2013_64]
 archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2013_64/qt5_qtwebengine.7z
-package_finalize_items: delete_doc_directory
-
-# QtWebKit provided as separate installable component in installer
-[qt.55.qtwebkit]
-[qt.55.qtwebkit.win64_msvc2013_64]
-archives:               55.qtwebkit.win64_msvc2013_64
-target_install_base:    /5.5/msvc2013_64
-[55.qtwebkit.win64_msvc2013_64]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2013_64/qt5_qtwebkit.7z
-rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
 # QtQuick1 provided as separate installable component in installer
@@ -101,5 +91,46 @@ target_install_base:    /5.5/msvc2013_64
 [55.qtscript.win64_msvc2013_64]
 archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2013_64/qt5_qtscript.7z
 rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+
+# QtQuickControls provided as separate installable component in installer
+[qt.55.qtquickcontrols]
+[qt.55.qtquickcontrols.win64_msvc2013_64]
+archives:               55.qtquickcontrols.win64_msvc2013_64
+target_install_base:    /5.5/msvc2013_64
+[55.qtquickcontrols.win64_msvc2013_64]
+archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2013_64/qt5_qtquickcontrols.7z
+rpath_target:
+package_finalize_items: delete_doc_directory
+
+# QtLocation provided as separate installable component in installer
+[qt.55.qtlocation]
+[qt.55.qtlocation.win64_msvc2013_64]
+archives:               55.qtlocation.win64_msvc2013_64
+target_install_base:    /5.5/msvc2013_64
+[55.qtlocation.win64_msvc2013_64]
+archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2013_64/qt5_qtlocation.7z
+rpath_target:
+package_finalize_items: delete_doc_directory
+
+# Qt3D provided as separate installable component in installer
+[qt.55.qt3d]
+[qt.55.qt3d.win64_msvc2013_64]
+archives:               55.qt3d.win64_msvc2013_64
+target_install_base:    /5.5/msvc2013_64
+[55.qt3d.win64_msvc2013_64]
+archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2013_64/qt5_qt3d.7z
+rpath_target:
+package_finalize_items: delete_doc_directory
+
+# QtCanvas3D provided as separate installable component in installer
+[qt.55.qtcanvas3d]
+[qt.55.qtcanvas3d.win64_msvc2013_64]
+archives:               55.qtcanvas3d.win64_msvc2013_64
+target_install_base:    /5.5/msvc2013_64
+[55.qtcanvas3d.win64_msvc2013_64]
+archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2013_64/qt5_qtcanvas3d.7z
+rpath_target:
 package_finalize_items: delete_doc_directory
 

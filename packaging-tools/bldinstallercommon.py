@@ -598,7 +598,7 @@ def requires_rpath(file_path):
     if IS_LINUX_PLATFORM or IS_SOLARIS_PLATFORM:
         if not is_executable(file_path):
             return False
-        return (re.search(r':*.RPATH=',
+        return (re.search(r':*.R.*PATH=',
             subprocess.Popen(['chrpath', '-l', file_path],
                 stdout=subprocess.PIPE).stdout.read()) is not None)
     return False
@@ -611,7 +611,7 @@ def sanity_check_rpath_max_length(file_path, new_rpath):
     if IS_LINUX_PLATFORM or IS_SOLARIS_PLATFORM:
         if not is_executable(file_path):
             return False
-        result = re.search(r':*.RPATH=.*', subprocess.Popen(['chrpath', '-l', file_path], stdout=subprocess.PIPE).stdout.read())
+        result = re.search(r':*.R.*PATH=.*', subprocess.Popen(['chrpath', '-l', file_path], stdout=subprocess.PIPE).stdout.read())
         if not result:
             print '*** No RPath found from given file: ' + file_path
         else:
@@ -762,21 +762,25 @@ def do_execute_sub_process(args, execution_path, abort_on_fail, get_output=False
 ###############################
 # function
 ###############################
-def clone_repository(repo_url, repo_branch_or_tag, destination_folder):
+def clone_repository(repo_url, repo_branch_or_tag, destination_folder, full_clone = False):
     print '--------------------------------------------------------------------'
     print 'Cloning repository: ' + repo_url
     print '        branch/tag: ' + repo_branch_or_tag
     print 'Dest:               ' + destination_folder
     print '--------------------------------------------------------------------'
 
-    cmd_args = ['git', 'init', destination_folder]
-    do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+    if full_clone:
+        cmd_args = ['git', 'clone', repo_url, destination_folder, '-b', repo_branch_or_tag]
+        do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+    else:
+        cmd_args = ['git', 'init', destination_folder]
+        do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
-    cmd_args = ['git', 'fetch', repo_url, repo_branch_or_tag]
-    do_execute_sub_process(cmd_args, destination_folder, True)
+        cmd_args = ['git', 'fetch', repo_url, repo_branch_or_tag]
+        do_execute_sub_process(cmd_args, destination_folder, True)
 
-    cmd_args = ['git', 'checkout', 'FETCH_HEAD']
-    do_execute_sub_process(cmd_args, destination_folder, True)
+        cmd_args = ['git', 'checkout', 'FETCH_HEAD']
+        do_execute_sub_process(cmd_args, destination_folder, True)
 
 
 ###############################
@@ -830,7 +834,7 @@ def remote_path_exists(remote_addr, path_to_check, ssh_command = 'ssh'):
 ###############################
 # function
 ###############################
-def create_mac_disk_image(execution_path, file_directory, file_base_name, image_size = '2g'):
+def create_mac_disk_image(execution_path, file_directory, file_base_name, image_size = '3g'):
     # create disk image
     cmd_args = ['hdiutil', 'create', '-srcfolder', \
                 os.path.join(file_directory, file_base_name + '.app'), \

@@ -44,8 +44,8 @@
 archives:               tools.win32_mingw492
 target_install_base:    /Tools/mingw492_32
 [tools.win32_mingw492]
-archive_uri:            http://download.qt.io/development_releases/prebuilt/mingw_32/i686-4.9.2-release-posix-dwarf-rt_v3-rev2.7z
+archive_uri:            http://download.qt.io/development_releases/prebuilt/mingw_32/i686-4.9.2-release-posix-dwarf-rt_v3-rev1.7z
 package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:
-archive_name:           i686-4.9.2-release-posix-dwarf-rt_v3-rev2.7z
+archive_name:           i686-4.9.2-release-posix-dwarf-rt_v3-rev1.7z

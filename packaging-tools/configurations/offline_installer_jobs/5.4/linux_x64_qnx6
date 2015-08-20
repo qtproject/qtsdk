@@ -54,7 +54,7 @@ file_list:              qt-conf,
                         x86_64-qt54-gcc-conf,
                         qnx6-x64-qt54-armv7-conf,
                         qnx6-x64-qt54-x86-conf,
-                        x86_64-tools-qtcreator-conf,
+                        x86_64-tools-qtcreator-qt54x-conf,
                         installer-qnx6-sdp-conf
 
 [ConfigDir]

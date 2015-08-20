@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <Package>
     <DisplayName>Qt 5.5</DisplayName>
-    <Description>Qt 5.5.0</Description>
-    <Version>5.5.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Description>Qt 5.5.1</Description>
+    <Version>5.5.1-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Script>installscript.qs</Script>
     <Dependencies>qt.55.doc, qt.55.examples</Dependencies>

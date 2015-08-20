@@ -46,5 +46,5 @@ file_list:              qtwebview-qt55-x64-android-armv5-conf,
 package_url:            http://download.qt.io/development_releases/prebuilt/mac/qt_menu.nib.7z
 
 [PackageTemplates]
-template_dirs:          pkg_extras
+template_dirs:          pkg_extras_qt55
 

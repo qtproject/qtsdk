@@ -49,4 +49,4 @@ archive_uri:            /qtcreator/releases/3.5.0/qtcreator_linux-g++-Rhel6.6-x8
 package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:
-archive_name:           qtcreator_linux-gcc-Rhel6.6-x86.7z
+archive_name:           qt-creator-opensource-rhel66-32.7z

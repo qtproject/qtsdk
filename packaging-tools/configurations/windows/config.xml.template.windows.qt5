@@ -9,7 +9,7 @@
     <Watermark>watermark.png</Watermark>
     <StartMenuDir>Qt @QT_VERSION@</StartMenuDir>
     <ProductUrl>http://www.qt.io/</ProductUrl>
-    <UninstallerName>MaintenanceTool</UninstallerName>
+    <MaintenanceToolName>MaintenanceTool</MaintenanceToolName>
     <DependsOnLocalInstallerBinary>true</DependsOnLocalInstallerBinary>
     <!--<RemoteRepositories>
         <Repository>

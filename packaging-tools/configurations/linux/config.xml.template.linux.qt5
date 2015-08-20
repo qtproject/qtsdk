@@ -9,7 +9,6 @@
     <Watermark>watermark_linux.png</Watermark>
     <StartMenuDir>Qt @QT_VERSION@</StartMenuDir>
     <ProductUrl>http://www.qt.io/</ProductUrl>
-    <UninstallerName>MaintenanceTool</UninstallerName>
     <!--<RemoteRepositories>
         <Repository>
             <Url>%UPDATE_REPOSITORY_URL%</Url>
@@ -21,4 +20,5 @@
     <AdminTargetDir>/opt/Qt@QT_VERSION@</AdminTargetDir>
     <WizardDefaultHeight>520</WizardDefaultHeight>
     <AllowSpaceInPath>false</AllowSpaceInPath>
+    <MaintenanceToolName>MaintenanceTool</MaintenanceToolName>
 </Installer>

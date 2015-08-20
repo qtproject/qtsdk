@@ -54,7 +54,7 @@ archive_uri:            /qt/@QT_VERSION@/latest/linux_gcc_32_rhel66/qt5_addons.7
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 [55.gcc.icu_541]
-archive_uri:            http://download.qt.io/development_releases/prebuilt/icu/prebuilt/rhel66/icu_54_1_rhel_6_6_64.7z
+archive_uri:            http://download.qt.io/development_releases/prebuilt/icu/prebuilt/54.1/icu-linux-g++-Rhel6.6-x86.7z
 target_install_dir:     /lib
 
 
@@ -65,16 +65,6 @@ archives:               55.qtwebengine.gcc
 target_install_base:    /5.5/gcc
 [55.qtwebengine.gcc]
 archive_uri:            /qt/@QT_VERSION@/latest/linux_gcc_32_rhel66/qt5_qtwebengine.7z
-rpath_target:           /lib
-package_finalize_items: delete_doc_directory
-
-# QtWebKit provided as separate installable component in installer
-[qt.55.qtwebkit]
-[qt.55.qtwebkit.gcc]
-archives:               55.qtwebkit.gcc
-target_install_base:    /5.5/gcc
-[55.qtwebkit.gcc]
-archive_uri:            /qt/@QT_VERSION@/latest/linux_gcc_32_rhel66/qt5_qtwebkit.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -95,5 +85,46 @@ archives:               55.qtscript.gcc
 target_install_base:    /5.5/gcc
 [55.qtscript.gcc]
 archive_uri:            /qt/@QT_VERSION@/latest/linux_gcc_32_rhel66/qt5_qtscript.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+
+# QtQuickControls provided as separate installable component in installer
+[qt.55.qtquickcontrols]
+[qt.55.qtquickcontrols.gcc]
+archives:               55.qtquickcontrols.gcc
+target_install_base:    /5.5/gcc
+[55.qtquickcontrols.gcc]
+archive_uri:            /qt/@QT_VERSION@/latest/linux_gcc_32_rhel66/qt5_qtquickcontrols.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+# QtLocation provided as separate installable component in installer
+[qt.55.qtlocation]
+[qt.55.qtlocation.gcc]
+archives:               55.qtlocation.gcc
+target_install_base:    /5.5/gcc
+[55.qtlocation.gcc]
+archive_uri:            /qt/@QT_VERSION@/latest/linux_gcc_32_rhel66/qt5_qtlocation.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+# Qt3D provided as separate installable component in installer
+[qt.55.qt3d]
+[qt.55.qt3d.gcc]
+archives:               55.qt3d.gcc
+target_install_base:    /5.5/gcc
+[55.qt3d.gcc]
+archive_uri:            /qt/@QT_VERSION@/latest/linux_gcc_32_rhel66/qt5_qt3d.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+# QtCanvas3D provided as separate installable component in installer
+[qt.55.qtcanvas3d]
+[qt.55.qtcanvas3d.gcc]
+archives:               55.qtcanvas3d.gcc
+target_install_base:    /5.5/gcc
+[55.qtcanvas3d.gcc]
+archive_uri:            /qt/@QT_VERSION@/latest/linux_gcc_32_rhel66/qt5_qtcanvas3d.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory

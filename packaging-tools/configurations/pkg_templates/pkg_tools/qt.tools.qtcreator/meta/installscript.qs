@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+** Copyright (C) 2015 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the tools applications of the Qt Toolkit.
@@ -39,7 +39,6 @@
 **
 ****************************************************************************/
 
-var component_root_path = "/";
 var native_path_separator = "/";
 
 // constructor
@@ -77,12 +76,8 @@ Component.prototype.loaded = function()
 
 Component.prototype.beginInstallation = function()
 {
-    if (installer.value("os") === "win") {
-        var path = component_root_path + native_path_separator + "bin" + native_path_separator;
-        component.setStopProcessForUpdateRequest(path + "qtcreator.exe", true);
-        component.setStopProcessForUpdateRequest(path + "linguist.exe", true);
-        component.setStopProcessForUpdateRequest(path + "qmlviewer.exe", true);
-    }
+    if (installer.value("os") === "win")
+        component.addStopProcessForUpdateRequest(component.qtCreatorBinaryPath);
 }
 
 Component.prototype.reactOnTargetDirChange = function(key, value)
@@ -108,20 +103,6 @@ Component.prototype.reactOnTargetDirChange = function(key, value)
             component.qtCreatorBinaryPath = component.qtCreatorBinaryPath.replace(/\/+/g, "/");
         }
     }
-}
-
-function buildNativeComponentRootPath()
-{
-    var target_install_dir = "%TARGET_INSTALL_DIR%";
-    if (installer.value("os") == "win") {
-        native_path_separator = "\\";
-        target_install_dir = target_install_dir.replace(/\//g, "\\");
-    }
-    else {
-        native_path_separator = "/";
-    }
-
-    component_root_path = installer.value("TargetDir") + target_install_dir;
 }
 
 registerCommonWindowsFileTypeExtensions = function()
@@ -209,15 +190,13 @@ Component.prototype.createOperations = function()
 {
     // Call the base createOperations and afterwards set some registry settings
     component.createOperations();
-    buildNativeComponentRootPath();
-    var path = component_root_path + native_path_separator;
     var maintenanceToolPath;
 
     if (installer.value("os") == "win") {
         component.addOperation("CreateShortcut",
                                component.qtCreatorBinaryPath,
                                "@StartMenuDir@\\Qt Creator (Community).lnk",
-                               "workingDirectory=" + path + "bin");
+                               "workingDirectory=@homeDir@");
 
         registerWindowsFileTypeExtensions();
 
@@ -227,7 +206,7 @@ Component.prototype.createOperations = function()
         maintenanceToolPath = installer.value("TargetDir") + "/MaintenanceTool.exe";
     }
     if (installer.value("os") == "x11") {
-        component.addOperation("InstallIcons", path + "share" + native_path_separator + "icons" );
+        component.addOperation("InstallIcons", installer.value("TargetDir") + "%TARGET_INSTALL_DIR%/share/icons" );
         component.addOperation("CreateDesktopEntry",
                                "DigiaQt-qtcreator-community.desktop",
                                "Type=Application\nExec=" + component.qtCreatorBinaryPath + "\nName=Qt Creator (Community)\nGenericName=The IDE of choice for Qt development.\nIcon=QtProject-qtcreator\nTerminal=false\nCategories=Development;IDE;Qt;\nMimeType=text/x-c++src;text/x-c++hdr;text/x-xsrc;application/x-designer;application/vnd.qt.qmakeprofile;application/vnd.qt.xml.resource;text/x-qml;text/x-qt.qml;text/x-qt.qbs;");

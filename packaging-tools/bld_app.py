@@ -344,16 +344,10 @@ if not os.path.lexists(callerArguments.qt5path):
     qt_install_prefix = get_qt_install_prefix(callerArguments.qt5path)
 
     print("##### {0} #####".format("patch Qt"))
-    if sys.platform == "darwin":
-        installerbasePath = os.path.join(tempPath, 'ifw-bld/bin/installerbase')
-        os.chmod(installerbasePath, 0777)
-        runCommand(installerbasePath + " -v --runoperation QtPatch mac " + callerArguments.qt5path  + " qt5",
-            qtApplicationBuildDirectory, callerArguments)
-    else: # don't use qt.conf file, it has a bug on macos QTBUG-29979
-        qtConfFile = open(os.path.join(callerArguments.qt5path, 'bin', 'qt.conf'), "w")
-        qtConfFile.write("[Paths]" + os.linesep)
-        qtConfFile.write("Prefix=.." + os.linesep)
-        qtConfFile.close()
+    qtConfFile = open(os.path.join(callerArguments.qt5path, 'bin', 'qt.conf'), "w")
+    qtConfFile.write("[Paths]" + os.linesep)
+    qtConfFile.write("Prefix=.." + os.linesep)
+    qtConfFile.close()
     if sys.platform.startswith('linux'):
         bldinstallercommon.handle_component_rpath(callerArguments.qt5path, 'lib')
     print("##### {0} ##### ... done".format("patch Qt"))
@@ -379,7 +373,8 @@ environment = {'PATH': os.pathsep.join(pathKeyList)}
 environment["INSTALLER_ARCHIVE"] = os.environ['APPLICATION_NAME'] + '.7z'
 
 if sys.platform.startswith('linux'):
-    environment["LD_LIBRARY_PATH"] = os.path.join(callerArguments.qt5path, 'lib')
+    environment["LD_LIBRARY_PATH"] = os.pathsep.join([os.path.join(callerArguments.qt5path, 'lib')]
++ os.environ.get("LD_LIBRARY_PATH", "").split(os.pathsep))
     environment["QMAKESPEC"] = "linux-g++"
 
 if sys.platform == "darwin":

@@ -1151,8 +1151,6 @@ def create_installer_binary():
             cmd_args = cmd_args + ['-c', CONFIG_DIR_DST, SDK_NAME, ROOT_COMPONENT_NAME]
         else:
             cmd_args = cmd_args + ['--online-only', '-c', CONFIG_DIR_DST + os.sep + 'config.xml', SDK_NAME]
-        # create installer binary
-        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
     # if offline-only installer
     if CREATE_OFFLINE_INSTALLER:
@@ -1168,8 +1166,14 @@ def create_installer_binary():
             cmd_args = cmd_args + ['-c', CONFIG_DIR_DST, SDK_NAME, ROOT_COMPONENT_NAME]
         else:
             cmd_args = cmd_args + ['-c', CONFIG_DIR_DST + os.sep + 'config.xml', SDK_NAME]
-        # create installer binary
-        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
+
+    # use license resource file if given
+    license_resource_file = os.path.join(CONFIG_DIR_DST, 'license.qrc')
+    if os.path.isfile(license_resource_file):
+        cmd_args = cmd_args + ['-r', license_resource_file]
+
+    # create installer binary
+    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
     # move results to dedicated directory
     output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.INSTALLER_OUTPUT_DIR_NAME)
@@ -1292,7 +1296,7 @@ def create_mac_disk_image():
                 '-volname', SDK_NAME, \
                 '-format', 'UDBZ', \
                 os.path.join(SCRIPT_ROOT_DIR, pkg_constants.INSTALLER_OUTPUT_DIR_NAME, SDK_NAME + '.dmg'), \
-                '-ov', '-scrub', '-size', '2g']
+                '-ov', '-scrub', '-size', '3g']
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, True)
 
 

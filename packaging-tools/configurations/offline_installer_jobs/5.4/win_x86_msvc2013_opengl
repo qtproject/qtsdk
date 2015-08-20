@@ -1,6 +1,6 @@
 #############################################################################
 ##
-## Copyright (C) 2014 Digia Plc and/or its subsidiary(-ies).
+## Copyright (C) 2015 Digia Plc and/or its subsidiary(-ies).
 ## Contact: http://www.qt-project.org/legal
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -51,7 +51,7 @@ file_list:              qt-conf,
                         qt54-src-conf,
                         qt54-doc-examples-conf,
                         x86-qt54-msvc2013_32-opengl-conf,
-                        x86-tools-qtcreator-conf,
+                        x86-tools-qtcreator-qt54x-conf,
                         x86-tools-vcredist_msvc2013-conf,
                         qtwebview-src-doc-examples-conf-10,
                         qtwebview-qt54-x86-msvc2013_32-opengl-conf,

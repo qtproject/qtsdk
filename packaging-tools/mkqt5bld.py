@@ -53,6 +53,7 @@ import multiprocessing
 import patch_qmake_qt_key
 from optparse import OptionParser, Option
 import shlex
+import time
 
 SCRIPT_ROOT_DIR                     = os.getcwd()
 WORK_DIR_NAME                       = 'qt5_workdir'
@@ -88,8 +89,6 @@ QT5_ESSENTIALS                      = [ 'qtbase', 'qtdeclarative', 'qtdoc', \
                                         'qtwebkit-examples', 'qtxmlpatterns' ]
 # Modules not to be included in final package
 QT5_MODULE_INSTALL_EXCLUDE_LIST     = ['qtwebkit-examples']
-# Modules to be put in separate archive
-QT5_MODULE_INSTALL_SEPARATE_LIST    = ['qtwebengine']
 
 ORIGINAL_QMAKE_QT_PRFXPATH          = ''
 FILES_TO_REMOVE_LIST                = ['Makefile', 'Makefile.Release', 'Makefile.Debug', \
@@ -140,13 +139,14 @@ class MkQtBuildOptions:
         self.make_thread_count      = multiprocessing.cpu_count()+1
         self.silent_build           = False
         self.module_ignore_list     = []
+        self.module_separate_install_list   = []
         self.strict_mode            = True
         self.replace_rpath          = False
         self.icu_uri                = ''
         self.runtime_path           = ''
         self.prefix                 = ''
         self.android_ndk_host       = ''
-        self.android_api_version    = 'android-10'
+        self.android_api_version    = ''
         self.android_sdk_home       = ''
         self.android_ndk_home       = ''
         self.system_env             = dict(os.environ)
@@ -166,6 +166,8 @@ class MkQtBuildOptions:
             self.silent_build           = option_parser.silent_build
         if option_parser.module_ignore_list:
             self.module_ignore_list     = option_parser.module_ignore_list
+        if option_parser.module_separate_install_list:
+            self.module_separate_install_list = option_parser.module_separate_install_list
         if option_parser.strict_mode:
             self.strict_mode            = option_parser.strict_mode
         if option_parser.replace_rpath:
@@ -301,12 +303,18 @@ def extract_src_package():
         bldinstallercommon.create_dirs(QT_SOURCE_DIR)
         bldinstallercommon.extract_file(QT_PACKAGE_SAVE_AS_TEMP, QT_SOURCE_DIR)
 
+    time.sleep(10)
+
     l = os.listdir(QT_SOURCE_DIR)
     items = len(l)
     if items == 1:
         print_wrap('    Replacing qt-everywhere-xxx-src-5.0.0 with shorter path names')
         shorter_dir_path = QT_SOURCE_DIR + os.sep + QT_PACKAGE_SHORT_NAME
+        time.sleep(10)
+        print_wrap(QT_SOURCE_DIR + os.sep + l[0] + ',' + shorter_dir_path)
+        time.sleep(20)
         os.rename(QT_SOURCE_DIR + os.sep + l[0], shorter_dir_path)
+        time.sleep(10)
         print_wrap('    Old source dir: ' + QT_SOURCE_DIR)
         QT_SOURCE_DIR = shorter_dir_path
         print_wrap('    New source dir: ' + QT_SOURCE_DIR)
@@ -432,19 +440,6 @@ def build_qt():
 ###############################
 def install_qt():
     print_wrap('---------------- Installing Qt -------------------------------------')
-    # temporary solution for installing cross compiled Qt for Android on Windows host
-    if ANDROID_BUILD and bldinstallercommon.is_win_platform():
-        install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
-        # do not use drive letter when running make install
-        install_root_path = install_root_path[2:]
-        cmd_args = MAKE_INSTALL_CMD + ' ' + 'INSTALL_ROOT=' + install_root_path
-        print_wrap('    Installing module: Qt top level')
-        print_wrap('          -> cmd args: ' + cmd_args)
-        print_wrap('                -> in: ' + QT_SOURCE_DIR)
-        return_code, dummy = bldinstallercommon.do_execute_sub_process(cmd_args.split(' '),
-                                                                       QT_SOURCE_DIR, QT_BUILD_OPTIONS.strict_mode, False, QT_BUILD_OPTIONS.system_env)
-        return
-
     if QNX_BUILD:
         install_root_path = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
         if bldinstallercommon.is_win_platform():
@@ -467,7 +462,7 @@ def install_qt():
             continue
         # determine into which final archive this module belongs into
         install_dir = ''
-        if module_name in QT5_MODULE_INSTALL_SEPARATE_LIST:
+        if module_name in QT_BUILD_OPTIONS.module_separate_install_list:
             install_dir = module_name
         elif module_name in QT5_ESSENTIALS:
             install_dir = ESSENTIALS_INSTALL_DIR_NAME
@@ -643,18 +638,6 @@ def replace_rpath():
 def archive_submodules():
     print_wrap('---------------- Archiving submodules ------------------------------')
     bldinstallercommon.create_dirs(MODULE_ARCHIVE_DIR)
-    # temporary solution for Android on Windows compilations
-    if ANDROID_BUILD and bldinstallercommon.is_win_platform():
-        print_wrap('---------- Archiving Qt modules')
-        install_path = MAKE_INSTALL_ROOT_DIR + os.sep + SINGLE_INSTALL_DIR_NAME
-        install_path = 'C' + install_path[1:]
-        if os.path.exists(install_path):
-            cmd_args = '7z a ' + MODULE_ARCHIVE_DIR + os.sep + 'qt5_essentials' + '.7z *'
-            run_in = os.path.normpath(install_path + os.sep + INSTALL_PREFIX)
-            bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), run_in, True, True)
-        else:
-            print_wrap(install_path + os.sep + SINGLE_INSTALL_DIR_NAME + ' DIRECTORY NOT FOUND\n      -> Qt not archived!')
-        return
 
     if QNX_BUILD:
         print_wrap('---------- Archiving Qt modules')
@@ -776,6 +759,15 @@ def patch_build():
     # patch icu_install paths from files
     if bldinstallercommon.is_linux_platform():
         bld_icu_tools.patch_icu_paths(MAKE_INSTALL_ROOT_DIR)
+    # make sure the 'fixqt4headers.pl' ends up in final package if it does not exist there already
+    fixqt4headers_filename = 'fixqt4headers.pl'
+    fixqt4headers_file = bldinstallercommon.locate_file(MAKE_INSTALL_ROOT_DIR, fixqt4headers_filename)
+    if not fixqt4headers_file:
+        # copy it from the used src package
+        fixqt4headers_file = bldinstallercommon.locate_file(QT_SOURCE_DIR, fixqt4headers_filename)
+        target_dir = bldinstallercommon.locate_directory(os.path.join(MAKE_INSTALL_ROOT_DIR, ESSENTIALS_INSTALL_DIR_NAME), 'bin')
+        if fixqt4headers_file and target_dir:
+            shutil.copy(fixqt4headers_file, target_dir)
 
 
 ###############################
@@ -862,8 +854,11 @@ def setup_option_parser():
                              action="store_true", dest="silent_build", default=False,
                              help="suppress command output, show only errors")
     OPTION_PARSER.add_option("-i", "--ignore",
-                             action="extend", type="string", dest="module_ignore_list",
-                             help="do not build module")
+                      action="extend", type="string", dest="module_ignore_list",
+                      help="do not build module")
+    OPTION_PARSER.add_option("--module-separate-install-list",
+                      action="extend", type="string", dest="module_separate_install_list",
+                      help="Create separate archives from the given Qt modules")
     OPTION_PARSER.add_option("-S", "--non-strict-mode",
                              action="store_false", dest="strict_mode", default=True,
                              help="exit on error, defaults to true.")
@@ -890,8 +885,8 @@ def setup_option_parser():
                              action="store", type="string", dest="android_ndk_host", default="",
                              help="E.g. linux-x86")
     OPTION_PARSER.add_option("--android-api-version",
-                             action="store", type="string", dest="android_api_version", default="android-10",
-                             help="API version for the Android.")
+                      action="store", type="string", dest="android_api_version", default="",
+                      help="API version for the Android.")
     OPTION_PARSER.add_option("--android-sdk-home",
                              action="store", type="string", dest="android_sdk_home", default="",
                              help="Path to Android SDK home.")

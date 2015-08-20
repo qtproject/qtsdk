@@ -141,7 +141,7 @@ class IfwOptions:
     default_qt5_src_pkg = 'http://download.qt.io/official_releases/qt/5.4/5.4.0/single/qt-everywhere-opensource-src-5.4.0' + ARCH_EXT
     default_qt4_src_pkg = 'http://download.qt.io/development_releases/prebuilt/qt-src-for-ifw/qt-everywhere-opensource-src-4.8.6-ifw-patch' + ARCH_EXT
 
-    default_qt_installer_framework_url          = 'git://gitorious.org/installer-framework/installer-framework.git'
+    default_qt_installer_framework_url          = 'git://code.qt.io/installer-framework/installer-framework.git'
 
     default_qt_installer_framework_branch_qt4   = '1.6'
     default_qt_installer_framework_branch_qt5   = '2.0'
@@ -185,7 +185,18 @@ class IfwOptions:
         self.mac_deploy_qt_archive_name                 = 'macdeployqt.7z'
         self.mac_qt_menu_nib_archive_name               = 'qt_menu.nib.7z'
         # determine filenames used later on
-        architecture                                    = bldinstallercommon.get_architecture()
+        architecture = ''
+        # if this is cross-compilation attempt to parse the target architecture from the given -platform
+        if '-platform' in qt_configure_options:
+            temp = qt_configure_options.split(' ')
+            plat = temp[temp.index('-platform') + 1]
+            bits = ''.join(re.findall(r'\d+', plat))
+            if bits == '32':
+                architecture = 'x86'
+            else:
+                architecture = 'x64'
+        if not architecture:
+            architecture = bldinstallercommon.get_architecture()
         plat_suffix                                     = bldinstallercommon.get_platform_suffix()
         self.installer_framework_archive_name           = 'installer-framework-build-' + plat_suffix + '-' + architecture + '.7z'
         self.installer_base_archive_name                = 'installerbase-' + plat_suffix + '-' + architecture + '.7z'

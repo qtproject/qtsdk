@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt WebView 1.1 (Tech Preview)</DisplayName>
+    <Description>License options: LGPLv3, GPLv2, Commercial&lt;br&gt;&lt;br&gt;NOTE: Not licensed under LGPLv2.1&lt;br&gt;&lt;br&gt;Qt WebView. A lightweight native WebView for Android and iOS.</Description>
+    <Version>1.1.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Dependencies>qt.extras.qtwebview.src, qt.extras.qtwebview.doc, qt.extras.qtwebview.examples</Dependencies>
+    <Default>true</Default>
+    <SortingPriority>6000</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+

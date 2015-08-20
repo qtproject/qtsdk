@@ -49,6 +49,6 @@ target_install_base:    /5.5/qnx6-x86
 archive_uri:            /qt/@QT_VERSION@/latest/qnx6_x86/mingw492_x86/qt5_essentials.7z
 package_finalize_items: delete_doc_directory
 [55.qnx6_x86.mingw492.runtime]
-archive_uri:            http://download.qt.io/development_releases/prebuilt/mingw_32/i686-4.9.2-release-posix-dwarf-rt_v3-rev2-runtime.7z
+archive_uri:            http://download.qt.io/development_releases/prebuilt/mingw_32/i686-4.9.2-release-posix-dwarf-rt_v3-rev1-runtime.7z
 target_install_dir:     /bin
 
