@@ -294,6 +294,7 @@ def fetch_src_package():
 ###############################
 def extract_src_package():
     global QT_SOURCE_DIR
+    global QT_BUILD_OPTIONS
     print_wrap('---------------- Extracting source package -------------------------')
     if os.path.exists(QT_SOURCE_DIR):
         print_wrap('Source dir ' + QT_SOURCE_DIR + ' already exists, using that (not re-extracting the archive!)')
@@ -328,6 +329,13 @@ def extract_src_package():
         if os.path.exists(QT_SOURCE_DIR + os.sep + ignore):
             print_wrap('    Removing ' + ignore)
             bldinstallercommon.remove_tree(QT_SOURCE_DIR + os.sep + ignore)
+
+    # Locate gnuwin32 tools
+    if bldinstallercommon.is_win_platform():
+        gnuwin32_path = bldinstallercommin.locate_directory(QT_SOURCE_DIR, 'gnuwin32')
+        path_temp = QT_BUILD_OPTIONS.system_env['PATH']
+        path_temp = path_temp + ';' + gnuwin32_path
+        QT_BUILD_OPTIONS.system_env['PATH'] = path_temp
     print_wrap('--------------------------------------------------------------------')
 
 
