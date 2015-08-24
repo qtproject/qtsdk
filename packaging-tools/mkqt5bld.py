@@ -332,10 +332,9 @@ def extract_src_package():
 
     # Locate gnuwin32 tools
     if bldinstallercommon.is_win_platform():
-        gnuwin32_path = bldinstallercommin.locate_directory(QT_SOURCE_DIR, 'gnuwin32')
-        path_temp = QT_BUILD_OPTIONS.system_env['PATH']
-        path_temp = path_temp + ';' + gnuwin32_path
-        QT_BUILD_OPTIONS.system_env['PATH'] = path_temp
+        gnuwin32_path = bldinstallercommon.locate_directory(QT_SOURCE_DIR, 'gnuwin32')
+        gnuwin32_path = os.path.join(gnuwin32_path, 'bin')
+        QT_BUILD_OPTIONS.system_env['PATH'] = gnuwin32_path + ';' + QT_BUILD_OPTIONS.system_env['PATH']
     print_wrap('--------------------------------------------------------------------')
 
 
