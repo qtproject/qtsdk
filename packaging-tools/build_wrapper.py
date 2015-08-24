@@ -1197,9 +1197,9 @@ def handle_qt_creator_build(bld_command):
     qt_pkg_base_url = bld_command.pkg_server_addr_http + '/' + bld_command.license + '/qt/'
     qt_pkg_base_url += bld_command.qtcreator_qt5_version + '/latest_available_package/'
 
-    cmd_args = ['python', '-u', 'bld_qtcreator.py',
+    cmd_args = ['python', '-u', os.path.normpath(SCRIPT_ROOT_DIR + '/bld_qtcreator.py'),
                 '--clean',
-                '--qt5path', os.path.normpath('../../qt5_install_dir'),
+                '--qt5path', os.path.normpath(WORK_DIR + '/qt5_install_dir'),
                 '--qt5_packages_url', qt_pkg_base_url + BIN_TARGET_DIRS[bld_command.target_env],
                 '--versiondescription', '"' + bld_command.qtcreator_version_description + '"']
 
@@ -1239,7 +1239,7 @@ def handle_qt_creator_build(bld_command):
         if bld_command.openssl_libs:
             cmd_args.extend(['--openssl7z', bld_command.openssl_libs])
 
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
+    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR)
 
     if bldinstallercommon.is_mac_platform():
         lock_keychain()

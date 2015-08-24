@@ -133,13 +133,14 @@ if callerArguments.qt5path != os.path.abspath(callerArguments.qt5path):
         os.path.abspath(callerArguments.qt5path)))
     callerArguments.qt5path = os.path.abspath(callerArguments.qt5path)
 
-qtCreatorSourceDirectory = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'qt-creator'))
-qtCreatorBuildDirectory = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..',
-    os.path.split(qtCreatorSourceDirectory)[1] + '_build'))
-qtCreatorInstallDirectory = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..',
-    os.path.split(qtCreatorSourceDirectory)[1] + '_install'))
+qtCreatorSourceDirectory = os.path.abspath('qt-creator')
+qtCreatorBuildDirectory = os.path.abspath(os.path.join(qtCreatorSourceDirectory,
+    '..', 'qt-creator_build'))
+qtCreatorInstallDirectory = os.path.abspath(os.path.join(qtCreatorSourceDirectory,
+    '..', 'qt-creator_install'))
 
-tempPath = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'temp'))
+tempPath = os.path.abspath(os.path.join(qtCreatorSourceDirectory,
+    '..', 'qt-creator_temp'))
 
 ### check mac setup
 if sys.platform == "darwin":
