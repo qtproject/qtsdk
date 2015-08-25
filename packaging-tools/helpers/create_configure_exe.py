@@ -41,6 +41,7 @@
 #############################################################################
 
 import os
+import ntpath
 import sys
 import urllib
 import zipfile
@@ -239,19 +240,11 @@ def extract_src_package():
     contents_before = os.listdir(QT_SRC_DIR)
     bldinstallercommon.extract_file(QT_SRC_ZIP, QT_SRC_DIR)
 
-    contents_after = os.listdir(QT_SRC_DIR)
-    items_b = len(contents_before)
-    items_a = len(contents_after)
-    if items_b < items_a:
-        print_wrap('    Source package extracted.')
-        for item in contents_after:
-            if os.path.isdir(item):
-                QT_SRC_DIR = QT_SRC_DIR + os.sep + item
-                QT_PKG_NAME = item
-        print_wrap('    Source dir: ' + QT_SRC_DIR)
-    else:
-        print_wrap('*** Unsupported directory structure!!!')
-        sys.exit(-1)
+    extracted_dir_name = ntpath.basename(QT_SRC_ZIP)
+    extracted_dir_name = os.path.splitext(extracted_dir_name)[0]
+    QT_SRC_DIR = os.path.join(QT_SRC_DIR, extracted_dir_name)
+    QT_PKG_NAME = extracted_dir_name
+
     print_wrap('------------')
     print_wrap('    Extracting module zip')
     bldinstallercommon.create_dirs(MODULE_DIR)
