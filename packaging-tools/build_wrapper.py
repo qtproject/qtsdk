@@ -46,6 +46,7 @@
 # import the print function which is used in python 3.x
 from __future__ import print_function
 import ConfigParser
+import collections
 import os
 import shutil
 import sys
@@ -53,6 +54,7 @@ import re
 import platform
 from time import gmtime, strftime
 import urllib
+import urlparse
 import mkqt5bld
 import build_doc
 import bld_ifw_tools
@@ -1197,28 +1199,33 @@ def handle_qt_release_build(bld_command):
 # handle_qt_creator_build
 ###############################
 def handle_qt_creator_build(bld_command):
+    def file_url(file_path):
+        return urlparse.urljoin('file:', urllib.pathname2url(file_path))
+
     sanity_check_packaging_server(bld_command)
+    target_env_dir = BIN_TARGET_DIRS[bld_command.target_env]
 
     # determine used Qt package base http url
     qt_pkg_base_url = bld_command.pkg_server_addr_http + '/' + bld_command.license + '/qt/'
     qt_pkg_base_url += bld_command.qtcreator_qt5_version + '/latest_available_package/'
+    qt_pkg_base_url += target_env_dir
+
+    common_arguments = []
+    if not bldinstallercommon.is_win_platform():
+        common_arguments.extend(['--installcommand', 'make -j1'])
+    else:
+        common_arguments.extend(['--buildcommand', os.path.normpath('C:/Utils/jom/jom.exe'),
+                         '--installcommand', os.path.normpath('nmake.exe'),
+                         '--sevenzippath', os.path.normpath('C:/Utils/sevenzip'),
+                         '--gitpath', os.path.normpath('C:/Program Files/Git/bin'),
+                         '--environment_batch', os.path.normpath('C:/Program Files/Microsoft Visual Studio 12.0/VC/vcvarsall.bat'),
+                         '--environment_batch_argument', 'x86'])
 
     cmd_args = ['python', '-u', os.path.normpath(SCRIPT_ROOT_DIR + '/bld_qtcreator.py'),
                 '--clean',
                 '--qt5path', os.path.normpath(WORK_DIR + '/qt5_install_dir'),
-                '--qt5_packages_url', qt_pkg_base_url + BIN_TARGET_DIRS[bld_command.target_env],
+                '--qt5_packages_url', qt_pkg_base_url,
                 '--versiondescription', '"' + bld_command.qtcreator_version_description + '"']
-
-    if bld_command.license == 'enterprise':
-        cmd_args.extend(['--additional_plugin', os.path.normpath(WORK_DIR + '/licensechecker'),
-                         '--additional_plugin', os.path.normpath(WORK_DIR + '/qmlprofiler'),
-                         '--additional_plugin', os.path.normpath(WORK_DIR + '/clangstaticanalyzer'),
-                         '--additional_plugin', os.path.normpath(WORK_DIR + '/autotest-qtcreator-plugin'),
-                         '--additional_plugin', os.path.normpath(WORK_DIR + '/vxworks-qtcreator-plugin'),
-                         '--additional_plugin', os.path.normpath(WORK_DIR + '/qtquickdesigner')])
-        if bldinstallercommon.is_linux_platform():
-            cmd_args.extend(['--additional_plugin', os.path.normpath(WORK_DIR + '/perfprofiler'),
-                             '--additional_plugin', os.path.normpath(WORK_DIR + '/b2qt-qtcreator-plugin')])
 
     ifw_base_path = 'http://ci-files02-hki.ci.local/packages/jenkins/enterprise/ifw/unifiedqt'
     if bldinstallercommon.is_linux_platform():
@@ -1228,27 +1235,78 @@ def handle_qt_creator_build(bld_command):
         else:
             cmd_args.extend(['--installerbase7z', ifw_base_path + '/installer-framework-build-linux-x86.7z'])
     elif bldinstallercommon.is_mac_platform():
-        cmd_args.extend(['--installcommand', 'make -j1',
-                         '--installerbase7z', ifw_base_path + '/installer-framework-build-mac-x64.7z',
+        cmd_args.extend(['--installerbase7z', ifw_base_path + '/installer-framework-build-mac-x64.7z',
                          '--keychain_unlock_script', '/Users/qt/unlock-keychain.sh'])
     else:
-        cmd_args.extend(['--buildcommand', os.path.normpath('C:/Utils/jom/jom.exe'),
-                         '--installcommand', os.path.normpath('nmake.exe'),
+        d3d_url = 'http://download.qt.io/development_releases/prebuilt/d3dcompiler/msvc2013/d3dcompiler_47-x86.7z'
+        opengl_url = 'http://download.qt.io/development_releases/prebuilt/llvmpipe/windows/opengl32sw-32.7z'
+        cmd_args.extend(['--d3dcompiler7z', d3d_url,
+                         '--opengl32sw7z', opengl_url,
                          '--icu7z', bld_command.icu_libs,
-                         '--sevenzippath', os.path.normpath('C:/Utils/sevenzip'),
-                         '--gitpath', os.path.normpath('C:/Program Files/Git/bin'),
-                         '--d3dcompiler7z', 'http://download.qt.io/development_releases/prebuilt/d3dcompiler/msvc2013/d3dcompiler_47-x86.7z',
-                         '--opengl32sw7z', 'http://download.qt.io/development_releases/prebuilt/llvmpipe/windows/opengl32sw-32.7z',
-                         '--installerbase7z', ifw_base_path + '/installer-framework-build-win-x86.7z',
-                         '--environment_batch', os.path.normpath('C:/Program Files/Microsoft Visual Studio 12.0/VC/vcvarsall.bat'),
-                         '--environment_batch_argument', 'x86'])
+                         '--installerbase7z', ifw_base_path + '/installer-framework-build-win-x86.7z'])
         if bld_command.openssl_libs:
             cmd_args.extend(['--openssl7z', bld_command.openssl_libs])
+    cmd_args.extend(common_arguments)
 
     bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR)
 
     if bldinstallercommon.is_mac_platform():
         lock_keychain()
+
+    # Qt Creator enterprise plugins
+    Plugin = collections.namedtuple('Plugin', ['name', 'path', 'dependencies'])
+    if bld_command.license == 'enterprise':
+        additional_plugins = [Plugin(name='licensechecker', path='licensechecker',
+                                     dependencies=[]),
+                              Plugin(name='qmlprofiler', path='qmlprofiler',
+                                     dependencies=['licensechecker']),
+                              Plugin(name='clangstaticanalyzer', path='clangstaticanalyzer',
+                                     dependencies=['licensechecker']),
+                              Plugin(name='autotest-qtcreator-plugin', path='autotest-qtcreator-plugin',
+                                     dependencies=['licensechecker']),
+                              Plugin(name='vxworks-qtcreator-plugin', path='vxworks-qtcreator-plugin',
+                                     dependencies=['licensechecker']),
+                              Plugin(name='isoiconbrowser', path='qtquickdesigner',
+                                     dependencies=['licensechecker'])]
+        if bldinstallercommon.is_linux_platform():
+            additional_plugins.extend([Plugin(name='perfprofiler', path='perfprofiler',
+                                              dependencies=['licensechecker']),
+                                       Plugin(name='b2qt-qtcreator-plugin', path='b2qt-qtcreator-plugin',
+                                              dependencies=['licensechecker', 'perfprofiler'])])
+    for plugin in additional_plugins:
+        cmd_arguments = ['python', '-u', os.path.join(SCRIPT_ROOT_DIR, 'bld_qtcreator_plugins.py'),
+                         '--clean',
+                         '--qt5_packages_url', file_url(os.path.join(WORK_DIR, 'qt-creator_temp')),
+                         '--qtc-build', os.path.join(WORK_DIR, 'qt-creator_build'),
+                         '--qtc-dev', os.path.join(WORK_DIR, 'qt-creator'),
+                         '--plugin-path', os.path.join(WORK_DIR, plugin.path),
+                         '--build-path', WORK_DIR,
+                         '--add-qmake-argument', 'CONFIG+=licensechecker']
+
+        if not bldinstallercommon.is_mac_platform():
+            cmd_arguments.extend(['--icu7z', file_url(os.path.join(WORK_DIR, 'qt-creator_temp', os.path.basename(bld_command.icu_libs)))])
+        if bldinstallercommon.is_win_platform():
+            cmd_arguments.extend(['--d3dcompiler7z', file_url(os.path.join(WORK_DIR, 'qt-creator_temp', os.path.basename(d3d_url))),
+                                  '--opengl32sw7z', file_url(os.path.join(WORK_DIR, 'qt-creator_temp', os.path.basename(opengl_url)))])
+            if bld_command.openssl_libs:
+                cmd_args.extend(['--openssl7z', file_url(os.path.join(WORK_DIR, 'qt-creator_temp', os.path.basename(bld_command.openssl_libs)))])
+        libs_paths = []
+        for dependency_name in plugin.dependencies:
+            matches = [dep for dep in additional_plugins if dep.name == dependency_name]
+            if not matches:
+                raise LookupError('did not find dependency "{0}" for plugin "{1}"'.format(dependency_name, plugin.name))
+            dependency = matches[0]
+            cmd_arguments.extend(['--plugin-search-path', os.path.join(WORK_DIR, dependency.path, 'plugins')])
+            libs_base = os.path.join(WORK_DIR, dependency.name + '-target')
+            if bldinstallercommon.is_mac_platform():
+                libs_paths.append(os.path.join(libs_base, 'PlugIns'))
+            else:
+                libs_paths.append(os.path.join(libs_base, 'lib', 'qtcreator', 'plugins'))
+        if libs_paths:
+            cmd_arguments.extend(['--add-qmake-argument', 'LIBS*=' + ' '.join(['-L'+path for path in libs_paths])])
+        cmd_arguments.extend(common_arguments)
+        cmd_arguments.append(os.path.join(WORK_DIR, plugin.name + '.7z'))
+        bldinstallercommon.do_execute_sub_process(cmd_arguments, WORK_DIR)
 
     # Qt Creator directory
     qtcreator_edition_name = os.environ.get('QT_CREATOR_EDITION_NAME')
@@ -1258,7 +1316,7 @@ def handle_qt_creator_build(bld_command):
         base_path += '_' + qtcreator_edition_name
     dir_path = base_path + '/' + build_id
     latest_path = base_path + '/latest'
-    create_remote_dirs(bld_command.pkg_server_addr, dir_path)
+    create_remote_dirs(bld_command.pkg_server_addr, dir_path + '/' + target_env_dir)
     update_latest_link(bld_command, dir_path, latest_path)
 
     # snapshot directory
@@ -1267,10 +1325,7 @@ def handle_qt_creator_build(bld_command):
         if bld_command.qtcreator_version:
             snapshot_path += '/' + bld_command.qtcreator_version
         cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, "ssh", bld_command.snapshot_server,
-            'mkdir', '-p', snapshot_path + '/' + build_id]
-        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
-        cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, "ssh", bld_command.snapshot_server,
-            'mkdir', '-p', snapshot_path + '/' + build_id + '/installer_source']
+            'mkdir', '-p', snapshot_path + '/' + build_id + '/installer_source/' + target_env_dir]
         bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
         cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, "ssh", bld_command.snapshot_server,
             'ln', '-sfn', snapshot_path + '/' + build_id, snapshot_path + '/latest']
@@ -1285,25 +1340,27 @@ def handle_qt_creator_build(bld_command):
     bitness = 'x86'
     if bld_command.target_env.find('64') != -1:
         bitness = 'x86_64'
+
+    # installers
     if bldinstallercommon.is_linux_platform():
-        file_upload_list.append(('qt-creator_build/qt-creator-installer-archive.7z', 'qtcreator_' + bld_command.target_env + '.7z'))
         file_upload_list.append(('qt-creator_build/qt-creator.run', 'qt-creator-' + bld_command.license + '-linux-' + bitness + postfix + '.run'))
-        snapshot_upload_list.append(('qtcreator_' + bld_command.target_env + '.7z', 'installer_source/'))
         snapshot_upload_list.append(('qt-creator-' + bld_command.license + '-linux-' + bitness + postfix + '.run', ''))
     elif bldinstallercommon.is_mac_platform():
-        file_upload_list.append(('qt-creator_build/qt-creator-installer-archive.7z', 'qtcreator_' + bld_command.target_env + '.7z'))
         if bld_command.license == 'opensource': # opensource gets pure disk image with app and license.txt
             file_upload_list.append(('qt-creator_build/qt-creator.dmg', 'qt-creator-' + bld_command.license + '-mac-' + bitness + postfix + '.dmg'))
         else: # enterprise gets installer with license check
             file_upload_list.append(('qt-creator_build/qt-creator-installer.dmg', 'qt-creator-' + bld_command.license + '-mac-' + bitness + postfix + '.dmg'))
-        snapshot_upload_list.append(('qtcreator_' + bld_command.target_env + '.7z', 'installer_source/'))
         snapshot_upload_list.append(('qt-creator-' + bld_command.license + '-mac-' + bitness + postfix + '.dmg', ''))
     else: # --> windows
-        file_upload_list.append(('qt-creator_build/qt-creator-installer-archive.7z', 'qtcreator_' + bld_command.target_env + '.7z'))
         sign_windows_executable('qt-creator_build/qt-creator.exe', WORK_DIR, True)
         file_upload_list.append(('qt-creator_build/qt-creator.exe', 'qt-creator-' + bld_command.license + '-windows-' + bitness + postfix + '.exe'))
-        snapshot_upload_list.append(('qtcreator_' + bld_command.target_env + '.7z', 'installer_source/'))
         snapshot_upload_list.append(('qt-creator-' + bld_command.license + '-windows-' + bitness + postfix + '.exe', ''))
+
+    # installer 7z sources
+    file_upload_list.append(('qt-creator_build/qt-creator-installer-archive.7z', target_env_dir + '/qtcreator.7z'))
+    snapshot_upload_list.append((target_env_dir + '/qtcreator.7z', 'installer_source/' + target_env_dir + '/qtcreator.7z'))
+    for plugin in additional_plugins:
+        file_upload_list.append((plugin.name + '.7z', target_env_dir + '/' + plugin.name + '.7z'))
 
     # upload files
     for source, destination in file_upload_list:
