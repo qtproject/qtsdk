@@ -62,9 +62,10 @@ CONFIGURATIONS_FILE_BASE_DIR            = ''
 
 REPOSITORY_BASE_NAME                    = 'qtsdkrepository'
 
-REPO_STAGING_SERVER_TEST_REPO           = '/online_repo'
-REPO_STAGING_SERVER_TEST_REPO_PENDING   = '/online_repo_pending'
-REPO_STAGING_SERVER_TEST_REPO_DIST_WORK = '/online_repo_dist_update_work'
+STAGING_SERVER_ONLINE_REPO_BASE_PATH    = ''
+REPO_STAGING_SERVER_TEST_REPO           = ''
+REPO_STAGING_SERVER_TEST_REPO_PENDING   = ''
+REPO_STAGING_SERVER_TEST_REPO_DIST_WORK = ''
 
 PROD_USER                               = ''
 PROD_ADDR                               = ''
@@ -624,6 +625,11 @@ def update_online_repo(job, update_staging_repo, update_production_repo):
 
 # init environment
 def init_env():
+    global LICENSE
+    global STAGING_SERVER_ONLINE_REPO_BASE_PATH
+    global REPO_STAGING_SERVER_TEST_REPO
+    global REPO_STAGING_SERVER_TEST_REPO_PENDING
+    global REPO_STAGING_SERVER_TEST_REPO_DIST_WORK
     global REPO_STAGING_SERVER
     global REPO_STAGING_SERVER_UNAME
     global PKG_SERVER_URL
@@ -640,6 +646,14 @@ def init_env():
     global INIT_DONE
     if INIT_DONE:
         return
+
+    # "enterprise" or "opensource"
+    LICENSE = os.environ['LICENSE']
+    # Define the base directory under which the rest of directories exist
+    STAGING_SRV_ONLINE_REPO_BASE_PATH       = os.environ['STAGING_SRV_ONLINE_REPO_BASE_PATH']
+    REPO_STAGING_SERVER_TEST_REPO           = STAGING_SRV_ONLINE_REPO_BASE_PATH + '/' + LICENSE + '/staging'
+    REPO_STAGING_SERVER_TEST_REPO_PENDING   = STAGING_SRV_ONLINE_REPO_BASE_PATH + '/' + LICENSE + '/staging_pending'
+    REPO_STAGING_SERVER_TEST_REPO_DIST_WORK = STAGING_SRV_ONLINE_REPO_BASE_PATH + '/' + LICENSE + '/production_dist_update_work'
 
     REPO_STAGING_SERVER             = os.environ['PKG_STAGING_SERVER']
     REPO_STAGING_SERVER_UNAME       = os.environ['PKG_STAGING_SERVER_UNAME']
