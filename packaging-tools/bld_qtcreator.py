@@ -66,10 +66,12 @@ def createDownloadExtract7zTask(url, target_path, temp_path, caller_arguments):
         sevenzipFile, target_path), temp_path, caller_arguments)
     return downloadExtract7zTask
 
+bldinstallercommon.init_common_module(os.path.dirname(os.path.realpath(__file__)))
+
 # install an argument parser
 parser = argparse.ArgumentParser(prog = os.path.basename(sys.argv[0]),
     add_help=True, description="build Qt 5 based Qt Creator", formatter_class=argparse.RawTextHelpFormatter)
-if os.name == 'nt':
+if bldinstallercommon.is_win_platform():
     parser.epilog = "example on windows: " + os.linesep + "\tpython {0} --clean " \
         "--buildcommand C:\\bin\\ibjom.cmd --installcommand nmake --qt5path ..\\..\\creator_qt5 " \
         "--qt5_packages_url http://it-dl241-hki.it.local/packages/qt/5.5.0-released/windows_vs2013_32/" \
@@ -82,7 +84,7 @@ if os.name == 'nt':
         "--environment_batch \"C:\\Program Files (x86)\\Microsoft Visual Studio 10.0\\VC\\vcvarsall.bat\" " \
         "--environment_batch_argument x86 " \
         "".format(os.path.basename(sys.argv[0]))
-elif sys.platform == "darwin":
+elif bldinstallercommon.is_mac_platform():
     parser.epilog = "example: " + os.linesep + "\tpython {0} --clean " \
         "--qt5path ../../qtcreator_qt5 " \
         "--qt5_packages_url http://it-dl241-hki.it.local/packages/qt/5.0.1-released/mac_cocoa_10.7/" \
@@ -108,11 +110,11 @@ parser.add_argument('--installerbase7z', help="a file or url where it get instal
 parser.add_argument('--versiondescription', help="version description to be shown in the about dialog, e.g. 'pre-2.7.2")
 parser.add_argument('--additional_plugin', help="path to additional Qt Creator plugin to build", action='append')
 
-if (sys.platform != "darwin"):
+if not bldinstallercommon.is_mac_platform():
     parser.add_argument('--icu7z', help="a file or url where it get icu libs as 7z", required=True)
 
 # if we are on windows, maybe we want some other arguments
-if os.name == 'nt':
+if bldinstallercommon.is_win_platform():
     parser.add_argument('--d3dcompiler7z', help="a file or url where it get d3dcompiler lib")
     parser.add_argument('--opengl32sw7z', help="a file or url where it get d3dcompiler lib")
     parser.add_argument('--openssl7z', help="a file or url where to get the openssl libs as 7z")
@@ -121,7 +123,7 @@ if os.name == 'nt':
     parser.add_argument('--sevenzippath', help="path where the 7zip binary is located")
     parser.add_argument('--gitpath', help="path where the git binary is located")
 
-if sys.platform == "darwin":
+if bldinstallercommon.is_mac_platform():
     parser.add_argument('--keychain_unlock_script', help="script for unlocking the keychain used for signing")
 
 callerArguments = parser.parse_args()
@@ -143,7 +145,7 @@ tempPath = os.path.abspath(os.path.join(qtCreatorSourceDirectory,
     '..', 'qt-creator_temp'))
 
 ### check mac setup
-if sys.platform == "darwin":
+if bldinstallercommon.is_mac_platform():
     if callerArguments.keychain_unlock_script:
         if not os.environ['SIGNING_IDENTITY']:
             print('error: Environment variable SIGNING_IDENTITY not set')
@@ -184,16 +186,16 @@ if not os.path.lexists(callerArguments.qt5path):
             print("warning: could not find {0}".format(package_url))
 
 ### add get icu and d3dcompiler lib task
-    if os.name == 'nt':
+    if bldinstallercommon.is_win_platform():
         targetPath = os.path.join(callerArguments.qt5path, 'bin')
     else:
         targetPath = os.path.join(callerArguments.qt5path, 'lib')
 
-    if not sys.platform == "darwin":
+    if not bldinstallercommon.is_mac_platform():
         myGetQtBinaryWork.addTaskObject(
             createDownloadExtract7zTask(callerArguments.icu7z, targetPath, tempPath, callerArguments))
 
-    if os.name == 'nt':
+    if bldinstallercommon.is_win_platform():
         targetPath = os.path.join(callerArguments.qt5path, 'bin')
         myGetQtBinaryWork.addTaskObject(
             createDownloadExtract7zTask(callerArguments.d3dcompiler7z, targetPath, tempPath, callerArguments))
@@ -221,7 +223,7 @@ if not os.path.lexists(callerArguments.qt5path):
     qtConfFile.write("[Paths]" + os.linesep)
     qtConfFile.write("Prefix=.." + os.linesep)
     qtConfFile.close()
-    if sys.platform.startswith('linux'):
+    if bldinstallercommon.is_linux_platform():
         bldinstallercommon.handle_component_rpath(callerArguments.qt5path, 'lib')
     print("##### {0} ##### ... done".format("patch Qt"))
     runCommand(qmakeBinary + " -query", qtCreatorBuildDirectory, callerArguments)
@@ -245,14 +247,14 @@ environment = {'PATH': os.pathsep.join(pathKeyList)}
 environment["INSTALL_BASENAME"] = "qt-creator"
 environment["IFW_PATH"] = installerPath
 
-if sys.platform.startswith('linux'):
+if bldinstallercommon.is_mac_platform():
     environment["LD_LIBRARY_PATH"] = os.path.join(callerArguments.qt5path, 'lib')
     environment["QMAKESPEC"] = "linux-g++"
 
-if sys.platform == "darwin":
+if bldinstallercommon.is_mac_platform():
     environment["DYLD_FRAMEWORK_PATH"] = os.path.join(callerArguments.qt5path, 'lib')
 
-if os.name != 'nt':
+if not bldinstallercommon.is_win_platform():
     environment["MAKEFLAGS"] = "-j" + str(multiprocessing.cpu_count() + 1)
 
 if callerArguments.debug:
@@ -268,7 +270,7 @@ qmakeCommandArguments = "-r {0} QTC_PREFIX={1} DEFINES+=IDE_REVISION={2} CONFIG+
 # hack to ensure plugins depending on declarative are also compiled with 2.7.0/5.0.1
 qmakeCommandArguments += " QT_CONFIG+=declarative"
 
-if sys.platform == "darwin":
+if bldinstallercommon.is_mac_platform():
     qmakeCommandArguments += " QMAKE_MAC_SDK=macosx" # work around QTBUG-41238
 
 if sys.platform == "win32":  # allow app to run on Windows XP
@@ -288,7 +290,7 @@ runBuildCommand(currentWorkingDirectory = qtCreatorBuildDirectory, callerArgumen
 runInstallCommand("docs", currentWorkingDirectory = qtCreatorBuildDirectory, callerArguments = callerArguments,
     init_environment = environment)
 
-if sys.platform != "darwin":
+if not bldinstallercommon.is_mac_platform():
     runInstallCommand('install install_docs', currentWorkingDirectory = qtCreatorBuildDirectory,
         callerArguments = callerArguments, init_environment = environment)
 
@@ -299,7 +301,7 @@ if callerArguments.additional_plugin:
         env['QTC_SOURCE'] = qtCreatorSourceDirectory
         env['QTC_BUILD'] = qtCreatorBuildDirectory
         additionalQmakeArguments = "CONFIG+=licensechecker"
-        if sys.platform == "darwin":
+        if bldinstallercommon.is_mac_platform():
             additionalQmakeArguments += " QMAKE_MAC_SDK=macosx" # work around QTBUG-41238
         runCommand('{0} QTC_PREFIX={1} {2}'.format(qmakeBinary, qtCreatorInstallDirectory,
             additionalQmakeArguments), plugin_dir,
@@ -308,14 +310,14 @@ if callerArguments.additional_plugin:
             init_environment = env)
         runInstallCommand("docs", currentWorkingDirectory = plugin_dir, callerArguments = callerArguments,
             init_environment = env)
-        if sys.platform != 'darwin':
+        if not bldinstallercommon.is_mac_platform():
             runInstallCommand('install install_docs', currentWorkingDirectory = plugin_dir,
                 callerArguments = callerArguments, init_environment = env)
 
 runInstallCommand('deployqt', currentWorkingDirectory = qtCreatorBuildDirectory, callerArguments = callerArguments,
     init_environment = environment)
 
-if sys.platform == "darwin":
+if bldinstallercommon.is_mac_platform():
     if callerArguments.keychain_unlock_script:
         runCommand(callerArguments.keychain_unlock_script, qtCreatorBuildDirectory, callerArguments = callerArguments,
             init_environment = environment)
@@ -323,7 +325,7 @@ if sys.platform == "darwin":
     runInstallCommand('codesign', currentWorkingDirectory = qtCreatorBuildDirectory,
         callerArguments = callerArguments, init_environment = environment)
 
-if os.name == 'nt':
+if bldinstallercommon.is_win_platform():
     runInstallCommand('deployartifacts', qtCreatorBuildDirectory,
         callerArguments = callerArguments, init_environment = environment)
 
@@ -333,6 +335,6 @@ runInstallCommand('bindist_installer', qtCreatorBuildDirectory, callerArguments 
 # Qt Creator standalone package
 runInstallCommand('installer', qtCreatorBuildDirectory, callerArguments = callerArguments,
     init_environment = environment)
-if sys.platform == "darwin":
+if bldinstallercommon.is_mac_platform():
     runInstallCommand('codesign_installer dmg dmg_installer', qtCreatorBuildDirectory,
         callerArguments = callerArguments, init_environment = environment)
