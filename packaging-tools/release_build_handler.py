@@ -483,14 +483,14 @@ def generate_repo_path(build_job):
 
 # generate full path for test area repository
 def generate_repo_path_for_test_area(build_job):
-    path = REPO_STAGING_SERVER_TEST_REPO + '/' + build_job.license + '/'
+    path = REPO_STAGING_SERVER_TEST_REPO + '/'
     path += generate_repo_path(build_job)
     return ensure_unix_paths(path)
 
 
 # generate pending area (base) path
 def generate_repo_path_for_pending_area(build_job):
-    path = REPO_STAGING_SERVER_TEST_REPO_PENDING + '/' + build_job.license + '/'
+    path = REPO_STAGING_SERVER_TEST_REPO_PENDING + '/'
     path += build_job.repo_content_type + '/'
     path += generate_repo_path(build_job)
     return ensure_unix_paths(path)
@@ -527,7 +527,7 @@ def ensure_unix_paths(path):
 
 # helper function to generate correct path structure for pending area
 def generate_repo_pending_base_path(build_job):
-    base_path_pending = REPO_STAGING_SERVER_TEST_REPO_PENDING + '/' + build_job.license + '/'
+    base_path_pending = REPO_STAGING_SERVER_TEST_REPO_PENDING + '/'
     base_path_pending += build_job.repo_content_type + '/' + REPOSITORY_BASE_NAME + '/' + build_job.repo_url_specifier
     return base_path_pending
 
@@ -547,7 +547,7 @@ def update_online_repo(job, update_staging_repo, update_production_repo):
     # do we update the staging repository
     if update_staging_repo:
         # determine target repo
-        staging_target_repo = REPO_STAGING_SERVER_TEST_REPO + '/' + job.license + '/' + REPOSITORY_BASE_NAME + '/' + job.repo_url_specifier
+        staging_target_repo = REPO_STAGING_SERVER_TEST_REPO + '/' + REPOSITORY_BASE_NAME + '/' + job.repo_url_specifier
         cmd_args = [SSH_COMMAND, '-t', '-t', staging_server_addr]
         cmd_args = cmd_args + ['python', script]
         cmd_args = cmd_args + ['--repogen_tools=' + repogen_tools]
@@ -565,7 +565,7 @@ def update_online_repo(job, update_staging_repo, update_production_repo):
         production_repo_path = PROD_SRV_REPO_BASE_PATH + '/' + REPOSITORY_BASE_NAME + '/' + job.repo_url_specifier
         production_repo_path = ensure_unix_paths(production_repo_path)
         prod_url = production_repo + ":" + production_repo_path
-        staging_prod_repo_temp_path = REPO_STAGING_SERVER_TEST_REPO_DIST_WORK + '/' + job.license + '/' + REPOSITORY_BASE_NAME + '/' + job.repo_url_specifier
+        staging_prod_repo_temp_path = REPO_STAGING_SERVER_TEST_REPO_DIST_WORK + '/' + REPOSITORY_BASE_NAME + '/' + job.repo_url_specifier
         # delete old existing 'temp' paths
         delete_online_repo_paths(staging_server_addr, staging_prod_repo_temp_path)
         # create 'temp' location where to pull the repo from production
