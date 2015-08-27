@@ -77,7 +77,6 @@ SSH_COMMAND                 = ''
 SCP_COMMAND                 = ''
 
 # ----------------------------------------------------------------------
-BUILD_TIMESTAMP             = strftime('%Y-%m-%d', gmtime())
 SCRIPT_ROOT_DIR             = os.path.dirname(os.path.realpath(__file__))
 REPO_OUTPUT_DIR             = os.path.normpath(os.path.join(SCRIPT_ROOT_DIR, 'repository'))
 WORK_DIR                    = os.path.join(os.environ['PKG_NODE_ROOT'], 'build')
@@ -155,9 +154,6 @@ class BldCommand:
         self.build_number = options.build_number
         if not self.build_number:
             self.build_number = os.environ.get('BUILD_NUMBER')
-        self.build_time_stamp = options.time_stamp
-        if not self.build_time_stamp:
-            self.build_time_stamp = os.environ.get('BUILD_ID')
         # package storage server (ssh access)
         self.pkg_server_addr = options.server # -s
         if not self.pkg_server_addr:
@@ -228,12 +224,12 @@ class BldCommand:
             # create directories for extra module src files
             self.app_name = os.environ['APPLICATION_NAME']
             self.app_version = os.environ['APPLICATION_VERSION']
-            self.remote_extra_module_dir += self.app_name + '/' + self.app_version + '/' + self.build_time_stamp + '-' + self.build_number
+            self.remote_extra_module_dir += self.app_name + '/' + self.app_version + '/' + self.build_number
             self.latest_extra_module_dir += self.app_name + '/' + self.app_version + '/' + 'latest'
             # create directories for extra module binaries
             # QT_VERSION_MINOR indicates that this is a binary build
             if os.environ.get('QT_VERSION_MINOR'):
-                self.remote_extra_module_binary_dir += self.app_name + '/' + self.app_version + '/' + os.environ.get('QT_VERSION_MINOR') + '/' + self.build_time_stamp + '-' +  os.environ.get('BUILD_NUMBER')
+                self.remote_extra_module_binary_dir += self.app_name + '/' + self.app_version + '/' + os.environ.get('QT_VERSION_MINOR') + '/' +  os.environ.get('BUILD_NUMBER')
                 self.latest_extra_module_binary_dir += self.app_name + '/' + self.app_version + '/' + os.environ.get('QT_VERSION_MINOR') + '/' + 'latest'
 
 
@@ -283,9 +279,6 @@ class BldCommand:
                 return False
             if not self.options.target_env:
                 print('*** Target environment not defined.')
-                return False
-            if not self.options.time_stamp:
-                print('*** Build time stamp not defined.')
                 return False
             if not self.options.build_number:
                 print('*** Build number not defined.')
@@ -350,8 +343,6 @@ class BldCommand:
             sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('GIT_APPLICATION_REPO'))
         if not os.environ.get('GIT_APPLICATION_REPO_BRANCH'):
             sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('GIT_APPLICATION_REPO_BRANCH'))
-        if not os.environ.get('BUILD_ID'):
-            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('BUILD_ID'))
         if not os.environ.get('BUILD_NUMBER'):
             sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('BUILD_NUMBER'))
         if not os.environ.get('PACKAGE_STORAGE_SERVER'):
@@ -519,11 +510,11 @@ def sign_mac_executable(file_path, working_dir, abort_on_fail):
 ##############################################################
 def get_qt_snapshot_dir(bld_command):
     snapshot_qt_dir_base = bld_command.path + '/' + bld_command.license + '/qt/' + bld_command.version
-    snapshot_qt_dir      = bld_command.path + '/' + bld_command.license + '/' + 'qt' + '/' + bld_command.version + '/' + bld_command.build_time_stamp + '-' + bld_command.build_number
+    snapshot_qt_dir      = bld_command.path + '/' + bld_command.license + '/' + 'qt' + '/' + bld_command.version + '/' + bld_command.build_number
     latest_qt_dir        = bld_command.path + '/' + bld_command.license + '/' + 'qt' + '/' + bld_command.version + '/' + 'latest'
     if bld_command.custom_build != 0:
         snapshot_qt_dir_base = bld_command.path + '/' + bld_command.license + '/qt/' + bld_command.version + '-' + bld_command.custom_build
-        snapshot_qt_dir      = bld_command.path + '/' + bld_command.license + '/' + 'qt' + '/' + bld_command.version + '-' + bld_command.custom_build + '/' + bld_command.build_time_stamp + '-' + bld_command.build_number
+        snapshot_qt_dir      = bld_command.path + '/' + bld_command.license + '/' + 'qt' + '/' + bld_command.version + '-' + bld_command.custom_build + '/' + bld_command.build_number
         latest_qt_dir        = bld_command.path + '/' + bld_command.license + '/' + 'qt' + '/' + bld_command.version + '-' + bld_command.custom_build + '/' + 'latest'
     return QtSnapshotDir(snapshot_qt_dir_base, snapshot_qt_dir, latest_qt_dir)
 
@@ -660,7 +651,7 @@ def build_extra_module_src_pkg(bld_command):
     cmd_args = ['../qtsdk/packaging-tools/mksrc.sh', '-v', bld_command.app_version, '-l', bld_command.license, '--single-module']
     bldinstallercommon.do_execute_sub_process(cmd_args, application_dir)
     #extract examples
-    cmd_args = ['../qtsdk/packaging-tools/extract_examples.sh', '-n', bld_command.app_name, '-l', bld_command.license, '-v', bld_command.app_version, '-u', bld_command.package_storage_server_user, '-s', bld_command.package_storage_server, '-d', bld_command.package_storage_server_base_dir, '-i', os.environ['BUILD_ID'], '-b', bld_command.build_number]
+    cmd_args = ['../qtsdk/packaging-tools/extract_examples.sh', '-n', bld_command.app_name, '-l', bld_command.license, '-v', bld_command.app_version, '-u', bld_command.package_storage_server_user, '-s', bld_command.package_storage_server, '-d', bld_command.package_storage_server_base_dir, '-b', bld_command.build_number]
     bldinstallercommon.do_execute_sub_process(cmd_args, application_dir)
     #Copy src package to the server
     extra_module_src_dir = bld_command.package_storage_server_user + '@' + bld_command.package_storage_server + ':' + bld_command.package_storage_server_base_dir + '/' + bld_command.license + '/' + bld_command.app_name + '/' + bld_command.app_version
@@ -756,7 +747,7 @@ def handle_ifw_build(bld_command):
         ext_server_base_url  = os.environ['EXT_SERVER_BASE_URL']
         ext_server_base_path = os.environ['EXT_SERVER_BASE_PATH']
         # public server directories
-        ext_dest_dir = ext_server_base_path + '/snapshots/ifw/' + ifw_dest_dir_name + '/' + bld_command.build_time_stamp[:10] + '_' + bld_command.build_number
+        ext_dest_dir = ext_server_base_path + '/snapshots/ifw/' + ifw_dest_dir_name + '/' + bld_command.build_number
         cmd_args_mkdir_pkg = [SSH_COMMAND, bld_command.pkg_server_addr]
         cmd_args_mkdir_ext = cmd_args_mkdir_pkg + ['ssh', ext_server_base_url, 'mkdir', '-p', ext_dest_dir]
         bldinstallercommon.do_execute_sub_process(cmd_args_mkdir_ext, SCRIPT_ROOT_DIR)
@@ -1246,7 +1237,7 @@ def handle_qt_creator_build(bld_command):
 
     # Qt Creator directory
     qtcreator_edition_name = os.environ.get('QT_CREATOR_EDITION_NAME')
-    build_id = bld_command.build_time_stamp[:10] + '_' + bld_command.build_number
+    build_id = bld_command.build_number
     base_path = bld_command.path + '/' + bld_command.license + '/qtcreator/snapshots/' + bld_command.qtcreator_version
     if qtcreator_edition_name:
         base_path += '_' + qtcreator_edition_name
@@ -1375,7 +1366,7 @@ def handle_installer_build(installer_type, bld_command):
     # Create directories under <LICENSE>/<installer_type>_installers/
     remote_path_base = bld_command.path + '/' + bld_command.license + '/'
     remote_path_top_level_base              = remote_path_base + '/' + installer_type + '_installers' + '/' + bld_command.version + '/'
-    remote_path_top_level                   = remote_path_top_level_base + bld_command.build_time_stamp[:10] + '_' + bld_command.build_number
+    remote_path_top_level                   = remote_path_top_level_base + bld_command.build_number
     remote_path_top_level_latest            = remote_path_top_level_base + '/' + 'latest'
     remote_path_top_level_latest_available  = remote_path_top_level_base + '/' + 'latest_available_' + installer_type + '_installers'
     create_remote_dirs(bld_command.pkg_server_addr, remote_path_top_level)
@@ -1399,7 +1390,7 @@ def handle_installer_build(installer_type, bld_command):
         ext_server_base_url  = os.environ['EXT_SERVER_BASE_URL']
         ext_server_base_path = os.environ['EXT_SERVER_BASE_PATH']
         # opensource distribution server directories
-        ext_dest_dir = ext_server_base_path + '/snapshots/qt/' + bld_command.version[:3] + '/' + bld_command.full_version + '/' + bld_command.build_time_stamp[:10] + '_' + bld_command.build_number
+        ext_dest_dir = ext_server_base_path + '/snapshots/qt/' + bld_command.version[:3] + '/' + bld_command.full_version + '/' + bld_command.build_number
         cmd_args_mkdir_pkg = [SSH_COMMAND, bld_command.pkg_server_addr]
         cmd_args_mkdir_ext = cmd_args_mkdir_pkg + ['ssh', ext_server_base_url, 'mkdir -p', ext_dest_dir]
         bldinstallercommon.do_execute_sub_process(cmd_args_mkdir_ext, SCRIPT_ROOT_DIR)
@@ -1489,17 +1480,17 @@ def generate_installer_final_name(bld_command, file_name):
     if file_name.endswith(".run"):
         installer_name = file_name
         installer_name_base = os.path.splitext(file_name)[0]
-        installer_name_final = installer_name_base + '_' + bld_command.build_time_stamp + '-' + bld_command.build_number + '.run'
+        installer_name_final = installer_name_base + '_' + bld_command.build_number + '.run'
     # Mac
     if file_name.endswith(".dmg"):
         installer_name = file_name
         installer_name_base = os.path.splitext(file_name)[0]
-        installer_name_final = installer_name_base + '_' + bld_command.build_time_stamp + '-' + bld_command.build_number + '.dmg'
+        installer_name_final = installer_name_base + '_' + bld_command.build_number + '.dmg'
     # Windows
     if file_name.endswith(".exe"):
         installer_name = file_name
         installer_name_base = os.path.splitext(file_name)[0]
-        installer_name_final = installer_name_base + '_' + bld_command.build_time_stamp + '-' + bld_command.build_number + '.exe'
+        installer_name_final = installer_name_base + '_' + bld_command.build_number + '.exe'
     return installer_name, installer_name_base, installer_name_final
 
 
@@ -1631,7 +1622,7 @@ def publish_qt5_src_packages(bld_command):
     ext_server_base_url  = os.environ['EXT_SERVER_BASE_URL']
     ext_server_base_path = os.environ['EXT_SERVER_BASE_PATH']
 
-    ext_dest_dir = ext_server_base_path + '/snapshots/qt/' + bld_command.version[:3] + '/' + bld_command.full_version + '/' + bld_command.build_time_stamp[:10] + '_' + bld_command.build_number
+    ext_dest_dir = ext_server_base_path + '/snapshots/qt/' + bld_command.version[:3] + '/' + bld_command.full_version + '/' + bld_command.build_number
 
     # copy source packages to public server
     if bld_command.license == 'opensource':
@@ -1668,12 +1659,10 @@ def initialize_icu_build(bld_command):
         sys.exit('*** ICU build is missing: icu_version')
     if not bld_command.path:
         sys.exit('*** ICU build is missing: path')
-    if not bld_command.build_time_stamp:
-        sys.exit('*** ICU build is missing: build_time_stamp')
     if not bld_command.build_number:
         sys.exit('*** ICU build is missing: build_number')
     remote_snaphot_dir_base = bld_command.path + '/' + 'icu' + '/' + bld_command.icu_version
-    remote_snaphot_dir = remote_snaphot_dir_base + '/' + bld_command.build_time_stamp + '-' + bld_command.build_number
+    remote_snaphot_dir = remote_snaphot_dir_base + '/' + bld_command.build_number
     remote_latest_dir = remote_snaphot_dir_base + '/' + 'latest'
     # create remote snapshot dir
     create_remote_dirs(bld_command.pkg_server_addr, remote_snaphot_dir)
@@ -1776,9 +1765,6 @@ def setup_option_parser():
     OPTION_PARSER.add_option("-l", "--license",
                              action="store", type="string", dest="license", default="",
                              help="license type: enterprise or opensource")
-    OPTION_PARSER.add_option("-t", "--time_stamp",
-                             action="store", type="string", dest="time_stamp", default="",
-                             help="Jenkins build time stamp")
     OPTION_PARSER.add_option("-b", "--build_number",
                              action="store", type="string", dest="build_number", default="",
                              help="Jenkins build number")
