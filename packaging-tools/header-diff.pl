@@ -39,6 +39,8 @@
 
 use strict;
 use warnings;
+use Cwd;
+use File::Spec::Functions;
 
 sub help {
     print "Usage: header-diff <revision-range> [srcdir] [builddir]\n" .
@@ -55,7 +57,7 @@ my $srcdir = scalar @ARGV ? shift @ARGV : ".";
 my $builddir = scalar @ARGV ? shift @ARGV : $srcdir;
 my $includedir = "$builddir/qtbase/include";
 
-my %module_list;
+my %module_list = ('no changes' => [], 'no headers' => [], 'git failed' => [], 'new headers' => []);
 
 # Sanity check
 die("Not a qtsdk source directory at $srcdir: no qtbase found")
@@ -70,6 +72,7 @@ for my $repo (<$srcdir/*>) {
 }
 
 PRO: for my $pro (@modules_pro) {
+    my ($module) = $pro =~ m/\.\/(.*?)\//;
     #print "Processing .pro file $pro\n";
     open PRO, "<", $pro
         or die("Could not open $pro: $!");
@@ -133,7 +136,6 @@ PRO: for my $pro (@modules_pro) {
     }
 
     chdir($oldpwd);
-    close OUTPUT;
     close DIFF or unlink("$name.diff");
     if ($?) {
         print " - Git failed, skipping\n";
@@ -144,6 +146,34 @@ PRO: for my $pro (@modules_pro) {
     } else {
         print " - $name.diff created\n";
     }
+
+    my $new_headers = 0;
+    chdir($pro) or die;
+
+    open DIFF, "-|", 'git', 'diff', '--diff-filter=A', '-w', '-b', $revrange, '--', @headers
+        or die("Could not run git diff: $!");
+    while (<DIFF>) {
+        if (/^\+\+\+ b\/(.*)/) {
+            my $headerfile = $1;
+            print " - New header: $headerfile\n";
+            print OUTPUT "INFO - New header: $headerfile\n";
+            my ($later_branch) = $revrange =~ m/.*\.\.(.*)/;
+            my $gitworktree = catdir($oldpwd, $module);
+            open NHF, "-|", 'git', "--work-tree=$gitworktree", 'show', "$later_branch:$headerfile"
+                or die("Could not show $later_branch:$headerfile: $!");
+            while (<NHF>) {
+                print OUTPUT $_;
+            }
+            close NHF;
+            $new_headers++;
+        }
+    }
+    chdir($oldpwd);
+    close OUTPUT;
+    close DIFF or unlink("$name.diff");
+    if ($new_headers) {
+        push @{$module_list{"new headers"}}, $name;
+    }
 }
 
 print "\nResults";
@@ -151,6 +181,8 @@ print "\nModules with no public headers:\n\t";
 print join("\n\t", sort @{$module_list{"no headers"}});
 print "\nModules with no changes to public headers:\n\t";
 print join("\n\t", sort @{$module_list{"no changes"}});
+print "\nModules with new public headers:\n\t";
+print join("\n\t", sort @{$module_list{"new headers"}});
 print "\nModules for which Git failed to retrieve changes:\n\t";
 print join("\n\t", sort @{$module_list{"git failed"}});
 print "\n";
