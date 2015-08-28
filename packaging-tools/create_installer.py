@@ -1039,8 +1039,7 @@ def install_ifw_tools():
         options.incremental_mode = INCREMENTAL_MODE
         tools_dir_temp = bld_ifw_tools.build_ifw(options)
         tools_bin_path = SCRIPT_ROOT_DIR + os.sep + tools_dir_temp
-    else:
-        bldinstallercommon.remove_tree(IFW_TOOLS_DIR)
+    elif not os.path.exists(IFW_TOOLS_DIR):
         if INSTALLER_FRAMEWORK_TOOLS:
             package_url = INSTALLER_FRAMEWORK_TOOLS
         else:
