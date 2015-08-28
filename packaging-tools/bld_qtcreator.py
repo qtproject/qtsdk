@@ -247,7 +247,7 @@ environment = {'PATH': os.pathsep.join(pathKeyList)}
 environment["INSTALL_BASENAME"] = "qt-creator"
 environment["IFW_PATH"] = installerPath
 
-if bldinstallercommon.is_mac_platform():
+if bldinstallercommon.is_linux_platform():
     environment["LD_LIBRARY_PATH"] = os.path.join(callerArguments.qt5path, 'lib')
     environment["QMAKESPEC"] = "linux-g++"
 
