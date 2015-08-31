@@ -58,6 +58,7 @@ import fileinput
 from bld_utils import runCommand
 
 
+
 # need to include this for win platforms as long path names
 # cause problems
 if platform.system().lower().startswith('win'):
