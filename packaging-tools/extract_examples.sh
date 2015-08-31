@@ -46,10 +46,9 @@ APPLICATION_VERSION=''
 PACKAGE_STORAGE_SERVER_USER=''
 PACKAGE_STORAGE_SERVER=''
 PACKAGE_STORAGE_SERVER_BASE_DIR=''
-BUILD_ID=''
 BUILD_NUMBER=''
 
-if [ $# -lt 16 ]; then
+if [ $# -lt 14 ]; then
     echo "Missing argument"
     exit 1
 fi
@@ -85,11 +84,6 @@ while test $# -gt 0; do
     -d|--directory)
       shift
       PACKAGE_STORAGE_SERVER_BASE_DIR=$1
-      shift
-    ;;
-    -i|--id)
-      shift
-      BUILD_ID=$1
       shift
     ;;
     -b|--build)
