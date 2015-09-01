@@ -287,13 +287,14 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None, init_en
     if currentWorkingDirectory and not os.path.lexists(currentWorkingDirectory):
         raise Exception("The current working directory is not existing: %s" % currentWorkingDirectory)
 
+    useShell = True if sys.platform.startswith('win') else False
     lastStdOutLines = []
     lastStdErrLines = []
     if threading.currentThread().name == "MainThread" and not onlyErrorCaseOutput:
-        process = subprocess.Popen(commandAsList,
+        process = subprocess.Popen(commandAsList, shell=useShell,
             cwd = currentWorkingDirectory, bufsize = -1, env = environment)
     else:
-        process = subprocess.Popen(commandAsList,
+        process = subprocess.Popen(commandAsList, shell=useShell,
             stdout = subprocess.PIPE, stderr = subprocess.PIPE,
             cwd = currentWorkingDirectory, bufsize = -1, env = environment)
 
