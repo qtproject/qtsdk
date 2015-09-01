@@ -355,6 +355,7 @@ def remove_tree(path):
             try:
                 runCommand("rmdir {0} /S /Q".format(path), SCRIPT_ROOT_DIR, onlyErrorCaseOutput=True)
             except:
+                traceback.print_exc()
                 pass
         else:
             #shutil.rmtree(path)
@@ -805,7 +806,9 @@ def extract_file(path, to_directory='.'):
         print 'Did not extract the file! Not archived or no appropriate extractor was found: ' + path
         return False
 
-    runCommand(cmd_args, currentWorkingDirectory=to_directory, onlyErrorCaseOutput=True)
+    ret = runCommand(cmd_args, currentWorkingDirectory=to_directory, onlyErrorCaseOutput=True)
+    if ret:
+        sys.exit('Failure running the last command: %i' % ret)
     return True
 
 

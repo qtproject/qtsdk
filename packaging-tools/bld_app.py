@@ -397,15 +397,19 @@ bldinstallercommon.do_execute_sub_process(qmakeCommandArguments, qtApplicationBu
 makeCommand = 'make'
 if os.name == 'nt' or sys.platform == "darwin":
     makeCommand = callerArguments.buildcommand
-runCommand("{0}".format(makeCommand), currentWorkingDirectory = qtApplicationBuildDirectory)
+ret = runCommand("{0}".format(makeCommand), currentWorkingDirectory = qtApplicationBuildDirectory)
+if ret:
+    sys.exit('Failure running the last command: %i' % ret)
 
 installCommand = 'make'
 if os.name == 'nt' or sys.platform == "darwin":
     installCommand = callerArguments.installcommand
 
 installCommandArguments = 'install INSTALL_ROOT=' + qtApplicationInstallDirectory
-runCommand("{0} {1}".format(installCommand, installCommandArguments), currentWorkingDirectory = qtApplicationBuildDirectory,
+ret = runCommand("{0} {1}".format(installCommand, installCommandArguments), currentWorkingDirectory = qtApplicationBuildDirectory,
         callerArguments = callerArguments, init_environment = environment)
+if ret:
+    sys.exit('Failure running the last command: %i' % ret)
 
 # patch .so filenames on Windows/Android
 if bldinstallercommon.is_win_platform() and os.environ.get('DO_PATCH_ANDROID_SONAME_FILES'):
@@ -423,16 +427,22 @@ if callerArguments.collectDocs:
 if callerArguments.makeDocs:
     # build docs first
     makeCommandArguments = '-j1 docs'
-    runCommand("{0} {1}".format(makeCommand, makeCommandArguments), currentWorkingDirectory = qtApplicationBuildDirectory, callerArguments = callerArguments, init_environment = environment)
+    ret = runCommand("{0} {1}".format(makeCommand, makeCommandArguments), currentWorkingDirectory = qtApplicationBuildDirectory, callerArguments = callerArguments, init_environment = environment)
+    if ret:
+        sys.exit('Failure running the last command: %i' % ret)
     # then make install those
     installCommandArguments = '-j1 install_docs INSTALL_ROOT=' + qtApplicationInstallDirectory
-    runCommand("{0} {1}".format(installCommand, installCommandArguments), currentWorkingDirectory = qtApplicationBuildDirectory, callerArguments = callerArguments, init_environment = environment)
+    ret = runCommand("{0} {1}".format(installCommand, installCommandArguments), currentWorkingDirectory = qtApplicationBuildDirectory, callerArguments = callerArguments, init_environment = environment)
+    if ret:
+        sys.exit('Failure running the last command: %i' % ret)
     # make separate "doc.7z" for later use if needed
     doc_dir = bldinstallercommon.locate_directory(qtApplicationInstallDirectory, 'doc')
     if doc_dir:
         archive_name = os.environ['APPLICATION_NAME'] + '-' + os.environ['LICENSE'] + '-doc-' + os.environ['APPLICATION_VERSION'] + '.7z'
         archive_cmd = '7z a ' + 'doc_archives' + os.sep + archive_name + ' ' + doc_dir
-        runCommand("{0}".format(archive_cmd), currentWorkingDirectory = os.path.dirname(os.path.realpath(__file__)) )
+        ret = runCommand("{0}".format(archive_cmd), currentWorkingDirectory = os.path.dirname(os.path.realpath(__file__)) )
+        if ret:
+            sys.exit('Failure running the last command: %i' % ret)
 
 # try to figure out where the actual exported content is
 dir_to_archive = os.path.dirname(bldinstallercommon.locate_directory(qtApplicationInstallDirectory, 'qt5_package_dir'))
@@ -448,5 +458,6 @@ patch_archive(basedir, callerArguments.qt5path, qt_install_prefix)
 
 # create 7z archive
 archive_cmd = '7z a ' + 'module_archives' + os.sep + 'qt5_' + os.environ['APPLICATION_NAME'] + '.7z' + ' ' + dir_to_archive + os.sep + 'qt5_package_dir'
-runCommand("{0}".format(archive_cmd), currentWorkingDirectory = os.path.dirname(os.path.realpath(__file__)) )
-
+ret = runCommand("{0}".format(archive_cmd), currentWorkingDirectory = os.path.dirname(os.path.realpath(__file__)) )
+if ret:
+    sys.exit('Failure running the last command: %i' % ret)

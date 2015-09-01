@@ -780,7 +780,8 @@ def move_directory_one_layer_up(directory):
         os.rename(directory_relative_to_cwd + dir_name, temp_path_name)
         new_location = os.path.abspath(os.path.join(temp_path_name, '..'))
         bldinstallercommon.move_tree(temp_path_name, new_location)
-        bldinstallercommon.remove_tree(temp_path_name)
+        if not bldinstallercommon.remove_tree(temp_path_name):
+            sys.exit('Unable to remove directory: %s' % temp_path_name)
     else:
         sys.stderr.write('*** Error: unsupported folder structure encountered, abort!')
         sys.stderr.write('*** Found items: ' + str(items) + ' in directory: ' + directory)
@@ -936,7 +937,8 @@ def create_target_components(target_config):
         substitute_component_tags(create_metadata_map(sdk_component), sdk_component.meta_dir_dest)
         if hasattr(sdk_component, 'temp_data_dir') and os.path.exists(sdk_component.temp_data_dir):
             # lastly remove temp dir after all data is prepared
-            bldinstallercommon.remove_tree(sdk_component.temp_data_dir)
+            if not bldinstallercommon.remove_tree(sdk_component.temp_data_dir):
+                sys.exit('Unable to remove directory: %s' % sdk_component.temp_data_dir)
             # substitute downloadable archive names in installscript.qs
             substitute_component_tags(sdk_component.generate_downloadable_archive_list(), sdk_component.meta_dir_dest)
 
