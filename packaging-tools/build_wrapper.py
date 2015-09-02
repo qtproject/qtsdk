@@ -1218,7 +1218,7 @@ def handle_qt_creator_build(bld_command):
                          '--keychain_unlock_script', '/Users/qt/unlock-keychain.sh'])
     else:
         cmd_args.extend(['--buildcommand', os.path.normpath('C:/Utils/jom/jom.exe'),
-                         '--installcommand', os.path.normpath('C:/Program Files/Microsoft Visual Studio 12.0/VC/bin/nmake.exe'),
+                         '--installcommand', os.path.normpath('nmake.exe'),
                          '--icu7z', bld_command.icu_libs,
                          '--sevenzippath', os.path.normpath('C:/Utils/sevenzip'),
                          '--gitpath', os.path.normpath('C:/Program Files/Git/bin'),
