@@ -1,0 +1,104 @@
+#############################################################################
+##
+## Copyright (C) 2015 The Qt Company Ltd.
+## Contact: http://www.qt.io/licensing/
+##
+## This file is part of the QtCore module of the Qt Toolkit.
+##
+## $QT_BEGIN_LICENSE:LGPL21$
+## Commercial License Usage
+## Licensees holding valid commercial Qt licenses may use this file in
+## accordance with the commercial license agreement provided with the
+## Software or, alternatively, in accordance with the terms contained in
+## a written agreement between you and The Qt Company. For licensing terms
+## and conditions see http://www.qt.io/terms-conditions. For further
+## information use the contact form at http://www.qt.io/contact-us.
+##
+## GNU Lesser General Public License Usage
+## Alternatively, this file may be used under the terms of the GNU Lesser
+## General Public License version 2.1 or version 3 as published by the Free
+## Software Foundation and appearing in the file LICENSE.LGPLv21 and
+## LICENSE.LGPLv3 included in the packaging of this file. Please review the
+## following information to ensure the GNU Lesser General Public License
+## requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+## http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+##
+## As a special exception, The Qt Company gives you certain additional
+## rights. These rights are described in The Qt Company LGPL Exception
+## version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
+##
+## $QT_END_LICENSE$
+##
+#############################################################################
+
+
+[qt.56.android_armv5]
+archives:               56.android_armv5.essentials,
+                        56.android_armv5.addons
+target_install_base:    /5.6/android_armv5
+[56.android_armv5.essentials]
+archive_uri:            /qt/@QT_VERSION@/latest/android_armv5/mac_x64/qt5_essentials.7z
+package_finalize_items: delete_doc_directory
+[56.android_armv5.addons]
+archive_uri:            /qt/@QT_VERSION@/latest/android_armv5/mac_x64/qt5_addons.7z
+package_finalize_items: delete_doc_directory
+
+# QtQuick1 provided as separate installable component in installer
+[qt.56.qtquick1]
+[qt.56.qtquick1.android_armv5]
+archives:               56.qtquick1.android_armv5
+target_install_base:    /5.6/android_armv5
+[56.qtquick1.android_armv5]
+archive_uri:            /qt/@QT_VERSION@/latest/android_armv5/mac_x64/qt5_qtquick1.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+# QtScript provided as separate installable component in installer
+[qt.56.qtscript]
+[qt.56.qtscript.android_armv5]
+archives:               56.qtscript.android_armv5
+target_install_base:    /5.6/android_armv5
+[56.qtscript.android_armv5]
+archive_uri:            /qt/@QT_VERSION@/latest/android_armv5/mac_x64/qt5_qtscript.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+# QtQuickControls provided as separate installable component in installer
+[qt.56.qtquickcontrols]
+[qt.56.qtquickcontrols.android_armv5]
+archives:               56.qtquickcontrols.android_armv5
+target_install_base:    /5.6/android_armv5
+[56.qtquickcontrols.android_armv5]
+archive_uri:            /qt/@QT_VERSION@/latest/android_armv5/mac_x64/qt5_qtquickcontrols.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+# QtLocation provided as separate installable component in installer
+[qt.56.qtlocation]
+[qt.56.qtlocation.android_armv5]
+archives:               56.qtlocation.android_armv5
+target_install_base:    /5.6/android_armv5
+[56.qtlocation.android_armv5]
+archive_uri:            /qt/@QT_VERSION@/latest/android_armv5/mac_x64/qt5_qtlocation.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+# Qt3D provided as separate installable component in installer
+[qt.56.qt3d]
+[qt.56.qt3d.android_armv5]
+archives:               56.qt3d.android_armv5
+target_install_base:    /5.6/android_armv5
+[56.qt3d.android_armv5]
+archive_uri:            /qt/@QT_VERSION@/latest/android_armv5/mac_x64/qt5_qt3d.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+# QtCanvas3D provided as separate installable component in installer
+[qt.56.qtcanvas3d]
+[qt.56.qtcanvas3d.android_armv5]
+archives:               56.qtcanvas3d.android_armv5
+target_install_base:    /5.6/android_armv5
+[56.qtcanvas3d.android_armv5]
+archive_uri:            /qt/@QT_VERSION@/latest/android_armv5/mac_x64/qt5_qtcanvas3d.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory

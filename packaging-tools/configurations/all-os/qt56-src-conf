@@ -1,0 +1,251 @@
+#############################################################################
+##
+## Copyright (C) 2015 The Qt Company Ltd.
+## Contact: http://www.qt.io/licensing/
+##
+## This file is part of the QtCore module of the Qt Toolkit.
+##
+## $QT_BEGIN_LICENSE:LGPL21$
+## Commercial License Usage
+## Licensees holding valid commercial Qt licenses may use this file in
+## accordance with the commercial license agreement provided with the
+## Software or, alternatively, in accordance with the terms contained in
+## a written agreement between you and The Qt Company. For licensing terms
+## and conditions see http://www.qt.io/terms-conditions. For further
+## information use the contact form at http://www.qt.io/contact-us.
+##
+## GNU Lesser General Public License Usage
+## Alternatively, this file may be used under the terms of the GNU Lesser
+## General Public License version 2.1 or version 3 as published by the Free
+## Software Foundation and appearing in the file LICENSE.LGPLv21 and
+## LICENSE.LGPLv3 included in the packaging of this file. Please review the
+## following information to ensure the GNU Lesser General Public License
+## requirements will be met: https://www.gnu.org/licenses/lgpl.html and
+## http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+##
+## As a special exception, The Qt Company gives you certain additional
+## rights. These rights are described in The Qt Company LGPL Exception
+## version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
+##
+## $QT_END_LICENSE$
+##
+#############################################################################
+
+
+[qt.56]
+
+[qt.56.src]
+
+
+#################################
+## Essentials
+#################################
+
+[qt.56.src.essentials]
+archives:               src.qt5, src.essentials.qtbase, src.essentials.qtdeclarative, src.essentials.qtdoc, src.essentials.qttools, src.essentials.qtwebkit, src.essentials.qtwebkitexamples, src.essentials.qtxmlpatterns, src.essentials.qtmultimedia
+target_install_base:    /5.6/Src/
+[src.qt5]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qt5-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /
+[src.essentials.qtbase]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtbase-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qtbase
+[src.essentials.qtdeclarative]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtdeclarative-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qtdeclarative
+[src.essentials.qtdoc]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtdoc-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qtdoc
+[src.essentials.qttools]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qttools-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qttools
+[src.essentials.qtwebkit]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtwebkit-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qtwebkit
+[src.essentials.qtwebkitexamples]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtwebkit-examples-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qtwebkit-examples
+[src.essentials.qtxmlpatterns]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtxmlpatterns-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qtxmlpatterns
+[src.essentials.qtmultimedia]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtmultimedia-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+target_install_dir:     /qtmultimedia
+
+
+#################################
+## Add-Ons
+#################################
+
+[qt.56.src.addons]
+
+[qt.56.src.addons.qtactiveqt]
+archives:               src.addons.qtactiveqt
+target_install_base:    /5.6/Src/qtactiveqt
+[src.addons.qtactiveqt]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtactiveqt-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.addons.qtandroidextras]
+archives:               src.addons.qtandroidextras
+target_install_base:    /5.6/Src/qtandroidextras
+[src.addons.qtandroidextras]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtandroidextras-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.addons.qtconnectivity]
+archives:               src.addons.qtconnectivity
+target_install_base:    /5.6/Src/qtconnectivity
+[src.addons.qtconnectivity]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtconnectivity-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.addons.qtgraphicaleffects]
+archives:               src.addons.qtgraphicaleffects
+target_install_base:    /5.6/Src/qtgraphicaleffects
+[src.addons.qtgraphicaleffects]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtgraphicaleffects-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.addons.qtimageformats]
+archives:               src.addons.qtimageformats
+target_install_base:    /5.6/Src/qtimageformats
+[src.addons.qtimageformats]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtimageformats-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.addons.qtlocation]
+archives:               src.addons.qtlocation
+target_install_base:    /5.6/Src/qtlocation
+[src.addons.qtlocation]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtlocation-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.addons.qtmacextras]
+archives:               src.addons.qtmacextras
+target_install_base:    /5.6/Src/qtmacextras
+[src.addons.qtmacextras]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtmacextras-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.addons.qtsvg]
+archives:               src.addons.qtsvg
+target_install_base:    /5.6/Src/qtsvg
+[src.addons.qtsvg]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtsvg-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.addons.qttranslations]
+archives:               src.addons.qttranslations
+target_install_base:    /5.6/Src/qttranslations
+[src.addons.qttranslations]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qttranslations-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.addons.qtsensors]
+archives:               src.addons.qtsensors
+target_install_base:    /5.6/Src/qtsensors
+[src.addons.qtsensors]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtsensors-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.addons.qtserialport]
+archives:               src.addons.qtserialport
+target_install_base:    /5.6/Src/qtserialport
+[src.addons.qtserialport]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtserialport-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.addons.qtwayland]
+archives:               src.addons.qtwayland
+target_install_base:    /5.6/Src/qtwayland
+[src.addons.qtwayland]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtwayland-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.addons.qtwinextras]
+archives:               src.addons.qtwinextras
+target_install_base:    /5.6/Src/qtwinextras
+[src.addons.qtwinextras]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtwinextras-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.addons.qtx11extras]
+archives:               src.addons.qtx11extras
+target_install_base:    /5.6/Src/qtx11extras
+[src.addons.qtx11extras]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtx11extras-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.addons.qtwebchannel]
+archives:               src.addons.qtwebchannel
+target_install_base:    /5.6/Src/qtwebchannel
+[src.addons.qtwebchannel]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtwebchannel-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.addons.qtwebsockets]
+archives:               src.addons.qtwebsockets
+target_install_base:    /5.6/Src/qtwebsockets
+[src.addons.qtwebsockets]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtwebsockets-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.addons.qtwebengine]
+archives:               src.addons.qtwebengine
+target_install_base:    /5.6/Src/qtwebengine
+[src.addons.qtwebengine]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtwebengine-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.addons.qtenginio]
+archives:               src.addons.qtenginio
+target_install_base:    /5.6/Src/qtenginio
+[src.addons.qtenginio]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtenginio-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.addons.qt3d]
+archives:               src.addons.qt3d
+target_install_base:    /5.6/Src/qt3d
+[src.addons.qt3d]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qt3d-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.addons.qtcanvas3d]
+archives:               src.addons.qtcanvas3d
+target_install_base:    /5.6/Src/qtcanvas3d
+[src.addons.qtcanvas3d]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtcanvas3d-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.addons.qtquick1]
+archives:               src.addons.qtquick1
+target_install_base:    /5.6/Src/qtquick1
+[src.addons.qtquick1]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtquick1-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.addons.qtscript]
+archives:               src.addons.qtscript
+target_install_base:    /5.6/Src/qtscript
+[src.addons.qtscript]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtscript-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.addons.qtquickcontrols]
+archives:               src.addons.qtquickcontrols
+target_install_base:    /5.6/Src/qtquickcontrols
+[src.addons.qtquickcontrols]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtquickcontrols-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
