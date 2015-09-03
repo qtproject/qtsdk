@@ -144,7 +144,7 @@ class BldCommand:
         if not self.license:
             self.license = os.environ.get('LICENSE')
         if not any(self.license in s for s in ['opensource', 'enterprise']):
-            print('*** License unknown: {0}'.format(LICENSE))
+            print('*** License unknown: {0}'.format(self.license))
             sys.exit(-1)
         # cfg
         self.target_env = options.target_env
@@ -179,7 +179,11 @@ class BldCommand:
         if os.path.exists(self.release_description_file):
             print('Using release description file: {0}'.format(self.release_description_file))
             self.parse_release_description_file()
-            qt_pkg_url = self.pkg_server_addr_http + '/' + self.license
+            version_num = int(''.join(re.findall(r'\d+', self.version)))
+            if (version_num >= 560):
+                qt_pkg_url = self.pkg_server_addr_http
+            else:
+                qt_pkg_url = self.pkg_server_addr_http + '/' + self.license
             if self.custom_build != 0:
                 qt_pkg_url +=  '/qt/' + self.version + '-' + self.custom_build + '/latest/'
             else:
@@ -509,13 +513,19 @@ def sign_mac_executable(file_path, working_dir, abort_on_fail):
 # Determine the qt build snaphot directory name
 ##############################################################
 def get_qt_snapshot_dir(bld_command):
-    snapshot_qt_dir_base = bld_command.path + '/' + bld_command.license + '/qt/' + bld_command.version
-    snapshot_qt_dir      = bld_command.path + '/' + bld_command.license + '/' + 'qt' + '/' + bld_command.version + '/' + bld_command.build_number
-    latest_qt_dir        = bld_command.path + '/' + bld_command.license + '/' + 'qt' + '/' + bld_command.version + '/' + 'latest'
-    if bld_command.custom_build != 0:
-        snapshot_qt_dir_base = bld_command.path + '/' + bld_command.license + '/qt/' + bld_command.version + '-' + bld_command.custom_build
-        snapshot_qt_dir      = bld_command.path + '/' + bld_command.license + '/' + 'qt' + '/' + bld_command.version + '-' + bld_command.custom_build + '/' + bld_command.build_number
-        latest_qt_dir        = bld_command.path + '/' + bld_command.license + '/' + 'qt' + '/' + bld_command.version + '-' + bld_command.custom_build + '/' + 'latest'
+    version_num = int(''.join(re.findall(r'\d+', bld_command.version)))
+    if (version_num >= 560):
+        snapshot_qt_dir_base = bld_command.path + '/qt/' + bld_command.version
+        if bld_command.custom_build != 0:
+            snapshot_qt_dir_base += '-' + bld_command.custom_build
+        snapshot_qt_dir      = snapshot_qt_dir_base + '/' + bld_command.build_number
+        latest_qt_dir        = snapshot_qt_dir_base + '/' + 'latest'
+    else:
+        snapshot_qt_dir_base = bld_command.path + bld_command.license + '/qt/' + bld_command.version
+        if bld_command.custom_build != 0:
+            snapshot_qt_dir_base += '-' + bld_command.custom_build
+        snapshot_qt_dir      = snapshot_qt_dir_base + '/' + bld_command.build_number
+        latest_qt_dir        = snapshot_qt_dir_base + '/' + 'latest'
     return QtSnapshotDir(snapshot_qt_dir_base, snapshot_qt_dir, latest_qt_dir)
 
 
@@ -543,9 +553,14 @@ def initialize_qt5_build(bld_command):
         remote_qt_minor_dir = qt_dir_base[:-2]
         cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, 'ln -sfn', latest_available_pkg , remote_qt_minor_dir]
         bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
-    # Create binary links for opensource
     version_num = int(''.join(re.findall(r'\d+', bld_command.version)))
-    if (version_num >= 550):
+    if (version_num >= 560):
+        # Create symbolic links into build artifacts if not already exist
+        snapshot_license_path = snapshot_path.snapshot_qt_dir_base + '/' + bld_command.license + '/qt/' + bld_command.version
+        if not os.path.exists(snapshot_license_path):
+            update_latest_link(bld_command, qt_dir_base, snapshot_license_path)
+    else if (version_num >= 550):
+        # Create binary links for opensource
         if bld_command.license == 'opensource':
             remote_doc_dir = latest_qt_dir + '/' + 'src/doc'
             delete_remote_directory_tree(bld_command, remote_doc_dir)
