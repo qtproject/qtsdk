@@ -76,17 +76,16 @@ QT5_MODULES_LIST                    = [ 'qt3d', 'qtactiveqt', 'qtandroidextras',
                                         'qtbase', 'qtconnectivity', 'qtdeclarative', \
                                         'qtdoc', 'qtenginio', 'qtfeedback', 'qtgraphicaleffects', \
                                         'qtimageformats', 'qtlocation', 'qtmacextras', \
-                                        'qtmultimedia', 'qtpim', 'qtqa', 'qtquick1', \
-                                        'qtquickcontrols', 'qtrepotools', 'qtscript', \
-                                        'qtsensors', 'qtserialport', 'qtsvg', 'qtsystems', \
-                                        'qttools', 'qttranslations', 'qtwayland', \
-                                        'qtwebkit', 'qtwebkit-examples', 'qtwebsockets', \
-                                        'qtwinextras', 'qtxmlpatterns', 'qtx11extras', \
-                                        'qtwebengine', 'qtwebchannel' ]
-QT5_ESSENTIALS                      = [ 'qtbase', 'qtdeclarative', 'qtdoc', \
-                                        'qtmultimedia', 'qtquick1', 'qtquickcontrols', \
-                                        'qtscript', 'qttools', 'qtwebkit', \
-                                        'qtwebkit-examples', 'qtxmlpatterns' ]
+                                        'qtmultimedia', 'qtpim', 'qtqa', 'qtquickcontrols', \
+                                        'qtquickcontrols2', 'qtrepotools', 'qtscript', \
+                                        'qtsensors', 'qtserialbus', 'qtserialport', 'qtsvg',\
+                                        'qtsystems', 'qttools', 'qttranslations', 'qtwayland', \
+                                        'qtwebsockets', 'qtwinextras', 'qtxmlpatterns', 'qtx11extras', \
+                                        'qtwebengine', 'qtwebchannel', 'qtwebview' ]
+QT5_ESSENTIALS                      = [ 'qtbase', 'qtdeclarative', 'qtdoc',
+                                        'qtmultimedia', 'qtquickcontrols', \
+                                        'qtscript', 'qttools', \
+                                        'qtxmlpatterns' ]
 # Modules not to be included in final package
 QT5_MODULE_INSTALL_EXCLUDE_LIST     = ['qtwebkit-examples']
 

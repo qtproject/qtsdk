@@ -13,25 +13,24 @@ mac-x64:                    installer-framework-build-mac-x64.7z
 [release.global]
 version:                        5.6.0
 version_tag:                    alpha
-module_exclude_list:            qtdocgallery, qtfeedback, qtjsondb, qtpim, qtqa, qtrepotools, qtsystems
-module_separate_install_list:   qtwebengine, qtquick1, qtscript
+module_exclude_list:            qtdocgallery, qtfeedback, qtjsondb, qtpim, qtqa, qtquick1, qtrepotools, qtserialbus, qtsystems, qtwebkit, qtwebkit-examples
+module_separate_install_list:   qtwebengine, qtwebview, qtscript
 arg_substitution_list:          @QT_VERSION@=%GLOBAL_VERSION%,
                                 @QT_VERSION_MINOR@=5.6,
                                 @QT_VERSION_AND_TAG@=%GLOBAL_VERSION_AND_TAG%,
-                                @QT_INSTALL_DIR_NAME@=5.6,
-                                @QTWEBVIEW_VERSION@=1.1.0
+                                @QT_INSTALL_DIR_NAME@=5.6
 
 [release.qt.configure_options.android_armv5]
 build_node_labels:      linux-g++-Rhel6.6-x86_Android-armv5, linux-g++-Rhel6.6-x64_Android-armv5, mac-clang-10.10-x64_Android-armv5, win-MinGW4.9.2-Windows7-x86_Android-armv5
-configure_options:      -opensource -confirm-license -release -xplatform android-g++ -opengl es2 -android-arch armeabi -nomake tests -nomake examples -skip qtserialport -skip qtwebkit -skip qtwebkit-examples -skip qtx11extras -sysconfdir /etc/xdg -no-icu -openssl
+configure_options:      -opensource -confirm-license -release -xplatform android-g++ -opengl es2 -android-arch armeabi -nomake tests -nomake examples -skip qtserialport -skip qtx11extras -sysconfdir /etc/xdg -no-icu -openssl
 
 [release.qt.configure_options.android_armv7]
 build_node_labels:      linux-g++-Rhel6.6-x86_Android-armv7, linux-g++-Rhel6.6-x64_Android-armv7, mac-clang-10.10-x64_Android-armv7, win-MinGW4.9.2-Windows7-x86_Android-armv7
-configure_options:      -opensource -confirm-license -release -xplatform android-g++ -opengl es2 -android-arch armeabi-v7a -nomake tests -nomake examples -skip qtserialport -skip qtwebkit -skip qtwebkit-examples -skip qtx11extras -sysconfdir /etc/xdg -no-icu -openssl
+configure_options:      -opensource -confirm-license -release -xplatform android-g++ -opengl es2 -android-arch armeabi-v7a -nomake tests -nomake examples -skip qtserialport -skip qtx11extras -sysconfdir /etc/xdg -no-icu -openssl
 
 [release.qt.configure_options.android_x86]
 build_node_labels:      linux-g++-Rhel6.6-x86_Android-x86, linux-g++-Rhel6.6-x64_Android-x86, mac-clang-10.10-x64_Android-x86, win-MinGW4.9.2-Windows7-x86_Android-x86
-configure_options:      -opensource -confirm-license -release -xplatform android-g++ -opengl es2 -android-arch x86 -nomake tests -nomake examples -skip qtserialport -skip qtwebkit -skip qtwebkit-examples -skip qtx11extras -sysconfdir /etc/xdg -no-icu -openssl
+configure_options:      -opensource -confirm-license -release -xplatform android-g++ -opengl es2 -android-arch x86 -nomake tests -nomake examples -skip qtserialport -skip qtx11extras -sysconfdir /etc/xdg -no-icu -openssl
 
 [release.qt.configure_options.ios]
 build_node_labels:      mac-clang-10.10-x64_iOS
