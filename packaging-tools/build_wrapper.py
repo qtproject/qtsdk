@@ -68,6 +68,8 @@ import random
 from pkg_constants import ICU_BUILD_OUTPUT_DIR
 import imp
 
+import split_qtlocation
+
 
 # ----------------------------------------------------------------------
 # external commands
@@ -1163,6 +1165,12 @@ def handle_qt_release_build(bld_command):
     # Execute Qt build
     mkqt5bld.QT_BUILD_OPTIONS = qt5BuildOptions
     mkqt5bld.main_call_parameters()
+
+    local_archives_dir = os.path.join(WORK_DIR, 'module_archives')
+    # split qtlocation
+    location_archive = bldinstallercommon.locate_file(local_archives_dir, 'qt5_qtlocation.7z')
+    if location_archive:
+        split_qtlocation.do_split(location_archive, local_archives_dir, WORK_DIR)
 
     # Define upload directories
     qt_dir_base   = get_qt_snapshot_dir(bld_command).snapshot_qt_dir_base
