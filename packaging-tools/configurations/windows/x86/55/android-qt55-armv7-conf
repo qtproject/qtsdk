@@ -44,7 +44,8 @@
 archives:               55.android_armv7.essentials,
                         55.android_armv7.addons,
                         55.android_armv7.icu_541.mingw_32,
-                        55.android_armv7.mingw492.runtime
+                        55.android_armv7.mingw492.runtime,
+                        55.android_armv7.qtpositioning
 target_install_base:    /5.5/android_armv7
 [55.android_armv7.essentials]
 archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/mingw_x86/qt5_essentials.7z
@@ -57,6 +58,9 @@ archive_uri:            http://download.qt.io/development_releases/prebuilt/icu/
 [55.android_armv7.mingw492.runtime]
 archive_uri:            http://download.qt.io/development_releases/prebuilt/mingw_32/i686-4.9.2-release-posix-dwarf-rt_v3-rev1-runtime.7z
 target_install_dir:     /bin
+[55.android_armv7.qtpositioning]
+archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/mingw_x86/qt5_qtpositioning.7z
+package_finalize_items: delete_doc_directory
 
 # QtQuick1 provided as separate installable component in installer
 [qt.55.qtquick1]

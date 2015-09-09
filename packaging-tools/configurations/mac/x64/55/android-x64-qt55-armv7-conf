@@ -42,13 +42,17 @@
 
 [qt.55.android_armv7]
 archives:               55.android_armv7.essentials,
-                        55.android_armv7.addons
+                        55.android_armv7.addons,
+                        55.android_armv7.qtpositioning
 target_install_base:    /5.5/android_armv7
 [55.android_armv7.essentials]
 archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/mac_x64/qt5_essentials.7z
 package_finalize_items: delete_doc_directory
 [55.android_armv7.addons]
 archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/mac_x64/qt5_addons.7z
+package_finalize_items: delete_doc_directory
+[55.android_armv7.qtpositioning]
+archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/mac_x64/qt5_qtpositioning.7z
 package_finalize_items: delete_doc_directory
 
 # QtQuick1 provided as separate installable component in installer

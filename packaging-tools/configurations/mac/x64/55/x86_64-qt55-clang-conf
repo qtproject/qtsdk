@@ -42,7 +42,8 @@
 
 [qt.55.clang_64]
 archives:               55.clang_64.essentials,
-                        55.clang_64.addons
+                        55.clang_64.addons,
+                        55.clang_64.qtpositioning
 target_install_base:    /5.5/clang_64
 [55.clang_64.essentials]
 archive_uri:            /qt/@QT_VERSION@/latest/mac_x64/qt5_essentials.7z
@@ -50,7 +51,9 @@ package_finalize_items: delete_doc_directory
 [55.clang_64.addons]
 archive_uri:            /qt/@QT_VERSION@/latest/mac_x64/qt5_addons.7z
 package_finalize_items: delete_doc_directory
-
+[55.clang_64.qtpositioning]
+archive_uri:            /qt/@QT_VERSION@/latest/mac_x64/qt5_qtpositioning.7z
+package_finalize_items: delete_doc_directory
 
 # QtWebEngine provided as separate installable component in installer
 [qt.55.qtwebengine]
