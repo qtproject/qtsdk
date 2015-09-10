@@ -173,8 +173,8 @@ if not os.path.lexists(callerArguments.qt5path):
         'qt5_essentials.7z',
         'qt5_addons.7z',
         'qt5_qtscript.7z',
-        'qt5_qtwebkit.7z',
         'qt5_qtlocation.7z',
+        'qt5_qtpositioning.7z',
         'qt5_qtquickcontrols.7z'
     ]
     for package in qt_packages:
