@@ -559,7 +559,7 @@ def initialize_qt5_build(bld_command):
         snapshot_license_path = snapshot_path.snapshot_qt_dir_base + '/' + bld_command.license + '/qt/' + bld_command.version
         if not os.path.exists(snapshot_license_path):
             update_latest_link(bld_command, qt_dir_base, snapshot_license_path)
-    else if (version_num >= 550):
+    elif (version_num >= 550):
         # Create binary links for opensource
         if bld_command.license == 'opensource':
             remote_doc_dir = latest_qt_dir + '/' + 'src/doc'
