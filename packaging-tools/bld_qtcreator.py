@@ -145,6 +145,8 @@ qtCreatorInstallDirectory = os.path.abspath(os.path.join(qtCreatorSourceDirector
 tempPath = os.path.abspath(os.path.join(qtCreatorSourceDirectory,
     '..', 'qt-creator_temp'))
 
+installerPath = os.path.join(tempPath, 'ifw-bld')
+
 ### check mac setup
 if bldinstallercommon.is_mac_platform():
     if callerArguments.keychain_unlock_script:
@@ -209,7 +211,6 @@ if not os.path.lexists(callerArguments.qt5path):
 ### add get installer base task
     myGetQtBinaryWork.addTaskObject(
         createDownloadExtract7zTask(callerArguments.installerbase7z, tempPath, tempPath, callerArguments))
-    installerPath = os.path.join(tempPath, 'ifw-bld')
 
 ### run get Qt 5 tasks
     myGetQtBinaryWork.run()
