@@ -47,6 +47,7 @@ from __future__ import print_function
 import argparse # commandline argument parser
 import multiprocessing
 import os
+import subprocess
 import sys
 from urlparse import urlparse
 
@@ -215,8 +216,21 @@ if not os.path.lexists(callerArguments.qt5path):
 
     print("##### {0} #####".format("patch Qt"))
 
-    # Save QT_INSTALL_PREFIX
-    #qt_install_prefix = get_qt_install_prefix(callerArguments.qt5path)
+    # fix paths in module .pri files
+    qt_install_prefix = subprocess.check_output([os.path.join(callerArguments.qt5path, 'bin', 'qmake'),
+                                                 '-query', 'QT_INSTALL_PREFIX']).strip()
+    print('install prefix: "{0}", qt5_path "{1}"'.format(qt_install_prefix, callerArguments.qt5path))
+    for (path, dirnames, filenames) in os.walk(os.path.join(callerArguments.qt5path, 'mkspecs')):
+        for filename in filenames:
+            if not filename.endswith('.pri'):
+                continue
+            filepath = os.path.join(path, filename)
+            print('patching "{0}"'.format(filepath))
+            with open(filepath, 'r') as f:
+                contents = f.read()
+            contents = contents.replace(qt_install_prefix, callerArguments.qt5path)
+            with open(filepath, 'w') as f:
+                f.write(contents)
 
     print("##### {0} #####".format("patch Qt"))
     qtConfFile = open(os.path.join(callerArguments.qt5path, 'bin', 'qt.conf'), "w")
