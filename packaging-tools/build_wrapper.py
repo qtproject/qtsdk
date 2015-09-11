@@ -527,7 +527,12 @@ def initialize_qt5_build(bld_command):
     sanity_check_packaging_server(bld_command)
     version_num = int(''.join(re.findall(r'\d+', bld_command.version)))
     if 'opensource' in bld_command.license and (version_num >= 560):
-        print('***** Do nothing *****')
+        # Create symbolic links into build artifacts if not already exist
+        snapshot_license_path = bld_command.path + '/' + bld_command.license + '/qt/' + bld_command.version
+        if not bldinstallercommon.remote_path_exists(bld_command.pkg_server_addr, snapshot_license_path, SSH_COMMAND):
+            snapshot_path = get_qt_snapshot_dir(bld_command)
+            qt_dir_base   = snapshot_path.snapshot_qt_dir_base
+            update_latest_link(bld_command, qt_dir_base, snapshot_license_path)
     else:
         snapshot_path = get_qt_snapshot_dir(bld_command)
         snapshot_qt_dir = snapshot_path.snapshot_qt_dir
@@ -550,8 +555,8 @@ def initialize_qt5_build(bld_command):
             bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
         if (version_num >= 560):
             # Create symbolic links into build artifacts if not already exist
-            snapshot_license_path = snapshot_path.snapshot_qt_dir_base + '/' + bld_command.license + '/qt/' + bld_command.version
-            if not os.path.exists(snapshot_license_path):
+            snapshot_license_path = bld_command.path + '/' + bld_command.license + '/qt/' + bld_command.version
+            if not bldinstallercommon.remote_path_exists(bld_command.pkg_server_addr, snapshot_license_path, SSH_COMMAND):
                 update_latest_link(bld_command, qt_dir_base, snapshot_license_path)
         elif (version_num >= 550):
             # Create binary links for opensource
@@ -627,9 +632,15 @@ def handle_qt_configure_exe_build(bld_command):
     bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
 
     # upload packages
-    ARTF_UPLOAD_PATH=bld_command.pkg_server_addr + ':' + bld_command.path + '/' + bld_command.license + '/' + 'qt/' + bld_command.version + '/latest/src'
-    if bld_command.custom_build != 0:
-        ARTF_UPLOAD_PATH=bld_command.pkg_server_addr + ':' + bld_command.path + '/' + bld_command.license + '/' + 'qt/' + bld_command.version + '-' + bld_command.custom_build + '/latest/src'
+    version_num = int(''.join(re.findall(r'\d+', bld_command.version)))
+    if (version_num >= 560):
+        ARTF_UPLOAD_PATH=bld_command.pkg_server_addr + ':' + bld_command.path + '/qt/' + bld_command.version + '/latest/src'
+        if bld_command.custom_build != 0:
+            ARTF_UPLOAD_PATH=bld_command.pkg_server_addr + ':' + bld_command.path + '/qt/' + bld_command.version + '-' + bld_command.custom_build + '/latest/src'
+    else:
+        ARTF_UPLOAD_PATH=bld_command.pkg_server_addr + ':' + bld_command.path + '/' + bld_command.license + '/' + 'qt/' + bld_command.version + '/latest/src'
+        if bld_command.custom_build != 0:
+            ARTF_UPLOAD_PATH=bld_command.pkg_server_addr + ':' + bld_command.path + '/' + bld_command.license + '/' + 'qt/' + bld_command.version + '-' + bld_command.custom_build + '/latest/src'
     temp_file = src_package_name + '.zip'
     cmd_args = [SCP_COMMAND, temp_file, ARTF_UPLOAD_PATH + '/single/']
     bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
