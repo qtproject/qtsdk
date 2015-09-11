@@ -523,7 +523,7 @@ def get_qt_snapshot_dir(bld_command):
         snapshot_qt_dir      = snapshot_qt_dir_base + '/' + bld_command.build_number
         latest_qt_dir        = snapshot_qt_dir_base + '/' + 'latest'
     else:
-        snapshot_qt_dir_base = bld_command.path + bld_command.license + '/qt/' + bld_command.version
+        snapshot_qt_dir_base = bld_command.path + '/' + bld_command.license + '/qt/' + bld_command.version
         if bld_command.custom_build != 0:
             snapshot_qt_dir_base += '-' + bld_command.custom_build
         snapshot_qt_dir      = snapshot_qt_dir_base + '/' + bld_command.build_number
@@ -536,40 +536,43 @@ def get_qt_snapshot_dir(bld_command):
 ###############################
 def initialize_qt5_build(bld_command):
     sanity_check_packaging_server(bld_command)
-    snapshot_path = get_qt_snapshot_dir(bld_command)
-    snapshot_qt_dir = snapshot_path.snapshot_qt_dir
-    latest_qt_dir   = snapshot_path.latest_qt_dir
-    qt_dir_base     = snapshot_path.snapshot_qt_dir_base
-    for dir_name in SRC_DEST_DIRS:
-        dir_path = snapshot_qt_dir + '/' + dir_name
-        create_remote_dirs(bld_command.pkg_server_addr, dir_path)
-    # Update latest link
-    cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, 'ln -sfn', snapshot_qt_dir, latest_qt_dir]
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
-    #Create latest_available_package
-    latest_available_pkg = qt_dir_base + '/latest_available_package'
-    create_remote_dirs(bld_command.pkg_server_addr, latest_available_pkg)
-    # Update latest Qt Minor version link
-    qt_dir_base = snapshot_path.snapshot_qt_dir_base
-    if bld_command.custom_build == 0:
-        remote_qt_minor_dir = qt_dir_base[:-2]
-        cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, 'ln -sfn', latest_available_pkg , remote_qt_minor_dir]
-        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
     version_num = int(''.join(re.findall(r'\d+', bld_command.version)))
-    if (version_num >= 560):
-        # Create symbolic links into build artifacts if not already exist
-        snapshot_license_path = snapshot_path.snapshot_qt_dir_base + '/' + bld_command.license + '/qt/' + bld_command.version
-        if not os.path.exists(snapshot_license_path):
-            update_latest_link(bld_command, qt_dir_base, snapshot_license_path)
-    elif (version_num >= 550):
-        # Create binary links for opensource
-        if bld_command.license == 'opensource':
-            remote_doc_dir = latest_qt_dir + '/' + 'src/doc'
-            delete_remote_directory_tree(bld_command, remote_doc_dir)
-            for dir_name in BIN_DEST_DIRS:
-                link_name = latest_qt_dir + '/' + dir_name
-                remote_dir = link_name.replace('opensource', 'enterprise')
-                update_latest_link(bld_command, remote_dir, link_name)
+    if 'opensource' in bld_command.license and (version_num >= 560):
+        print('***** Do nothing *****')
+    else:
+        snapshot_path = get_qt_snapshot_dir(bld_command)
+        snapshot_qt_dir = snapshot_path.snapshot_qt_dir
+        latest_qt_dir   = snapshot_path.latest_qt_dir
+        qt_dir_base     = snapshot_path.snapshot_qt_dir_base
+        for dir_name in SRC_DEST_DIRS:
+            dir_path = snapshot_qt_dir + '/' + dir_name
+            create_remote_dirs(bld_command.pkg_server_addr, dir_path)
+        # Update latest link
+        cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, 'ln -sfn', snapshot_qt_dir, latest_qt_dir]
+        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
+        #Create latest_available_package
+        latest_available_pkg = qt_dir_base + '/latest_available_package'
+        create_remote_dirs(bld_command.pkg_server_addr, latest_available_pkg)
+        # Update latest Qt Minor version link
+        qt_dir_base = snapshot_path.snapshot_qt_dir_base
+        if bld_command.custom_build == 0:
+            remote_qt_minor_dir = qt_dir_base[:-2]
+            cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, 'ln -sfn', latest_available_pkg , remote_qt_minor_dir]
+            bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
+        if (version_num >= 560):
+            # Create symbolic links into build artifacts if not already exist
+            snapshot_license_path = snapshot_path.snapshot_qt_dir_base + '/' + bld_command.license + '/qt/' + bld_command.version
+            if not os.path.exists(snapshot_license_path):
+                update_latest_link(bld_command, qt_dir_base, snapshot_license_path)
+        elif (version_num >= 550):
+            # Create binary links for opensource
+            if bld_command.license == 'opensource':
+                remote_doc_dir = latest_qt_dir + '/' + 'src/doc'
+                delete_remote_directory_tree(bld_command, remote_doc_dir)
+                for dir_name in BIN_DEST_DIRS:
+                    link_name = latest_qt_dir + '/' + dir_name
+                    remote_dir = link_name.replace('opensource', 'enterprise')
+                    update_latest_link(bld_command, remote_dir, link_name)
 
 
 ###############################
