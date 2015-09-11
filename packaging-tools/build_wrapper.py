@@ -682,18 +682,21 @@ def build_extra_module_src_pkg(bld_command):
             src_pkg = True
             cmd_args = ['scp', file_name, extra_module_src_dir + '/latest/src']
             bldinstallercommon.do_execute_sub_process(cmd_args, application_dir)
-    # handle doc package creation
-    build_doc.handle_extra_module_doc_build()
-    # copy archived doc files to network drive if exists, we use Linux only to generate doc archives
-    local_docs_dir = os.path.join(SCRIPT_ROOT_DIR, 'doc_archives')
-    doc_pkg = False
-    if os.path.exists(local_docs_dir):
-        doc_pkg = True
-        # create remote doc dir
-        doc_target_dir = bld_command.pkg_server_addr + ':' + bld_command.latest_extra_module_dir + '/' + 'doc'
-        remote_copy_archives(doc_target_dir, local_docs_dir)
-    # if we got here, we have all the packages, update symlink latest_successful -> latest
-    if src_pkg and doc_pkg:
+    # handle doc package creation, this may fail as some extra modules are missing docs
+    try:
+        build_doc.handle_extra_module_doc_build()
+        # copy archived doc files to network drive if exists, we use Linux only to generate doc archives
+        local_docs_dir = os.path.join(SCRIPT_ROOT_DIR, 'doc_archives')
+        if os.path.exists(local_docs_dir):
+            # create remote doc dir
+            doc_target_dir = bld_command.pkg_server_addr + ':' + bld_command.latest_extra_module_dir + '/' + 'doc'
+            remote_copy_archives(doc_target_dir, local_docs_dir)
+    except Exception:
+        print('Failed to build doc package for: {0}'.format(os.environ['GIT_APPLICATION_REPO']))
+        pass
+
+    # if we got here, we have at least the src packages, update symlink latest_successful -> latest
+    if src_pkg:
         latest_successful_dir = bld_command.latest_extra_module_dir + '_successful'
         update_latest_link(bld_command, bld_command.latest_extra_module_dir, latest_successful_dir)
 

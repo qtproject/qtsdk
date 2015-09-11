@@ -159,6 +159,9 @@ def handle_extra_module_doc_build():
     bldinstallercommon.do_execute_sub_process(bld_args, os.path.dirname(extra_module_pro_file), extra_env=extra_module_build_environment)
     # create archive
     doc_dir = bldinstallercommon.locate_directory(extra_module_doc_install_dir, 'doc')
+    if not os.path.exists(doc_dir):
+        print('Warning! Doc archive not generated!')
+        return
     archive_name = os.environ['APPLICATION_NAME'] + '-' + os.environ['LICENSE'] + '-doc-' + os.environ['APPLICATION_VERSION'] + '.7z'
     archive_path = os.path.join(current_path, 'doc_archives', archive_name)
     bld_args = ['7z', 'a', archive_path, 'doc']
