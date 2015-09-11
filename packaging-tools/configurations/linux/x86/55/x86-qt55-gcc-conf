@@ -55,7 +55,7 @@ archive_uri:            /qt/@QT_VERSION@/latest/linux_gcc_32_rhel66/qt5_addons.7
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 [55.gcc.qtpositioning]
-archive_uri:            /qt/@QT_VERSION@/latest/linux_gcc_32_rhel66/qt5_positioning.7z
+archive_uri:            /qt/@QT_VERSION@/latest/linux_gcc_32_rhel66/qt5_qtpositioning.7z
 package_finalize_items: delete_doc_directory
 
 [55.gcc.icu_541]
