@@ -59,8 +59,8 @@ from bld_utils import download, runCommand, stripVars
 import bldinstallercommon
 
 SCRIPT_ROOT_DIR             = os.path.dirname(os.path.realpath(__file__))
-APPLICATION_SRC_DIR_NAME    = 'application_src'
-APPLICATION_SRC_DIR         = os.path.join(SCRIPT_ROOT_DIR, APPLICATION_SRC_DIR_NAME)
+MODULE_SRC_DIR_NAME         = 'module_src'
+MODULE_SRC_DIR              = os.path.join(SCRIPT_ROOT_DIR, MODULE_SRC_DIR_NAME)
 bldinstallercommon.init_common_module(os.getcwd())
 
 ###############################
@@ -152,7 +152,7 @@ def createDownloadExtractTask(url, target_path, temp_path, caller_arguments):
 # function
 ###############################
 def locate_pro(directory):
-    print('Trying to locate application .pro file file from: {0}'.format(directory))
+    print('Trying to locate module .pro file file from: {0}'.format(directory))
     for root, dummy, files in os.walk(directory):
         for basename in files:
             if fnmatch.fnmatch(basename, '*.pro'):
@@ -164,40 +164,36 @@ def locate_pro(directory):
 
 # install an argument parser
 parser = argparse.ArgumentParser(prog = os.path.basename(sys.argv[0]),
-    add_help=True, description="build Qt 5 based Qt Application", formatter_class=argparse.RawTextHelpFormatter)
+    add_help=True, description="build Qt 5 based Qt Module", formatter_class=argparse.RawTextHelpFormatter)
 if os.name == 'nt':
     parser.epilog = "example on windows: " + os.linesep + "\tpython {0} --clean " \
-        "--buildcommand C:\\bin\\ibjom.cmd --installcommand nmake --qt5path ..\\..\\qtapplication_qt5 " \
+        "--buildcommand C:\\bin\\ibjom.cmd" \
         "--qt5_essentials7z <uri to qt5_essentials.7z> " \
         "--qt5_addons7z <uri to qt5_addons.7z> " \
         "--qt5_webengine7z <uri to qt5_webengine.7z> " \
-        "--application_url <url into application repository>" \
-        "--application_branch <application branch>" \
-        "--application_dir <Local copy of application>" \
-        "--sevenzippath \"C:\\Program Files\\7-Zip\" " \
-        "--gitpath \"C:\\Program Files (x86)\\Git\\cmd\" "\
+        "--module_url <url into module repository>" \
+        "--module_branch <module branch>" \
+        "--module_dir <Local copy of module>" \
         "".format(os.path.basename(sys.argv[0]))
 elif sys.platform == "darwin":
     parser.epilog = "example: " + os.linesep + "\tpython {0} --clean " \
-        "--qt5path ../../qtapplication_qt5 " \
         "--qt5_essentials7z <uri to qt5_essentials.7z> " \
         "--qt5_addons7z <uri to qt5_addons.7z> " \
         "--qt5_webengine7z <uri to qt5_webengine.7z> " \
         "--installerbase7z <uri into installer base>" \
-        "--application_url <url into application repository>" \
-        "--application_branch <application branch>" \
-        "--application_dir <Local copy of application>" \
+        "--module_url <url into module repository>" \
+        "--module_branch <module branch>" \
+        "--module_dir <Local copy of module>" \
         "--keychain_unlock_script $HOME/unlock-keychain.sh" \
         "".format(os.path.basename(sys.argv[0]))
 else:
     parser.epilog = "example: " + os.linesep + "\tpython {0} --clean " \
-        "--qt5path ../../qtapplication_qt5 " \
         "--qt5_essentials7z <uri to qt5_essentials.7z> " \
         "--qt5_addons7z <uri to qt5_addons.7z> " \
         "--qt5_webengine7z <uri to qt5_webengine.7z> " \
-        "--application_url <url into application repository>" \
-        "--application_branch <application branch>" \
-        "--application_dir <Local copy of application>" \
+        "--module_url <url into module repository>" \
+        "--module_branch <module branch>" \
+        "--module_dir <Local copy of module>" \
         "".format(os.path.basename(sys.argv[0]))
 
 # general arguments
@@ -209,21 +205,16 @@ parser.add_argument('--debug', help="use debug builds", action='store_true', def
 parser.add_argument('--qt5_essentials7z', help="a file or url where it get the built qt5 essential content as 7z")
 parser.add_argument('--qt5_addons7z', help="a file or url where it get the built qt5 addons content as 7z", required=False, default='')
 parser.add_argument('--qt5_webengine7z', help="a file or url where it get the built qt5 webengine content as 7z", required=False, default='')
-parser.add_argument('--application_url', help="Git URL for Qt Application", required=False, default='')
-parser.add_argument('--application_branch', help="Git branch for Qt Application", required=False, default='')
-parser.add_argument('--application_dir', help="Local copy of Qt Application", required=False, default='')
-parser.add_argument('--application7z', help="a file or url where it get the application source", required=False, default='')
+parser.add_argument('--module_url', help="Git URL for Qt Module", required=False, default='')
+parser.add_argument('--module_branch', help="Git branch for Qt Module", required=False, default='')
+parser.add_argument('--module_dir', help="Local copy of Qt Module", required=False, default='')
+parser.add_argument('--module7z', help="a file or url where it get the module source", required=False, default='')
 parser.add_argument('--makeDocs', help="Should the docs be built for this component?", required=False, action='store_true', default=False)
 parser.add_argument('--collectDocs', help="Should the docs be collected for this component?", required=False, action='store_true', default=False)
 
 
 if (sys.platform != "darwin"):
     parser.add_argument('--icu7z', help="a file or url where it get icu libs as 7z", required=False, default='')
-
-# if we are on windows, maybe we want some other arguments
-if os.name == 'nt':
-    parser.add_argument('--sevenzippath', help="path where the 7zip binary is located", required=False, default='')
-    parser.add_argument('--gitpath', help="path where the git binary is located", required=False, default='')
 
 if sys.platform == "darwin":
     parser.add_argument('--installerbase7z', help="a file or url where it get installerbase binary as 7z")
@@ -241,37 +232,37 @@ if callerArguments.qt5path != os.path.abspath(callerArguments.qt5path):
 
 tempPath = os.path.abspath(os.path.join(os.path.dirname(__file__), 'temp'))
 
-# clone application repo
-if callerArguments.application_url != '':
+# clone module repo
+if callerArguments.module_url != '':
     bldinstallercommon.init_common_module(os.getcwd())
-    bldinstallercommon.create_dirs(APPLICATION_SRC_DIR)
-    bldinstallercommon.clone_repository(callerArguments.application_url, callerArguments.application_branch, os.path.join(os.path.dirname(__file__), APPLICATION_SRC_DIR_NAME))
-    qtApplicationSourceDirectory = APPLICATION_SRC_DIR
-elif callerArguments.application7z != '':
-    bldinstallercommon.create_dirs(APPLICATION_SRC_DIR)
-    myGetQtApp = ThreadedWork("get and extract application src")
-    myGetQtApp.addTaskObject(createDownloadExtractTask(callerArguments.application7z, APPLICATION_SRC_DIR, tempPath, callerArguments))
-    myGetQtApp.run()
-    qtApplicationSourceDirectory = APPLICATION_SRC_DIR
+    bldinstallercommon.create_dirs(MODULE_SRC_DIR)
+    bldinstallercommon.clone_repository(callerArguments.module_url, callerArguments.module_branch, os.path.join(os.path.dirname(__file__), MODULE_SRC_DIR_NAME))
+    qtModuleSourceDirectory = MODULE_SRC_DIR
+elif callerArguments.module7z != '':
+    bldinstallercommon.create_dirs(MODULE_SRC_DIR)
+    myGetQtModule = ThreadedWork("get and extract module src")
+    myGetQtModule.addTaskObject(createDownloadExtractTask(callerArguments.module7z, MODULE_SRC_DIR, tempPath, callerArguments))
+    myGetQtModule.run()
+    qtModuleSourceDirectory = MODULE_SRC_DIR
 else:
-    print(("Using local copy of {0}").format(os.environ['APPLICATION_NAME']))
-    qtApplicationSourceDirectory = callerArguments.application_dir
+    print(("Using local copy of {0}").format(os.environ['MODULE_NAME']))
+    qtModuleSourceDirectory = callerArguments.module_dir
 
-qtApplicationProFile = locate_pro(APPLICATION_SRC_DIR)
+qtModuleProFile = locate_pro(MODULE_SRC_DIR)
 # rip out drive letter from path on Windows
-pro_file_base_path = os.path.split(qtApplicationProFile)[0]
+pro_file_base_path = os.path.split(qtModuleProFile)[0]
 
-qtApplicationBuildDirectory = APPLICATION_SRC_DIR + '_build'
+qtModuleBuildDirectory = MODULE_SRC_DIR + '_build'
 if bldinstallercommon.is_win_platform():
-    qtApplicationBuildDirectory = pro_file_base_path
-qtApplicationInstallDirectory = APPLICATION_SRC_DIR + '_install'
+    qtModuleBuildDirectory = pro_file_base_path
+qtModuleInstallDirectory = MODULE_SRC_DIR + '_install'
 if os.name == 'nt':
-    qtApplicationInstallDirectory = qtApplicationInstallDirectory[2:]
+    qtModuleInstallDirectory = qtModuleInstallDirectory[2:]
 
     # check whether this is a QNX build
     if 'qnx' in callerArguments.qt5_essentials7z.lower():
         # apply the workaround from QTBUG-38555
-        qtApplicationInstallDirectory = qtApplicationInstallDirectory.replace('\\','/').replace('/', '\\', 1)
+        qtModuleInstallDirectory = qtModuleInstallDirectory.replace('\\','/').replace('/', '\\', 1)
 
 
 ### check mac setup
@@ -285,7 +276,7 @@ if sys.platform == "darwin":
 if callerArguments.clean:
     print("##### {0} #####".format("clean old builds"))
     bldinstallercommon.remove_tree(callerArguments.qt5path)
-    bldinstallercommon.remove_tree(qtApplicationInstallDirectory)
+    bldinstallercommon.remove_tree(qtModuleInstallDirectory)
     bldinstallercommon.remove_tree(tempPath)
 
 if not os.path.lexists(callerArguments.qt5path) and not (callerArguments.qt5_essentials7z):
@@ -351,7 +342,7 @@ if not os.path.lexists(callerArguments.qt5path):
     if sys.platform.startswith('linux'):
         bldinstallercommon.handle_component_rpath(callerArguments.qt5path, 'lib')
     print("##### {0} ##### ... done".format("patch Qt"))
-    runCommand(qmakeBinary + " -query", qtApplicationBuildDirectory, callerArguments)
+    runCommand(qmakeBinary + " -query", qtModuleBuildDirectory, callerArguments)
 
 
 ### lets start building
@@ -363,14 +354,10 @@ qtBinPath = os.path.abspath(os.path.join(callerArguments.qt5path, 'bin'))
 pathKeyList.append(qtBinPath)
 pythonExecutablePath = os.path.dirname(sys.executable)
 pathKeyList.append(pythonExecutablePath)
-if hasattr(callerArguments, 'sevenzippath') and callerArguments.sevenzippath:
-    pathKeyList.append(callerArguments.sevenzippath)
-if hasattr(callerArguments, 'gitpath') and callerArguments.gitpath:
-    pathKeyList.append(callerArguments.gitpath)
 
 environment = {'PATH': os.pathsep.join(pathKeyList)}
 
-environment["INSTALLER_ARCHIVE"] = os.environ['APPLICATION_NAME'] + '.7z'
+environment["INSTALLER_ARCHIVE"] = os.environ['MODULE_NAME'] + '.7z'
 
 if sys.platform.startswith('linux'):
     environment["LD_LIBRARY_PATH"] = os.pathsep.join([os.path.join(callerArguments.qt5path, 'lib')]
@@ -391,13 +378,13 @@ else:
 qmakeCommandArguments = [qmakeBinary]
 if os.environ.get('EXTRA_QMAKE_ARGS'):
     qmakeCommandArguments += [os.environ["EXTRA_QMAKE_ARGS"]]
-qmakeCommandArguments += ["{0}".format(qtApplicationProFile)]
-bldinstallercommon.do_execute_sub_process(qmakeCommandArguments, qtApplicationBuildDirectory)
+qmakeCommandArguments += ["{0}".format(qtModuleProFile)]
+bldinstallercommon.do_execute_sub_process(qmakeCommandArguments, qtModuleBuildDirectory)
 
 makeCommand = 'make'
 if os.name == 'nt' or sys.platform == "darwin":
     makeCommand = callerArguments.buildcommand
-ret = runCommand("{0}".format(makeCommand), currentWorkingDirectory = qtApplicationBuildDirectory)
+ret = runCommand("{0}".format(makeCommand), currentWorkingDirectory = qtModuleBuildDirectory)
 if ret:
     sys.exit('Failure running the last command: %i' % ret)
 
@@ -405,20 +392,20 @@ installCommand = 'make'
 if os.name == 'nt' or sys.platform == "darwin":
     installCommand = callerArguments.installcommand
 
-installCommandArguments = 'install INSTALL_ROOT=' + qtApplicationInstallDirectory
-ret = runCommand("{0} {1}".format(installCommand, installCommandArguments), currentWorkingDirectory = qtApplicationBuildDirectory,
+installCommandArguments = 'install INSTALL_ROOT=' + qtModuleInstallDirectory
+ret = runCommand("{0} {1}".format(installCommand, installCommandArguments), currentWorkingDirectory = qtModuleBuildDirectory,
         callerArguments = callerArguments, init_environment = environment)
 if ret:
     sys.exit('Failure running the last command: %i' % ret)
 
 # patch .so filenames on Windows/Android
 if bldinstallercommon.is_win_platform() and os.environ.get('DO_PATCH_ANDROID_SONAME_FILES'):
-    bldinstallercommon.rename_android_soname_files(qtApplicationInstallDirectory)
+    bldinstallercommon.rename_android_soname_files(qtModuleInstallDirectory)
 
 #doc collection
 if callerArguments.collectDocs:
-    doc_list = bldinstallercommon.make_files_list(qtApplicationSourceDirectory, '\\.qch')
-    doc_install_dir = qtApplicationInstallDirectory + os.sep + 'doc'
+    doc_list = bldinstallercommon.make_files_list(qtModuleSourceDirectory, '\\.qch')
+    doc_install_dir = qtModuleInstallDirectory + os.sep + 'doc'
     bldinstallercommon.create_dirs(doc_install_dir)
     for item in doc_list:
         shutil.copy(item, doc_install_dir)
@@ -427,28 +414,28 @@ if callerArguments.collectDocs:
 if callerArguments.makeDocs:
     # build docs first
     makeCommandArguments = '-j1 docs'
-    ret = runCommand("{0} {1}".format(makeCommand, makeCommandArguments), currentWorkingDirectory = qtApplicationBuildDirectory, callerArguments = callerArguments, init_environment = environment)
+    ret = runCommand("{0} {1}".format(makeCommand, makeCommandArguments), currentWorkingDirectory = qtModuleBuildDirectory, callerArguments = callerArguments, init_environment = environment)
     if ret:
         sys.exit('Failure running the last command: %i' % ret)
     # then make install those
-    installCommandArguments = '-j1 install_docs INSTALL_ROOT=' + qtApplicationInstallDirectory
-    ret = runCommand("{0} {1}".format(installCommand, installCommandArguments), currentWorkingDirectory = qtApplicationBuildDirectory, callerArguments = callerArguments, init_environment = environment)
+    installCommandArguments = '-j1 install_docs INSTALL_ROOT=' + qtModuleInstallDirectory
+    ret = runCommand("{0} {1}".format(installCommand, installCommandArguments), currentWorkingDirectory = qtModuleBuildDirectory, callerArguments = callerArguments, init_environment = environment)
     if ret:
         sys.exit('Failure running the last command: %i' % ret)
     # make separate "doc.7z" for later use if needed
-    doc_dir = bldinstallercommon.locate_directory(qtApplicationInstallDirectory, 'doc')
+    doc_dir = bldinstallercommon.locate_directory(qtModuleInstallDirectory, 'doc')
     if doc_dir:
-        archive_name = os.environ['APPLICATION_NAME'] + '-' + os.environ['LICENSE'] + '-doc-' + os.environ['APPLICATION_VERSION'] + '.7z'
+        archive_name = os.environ['MODULE_NAME'] + '-' + os.environ['LICENSE'] + '-doc-' + os.environ['MODULE_VERSION'] + '.7z'
         archive_cmd = '7z a ' + 'doc_archives' + os.sep + archive_name + ' ' + doc_dir
         ret = runCommand("{0}".format(archive_cmd), currentWorkingDirectory = os.path.dirname(os.path.realpath(__file__)) )
         if ret:
             sys.exit('Failure running the last command: %i' % ret)
 
 # try to figure out where the actual exported content is
-dir_to_archive = os.path.dirname(bldinstallercommon.locate_directory(qtApplicationInstallDirectory, 'qt5_package_dir'))
+dir_to_archive = os.path.dirname(bldinstallercommon.locate_directory(qtModuleInstallDirectory, 'qt5_package_dir'))
 
 # if .tag file exists in the source package (sha1) then copy it into the binary archive
-tag_file = bldinstallercommon.locate_file(APPLICATION_SRC_DIR, '.tag')
+tag_file = bldinstallercommon.locate_file(MODULE_SRC_DIR, '.tag')
 if tag_file:
     shutil.copy2(tag_file, dir_to_archive + os.sep + 'qt5_package_dir')
 
@@ -457,7 +444,7 @@ basedir = dir_to_archive + os.sep + 'qt5_package_dir'
 patch_archive(basedir, callerArguments.qt5path, qt_install_prefix)
 
 # create 7z archive
-archive_cmd = '7z a ' + 'module_archives' + os.sep + 'qt5_' + os.environ['APPLICATION_NAME'] + '.7z' + ' ' + dir_to_archive + os.sep + 'qt5_package_dir'
+archive_cmd = '7z a ' + 'module_archives' + os.sep + 'qt5_' + os.environ['MODULE_NAME'] + '.7z' + ' ' + dir_to_archive + os.sep + 'qt5_package_dir'
 ret = runCommand("{0}".format(archive_cmd), currentWorkingDirectory = os.path.dirname(os.path.realpath(__file__)) )
 if ret:
     sys.exit('Failure running the last command: %i' % ret)

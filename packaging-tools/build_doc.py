@@ -48,26 +48,26 @@ import multiprocessing
 import bldinstallercommon
 bldinstallercommon.init_common_module(os.path.dirname(os.path.realpath(__file__)))
 
-def handle_extra_module_doc_build():
+def handle_module_doc_build():
     if not bldinstallercommon.is_linux_platform():
         print('*** Only Linux platform supported currently to perform doc builds. Aborting')
         sys.exit(-1)
-    if not os.environ.get('APPLICATION_NAME'):
-        print('*** APPLICATION_NAME environment variable not defined. Unable to generate doc for this package.')
+    if not os.environ.get('MODULE_NAME'):
+        print('*** MODULE_NAME environment variable not defined. Unable to generate doc for this package.')
         sys.exit(-1)
-    if not os.environ.get('EXTRA_MODULE_SRC_PACKAGE_URI'):
-        print('*** EXTRA_MODULE_SRC_PACKAGE_URI environment variable not defined. Unable to generate doc for this package.')
+    if not os.environ.get('MODULE_SRC_PACKAGE_URI'):
+        print('*** MODULE_SRC_PACKAGE_URI environment variable not defined. Unable to generate doc for this package.')
         sys.exit(-1)
-    if not os.environ.get('EXTRA_MODULE_DOC_BUILD_QT_PACKAGE_URI'):
-        print('*** EXTRA_MODULE_DOC_BUILD_QT_PACKAGE_URI environment variable not defined. Unable to generate doc for this package.')
+    if not os.environ.get('MODULE_DOC_BUILD_QT_PACKAGE_URI'):
+        print('*** MODULE_DOC_BUILD_QT_PACKAGE_URI environment variable not defined. Unable to generate doc for this package.')
         sys.exit(-1)
-    if not os.environ.get('EXTRA_MODULE_DOC_BUILD_QT_ICU_PACKAGE_URI'):
-        print('*** EXTRA_MODULE_DOC_BUILD_QT_ICU_PACKAGE_URI environment variable not defined. Unable to generate doc for this package.')
+    if not os.environ.get('MODULE_DOC_BUILD_QT_ICU_PACKAGE_URI'):
+        print('*** MODULE_DOC_BUILD_QT_ICU_PACKAGE_URI environment variable not defined. Unable to generate doc for this package.')
         sys.exit(-1)
-    extra_module_src_package_uri = os.environ['EXTRA_MODULE_SRC_PACKAGE_URI']
-    extra_module_doc_build_qt_package_uri = os.environ['EXTRA_MODULE_DOC_BUILD_QT_PACKAGE_URI']
-    extra_module_doc_build_qt_dependency_package_uri = os.environ.get('EXTRA_MODULE_DOC_BUILD_QT_DEPENDENCY_PACKAGE_URI', '')
-    extra_module_doc_build_qt_icu_package_uri = os.environ['EXTRA_MODULE_DOC_BUILD_QT_ICU_PACKAGE_URI']
+    module_src_package_uri = os.environ['MODULE_SRC_PACKAGE_URI']
+    module_doc_build_qt_package_uri = os.environ['MODULE_DOC_BUILD_QT_PACKAGE_URI']
+    module_doc_build_qt_dependency_package_uri = os.environ.get('MODULE_DOC_BUILD_QT_DEPENDENCY_PACKAGE_URI', '')
+    module_doc_build_qt_icu_package_uri = os.environ['MODULE_DOC_BUILD_QT_ICU_PACKAGE_URI']
     # define some paths
     current_path = os.path.dirname(os.path.realpath(__file__))
     qt_package_path = os.path.join(current_path, 'doc_build_qt_package')
@@ -78,49 +78,49 @@ def handle_extra_module_doc_build():
     if os.path.exists(qt_icu_path):
         print('*** Deleted existing qt icu directory (for doc build) before setting up the new one: '.format(qt_icu_path))
         shutil.rmtree(qt_icu_path)
-    extra_module_src_path = os.path.join(current_path, 'extra_module_src_package')
-    if os.path.exists(extra_module_src_path):
-        print('*** Deleted existing extra module package directory before setting up the new one: '.format(extra_module_src_path))
-        shutil.rmtree(extra_module_src_path)
+    module_src_path = os.path.join(current_path, 'module_src_package')
+    if os.path.exists(module_src_path):
+        print('*** Deleted existing module package directory before setting up the new one: '.format(module_src_path))
+        shutil.rmtree(module_src_path)
     bldinstallercommon.create_dirs(qt_package_path)
-    bldinstallercommon.create_dirs(extra_module_src_path)
+    bldinstallercommon.create_dirs(module_src_path)
     bldinstallercommon.create_dirs(qt_icu_path)
-    # fetch extra module src package
-    raw_name_extra_module_src_package = extra_module_src_package_uri.rsplit('/', 1)[-1] # get last item from array
-    downloaded_extra_module_archive = os.path.join(current_path, raw_name_extra_module_src_package)
-    if os.path.lexists(downloaded_extra_module_archive):
-        print('*** Deleted existing extra module src package: [{0}] before fetching the new one.{0}'.format(downloaded_extra_module_archive))
-        os.remove(downloaded_extra_module_archive)
-    print('Starting to download: {0}'.format(extra_module_src_package_uri))
-    bldinstallercommon.retrieve_url(extra_module_src_package_uri, downloaded_extra_module_archive)
-    bldinstallercommon.extract_file(downloaded_extra_module_archive, extra_module_src_path)
+    # fetch module src package
+    raw_name_module_src_package = module_src_package_uri.rsplit('/', 1)[-1] # get last item from array
+    downloaded_module_archive = os.path.join(current_path, raw_name_module_src_package)
+    if os.path.lexists(downloaded_module_archive):
+        print('*** Deleted existing module src package: [{0}] before fetching the new one.{0}'.format(downloaded_module_archive))
+        os.remove(downloaded_module_archive)
+    print('Starting to download: {0}'.format(module_src_package_uri))
+    bldinstallercommon.retrieve_url(module_src_package_uri, downloaded_module_archive)
+    bldinstallercommon.extract_file(downloaded_module_archive, module_src_path)
     # fetch qt binary package
-    raw_name_qt_bin_package = extra_module_doc_build_qt_package_uri.rsplit('/', 1)[-1] # get last item from array
+    raw_name_qt_bin_package = module_doc_build_qt_package_uri.rsplit('/', 1)[-1] # get last item from array
     downloaded_qt_bin_archive = os.path.join(current_path, raw_name_qt_bin_package)
     if os.path.lexists(downloaded_qt_bin_archive):
         print('*** Deleted existing qt binary package: [{0}] before fetching the new one.'.format(downloaded_qt_bin_archive))
         os.remove(downloaded_qt_bin_archive)
-    print('Starting to download: {0}'.format(extra_module_doc_build_qt_package_uri))
-    bldinstallercommon.retrieve_url(extra_module_doc_build_qt_package_uri, downloaded_qt_bin_archive)
+    print('Starting to download: {0}'.format(module_doc_build_qt_package_uri))
+    bldinstallercommon.retrieve_url(module_doc_build_qt_package_uri, downloaded_qt_bin_archive)
     bldinstallercommon.extract_file(downloaded_qt_bin_archive, qt_package_path)
     # fetch qt dependency package (optional)
-    if bldinstallercommon.is_content_url_valid(extra_module_doc_build_qt_dependency_package_uri):
-        raw_name_qt_bin_dependency_package = extra_module_doc_build_qt_dependency_package_uri.rsplit('/', 1)[-1] # get last item from array
+    if bldinstallercommon.is_content_url_valid(module_doc_build_qt_dependency_package_uri):
+        raw_name_qt_bin_dependency_package = module_doc_build_qt_dependency_package_uri.rsplit('/', 1)[-1] # get last item from array
         downloaded_qt_dependency_bin_archive = os.path.join(current_path, raw_name_qt_bin_dependency_package)
         if os.path.lexists(downloaded_qt_dependency_bin_archive):
             print('*** Deleted existing qt binary dependency package: [{0}] before fetching the new one.'.format(downloaded_qt_dependency_bin_archive))
             os.remove(downloaded_qt_dependency_bin_archive)
-        print('Starting to download: {0}'.format(extra_module_doc_build_qt_dependency_package_uri))
-        bldinstallercommon.retrieve_url(extra_module_doc_build_qt_dependency_package_uri, downloaded_qt_dependency_bin_archive)
+        print('Starting to download: {0}'.format(module_doc_build_qt_dependency_package_uri))
+        bldinstallercommon.retrieve_url(module_doc_build_qt_dependency_package_uri, downloaded_qt_dependency_bin_archive)
         bldinstallercommon.extract_file(downloaded_qt_dependency_bin_archive, qt_package_path)
     # fetch qt icu binary package
-    raw_name_qt_icu_package = extra_module_doc_build_qt_icu_package_uri.rsplit('/', 1)[-1] # get last item from array
+    raw_name_qt_icu_package = module_doc_build_qt_icu_package_uri.rsplit('/', 1)[-1] # get last item from array
     downloaded_qt_icu_archive = os.path.join(current_path, raw_name_qt_icu_package)
     if os.path.lexists(downloaded_qt_icu_archive):
         print('*** Deleted existing qt icu package: [{0}] before fetching the new one.'.format(downloaded_qt_icu_archive))
         os.remove(downloaded_qt_icu_archive)
-    print('Starting to download: {0}'.format(extra_module_doc_build_qt_icu_package_uri))
-    bldinstallercommon.retrieve_url(extra_module_doc_build_qt_icu_package_uri, downloaded_qt_icu_archive)
+    print('Starting to download: {0}'.format(module_doc_build_qt_icu_package_uri))
+    bldinstallercommon.retrieve_url(module_doc_build_qt_icu_package_uri, downloaded_qt_icu_archive)
     qt_lib_directory = bldinstallercommon.locate_directory(qt_package_path, 'lib')
     bldinstallercommon.extract_file(downloaded_qt_icu_archive, qt_lib_directory)
     # patch Qt package
@@ -137,32 +137,32 @@ def handle_extra_module_doc_build():
     # locate tools
     qmake_binary = bldinstallercommon.locate_executable(qt_directory, 'qmake')
     print('Using qmake from: {0}'.format(qmake_binary))
-    # locate extra module .pro file
-    extra_module_pro_file = bldinstallercommon.locate_file(extra_module_src_path, '*.pro')
-    # build extra module
-    extra_module_build_environment = dict(os.environ)
-    extra_module_build_environment["LD_LIBRARY_PATH"] = os.pathsep.join([os.path.join(qt_package_path, 'lib')] +
+    # locate module .pro file
+    module_pro_file = bldinstallercommon.locate_file(module_src_path, '*.pro')
+    # build module
+    module_build_environment = dict(os.environ)
+    module_build_environment["LD_LIBRARY_PATH"] = os.pathsep.join([os.path.join(qt_package_path, 'lib')] +
                                                         os.environ.get("LD_LIBRARY_PATH", "").split(os.pathsep))
-    extra_module_build_environment["QMAKESPEC"] = "linux-g++"
+    module_build_environment["QMAKESPEC"] = "linux-g++"
     cpu_count = ["-j" + str(multiprocessing.cpu_count() + 1)]
-    print('Using .pro file from: {0}'.format(extra_module_pro_file))
-    bld_args = [qmake_binary, extra_module_pro_file]
-    bldinstallercommon.do_execute_sub_process(bld_args, os.path.dirname(extra_module_pro_file), extra_env=extra_module_build_environment)
+    print('Using .pro file from: {0}'.format(module_pro_file))
+    bld_args = [qmake_binary, module_pro_file]
+    bldinstallercommon.do_execute_sub_process(bld_args, os.path.dirname(module_pro_file), extra_env=module_build_environment)
     bld_args = ['make'] + cpu_count
-    bldinstallercommon.do_execute_sub_process(bld_args, os.path.dirname(extra_module_pro_file), extra_env=extra_module_build_environment)
+    bldinstallercommon.do_execute_sub_process(bld_args, os.path.dirname(module_pro_file), extra_env=module_build_environment)
     # make docs
     bld_args = ['make', '-j1', 'docs']
-    bldinstallercommon.do_execute_sub_process(bld_args, os.path.dirname(extra_module_pro_file), extra_env=extra_module_build_environment)
+    bldinstallercommon.do_execute_sub_process(bld_args, os.path.dirname(module_pro_file), extra_env=module_build_environment)
     # make install docs
-    extra_module_doc_install_dir = extra_module_src_path = os.path.join(current_path, 'extra_module_doc_install_dir')
-    bld_args = ['make', '-j1', 'install_docs', 'INSTALL_ROOT=' + extra_module_doc_install_dir]
-    bldinstallercommon.do_execute_sub_process(bld_args, os.path.dirname(extra_module_pro_file), extra_env=extra_module_build_environment)
+    module_doc_install_dir = module_src_path = os.path.join(current_path, 'module_doc_install_dir')
+    bld_args = ['make', '-j1', 'install_docs', 'INSTALL_ROOT=' + module_doc_install_dir]
+    bldinstallercommon.do_execute_sub_process(bld_args, os.path.dirname(module_pro_file), extra_env=module_build_environment)
     # create archive
-    doc_dir = bldinstallercommon.locate_directory(extra_module_doc_install_dir, 'doc')
+    doc_dir = bldinstallercommon.locate_directory(module_doc_install_dir, 'doc')
     if not os.path.exists(doc_dir):
         print('Warning! Doc archive not generated!')
         return
-    archive_name = os.environ['APPLICATION_NAME'] + '-' + os.environ['LICENSE'] + '-doc-' + os.environ['APPLICATION_VERSION'] + '.7z'
+    archive_name = os.environ['MODULE_NAME'] + '-' + os.environ['LICENSE'] + '-doc-' + os.environ['MODULE_VERSION'] + '.7z'
     archive_path = os.path.join(current_path, 'doc_archives', archive_name)
     bld_args = ['7z', 'a', archive_path, 'doc']
     bldinstallercommon.do_execute_sub_process(bld_args, os.path.dirname(doc_dir))

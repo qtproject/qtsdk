@@ -223,20 +223,20 @@ class BldCommand:
         self.latest_extra_module_binary_dir = self.path + '/' + self.license + '/'
 
         # create output directories for extra module build
-        if os.environ.get('APPLICATION_NAME'):
+        if os.environ.get('MODULE_NAME'):
             self.package_storage_server_user = os.environ['PACKAGE_STORAGE_SERVER_USER']
             self.package_storage_server = os.environ['PACKAGE_STORAGE_SERVER']
             self.package_storage_server_base_dir = os.environ['PACKAGE_STORAGE_SERVER_BASE_DIR']
             # create directories for extra module src files
-            self.app_name = os.environ['APPLICATION_NAME']
-            self.app_version = os.environ['APPLICATION_VERSION']
-            self.remote_extra_module_dir += self.app_name + '/' + self.app_version + '/' + self.build_number
-            self.latest_extra_module_dir += self.app_name + '/' + self.app_version + '/' + 'latest'
+            self.module_name = os.environ['MODULE_NAME']
+            self.module_version = os.environ['MODULE_VERSION']
+            self.remote_extra_module_dir += self.module_name + '/' + self.module_version + '/' + self.build_number
+            self.latest_extra_module_dir += self.module_name + '/' + self.module_version + '/' + 'latest'
             # create directories for extra module binaries
             # QT_VERSION_MINOR indicates that this is a binary build
             if os.environ.get('QT_VERSION_MINOR'):
-                self.remote_extra_module_binary_dir += self.app_name + '/' + self.app_version + '/' + os.environ.get('QT_VERSION_MINOR') + '/' +  os.environ.get('BUILD_NUMBER')
-                self.latest_extra_module_binary_dir += self.app_name + '/' + self.app_version + '/' + os.environ.get('QT_VERSION_MINOR') + '/' + 'latest'
+                self.remote_extra_module_binary_dir += self.module_name + '/' + self.module_version + '/' + os.environ.get('QT_VERSION_MINOR') + '/' +  os.environ.get('BUILD_NUMBER')
+                self.latest_extra_module_binary_dir += self.module_name + '/' + self.module_version + '/' + os.environ.get('QT_VERSION_MINOR') + '/' + 'latest'
 
 
     ###########################################
@@ -341,14 +341,14 @@ class BldCommand:
         print(self.options)
         if not os.environ.get('LICENSE'):
             sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('LICENSE'))
-        if not os.environ.get('APPLICATION_NAME'):
-            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('APPLICATION_NAME'))
-        if not os.environ.get('APPLICATION_VERSION'):
-            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('APPLICATION_VERSION'))
-        if not os.environ.get('GIT_APPLICATION_REPO'):
-            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('GIT_APPLICATION_REPO'))
-        if not os.environ.get('GIT_APPLICATION_REPO_BRANCH'):
-            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('GIT_APPLICATION_REPO_BRANCH'))
+        if not os.environ.get('MODULE_NAME'):
+            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('MODULE_NAME'))
+        if not os.environ.get('MODULE_VERSION'):
+            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('MODULE_VERSION'))
+        if not os.environ.get('GIT_MODULE_REPO'):
+            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('GIT_MODULE_REPO'))
+        if not os.environ.get('GIT_MODULE_REPO_BRANCH'):
+            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('GIT_MODULE_REPO_BRANCH'))
         if not os.environ.get('BUILD_NUMBER'):
             sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('BUILD_NUMBER'))
         if not os.environ.get('PACKAGE_STORAGE_SERVER'):
@@ -372,21 +372,10 @@ class BldCommand:
             sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('PACKAGE_STORAGE_SERVER_PATH_HTTP'))
         if not os.environ.get('QT_VERSION_MINOR'):
             sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('QT_VERSION_MINOR'))
-        if not os.environ.get('APPLICATION_NAME'):
-            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('APPLICATION_NAME'))
-        if not os.environ.get('APPLICATION_VERSION'):
-            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('APPLICATION_VERSION'))
-        if not os.environ.get('QT5_APPLICATION_SRC_URI'):
-            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('QT5_APPLICATION_SRC_URI'))
-        if bldinstallercommon.is_win_platform():
-            if not os.environ.get('QT5_APPLICATION_BUILD_CMD'):
-                sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('QT5_APPLICATION_BUILD_CMD'))
-            if not os.environ.get('QT5_APPLICATION_INSTALL_CMD'):
-                sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('QT5_APPLICATION_INSTALL_CMD'))
-            if not os.environ.get('7Z_TOOL_PATH'):
-                sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('7Z_TOOL_PATH'))
-            if not os.environ.get('GIT_TOOL_PATH'):
-                sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('GIT_TOOL_PATH'))
+        if not os.environ.get('MODULE_NAME'):
+            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('MODULE_NAME'))
+        if not os.environ.get('MODULE_VERSION'):
+            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('MODULE_VERSION'))
         if bldinstallercommon.is_mac_platform():
             if not os.environ.get('IFW_INSTALLERBASE_URI'):
                 sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('IFW_INSTALLERBASE_URI'))
@@ -416,8 +405,8 @@ class BldCommand:
     ###########################################
     def is_enginio_build(self):
         if self.options.command == self.execute_extra_module_bld:
-            app_name = os.environ.get('APPLICATION_NAME')
-            if 'enginio' in app_name.lower():
+            module_name = os.environ.get('MODULE_NAME')
+            if 'enginio' in module_name.lower():
                 return True
         return False
 
@@ -660,31 +649,31 @@ def handle_qt_configure_exe_build(bld_command):
 def build_extra_module_src_pkg(bld_command):
     sanity_check_packaging_server(bld_command)
     #create dir
-    application_dir = os.path.join(WORK_DIR, bld_command.app_name)
-    bldinstallercommon.create_dirs(application_dir)
+    module_dir = os.path.join(WORK_DIR, bld_command.module_name)
+    bldinstallercommon.create_dirs(module_dir)
     #clone repo
-    bldinstallercommon.clone_repository(os.environ['GIT_APPLICATION_REPO'], os.environ['GIT_APPLICATION_REPO_BRANCH'], application_dir, True)
-    if os.environ.get('APPLICATION_SHA1'):
-        cmd_args = ['git', 'checkout', os.environ['APPLICATION_SHA1']]
-        bldinstallercommon.do_execute_sub_process(cmd_args, application_dir)
+    bldinstallercommon.clone_repository(os.environ['GIT_MODULE_REPO'], os.environ['GIT_MODULE_REPO_BRANCH'], module_dir, True)
+    if os.environ.get('MODULE_SHA1'):
+        cmd_args = ['git', 'checkout', os.environ['MODULE_SHA1']]
+        bldinstallercommon.do_execute_sub_process(cmd_args, module_dir)
     #make src package
-    cmd_args = ['../qtsdk/packaging-tools/mksrc.sh', '-v', bld_command.app_version, '-l', bld_command.license, '--single-module']
-    bldinstallercommon.do_execute_sub_process(cmd_args, application_dir)
+    cmd_args = ['../qtsdk/packaging-tools/mksrc.sh', '-v', bld_command.module_version, '-l', bld_command.license, '--single-module']
+    bldinstallercommon.do_execute_sub_process(cmd_args, module_dir)
     #extract examples
-    cmd_args = ['../qtsdk/packaging-tools/extract_examples.sh', '-n', bld_command.app_name, '-l', bld_command.license, '-v', bld_command.app_version, '-u', bld_command.package_storage_server_user, '-s', bld_command.package_storage_server, '-d', bld_command.package_storage_server_base_dir, '-b', bld_command.build_number]
-    bldinstallercommon.do_execute_sub_process(cmd_args, application_dir)
+    cmd_args = ['../qtsdk/packaging-tools/extract_examples.sh', '-n', bld_command.module_name, '-l', bld_command.license, '-v', bld_command.module_version, '-u', bld_command.package_storage_server_user, '-s', bld_command.package_storage_server, '-d', bld_command.package_storage_server_base_dir, '-b', bld_command.build_number]
+    bldinstallercommon.do_execute_sub_process(cmd_args, module_dir)
     #Copy src package to the server
-    extra_module_src_dir = bld_command.package_storage_server_user + '@' + bld_command.package_storage_server + ':' + bld_command.package_storage_server_base_dir + '/' + bld_command.license + '/' + bld_command.app_name + '/' + bld_command.app_version
+    extra_module_src_dir = bld_command.package_storage_server_user + '@' + bld_command.package_storage_server + ':' + bld_command.package_storage_server_base_dir + '/' + bld_command.license + '/' + bld_command.module_name + '/' + bld_command.module_version
     src_pkg = False
-    file_list = os.listdir(application_dir)
+    file_list = os.listdir(module_dir)
     for file_name in file_list:
-        if file_name.startswith(bld_command.app_name + '-' + bld_command.license + '-src-' + bld_command.app_version):
+        if file_name.startswith(bld_command.module_name + '-' + bld_command.license + '-src-' + bld_command.module_version):
             src_pkg = True
             cmd_args = ['scp', file_name, extra_module_src_dir + '/latest/src']
-            bldinstallercommon.do_execute_sub_process(cmd_args, application_dir)
+            bldinstallercommon.do_execute_sub_process(cmd_args, module_dir)
     # handle doc package creation, this may fail as some extra modules are missing docs
     try:
-        build_doc.handle_extra_module_doc_build()
+        build_doc.handle_module_doc_build()
         # copy archived doc files to network drive if exists, we use Linux only to generate doc archives
         local_docs_dir = os.path.join(SCRIPT_ROOT_DIR, 'doc_archives')
         if os.path.exists(local_docs_dir):
@@ -692,7 +681,7 @@ def build_extra_module_src_pkg(bld_command):
             doc_target_dir = bld_command.pkg_server_addr + ':' + bld_command.latest_extra_module_dir + '/' + 'doc'
             remote_copy_archives(doc_target_dir, local_docs_dir)
     except Exception:
-        print('Failed to build doc package for: {0}'.format(os.environ['GIT_APPLICATION_REPO']))
+        print('Failed to build doc package for: {0}'.format(os.environ['GIT_MODULE_REPO']))
         pass
 
     # if we got here, we have at least the src packages, update symlink latest_successful -> latest
@@ -959,24 +948,22 @@ def get_qt_configuration_options(bld_command):
 ###############################
 def handle_extra_module_release_build(bld_command):
     qt_version = os.environ['QT_VERSION']
-    script_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_app.py')
+    script_path = os.path.join(SCRIPT_ROOT_DIR, 'bld_module.py')
     icu7z_package = os.environ.get('ICU7Z')
     pkg_storage_server = os.environ['PACKAGE_STORAGE_SERVER_PATH_HTTP']
-    build_command = os.environ.get('QT5_APPLICATION_BUILD_CMD')
-    install_command = os.environ.get('QT5_APPLICATION_INSTALL_CMD')
-    collect_docs_command = os.environ.get('QT5_APPLICATION_COLLECT_DOCS_CMD')
-    make_docs_command = os.environ.get('QT5_APPLICATION_MAKE_DOCS_CMD')
+    build_command = os.environ.get('MODULE_BUILD_CMD')
+    install_command = os.environ.get('MODULE_INSTALL_CMD')
     qt5_bin_pkg_base_path = pkg_storage_server + '/' + bld_command.license + '/' + 'qt' + '/' + qt_version + '/' + 'latest_available_package/' +  BIN_TARGET_DIRS[bld_command.target_env]
     qt5_essentials_lib_package_uri = qt5_bin_pkg_base_path + '/qt5_essentials.7z'
     qt5_addons_lib_package_uri = qt5_bin_pkg_base_path + '/qt5_addons.7z'
     qt5_webengine_lib_package_url = qt5_bin_pkg_base_path + '/qt5_qtwebengine.7z'
-    extra_module_src_uri = pkg_storage_server + '/' + bld_command.license + '/' + bld_command.app_name + '/' + bld_command.app_version + '/latest/src/' + bld_command.app_name + '-' + bld_command.license + '-src-' + bld_command.app_version + '.7z'
+    extra_module_src_uri = pkg_storage_server + '/' + bld_command.license + '/' + bld_command.module_name + '/' + bld_command.module_version + '/latest/src/' + bld_command.module_name + '-' + bld_command.license + '-src-' + bld_command.module_version + '.7z'
 
     # build command
     cmd_args = ['python', '-u', script_path, '--clean']
     cmd_args += ['--qt5path', 'qt5_package_dir']
     cmd_args += ['--qt5_essentials7z', qt5_essentials_lib_package_uri]
-    cmd_args += ['--application7z', extra_module_src_uri]
+    cmd_args += ['--module7z', extra_module_src_uri]
 
     if bldinstallercommon.is_content_url_valid(qt5_addons_lib_package_uri):
         cmd_args += ['--qt5_addons7z', qt5_addons_lib_package_uri]
@@ -988,13 +975,6 @@ def handle_extra_module_release_build(bld_command):
         cmd_args += ['--buildcommand', build_command]
     if install_command:
         cmd_args += ['--installcommand', install_command]
-    if collect_docs_command:
-        cmd_args += ['--collectDocs']
-    if make_docs_command:
-        cmd_args += ['--makeDocs']
-    if bldinstallercommon.is_win_platform():
-        cmd_args += ['--sevenzippath', os.environ.get('7Z_TOOL_PATH')]
-        cmd_args += ['--gitpath', os.environ.get('GIT_TOOL_PATH')]
     if bldinstallercommon.is_mac_platform():
         cmd_args += ['--installerbase7z', os.environ['IFW_INSTALLERBASE_URI']]
     # init result directories
