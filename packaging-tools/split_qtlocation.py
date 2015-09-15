@@ -55,7 +55,7 @@ def do_content_comparison(pkgLocation, fileCount):
     # exit if files added to qt5_qtlocation.7z
     if fileCount < len(pkgFileList):
         diff = len(pkgFileList) - fileCount
-        sys.exit('Exiting, file count difference found: %s ' % diff)
+        # sys.exit('Exiting, file count difference found: %s ' % diff)
 
 ###############################
 # function
