@@ -43,14 +43,9 @@
 [qt.license.lgpl]
 
 [qt.license.thirdparty]
-archives:               softwarelisting3rdparty, fdl_license
+archives:               fdl_license
 target_install_base:    /Licenses
-[softwarelisting3rdparty]
-archive_uri:            ThirdPartySoftware_Listing.txt
-package_strip_dirs:     0
-target_install_dir:     /
-rpath_target:
-archive_name:           ThirdPartySoftware_Listing.7z
+
 [fdl_license]
 archive_uri:            LICENSE.FDL
 package_strip_dirs:     0
