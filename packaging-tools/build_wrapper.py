@@ -970,13 +970,13 @@ def handle_extra_module_release_build(bld_command):
     # build command
     cmd_args = ['python', '-u', script_path, '--clean']
     cmd_args += ['--qt5path', 'qt5_package_dir']
-    cmd_args += ['--qt5_essentials7z', qt5_essentials_lib_package_uri]
+    cmd_args += ['--qt5_module_url', qt5_essentials_lib_package_uri]
     cmd_args += ['--module7z', extra_module_src_uri]
 
     if bldinstallercommon.is_content_url_valid(qt5_addons_lib_package_uri):
-        cmd_args += ['--qt5_addons7z', qt5_addons_lib_package_uri]
+        cmd_args += ['--qt5_module_url', qt5_addons_lib_package_uri]
     if bldinstallercommon.is_content_url_valid(qt5_webengine_lib_package_url):
-        cmd_args += ['--qt5_webengine7z', qt5_webengine_lib_package_url]
+        cmd_args += ['--qt5_module_url', qt5_webengine_lib_package_url]
     if icu7z_package:
         cmd_args += ['--icu7z', icu7z_package]
     if build_command:

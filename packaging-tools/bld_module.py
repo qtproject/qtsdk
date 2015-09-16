@@ -149,27 +149,27 @@ parser = argparse.ArgumentParser(prog = os.path.basename(sys.argv[0]),
 if os.name == 'nt':
     parser.epilog = "example on windows: " + os.linesep + "\tpython {0} --clean " \
         "--buildcommand C:\\bin\\ibjom.cmd" \
-        "--qt5_essentials7z <uri to qt5_essentials.7z> " \
-        "--qt5_addons7z <uri to qt5_addons.7z> " \
-        "--qt5_webengine7z <uri to qt5_webengine.7z> " \
+        "--qt5_module_url <uri to qt5_essentials.7z> " \
+        "--qt5_module_url <uri to qt5_addons.7z> " \
+        "--qt5_module_url <uri to qt5_webengine.7z> " \
         "--module_url <url into module repository>" \
         "--module_branch <module branch>" \
         "--module_dir <Local copy of module>" \
         "".format(os.path.basename(sys.argv[0]))
 elif sys.platform == "darwin":
     parser.epilog = "example: " + os.linesep + "\tpython {0} --clean " \
-        "--qt5_essentials7z <uri to qt5_essentials.7z> " \
-        "--qt5_addons7z <uri to qt5_addons.7z> " \
-        "--qt5_webengine7z <uri to qt5_webengine.7z> " \
+        "--qt5_module_url <uri to qt5_essentials.7z> " \
+        "--qt5_module_url <uri to qt5_addons.7z> " \
+        "--qt5_module_url <uri to qt5_webengine.7z> " \
         "--module_url <url into module repository>" \
         "--module_branch <module branch>" \
         "--module_dir <Local copy of module>" \
         "".format(os.path.basename(sys.argv[0]))
 else:
     parser.epilog = "example: " + os.linesep + "\tpython {0} --clean " \
-        "--qt5_essentials7z <uri to qt5_essentials.7z> " \
-        "--qt5_addons7z <uri to qt5_addons.7z> " \
-        "--qt5_webengine7z <uri to qt5_webengine.7z> " \
+        "--qt5_module_url <uri to qt5_essentials.7z> " \
+        "--qt5_module_url <uri to qt5_addons.7z> " \
+        "--qt5_module_url <uri to qt5_webengine.7z> " \
         "--module_url <url into module repository>" \
         "--module_branch <module branch>" \
         "--module_dir <Local copy of module>" \
@@ -181,9 +181,8 @@ parser.add_argument('--qt5path', help="here it expects a compiled Qt5", required
 parser.add_argument('--buildcommand', help="this means usually make", default="make")
 parser.add_argument('--installcommand', help="this means usually make", default="make")
 parser.add_argument('--debug', help="use debug builds", action='store_true', default=False)
-parser.add_argument('--qt5_essentials7z', help="a file or url where it get the built qt5 essential content as 7z")
-parser.add_argument('--qt5_addons7z', help="a file or url where it get the built qt5 addons content as 7z", required=False, default='')
-parser.add_argument('--qt5_webengine7z', help="a file or url where it get the built qt5 webengine content as 7z", required=False, default='')
+parser.add_argument('--qt5_module_url', help="a file or url where to get a qt5 module's binary content that is needed for the build as 7z",
+    dest='qt5_module_urls', action='append')
 parser.add_argument('--module_url', help="Git URL for Qt Module", required=False, default='')
 parser.add_argument('--module_branch', help="Git branch for Qt Module", required=False, default='')
 parser.add_argument('--module_dir', help="Local copy of Qt Module", required=False, default='')
@@ -236,7 +235,7 @@ if os.name == 'nt':
     qtModuleInstallDirectory = qtModuleInstallDirectory[2:]
 
     # check whether this is a QNX build
-    if 'qnx' in callerArguments.qt5_essentials7z.lower():
+    if any('qnx' in qt5_url.lower() for qt5_url in callerArguments.qt5_module_urls):
         # apply the workaround from QTBUG-38555
         qtModuleInstallDirectory = qtModuleInstallDirectory.replace('\\','/').replace('/', '\\', 1)
 
@@ -248,9 +247,9 @@ if callerArguments.clean:
     bldinstallercommon.remove_tree(qtModuleInstallDirectory)
     bldinstallercommon.remove_tree(tempPath)
 
-if not os.path.lexists(callerArguments.qt5path) and not (callerArguments.qt5_essentials7z):
+if not os.path.lexists(callerArguments.qt5path) and not callerArguments.qt5_module_urls:
     parser.print_help()
-    print(("error: Please add the missing qt5_essentials7z argument if the {0} does not exist"
+    print(("error: Please add the missing qt5_module_url arguments if the {0} does not exist"
         + os.linesep + os.linesep).format(callerArguments.qt5path))
     sys.exit(1)
 
@@ -258,19 +257,10 @@ qmakeBinary = os.path.abspath(os.path.join(callerArguments.qt5path, 'bin', 'qmak
 
 if not os.path.lexists(callerArguments.qt5path):
     myGetQtBinaryWork = ThreadedWork("get and extract Qt 5 binary")
-    ### add get Qt essentials task
-    myGetQtBinaryWork.addTaskObject(
-        bldinstallercommon.create_download_extract_task(callerArguments.qt5_essentials7z, callerArguments.qt5path, tempPath, callerArguments))
-
-    ### add get Qt addons task
-    if callerArguments.qt5_addons7z:
+    ### add get Qt module tasks
+    for qt5_url in callerArguments.qt5_module_urls:
         myGetQtBinaryWork.addTaskObject(
-            bldinstallercommon.create_download_extract_task(callerArguments.qt5_addons7z, callerArguments.qt5path, tempPath, callerArguments))
-
-    ### add get Qt webengine task
-    if callerArguments.qt5_webengine7z:
-        myGetQtBinaryWork.addTaskObject(
-            bldinstallercommon.create_download_extract_task(callerArguments.qt5_webengine7z, callerArguments.qt5path, tempPath, callerArguments))
+            bldinstallercommon.create_download_extract_task(qt5_url, callerArguments.qt5path, tempPath, callerArguments))
 
     ### add get icu lib task
     if not bldinstallercommon.is_mac_platform() and callerArguments.icu7z:
