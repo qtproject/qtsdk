@@ -161,11 +161,9 @@ elif sys.platform == "darwin":
         "--qt5_essentials7z <uri to qt5_essentials.7z> " \
         "--qt5_addons7z <uri to qt5_addons.7z> " \
         "--qt5_webengine7z <uri to qt5_webengine.7z> " \
-        "--installerbase7z <uri into installer base>" \
         "--module_url <url into module repository>" \
         "--module_branch <module branch>" \
         "--module_dir <Local copy of module>" \
-        "--keychain_unlock_script $HOME/unlock-keychain.sh" \
         "".format(os.path.basename(sys.argv[0]))
 else:
     parser.epilog = "example: " + os.linesep + "\tpython {0} --clean " \
@@ -197,9 +195,6 @@ parser.add_argument('--collectDocs', help="Should the docs be collected for this
 if (sys.platform != "darwin"):
     parser.add_argument('--icu7z', help="a file or url where it get icu libs as 7z", required=False, default='')
 
-if sys.platform == "darwin":
-    parser.add_argument('--installerbase7z', help="a file or url where it get installerbase binary as 7z")
-    parser.add_argument('--keychain_unlock_script', help="script for unlocking the keychain used for signing")
 callerArguments = parser.parse_args()
 
 # cleanup some values inside the callerArguments object
@@ -246,13 +241,6 @@ if os.name == 'nt':
         qtModuleInstallDirectory = qtModuleInstallDirectory.replace('\\','/').replace('/', '\\', 1)
 
 
-### check mac setup
-if sys.platform == "darwin":
-    if callerArguments.keychain_unlock_script:
-        if not os.environ['SIGNING_IDENTITY']:
-            print('error: Environment variable SIGNING_IDENTITY not set')
-            sys.exit(1)
-
 ### clean step
 if callerArguments.clean:
     print("##### {0} #####".format("clean old builds"))
@@ -279,36 +267,20 @@ if not os.path.lexists(callerArguments.qt5path):
         myGetQtBinaryWork.addTaskObject(
             bldinstallercommon.create_download_extract_task(callerArguments.qt5_addons7z, callerArguments.qt5path, tempPath, callerArguments))
 
-        if os.name == 'nt':
-            targetPath = os.path.join(callerArguments.qt5path, 'bin')
-        else:
-            targetPath = os.path.join(callerArguments.qt5path, 'lib')
-
     ### add get Qt webengine task
     if callerArguments.qt5_webengine7z:
         myGetQtBinaryWork.addTaskObject(
             bldinstallercommon.create_download_extract_task(callerArguments.qt5_webengine7z, callerArguments.qt5path, tempPath, callerArguments))
 
+    ### add get icu lib task
+    if not bldinstallercommon.is_mac_platform() and callerArguments.icu7z:
         if os.name == 'nt':
             targetPath = os.path.join(callerArguments.qt5path, 'bin')
         else:
             targetPath = os.path.join(callerArguments.qt5path, 'lib')
-
-    ### add get icu lib task
-    if not bldinstallercommon.is_mac_platform():
-        if callerArguments.icu7z:
-            if os.name == 'nt':
-                targetPath = os.path.join(callerArguments.qt5path, 'bin')
-            else:
-                targetPath = os.path.join(callerArguments.qt5path, 'lib')
-
-            if not sys.platform == "darwin":
-                myGetQtBinaryWork.addTaskObject(
-                    bldinstallercommon.create_download_extract_task(callerArguments.icu7z, targetPath, tempPath, callerArguments))
-
-    if sys.platform == "darwin":
         myGetQtBinaryWork.addTaskObject(
-            bldinstallercommon.create_download_extract_task(callerArguments.installerbase7z, tempPath, tempPath, callerArguments))
+            bldinstallercommon.create_download_extract_task(callerArguments.icu7z, targetPath, tempPath, callerArguments))
+
     ### run get Qt 5 tasks
     myGetQtBinaryWork.run()
 
@@ -337,8 +309,6 @@ pythonExecutablePath = os.path.dirname(sys.executable)
 pathKeyList.append(pythonExecutablePath)
 
 environment = {'PATH': os.pathsep.join(pathKeyList)}
-
-environment["INSTALLER_ARCHIVE"] = os.environ['MODULE_NAME'] + '.7z'
 
 if sys.platform.startswith('linux'):
     environment["LD_LIBRARY_PATH"] = os.pathsep.join([os.path.join(callerArguments.qt5path, 'lib')]

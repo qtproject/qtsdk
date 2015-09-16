@@ -376,9 +376,6 @@ class BldCommand:
             sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('MODULE_NAME'))
         if not os.environ.get('MODULE_VERSION'):
             sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('MODULE_VERSION'))
-        if bldinstallercommon.is_mac_platform():
-            if not os.environ.get('IFW_INSTALLERBASE_URI'):
-                sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('IFW_INSTALLERBASE_URI'))
         # check command line arguments
         if not self.options.server:
             sys.exit('*** Qt5 Extra Module build missing command line argument: --server')
@@ -986,8 +983,6 @@ def handle_extra_module_release_build(bld_command):
         cmd_args += ['--buildcommand', build_command]
     if install_command:
         cmd_args += ['--installcommand', install_command]
-    if bldinstallercommon.is_mac_platform():
-        cmd_args += ['--installerbase7z', os.environ['IFW_INSTALLERBASE_URI']]
     # init result directories
     create_remote_dirs(bld_command.pkg_server_addr, bld_command.latest_extra_module_binary_dir + '/' + BIN_TARGET_DIRS[bld_command.target_env])
     # execute build
