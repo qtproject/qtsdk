@@ -54,16 +54,16 @@ def handle_module_doc_build():
         sys.exit(-1)
     if not os.environ.get('MODULE_NAME'):
         print('*** MODULE_NAME environment variable not defined. Unable to generate doc for this package.')
-        sys.exit(-1)
+        return
     if not os.environ.get('MODULE_SRC_PACKAGE_URI'):
         print('*** MODULE_SRC_PACKAGE_URI environment variable not defined. Unable to generate doc for this package.')
-        sys.exit(-1)
+        return
     if not os.environ.get('MODULE_DOC_BUILD_QT_PACKAGE_URI'):
         print('*** MODULE_DOC_BUILD_QT_PACKAGE_URI environment variable not defined. Unable to generate doc for this package.')
-        sys.exit(-1)
+        return
     if not os.environ.get('MODULE_DOC_BUILD_QT_ICU_PACKAGE_URI'):
         print('*** MODULE_DOC_BUILD_QT_ICU_PACKAGE_URI environment variable not defined. Unable to generate doc for this package.')
-        sys.exit(-1)
+        return
     module_src_package_uri = os.environ['MODULE_SRC_PACKAGE_URI']
     module_doc_build_qt_package_uri = os.environ['MODULE_DOC_BUILD_QT_PACKAGE_URI']
     module_doc_build_qt_dependency_package_uri = os.environ.get('MODULE_DOC_BUILD_QT_DEPENDENCY_PACKAGE_URI', '')
@@ -147,16 +147,20 @@ def handle_module_doc_build():
     cpu_count = ["-j" + str(multiprocessing.cpu_count() + 1)]
     print('Using .pro file from: {0}'.format(module_pro_file))
     bld_args = [qmake_binary, module_pro_file]
-    bldinstallercommon.do_execute_sub_process(bld_args, os.path.dirname(module_pro_file), extra_env=module_build_environment)
+    bldinstallercommon.do_execute_sub_process(args=bld_args, execution_path=os.path.dirname(module_pro_file),
+                                              abort_on_fail=False, extra_env=module_build_environment)
     bld_args = ['make'] + cpu_count
-    bldinstallercommon.do_execute_sub_process(bld_args, os.path.dirname(module_pro_file), extra_env=module_build_environment)
+    bldinstallercommon.do_execute_sub_process(args=bld_args, execution_path=os.path.dirname(module_pro_file),
+                                              abort_on_fail=False, extra_env=module_build_environment)
     # make docs
     bld_args = ['make', '-j1', 'docs']
-    bldinstallercommon.do_execute_sub_process(bld_args, os.path.dirname(module_pro_file), extra_env=module_build_environment)
+    bldinstallercommon.do_execute_sub_process(args=bld_args, execution_path=os.path.dirname(module_pro_file),
+                                              abort_on_fail=False, extra_env=module_build_environment)
     # make install docs
     module_doc_install_dir = module_src_path = os.path.join(current_path, 'module_doc_install_dir')
     bld_args = ['make', '-j1', 'install_docs', 'INSTALL_ROOT=' + module_doc_install_dir]
-    bldinstallercommon.do_execute_sub_process(bld_args, os.path.dirname(module_pro_file), extra_env=module_build_environment)
+    bldinstallercommon.do_execute_sub_process(args=bld_args, execution_path=os.path.dirname(module_pro_file),
+                                              abort_on_fail=False, extra_env=module_build_environment)
     # create archive
     doc_dir = bldinstallercommon.locate_directory(module_doc_install_dir, 'doc')
     if not os.path.exists(doc_dir):
@@ -165,7 +169,7 @@ def handle_module_doc_build():
     archive_name = os.environ['MODULE_NAME'] + '-' + os.environ['LICENSE'] + '-doc-' + os.environ['MODULE_VERSION'] + '.7z'
     archive_path = os.path.join(current_path, 'doc_archives', archive_name)
     bld_args = ['7z', 'a', archive_path, 'doc']
-    bldinstallercommon.do_execute_sub_process(bld_args, os.path.dirname(doc_dir))
+    bldinstallercommon.do_execute_sub_process(args=bld_args, execution_path=os.path.dirname(doc_dir), abort_on_fail=False)
     if os.path.exists(archive_path):
         print('Doc archive generated successfully: {0}'.format(archive_path))
 
