@@ -51,11 +51,10 @@ import sys
 import fnmatch
 import shutil
 import fileinput
-from urlparse import urlparse
 
 # own imports
 from threadedwork import Task, ThreadedWork
-from bld_utils import download, runCommand, stripVars
+from bld_utils import runCommand, stripVars
 import bldinstallercommon
 
 SCRIPT_ROOT_DIR             = os.path.dirname(os.path.realpath(__file__))
@@ -129,24 +128,6 @@ def patch_build_time_paths(search_path, search_string, qt_install_prefix):
                 continue
             patched_line = line.replace(search_string, qt_install_prefix.rstrip('\n'))
             print(patched_line.rstrip('\n'))
-
-###############################
-# function
-###############################
-def createDownloadExtractTask(url, target_path, temp_path, caller_arguments):
-    fileNameFromUrl = os.path.basename(urlparse(url).path)
-    sevenzipFile = os.path.join(temp_path, fileNameFromUrl)
-    downloadExtractTask = Task("download {0} to {1} and extract it to {2}".format(url, sevenzipFile, target_path))
-
-    downloadExtractTask.addFunction(download, url, sevenzipFile)
-    if fileNameFromUrl.endswith('tar.gz'):
-        bldinstallercommon.create_dirs(temp_path)
-        downloadExtractTask.addFunction(runCommand, "tar zxf {0} -C {1}".format(
-            sevenzipFile, target_path), temp_path, caller_arguments)
-    else:
-        downloadExtractTask.addFunction(runCommand, "7z x -y {0} -o{1}".format(
-            sevenzipFile, target_path), temp_path, caller_arguments)
-    return downloadExtractTask
 
 ###############################
 # function
@@ -241,7 +222,7 @@ if callerArguments.module_url != '':
 elif callerArguments.module7z != '':
     bldinstallercommon.create_dirs(MODULE_SRC_DIR)
     myGetQtModule = ThreadedWork("get and extract module src")
-    myGetQtModule.addTaskObject(createDownloadExtractTask(callerArguments.module7z, MODULE_SRC_DIR, tempPath, callerArguments))
+    myGetQtModule.addTaskObject(bldinstallercommon.create_download_extract_task(callerArguments.module7z, MODULE_SRC_DIR, tempPath, callerArguments))
     myGetQtModule.run()
     qtModuleSourceDirectory = MODULE_SRC_DIR
 else:
@@ -291,12 +272,12 @@ if not os.path.lexists(callerArguments.qt5path):
     myGetQtBinaryWork = ThreadedWork("get and extract Qt 5 binary")
     ### add get Qt essentials task
     myGetQtBinaryWork.addTaskObject(
-        createDownloadExtractTask(callerArguments.qt5_essentials7z, callerArguments.qt5path, tempPath, callerArguments))
+        bldinstallercommon.create_download_extract_task(callerArguments.qt5_essentials7z, callerArguments.qt5path, tempPath, callerArguments))
 
     ### add get Qt addons task
     if callerArguments.qt5_addons7z:
         myGetQtBinaryWork.addTaskObject(
-            createDownloadExtractTask(callerArguments.qt5_addons7z, callerArguments.qt5path, tempPath, callerArguments))
+            bldinstallercommon.create_download_extract_task(callerArguments.qt5_addons7z, callerArguments.qt5path, tempPath, callerArguments))
 
         if os.name == 'nt':
             targetPath = os.path.join(callerArguments.qt5path, 'bin')
@@ -306,7 +287,7 @@ if not os.path.lexists(callerArguments.qt5path):
     ### add get Qt webengine task
     if callerArguments.qt5_webengine7z:
         myGetQtBinaryWork.addTaskObject(
-            createDownloadExtractTask(callerArguments.qt5_webengine7z, callerArguments.qt5path, tempPath, callerArguments))
+            bldinstallercommon.create_download_extract_task(callerArguments.qt5_webengine7z, callerArguments.qt5path, tempPath, callerArguments))
 
         if os.name == 'nt':
             targetPath = os.path.join(callerArguments.qt5path, 'bin')
@@ -323,11 +304,11 @@ if not os.path.lexists(callerArguments.qt5path):
 
             if not sys.platform == "darwin":
                 myGetQtBinaryWork.addTaskObject(
-                    createDownloadExtractTask(callerArguments.icu7z, targetPath, tempPath, callerArguments))
+                    bldinstallercommon.create_download_extract_task(callerArguments.icu7z, targetPath, tempPath, callerArguments))
 
     if sys.platform == "darwin":
         myGetQtBinaryWork.addTaskObject(
-            createDownloadExtractTask(callerArguments.installerbase7z, tempPath, tempPath, callerArguments))
+            bldinstallercommon.create_download_extract_task(callerArguments.installerbase7z, tempPath, tempPath, callerArguments))
     ### run get Qt 5 tasks
     myGetQtBinaryWork.run()
 

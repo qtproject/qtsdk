@@ -55,9 +55,10 @@ import urllib
 import urllib2
 import string
 import fileinput
-from bld_utils import runCommand
+from urlparse import urlparse
 
-
+from bld_utils import runCommand, download
+from threadedwork import Task, ThreadedWork
 
 # need to include this for win platforms as long path names
 # cause problems
@@ -892,3 +893,20 @@ def remove_directories_by_type(base_path, search_pattern):
         else:
             break
 
+###############################
+# function
+###############################
+def create_download_extract_task(url, target_path, temp_path, caller_arguments):
+    filename = os.path.basename(urlparse(url).path)
+    sevenzip_file = os.path.join(temp_path, filename)
+    download_extract_task = Task("download {0} to {1} and extract it to {2}".format(url, sevenzip_file, target_path))
+
+    download_extract_task.addFunction(download, url, sevenzip_file)
+    if filename.endswith('tar.gz'):
+        create_dirs(temp_path)
+        download_extract_task.addFunction(runCommand, "tar zxf {0} -C {1}".format(
+            sevenzip_file, target_path), temp_path, caller_arguments)
+    else:
+        download_extract_task.addFunction(runCommand, "7z x -y {0} -o{1}".format(
+            sevenzip_file, target_path), temp_path, caller_arguments)
+    return download_extract_task

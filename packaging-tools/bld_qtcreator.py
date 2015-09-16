@@ -49,23 +49,12 @@ import multiprocessing
 import os
 import subprocess
 import sys
-from urlparse import urlparse
 
 # own imports
 from threadedwork import Task, ThreadedWork
-from bld_utils import download, gitSHA, runBuildCommand, runCommand, runInstallCommand, stripVars
+from bld_utils import gitSHA, runBuildCommand, runCommand, runInstallCommand, stripVars
 import bldinstallercommon
 from patch_qmake_qt_key import replace_key
-
-def createDownloadExtract7zTask(url, target_path, temp_path, caller_arguments):
-    fileNameFromUrl = os.path.basename(urlparse(url).path)
-    sevenzipFile = os.path.join(temp_path, fileNameFromUrl)
-    downloadExtract7zTask = Task("download {0} to {1} and extract it to {2}".format(url, sevenzipFile, target_path))
-
-    downloadExtract7zTask.addFunction(download, url, sevenzipFile)
-    downloadExtract7zTask.addFunction(runCommand, "7z x -y {0} -o{1}".format(
-        sevenzipFile, target_path), temp_path, caller_arguments)
-    return downloadExtract7zTask
 
 bldinstallercommon.init_common_module(os.path.dirname(os.path.realpath(__file__)))
 
@@ -184,7 +173,7 @@ if not os.path.lexists(callerArguments.qt5path):
         package_url = callerArguments.qt5_packages_url + '/' + package
         if bldinstallercommon.is_content_url_valid(package_url):
             myGetQtBinaryWork.addTaskObject(
-                createDownloadExtract7zTask(package_url, callerArguments.qt5path, tempPath, callerArguments))
+                bldinstallercommon.create_download_extract_task(package_url, callerArguments.qt5path, tempPath, callerArguments))
         else:
             print("warning: could not find {0}".format(package_url))
 
@@ -196,21 +185,21 @@ if not os.path.lexists(callerArguments.qt5path):
 
     if not bldinstallercommon.is_mac_platform():
         myGetQtBinaryWork.addTaskObject(
-            createDownloadExtract7zTask(callerArguments.icu7z, targetPath, tempPath, callerArguments))
+            bldinstallercommon.create_download_extract_task(callerArguments.icu7z, targetPath, tempPath, callerArguments))
 
     if bldinstallercommon.is_win_platform():
         targetPath = os.path.join(callerArguments.qt5path, 'bin')
         myGetQtBinaryWork.addTaskObject(
-            createDownloadExtract7zTask(callerArguments.d3dcompiler7z, targetPath, tempPath, callerArguments))
+            bldinstallercommon.create_download_extract_task(callerArguments.d3dcompiler7z, targetPath, tempPath, callerArguments))
         myGetQtBinaryWork.addTaskObject(
-            createDownloadExtract7zTask(callerArguments.opengl32sw7z, targetPath, tempPath, callerArguments))
+            bldinstallercommon.create_download_extract_task(callerArguments.opengl32sw7z, targetPath, tempPath, callerArguments))
         if callerArguments.openssl7z:
             myGetQtBinaryWork.addTaskObject(
-                createDownloadExtract7zTask(callerArguments.openssl7z, targetPath, tempPath, callerArguments))
+                bldinstallercommon.create_download_extract_task(callerArguments.openssl7z, targetPath, tempPath, callerArguments))
 
 ### add get installer base task
     myGetQtBinaryWork.addTaskObject(
-        createDownloadExtract7zTask(callerArguments.installerbase7z, tempPath, tempPath, callerArguments))
+        bldinstallercommon.create_download_extract_task(callerArguments.installerbase7z, tempPath, tempPath, callerArguments))
 
 ### run get Qt 5 tasks
     myGetQtBinaryWork.run()
