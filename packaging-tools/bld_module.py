@@ -75,7 +75,7 @@ def patch_archive(base_dir, search_string, qt_install_prefix):
 def get_qt_install_prefix(qt_path):
     qmake_executable = 'qmake'
     qt_install_prefix = ''
-    if os.name == 'nt':
+    if bldinstallercommon.is_win_platform():
         qmake_executable += '.exe'
     qmake_executable = bldinstallercommon.locate_file(qt_path, qmake_executable)
     if not os.path.isfile(qmake_executable):
@@ -146,7 +146,7 @@ def locate_pro(directory):
 # install an argument parser
 parser = argparse.ArgumentParser(prog = os.path.basename(sys.argv[0]),
     add_help=True, description="build Qt 5 based Qt Module", formatter_class=argparse.RawTextHelpFormatter)
-if os.name == 'nt':
+if bldinstallercommon.is_win_platform():
     parser.epilog = "example on windows: " + os.linesep + "\tpython {0} --clean " \
         "--buildcommand C:\\bin\\ibjom.cmd" \
         "--qt5_module_url <uri to qt5_essentials.7z> " \
@@ -156,7 +156,7 @@ if os.name == 'nt':
         "--module_branch <module branch>" \
         "--module_dir <Local copy of module>" \
         "".format(os.path.basename(sys.argv[0]))
-elif sys.platform == "darwin":
+elif bldinstallercommon.is_mac_platform():
     parser.epilog = "example: " + os.linesep + "\tpython {0} --clean " \
         "--qt5_module_url <uri to qt5_essentials.7z> " \
         "--qt5_module_url <uri to qt5_addons.7z> " \
@@ -191,7 +191,7 @@ parser.add_argument('--makeDocs', help="Should the docs be built for this compon
 parser.add_argument('--collectDocs', help="Should the docs be collected for this component?", required=False, action='store_true', default=False)
 
 
-if (sys.platform != "darwin"):
+if not bldinstallercommon.is_mac_platform():
     parser.add_argument('--icu7z', help="a file or url where it get icu libs as 7z", required=False, default='')
 
 callerArguments = parser.parse_args()
@@ -231,7 +231,7 @@ qtModuleBuildDirectory = MODULE_SRC_DIR + '_build'
 if bldinstallercommon.is_win_platform():
     qtModuleBuildDirectory = pro_file_base_path
 qtModuleInstallDirectory = MODULE_SRC_DIR + '_install'
-if os.name == 'nt':
+if bldinstallercommon.is_win_platform():
     qtModuleInstallDirectory = qtModuleInstallDirectory[2:]
 
     # check whether this is a QNX build
@@ -280,15 +280,15 @@ pathKeyList.append(pythonExecutablePath)
 
 environment = {'PATH': os.pathsep.join(pathKeyList)}
 
-if sys.platform.startswith('linux'):
+if bldinstallercommon.is_linux_platform():
     environment["LD_LIBRARY_PATH"] = os.pathsep.join([os.path.join(callerArguments.qt5path, 'lib')]
 + os.environ.get("LD_LIBRARY_PATH", "").split(os.pathsep))
     environment["QMAKESPEC"] = "linux-g++"
 
-if sys.platform == "darwin":
+if bldinstallercommon.is_mac_platform():
     environment["DYLD_FRAMEWORK_PATH"] = os.path.join(callerArguments.qt5path, 'lib')
 
-if os.name != 'nt':
+if not bldinstallercommon.is_win_platform():
     environment["MAKEFLAGS"] = "-j" + str(multiprocessing.cpu_count() + 1)
 
 if callerArguments.debug:
