@@ -54,7 +54,7 @@ import fileinput
 
 # own imports
 from threadedwork import Task, ThreadedWork
-from bld_utils import runCommand, stripVars
+from bld_utils import runCommand, runBuildCommand, runInstallCommand, stripVars
 import bldinstallercommon
 
 SCRIPT_ROOT_DIR             = os.path.dirname(os.path.realpath(__file__))
@@ -298,24 +298,19 @@ else:
 
 qmakeCommandArguments = [qmakeBinary]
 if os.environ.get('EXTRA_QMAKE_ARGS'):
-    qmakeCommandArguments += [os.environ["EXTRA_QMAKE_ARGS"]]
-qmakeCommandArguments += ["{0}".format(qtModuleProFile)]
-bldinstallercommon.runCommand(qmakeCommandArguments, qtModuleBuildDirectory)
+    qmakeCommandArguments.append(os.environ["EXTRA_QMAKE_ARGS"])
+qmakeCommandArguments.append(qtModuleProFile)
+runCommand(qmakeCommandArguments,
+           currentWorkingDirectory = qtModuleBuildDirectory,
+           callerArguments = callerArguments, init_environment = environment)
 
-makeCommand = 'make'
-if os.name == 'nt' or sys.platform == "darwin":
-    makeCommand = callerArguments.buildcommand
-ret = runCommand("{0}".format(makeCommand), currentWorkingDirectory = qtModuleBuildDirectory)
+ret = runBuildCommand(currentWorkingDirectory = qtModuleBuildDirectory, callerArguments = callerArguments)
 if ret:
     sys.exit('Failure running the last command: %i' % ret)
 
-installCommand = 'make'
-if os.name == 'nt' or sys.platform == "darwin":
-    installCommand = callerArguments.installcommand
-
-installCommandArguments = 'install INSTALL_ROOT=' + qtModuleInstallDirectory
-ret = runCommand("{0} {1}".format(installCommand, installCommandArguments), currentWorkingDirectory = qtModuleBuildDirectory,
-        callerArguments = callerArguments, init_environment = environment)
+ret = runInstallCommand(['install', 'INSTALL_ROOT=' + qtModuleInstallDirectory],
+                 currentWorkingDirectory = qtModuleBuildDirectory,
+                 callerArguments = callerArguments, init_environment = environment)
 if ret:
     sys.exit('Failure running the last command: %i' % ret)
 
@@ -334,21 +329,23 @@ if callerArguments.collectDocs:
 # enginio etc. docs creation
 if callerArguments.makeDocs:
     # build docs first
-    makeCommandArguments = '-j1 docs'
-    ret = runCommand("{0} {1}".format(makeCommand, makeCommandArguments), currentWorkingDirectory = qtModuleBuildDirectory, callerArguments = callerArguments, init_environment = environment)
+    ret = runInstallCommand('docs',
+                     currentWorkingDirectory = qtModuleBuildDirectory,
+                     callerArguments = callerArguments, init_environment = environment)
     if ret:
         sys.exit('Failure running the last command: %i' % ret)
     # then make install those
-    installCommandArguments = '-j1 install_docs INSTALL_ROOT=' + qtModuleInstallDirectory
-    ret = runCommand("{0} {1}".format(installCommand, installCommandArguments), currentWorkingDirectory = qtModuleBuildDirectory, callerArguments = callerArguments, init_environment = environment)
+    ret = runInstallCommand(['install_docs', 'INSTALL_ROOT=' + qtModuleInstallDirectory],
+                     currentWorkingDirectory = qtModuleBuildDirectory,
+                     callerArguments = callerArguments, init_environment = environment)
     if ret:
         sys.exit('Failure running the last command: %i' % ret)
     # make separate "doc.7z" for later use if needed
     doc_dir = bldinstallercommon.locate_directory(qtModuleInstallDirectory, 'doc')
     if doc_dir:
         archive_name = os.environ['MODULE_NAME'] + '-' + os.environ['LICENSE'] + '-doc-' + os.environ['MODULE_VERSION'] + '.7z'
-        archive_cmd = '7z a ' + 'doc_archives' + os.sep + archive_name + ' ' + doc_dir
-        ret = runCommand("{0}".format(archive_cmd), currentWorkingDirectory = os.path.dirname(os.path.realpath(__file__)) )
+        ret = runCommand(['7z', 'a', 'doc_archives' + os.sep + archive_name, doc_dir],
+                         currentWorkingDirectory = os.path.dirname(os.path.realpath(__file__)))
         if ret:
             sys.exit('Failure running the last command: %i' % ret)
 
@@ -365,7 +362,8 @@ basedir = dir_to_archive + os.sep + 'qt5_package_dir'
 patch_archive(basedir, callerArguments.qt5path, qt_install_prefix)
 
 # create 7z archive
-archive_cmd = '7z a ' + 'module_archives' + os.sep + 'qt5_' + os.environ['MODULE_NAME'] + '.7z' + ' ' + dir_to_archive + os.sep + 'qt5_package_dir'
-ret = runCommand("{0}".format(archive_cmd), currentWorkingDirectory = os.path.dirname(os.path.realpath(__file__)) )
+archive_cmd = ['7z', 'a', 'module_archives' + os.sep + 'qt5_' + os.environ['MODULE_NAME'] + '.7z',
+               dir_to_archive + os.sep + 'qt5_package_dir']
+ret = runCommand(archive_cmd, currentWorkingDirectory = os.path.dirname(os.path.realpath(__file__)))
 if ret:
     sys.exit('Failure running the last command: %i' % ret)
