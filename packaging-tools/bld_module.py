@@ -223,14 +223,14 @@ else:
     print(("Using local copy of {0}").format(os.environ['MODULE_NAME']))
     qtModuleSourceDirectory = callerArguments.module_dir
 
-qtModuleProFile = locate_pro(MODULE_SRC_DIR)
+qtModuleProFile = locate_pro(qtModuleSourceDirectory)
 # rip out drive letter from path on Windows
 pro_file_base_path = os.path.split(qtModuleProFile)[0]
 
-qtModuleBuildDirectory = MODULE_SRC_DIR + '_build'
+qtModuleBuildDirectory = qtModuleSourceDirectory + '_build'
 if bldinstallercommon.is_win_platform():
     qtModuleBuildDirectory = pro_file_base_path
-qtModuleInstallDirectory = MODULE_SRC_DIR + '_install'
+qtModuleInstallDirectory = qtModuleSourceDirectory + '_install'
 if bldinstallercommon.is_win_platform():
     qtModuleInstallDirectory = qtModuleInstallDirectory[2:]
 
@@ -353,7 +353,7 @@ if callerArguments.makeDocs:
 dir_to_archive = os.path.dirname(bldinstallercommon.locate_directory(qtModuleInstallDirectory, 'qt5_package_dir'))
 
 # if .tag file exists in the source package (sha1) then copy it into the binary archive
-tag_file = bldinstallercommon.locate_file(MODULE_SRC_DIR, '.tag')
+tag_file = bldinstallercommon.locate_file(qtModuleSourceDirectory, '.tag')
 if tag_file:
     shutil.copy2(tag_file, dir_to_archive + os.sep + 'qt5_package_dir')
 
