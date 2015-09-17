@@ -54,7 +54,6 @@ import sys
 from threadedwork import Task, ThreadedWork
 from bld_utils import gitSHA, runBuildCommand, runCommand, runInstallCommand, stripVars
 import bldinstallercommon
-from patch_qmake_qt_key import replace_key
 
 bldinstallercommon.init_common_module(os.path.dirname(os.path.realpath(__file__)))
 
@@ -160,7 +159,6 @@ if not os.path.lexists(callerArguments.qt5path) and not callerArguments.qt5_pack
 qmakeBinary = os.path.abspath(os.path.join(callerArguments.qt5path, 'bin', 'qmake'))
 
 if not os.path.lexists(callerArguments.qt5path):
-    myGetQtBinaryWork = ThreadedWork("get and extract Qt 5 binaries")
     qt_packages = [
         'qt5_essentials.7z',
         'qt5_addons.7z',
@@ -169,33 +167,10 @@ if not os.path.lexists(callerArguments.qt5path):
         'qt5_qtpositioning.7z',
         'qt5_qtquickcontrols.7z'
     ]
-    for package in qt_packages:
-        package_url = callerArguments.qt5_packages_url + '/' + package
-        if bldinstallercommon.is_content_url_valid(package_url):
-            myGetQtBinaryWork.addTaskObject(
-                bldinstallercommon.create_download_extract_task(package_url, callerArguments.qt5path, tempPath, callerArguments))
-        else:
-            print("warning: could not find {0}".format(package_url))
-
-### add get icu and d3dcompiler lib task
-    if bldinstallercommon.is_win_platform():
-        targetPath = os.path.join(callerArguments.qt5path, 'bin')
-    else:
-        targetPath = os.path.join(callerArguments.qt5path, 'lib')
-
-    if not bldinstallercommon.is_mac_platform():
-        myGetQtBinaryWork.addTaskObject(
-            bldinstallercommon.create_download_extract_task(callerArguments.icu7z, targetPath, tempPath, callerArguments))
-
-    if bldinstallercommon.is_win_platform():
-        targetPath = os.path.join(callerArguments.qt5path, 'bin')
-        myGetQtBinaryWork.addTaskObject(
-            bldinstallercommon.create_download_extract_task(callerArguments.d3dcompiler7z, targetPath, tempPath, callerArguments))
-        myGetQtBinaryWork.addTaskObject(
-            bldinstallercommon.create_download_extract_task(callerArguments.opengl32sw7z, targetPath, tempPath, callerArguments))
-        if callerArguments.openssl7z:
-            myGetQtBinaryWork.addTaskObject(
-                bldinstallercommon.create_download_extract_task(callerArguments.openssl7z, targetPath, tempPath, callerArguments))
+    myGetQtBinaryWork = ThreadedWork("get and extract Qt 5 binaries")
+    bldinstallercommon.add_qt_download(myGetQtBinaryWork,
+        [(callerArguments.qt5_packages_url + '/' + package) for package in qt_packages],
+        callerArguments.qt5path, tempPath, callerArguments)
 
 ### add get installer base task
     myGetQtBinaryWork.addTaskObject(
@@ -204,11 +179,10 @@ if not os.path.lexists(callerArguments.qt5path):
 ### run get Qt 5 tasks
     myGetQtBinaryWork.run()
 
-    print("##### {0} #####".format("patch Qt"))
-
-    # fix paths in module .pri files
     qt_install_prefix = subprocess.check_output([os.path.join(callerArguments.qt5path, 'bin', 'qmake'),
                                                  '-query', 'QT_INSTALL_PREFIX']).strip()
+    bldinstallercommon.patch_qt(callerArguments.qt5path)
+    # fix paths in module .pri files
     print('install prefix: "{0}", qt5_path "{1}"'.format(qt_install_prefix, callerArguments.qt5path))
     for (path, dirnames, filenames) in os.walk(os.path.join(callerArguments.qt5path, 'mkspecs')):
         for filename in filenames:
@@ -221,16 +195,6 @@ if not os.path.lexists(callerArguments.qt5path):
             contents = contents.replace(qt_install_prefix, callerArguments.qt5path)
             with open(filepath, 'w') as f:
                 f.write(contents)
-
-    print("##### {0} #####".format("patch Qt"))
-    qtConfFile = open(os.path.join(callerArguments.qt5path, 'bin', 'qt.conf'), "w")
-    qtConfFile.write("[Paths]" + os.linesep)
-    qtConfFile.write("Prefix=.." + os.linesep)
-    qtConfFile.close()
-    if bldinstallercommon.is_linux_platform():
-        bldinstallercommon.handle_component_rpath(callerArguments.qt5path, 'lib')
-    print("##### {0} ##### ... done".format("patch Qt"))
-    runCommand(qmakeBinary + " -query", qtCreatorBuildDirectory, callerArguments)
 
 ### lets start building
 

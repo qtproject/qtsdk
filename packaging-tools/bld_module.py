@@ -256,37 +256,17 @@ if not os.path.lexists(callerArguments.qt5path) and not callerArguments.qt5_modu
 qmakeBinary = os.path.abspath(os.path.join(callerArguments.qt5path, 'bin', 'qmake'))
 
 if not os.path.lexists(callerArguments.qt5path):
+    # get Qt
     myGetQtBinaryWork = ThreadedWork("get and extract Qt 5 binary")
-    ### add get Qt module tasks
-    for qt5_url in callerArguments.qt5_module_urls:
-        myGetQtBinaryWork.addTaskObject(
-            bldinstallercommon.create_download_extract_task(qt5_url, callerArguments.qt5path, tempPath, callerArguments))
-
-    ### add get icu lib task
-    if not bldinstallercommon.is_mac_platform() and callerArguments.icu7z:
-        if os.name == 'nt':
-            targetPath = os.path.join(callerArguments.qt5path, 'bin')
-        else:
-            targetPath = os.path.join(callerArguments.qt5path, 'lib')
-        myGetQtBinaryWork.addTaskObject(
-            bldinstallercommon.create_download_extract_task(callerArguments.icu7z, targetPath, tempPath, callerArguments))
-
-    ### run get Qt 5 tasks
+    bldinstallercommon.add_qt_download(myGetQtBinaryWork, callerArguments.qt5_module_urls,
+                                       callerArguments.qt5path, tempPath, callerArguments)
     myGetQtBinaryWork.run()
 
     # Save QT_INSTALL_PREFIX
     qt_install_prefix = get_qt_install_prefix(callerArguments.qt5path)
 
-    print("##### {0} #####".format("patch Qt"))
-    qtConfFile = open(os.path.join(callerArguments.qt5path, 'bin', 'qt.conf'), "w")
-    qtConfFile.write("[Paths]" + os.linesep)
-    qtConfFile.write("Prefix=.." + os.linesep)
-    qtConfFile.close()
-    if sys.platform.startswith('linux'):
-        bldinstallercommon.handle_component_rpath(callerArguments.qt5path, 'lib')
-    print("##### {0} ##### ... done".format("patch Qt"))
-    runCommand(qmakeBinary + " -query", qtModuleBuildDirectory, callerArguments)
-
+    # "install" Qt
+    bldinstallercommon.patch_qt(callerArguments.qt5path)
 
 ### lets start building
 
@@ -320,7 +300,7 @@ qmakeCommandArguments = [qmakeBinary]
 if os.environ.get('EXTRA_QMAKE_ARGS'):
     qmakeCommandArguments += [os.environ["EXTRA_QMAKE_ARGS"]]
 qmakeCommandArguments += ["{0}".format(qtModuleProFile)]
-bldinstallercommon.do_execute_sub_process(qmakeCommandArguments, qtModuleBuildDirectory)
+bldinstallercommon.runCommand(qmakeCommandArguments, qtModuleBuildDirectory)
 
 makeCommand = 'make'
 if os.name == 'nt' or sys.platform == "darwin":
