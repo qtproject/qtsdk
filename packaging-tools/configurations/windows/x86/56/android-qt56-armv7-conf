@@ -3,7 +3,7 @@
 ## Copyright (C) 2015 The Qt Company Ltd.
 ## Contact: http://www.qt.io/licensing/
 ##
-## This file is part of the QtCore module of the Qt Toolkit.
+## This file is part of the release tools of the Qt Toolkit.
 ##
 ## $QT_BEGIN_LICENSE:LGPL21$
 ## Commercial License Usage
@@ -107,5 +107,15 @@ archives:               56.qtcanvas3d.android_armv7
 target_install_base:    /5.6/android_armv7
 [56.qtcanvas3d.android_armv7]
 archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/mingw_x86/qt5_qtcanvas3d.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+# QtWebView provided as separate installable component in installer
+[qt.56.qtwebview]
+[qt.56.qtwebview.android_armv7]
+archives:               56.qtwebview.android_armv7
+target_install_base:    /5.6/android_armv7
+[56.qtwebview.android_armv7]
+archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/mingw_x86/qt5_qtwebview.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory

@@ -3,7 +3,7 @@
 ## Copyright (C) 2015 The Qt Company Ltd.
 ## Contact: http://www.qt.io/licensing/
 ##
-## This file is part of the QtCore module of the Qt Toolkit.
+## This file is part of the release tools of the Qt Toolkit.
 ##
 ## $QT_BEGIN_LICENSE:LGPL21$
 ## Commercial License Usage
@@ -82,4 +82,14 @@ target_install_base:    /5.6/winphone_arm
 [56.qtcanvas3d.win64_msvc2013_winphone_arm]
 archive_uri:            /qt/@QT_VERSION@/latest/winphone81/arm/qt5_qtcanvas3d.7z
 rpath_target:
+package_finalize_items: delete_doc_directory
+
+# QtWebView provided as separate installable component in installer
+[qt.56.qtwebview]
+[qt.56.qtwebview.win64_msvc2013_winphone_arm]
+archives:               56.qtwebview.win64_msvc2013_winphone_arm
+target_install_base:    /5.6/winphone_arm
+[56.qtwebview.win64_msvc2013_winphone_arm]
+archive_uri:            /qt/@QT_VERSION@/latest/winphone81/arm/qt5_qtwebview.7z
+rpath_target:           /lib
 package_finalize_items: delete_doc_directory

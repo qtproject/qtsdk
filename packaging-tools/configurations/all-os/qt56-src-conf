@@ -249,3 +249,9 @@ target_install_base:    /5.6/Src/qtquickcontrols
 archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtquickcontrols-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 
+[qt.56.src.addons.qtwebview]
+archives:               src.addons.qtwebview
+target_install_base:    /5.6/Src/qtwebview
+[src.addons.qtwebview]
+archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtwebview-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1

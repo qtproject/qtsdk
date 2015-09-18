@@ -48,12 +48,7 @@ file_list:              qt-conf,
                         android-qt56-x86-conf,
                         x86-tools-mingw492-conf,
                         x86-tools-qtcreator-qt56x-conf,
-                        x86-tools-vcredist_msvc2013-conf,
-                        qtwebview-src-doc-examples-conf-11,
-                        qtwebview-qt56-x86-android-armv7-conf,
-                        qtwebview-qt56-x86-android-armv5-conf,
-                        qtwebview-qt56-x86-android-x86-conf
-
+                        x86-tools-vcredist_msvc2013-conf
 [ConfigDir]
 template_name:          config_qt5
 
@@ -61,5 +56,5 @@ template_name:          config_qt5
 template_name:          config.xml.template.windows.qt5
 
 [PackageTemplates]
-template_dirs:          pkg_56, pkg_tools, pkg_extras_qt56
+template_dirs:          pkg_56, pkg_tools
 
