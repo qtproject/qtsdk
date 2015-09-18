@@ -73,26 +73,9 @@ def patch_archive(base_dir, search_string, qt_install_prefix):
 # function
 ###############################
 def get_qt_install_prefix(qt_path):
-    qmake_executable = 'qmake'
-    qt_install_prefix = ''
-    if bldinstallercommon.is_win_platform():
-        qmake_executable += '.exe'
-    qmake_executable = bldinstallercommon.locate_file(qt_path, qmake_executable)
-    if not os.path.isfile(qmake_executable):
-        print('*** Unable to locate qmake executable from: {0}'.format(qt_path))
-        sys.exit(-1)
-    cmd_args = [qmake_executable, '-query']
-    qmakePath = os.path.abspath(os.path.join(callerArguments.qt5path, 'bin'))
-    dummy, output = bldinstallercommon.do_execute_sub_process(cmd_args, qmakePath, get_output=True)
-    # read output line by line
-    lines = output.splitlines(True)
-    for line in lines:
-        if 'QT_INSTALL_PREFIX' in line:
-            # save qt_install_prefix
-            qt_install_prefix = line[line.index(':') + 1:]
-            break
-
-    return qt_install_prefix
+    cmd_args = [os.path.join(qt_path, 'bin', 'qmake'), '-query', 'QT_INSTALL_PREFIX']
+    ret, qt_install_prefix = bldinstallercommon.do_execute_sub_process(cmd_args, qt_path, get_output=True)
+    return qt_install_prefix.strip()
 
 ###############################
 # function
@@ -126,7 +109,7 @@ def patch_build_time_paths(search_path, search_string, qt_install_prefix):
             if not search_string in line:
                 print(line.rstrip('\n'))
                 continue
-            patched_line = line.replace(search_string, qt_install_prefix.rstrip('\n'))
+            patched_line = line.replace(search_string, qt_install_prefix)
             print(patched_line.rstrip('\n'))
 
 ###############################
