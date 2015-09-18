@@ -319,7 +319,7 @@ if bldinstallercommon.is_win_platform() and os.environ.get('DO_PATCH_ANDROID_SON
 #doc collection
 if callerArguments.collectDocs:
     doc_list = bldinstallercommon.make_files_list(qtModuleSourceDirectory, '\\.qch')
-    doc_install_dir = qtModuleInstallDirectory + os.sep + 'doc'
+    doc_install_dir = os.path.join(qtModuleInstallDirectory, 'doc')
     bldinstallercommon.create_dirs(doc_install_dir)
     for item in doc_list:
         shutil.copy(item, doc_install_dir)
@@ -342,26 +342,25 @@ if callerArguments.makeDocs:
     doc_dir = bldinstallercommon.locate_directory(qtModuleInstallDirectory, 'doc')
     if doc_dir:
         archive_name = os.environ['MODULE_NAME'] + '-' + os.environ['LICENSE'] + '-doc-' + os.environ['MODULE_VERSION'] + '.7z'
-        ret = runCommand(['7z', 'a', 'doc_archives' + os.sep + archive_name, doc_dir],
+        ret = runCommand(['7z', 'a', os.path.join('doc_archives', archive_name), doc_dir],
                          currentWorkingDirectory = os.path.dirname(os.path.realpath(__file__)))
         if ret:
             sys.exit('Failure running the last command: %i' % ret)
 
 # try to figure out where the actual exported content is
-dir_to_archive = os.path.dirname(bldinstallercommon.locate_directory(qtModuleInstallDirectory, 'qt5_package_dir'))
+dir_to_archive = bldinstallercommon.locate_directory(qtModuleInstallDirectory, 'qt5_package_dir')
 
 # if .tag file exists in the source package (sha1) then copy it into the binary archive
 tag_file = bldinstallercommon.locate_file(qtModuleSourceDirectory, '.tag')
 if tag_file:
-    shutil.copy2(tag_file, dir_to_archive + os.sep + 'qt5_package_dir')
+    shutil.copy2(tag_file, dir_to_archive)
 
 # Pre-patch the package for IFW to patch it correctly during installation
-basedir = dir_to_archive + os.sep + 'qt5_package_dir'
-patch_archive(basedir, callerArguments.qt5path, qt_install_prefix)
+patch_archive(dir_to_archive, callerArguments.qt5path, qt_install_prefix)
 
 # create 7z archive
-archive_cmd = ['7z', 'a', 'module_archives' + os.sep + 'qt5_' + os.environ['MODULE_NAME'] + '.7z',
-               dir_to_archive + os.sep + 'qt5_package_dir']
+archive_cmd = ['7z', 'a', os.path.join('module_archives', 'qt5_' + os.environ['MODULE_NAME'] + '.7z'),
+               dir_to_archive]
 ret = runCommand(archive_cmd, currentWorkingDirectory = os.path.dirname(os.path.realpath(__file__)))
 if ret:
     sys.exit('Failure running the last command: %i' % ret)
