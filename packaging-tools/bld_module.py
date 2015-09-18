@@ -348,7 +348,8 @@ if callerArguments.makeDocs:
             sys.exit('Failure running the last command: %i' % ret)
 
 # try to figure out where the actual exported content is
-dir_to_archive = bldinstallercommon.locate_directory(qtModuleInstallDirectory, 'qt5_package_dir')
+qt5_install_basename = os.path.basename(callerArguments.qt5path)
+dir_to_archive = bldinstallercommon.locate_directory(qtModuleInstallDirectory, qt5_install_basename)
 
 # if .tag file exists in the source package (sha1) then copy it into the binary archive
 tag_file = bldinstallercommon.locate_file(qtModuleSourceDirectory, '.tag')
