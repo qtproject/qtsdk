@@ -161,6 +161,8 @@ else:
 # general arguments
 parser.add_argument('--clean', help="clean up everything from old builds", action='store_true', default=False)
 parser.add_argument('--qt5path', help="here it expects a compiled Qt5", required=True)
+parser.add_argument('--use-cmake', help="use cmake instead of qmake for generating Makefiles", action='store_true', default=False)
+parser.add_argument('--add-config-arg', help='additional argument to use with qmake or cmake', action='append', default=[], dest='additional_config_args')
 parser.add_argument('--buildcommand', help="this means usually make", default="make")
 parser.add_argument('--installcommand', help="this means usually make", default="make")
 parser.add_argument('--debug', help="use debug builds", action='store_true', default=False)
@@ -208,15 +210,11 @@ else:
     print(("Using local copy of {0}").format(callerArguments.module_name))
     qtModuleSourceDirectory = callerArguments.module_dir
 
-qtModuleBuildDirectory = qtModuleSourceDirectory + '_build'
+# install directory
 qtModuleInstallDirectory = qtModuleSourceDirectory + '_install'
-qtModuleProFile = locate_pro(qtModuleSourceDirectory)
 if bldinstallercommon.is_win_platform():
     # rip out drive letter from path on Windows
     qtModuleInstallDirectory = qtModuleInstallDirectory[2:]
-    # do not shadow-build on Windows
-    qtModuleBuildDirectory = os.path.dirname(qtModuleProFile)
-
     # check whether this is a QNX build
     if any('qnx' in qt5_url.lower() for qt5_url in callerArguments.qt5_module_urls):
         # apply the workaround from QTBUG-38555
@@ -279,12 +277,36 @@ if callerArguments.debug:
 else:
     buildType = 'release'
 
-qmakeCommandArguments = [qmakeBinary]
-if os.environ.get('EXTRA_QMAKE_ARGS'):
-    qmakeCommandArguments.append(os.environ["EXTRA_QMAKE_ARGS"])
-qmakeCommandArguments.append(qtModuleProFile)
-runCommand(qmakeCommandArguments,
-           currentWorkingDirectory = qtModuleBuildDirectory,
+qtModuleBuildDirectory = qtModuleSourceDirectory + '_build'
+
+if callerArguments.use_cmake:
+    generateCommand = ['cmake',
+                       '-DCMAKE_VERBOSE_MAKEFILE=YES',
+                       # TODO: should get QT_INSTALL_LIBS instead
+                       '-DCMAKE_INSTALL_RPATH=' + ';'.join([qt_install_prefix, os.path.join(qt_install_prefix, 'lib')]),
+                       '-DCMAKE_INSTALL_PREFIX=' + qtModuleInstallDirectory,
+                       '-DCMAKE_BUILD_TYPE=' + buildType.capitalize()]
+    cmake_prefix_path = [callerArguments.qt5path]
+    for extra_arg in callerArguments.additional_config_args:
+        if extra_arg.startswith('-DCMAKE_PREFIX_PATH'):
+            cmake_prefix_path.extend(extra_arg.split('=', 1)[1].split(';'))
+        else:
+            generateCommand.append(extra_arg)
+    generateCommand.append('-DCMAKE_PREFIX_PATH=' + ';'.join(cmake_prefix_path))
+    # for now assume that qtModuleSourceDirectory contains CMakeLists.txt directly
+    generateCommand.append(qtModuleSourceDirectory)
+else: # --> qmake
+    qtModuleProFile = locate_pro(qtModuleSourceDirectory)
+    if bldinstallercommon.is_win_platform():
+        # do not shadow-build with qmake on Windows
+        qtModuleBuildDirectory = os.path.dirname(qtModuleProFile)
+    generateCommand = [qmakeBinary]
+    generateCommand.extend(callerArguments.additional_config_args)
+    if os.environ.get('EXTRA_QMAKE_ARGS'):
+        generateCommand.append(os.environ["EXTRA_QMAKE_ARGS"])
+    generateCommand.append(qtModuleProFile)
+
+runCommand(generateCommand, currentWorkingDirectory = qtModuleBuildDirectory,
            callerArguments = callerArguments, init_environment = environment)
 
 ret = runBuildCommand(currentWorkingDirectory = qtModuleBuildDirectory, callerArguments = callerArguments)
@@ -334,7 +356,11 @@ if callerArguments.makeDocs:
 
 # try to figure out where the actual exported content is
 qt5_install_basename = os.path.basename(callerArguments.qt5path)
-dir_to_archive = bldinstallercommon.locate_directory(qtModuleInstallDirectory, qt5_install_basename)
+
+if callerArguments.use_cmake:
+    dir_to_archive = qtModuleInstallDirectory
+else:
+    dir_to_archive = bldinstallercommon.locate_directory(qtModuleInstallDirectory, qt5_install_basename)
 
 # if .tag file exists in the source package (sha1) then copy it into the binary archive
 tag_file = bldinstallercommon.locate_file(qtModuleSourceDirectory, '.tag')
@@ -344,9 +370,11 @@ if tag_file:
 # Pre-patch the package for IFW to patch it correctly during installation
 patch_archive(dir_to_archive, [callerArguments.qt5path, dir_to_archive], qt_install_prefix)
 
-# create 7z archive
-archive_cmd = ['7z', 'a', os.path.join('module_archives', 'qt5_' + callerArguments.module_name + '.7z'),
-               dir_to_archive]
+archive_cmd = ['7z', 'a', os.path.join('module_archives', 'qt5_' + callerArguments.module_name + '.7z')]
+if callerArguments.use_cmake:
+    archive_cmd.append(os.path.join(dir_to_archive, '*'))
+else:
+    archive_cmd.append(dir_to_archive)
 ret = runCommand(archive_cmd, currentWorkingDirectory = os.path.dirname(os.path.realpath(__file__)))
 if ret:
     sys.exit('Failure running the last command: %i' % ret)
