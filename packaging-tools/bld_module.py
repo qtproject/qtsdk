@@ -223,16 +223,14 @@ else:
     print(("Using local copy of {0}").format(os.environ['MODULE_NAME']))
     qtModuleSourceDirectory = callerArguments.module_dir
 
-qtModuleProFile = locate_pro(qtModuleSourceDirectory)
-# rip out drive letter from path on Windows
-pro_file_base_path = os.path.split(qtModuleProFile)[0]
-
 qtModuleBuildDirectory = qtModuleSourceDirectory + '_build'
-if bldinstallercommon.is_win_platform():
-    qtModuleBuildDirectory = pro_file_base_path
 qtModuleInstallDirectory = qtModuleSourceDirectory + '_install'
+qtModuleProFile = locate_pro(qtModuleSourceDirectory)
 if bldinstallercommon.is_win_platform():
+    # rip out drive letter from path on Windows
     qtModuleInstallDirectory = qtModuleInstallDirectory[2:]
+    # do not shadow-build on Windows
+    qtModuleBuildDirectory = os.path.dirname(qtModuleProFile)
 
     # check whether this is a QNX build
     if any('qnx' in qt5_url.lower() for qt5_url in callerArguments.qt5_module_urls):
