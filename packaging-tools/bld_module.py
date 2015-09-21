@@ -65,9 +65,9 @@ bldinstallercommon.init_common_module(os.getcwd())
 ###############################
 # function
 ###############################
-def patch_archive(base_dir, search_string, qt_install_prefix):
+def patch_archive(base_dir, search_strings, qt_install_prefix):
     erase_qmake_prl_build_dir(base_dir)
-    patch_build_time_paths(base_dir, search_string, qt_install_prefix)
+    patch_build_time_paths(base_dir, search_strings, qt_install_prefix)
 
 ###############################
 # function
@@ -99,17 +99,17 @@ def erase_qmake_prl_build_dir(search_path):
 ###############################
 # function
 ###############################
-def patch_build_time_paths(search_path, search_string, qt_install_prefix):
+def patch_build_time_paths(search_path, search_strings, qt_install_prefix):
     extension_list = ['*.prl', '*.pri', '*.pc', '*.la']
-    file_list = bldinstallercommon.search_for_files(search_path, extension_list, search_string)
+    search_regexp = '|'.join(search_strings)
+    file_list = bldinstallercommon.search_for_files(search_path, extension_list, search_regexp)
 
     for item in file_list:
-        print('Replacing \'{0}\' paths from file: {1}'.format(search_string, item))
+        print('Replacing {0} paths from file: {1}'.format(search_strings, item))
         for line in fileinput.FileInput(item, inplace = 1):
-            if not search_string in line:
-                print(line.rstrip('\n'))
-                continue
-            patched_line = line.replace(search_string, qt_install_prefix)
+            patched_line = reduce(lambda accum, value: accum.replace(value, qt_install_prefix),
+                                  search_strings,
+                                  line)
             print(patched_line.rstrip('\n'))
 
 ###############################
@@ -340,7 +340,7 @@ if tag_file:
     shutil.copy2(tag_file, dir_to_archive)
 
 # Pre-patch the package for IFW to patch it correctly during installation
-patch_archive(dir_to_archive, callerArguments.qt5path, qt_install_prefix)
+patch_archive(dir_to_archive, [callerArguments.qt5path, dir_to_archive], qt_install_prefix)
 
 # create 7z archive
 archive_cmd = ['7z', 'a', os.path.join('module_archives', 'qt5_' + os.environ['MODULE_NAME'] + '.7z'),
