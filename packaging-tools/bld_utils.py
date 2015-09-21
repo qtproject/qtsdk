@@ -263,7 +263,7 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None, init_en
 
     # if we can not find the command, just check the current working dir
     if not os.path.lexists(commandAsList[0]) and currentWorkingDirectory and \
-        os.path.lexists(os.path.abspath(os.path.join(currentWorkingDirectory, commandAsList[0]))):
+        os.path.isfile(os.path.abspath(os.path.join(currentWorkingDirectory, commandAsList[0]))):
         commandAsList[0] = os.path.abspath(os.path.join(currentWorkingDirectory, commandAsList[0]))
 
     if 'Path' in environment:
