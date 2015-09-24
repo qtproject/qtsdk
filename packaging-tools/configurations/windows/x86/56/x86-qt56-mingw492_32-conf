@@ -55,16 +55,6 @@ target_install_dir:     /bin
 archive_uri:            http://download.qt.io/development_releases/prebuilt/llvmpipe/windows/opengl32sw-32.7z
 target_install_dir:     /bin
 
-# QtQuick1 provided as separate installable component in installer
-[qt.56.qtquick1]
-[qt.56.qtquick1.win32_mingw492]
-archives:               56.qtquick1.win32_mingw492
-target_install_base:    /5.6/mingw492_32
-[56.qtquick1.win32_mingw492]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_mingw492_x86/qt5_qtquick1.7z
-rpath_target:           /lib
-package_finalize_items: delete_doc_directory
-
 # QtScript provided as separate installable component in installer
 [qt.56.qtscript]
 [qt.56.qtscript.win32_mingw492]

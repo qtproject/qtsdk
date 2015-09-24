@@ -42,7 +42,7 @@
 #################################
 
 [qt.56.src.essentials]
-archives:               src.qt5, src.essentials.qtbase, src.essentials.qtdeclarative, src.essentials.qtdoc, src.essentials.qttools, src.essentials.qtwebkit, src.essentials.qtwebkitexamples, src.essentials.qtxmlpatterns, src.essentials.qtmultimedia
+archives:               src.qt5, src.essentials.qtbase, src.essentials.qtdeclarative, src.essentials.qtdoc, src.essentials.qttools, src.essentials.qtxmlpatterns, src.essentials.qtmultimedia
 target_install_base:    /5.6/Src/
 [src.qt5]
 archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qt5-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
@@ -64,14 +64,6 @@ target_install_dir:     /qtdoc
 archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qttools-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 target_install_dir:     /qttools
-[src.essentials.qtwebkit]
-archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtwebkit-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
-package_strip_dirs:     1
-target_install_dir:     /qtwebkit
-[src.essentials.qtwebkitexamples]
-archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtwebkit-examples-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
-package_strip_dirs:     1
-target_install_dir:     /qtwebkit-examples
 [src.essentials.qtxmlpatterns]
 archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtxmlpatterns-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
@@ -226,13 +218,6 @@ archives:               src.addons.qtcanvas3d
 target_install_base:    /5.6/Src/qtcanvas3d
 [src.addons.qtcanvas3d]
 archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtcanvas3d-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
-package_strip_dirs:     1
-
-[qt.56.src.addons.qtquick1]
-archives:               src.addons.qtquick1
-target_install_base:    /5.6/Src/qtquick1
-[src.addons.qtquick1]
-archive_uri:            /qt/@QT_VERSION@/latest/src/submodules/qtquick1-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 
 [qt.56.src.addons.qtscript]

@@ -43,16 +43,6 @@ package_finalize_items: delete_doc_directory
 archive_uri:            /qt/@QT_VERSION@/latest/android_armv5/linux_x64/qt5_addons.7z
 package_finalize_items: delete_doc_directory
 
-# QtQuick1 provided as separate installable component in installer
-[qt.56.qtquick1]
-[qt.56.qtquick1.android_armv5]
-archives:               56.qtquick1.android_armv5
-target_install_base:    /5.6/android_armv5
-[56.qtquick1.android_armv5]
-archive_uri:            /qt/@QT_VERSION@/latest/android_armv5/linux_x64/qt5_qtquick1.7z
-rpath_target:           /lib
-package_finalize_items: delete_doc_directory
-
 # QtScript provided as separate installable component in installer
 [qt.56.qtscript]
 [qt.56.qtscript.android_armv5]

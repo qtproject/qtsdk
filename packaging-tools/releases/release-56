@@ -13,7 +13,7 @@ mac-x64:                    installer-framework-build-mac-x64.7z
 [release.global]
 version:                        5.6.0
 version_tag:                    beta
-module_exclude_list:            qtdocgallery, qtfeedback, qtjsondb, qtpim, qtqa, qtrepotools, qtserialbus, qtsystems, qtquick1, qtwebkit, qtwebkit-examples
+module_exclude_list:            qtdocgallery, qtfeedback, qtjsondb, qtpim, qtqa, qtrepotools, qtserialbus, qtsystems
 module_separate_install_list:   qtwebengine, qtscript, qt3d, qtcanvas3d, qtlocation, qtquickcontrols, qtwebview
 arg_substitution_list:          @QT_VERSION@=%GLOBAL_VERSION%,
                                 @QT_VERSION_MINOR@=5.6,
