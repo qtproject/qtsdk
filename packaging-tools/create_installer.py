@@ -47,6 +47,8 @@ import os
 import shutil
 import sys
 import re
+import random
+import string
 from time import gmtime, strftime
 from optparse import OptionParser, Option
 import multiprocessing # to get the cpu core count
@@ -799,6 +801,10 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
     if not archive.package_strip_dirs:
         archive.package_strip_dirs = '0'
 
+    # Some archives to be downloaded may have same filenames and those archives will be saved to tmp
+    # directory before final installer creation. Ensure that the temporary archive names on the disk
+    # get unique filenames
+    random_temp_archive_prefix = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
     if package_raw_name.endswith('.7z') \
        and archive.package_strip_dirs == '0' \
        and not archive.package_finalize_items \
@@ -806,12 +812,12 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
        and sdk_component.target_install_base == '/' \
        and package_raw_name == archive.archive_name:
         print '     No repackaging actions required for the package, just download it directly to data directory'
-        downloadedArchive = os.path.normpath(data_dir_dest + os.sep + package_raw_name)
+        downloadedArchive = os.path.join(data_dir_dest, random_temp_archive_prefix + "_" + package_raw_name)
         # start download
         bld_utils.download(archive.archive_uri, downloadedArchive)
         return
 
-    downloadedArchive = os.path.normpath(install_dir + os.sep + package_raw_name)
+    downloadedArchive = os.path.join(install_dir, random_temp_archive_prefix + "_" + package_raw_name)
     # start download
     bld_utils.download(archive.archive_uri, downloadedArchive)
 
