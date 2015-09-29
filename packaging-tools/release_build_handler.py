@@ -654,8 +654,12 @@ def init_env():
     REPO_STAGING_SERVER_TEST_REPO           = STAGING_SRV_ONLINE_REPO_BASE_PATH + '/' + LICENSE + '/staging'
     REPO_STAGING_SERVER_TEST_REPO_PENDING   = STAGING_SRV_ONLINE_REPO_BASE_PATH + '/' + LICENSE + '/staging_pending'
     REPO_STAGING_SERVER_TEST_REPO_DIST_WORK = STAGING_SRV_ONLINE_REPO_BASE_PATH + '/' + LICENSE + '/production_dist_update_work'
-    PROD_SRV_REPO_BASE_PATH                 = STAGING_SRV_ONLINE_REPO_BASE_PATH + '/' + LICENSE + '/production'
-    PROD_SRV_REPO_PENDING_AREA_DIR          = STAGING_SRV_ONLINE_REPO_BASE_PATH + '/' + LICENSE + '/production_pending'
+    if LICENSE == 'enterprise':
+        PROD_SRV_REPO_BASE_PATH                 = STAGING_SRV_ONLINE_REPO_BASE_PATH + '/' + LICENSE + '/production'
+        PROD_SRV_REPO_PENDING_AREA_DIR          = STAGING_SRV_ONLINE_REPO_BASE_PATH + '/' + LICENSE + '/production_pending'
+    else:
+        PROD_SRV_REPO_BASE_PATH                 = os.environ['PROD_SRV_REPO_BASE_PATH']
+        PROD_SRV_REPO_PENDING_AREA_DIR          = os.environ['PROD_SRV_REPO_PENDING_AREA_DIR']
 
     REPO_STAGING_SERVER             = os.environ['PKG_STAGING_SERVER']
     REPO_STAGING_SERVER_UNAME       = os.environ['PKG_STAGING_SERVER_UNAME']
