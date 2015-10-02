@@ -1254,6 +1254,7 @@ def handle_qt_creator_build(bld_command):
         lock_keychain()
 
     # Qt Creator enterprise plugins
+    additional_qmake_arguments = ['CONFIG+=licensechecker']
     Plugin = collections.namedtuple('Plugin', ['name', 'path', 'dependencies'])
     if bld_command.license == 'enterprise':
         additional_plugins = [Plugin(name='licensechecker', path='licensechecker',
@@ -1269,6 +1270,10 @@ def handle_qt_creator_build(bld_command):
                               Plugin(name='isoiconbrowser', path='qtquickdesigner',
                                      dependencies=['licensechecker'])]
         if bldinstallercommon.is_linux_platform():
+            additional_qmake_arguments.extend(['PERFPARSER_BUNDLED_ELFUTILS=true',
+                                               'PERFPARSER_APP_DESTDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'libexec', 'qtcreator'),
+                                               'PERFPARSER_ELFUTILS_DESTDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'lib', 'qtcreator')])
+            additional_plugins.append(Plugin(name='perfparser', path='perfparser', dependencies=[]))
             additional_plugins.extend([Plugin(name='perfprofiler', path='perfprofiler',
                                               dependencies=['licensechecker']),
                                        Plugin(name='b2qt-qtcreator-plugin', path='b2qt-qtcreator-plugin',
@@ -1280,8 +1285,9 @@ def handle_qt_creator_build(bld_command):
                          '--qtc-build', os.path.join(WORK_DIR, 'qt-creator_build'),
                          '--qtc-dev', os.path.join(WORK_DIR, 'qt-creator'),
                          '--plugin-path', os.path.join(WORK_DIR, plugin.path),
-                         '--build-path', WORK_DIR,
-                         '--add-qmake-argument', 'CONFIG+=licensechecker']
+                         '--build-path', WORK_DIR]
+        for qmake_arg in additional_qmake_arguments:
+            cmd_arguments.extend(['--add-qmake-argument', qmake_arg])
 
         if not bldinstallercommon.is_mac_platform():
             cmd_arguments.extend(['--icu7z', file_url(os.path.join(WORK_DIR, 'qt-creator_temp', os.path.basename(bld_command.icu_libs)))])
