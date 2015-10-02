@@ -168,9 +168,9 @@ if not os.path.lexists(callerArguments.qt5path):
         'qt5_qtquickcontrols.7z'
     ]
     myGetQtBinaryWork = ThreadedWork("get and extract Qt 5 binaries")
-    bldinstallercommon.add_qt_download(myGetQtBinaryWork,
-        [(callerArguments.qt5_packages_url + '/' + package) for package in qt_packages],
-        callerArguments.qt5path, tempPath, callerArguments)
+    myGetQtBinaryWork.addTaskObject(bldinstallercommon.create_qt_download_task(
+            [(callerArguments.qt5_packages_url + '/' + package) for package in qt_packages],
+            callerArguments.qt5path, tempPath, callerArguments))
 
 ### add get installer base task
     myGetQtBinaryWork.addTaskObject(

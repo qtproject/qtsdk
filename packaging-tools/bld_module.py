@@ -241,8 +241,8 @@ qmakeBinary = os.path.abspath(os.path.join(callerArguments.qt5path, 'bin', 'qmak
 if not os.path.lexists(callerArguments.qt5path):
     # get Qt
     myGetQtBinaryWork = ThreadedWork("get and extract Qt 5 binary")
-    bldinstallercommon.add_qt_download(myGetQtBinaryWork, callerArguments.qt5_module_urls,
-                                       callerArguments.qt5path, tempPath, callerArguments)
+    myGetQtBinaryWork.addTaskObject(bldinstallercommon.create_qt_download_task(callerArguments.qt5_module_urls,
+                                       callerArguments.qt5path, tempPath, callerArguments))
     myGetQtBinaryWork.run()
 
     # Save QT_INSTALL_PREFIX

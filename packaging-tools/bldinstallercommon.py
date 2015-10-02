@@ -896,51 +896,78 @@ def remove_directories_by_type(base_path, search_pattern):
 ###############################
 # function
 ###############################
+def create_extract_function(file_path, target_path, caller_arguments = None, init_environment = None):
+    create_dirs(target_path)
+    working_dir = os.path.dirname(file_path)
+    if file_path.endswith('.tar.gz'):
+        return lambda: runCommand(['tar', 'zxf', file_path, '-C', target_path], working_dir, caller_arguments)
+    return lambda: runCommand(['7z', 'x', '-y', file_path, '-o'+target_path], working_dir, caller_arguments)
+
+###############################
+# function
+###############################
+def create_download_and_extract_tasks(url, target_path, temp_path, caller_arguments):
+    filename = os.path.basename(urlparse(url).path)
+    sevenzip_file = os.path.join(temp_path, filename)
+    download_task = Task('download "{0}" to "{1}"'.format(url, sevenzip_file))
+    download_task.addFunction(download, url, sevenzip_file)
+    extract_task = Task('extract "{0}" to "{1}"'.format(sevenzip_file, target_path))
+    extract_task.addFunction(create_extract_function(sevenzip_file, target_path, caller_arguments))
+    return (download_task, extract_task)
+
+###############################
+# function
+###############################
 def create_download_extract_task(url, target_path, temp_path, caller_arguments):
     filename = os.path.basename(urlparse(url).path)
     sevenzip_file = os.path.join(temp_path, filename)
     download_extract_task = Task("download {0} to {1} and extract it to {2}".format(url, sevenzip_file, target_path))
-
     download_extract_task.addFunction(download, url, sevenzip_file)
-    if filename.endswith('tar.gz'):
-        create_dirs(temp_path)
-        download_extract_task.addFunction(runCommand, "tar zxf {0} -C {1}".format(
-            sevenzip_file, target_path), temp_path, caller_arguments)
-    else:
-        download_extract_task.addFunction(runCommand, "7z x -y {0} -o{1}".format(
-            sevenzip_file, target_path), temp_path, caller_arguments)
+    download_extract_task.addFunction(create_extract_function(sevenzip_file, target_path, caller_arguments))
     return download_extract_task
 
 ###############################
 # function
 ###############################
-def add_qt_download(threaded_work, module_urls, target_qt5_path, temp_path, caller_arguments):
+def create_qt_download_task(module_urls, target_qt5_path, temp_path, caller_arguments):
+    qt_task = Task('download and extract Qt to "{0}"'.format(target_qt5_path))
+    download_work = ThreadedWork('download Qt packages to "{0}"'.format(temp_path))
+    unzip_task = Task('extracting packages to "{0}"'.format(target_qt5_path))
     # add Qt modules
     for module_url in module_urls:
         if is_content_url_valid(module_url):
-            threaded_work.addTaskObject(create_download_extract_task(module_url, target_qt5_path,
-                                                                     temp_path, caller_arguments))
+            (download_task, extract_task) = create_download_and_extract_tasks(module_url,
+                                                target_qt5_path, temp_path, caller_arguments)
+            download_work.addTaskObject(download_task)
+            unzip_task.addFunction(extract_task.do)
         else:
             print('warning: could not find "{0}" for download'.format(module_url))
     # add icu, d3dcompiler, opengl32, openssl
     target_path = os.path.join(target_qt5_path, 'bin' if is_win_platform() else 'lib')
     if not is_mac_platform() and hasattr(caller_arguments, 'icu7z') and caller_arguments.icu7z:
-        threaded_work.addTaskObject(create_download_extract_task(caller_arguments.icu7z,
-                                                                 target_path, temp_path,
-                                                                 caller_arguments))
+        (download_task, extract_task) = create_download_and_extract_tasks(caller_arguments.icu7z,
+                                                target_path, temp_path, caller_arguments)
+        download_work.addTaskObject(download_task)
+        unzip_task.addFunction(extract_task.do)
     if is_win_platform():
         if hasattr(caller_arguments, 'd3dcompiler7z') and caller_arguments.d3dcompiler7z:
-            threaded_work.addTaskObject(create_download_extract_task(caller_arguments.d3dcompiler7z,
-                                                                     target_path, temp_path,
-                                                                     caller_arguments))
+            (download_task, extract_task) = create_download_and_extract_tasks(caller_arguments.d3dcompiler7z,
+                                                    target_path, temp_path, caller_arguments)
+            download_work.addTaskObject(download_task)
+            unzip_task.addFunction(extract_task.do)
         if hasattr(caller_arguments, 'opengl32sw7z') and caller_arguments.opengl32sw7z:
-            threaded_work.addTaskObject(create_download_extract_task(caller_arguments.opengl32sw7z,
-                                                                     target_path, temp_path,
-                                                                     caller_arguments))
+            (download_task, extract_task) = create_download_and_extract_tasks(caller_arguments.opengl32sw7z,
+                                                    target_path, temp_path, caller_arguments)
+            download_work.addTaskObject(download_task)
+            unzip_task.addFunction(extract_task.do)
         if hasattr(caller_arguments, 'openssl7z') and caller_arguments.openssl7z:
-            threaded_work.addTaskObject(create_download_extract_task(caller_arguments.openssl7z,
-                                                                     target_path, temp_path,
-                                                                     caller_arguments))
+            (download_task, extract_task) = create_download_and_extract_tasks(caller_arguments.openssl7z,
+                                                    target_path, temp_path, caller_arguments)
+            download_work.addTaskObject(download_task)
+            unzip_task.addFunction(extract_task.do)
+    qt_task.addFunction(download_work.run)
+    qt_task.addFunction(unzip_task.do)
+    return qt_task
 
 def patch_qt(qt5_path):
     print("##### {0} #####".format("patch Qt"))
