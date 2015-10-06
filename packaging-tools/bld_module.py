@@ -166,6 +166,7 @@ parser.add_argument('--installcommand', help="this means usually make", default=
 parser.add_argument('--debug', help="use debug builds", action='store_true', default=False)
 parser.add_argument('--qt5_module_url', help="a file or url where to get a qt5 module's binary content that is needed for the build as 7z",
     dest='qt5_module_urls', action='append')
+parser.add_argument('--module-name', help='name of the module, used for the resulting 7zip file')
 parser.add_argument('--module_url', help="Git URL for Qt Module", required=False, default='')
 parser.add_argument('--module_branch', help="Git branch for Qt Module", required=False, default='')
 parser.add_argument('--module_dir', help="Local copy of Qt Module", required=False, default='')
@@ -186,7 +187,8 @@ if callerArguments.qt5path != os.path.abspath(callerArguments.qt5path):
         os.path.abspath(callerArguments.qt5path)))
     callerArguments.qt5path = os.path.abspath(callerArguments.qt5path)
 
-
+if not callerArguments.module_name:
+    callerArguments.module_name = os.environ['MODULE_NAME']
 
 tempPath = os.path.abspath(os.path.join(os.path.dirname(__file__), 'temp'))
 
@@ -203,7 +205,7 @@ elif callerArguments.module7z != '':
     myGetQtModule.run()
     qtModuleSourceDirectory = MODULE_SRC_DIR
 else:
-    print(("Using local copy of {0}").format(os.environ['MODULE_NAME']))
+    print(("Using local copy of {0}").format(callerArguments.module_name))
     qtModuleSourceDirectory = callerArguments.module_dir
 
 qtModuleBuildDirectory = qtModuleSourceDirectory + '_build'
@@ -324,7 +326,7 @@ if callerArguments.makeDocs:
     # make separate "doc.7z" for later use if needed
     doc_dir = bldinstallercommon.locate_directory(qtModuleInstallDirectory, 'doc')
     if doc_dir:
-        archive_name = os.environ['MODULE_NAME'] + '-' + os.environ['LICENSE'] + '-doc-' + os.environ['MODULE_VERSION'] + '.7z'
+        archive_name = callerArguments.module_name + '-' + os.environ['LICENSE'] + '-doc-' + os.environ['MODULE_VERSION'] + '.7z'
         ret = runCommand(['7z', 'a', os.path.join('doc_archives', archive_name), doc_dir],
                          currentWorkingDirectory = os.path.dirname(os.path.realpath(__file__)))
         if ret:
@@ -343,7 +345,7 @@ if tag_file:
 patch_archive(dir_to_archive, [callerArguments.qt5path, dir_to_archive], qt_install_prefix)
 
 # create 7z archive
-archive_cmd = ['7z', 'a', os.path.join('module_archives', 'qt5_' + os.environ['MODULE_NAME'] + '.7z'),
+archive_cmd = ['7z', 'a', os.path.join('module_archives', 'qt5_' + callerArguments.module_name + '.7z'),
                dir_to_archive]
 ret = runCommand(archive_cmd, currentWorkingDirectory = os.path.dirname(os.path.realpath(__file__)))
 if ret:
