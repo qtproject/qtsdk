@@ -180,6 +180,10 @@ parser.add_argument('--collectDocs', help="Should the docs be collected for this
 if not bldinstallercommon.is_mac_platform():
     parser.add_argument('--icu7z', help="a file or url where it get icu libs as 7z", required=False, default='')
 
+if bldinstallercommon.is_win_platform():
+    parser.add_argument('--environment_batch', help="batch file that sets up environment")
+    parser.add_argument('--environment_batch_argument', help="if the batch file needs an argument just add it with this argument")
+
 callerArguments = parser.parse_args()
 
 # cleanup some values inside the callerArguments object

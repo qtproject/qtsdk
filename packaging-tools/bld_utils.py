@@ -53,6 +53,9 @@ import shutil
 import subprocess
 import threading
 import collections
+import urlparse
+import urllib
+
 #fix that there was var with name "type" in a calling test for runCommand when trying
 #to use __builtin__.type()
 import __builtin__
@@ -403,3 +406,6 @@ def isGitDirectory(repository_path):
         return False
     gitConfigDir = os.path.abspath(os.path.join(repository_path, '.git'))
     return os.path.lexists(gitConfigDir)
+
+def file_url(file_path):
+    return urlparse.urljoin('file:', urllib.pathname2url(file_path))

@@ -54,7 +54,6 @@ import re
 import platform
 from time import gmtime, strftime
 import urllib
-import urlparse
 import mkqt5bld
 import build_doc
 import bld_ifw_tools
@@ -129,6 +128,7 @@ class BldCommand:
     execute_extra_module_build_cycle_binary = 'build_qt5_app'
     execute_ifw_bld                         = 'ifw'
     execute_creator_bld                     = 'build_creator'
+    execute_gammaray_bld                    = 'build_gammaray'
     execute_repo_bld                        = 'repo_build'
     execute_offline_inst_bld                = 'offline_installer'
     execute_online_inst_bld                 = 'online_installer'
@@ -255,6 +255,7 @@ class BldCommand:
         commands += [self.execute_extra_module_build_cycle_binary]
         commands += [self.execute_ifw_bld]
         commands += [self.execute_creator_bld]
+        commands += [self.execute_gammaray_bld]
         commands += [self.execute_repo_bld]
         commands += [self.execute_offline_inst_bld]
         commands += [self.execute_online_inst_bld]
@@ -1197,14 +1198,78 @@ def handle_qt_release_build(bld_command):
                     cmd_args = [SCP_COMMAND, file_name, bld_command.pkg_server_addr + ':' + latest_qt_dir + '/src/doc/']
                     bldinstallercommon.do_execute_sub_process(cmd_args, local_archives_dir)
 
+###############################
+# handle_gammaray_build
+###############################
+def handle_gammaray_build(bld_command):
+    sanity_check_packaging_server(bld_command)
+    gammaray_version = os.environ['GAMMARAY_VERSION']
+    qt_base_url = (bld_command.pkg_server_addr_http + '/' + os.environ['QT_BASE_PATH']
+                   + '/' + BIN_TARGET_DIRS[bld_command.target_env])
+    graphviz_filename = os.environ['GRAPHVIZ_BASE_FILENAME'] + '-' + bld_command.target_env + '.7z'
+    graphviz_url = (bld_command.pkg_server_addr_http + '/' + os.environ['GRAPHVIZ_BASE_PATH']
+                    + '/' + graphviz_filename)
+    graphviz_download_filepath = os.path.join(WORK_DIR, graphviz_filename)
+    graphviz_target_path = os.path.join(WORK_DIR, 'graphviz')
+    qt_modules = ['essentials', 'addons']
+
+    # download and extract graphviz
+    bld_utils.download(graphviz_url, graphviz_download_filepath)
+    extract_graphviz_cmd = ['7z', 'x', '-y', graphviz_download_filepath,
+                   '-o' + graphviz_target_path]
+    bldinstallercommon.do_execute_sub_process(extract_graphviz_cmd, WORK_DIR)
+
+    def common_gammaray_args():
+        cmd_args = ['python', '-u', os.path.join(SCRIPT_ROOT_DIR, 'bld_module.py'),
+                    '--clean',
+                    '--use-cmake']
+        for module in qt_modules:
+            cmd_args.extend(['--qt5_module_url', qt_base_url + '/qt5_' + module + '.7z'])
+        if not bldinstallercommon.is_mac_platform():
+            cmd_args.extend(['--icu7z', bld_command.icu_libs])
+        if bldinstallercommon.is_win_platform():
+            cmd_args.extend(['--add-config-arg=-G', '--add-config-arg=NMake Makefiles',
+                             '--environment_batch', os.path.normpath('C:/Program Files/Microsoft Visual Studio 12.0/VC/vcvarsall.bat'),
+                             '--environment_batch_argument', 'x86',
+                             '--buildcommand', 'nmake',
+                             '--installcommand', 'nmake'])
+        return cmd_args
+
+    # build kdstatemachineeditor
+    cmd_args = common_gammaray_args()
+    cmd_args.extend(['--module_dir', os.path.join(WORK_DIR, 'kdsme'),
+                     '--module-name', 'kdsme',
+                     '--qt5path', os.path.join(WORK_DIR, 'kdsme_qt5_install'),
+                     '--add-config-arg=-DBUILD_EXAMPLES=OFF',
+                     '--add-config-arg=-DBUILD_TESTING=OFF',
+                     '--add-config-arg=-DGRAPHVIZ_ROOT={0}'.format(graphviz_target_path)])
+    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR)
+
+    # build gammaray
+    cmd_args = common_gammaray_args()
+    cmd_args.extend(['--module_dir', os.path.join(WORK_DIR, 'gammaray'),
+                     '--module-name', 'gammaray',
+                     '--qt5path', os.path.join(WORK_DIR, 'gammaray_qt5_install'),
+                     '--add-config-arg=-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=FALSE',
+                     '--qt5_module_url', bld_utils.file_url(os.path.join(SCRIPT_ROOT_DIR, 'module_archives', 'qt5_kdsme.7z'))])
+    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR)
+
+    # upload
+    base_path = bld_command.path + '/gammaray/' + gammaray_version
+    base_upload_path = base_path + '/' + bld_command.build_number
+    upload_path =  base_upload_path + '/' + BIN_TARGET_DIRS[bld_command.target_env]
+    latest_path = base_path + '/latest'
+    create_remote_dirs(bld_command.pkg_server_addr, upload_path)
+    update_latest_link(bld_command, base_upload_path, latest_path)
+    for module in ['kdsme', 'gammaray']:
+        cmd_args = [SCP_COMMAND, os.path.join(SCRIPT_ROOT_DIR, 'module_archives', 'qt5_{0}.7z'.format(module)),
+                    bld_command.pkg_server_addr + ':' + upload_path + '/']
+        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR)
 
 ###############################
 # handle_qt_creator_build
 ###############################
 def handle_qt_creator_build(bld_command):
-    def file_url(file_path):
-        return urlparse.urljoin('file:', urllib.pathname2url(file_path))
-
     sanity_check_packaging_server(bld_command)
     target_env_dir = BIN_TARGET_DIRS[bld_command.target_env]
 
@@ -1276,7 +1341,7 @@ def handle_qt_creator_build(bld_command):
     for plugin in additional_plugins:
         cmd_arguments = ['python', '-u', os.path.join(SCRIPT_ROOT_DIR, 'bld_qtcreator_plugins.py'),
                          '--clean',
-                         '--qt5_packages_url', file_url(os.path.join(WORK_DIR, 'qt-creator_temp')),
+                         '--qt5_packages_url', bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_temp')),
                          '--qtc-build', os.path.join(WORK_DIR, 'qt-creator_build'),
                          '--qtc-dev', os.path.join(WORK_DIR, 'qt-creator'),
                          '--plugin-path', os.path.join(WORK_DIR, plugin.path),
@@ -1285,12 +1350,12 @@ def handle_qt_creator_build(bld_command):
             cmd_arguments.extend(['--add-qmake-argument', qmake_arg])
 
         if not bldinstallercommon.is_mac_platform():
-            cmd_arguments.extend(['--icu7z', file_url(os.path.join(WORK_DIR, 'qt-creator_temp', os.path.basename(bld_command.icu_libs)))])
+            cmd_arguments.extend(['--icu7z', bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_temp', os.path.basename(bld_command.icu_libs)))])
         if bldinstallercommon.is_win_platform():
-            cmd_arguments.extend(['--d3dcompiler7z', file_url(os.path.join(WORK_DIR, 'qt-creator_temp', os.path.basename(d3d_url))),
-                                  '--opengl32sw7z', file_url(os.path.join(WORK_DIR, 'qt-creator_temp', os.path.basename(opengl_url)))])
+            cmd_arguments.extend(['--d3dcompiler7z', bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_temp', os.path.basename(d3d_url))),
+                                  '--opengl32sw7z', bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_temp', os.path.basename(opengl_url)))])
             if bld_command.openssl_libs:
-                cmd_args.extend(['--openssl7z', file_url(os.path.join(WORK_DIR, 'qt-creator_temp', os.path.basename(bld_command.openssl_libs)))])
+                cmd_args.extend(['--openssl7z', bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_temp', os.path.basename(bld_command.openssl_libs)))])
         libs_paths = []
         for dependency_name in plugin.dependencies:
             matches = [dep for dep in additional_plugins if dep.name == dependency_name]
@@ -1981,6 +2046,9 @@ def main():
     # QtCreator specific
     elif bld_command.command == BldCommand.execute_creator_bld:
         handle_qt_creator_build(bld_command)
+    # GammaRay Qt module
+    elif bld_command.command == BldCommand.execute_gammaray_bld:
+        handle_gammaray_build(bld_command)
     # Qt Installer-Framework specific
     elif bld_command.command == BldCommand.execute_ifw_bld:
         handle_ifw_build(bld_command)
