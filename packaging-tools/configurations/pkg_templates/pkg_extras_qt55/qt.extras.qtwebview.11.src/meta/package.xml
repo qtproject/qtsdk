@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt WebView Src</DisplayName>
     <Description></Description>
-    <Version>1.1.0-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>1.1.1-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Virtual>true</Virtual>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>

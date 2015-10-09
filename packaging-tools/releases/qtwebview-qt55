@@ -8,7 +8,7 @@ linux-x64:                  installer-framework-build-linux-x64.7z
 mac-x64:                    installer-framework-build-mac-x64.7z
 
 [release.global]
-version:                    1.1.0
+version:                    1.1.1
 version_tag:
 arg_substitution_list:      @QT_VERSION_MINOR@=5.5,
                             @QT_INSTALL_DIR_NAME@=5.5,

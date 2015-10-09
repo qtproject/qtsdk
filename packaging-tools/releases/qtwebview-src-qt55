@@ -8,7 +8,7 @@ linux-x64:                  installer-framework-build-linux-x64.7z
 mac-x64:                    installer-framework-build-mac-x64.7z
 
 [release.global]
-version:                    1.1.0
+version:                    1.1.1
 version_tag:
 arg_substitution_list:      @QTWEBVIEW_VERSION@=%GLOBAL_VERSION%
 
