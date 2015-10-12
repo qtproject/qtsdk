@@ -220,12 +220,14 @@ if __name__ == "__main__":
              callerArguments.qt5path, tempPath, callerArguments))
 
     # add get installer base task
-    download_packages_work.addTaskObject(
-        bldinstallercommon.create_download_extract_task(callerArguments.installerbase7z, tempPath, tempPath, callerArguments))
+    if callerArguments.installerbase7z:
+        download_packages_work.addTaskObject(
+            bldinstallercommon.create_download_extract_task(callerArguments.installerbase7z, tempPath, tempPath, callerArguments))
     installerPath = os.path.join(tempPath, 'ifw-bld')
 
     # run get Qt 5 tasks
-    download_packages_work.run()
+    if download_packages_work.taskNumber != 0:
+        download_packages_work.run()
 
     if need_to_install_qt:
         patch_qt_pri_files(callerArguments.qt5path)
@@ -235,7 +237,9 @@ if __name__ == "__main__":
 
     environment = get_common_environment(callerArguments.qt5path, callerArguments)
     environment["INSTALL_BASENAME"] = "qt-creator"
-    environment["IFW_PATH"] = installerPath
+    environment["INSTALLER_ARCHIVE"] = "qtcreator.7z"
+    if callerArguments.installerbase7z:
+        environment["IFW_PATH"] = installerPath
 
     if callerArguments.debug:
         buildType = 'debug'
@@ -313,8 +317,13 @@ if __name__ == "__main__":
         init_environment = environment)
 
     # Qt Creator standalone package
-    runInstallCommand('installer', qtCreatorBuildDirectory, callerArguments = callerArguments,
-        init_environment = environment)
+    if callerArguments.installerbase7z:
+        runInstallCommand('installer', qtCreatorBuildDirectory, callerArguments = callerArguments,
+            init_environment = environment)
+        if bldinstallercommon.is_mac_platform():
+            runInstallCommand('codesign_installer dmg_installer', qtCreatorBuildDirectory,
+                callerArguments = callerArguments, init_environment = environment)
+
     if bldinstallercommon.is_mac_platform():
-        runInstallCommand('codesign_installer dmg dmg_installer', qtCreatorBuildDirectory,
+        runInstallCommand('dmg', qtCreatorBuildDirectory,
             callerArguments = callerArguments, init_environment = environment)
