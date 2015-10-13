@@ -212,6 +212,7 @@ if __name__ == "__main__":
             'qt5_qtscript.7z',
             'qt5_qtwebkit.7z',
             'qt5_qtlocation.7z',
+            'qt5_qtpositioning.7z',
             'qt5_qtquickcontrols.7z'
         ]
         download_packages_work.addTaskObject(bldinstallercommon.create_qt_download_task(
