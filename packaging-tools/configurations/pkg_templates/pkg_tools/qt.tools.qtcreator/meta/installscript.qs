@@ -97,7 +97,7 @@ Component.prototype.reactOnTargetDirChange = function(key, value)
             component.qtCreatorBinaryPath = component.qtCreatorBinaryPath.replace(/\/+/g, "/");
         } else {
             installer.setValue("QtCreatorInstallerSettingsFile", value + "/%TARGET_INSTALL_DIR%/share/qtcreator/QtProject/QtCreator.ini");
-            installer.setValue("SDKToolBinary", value + "/%TARGET_INSTALL_DIR%/bin/sdktool");
+            installer.setValue("SDKToolBinary", value + "/%TARGET_INSTALL_DIR%/libexec/qtcreator/sdktool");
             component.qtCreatorBinaryPath = value + "/%TARGET_INSTALL_DIR%/bin/qtcreator";
             // fix duplicate forward slashes in path
             component.qtCreatorBinaryPath = component.qtCreatorBinaryPath.replace(/\/+/g, "/");
