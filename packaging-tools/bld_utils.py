@@ -357,31 +357,30 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None, init_en
         raise Exception("Different exit code then expected({0}): {1}{2}".format(expectedExitCodes, exitCode, prettyLastOutput))
     return exitCode
 
-def runInstallCommand(arguments = 'install', currentWorkingDirectory = None, callerArguments = None, init_environment = None):
+def runInstallCommand(arguments = ['install'], currentWorkingDirectory = None, callerArguments = None, init_environment = None):
     if init_environment is None:
         init_environment = {}
-    installcommand = 'make'
     if hasattr(callerArguments, 'installcommand') and callerArguments.installcommand:
-        installcommand = callerArguments.installcommand
+        installcommand = callerArguments.installcommand.split()
     else:
-        installcommand = ' '.join((installcommand, "-j1"))
+        installcommand = ['make', '-j1']
         # had the case that the -j1 on the make command was ignored if there is a MAKEFLAGS variable
         if os.name != 'nt':
             init_environment["MAKEFLAGS"] = "-j1"
 
     if arguments:
-        installcommand = ' '.join((installcommand, arguments))
+        installcommand.extend(arguments if __builtin__.type(arguments) is list else arguments.split())
     runCommand(installcommand, currentWorkingDirectory, callerArguments, init_environment = init_environment)
 
 def runBuildCommand(arguments = None, currentWorkingDirectory = None, callerArguments = None, init_environment = None):
     if init_environment is None:
         init_environment = {}
-    buildcommand = 'make'
+    buildcommand = ['make']
     if hasattr(callerArguments, 'buildcommand') and callerArguments.buildcommand:
-        buildcommand = callerArguments.buildcommand
+        buildcommand = callerArguments.buildcommand.split()
 
     if arguments:
-        buildcommand = ' '.join((buildcommand, arguments))
+        buildcommand.extend(arguments if __builtin__.type(arguments) is list else arguments.split())
     runCommand(buildcommand, currentWorkingDirectory, callerArguments, init_environment = init_environment)
 
 def getReturnValue(command, currentWorkingDirectory = None, init_environment = None, callerArguments = None):
