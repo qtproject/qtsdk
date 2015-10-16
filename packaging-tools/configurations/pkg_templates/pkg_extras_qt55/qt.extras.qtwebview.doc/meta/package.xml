@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt WebView Documentation</DisplayName>
     <Description></Description>
-    <Version>1.1.1-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>1.1.1-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.tools, qt.tools.qtcreator</Dependencies>
     <Virtual>true</Virtual>
