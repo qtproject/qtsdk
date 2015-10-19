@@ -43,6 +43,13 @@ import bldinstallercommon
 
 locationDir = "qt5_qtlocation"
 positioningDir = "qt5_qtpositioning"
+geoservicesDir = "geoservices"
+geoLocationHeaders = [QGeoLocation,
+                      qgeolocation.h,
+                      qdeclarativegeolocation_p.h,
+                      qlocationutils_p.h,
+                      qgeolocation_p.h]
+
 
 ###############################
 # function
@@ -56,29 +63,31 @@ def do_content_comparison(pkgLocation, fileCount):
     if fileCount < len(pkgFileList):
         diff = len(pkgFileList) - fileCount
         # sys.exit('Exiting, file count difference found: %s ' % diff)
-
+d
 ###############################
 # function
 ###############################
 def do_cleanup(regExp, pkgLocation):
-    geoservicesDir = "geoservices"
-    print("CLEANUP: ", pkgLocation)
+    print("Cleanup: ", pkgLocation)
     os.chdir(pkgLocation)
     for root, dirs, files in os.walk(pkgLocation):
         for dirName in dirs:
             if regExp.findall(dirName):
-                print("REMOVING DIR: ", os.path.join(root, dirName))
+                print("Removing dir: ", os.path.join(root, dirName))
                 shutil.rmtree(os.path.join(root, dirName))
             if geoservicesDir in dirName and positioningDir in pkgLocation:
                 shutil.rmtree(os.path.join(root, dirName))
         for fileName in files:
             if regExp.findall(fileName):
                 if os.path.islink(os.path.join(root, fileName)):
-                    print("UNLINK: ", os.path.join(root, fileName))
+                    print("Unlink: ", os.path.join(root, fileName))
                     os.unlink(os.path.join(root, fileName))
                 if os.path.isfile(os.path.join(root, fileName)):
-                    print("REMOVING FILE: ", os.path.join(root, fileName))
-                    os.remove(os.path.join(root, fileName))
+                    if fileName in geoLocationHeaders and positioningDir in pkgLocation:
+                        print("Geolocation header, not removing: ", os.path.join(root, fileName))
+                    else:
+                        print("Removing file: ", os.path.join(root, fileName))
+                        os.remove(os.path.join(root, fileName))
 
 ###############################
 # function
