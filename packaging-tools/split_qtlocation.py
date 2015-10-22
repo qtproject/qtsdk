@@ -44,11 +44,11 @@ import bldinstallercommon
 locationDir = "qt5_qtlocation"
 positioningDir = "qt5_qtpositioning"
 geoservicesDir = "geoservices"
-geoLocationHeaders = [QGeoLocation,
-                      qgeolocation.h,
-                      qdeclarativegeolocation_p.h,
-                      qlocationutils_p.h,
-                      qgeolocation_p.h]
+geoLocationHeaders = ['QGeoLocation',
+                      'qgeolocation.h',
+                      'qdeclarativegeolocation_p.h',
+                      'qlocationutils_p.h',
+                      'qgeolocation_p.h']
 
 
 ###############################
@@ -63,7 +63,7 @@ def do_content_comparison(pkgLocation, fileCount):
     if fileCount < len(pkgFileList):
         diff = len(pkgFileList) - fileCount
         # sys.exit('Exiting, file count difference found: %s ' % diff)
-d
+
 ###############################
 # function
 ###############################
