@@ -370,7 +370,7 @@ def runInstallCommand(arguments = ['install'], currentWorkingDirectory = None, c
 
     if arguments:
         installcommand.extend(arguments if __builtin__.type(arguments) is list else arguments.split())
-    runCommand(installcommand, currentWorkingDirectory, callerArguments, init_environment = init_environment)
+    return runCommand(installcommand, currentWorkingDirectory, callerArguments, init_environment = init_environment)
 
 def runBuildCommand(arguments = None, currentWorkingDirectory = None, callerArguments = None, init_environment = None):
     if init_environment is None:
@@ -381,7 +381,7 @@ def runBuildCommand(arguments = None, currentWorkingDirectory = None, callerArgu
 
     if arguments:
         buildcommand.extend(arguments if __builtin__.type(arguments) is list else arguments.split())
-    runCommand(buildcommand, currentWorkingDirectory, callerArguments, init_environment = init_environment)
+    return runCommand(buildcommand, currentWorkingDirectory, callerArguments, init_environment = init_environment)
 
 def getReturnValue(command, currentWorkingDirectory = None, init_environment = None, callerArguments = None):
     if init_environment is None:
