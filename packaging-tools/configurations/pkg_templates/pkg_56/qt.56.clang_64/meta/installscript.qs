@@ -3,7 +3,7 @@
 ** Copyright (C) 2015 The Qt Company Ltd.
 ** Contact: http://www.qt.io/licensing/
 **
-** This file is part of the QtCore module of the Qt Toolkit.
+** This file is part of the release tools of the Qt Toolkit.
 **
 ** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
@@ -97,10 +97,6 @@ Component.prototype.createOperations = function()
         // patch qt edition
         var qconfigFile = qtPath + "/mkspecs/qconfig.pri";
         component.addOperation("LineReplace", qconfigFile, "QT_EDITION =", "QT_EDITION = OpenSource");
-
-        //QTBUG-37650
-        patchQtAssistant(component, installationPath, "Qt-5.6");
-
     } catch(e) {
         print(e);
     }

@@ -3,7 +3,7 @@
 ** Copyright (C) 2015 The Qt Company Ltd.
 ** Contact: http://www.qt.io/licensing/
 **
-** This file is part of the QtCore module of the Qt Toolkit.
+** This file is part of the release tools of the Qt Toolkit.
 **
 ** $QT_BEGIN_LICENSE:LGPL21$
 ** Commercial License Usage
@@ -51,6 +51,7 @@ function Component()
 
         installer.componentByName("qt.56.win32_msvc2013").setValue("Default", "false");
         installer.componentByName("qt.56.win64_msvc2013_64").setValue("Default", "false");
+
         installer.componentByName("qt.56.win32_msvc2015").setValue("Default", "false");
         installer.componentByName("qt.56.win64_msvc2015_64").setValue("Default", "false");
 
