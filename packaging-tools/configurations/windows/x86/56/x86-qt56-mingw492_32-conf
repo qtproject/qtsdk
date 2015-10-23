@@ -33,18 +33,64 @@
 
 
 [qt.56.win32_mingw492]
-archives:               56.win32_mingw492.essentials,
-                        56.win32_mingw492.addons,
+archives:               56.win32_mingw492.qtbase,
+                        56.win32_mingw492.qtconnectivity,
+                        56.win32_mingw492.qtactiveqt,
+                        56.win32_mingw492.qtmultimedia,
+                        56.win32_mingw492.qttranslations,
+                        56.win32_mingw492.qtgraphicaleffects,
+                        56.win32_mingw492.qtsvg,
+                        56.win32_mingw492.qtdeclarative,
+                        56.win32_mingw492.qtwinextras,
+                        56.win32_mingw492.qtimageformats,
+                        56.win32_mingw492.qttools,
+                        56.win32_mingw492.qtxmlpatterns,
+                        56.win32_mingw492.qtsensors,
+#                        56.win32_mingw492.qtenginio,
+                        56.win32_mingw492.qtwebsockets,
+                        56.win32_mingw492.qtwebchannel,
+                        56.win32_mingw492.qtpositioning,
+                        56.win32_mingw492.qtserialport,
                         56.win32_mingw492.icu_541.mingw_32,
                         56.win32_mingw492.runtime,
                         56.win32_mingw492.opengl32sw.x86
 target_install_base:    /5.6/mingw492_32
-[56.win32_mingw492.essentials]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_mingw492_x86/qt5_essentials.7z
-package_finalize_items: delete_doc_directory
-[56.win32_mingw492.addons]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_mingw492_x86/qt5_addons.7z
-package_finalize_items: delete_doc_directory
+[56.win32_mingw492.qtbase]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtbase/qtbase-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
+[56.win32_mingw492.qtconnectivity]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtconnectivity/qtconnectivity-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
+[56.win32_mingw492.qtactiveqt]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtactiveqt/qtactiveqt-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
+[56.win32_mingw492.qtmultimedia]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtmultimedia/qtmultimedia-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
+[56.win32_mingw492.qttranslations]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qttranslations/qttranslations-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
+[56.win32_mingw492.qtgraphicaleffects]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtgraphicaleffects/qtgraphicaleffects-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
+[56.win32_mingw492.qtsvg]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtsvg/qtsvg-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
+[56.win32_mingw492.qtdeclarative]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdeclarative/qtdeclarative-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
+[56.win32_mingw492.qtwinextras]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwinextras/qtwinextras-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
+[56.win32_mingw492.qtimageformats]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtimageformats/qtimageformats-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
+[56.win32_mingw492.qttools]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qttools/qttools-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
+[56.win32_mingw492.qtxmlpatterns]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtxmlpatterns/qtxmlpatterns-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
+[56.win32_mingw492.qtsensors]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtsensors/qtsensors-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
+[56.win32_mingw492.qtenginio]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtenginio/qtenginio-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
+[56.win32_mingw492.qtwebsockets]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebsockets/qtwebsockets-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
+[56.win32_mingw492.qtwebchannel]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebchannel/qtwebchannel-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
+[56.win32_mingw492.qtpositioning]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtpositioning-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
+[56.win32_mingw492.qtserialport]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialport/qtserialport-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
 [56.win32_mingw492.icu_541.mingw_32]
 archive_uri:            http://download.qt.io/development_releases/prebuilt/icu/prebuilt/54.1/icu-win-MinGW4.9.2-Windows7-x86.7z
 target_install_dir:     /bin
@@ -55,15 +101,14 @@ target_install_dir:     /bin
 archive_uri:            http://download.qt.io/development_releases/prebuilt/llvmpipe/windows/opengl32sw-32.7z
 target_install_dir:     /bin
 
+
 # QtScript provided as separate installable component in installer
 [qt.56.qtscript]
 [qt.56.qtscript.win32_mingw492]
 archives:               56.qtscript.win32_mingw492
 target_install_base:    /5.6/mingw492_32
 [56.qtscript.win32_mingw492]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_mingw492_x86/qt5_qtscript.7z
-rpath_target:           /lib
-package_finalize_items: delete_doc_directory
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
 
 # QtQuickControls provided as separate installable component in installer
 [qt.56.qtquickcontrols]
@@ -71,9 +116,15 @@ package_finalize_items: delete_doc_directory
 archives:               56.qtquickcontrols.win32_mingw492
 target_install_base:    /5.6/mingw492_32
 [56.qtquickcontrols.win32_mingw492]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_mingw492_x86/qt5_qtquickcontrols.7z
-rpath_target:
-package_finalize_items: delete_doc_directory
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcontrols-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
+
+# QtQuickControls2 provided as separate installable component in installer
+[qt.56.qtquickcontrols2]
+[qt.56.qtquickcontrols2.win32_mingw492]
+archives:               56.qtquickcontrols2.win32_mingw492
+target_install_base:    /5.6/mingw492_32
+[56.qtquickcontrols2.win32_mingw492]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickcontrols2-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
 
 # QtLocation provided as separate installable component in installer
 [qt.56.qtlocation]
@@ -81,9 +132,7 @@ package_finalize_items: delete_doc_directory
 archives:               56.qtlocation.win32_mingw492
 target_install_base:    /5.6/mingw492_32
 [56.qtlocation.win32_mingw492]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_mingw492_x86/qt5_qtlocation.7z
-rpath_target:
-package_finalize_items: delete_doc_directory
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
 
 # Qt3D provided as separate installable component in installer
 [qt.56.qt3d]
@@ -91,9 +140,7 @@ package_finalize_items: delete_doc_directory
 archives:               56.qt3d.win32_mingw492
 target_install_base:    /5.6/mingw492_32
 [56.qt3d.win32_mingw492]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_mingw492_x86/qt5_qt3d.7z
-rpath_target:
-package_finalize_items: delete_doc_directory
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
 
 # QtCanvas3D provided as separate installable component in installer
 [qt.56.qtcanvas3d]
@@ -101,6 +148,4 @@ package_finalize_items: delete_doc_directory
 archives:               56.qtcanvas3d.win32_mingw492
 target_install_base:    /5.6/mingw492_32
 [56.qtcanvas3d.win32_mingw492]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_mingw492_x86/qt5_qtcanvas3d.7z
-rpath_target:
-package_finalize_items: delete_doc_directory
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
