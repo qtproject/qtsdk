@@ -33,15 +33,56 @@
 
 
 [qt.56.android_armv7]
-archives:               56.android_armv7.essentials,
-                        56.android_armv7.addons
+archives:               56.android_armv7.qtbase,
+                        56.android_armv7.qtconnectivity,
+                        56.android_armv7.qtandroidextras,
+                        56.android_armv7.qtwebchannel,
+                        56.android_armv7.qtmultimedia,
+                        56.android_armv7.qttranslations,
+                        56.android_armv7.qtgraphicaleffects,
+                        56.android_armv7.qtsvg,
+                        56.android_armv7.qtdeclarative,
+                        56.android_armv7.qtwebsockets,
+                        56.android_armv7.qtimageformats,
+                        56.android_armv7.qttools,
+                        56.android_armv7.qtxmlpatterns,
+                        56.android_armv7.qtsensors,
+                        56.android_armv7.qtpositioning,
+                        56.android_armv7.qtserialport
 target_install_base:    /5.6/android_armv7
-[56.android_armv7.essentials]
-archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/linux_x64/qt5_essentials.7z
-package_finalize_items: delete_doc_directory
-[56.android_armv7.addons]
-archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/linux_x64/qt5_addons.7z
-package_finalize_items: delete_doc_directory
+[56.android_armv7.qtbase]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtbase/qtbase-Linux-RHEL_6_6-GCC-Android-Android_22-ARMv7.7z
+[56.android_armv7.qtconnectivity]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtconnectivity/qtconnectivity-Linux-RHEL_6_6-GCC-Android-Android_22-ARMv7.7z
+[56.android_armv7.qtandroidextras]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtandroidextras/qtandroidextras-Linux-RHEL_6_6-GCC-Android-Android_22-ARMv7.7z
+[56.android_armv7.qtwebchannel]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebchannel/qtwebchannel-Linux-RHEL_6_6-GCC-Android-Android_22-ARMv7.7z
+[56.android_armv7.qtmultimedia]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtmultimedia/qtmultimedia-Linux-RHEL_6_6-GCC-Android-Android_22-ARMv7.7z
+[56.android_armv7.qttranslations]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qttranslations/qttranslations-Linux-RHEL_6_6-GCC-Android-Android_22-ARMv7.7z
+[56.android_armv7.qtgraphicaleffects]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtgraphicaleffects/qtgraphicaleffects-Linux-RHEL_6_6-GCC-Android-Android_22-ARMv7.7z
+[56.android_armv7.qtsvg]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtsvg/qtsvg-Linux-RHEL_6_6-GCC-Android-Android_22-ARMv7.7z
+[56.android_armv7.qtdeclarative]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdeclarative/qtdeclarative-Linux-RHEL_6_6-GCC-Android-Android_22-ARMv7.7z
+[56.android_armv7.qtwebsockets]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebsockets/qtwebsockets-Linux-RHEL_6_6-GCC-Android-Android_22-ARMv7.7z
+[56.android_armv7.qtimageformats]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtimageformats/qtimageformats-Linux-RHEL_6_6-GCC-Android-Android_22-ARMv7.7z
+[56.android_armv7.qttools]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qttools/qttools-Linux-RHEL_6_6-GCC-Android-Android_22-ARMv7.7z
+[56.android_armv7.qtxmlpatterns]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtxmlpatterns/qtxmlpatterns-Linux-RHEL_6_6-GCC-Android-Android_22-ARMv7.7z
+[56.android_armv7.qtsensors]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtsensors/qtsensors-Linux-RHEL_6_6-GCC-Android-Android_22-ARMv7.7z
+[56.android_armv7.qtpositioning]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtpositioning-Linux-RHEL_6_6-GCC-Android-Android_22-ARMv7.7z
+[56.android_armv7.qtserialport]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialport/qtserialport-Linux-RHEL_6_6-GCC-Android-Android_22-ARMv7.7z
+
 
 # QtScript provided as separate installable component in installer
 [qt.56.qtscript]
@@ -49,9 +90,7 @@ package_finalize_items: delete_doc_directory
 archives:               56.qtscript.android_armv7
 target_install_base:    /5.6/android_armv7
 [56.qtscript.android_armv7]
-archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/linux_x64/qt5_qtscript.7z
-rpath_target:           /lib
-package_finalize_items: delete_doc_directory
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-Linux-RHEL_6_6-GCC-Android-Android_22-ARMv7.7z
 
 # QtQuickControls provided as separate installable component in installer
 [qt.56.qtquickcontrols]
@@ -59,9 +98,15 @@ package_finalize_items: delete_doc_directory
 archives:               56.qtquickcontrols.android_armv7
 target_install_base:    /5.6/android_armv7
 [56.qtquickcontrols.android_armv7]
-archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/linux_x64/qt5_qtquickcontrols.7z
-rpath_target:           /lib
-package_finalize_items: delete_doc_directory
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcontrols-Linux-RHEL_6_6-GCC-Android-Android_22-ARMv7.7z
+
+# QtQuickControls2 provided as separate installable component in installer
+[qt.56.qtquickcontrols2]
+[qt.56.qtquickcontrols2.android_armv7]
+archives:               56.qtquickcontrols2.android_armv7
+target_install_base:    /5.6/android_armv7
+[56.qtquickcontrols2.android_armv7]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickcontrols2-Linux-RHEL_6_6-GCC-Android-Android_22-ARMv7.7z
 
 # QtLocation provided as separate installable component in installer
 [qt.56.qtlocation]
@@ -69,7 +114,7 @@ package_finalize_items: delete_doc_directory
 archives:               56.qtlocation.android_armv7
 target_install_base:    /5.6/android_armv7
 [56.qtlocation.android_armv7]
-archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/linux_x64/qt5_qtlocation.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Linux-RHEL_6_6-GCC-Android-Android_22-ARMv7.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -79,7 +124,7 @@ package_finalize_items: delete_doc_directory
 archives:               56.qt3d.android_armv7
 target_install_base:    /5.6/android_armv7
 [56.qt3d.android_armv7]
-archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/linux_x64/qt5_qt3d.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Linux-RHEL_6_6-GCC-Android-Android_22-ARMv7.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -89,7 +134,7 @@ package_finalize_items: delete_doc_directory
 archives:               56.qtcanvas3d.android_armv7
 target_install_base:    /5.6/android_armv7
 [56.qtcanvas3d.android_armv7]
-archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/linux_x64/qt5_qtcanvas3d.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Linux-RHEL_6_6-GCC-Android-Android_22-ARMv7.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -99,6 +144,6 @@ package_finalize_items: delete_doc_directory
 archives:               56.qtwebview.android_armv7
 target_install_base:    /5.6/android_armv7
 [56.qtwebview.android_armv7]
-archive_uri:            /qt/@QT_VERSION@/latest/android_armv7/linux_x64/qt5_qtwebview.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-Linux-RHEL_6_6-GCC-Android-Android_22-ARMv7.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
