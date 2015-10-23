@@ -33,14 +33,14 @@
 
 
 [qt.56.doc]
-archives:               56.doc
-target_install_base:    /Docs/Qt-5.6/
-[56.doc]
-archive_uri:            /qt/@QT_VERSION@/latest/src/doc/qt5_docs.7z
-package_finalize_items: cleanup_doc_directory
+#archives:               56.doc
+#target_install_base:    /Docs/Qt-5.6/
+#[56.doc]
+#archive_uri:            /qt/@QT_VERSION_MINOR@/latest/src/single/
 
 [qt.56.examples]
 archives:               56.examples
 target_install_base:    /Examples/Qt-5.6/
 [56.examples]
-archive_uri:            /qt/@QT_VERSION@/latest/src/examples_injection/qt5_examples.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qt-everywhere-examples-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1

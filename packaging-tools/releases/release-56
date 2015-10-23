@@ -124,18 +124,6 @@ arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-mingw492-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_windows_mingw
 
-[release.56.offline.windows.x86.msvc2010]
-arg_configurations_file:    offline_installer_jobs/5.6/win_x86_msvc2010
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
-installer_name:             qt-opensource-windows-x86-msvc2010-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_windows_msvc2010
-
-[release.56.offline.windows.x86.msvc2012]
-arg_configurations_file:    offline_installer_jobs/5.6/win_x86_msvc2012
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
-installer_name:             qt-opensource-windows-x86-msvc2012-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_windows_msvc2012
-
 [release.56.offline.windows.x86.msvc2013]
 arg_configurations_file:    offline_installer_jobs/5.6/win_x86_msvc2013
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
@@ -148,18 +136,29 @@ arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-msvc2013_64-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_windows_msvc2013_64bit
 
+[release.56.offline.windows.x86.x64-msvc2015]
+arg_configurations_file:    offline_installer_jobs/5.6/win_x64_msvc2015
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+installer_name:             qt-opensource-windows-x86-msvc2015_64-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_windows_msvc2015_64bit
+
 [release.56.offline.windows.x86.mingw492.android]
 arg_configurations_file:    offline_installer_jobs/5.6/win_x86_mingw492_android
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-android-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_windows_android
 
-[release.56.offline.windows.x86.winrt]
-arg_configurations_file:    offline_installer_jobs/5.6/win_x64_winrt
+[release.56.offline.windows.x86.winrt_msvc2013]
+arg_configurations_file:    offline_installer_jobs/5.6/win_x64_winrt_msvc2013
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
-installer_name:             qt-opensource-windows-x86-winrt-%GLOBAL_VERSION_AND_TAG%
+installer_name:             qt-opensource-windows-x86-winrt-msvc2013-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_windows_winrt
 
+[release.56.offline.windows.x86.winrt_msvc2015]
+arg_configurations_file:    offline_installer_jobs/5.6/win_x64_winrt_msvc2015
+arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+installer_name:             qt-opensource-windows-x86-winrt-msvc2015-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_windows_winrt
 
 ################################################################################
 ## Linux repository
