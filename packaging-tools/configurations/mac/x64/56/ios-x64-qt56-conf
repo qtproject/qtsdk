@@ -33,15 +33,53 @@
 
 
 [qt.56.ios]
-archives:               56.ios.essentials,
-                        56.ios.addons
+archives:               56.ios.qtbase,
+                        56.ios.qtsensors,
+                        56.ios.qtxmlpatterns,
+                        56.ios.qttools,
+                        56.ios.qtimageformats,
+                        56.ios.qtdeclarative,
+                        56.ios.qtsvg,
+                        56.ios.qtgraphicaleffects,
+                        56.ios.qttranslations,
+                        56.ios.qtmultimedia,
+                        56.ios.qtwebchannel,
+                        56.ios.qtwebsockets,
+                        56.ios.qtconnectivity,
+                        56.ios.qtenginio,
+                        56.ios.qtpositioning
 target_install_base:    /5.6/ios
-[56.ios.essentials]
-archive_uri:            /qt/@QT_VERSION@/latest/ios/mac_x64/qt5_essentials.7z
-package_finalize_items: delete_doc_directory
-[56.ios.addons]
-archive_uri:            /qt/@QT_VERSION@/latest/ios/mac_x64/qt5_addons.7z
-package_finalize_items: delete_doc_directory
+[56.ios.qtbase]
+archive_uri:            /qt/@QT_VERSION@/latest/qtbase/qtbase-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
+[56.ios.qtsensors]
+archive_uri:            /qt/@QT_VERSION@/latest/qtsensors/qtsensors-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
+[56.ios.qtxmlpatterns]
+archive_uri:            /qt/@QT_VERSION@/latest/qtxmlpatterns/qtxmlpatterns-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
+[56.ios.qttools]
+archive_uri:            /qt/@QT_VERSION@/latest/qttools/qttools-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
+[56.ios.qtimageformats]
+archive_uri:            /qt/@QT_VERSION@/latest/qtimageformats/qtimageformats-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
+[56.ios.qtdeclarative]
+archive_uri:            /qt/@QT_VERSION@/latest/qtdeclarative/qtdeclarative-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
+[56.ios.qtsvg]
+archive_uri:            /qt/@QT_VERSION@/latest/qtsvg/qtsvg-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
+[56.ios.qtgraphicaleffects]
+archive_uri:            /qt/@QT_VERSION@/latest/qtgraphicaleffects/qtgraphicaleffects-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
+[56.ios.qttranslations]
+archive_uri:            /qt/@QT_VERSION@/latest/qttranslations/qttranslations-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
+[56.ios.qtmultimedia]
+archive_uri:            /qt/@QT_VERSION@/latest/qtmultimedia/qtmultimedia-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
+[56.ios.qtwebchannel]
+archive_uri:            /qt/@QT_VERSION@/latest/qtwebchannel/qtwebchannel-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
+[56.ios.qtwebsockets]
+archive_uri:            /qt/@QT_VERSION@/latest/qtwebsockets/qtwebsockets-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
+[56.ios.qtconnectivity]
+archive_uri:            /qt/@QT_VERSION@/latest/qtconnectivity/qtconnectivity-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
+[56.ios.qtenginio]
+archive_uri:            /qt/@QT_VERSION@/latest/qtenginio/qtenginio-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
+[56.ios.qtpositioning]
+archive_uri:            /qt/@QT_VERSION@/latest/qtlocation/qtpositioning-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
+
 
 # QtScript provided as separate installable component in installer
 [qt.56.qtscript]
@@ -49,7 +87,7 @@ package_finalize_items: delete_doc_directory
 archives:               56.qtscript.ios
 target_install_base:    /5.6/ios
 [56.qtscript.ios]
-archive_uri:            /qt/@QT_VERSION@/latest/ios/mac_x64/qt5_qtscript.7z
+archive_uri:            /qt/@QT_VERSION@/latest/qtscript/qtscript-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -59,7 +97,17 @@ package_finalize_items: delete_doc_directory
 archives:               56.qtquickcontrols.ios
 target_install_base:    /5.6/ios
 [56.qtquickcontrols.ios]
-archive_uri:            /qt/@QT_VERSION@/latest/ios/mac_x64/qt5_qtquickcontrols.7z
+archive_uri:            /qt/@QT_VERSION@/latest/qtquickcontrols/qtquickcontrols-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+# QtQuickControls2 provided as separate installable component in installer
+[qt.56.qtquickcontrols2]
+[qt.56.qtquickcontrols2.ios]
+archives:               56.qtquickcontrols2.ios
+target_install_base:    /5.6/ios
+[56.qtquickcontrols2.ios]
+archive_uri:            /qt/@QT_VERSION@/latest/qtquickcontrols2/qtquickcontrols2-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -69,7 +117,7 @@ package_finalize_items: delete_doc_directory
 archives:               56.qtlocation.ios
 target_install_base:    /5.6/ios
 [56.qtlocation.ios]
-archive_uri:            /qt/@QT_VERSION@/latest/ios/mac_x64/qt5_qtlocation.7z
+archive_uri:            /qt/@QT_VERSION@/latest/qtlocation/qtlocation-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -79,7 +127,7 @@ package_finalize_items: delete_doc_directory
 archives:               56.qt3d.ios
 target_install_base:    /5.6/ios
 [56.qt3d.ios]
-archive_uri:            /qt/@QT_VERSION@/latest/ios/mac_x64/qt5_qt3d.7z
+archive_uri:            /qt/@QT_VERSION@/latest/qt3d/qt3d-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -89,7 +137,7 @@ package_finalize_items: delete_doc_directory
 archives:               56.qtcanvas3d.ios
 target_install_base:    /5.6/ios
 [56.qtcanvas3d.ios]
-archive_uri:            /qt/@QT_VERSION@/latest/ios/mac_x64/qt5_qtcanvas3d.7z
+archive_uri:            /qt/@QT_VERSION@/latest/qtcanvas3d/qtcanvas3d-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -99,6 +147,6 @@ package_finalize_items: delete_doc_directory
 archives:               56.qtwebview.ios
 target_install_base:    /5.6/ios
 [56.qtwebview.ios]
-archive_uri:            /qt/@QT_VERSION@/latest/ios/mac_x64/qt5_qtwebview.7z
+archive_uri:            /qt/@QT_VERSION@/latest/qtwebview/qtwebview-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory

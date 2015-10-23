@@ -33,15 +33,53 @@
 
 
 [qt.56.android_x86]
-archives:               56.android_x86.essentials,
-                        56.android_x86.addons
+archives:               56.android_x86.qtbase,
+                        56.android_x86.qtxmlpatterns,
+                        56.android_x86.qttools,
+                        56.android_x86.qtimageformats,
+                        56.android_x86.qtwebsockets,
+                        56.android_x86.qtdeclarative,
+                        56.android_x86.qtsvg,
+                        56.android_x86.qttranslations,
+                        56.android_x86.qtmultimedia,
+                        56.android_x86.qtwebchannel,
+                        56.android_x86.qtandroidextras,
+                        56.android_x86.qtconnectivity,
+                        56.android_x86.qtsensors,
+                        56.android_x86.qtpositioning,
+                        56.android_x86.qtserialport
 target_install_base:    /5.6/android_x86
-[56.android_x86.essentials]
-archive_uri:            /qt/@QT_VERSION@/latest/android_x86/mac_x64/qt5_essentials.7z
-package_finalize_items: delete_doc_directory
-[56.android_x86.addons]
-archive_uri:            /qt/@QT_VERSION@/latest/android_x86/mac_x64/qt5_addons.7z
-package_finalize_items: delete_doc_directory
+[56.android_x86.qtbase]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtbase/qtbase-OSX-OSX_10_10-GCC-Android-Android_22-X86.7z
+[56.android_x86.qtxmlpatterns]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtxmlpatterns/qtxmlpatterns-OSX-OSX_10_10-GCC-Android-Android_22-X86.7z
+[56.android_x86.qttools]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qttools/qttools-OSX-OSX_10_10-GCC-Android-Android_22-X86.7z
+[56.android_x86.qtimageformats]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtimageformats/qtimageformats-OSX-OSX_10_10-GCC-Android-Android_22-X86.7z
+[56.android_x86.qtwebsockets]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebsockets/qtwebsockets-OSX-OSX_10_10-GCC-Android-Android_22-X86.7z
+[56.android_x86.qtdeclarative]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdeclarative/qtdeclarative-OSX-OSX_10_10-GCC-Android-Android_22-X86.7z
+[56.android_x86.qtsvg]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtsvg/qtsvg-OSX-OSX_10_10-GCC-Android-Android_22-X86.7z
+[56.android_x86.qttranslations]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qttranslations/qttranslations-OSX-OSX_10_10-GCC-Android-Android_22-X86.7z
+[56.android_x86.qtmultimedia]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtmultimedia/qtmultimedia-OSX-OSX_10_10-GCC-Android-Android_22-X86.7z
+[56.android_x86.qtwebchannel]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebchannel/qtwebchannel-OSX-OSX_10_10-GCC-Android-Android_22-X86.7z
+[56.android_x86.qtandroidextras]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtandroidextras/qtandroidextras-OSX-OSX_10_10-GCC-Android-Android_22-X86.7z
+[56.android_x86.qtconnectivity]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtconnectivity/qtconnectivity-OSX-OSX_10_10-GCC-Android-Android_22-X86.7z
+[56.android_x86.qtsensors]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtsensors/qtsensors-OSX-OSX_10_10-GCC-Android-Android_22-X86.7z
+[56.android_x86.qtpositioning]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtpositioning-OSX-OSX_10_10-GCC-Android-Android_22-X86.7z
+[56.android_x86.qtserialport]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialport/qtserialport-OSX-OSX_10_10-GCC-Android-Android_22-X86.7z
+
 
 # QtScript provided as separate installable component in installer
 [qt.56.qtscript]
@@ -49,7 +87,7 @@ package_finalize_items: delete_doc_directory
 archives:               56.qtscript.android_x86
 target_install_base:    /5.6/android_x86
 [56.qtscript.android_x86]
-archive_uri:            /qt/@QT_VERSION@/latest/android_x86/mac_x64/qt5_qtscript.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-OSX-OSX_10_10-GCC-Android-Android_22-X86.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -59,7 +97,17 @@ package_finalize_items: delete_doc_directory
 archives:               56.qtquickcontrols.android_x86
 target_install_base:    /5.6/android_x86
 [56.qtquickcontrols.android_x86]
-archive_uri:            /qt/@QT_VERSION@/latest/android_x86/mac_x64/qt5_qtquickcontrols.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcontrols-OSX-OSX_10_10-GCC-Android-Android_22-X86.7z
+rpath_target:           /lib
+package_finalize_items: delete_doc_directory
+
+# QtQuickControls2 provided as separate installable component in installer
+[qt.56.qtquickcontrols2]
+[qt.56.qtquickcontrols2.android_x86]
+archives:               56.qtquickcontrols2.android_x86
+target_install_base:    /5.6/android_x86
+[56.qtquickcontrols2.android_x86]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickcontrols2-OSX-OSX_10_10-GCC-Android-Android_22-X86.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -69,7 +117,7 @@ package_finalize_items: delete_doc_directory
 archives:               56.qtlocation.android_x86
 target_install_base:    /5.6/android_x86
 [56.qtlocation.android_x86]
-archive_uri:            /qt/@QT_VERSION@/latest/android_x86/mac_x64/qt5_qtlocation.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-OSX-OSX_10_10-GCC-Android-Android_22-X86.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -79,7 +127,7 @@ package_finalize_items: delete_doc_directory
 archives:               56.qt3d.android_x86
 target_install_base:    /5.6/android_x86
 [56.qt3d.android_x86]
-archive_uri:            /qt/@QT_VERSION@/latest/android_x86/mac_x64/qt5_qt3d.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-OSX-OSX_10_10-GCC-Android-Android_22-X86.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -89,7 +137,7 @@ package_finalize_items: delete_doc_directory
 archives:               56.qtcanvas3d.android_x86
 target_install_base:    /5.6/android_x86
 [56.qtcanvas3d.android_x86]
-archive_uri:            /qt/@QT_VERSION@/latest/android_x86/mac_x64/qt5_qtcanvas3d.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-OSX-OSX_10_10-GCC-Android-Android_22-X86.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -99,6 +147,6 @@ package_finalize_items: delete_doc_directory
 archives:               56.qtwebview.android_x86
 target_install_base:    /5.6/android_x86
 [56.qtwebview.android_x86]
-archive_uri:            /qt/@QT_VERSION@/latest/android_x86/mac_x64/qt5_qtwebview.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-OSX-OSX_10_10-GCC-Android-Android_22-X86.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory

@@ -40,11 +40,11 @@ identifier:             mac
 [PackageConfigurationFiles]
 file_list:              qt-conf,
                         qt-license-conf,
+                        qt-installer-changelog-56,
                         qt56-src-conf,
                         qt56-doc-examples-conf,
                         x86_64-qt56-clang-conf,
-                        x86_64-tools-qtcreator-qt56x-conf
-
+                        x86_64-tools-qtcreator-qt55x-conf
 
 [qtmenunib]
 package_url:            http://download.qt.io/development_releases/prebuilt/mac/qt_menu.nib.7z
