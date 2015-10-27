@@ -42,5 +42,5 @@
 archives:               56.examples
 target_install_base:    /Examples/Qt-5.6/
 [56.examples]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qt-everywhere-examples-src-@QT_VERSION_AND_TAG@.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qt-everywhere-examples-@QT_VERSION_AND_TAG@.7z
 package_strip_dirs:     1
