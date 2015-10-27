@@ -31,12 +31,53 @@
 ##
 #############################################################################
 
-
 [qt.56.win64_msvc2013_winrt_x64]
-archives:               56.win64_msvc2013_winrt_x64.essentials,
-                        56.win64_msvc2013_winrt_x64.addons,
-                        56.win64_msvc2013_winrt_x64.d3d_compiler_47.x64
+archives:               56.win64_msvc2013_winrt_x64.qtbase,
+                        56.win64_msvc2013_winrt_x64.qtconnectivity,
+                        56.win64_msvc2013_winrt_x64.qtwebchannel,
+                        56.win64_msvc2013_winrt_x64.qtmultimedia,
+                        56.win64_msvc2013_winrt_x64.qttranslations,
+                        56.win64_msvc2013_winrt_x64.qtgraphicaleffects,
+                        56.win64_msvc2013_winrt_x64.qtsvg,
+                        56.win64_msvc2013_winrt_x64.qtdeclarative,
+                        56.win64_msvc2013_winrt_x64.qtwebsockets,
+                        56.win64_msvc2013_winrt_x64.qtimageformats,
+                        56.win64_msvc2013_winrt_x64.qttools,
+                        56.win64_msvc2013_winrt_x64.qtxmlpatterns,
+                        56.win64_msvc2013_winrt_x64.qtsensors,
+                        56.win64_msvc2013_winrt_x64.qtenginio,
+                        56.win64_msvc2013_winrt_x64.qtpositioning
 target_install_base:    /5.6/winrt_x64
+[56.win64_msvc2013_winrt_x64.qtbase]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtbase/qtbase-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-X86.7z
+[56.win64_msvc2013_winrt_x64.qtconnectivity]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtconnectivity/qtconnectivity-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-X86.7z
+[56.win64_msvc2013_winrt_x64.qtwebchannel]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebchannel/qtwebchannel-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-X86.7z
+[56.win64_msvc2013_winrt_x64.qtmultimedia]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtmultimedia/qtmultimedia-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-X86.7z
+[56.win64_msvc2013_winrt_x64.qttranslations]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qttranslations/qttranslations-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-X86.7z
+[56.win64_msvc2013_winrt_x64.qtgraphicaleffects]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtgraphicaleffects/qtgraphicaleffects-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-X86.7z
+[56.win64_msvc2013_winrt_x64.qtsvg]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtsvg/qtsvg-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-X86.7z
+[56.win64_msvc2013_winrt_x64.qtdeclarative]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdeclarative/qtdeclarative-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-X86.7z
+[56.win64_msvc2013_winrt_x64.qtwebsockets]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebsockets/qtwebsockets-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-X86.7z
+[56.win64_msvc2013_winrt_x64.qtimageformats]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtimageformats/qtimageformats-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-X86.7z
+[56.win64_msvc2013_winrt_x64.qttools]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qttools/qttools-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-X86.7z
+[56.win64_msvc2013_winrt_x64.qtxmlpatterns]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtxmlpatterns/qtxmlpatterns-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-X86.7z
+[56.win64_msvc2013_winrt_x64.qtsensors]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtsensors/qtsensors-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-X86.7z
+[56.win64_msvc2013_winrt_x64.qtenginio]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtenginio/qtenginio-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-X86.7z
+[56.win64_msvc2013_winrt_x64.qtpositioning]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtpositioning-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-X86.7z
 
 # QtQuickControls provided as separate installable component in installer
 [qt.56.qtquickcontrols]
@@ -44,9 +85,15 @@ target_install_base:    /5.6/winrt_x64
 archives:               56.qtquickcontrols.win64_msvc2013_winrt_x64
 target_install_base:    /5.6/winrt_x64
 [56.qtquickcontrols.win64_msvc2013_winrt_x64]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2013_winrt_x64/qt5_qtquickcontrols.7z
-rpath_target:
-package_finalize_items: delete_doc_directory
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcontrols-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-ARMv4.7z
+
+# QtQuickControls2 provided as separate installable component in installer
+[qt.56.qtquickcontrols2]
+[qt.56.qtquickcontrols2.win64_msvc2013_winrt_x64]
+archives:               56.qtquickcontrols2.win64_msvc2013_winrt_x64
+target_install_base:    /5.6/winrt_x64
+[56.qtquickcontrols2.win64_msvc2013_winrt_x64]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickcontrols2-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-ARMv4.7z
 
 # QtLocation provided as separate installable component in installer
 [qt.56.qtlocation]
@@ -54,7 +101,7 @@ package_finalize_items: delete_doc_directory
 archives:               56.qtlocation.win64_msvc2013_winrt_x64
 target_install_base:    /5.6/winrt_x64
 [56.qtlocation.win64_msvc2013_winrt_x64]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2013_winrt_x64/qt5_qtlocation.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-ARMv4.7z
 rpath_target:
 package_finalize_items: delete_doc_directory
 
@@ -64,7 +111,7 @@ package_finalize_items: delete_doc_directory
 archives:               56.qt3d.win64_msvc2013_winrt_x64
 target_install_base:    /5.6/winrt_x64
 [56.qt3d.win64_msvc2013_winrt_x64]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2013_winrt_x64/qt5_qt3d.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-ARMv4.7z
 rpath_target:
 package_finalize_items: delete_doc_directory
 
@@ -74,7 +121,7 @@ package_finalize_items: delete_doc_directory
 archives:               56.qtcanvas3d.win64_msvc2013_winrt_x64
 target_install_base:    /5.6/winrt_x64
 [56.qtcanvas3d.win64_msvc2013_winrt_x64]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2013_winrt_x64/qt5_qtcanvas3d.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-ARMv4.7z
 rpath_target:
 package_finalize_items: delete_doc_directory
 
@@ -84,6 +131,6 @@ package_finalize_items: delete_doc_directory
 archives:               56.qtwebview.win64_msvc2013_winrt_x64
 target_install_base:    /5.6/winrt_x64
 [56.qtwebview.win64_msvc2013_winrt_x64]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_vs2013_winrt_x64/qt5_qtwebview.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-ARMv4.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory

@@ -31,18 +31,53 @@
 ##
 #############################################################################
 
-
 [qt.56.win64_msvc2013_winphone_arm]
-archives:               56.win64_msvc2013_winphone_arm.essentials,
-                        56.win64_msvc2013_winphone_arm.addons
+archives:               56.win64_msvc2013_winphone_arm.qtbase,
+                        56.win64_msvc2013_winphone_arm.qtconnectivity,
+                        56.win64_msvc2013_winphone_arm.qtwebchannel,
+                        56.win64_msvc2013_winphone_arm.qtmultimedia,
+                        56.win64_msvc2013_winphone_arm.qttranslations,
+                        56.win64_msvc2013_winphone_arm.qtgraphicaleffects,
+                        56.win64_msvc2013_winphone_arm.qtsvg,
+                        56.win64_msvc2013_winphone_arm.qtdeclarative,
+                        56.win64_msvc2013_winphone_arm.qtwebsockets,
+                        56.win64_msvc2013_winphone_arm.qtimageformats,
+                        56.win64_msvc2013_winphone_arm.qttools,
+                        56.win64_msvc2013_winphone_arm.qtxmlpatterns,
+                        56.win64_msvc2013_winphone_arm.qtsensors,
+                        56.win64_msvc2013_winphone_arm.qtenginio,
+                        56.win64_msvc2013_winphone_arm.qtpositioning
 target_install_base:    /5.6/winphone_arm
-
-[56.win64_msvc2013_winphone_arm.essentials]
-archive_uri:            /qt/@QT_VERSION@/latest/winphone81/arm/qt5_essentials.7z
-package_finalize_items: delete_doc_directory
-[56.win64_msvc2013_winphone_arm.addons]
-archive_uri:            /qt/@QT_VERSION@/latest/winphone81/arm/qt5_addons.7z
-package_finalize_items: delete_doc_directory
+[56.win64_msvc2013_winphone_arm.qtbase]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtbase/qtbase-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-ARMv4.7z
+[56.win64_msvc2013_winphone_arm.qtconnectivity]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtconnectivity/qtconnectivity-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-ARMv4.7z
+[56.win64_msvc2013_winphone_arm.qtwebchannel]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebchannel/qtwebchannel-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-ARMv4.7z
+[56.win64_msvc2013_winphone_arm.qtmultimedia]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtmultimedia/qtmultimedia-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-ARMv4.7z
+[56.win64_msvc2013_winphone_arm.qttranslations]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qttranslations/qttranslations-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-ARMv4.7z
+[56.win64_msvc2013_winphone_arm.qtgraphicaleffects]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtgraphicaleffects/qtgraphicaleffects-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-ARMv4.7z
+[56.win64_msvc2013_winphone_arm.qtsvg]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtsvg/qtsvg-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-ARMv4.7z
+[56.win64_msvc2013_winphone_arm.qtdeclarative]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdeclarative/qtdeclarative-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-ARMv4.7z
+[56.win64_msvc2013_winphone_arm.qtwebsockets]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebsockets/qtwebsockets-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-ARMv4.7z
+[56.win64_msvc2013_winphone_arm.qtimageformats]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtimageformats/qtimageformats-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-ARMv4.7z
+[56.win64_msvc2013_winphone_arm.qttools]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qttools/qttools-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-ARMv4.7z
+[56.win64_msvc2013_winphone_arm.qtxmlpatterns]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtxmlpatterns/qtxmlpatterns-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-ARMv4.7z
+[56.win64_msvc2013_winphone_arm.qtsensors]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtsensors/qtsensors-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-ARMv4.7z
+[56.win64_msvc2013_winphone_arm.qtenginio]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtenginio/qtenginio-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-ARMv4.7z
+[56.win64_msvc2013_winphone_arm.qtpositioning]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtpositioning-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-ARMv4.7z
 
 # QtQuickControls provided as separate installable component in installer
 [qt.56.qtquickcontrols]
@@ -50,9 +85,15 @@ package_finalize_items: delete_doc_directory
 archives:               56.qtquickcontrols.win64_msvc2013_winphone_arm
 target_install_base:    /5.6/winphone_arm
 [56.qtquickcontrols.win64_msvc2013_winphone_arm]
-archive_uri:            /qt/@QT_VERSION@/latest/winphone81/arm/qt5_qtquickcontrols.7z
-rpath_target:
-package_finalize_items: delete_doc_directory
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcontrols-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-ARMv4.7z
+
+# QtQuickControls2 provided as separate installable component in installer
+[qt.56.qtquickcontrols2]
+[qt.56.qtquickcontrols2.win64_msvc2013_winphone_arm]
+archives:               56.qtquickcontrols2.win64_msvc2013_winphone_arm
+target_install_base:    /5.6/winphone_arm
+[56.qtquickcontrols2.win64_msvc2013_winphone_arm]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickcontrols2-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-ARMv4.7z
 
 # QtLocation provided as separate installable component in installer
 [qt.56.qtlocation]
@@ -60,7 +101,7 @@ package_finalize_items: delete_doc_directory
 archives:               56.qtlocation.win64_msvc2013_winphone_arm
 target_install_base:    /5.6/winphone_arm
 [56.qtlocation.win64_msvc2013_winphone_arm]
-archive_uri:            /qt/@QT_VERSION@/latest/winphone81/arm/qt5_qtlocation.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-ARMv4.7z
 rpath_target:
 package_finalize_items: delete_doc_directory
 
@@ -70,7 +111,7 @@ package_finalize_items: delete_doc_directory
 archives:               56.qt3d.win64_msvc2013_winphone_arm
 target_install_base:    /5.6/winphone_arm
 [56.qt3d.win64_msvc2013_winphone_arm]
-archive_uri:            /qt/@QT_VERSION@/latest/winphone81/arm/qt5_qt3d.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-ARMv4.7z
 rpath_target:
 package_finalize_items: delete_doc_directory
 
@@ -80,7 +121,7 @@ package_finalize_items: delete_doc_directory
 archives:               56.qtcanvas3d.win64_msvc2013_winphone_arm
 target_install_base:    /5.6/winphone_arm
 [56.qtcanvas3d.win64_msvc2013_winphone_arm]
-archive_uri:            /qt/@QT_VERSION@/latest/winphone81/arm/qt5_qtcanvas3d.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-ARMv4.7z
 rpath_target:
 package_finalize_items: delete_doc_directory
 
@@ -90,6 +131,6 @@ package_finalize_items: delete_doc_directory
 archives:               56.qtwebview.win64_msvc2013_winphone_arm
 target_install_base:    /5.6/winphone_arm
 [56.qtwebview.win64_msvc2013_winphone_arm]
-archive_uri:            /qt/@QT_VERSION@/latest/winphone81/arm/qt5_qtwebview.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-ARMv4.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
