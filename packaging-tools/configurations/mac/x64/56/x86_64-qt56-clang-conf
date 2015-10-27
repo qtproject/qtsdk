@@ -49,7 +49,8 @@ archives:               56.clang_64.qtbase,
                         56.clang_64.qtwebview,
                         56.clang_64.qtxmlpatterns,
                         56.clang_64.qtpositioning,
-                        56.clang_64.qtserialport
+                        56.clang_64.qtserialport,
+                        56.clang_64.qttools
 target_install_base:    /5.6/clang_64
 
 [56.clang_64.qtbase]
