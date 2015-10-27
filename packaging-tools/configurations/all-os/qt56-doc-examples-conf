@@ -33,10 +33,10 @@
 
 
 [qt.56.doc]
-#archives:               56.doc
-#target_install_base:    /Docs/Qt-5.6/
-#[56.doc]
-#archive_uri:            /qt/@QT_VERSION_MINOR@/latest/src/single/
+archives:               56.doc
+target_install_base:    /Docs/Qt-5.6/
+[56.doc]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/documentation-@QT_VERSION_AND_TAG@.7z
 
 [qt.56.examples]
 archives:               56.examples
