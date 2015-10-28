@@ -86,7 +86,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtpositioning-W
 archives:               56.qtquickcontrols.win64_msvc2013_winphone_x86
 target_install_base:    /5.6/winphone_x86
 [56.qtquickcontrols.win64_msvc2013_winphone_x86]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcontrols-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcontrols-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-X86.7z
 
 # QtQuickControls2 provided as separate installable component in installer
 [qt.56.qtquickcontrols2]
@@ -94,7 +94,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcon
 archives:               56.qtquickcontrols2.win64_msvc2013_winphone_x86
 target_install_base:    /5.6/winphone_x86
 [56.qtquickcontrols2.win64_msvc2013_winphone_x86]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickcontrols2-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickcontrols2-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-X86.7z
 
 # QtLocation provided as separate installable component in installer
 [qt.56.qtlocation]
@@ -102,7 +102,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickco
 archives:               56.qtlocation.win64_msvc2013_winphone_x86
 target_install_base:    /5.6/winphone_x86
 [56.qtlocation.win64_msvc2013_winphone_x86]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-X86.7z
 rpath_target:
 package_finalize_items: delete_doc_directory
 
@@ -112,7 +112,7 @@ package_finalize_items: delete_doc_directory
 archives:               56.qt3d.win64_msvc2013_winphone_x86
 target_install_base:    /5.6/winphone_x86
 [56.qt3d.win64_msvc2013_winphone_x86]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-X86.7z
 rpath_target:
 package_finalize_items: delete_doc_directory
 
@@ -122,7 +122,7 @@ package_finalize_items: delete_doc_directory
 archives:               56.qtcanvas3d.win64_msvc2013_winphone_x86
 target_install_base:    /5.6/winphone_x86
 [56.qtcanvas3d.win64_msvc2013_winphone_x86]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-X86.7z
 rpath_target:
 package_finalize_items: delete_doc_directory
 
@@ -132,6 +132,6 @@ package_finalize_items: delete_doc_directory
 archives:               56.qtwebview.win64_msvc2013_winphone_x86
 target_install_base:    /5.6/winphone_x86
 [56.qtwebview.win64_msvc2013_winphone_x86]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-X86.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
