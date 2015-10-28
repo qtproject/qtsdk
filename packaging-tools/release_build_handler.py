@@ -351,7 +351,7 @@ def create_installer(job, packages_base_url, installer_type):
     cmd_args = cmd_args + ['-a', arch_naming]
     cmd_args = cmd_args + ['--version-number=' + job.version_number]
     cmd_args = cmd_args + ['--version-tag=' + job.version_number_tag]
-    cmd_args = cmd_args + ['-u', urlparse.urljoin(packages_base_url, job.license)]
+    cmd_args = cmd_args + ['-u', packages_base_url]
     cmd_args = cmd_args + ['--ifw-tools=' + job.ifw_tools]
     cmd_args = cmd_args + ['--preferred-installer-name=' + job.installer_name]
     if (len(job.substitution_arg_list) > 0):
@@ -437,7 +437,7 @@ def create_online_repository(build_job, packages_base_url, forced_version_number
                 '--create-repo', \
                 '-l', build_job.license, \
                 '--version-number=' + build_job.version_number, \
-                '-u', urlparse.urljoin(packages_base_url, build_job.license), \
+                '-u', packages_base_url, \
                 '--ifw-tools='+ build_job.ifw_tools]
     if forced_version_number_bump:
         cmd_args += ['--force-version-number-increase']
