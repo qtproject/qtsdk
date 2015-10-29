@@ -40,7 +40,6 @@ archives:               56.gcc_64.qtbase,
                         56.gcc_64.qtmultimedia,
                         56.gcc_64.qttranslations,
                         56.gcc_64.qtgraphicaleffects,
-                        56.gcc_64.qtlocation,
                         56.gcc_64.qtsvg,
                         56.gcc_64.qtdeclarative,
                         56.gcc_64.qtwebsockets,
@@ -67,8 +66,6 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtmultimedia/qtmultimedia-
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qttranslations/qttranslations-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
 [56.gcc_64.qtgraphicaleffects]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtgraphicaleffects/qtgraphicaleffects-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
-[56.gcc_64.qtlocation]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
 [56.gcc_64.qtsvg]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtsvg/qtsvg-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
 [56.gcc_64.qtdeclarative]
@@ -96,12 +93,12 @@ archive_name:           icu-linux-Rhel6.6-x64.7z
 
 
 # QtWebEngine provided as separate installable component in installer
-# [qt.56.qtwebengine]
-# [qt.56.qtwebengine.gcc_64]
-# archives:               56.qtwebengine.gcc_64
-# target_install_base:    /5.6/gcc_64
-# [56.qtwebengine.gcc_64]
-# archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebengine/qtwebengine-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+[qt.56.qtwebengine]
+[qt.56.qtwebengine.gcc_64]
+archives:               56.qtwebengine.gcc_64
+target_install_base:    /5.6/gcc_64
+[56.qtwebengine.gcc_64]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebengine/qtwebengine-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
 
 # QtScript provided as separate installable component in installer
 [qt.56.qtscript]
@@ -150,3 +147,11 @@ archives:               56.qtcanvas3d.gcc_64
 target_install_base:    /5.6/gcc_64
 [56.qtcanvas3d.gcc_64]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+
+# QtWebView provided as separate installable component in installer
+[qt.56.qtwebview]
+[qt.56.qtwebview.gcc_64]
+archives:               56.qtwebview.gcc_64
+target_install_base:    /5.6/gcc_64
+[56.qtwebview.gcc_64]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z

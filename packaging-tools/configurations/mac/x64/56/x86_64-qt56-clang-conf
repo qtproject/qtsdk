@@ -46,7 +46,6 @@ archives:               56.clang_64.qtbase,
                         56.clang_64.qttranslations,
                         56.clang_64.qtwebchannel,
                         56.clang_64.qtwebsockets,
-                        56.clang_64.qtwebview,
                         56.clang_64.qtxmlpatterns,
                         56.clang_64.qtpositioning,
                         56.clang_64.qtserialport,
@@ -81,8 +80,6 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qttranslations/qttranslati
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebchannel/qtwebchannel-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
 [56.clang_64.qtwebsockets]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebsockets/qtwebsockets-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
-[56.clang_64.qtwebview]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
 [56.clang_64.qtxmlpatterns]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtxmlpatterns/qtxmlpatterns-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
 [56.clang_64.qtpositioning]

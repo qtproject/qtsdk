@@ -157,3 +157,12 @@ archives:               56.qtcanvas3d.win64_msvc2013_64
 target_install_base:    /5.6/msvc2013_64
 [56.qtcanvas3d.win64_msvc2013_64]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z
+
+# QtWebView provided as separate installable component in installer
+[qt.56.qtwebview]
+[qt.56.qtwebview.win64_msvc2013_64]
+archives:               56.qtwebview.win64_msvc2013_64
+target_install_base:    /5.6/msvc2013_64
+[56.qtwebview.win64_msvc2013_64]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z
+

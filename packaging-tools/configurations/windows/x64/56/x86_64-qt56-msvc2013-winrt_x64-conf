@@ -133,4 +133,4 @@ target_install_base:    /5.6/winrt_x64
 [56.qtwebview.win64_msvc2013_winrt_x64]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-Windows-Windows_8_1-MSVC2013-WinRT-Windows_8_1-X86_64.7z
 rpath_target:           /lib
-package_finalize_items: delete_doc_directory
+

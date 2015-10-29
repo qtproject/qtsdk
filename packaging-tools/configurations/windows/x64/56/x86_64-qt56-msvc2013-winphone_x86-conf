@@ -134,4 +134,4 @@ target_install_base:    /5.6/winphone_x86
 [56.qtwebview.win64_msvc2013_winphone_x86]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-X86.7z
 rpath_target:           /lib
-package_finalize_items: delete_doc_directory
+
