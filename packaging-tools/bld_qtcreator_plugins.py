@@ -76,12 +76,16 @@ def parse_arguments():
         dest='additional_qmake_arguments', action='append')
     parser.add_argument('--plugin-path', help='Path to a plugin to build', required=True,
         dest='plugin_paths', action='append')
+    parser.add_argument('--deploy-command', help='Command to execute for custom deployment before deploying and packaging the target directory.'
+        + 'The command gets the Qt prefix and plugin target directory as command line parameters. Pass multiple times for commands that have arguments.',
+        action='append', default=[])
     parser.add_argument('target_7zfile')
 
     parser.epilog += ' --build-path /tmp/plugin_build'
     parser.epilog += ' --qtc-build-url http://myserver/path/qtcreator_build.7z'
     parser.epilog += ' --qtc-dev-url http://myserver/path/qtcreator_dev.7z'
     parser.epilog += ' --plugin-path /home/myplugin1 --plugin-path /home/myplugin2'
+    parser.epilog += ' --deploy-command python --deploy-command "/path to/mydeployscript.py" --deploy-command=-v'
     parser.epilog += ' /tmp/plugin_build/myplugins.7z'
     caller_arguments = parser.parse_args()
     # normalize arguments
@@ -177,6 +181,12 @@ def build_plugins(caller_arguments):
             callerArguments = caller_arguments, init_environment = environment)
         runBuildCommand(currentWorkingDirectory = build_path,
             callerArguments = caller_arguments, init_environment = environment)
+
+    # run custom deploy script
+    if caller_arguments.deploy_command:
+        custom_deploy_command = caller_arguments.deploy_command + [paths.qt5,
+            paths.target]
+        runCommand(custom_deploy_command, currentWorkingDirectory = paths.target)
 
     # deploy and zip up
     deploy_command = ['python', '-u', os.path.join(paths.qtc_dev, 'scripts', 'packagePlugins.py'),
