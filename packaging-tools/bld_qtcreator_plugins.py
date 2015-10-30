@@ -46,14 +46,12 @@ from __future__ import print_function
 # built in imports
 import argparse # commandline argument parser
 import collections
-import multiprocessing
 import os
 import sys
-from urlparse import urlparse
 
 # own imports
-from threadedwork import Task, ThreadedWork
-from bld_utils import download, runBuildCommand, runCommand, runInstallCommand, stripVars
+from threadedwork import ThreadedWork
+from bld_utils import runBuildCommand, runCommand, stripVars
 import bldinstallercommon
 
 from bld_qtcreator import add_common_commandline_arguments, patch_qt_pri_files, qmake_binary, get_common_environment
@@ -79,6 +77,7 @@ def parse_arguments():
     parser.add_argument('--plugin-path', help='Path to a plugin to build', required=True,
         dest='plugin_paths', action='append')
     parser.add_argument('target_7zfile')
+
     parser.epilog += ' --build-path /tmp/plugin_build'
     parser.epilog += ' --qtc-build-url http://myserver/path/qtcreator_build.7z'
     parser.epilog += ' --qtc-dev-url http://myserver/path/qtcreator_dev.7z'
@@ -118,10 +117,8 @@ def get_common_qmake_arguments(paths, caller_arguments):
 def plugin_build_path(plugin_path, build_path):
     return os.path.join(build_path, 'build-' + os.path.basename(plugin_path))
 
-if __name__ == "__main__":
-    bldinstallercommon.init_common_module(os.path.dirname(os.path.realpath(__file__)))
-    caller_arguments = parse_arguments()
-    (basename, ext) = os.path.splitext(os.path.basename(caller_arguments.target_7zfile))
+def build_plugins(caller_arguments):
+    (basename,_) = os.path.splitext(os.path.basename(caller_arguments.target_7zfile))
     Paths = collections.namedtuple('Paths', ['qt5', 'temp', 'qtc_dev', 'qtc_build', 'target'])
     paths = Paths(qt5 = os.path.join(caller_arguments.build_path, basename + '-qt5'),
                   temp = os.path.join(caller_arguments.build_path, basename + '-temp'),
@@ -191,3 +188,11 @@ if __name__ == "__main__":
     deploy_command.extend([paths.target, caller_arguments.target_7zfile])
     runCommand(deploy_command, paths.temp,
         callerArguments = caller_arguments, init_environment = environment)
+
+def main():
+    bldinstallercommon.init_common_module(os.path.dirname(os.path.realpath(__file__)))
+    caller_arguments = parse_arguments()
+    build_plugins(caller_arguments)
+
+if __name__ == "__main__":
+    main()
