@@ -231,10 +231,16 @@ def get_job_list(conf_file, job_type_specifier, license_type, branch, platform, 
         section_parts = s.split('.')
         if (len(section_parts) < 5):
             continue
-        if (section_parts[0] == branch and
-            section_parts[2] == job_type_specifier and
-            section_parts[3] == platform and
-            section_parts[4] == arch):
+        if (section_parts[0] == branch and section_parts[2] == job_type_specifier):
+            # Check first if this job was assigned to dedicated machine label
+            machine_label = bldinstallercommon.safe_config_key_fetch(parser, s, 'assign_to_machine_label')
+            if machine_label:
+                if not machine_label == os.environ['cfg']:
+                    continue
+            else: # If not then check against the platform and arch
+                if not ((section_parts[3] == platform) and (section_parts[4] == arch)):
+                    continue
+
             # parse from conf file
             version_number = bldinstallercommon.safe_config_key_fetch(parser, s, 'version_number')
             if not version_number:
