@@ -50,6 +50,9 @@ import re
 from time import gmtime, strftime
 from optparse import OptionParser, Option
 import multiprocessing # to get the cpu core count
+import platform
+if platform.system().lower().startswith('win'):
+    import win32api
 
 from threadedwork import ThreadedWork
 import bld_utils
@@ -926,6 +929,9 @@ def create_target_components(target_config):
                         bldinstallercommon.create_dirs(install_dir)
                     if not os.path.lexists(data_dir_dest):
                         bldinstallercommon.create_dirs(data_dir_dest)
+                    if platform.system().lower().startswith('win'):
+                        install_dir = win32api.GetShortPathName(install_dir)
+                        data_dir_dest = win32api.GetShortPathName(data_dir_dest)
                     getComponentDataWork.addTask("adding {0} to {1}".format(archive.archive_name, sdk_component.package_name),
                                                  get_component_data, sdk_component, archive, install_dir, data_dir_dest, compress_content_dir)
 
