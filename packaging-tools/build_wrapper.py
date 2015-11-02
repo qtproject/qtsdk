@@ -669,6 +669,8 @@ def build_extra_module_src_pkg(bld_command):
         bldinstallercommon.do_execute_sub_process(cmd_args, module_dir)
     #make src package
     cmd_args = ['../qtsdk/packaging-tools/mksrc.sh', '-v', bld_command.module_version, '-l', bld_command.license, '--single-module']
+    if os.environ.get('SKIP_SYNCQT'):
+        cmd_args += ['--skip-syncqt']
     bldinstallercommon.do_execute_sub_process(cmd_args, module_dir)
     #extract examples
     cmd_args = ['../qtsdk/packaging-tools/extract_examples.sh', '-n', bld_command.module_name, '-l', bld_command.license, '-v', bld_command.module_version, '-u', bld_command.package_storage_server_user, '-s', bld_command.package_storage_server, '-d', bld_command.package_storage_server_base_dir, '-b', bld_command.build_number]
