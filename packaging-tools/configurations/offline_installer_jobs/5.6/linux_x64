@@ -44,7 +44,7 @@ file_list:              qt-conf,
                         qt56-src-conf,
                         qt56-doc-examples-conf,
                         x86_64-qt56-gcc-conf,
-                        x86_64-tools-qtcreator-qt55x-conf
+                        x86_64-tools-qtcreator-qt56x-conf
 
 
 [ConfigDir]

@@ -47,7 +47,7 @@ file_list:              qt-conf,
                         android-x64-qt56-armv7-conf,
                         android-x64-qt56-x86-conf,
                         ios-x64-qt56-conf,
-                        x86_64-tools-qtcreator-qt55x-conf
+                        x86_64-tools-qtcreator-qt56x-conf
 
 
 [qtmenunib]
