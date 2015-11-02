@@ -1252,8 +1252,8 @@ def handle_qt_creator_build(bld_command):
     # Qt Creator enterprise plugins
     additional_qmake_arguments = ['CONFIG+=licensechecker']
     Plugin = collections.namedtuple('Plugin', ['name', 'path', 'dependencies'])
-    additional_plugins = [Plugin(name='licensechecker', path='licensechecker',
-                                 dependencies=[]),
+    Plugin.__new__.__defaults__ = ([]) # 'name' and 'path' are mandatory
+    additional_plugins = [Plugin(name='licensechecker', path='licensechecker'),
                           Plugin(name='qmlprofiler', path='qmlprofiler',
                                  dependencies=['licensechecker']),
                           Plugin(name='clangstaticanalyzer', path='clangstaticanalyzer',
@@ -1268,7 +1268,7 @@ def handle_qt_creator_build(bld_command):
         additional_qmake_arguments.extend(['PERFPARSER_BUNDLED_ELFUTILS=true',
                                            'PERFPARSER_APP_DESTDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'libexec', 'qtcreator'),
                                            'PERFPARSER_ELFUTILS_DESTDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'lib', 'qtcreator')])
-        additional_plugins.append(Plugin(name='perfparser', path='perfparser', dependencies=[]))
+        additional_plugins.append(Plugin(name='perfparser', path='perfparser'))
         additional_plugins.extend([Plugin(name='perfprofiler', path='perfprofiler',
                                           dependencies=['licensechecker']),
                                    Plugin(name='b2qt-qtcreator-plugin', path='b2qt-qtcreator-plugin',
