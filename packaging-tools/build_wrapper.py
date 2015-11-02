@@ -1276,6 +1276,16 @@ def handle_qt_creator_build(bld_command):
     qt_pkg_base_url = bld_command.pkg_server_addr_http + '/' + os.environ['QTC_QT_BASE_DIR'] + '/'
     qt_pkg_base_url += target_env_dir
 
+    # gammaray and graphviz
+    kdsme_url = (bld_command.pkg_server_addr_http + '/'
+                    + os.environ["GAMMARAY_BASE_DIR"] + '/'
+                    + target_env_dir + '/qt5_kdsme.7z')
+    gammaray_url = (bld_command.pkg_server_addr_http + '/'
+                    + os.environ["GAMMARAY_BASE_DIR"] + '/'
+                    + target_env_dir + '/qt5_gammaray.7z')
+    graphviz_url = (bld_command.pkg_server_addr_http + '/'
+                    + os.environ["GRAPHVIZ_BASE_DIR"] + '-' + bld_command.target_env + '.7z')
+
     common_arguments = []
     if not bldinstallercommon.is_win_platform():
         common_arguments.extend(['--installcommand', 'make -j1'])
@@ -1314,8 +1324,8 @@ def handle_qt_creator_build(bld_command):
 
     # Qt Creator enterprise plugins
     additional_qmake_arguments = ['CONFIG+=licensechecker']
-    Plugin = collections.namedtuple('Plugin', ['name', 'path', 'dependencies'])
-    Plugin.__new__.__defaults__ = ([],) # 'name' and 'path' are mandatory
+    Plugin = collections.namedtuple('Plugin', ['name', 'path', 'dependencies', 'modules', 'additional_arguments', 'include_in_package'])
+    Plugin.__new__.__defaults__ = ([], [], [], True) # 'name' and 'path' are mandatory
     additional_plugins = [Plugin(name='licensechecker', path='licensechecker'),
                           Plugin(name='qmlprofiler', path='qmlprofiler',
                                  dependencies=['licensechecker']),
@@ -1326,17 +1336,38 @@ def handle_qt_creator_build(bld_command):
                           Plugin(name='vxworks-qtcreator-plugin', path='vxworks-qtcreator-plugin',
                                  dependencies=['licensechecker']),
                           Plugin(name='isoiconbrowser', path='qtquickdesigner',
-                                 dependencies=['licensechecker'])]
+                                 dependencies=['licensechecker'])
+                          ]
     if bldinstallercommon.is_linux_platform():
+        # download gammaray
+        bld_utils.download(kdsme_url, os.path.join(WORK_DIR, 'qt-creator_temp', 'qt5_kdsme.7z'))
+        bld_utils.download(gammaray_url, os.path.join(WORK_DIR, 'qt-creator_temp', 'qt5_gammaray.7z'))
+        # download and extract graphviz
+        graphviz_download_filepath = os.path.join(WORK_DIR, 'qt-creator_temp', 'graphviz.7z')
+        graphviz_target_path = os.path.join(WORK_DIR, 'graphviz')
+        bld_utils.download(graphviz_url, graphviz_download_filepath)
+        bldinstallercommon.extract_file(graphviz_download_filepath, graphviz_target_path)
+
         additional_qmake_arguments.extend(['PERFPARSER_BUNDLED_ELFUTILS=true',
                                            'PERFPARSER_APP_DESTDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'libexec', 'qtcreator'),
                                            'PERFPARSER_ELFUTILS_DESTDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'lib', 'qtcreator')])
-        additional_plugins.append(Plugin(name='perfparser', path='perfparser'))
+        additional_plugins.extend([Plugin(name='gammarayintegration', path='gammarayintegration',
+                                          dependencies=['licensechecker'], modules=['kdsme', 'gammaray'],
+                                          additional_arguments=[
+                                          '--deploy-command', 'python',
+                                          '--deploy-command=-u',
+                                          '--deploy-command', os.path.join(WORK_DIR, 'gammarayintegration', 'scripts', 'deploy.py'),
+                                          '--deploy-command=--graphviz-libs',
+                                          '--deploy-command', os.path.join(graphviz_target_path, 'lib')],
+                                          include_in_package=False),
+                                   Plugin(name='perfparser', path='perfparser')])
     if not bldinstallercommon.is_mac_platform():
         additional_plugins.extend([Plugin(name='perfprofiler', path='perfprofiler',
                                           dependencies=['licensechecker']),
                                    Plugin(name='b2qt-qtcreator-plugin', path='b2qt-qtcreator-plugin',
-                                          dependencies=['licensechecker', 'perfprofiler'])])
+                                          dependencies=['licensechecker', 'perfprofiler'])
+                                  ])
+
     for plugin in additional_plugins:
         cmd_arguments = ['python', '-u', os.path.join(SCRIPT_ROOT_DIR, 'bld_qtcreator_plugins.py'),
                          '--clean',
@@ -1345,6 +1376,9 @@ def handle_qt_creator_build(bld_command):
                          '--qtc-dev', os.path.join(WORK_DIR, 'qt-creator'),
                          '--plugin-path', os.path.join(WORK_DIR, plugin.path),
                          '--build-path', WORK_DIR]
+        for module in plugin.modules:
+            cmd_arguments.extend(['--qt-module', module])
+        cmd_arguments.extend(plugin.additional_arguments)
         for qmake_arg in additional_qmake_arguments:
             cmd_arguments.extend(['--add-qmake-argument', qmake_arg])
 
@@ -1417,7 +1451,8 @@ def handle_qt_creator_build(bld_command):
                                                   os.path.join(WORK_DIR, 'qt-creator'))
     cmd_args = list(common_args)
     for plugin in additional_plugins:
-        cmd_args.extend(['-a', os.path.join(WORK_DIR, plugin.name + '.7z')])
+        if plugin.include_in_package:
+            cmd_args.extend(['-a', os.path.join(WORK_DIR, plugin.name + '.7z')])
     cmd_args.append(installer_basename_template.format('enterprise'))
     bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR)
     # mac signing and installer dmg
