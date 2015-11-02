@@ -1585,6 +1585,8 @@ def sign_installer(installer_output_dir, installer_name, installer_name_base):
 # Remote copy installer
 ###############################
 def remote_copy_installer(bld_command, remote_dest_dir, file_name, installer_output_dir, installer_name_final):
+    # ensure remote directory exists
+    create_remote_dirs(bld_command.pkg_server_addr, remote_dest_dir)
     cmd_args = [SCP_COMMAND, file_name, bld_command.pkg_server_addr + ':' + remote_dest_dir + '/' + installer_name_final]
     bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir)
 
