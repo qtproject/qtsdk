@@ -39,7 +39,7 @@ function Component()
 
 function resolveQt5EssentialsDependency()
 {
-    return "qt.56.win64_msvc2013_winrt_x64" + "_qmakeoutput";
+    return "qt.56.win64_msvc2015_winrt_x64" + "_qmakeoutput";
 }
 
 
