@@ -1252,7 +1252,7 @@ def handle_qt_creator_build(bld_command):
     # Qt Creator enterprise plugins
     additional_qmake_arguments = ['CONFIG+=licensechecker']
     Plugin = collections.namedtuple('Plugin', ['name', 'path', 'dependencies'])
-    Plugin.__new__.__defaults__ = ([]) # 'name' and 'path' are mandatory
+    Plugin.__new__.__defaults__ = ([],) # 'name' and 'path' are mandatory
     additional_plugins = [Plugin(name='licensechecker', path='licensechecker'),
                           Plugin(name='qmlprofiler', path='qmlprofiler',
                                  dependencies=['licensechecker']),
