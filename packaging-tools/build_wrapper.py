@@ -1334,6 +1334,7 @@ def handle_qt_creator_build(bld_command):
                                            'PERFPARSER_APP_DESTDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'libexec', 'qtcreator'),
                                            'PERFPARSER_ELFUTILS_DESTDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'lib', 'qtcreator')])
         additional_plugins.append(Plugin(name='perfparser', path='perfparser'))
+    if not bldinstallercommon.is_mac_platform():
         additional_plugins.extend([Plugin(name='perfprofiler', path='perfprofiler',
                                           dependencies=['licensechecker']),
                                    Plugin(name='b2qt-qtcreator-plugin', path='b2qt-qtcreator-plugin',
@@ -2075,4 +2076,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
