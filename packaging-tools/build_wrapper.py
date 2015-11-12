@@ -216,7 +216,6 @@ class BldCommand:
         # qtcreator specific
         self.qtcreator_version = options.qtcreator_version
         self.qtcreator_version_description = options.qtcreator_version_description
-        self.qtcreator_qt5_version = os.environ.get('QTC_QT_VERSION', '')
 
         # define LATEST directories for extra module src & doc & examples packages
         self.remote_extra_module_dir = self.path + '/' + self.license + '/'
@@ -1274,8 +1273,7 @@ def handle_qt_creator_build(bld_command):
     target_env_dir = BIN_TARGET_DIRS[bld_command.target_env]
 
     # determine used Qt package base http url
-    qt_pkg_base_url = bld_command.pkg_server_addr_http + '/enterprise/qt/'
-    qt_pkg_base_url += bld_command.qtcreator_qt5_version + '/latest_available_package/'
+    qt_pkg_base_url = bld_command.pkg_server_addr_http + '/' + os.environ['QTC_QT_BASE_DIR'] + '/'
     qt_pkg_base_url += target_env_dir
 
     common_arguments = []
