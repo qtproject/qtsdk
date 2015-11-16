@@ -90,6 +90,7 @@ build_target_dir:           android_x86/linux_x86
 build_node_labels:          linux-g++-Rhel6.6-x86_Android-x86
 
 [meta.linux_rhel66.x64.gcc]
+ci_target_postfix:          Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64
 build_target_dir:           linux_gcc_64_rhel66
 build_node_labels:          linux-g++-Rhel6.6-x64
 
@@ -210,6 +211,7 @@ build_target_dir:           windows_vs2013_32
 build_node_labels:          win-msvc2013-Windows8.1-x86_ANGLE
 
 [meta.windows.x86.msvc2013_32]
+ci_target_postfix:          Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86
 build_target_dir:           windows_vs2013_32
 build_node_labels:          win-msvc2013-Windows8.1-x86
 
@@ -306,6 +308,7 @@ build_target_dir:           android_x86/mac_x64
 build_node_labels:          mac-clang-10.9-x64_Android-x86
 
 [meta.mac_1010.x64.clang]
+ci_target_postfix:          OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64
 build_target_dir:           mac_x64
 build_node_labels:          mac-clang-10.10-x64
 
@@ -320,4 +323,3 @@ build_node_labels:          mac-clang-10.10-x64_Android-armv7
 [meta.mac_1010.x64.android_x86]
 build_target_dir:           android_x86/mac_x64
 build_node_labels:          mac-clang-10.10-x64_Android-x86
-

@@ -91,7 +91,8 @@ SRC_DEST_DIRS               = ['src', 'src/submodules', 'src/doc', 'src/single',
 BIN_DEST_DIRS               = ['android_armv5', 'android_armv7', 'android_x86', 'linux_gcc_64_rhel66', 'linux_gcc_32_rhel66', 'ios', 'mac_x64', 'windows_mingw492_x86', 'windows_vs2013_winrt_x64', 'winphone81', 'windows_vs2013_32', 'windows_vs2013_64', 'windows_vs2012_32', 'windows_vs2010_32', 'src/doc']
 EXTRA_MODULE_DEST_DIRS      = ['src', 'doc', 'examples']
 QT5_DOCS_ARCHIVE_NAME       = 'qt5_docs.7z'
-BIN_TARGET_DIRS             = {} # dictionary populated based on the /packaging-tools/releases/release-<version>
+BIN_TARGET_DIRS             = {} # dictionary populated based on the /packaging-tools/releases/build-meta
+CI_TARGET_POSTFIX           = {} # dictionary populated based on the /packaging-tools/releases/build-meta
 EXTRA_ENV                   = dict(os.environ)
 MAKE_INSTALL_PADDING        = ''
 BUILD_META_INFO_FILE        = 'releases/build-meta'
@@ -1055,6 +1056,7 @@ def handle_examples_injection(bld_command):
 ###############################
 def generate_bin_target_dictionary():
     global BIN_TARGET_DIRS
+    global CI_TARGET_POSTFIX
     # parse module exclude list from release description file
     conf_file_base_path = os.path.join(SCRIPT_ROOT_DIR, BUILD_META_INFO_FILE)
     if not os.path.isfile(conf_file_base_path):
@@ -1068,6 +1070,7 @@ def generate_bin_target_dictionary():
         if section_parts[0] != 'meta':
             continue
         build_target_dir = bldinstallercommon.safe_config_key_fetch(parser, s, 'build_target_dir')
+        ci_target_postfix = bldinstallercommon.safe_config_key_fetch(parser, s, 'ci_target_postfix')
         build_node_labels = bldinstallercommon.safe_config_key_fetch(parser, s, 'build_node_labels').replace(' ', '')
         label_list = build_node_labels.split(',')
         if not build_target_dir:
@@ -1078,6 +1081,8 @@ def generate_bin_target_dictionary():
             sys.exit(-1)
         for label in label_list:
             BIN_TARGET_DIRS[label] = build_target_dir
+            if ci_target_postfix:
+                CI_TARGET_POSTFIX[label] = ci_target_postfix
 
 
 ###############################
