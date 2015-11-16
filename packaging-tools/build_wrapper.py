@@ -1197,14 +1197,24 @@ def handle_qt_release_build(bld_command):
 def handle_gammaray_build(bld_command):
     sanity_check_packaging_server(bld_command)
     gammaray_version = os.environ['GAMMARAY_VERSION']
-    qt_base_url = (bld_command.pkg_server_addr_http + '/' + os.environ['QT_BASE_PATH']
-                   + '/' + BIN_TARGET_DIRS[bld_command.target_env])
     graphviz_filename = os.environ['GRAPHVIZ_BASE_FILENAME'] + '-' + bld_command.target_env + '.7z'
     graphviz_url = (bld_command.pkg_server_addr_http + '/' + os.environ['GRAPHVIZ_BASE_PATH']
                     + '/' + graphviz_filename)
     graphviz_download_filepath = os.path.join(WORK_DIR, graphviz_filename)
     graphviz_target_path = os.path.join(WORK_DIR, 'graphviz')
-    qt_modules = ['essentials', 'addons']
+    qt_base_path = os.environ['QT_BASE_PATH']
+    qt_module_urls = []
+    if "/5.5" in qt_base_path: # Qt 5.5 compat mode
+        qt_modules = ['essentials', 'addons']
+        qt_base_url = (bld_command.pkg_server_addr_http + '/' + qt_base_path
+                       + '/' + BIN_TARGET_DIRS[bld_command.target_env])
+        qt_module_urls = [qt_base_url + '/qt5_' + module + '.7z' for module in qt_modules]
+    else:
+        qt_modules = ['qtbase', 'qtdeclarative', 'qtscript', 'qtxmlpatterns']
+        qt_base_url = bld_command.pkg_server_addr_http + '/' + qt_base_path
+        qt_postfix = CI_TARGET_POSTFIX[bld_command.target_env]
+        qt_module_urls = [qt_base_url + '/' + module + '/' + module + '-' + qt_postfix + '.7z'
+                          for module in qt_modules]
 
     # download and extract graphviz
     bld_utils.download(graphviz_url, graphviz_download_filepath)
@@ -1216,8 +1226,8 @@ def handle_gammaray_build(bld_command):
         cmd_args = ['python', '-u', os.path.join(SCRIPT_ROOT_DIR, 'bld_module.py'),
                     '--clean',
                     '--use-cmake']
-        for module in qt_modules:
-            cmd_args.extend(['--qt5_module_url', qt_base_url + '/qt5_' + module + '.7z'])
+        for module_url in qt_module_urls:
+            cmd_args.extend(['--qt5_module_url', module_url])
         if not bldinstallercommon.is_mac_platform():
             cmd_args.extend(['--icu7z', bld_command.icu_libs])
         if bldinstallercommon.is_win_platform():
