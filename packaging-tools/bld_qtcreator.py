@@ -51,7 +51,7 @@ import subprocess
 import sys
 
 # own imports
-from threadedwork import Task, ThreadedWork
+from threadedwork import ThreadedWork
 from bld_utils import gitSHA, runBuildCommand, runCommand, runInstallCommand, stripVars
 import bldinstallercommon
 

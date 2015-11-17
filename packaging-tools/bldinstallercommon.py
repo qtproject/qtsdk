@@ -94,7 +94,7 @@ class head_request(urllib2.Request):
 
 def is_content_url_valid(url):
     # check first if the url points to file on local file system
-    if (os.path.isfile(url)):
+    if os.path.isfile(url):
         return True
     # throws error if url does not point to valid object
     result = False
@@ -330,10 +330,10 @@ def copy_tree(source_dir, dest_dir):
             if len(full_file_name) > 255:
                 print 'given full_file_name length (' + len(full_file_name) + ') too long for Windows: ' + full_file_name
                 sys.exit(-1)
-        if (os.path.isdir(full_file_name)):
+        if os.path.isdir(full_file_name):
             create_dirs(dest_dir + os.sep + file_name)
             copy_tree(full_file_name, dest_dir + os.sep + file_name)
-        if (os.path.isfile(full_file_name)):
+        if os.path.isfile(full_file_name):
             shutil.copy(full_file_name, dest_dir)
 
 
@@ -406,7 +406,7 @@ def replace_in_text_files(root_directory, match_string, replacement_string, file
         for name in files:
             path = os.path.join(root, name)
             if not os.path.isdir(path) and not os.path.islink(path):
-                if not (any(name.endswith(item) for item in file_type_ignore_list)):
+                if not any(name.endswith(item) for item in file_type_ignore_list):
                     readlines = open(path, 'r').read()
                     if pattern.search(readlines):
                         print '---> Regexp match: ' + path
@@ -668,7 +668,7 @@ def calculate_relpath(p1, p2):
 # Calculate the relative RPath for the given file
 ##############################################################
 def calculate_rpath(file_full_path, destination_lib_path):
-    if not (os.path.isfile(file_full_path)):
+    if not os.path.isfile(file_full_path):
         print '*** Not a valid file: ' + file_full_path
         sys.exit(-1)
 
@@ -896,7 +896,7 @@ def remove_directories_by_type(base_path, search_pattern):
 ###############################
 # function
 ###############################
-def create_extract_function(file_path, target_path, caller_arguments = None, init_environment = None):
+def create_extract_function(file_path, target_path, caller_arguments = None):
     create_dirs(target_path)
     working_dir = os.path.dirname(file_path)
     if file_path.endswith('.tar.gz'):

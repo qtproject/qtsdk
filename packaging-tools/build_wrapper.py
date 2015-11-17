@@ -52,7 +52,6 @@ import shutil
 import sys
 import re
 import platform
-from time import gmtime, strftime
 import urllib
 import mkqt5bld
 import build_doc
@@ -109,7 +108,7 @@ def combine_env_variable(a, b):
     else :
         return a + ':' + b
 
-def combine_environment_dicts(a, b, op=combine_env_variable):
+def combine_environment_dicts(a, b):
     return dict(a.items() + b.items() +
                 [(k, combine_env_variable(a[k], b[k])) for k in set(b) & set(a)])
 
@@ -185,7 +184,7 @@ class BldCommand:
             print('Using release description file: {0}'.format(self.release_description_file))
             self.parse_release_description_file()
             version_num = int(''.join(re.findall(r'\d+', self.version)))
-            if (version_num >= 560):
+            if version_num >= 560:
                 qt_pkg_url = self.pkg_server_addr_http
             else:
                 qt_pkg_url = self.pkg_server_addr_http + '/' + self.license
@@ -471,8 +470,8 @@ def sanity_check_packaging_server(bld_command):
 # sign windows executable
 ###############################
 def sign_windows_executable(file_path, working_dir, abort_on_fail):
-    cmd_args = ['C:\Utils\sign\signtool.exe', 'sign', '/v', '/du', os.environ['SIGNING_SERVER'], '/p', os.environ['SIGNING_PASSWORD'],
-                '/t', 'http://timestamp.verisign.com/scripts/timestamp.dll', '/f', 'C:\utils\sign\keys.pfx', file_path]
+    cmd_args = [r'C:\Utils\sign\signtool.exe', 'sign', '/v', '/du', os.environ['SIGNING_SERVER'], '/p', os.environ['SIGNING_PASSWORD'],
+                '/t', 'http://timestamp.verisign.com/scripts/timestamp.dll', '/f', r'C:\utils\sign\keys.pfx', file_path]
     bldinstallercommon.do_execute_sub_process(cmd_args, working_dir, abort_on_fail)
 
 
@@ -505,7 +504,7 @@ def sign_mac_executable(file_path, working_dir, abort_on_fail):
 ##############################################################
 def get_qt_snapshot_dir(bld_command):
     version_num = int(''.join(re.findall(r'\d+', bld_command.version)))
-    if (version_num >= 560):
+    if version_num >= 560:
         snapshot_qt_dir_base = bld_command.path + '/qt/' + bld_command.version
         if bld_command.custom_build != 0:
             snapshot_qt_dir_base += '-' + bld_command.custom_build
@@ -553,12 +552,12 @@ def initialize_qt5_build(bld_command):
             remote_qt_minor_dir = qt_dir_base[:-2]
             cmd_args = [SSH_COMMAND, bld_command.pkg_server_addr, 'ln -sfn', latest_available_pkg , remote_qt_minor_dir]
             bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
-        if (version_num >= 560):
+        if version_num >= 560:
             # Create symbolic links into build artifacts if not already exist
             snapshot_license_path = bld_command.path + '/' + bld_command.license + '/qt/' + bld_command.version
             if not bldinstallercommon.remote_path_exists(bld_command.pkg_server_addr, snapshot_license_path, SSH_COMMAND):
                 update_latest_link(bld_command, qt_dir_base, snapshot_license_path)
-        elif (version_num >= 550):
+        elif version_num >= 550:
             # Create binary links for opensource
             if bld_command.license == 'opensource':
                 remote_doc_dir = latest_qt_dir + '/' + 'src/doc'
@@ -592,7 +591,7 @@ def handle_qt_licheck_build(bld_command):
         exe_dir = WORK_DIR + '/qtsdk-enterprise/license-managing/licheck'
         upload_path = bld_command.pkg_server_addr + ':' + bld_command.path + '/' + bld_command.license + '/licheck/'
         if bld_command.target_env.lower().startswith("win"):
-            cmd_args = ['c:\Utils\jom\jom.exe', '-f', 'Makefile_win']
+            cmd_args = [r'c:\Utils\jom\jom.exe', '-f', 'Makefile_win']
             bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
             cmd_args = [SCP_COMMAND, 'licheck.exe', upload_path]
             bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
@@ -628,12 +627,12 @@ def handle_qt_configure_exe_build(bld_command):
     else:
         src_package_name = 'qt-everywhere-' + bld_command.license + '-src-' + bld_command.full_version
         src_module_name = 'qtbase-' + bld_command.license + '-src-' + bld_command.full_version
-    cmd_args = ['python', '-u', WORK_DIR + '\qtsdk\packaging-tools\helpers\create_configure_exe.py', 'src_url=' + bld_command.qt_src_url_base + 'single/' + src_package_name + '.zip', 'mdl_url=' + bld_command.qt_src_url_base + 'submodules/' + src_module_name + '.zip', 'do_7z']
+    cmd_args = ['python', '-u', WORK_DIR + r'\qtsdk\packaging-tools\helpers\create_configure_exe.py', 'src_url=' + bld_command.qt_src_url_base + 'single/' + src_package_name + '.zip', 'mdl_url=' + bld_command.qt_src_url_base + 'submodules/' + src_module_name + '.zip', 'do_7z']
     bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
 
     # upload packages
     version_num = int(''.join(re.findall(r'\d+', bld_command.version)))
-    if (version_num >= 560):
+    if version_num >= 560:
         ARTF_UPLOAD_PATH=bld_command.pkg_server_addr + ':' + bld_command.path + '/qt/' + bld_command.version + '/latest/src'
         if bld_command.custom_build != 0:
             ARTF_UPLOAD_PATH=bld_command.pkg_server_addr + ':' + bld_command.path + '/qt/' + bld_command.version + '-' + bld_command.custom_build + '/latest/src'
@@ -724,7 +723,7 @@ def handle_ifw_build(bld_command):
     # Qt
     qt_src_pkg = os.environ['IFW_QT_SRC_PKG'] # mandatory env variable
     is_qt5_ifw_build = True
-    regex = re.compile('-((5)\.\d.\d)')
+    regex = re.compile(r'-((5)\.\d.\d)')
     regex_result = regex.findall(qt_src_pkg)
     if not regex_result:
         is_qt5_ifw_build = False
@@ -1105,7 +1104,7 @@ def handle_qt_release_build(bld_command):
     qt_configure_extra_options = os.getenv('EXTRA_QT_CONFIGURE_OPTIONS', '')
     if bld_command.license.lower() == 'enterprise':
         version_num = int(''.join(re.findall(r'\d+', bld_command.version)))
-        if (version_num < 550):
+        if version_num < 550:
             if not 'alpha' or 'beta' in bld_command.version_tag.lower():
                 if bldinstallercommon.is_win_platform():
                     qt_configure_extra_options += ' -D QT_EVAL'
@@ -1554,7 +1553,7 @@ def replace_latest_successful_installer(bld_command, installer_name, installer_n
     if 'online' in installer_name_final.lower():
         regex = re.compile('.*online')
         if "embedded" in installer_name_final.lower():
-            regex = re.compile('.*online(?:(?!_\d{4}).)*')
+            regex = re.compile(r'.*online(?:(?!_\d{4}).)*')
     else:
         regex = re.compile('.*' + bld_command.full_version)
     installer_base_name = "".join(regex.findall(installer_name_final))
@@ -1760,7 +1759,7 @@ def trigger_rta(rta_description_files_dir):
         print('*** Error - RTA_SERVER_BASE_URL env. variable is not defined. Unable to proceed! RTA not run for this build job!')
         return
     rta_server_base_url = os.environ['RTA_SERVER_BASE_URL']
-    if not (rta_server_base_url.endswith('/')):
+    if not rta_server_base_url.endswith('/'):
         rta_server_base_url += '/'
     # iterate rta description files
     for rta_description_file in matching:
