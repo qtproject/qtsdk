@@ -399,16 +399,6 @@ class BldCommand:
             return False
         return True
 
-    ###########################################
-    # Determine if this is Enginio build
-    ###########################################
-    def is_enginio_build(self):
-        if self.options.command == self.execute_extra_module_bld:
-            module_name = os.environ.get('MODULE_NAME')
-            if 'enginio' in module_name.lower():
-                return True
-        return False
-
     ##############################################################
     # Parse Qt version and tag from release description file
     ##############################################################
