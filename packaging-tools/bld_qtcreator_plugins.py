@@ -68,8 +68,6 @@ def parse_arguments():
     dev_group = parser.add_mutually_exclusive_group(required=True)
     dev_group.add_argument('--qtc-dev-url', help='Path to the Qt Creator dev source to use')
     dev_group.add_argument('--qtc-dev', help='Path to the Qt Creator dev source to use')
-    parser.add_argument('--qt-module', help='Qt module package needed for building aside from essentials',
-        dest='qt_modules', action='append')
     parser.add_argument('--plugin-search-path', help='Adds search path for plugin dependencies (QTC_PLUGIN_DIRS)',
         dest='plugin_search_paths', action='append')
     parser.add_argument('--add-qmake-argument', help='Adds an argument to the qmake command line',
@@ -82,6 +80,7 @@ def parse_arguments():
     parser.add_argument('target_7zfile')
 
     parser.epilog += ' --build-path /tmp/plugin_build'
+    parser.epilog += ' --qt-module http://myserver/path/qt_all.7z'
     parser.epilog += ' --qtc-build-url http://myserver/path/qtcreator_build.7z'
     parser.epilog += ' --qtc-dev-url http://myserver/path/qtcreator_dev.7z'
     parser.epilog += ' --plugin-path /home/myplugin1 --plugin-path /home/myplugin2'
@@ -144,12 +143,8 @@ def build_plugins(caller_arguments):
     download_packages_work = ThreadedWork('Get and extract all needed packages')
     need_to_install_qt = not os.path.exists(paths.qt5)
     if need_to_install_qt:
-        modules = ['essentials']
-        if caller_arguments.qt_modules:
-            modules.extend(caller_arguments.qt_modules)
         download_packages_work.addTaskObject(bldinstallercommon.create_qt_download_task(
-            [caller_arguments.qt5_packages_url + '/qt5_' + module + '.7z' for module in modules],
-            paths.qt5, paths.temp, caller_arguments))
+            caller_arguments.qt_modules, paths.qt5, paths.temp, caller_arguments))
     if caller_arguments.qtc_build_url and not os.path.exists(paths.qtc_build):
         download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(caller_arguments.qtc_build_url,
                                              paths.qtc_build, paths.temp, caller_arguments))

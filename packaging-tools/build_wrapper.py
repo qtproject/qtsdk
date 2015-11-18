@@ -1276,10 +1276,6 @@ def handle_qt_creator_build(bld_command):
     sanity_check_packaging_server(bld_command)
     target_env_dir = BIN_TARGET_DIRS[bld_command.target_env]
 
-    # determine used Qt package base http url
-    qt_pkg_base_url = bld_command.pkg_server_addr_http + '/' + os.environ['QTC_QT_BASE_DIR'] + '/'
-    qt_pkg_base_url += target_env_dir
-
     # gammaray and graphviz
     kdsme_url = (bld_command.pkg_server_addr_http + '/'
                     + os.environ["GAMMARAY_BASE_DIR"] + '/'
@@ -1289,6 +1285,27 @@ def handle_qt_creator_build(bld_command):
                     + target_env_dir + '/qt5_gammaray.7z')
     graphviz_url = (bld_command.pkg_server_addr_http + '/'
                     + os.environ["GRAPHVIZ_BASE_DIR"] + '-' + bld_command.target_env + '.7z')
+
+    qt_base_path = os.environ['QTC_QT_BASE_DIR']
+    qt_module_urls = []
+    qt_module_filenames = []
+    if "/5.5" in qt_base_path: # Qt 5.5 compat mode
+        qt_modules = ['essentials', 'addons', 'qtscript', 'qtwebkit',
+                      'qtlocation', 'qtpositioning', 'qtquickcontrols']
+        qt_module_filenames = ['qt5_' + module + '.7z' for module in qt_modules]
+        qt_base_url = (bld_command.pkg_server_addr_http + '/' + qt_base_path
+                       + '/' + BIN_TARGET_DIRS[bld_command.target_env])
+        qt_module_urls = [qt_base_url + '/' + filename for filename in qt_module_filenames]
+    else:
+        qt_modules = ['qtbase', 'qtdeclarative', 'qtgraphicaleffects',
+                      'qtimageformats', 'qtlocation', 'qtmacextras',
+                      'qtquickcontrols', 'qtscript', 'qtsvg', 'qttools',
+                      'qttranslations', 'qtx11extras', 'qtxmlpatterns']
+        qt_postfix = CI_TARGET_POSTFIX[bld_command.target_env]
+        qt_module_filenames = [module + '-' + qt_postfix + '.7z' for module in qt_modules]
+        qt_base_url = bld_command.pkg_server_addr_http + '/' + qt_base_path
+        qt_module_urls = [qt_base_url + '/' + module + '/' + filename
+                          for (module, filename) in zip(qt_modules, qt_module_filenames)]
 
     common_arguments = []
     if not bldinstallercommon.is_win_platform():
@@ -1300,12 +1317,12 @@ def handle_qt_creator_build(bld_command):
                          '--gitpath', os.path.normpath('C:/Program Files/Git/bin'),
                          '--environment_batch', os.path.normpath('C:/Program Files/Microsoft Visual Studio 12.0/VC/vcvarsall.bat'),
                          '--environment_batch_argument', 'x86'])
-
     cmd_args = ['python', '-u', os.path.normpath(SCRIPT_ROOT_DIR + '/bld_qtcreator.py'),
                 '--clean',
                 '--qt5path', os.path.normpath(WORK_DIR + '/qt5_install_dir'),
-                '--qt5_packages_url', qt_pkg_base_url,
                 '--versiondescription', '"' + bld_command.qtcreator_version_description + '"']
+    for module_url in qt_module_urls:
+        cmd_args.extend(['--qt-module', module_url])
 
     if bldinstallercommon.is_linux_platform():
         cmd_args.extend(['--icu7z', bld_command.icu_libs])
@@ -1343,9 +1360,6 @@ def handle_qt_creator_build(bld_command):
                                  dependencies=['licensechecker'])
                           ]
     if bldinstallercommon.is_linux_platform():
-        # download gammaray
-        bld_utils.download(kdsme_url, os.path.join(WORK_DIR, 'qt-creator_temp', 'qt5_kdsme.7z'))
-        bld_utils.download(gammaray_url, os.path.join(WORK_DIR, 'qt-creator_temp', 'qt5_gammaray.7z'))
         # download and extract graphviz
         graphviz_download_filepath = os.path.join(WORK_DIR, 'qt-creator_temp', 'graphviz.7z')
         graphviz_target_path = os.path.join(WORK_DIR, 'graphviz')
@@ -1356,7 +1370,7 @@ def handle_qt_creator_build(bld_command):
                                            'PERFPARSER_APP_DESTDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'libexec', 'qtcreator'),
                                            'PERFPARSER_ELFUTILS_DESTDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'lib', 'qtcreator')])
         additional_plugins.extend([Plugin(name='gammarayintegration', path='gammarayintegration',
-                                          dependencies=['licensechecker'], modules=['kdsme', 'gammaray'],
+                                          dependencies=['licensechecker'], modules=[kdsme_url, gammaray_url],
                                           additional_arguments=[
                                           '--deploy-command', 'python',
                                           '--deploy-command=-u',
@@ -1375,11 +1389,12 @@ def handle_qt_creator_build(bld_command):
     for plugin in additional_plugins:
         cmd_arguments = ['python', '-u', os.path.join(SCRIPT_ROOT_DIR, 'bld_qtcreator_plugins.py'),
                          '--clean',
-                         '--qt5_packages_url', bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_temp')),
                          '--qtc-build', os.path.join(WORK_DIR, 'qt-creator_build'),
                          '--qtc-dev', os.path.join(WORK_DIR, 'qt-creator'),
                          '--plugin-path', os.path.join(WORK_DIR, plugin.path),
                          '--build-path', WORK_DIR]
+        for module_filename in qt_module_filenames:
+            cmd_arguments.extend(['--qt-module', bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_temp', module_filename))])
         for module in plugin.modules:
             cmd_arguments.extend(['--qt-module', module])
         cmd_arguments.extend(plugin.additional_arguments)

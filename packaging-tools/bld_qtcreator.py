@@ -59,7 +59,7 @@ def add_common_commandline_arguments(parser):
     if bldinstallercommon.is_win_platform():
         parser.epilog = "example: " + os.linesep + "\tpython {0} --clean " \
             "--buildcommand C:\\bin\\ibjom.cmd --installcommand nmake " \
-            "--qt5_packages_url http://it-dl241-hki.it.local/packages/qt/5.5.0-released/windows_vs2013_32/ " \
+            "--qt-module http://it-dl241-hki.it.local/packages/qt/5.5.0-released/windows_vs2013_32/qt_all.7z " \
             "--sevenzippath \"C:\\Program Files\\7-Zip\" " \
             "--gitpath \"C:\\Program Files (x86)\\Git\\cmd\" "\
             "--icu7z http://download.qt.io/development_releases/prebuilt/icu/prebuilt/msvc2010/icu_49_win_32_release.7z " \
@@ -70,11 +70,11 @@ def add_common_commandline_arguments(parser):
             "".format(os.path.basename(sys.argv[0]))
     elif bldinstallercommon.is_mac_platform():
         parser.epilog = "example: " + os.linesep + "\tpython {0} --clean " \
-            "--qt5_packages_url http://it-dl241-hki.it.local/packages/qt/5.0.1-released/mac_cocoa_10.7/" \
+            "--qt-module http://it-dl241-hki.it.local/packages/qt/5.0.1-released/mac_cocoa_10.7/qt_all.7z" \
             "".format(os.path.basename(sys.argv[0]))
     else:
         parser.epilog = "example: " + os.linesep + "\tpython {0} --clean " \
-            "--qt5_packages_url http://it-dl241-hki.it.local/packages/qt/5.0.1-released/linux_gcc_64_ubuntu1110/ " \
+            "--qt-module http://it-dl241-hki.it.local/packages/qt/5.0.1-released/linux_gcc_64_ubuntu1110/qt_all.7z " \
             "--icu7z http://it-dl241-hki.it.local/packages/qt/5.0.1-released/linux_gcc_64_ubuntu1110/libicu_x86_64_ubuntu1110.7z" \
             "".format(os.path.basename(sys.argv[0]))
 
@@ -83,7 +83,8 @@ def add_common_commandline_arguments(parser):
     parser.add_argument('--buildcommand', help="this means usually make", default="make")
     parser.add_argument('--installcommand', help="this means usually make", default="make")
     parser.add_argument('--debug', help="use debug builds", action='store_true', default=False)
-    parser.add_argument('--qt5_packages_url', help="url/directory where to get the built qt5 modules' content as 7z")
+    parser.add_argument('--qt-module', help="Qt module package url (.7z) needed for building",
+        action='append', dest='qt_modules')
 
     if not bldinstallercommon.is_mac_platform():
         parser.add_argument('--icu7z', help="a file or url where it get icu libs as 7z", required=True)
@@ -195,9 +196,9 @@ if __name__ == "__main__":
         bldinstallercommon.remove_tree(qtCreatorInstallDirectory)
         bldinstallercommon.remove_tree(tempPath)
 
-    if not os.path.lexists(callerArguments.qt5path) and not callerArguments.qt5_packages_url:
+    if not os.path.lexists(callerArguments.qt5path) and not callerArguments.qt_modules:
         parser.print_help()
-        print(("error: You have to pass the qt5_packages_url argument if the {0} does not exist"
+        print(("error: You have to pass the --qt-module argument if the {0} does not exist"
             + os.linesep + os.linesep).format(callerArguments.qt5path))
         sys.exit(1)
 
@@ -206,18 +207,8 @@ if __name__ == "__main__":
     download_packages_work = ThreadedWork("get and extract Qt 5 binaries")
     need_to_install_qt = not os.path.lexists(callerArguments.qt5path)
     if need_to_install_qt:
-        qt_packages = [
-            'qt5_essentials.7z',
-            'qt5_addons.7z',
-            'qt5_qtscript.7z',
-            'qt5_qtwebkit.7z',
-            'qt5_qtlocation.7z',
-            'qt5_qtpositioning.7z',
-            'qt5_qtquickcontrols.7z'
-        ]
         download_packages_work.addTaskObject(bldinstallercommon.create_qt_download_task(
-            [(callerArguments.qt5_packages_url + '/' + package) for package in qt_packages],
-             callerArguments.qt5path, tempPath, callerArguments))
+            callerArguments.qt_modules, callerArguments.qt5path, tempPath, callerArguments))
 
     # add get installer base task
     if callerArguments.installerbase7z:
