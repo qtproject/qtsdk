@@ -1427,7 +1427,7 @@ def handle_qt_creator_build(bld_command):
     else: # -> windows
         installer_basename_template = 'qt-creator-{0}-windows-' + postfix
     common_args = ['python', '-u', os.path.join(WORK_DIR, 'qt-creator', 'scripts', 'packageIfw.py'),
-        '-v', '3.5.81', # TODO: hardcoded is bad... anyhow hopefully this code is gone soon
+        '-v', '3.5.82', # TODO: hardcoded is bad... anyhow hopefully this code is gone soon
         '-i', ifw_path,
         '-a', os.path.join(WORK_DIR, 'qt-creator_build/qtcreator.7z')]
     # opensource installers
