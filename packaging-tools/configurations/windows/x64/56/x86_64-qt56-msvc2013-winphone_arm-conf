@@ -102,8 +102,6 @@ archives:               56.qtlocation.win64_msvc2013_winphone_arm
 target_install_base:    /5.6/winphone_arm
 [56.qtlocation.win64_msvc2013_winphone_arm]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-ARMv4.7z
-rpath_target:
-package_finalize_items: delete_doc_directory
 
 # Qt3D provided as separate installable component in installer
 [qt.56.qt3d]
@@ -112,8 +110,6 @@ archives:               56.qt3d.win64_msvc2013_winphone_arm
 target_install_base:    /5.6/winphone_arm
 [56.qt3d.win64_msvc2013_winphone_arm]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-ARMv4.7z
-rpath_target:
-package_finalize_items: delete_doc_directory
 
 # QtCanvas3D provided as separate installable component in installer
 [qt.56.qtcanvas3d]
@@ -122,8 +118,6 @@ archives:               56.qtcanvas3d.win64_msvc2013_winphone_arm
 target_install_base:    /5.6/winphone_arm
 [56.qtcanvas3d.win64_msvc2013_winphone_arm]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-ARMv4.7z
-rpath_target:
-package_finalize_items: delete_doc_directory
 
 # QtWebView provided as separate installable component in installer
 [qt.56.qtwebview]
@@ -132,5 +126,3 @@ archives:               56.qtwebview.win64_msvc2013_winphone_arm
 target_install_base:    /5.6/winphone_arm
 [56.qtwebview.win64_msvc2013_winphone_arm]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-ARMv4.7z
-rpath_target:           /lib
-

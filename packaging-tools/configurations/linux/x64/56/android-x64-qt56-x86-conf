@@ -118,8 +118,6 @@ archives:               56.qtlocation.android_x86
 target_install_base:    /5.6/android_x86
 [56.qtlocation.android_x86]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
-rpath_target:           /lib
-package_finalize_items: delete_doc_directory
 
 # Qt3D provided as separate installable component in installer
 [qt.56.qt3d]
@@ -128,8 +126,6 @@ archives:               56.qt3d.android_x86
 target_install_base:    /5.6/android_x86
 [56.qt3d.android_x86]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
-rpath_target:           /lib
-package_finalize_items: delete_doc_directory
 
 # QtCanvas3D provided as separate installable component in installer
 [qt.56.qtcanvas3d]
@@ -138,8 +134,6 @@ archives:               56.qtcanvas3d.android_x86
 target_install_base:    /5.6/android_x86
 [56.qtcanvas3d.android_x86]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
-rpath_target:           /lib
-package_finalize_items: delete_doc_directory
 
 # QtWebView provided as separate installable component in installer
 [qt.56.qtwebview]
@@ -148,5 +142,3 @@ archives:               56.qtwebview.android_x86
 target_install_base:    /5.6/android_x86
 [56.qtwebview.android_x86]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
-rpath_target:           /lib
-package_finalize_items: delete_doc_directory

@@ -124,8 +124,6 @@ archives:               56.qtlocation.android_armv7
 target_install_base:    /5.6/android_armv7
 [56.qtlocation.android_armv7]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Windows-Windows_7-Mingw49-Android-Android_22-ARMv7.7z
-rpath_target:           /lib
-package_finalize_items: delete_doc_directory
 
 # Qt3D provided as separate installable component in installer
 [qt.56.qt3d]
@@ -134,8 +132,6 @@ archives:               56.qt3d.android_armv7
 target_install_base:    /5.6/android_armv7
 [56.qt3d.android_armv7]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Windows-Windows_7-Mingw49-Android-Android_22-ARMv7.7z
-rpath_target:           /lib
-package_finalize_items: delete_doc_directory
 
 # QtCanvas3D provided as separate installable component in installer
 [qt.56.qtcanvas3d]
@@ -144,8 +140,6 @@ archives:               56.qtcanvas3d.android_armv7
 target_install_base:    /5.6/android_armv7
 [56.qtcanvas3d.android_armv7]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Windows-Windows_7-Mingw49-Android-Android_22-ARMv7.7z
-rpath_target:           /lib
-package_finalize_items: delete_doc_directory
 
 # QtWebView provided as separate installable component in installer
 [qt.56.qtwebview]
@@ -154,5 +148,3 @@ archives:               56.qtwebview.android_armv7
 target_install_base:    /5.6/android_armv7
 [56.qtwebview.android_armv7]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-Windows-Windows_7-Mingw49-Android-Android_22-ARMv7.7z
-rpath_target:           /lib
-

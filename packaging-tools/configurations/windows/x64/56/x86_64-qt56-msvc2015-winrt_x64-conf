@@ -104,8 +104,6 @@ archives:               56.qtlocation.win64_msvc2015_winrt_x64
 target_install_base:    /5.6/winrt_x64_msvc2015
 [56.qtlocation.win64_msvc2015_winrt_x64]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Windows-Windows_10-MSVC2015-WinRT-Windows_10-X86_64.7z
-rpath_target:
-package_finalize_items: delete_doc_directory
 
 # Qt3D provided as separate installable component in installer
 [qt.56.qt3d]
@@ -114,8 +112,6 @@ archives:               56.qt3d.win64_msvc2015_winrt_x64
 target_install_base:    /5.6/winrt_x64_msvc2015
 [56.qt3d.win64_msvc2015_winrt_x64]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Windows-Windows_10-MSVC2015-WinRT-Windows_10-X86_64.7z
-rpath_target:
-package_finalize_items: delete_doc_directory
 
 # QtCanvas3D provided as separate installable component in installer
 [qt.56.qtcanvas3d]
@@ -124,8 +120,6 @@ archives:               56.qtcanvas3d.win64_msvc2015_winrt_x64
 target_install_base:    /5.6/winrt_x64_msvc2015
 [56.qtcanvas3d.win64_msvc2015_winrt_x64]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Windows-Windows_10-MSVC2015-WinRT-Windows_10-X86_64.7z
-rpath_target:
-package_finalize_items: delete_doc_directory
 
 # QtWebView provided as separate installable component in installer
 [qt.56.qtwebview]
@@ -134,4 +128,3 @@ archives:               56.qtwebview.win64_msvc2015_winrt_x64
 target_install_base:    /5.6/winrt_x64_msvc2015
 [56.qtwebview.win64_msvc2015_winrt_x64]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-Windows-Windows_10-MSVC2015-WinRT-Windows_10-X86_64.7z
-rpath_target:           /lib

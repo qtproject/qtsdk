@@ -88,8 +88,6 @@ archives:               56.qtscript.ios
 target_install_base:    /5.6/ios
 [56.qtscript.ios]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
-rpath_target:           /lib
-package_finalize_items: delete_doc_directory
 
 # QtQuickControls provided as separate installable component in installer
 [qt.56.qtquickcontrols]
@@ -98,8 +96,6 @@ archives:               56.qtquickcontrols.ios
 target_install_base:    /5.6/ios
 [56.qtquickcontrols.ios]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcontrols-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
-rpath_target:           /lib
-package_finalize_items: delete_doc_directory
 
 # QtQuickControls2 provided as separate installable component in installer
 [qt.56.qtquickcontrols2]
@@ -108,8 +104,6 @@ archives:               56.qtquickcontrols2.ios
 target_install_base:    /5.6/ios
 [56.qtquickcontrols2.ios]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickcontrols2-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
-rpath_target:           /lib
-package_finalize_items: delete_doc_directory
 
 # QtLocation provided as separate installable component in installer
 [qt.56.qtlocation]
@@ -118,8 +112,6 @@ archives:               56.qtlocation.ios
 target_install_base:    /5.6/ios
 [56.qtlocation.ios]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
-rpath_target:           /lib
-package_finalize_items: delete_doc_directory
 
 # Qt3D provided as separate installable component in installer
 [qt.56.qt3d]
@@ -128,8 +120,6 @@ archives:               56.qt3d.ios
 target_install_base:    /5.6/ios
 [56.qt3d.ios]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
-rpath_target:           /lib
-package_finalize_items: delete_doc_directory
 
 # QtCanvas3D provided as separate installable component in installer
 [qt.56.qtcanvas3d]
@@ -138,8 +128,6 @@ archives:               56.qtcanvas3d.ios
 target_install_base:    /5.6/ios
 [56.qtcanvas3d.ios]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
-rpath_target:           /lib
-package_finalize_items: delete_doc_directory
 
 # QtWebView provided as separate installable component in installer
 [qt.56.qtwebview]
@@ -148,5 +136,3 @@ archives:               56.qtwebview.ios
 target_install_base:    /5.6/ios
 [56.qtwebview.ios]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-OSX-OSX_10_10-Clang-IOS-OSX_10_10-Multi.7z
-rpath_target:           /lib
-package_finalize_items: delete_doc_directory
