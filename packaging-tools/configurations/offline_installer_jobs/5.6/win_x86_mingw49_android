@@ -43,11 +43,12 @@ file_list:              qt-conf,
                         qt-installer-changelog-56,
                         qt56-src-conf,
                         qt56-doc-examples-conf,
-                        x86-qt56-mingw492_32-conf,
+                        x86-qt56-mingw49_32-conf,
+                        android-qt56-armv7-conf,
+                        android-qt56-x86-conf,
                         x86-tools-mingw492-conf,
                         x86-tools-qtcreator-qt56x-conf,
                         x86-tools-vcredist_msvc2013-conf
-
 [ConfigDir]
 template_name:          config_qt5
 

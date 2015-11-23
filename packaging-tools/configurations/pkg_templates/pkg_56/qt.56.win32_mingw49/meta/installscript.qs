@@ -39,6 +39,8 @@ function Component()
 function createShortcuts()
 {
     var qtStringVersion = "5.6";
+    var minGwVersion = "4.9.2";
+
     // Create a batch file with the development environment
     var component_root_path = installer.value("TargetDir") + "%TARGET_INSTALL_DIR%";
     component_root_path = component_root_path.replace(/\//g, "\\");
@@ -61,22 +63,22 @@ function createShortcuts()
     var cmdLocation = windir + "\\system32\\cmd.exe";
     component.addOperation( "CreateShortcut",
                             cmdLocation,
-                            "@StartMenuDir@/" + qtStringVersion + "/MinGW 4.9.2 (32-bit)/Qt " + qtStringVersion + " for Desktop (MinGW 4.9.2 32 bit).lnk",
+                            "@StartMenuDir@/" + qtStringVersion + "/MinGW " + minGwVersion + " (32-bit)/Qt " + qtStringVersion + " for Desktop (MinGW " + minGwVersion + " 32 bit).lnk",
                             "/A /Q /K " + batchFileName);
     // Assistant
     component.addOperation( "CreateShortcut",
                             component_root_path + "/bin/assistant.exe",
-                            "@StartMenuDir@/" + qtStringVersion + "/MinGW 4.9.2 (32-bit)/Assistant.lnk");
+                            "@StartMenuDir@/" + qtStringVersion + "/MinGW " + minGwVersion + " (32-bit)/Assistant.lnk");
 
     // Designer
     component.addOperation( "CreateShortcut",
                             component_root_path + "/bin/designer.exe",
-                            "@StartMenuDir@/" + qtStringVersion + "/MinGW 4.9.2 (32-bit)/Designer.lnk");
+                            "@StartMenuDir@/" + qtStringVersion + "/MinGW " + minGwVersion + " (32-bit)/Designer.lnk");
 
     // Linguist
     component.addOperation( "CreateShortcut",
                             component_root_path + "/bin/linguist.exe",
-                            "@StartMenuDir@/" + qtStringVersion + "/MinGW 4.9.2 (32-bit)/Linguist.lnk");
+                            "@StartMenuDir@/" + qtStringVersion + "/MinGW " + minGwVersion + " (32-bit)/Linguist.lnk");
 }
 
 Component.prototype.beginInstallation = function()

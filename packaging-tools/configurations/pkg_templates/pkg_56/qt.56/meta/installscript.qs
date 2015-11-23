@@ -47,7 +47,7 @@ function Component()
         var winrt_x64 = installer.componentByName("qt.56.win64_msvc2013_winrt_x64");
 
         // first reset the latest Qt5.x.x package default values to false
-        installer.componentByName("qt.56.win32_mingw492").setValue("Default", "false");
+        installer.componentByName("qt.56.win32_mingw49").setValue("Default", "false");
 
         installer.componentByName("qt.56.win32_msvc2013").setValue("Default", "false");
         installer.componentByName("qt.56.win64_msvc2013_64").setValue("Default", "false");
@@ -97,7 +97,7 @@ function Component()
 
         // if no msvc toolkits detected, choose mingw by default
         if (!msvc2013 && !msvc2015) {
-            installer.componentByName("qt.56.win32_mingw492").setValue("Default", "true");
+            installer.componentByName("qt.56.win32_mingw49").setValue("Default", "true");
         }
     }
 }

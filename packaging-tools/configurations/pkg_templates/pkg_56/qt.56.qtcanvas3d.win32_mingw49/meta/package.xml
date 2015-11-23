@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>Qt Location for MinGW 4.9.2 32-bit</DisplayName>
+    <DisplayName>Qt Canvas 3D for MinGW 4.9.2 32-bit</DisplayName>
     <Description></Description>
     <Version>5.6.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <AutoDependOn>qt.56.qtlocation, qt.56.win32_mingw492</AutoDependOn>
-    <Dependencies>qt.56.win32_mingw492</Dependencies>
+    <AutoDependOn>qt.56.qtcanvas3d, qt.56.win32_mingw49</AutoDependOn>
+    <Dependencies>qt.56.win32_mingw49</Dependencies>
     <Virtual>true</Virtual>
     <Script>installscript.qs</Script>
     <SortingPriority></SortingPriority>

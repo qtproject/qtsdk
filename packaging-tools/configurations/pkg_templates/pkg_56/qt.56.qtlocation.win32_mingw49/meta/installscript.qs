@@ -39,7 +39,7 @@ function Component()
 
 function resolveQt5EssentialsDependency()
 {
-    return "qt.56.win32_mingw492" + "_qmakeoutput";
+    return "qt.56.win32_mingw49" + "_qmakeoutput";
 }
 
 Component.prototype.createOperations = function()
