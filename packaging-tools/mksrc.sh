@@ -448,7 +448,7 @@ if [ $SKIPSYNCQT = no ]; then
     done < $MODULES
   else
     if [ -f $PACKAGE_DIR/".qmake.conf" ]; then
-      RESULT=$(grep "MODULE_VERSION" $PACKAGE_DIR/.qmake.conf)
+      RESULT=$(grep "MODULE_VERSION" $PACKAGE_DIR/.qmake.conf || true)
       QTSYNCQTVER=$(echo $RESULT | sed 's/.[^=]*=\(.[^ \t]*\)[ \t]*/\1/')
     else
       echo "*** WARNING .qmake.conf not found *** - not running syncqt.pl ***"
@@ -457,7 +457,7 @@ if [ $SKIPSYNCQT = no ]; then
       echo " - Running syncqt.pl for $REPO_NAME with -version $QTSYNCQTVER"
       $CUR_DIR/../qtbase/bin/syncqt.pl -version $QTSYNCQTVER -outdir $PACKAGE_DIR $PACKAGE_DIR
     else
-      echo "*** WARNING sync.profile not found - not running syncqt.pl ***"
+      echo "*** WARNING sync.profile or MODULE_VERSION not found - not running syncqt.pl ***"
     fi
   fi
 fi
