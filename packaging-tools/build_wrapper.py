@@ -1255,9 +1255,9 @@ def handle_gammaray_build(bld_command):
     create_remote_dirs(bld_command.pkg_server_addr, upload_path)
     update_latest_link(bld_command, base_upload_path, latest_path)
     for module in ['kdsme', 'gammaray']:
-        cmd_args = [SCP_COMMAND, os.path.join(SCRIPT_ROOT_DIR, 'module_archives', 'qt5_{0}.7z'.format(module)),
+        cmd_args = [SCP_COMMAND, 'qt5_{0}.7z'.format(module),
                     bld_command.pkg_server_addr + ':' + upload_path + '/']
-        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR)
+        bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(SCRIPT_ROOT_DIR, 'module_archives'))
 
 ###############################
 # handle_qt_creator_build
