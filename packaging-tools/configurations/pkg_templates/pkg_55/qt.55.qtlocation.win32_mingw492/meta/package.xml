@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt Location for MinGW 4.9.2 32-bit</DisplayName>
     <Description></Description>
-    <Version>5.5.1-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.5.2-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <AutoDependOn>qt.55.qtlocation, qt.55.win32_mingw492</AutoDependOn>
     <Dependencies>qt.55.win32_mingw492</Dependencies>

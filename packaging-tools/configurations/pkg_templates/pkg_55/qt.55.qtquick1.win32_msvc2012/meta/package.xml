@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt Quick 1 for msvc2012 32-bit</DisplayName>
     <Description></Description>
-    <Version>5.5.1-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.5.2-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <AutoDependOn>qt.55.qtquick1, qt.55.win32_msvc2012</AutoDependOn>
     <Dependencies>qt.55.win32_msvc2012</Dependencies>
