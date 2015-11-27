@@ -47,13 +47,13 @@ archives:               55.win64_msvc2013_winphone_arm.essentials,
 target_install_base:    /5.5/winphone_arm
 
 [55.win64_msvc2013_winphone_arm.essentials]
-archive_uri:            /qt/@QT_VERSION@/latest/winphone81/arm/qt5_essentials.7z
+archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/winphone81/arm/qt5_essentials.7z
 package_finalize_items: delete_doc_directory
 [55.win64_msvc2013_winphone_arm.addons]
-archive_uri:            /qt/@QT_VERSION@/latest/winphone81/arm/qt5_addons.7z
+archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/winphone81/arm/qt5_addons.7z
 package_finalize_items: delete_doc_directory
 [55.win64_msvc2013_winphone_arm.qtpositioning]
-archive_uri:            /qt/@QT_VERSION@/latest/winphone81/arm/qt5_qtpositioning.7z
+archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/winphone81/arm/qt5_qtpositioning.7z
 package_finalize_items: delete_doc_directory
 
 # QtQuickControls provided as separate installable component in installer
@@ -62,7 +62,7 @@ package_finalize_items: delete_doc_directory
 archives:               55.qtquickcontrols.win64_msvc2013_winphone_arm
 target_install_base:    /5.5/winphone_arm
 [55.qtquickcontrols.win64_msvc2013_winphone_arm]
-archive_uri:            /qt/@QT_VERSION@/latest/winphone81/arm/qt5_qtquickcontrols.7z
+archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/winphone81/arm/qt5_qtquickcontrols.7z
 rpath_target:
 package_finalize_items: delete_doc_directory
 
@@ -72,7 +72,7 @@ package_finalize_items: delete_doc_directory
 archives:               55.qtlocation.win64_msvc2013_winphone_arm
 target_install_base:    /5.5/winphone_arm
 [55.qtlocation.win64_msvc2013_winphone_arm]
-archive_uri:            /qt/@QT_VERSION@/latest/winphone81/arm/qt5_qtlocation.7z
+archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/winphone81/arm/qt5_qtlocation.7z
 rpath_target:
 package_finalize_items: delete_doc_directory
 
@@ -82,7 +82,7 @@ package_finalize_items: delete_doc_directory
 archives:               55.qt3d.win64_msvc2013_winphone_arm
 target_install_base:    /5.5/winphone_arm
 [55.qt3d.win64_msvc2013_winphone_arm]
-archive_uri:            /qt/@QT_VERSION@/latest/winphone81/arm/qt5_qt3d.7z
+archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/winphone81/arm/qt5_qt3d.7z
 rpath_target:
 package_finalize_items: delete_doc_directory
 
@@ -92,6 +92,6 @@ package_finalize_items: delete_doc_directory
 archives:               55.qtcanvas3d.win64_msvc2013_winphone_arm
 target_install_base:    /5.5/winphone_arm
 [55.qtcanvas3d.win64_msvc2013_winphone_arm]
-archive_uri:            /qt/@QT_VERSION@/latest/winphone81/arm/qt5_qtcanvas3d.7z
+archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/winphone81/arm/qt5_qtcanvas3d.7z
 rpath_target:
 package_finalize_items: delete_doc_directory

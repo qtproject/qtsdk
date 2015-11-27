@@ -41,10 +41,10 @@ archives:               55.win64_mingw492.essentials,
                         55.win64_mingw492.qtpositioning
 target_install_base:    /5.5/mingw492_64
 [55.win64_mingw492.essentials]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_mingw_64/qt5_essentials.7z
+archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/windows_mingw_64/qt5_essentials.7z
 package_finalize_items: delete_doc_directory
 [55.win64_mingw492.addons]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_mingw_64/qt5_addons.7z
+archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/windows_mingw_64/qt5_addons.7z
 package_finalize_items: delete_doc_directory
 [55.win64_mingw492.icu_541.mingw_64]
 archive_uri:            http://download.qt.io/development_releases/prebuilt/icu/prebuilt/54.1/icu-wi
@@ -57,6 +57,6 @@ target_install_dir:     /bin
 archive_uri:            http://download.qt.io/development_releases/prebuilt/llvmpipe/windows/opengl32sw-64.7z
 target_install_dir:     /bin
 [55.win64_mingw492.qtpositioning]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_mingw_64/qt5_qtpositioning.7z
+archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/windows_mingw_64/qt5_qtpositioning.7z
 package_finalize_items: delete_doc_directory
 

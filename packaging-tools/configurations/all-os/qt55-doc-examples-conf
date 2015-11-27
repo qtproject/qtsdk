@@ -44,11 +44,11 @@
 archives:               55.doc
 target_install_base:    /Docs/Qt-5.5/
 [55.doc]
-archive_uri:            /qt/@QT_VERSION@/latest/src/doc/qt5_docs.7z
+archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/src/doc/qt5_docs.7z
 package_finalize_items: cleanup_doc_directory
 
 [qt.55.examples]
 archives:               55.examples
 target_install_base:    /Examples/Qt-5.5/
 [55.examples]
-archive_uri:            /qt/@QT_VERSION@/latest/src/examples_injection/qt5_examples.7z
+archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/src/examples_injection/qt5_examples.7z

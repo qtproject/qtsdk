@@ -45,7 +45,7 @@ archives:               tools.qtcreator
 target_install_base:    /
 package_default:        true
 [tools.qtcreator]
-archive_uri:            /qtcreator/snapshots/3.5.1_55x/latest/qtcreator_mac-clang-10.10-x64.7z
+archive_uri:            /@LICENSE@/qtcreator/snapshots/3.5.1_55x/latest/qtcreator_mac-clang-10.10-x64.7z
 package_strip_dirs:
 target_install_dir:     /
 rpath_target:
