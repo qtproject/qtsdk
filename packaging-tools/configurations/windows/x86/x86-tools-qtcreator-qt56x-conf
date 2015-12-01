@@ -36,7 +36,7 @@ archives:               tools.qtcreator
 target_install_base:    /Tools/QtCreator
 package_default:        true
 [tools.qtcreator]
-archive_uri:            /qtcreator/snapshots/3.6.0-rc1_56x/latest/windows_vs2013_32/qtcreator.7z
+archive_uri:            /qtcreator/snapshots/3.6.0-rc1_56x/latest_successful/windows_vs2013_32/qtcreator.7z
 package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:
