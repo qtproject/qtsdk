@@ -45,7 +45,7 @@ archives:               tools.qtcreator
 target_install_base:    /Tools/QtCreator
 package_default:        true
 [tools.qtcreator]
-archive_uri:            /qtcreator/snapshots/3.6.0_55x/latest_successful/linux_gcc_64_rhel66/qtcreator.7z
+archive_uri:            /qtcreator/snapshots/3.6.1_55x/latest_successful/linux_gcc_64_rhel66/qtcreator.7z
 package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:
