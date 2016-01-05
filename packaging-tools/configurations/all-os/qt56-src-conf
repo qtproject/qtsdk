@@ -35,8 +35,68 @@
 [qt.56]
 
 [qt.56.src]
-archives:               56.src
+
+[qt.56.src.qteverywhere]
+archives:               56.src.qteverywhere
 target_install_base:    /5.6/Src/
-[56.src]
+[56.src.qteverywhere]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/src/single/qt-everywhere-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.lgplv3]
+
+[qt.56.src.lgplv3.qt3d]
+archives:               56.src.lgplv3.qt3d
+target_install_base:    /5.6/Src/qt3d
+[56.src.lgplv3.qt3d]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/src/submodules/qt3d-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.lgplv3.qtcanvas3d]
+archives:               56.src.lgplv3.qtcanvas3d
+target_install_base:    /5.6/Src/qtcanvas3d
+[56.src.lgplv3.qtcanvas3d]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/src/submodules/qtcanvas3d-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.lgplv3.qtlocation]
+archives:               56.src.lgplv3.qtlocation
+target_install_base:    /5.6/Src/qtlocation
+[56.src.lgplv3.qtlocation]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/src/submodules/qtlocation-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.lgplv3.qtquickcontrols]
+archives:               56.src.lgplv3.qtquickcontrols
+target_install_base:    /5.6/Src/qtquickcontrols
+[56.src.lgplv3.qtquickcontrols]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/src/submodules/qtquickcontrols-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.lgplv3.qtquickcontrols2]
+archives:               56.src.lgplv3.qtquickcontrols2
+target_install_base:    /5.6/Src/qtlabscontrols
+[56.src.lgplv3.qtquickcontrols2]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/src/submodules/qtquickcontrols2-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.lgplv3.qtscript]
+archives:               56.src.lgplv3.qtscript
+target_install_base:    /5.6/Src/qtscript
+[56.src.lgplv3.qtscript]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/src/submodules/qtscript-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.lgplv3.qtwebengine]
+archives:               56.src.lgplv3.qtwebengine
+target_install_base:    /5.6/Src/qtwebengine
+[56.src.lgplv3.qtwebengine]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/src/submodules/qtwebengine-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.56.src.lgplv3.qtwebview]
+archives:               56.src.lgplv3.qtwebview
+target_install_base:    /5.6/Src/qtwebview
+[56.src.lgplv3.qtwebview]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/src/submodules/qtwebview-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
