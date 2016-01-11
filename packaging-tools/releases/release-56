@@ -120,7 +120,7 @@ assign_to_machine_label:    win-MinGW4.9.2-Windows7-x86
 arg_configurations_file:    offline_installer_jobs/5.6/win_x86_mingw492
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-mingw492-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_windows_mingw
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke_tests_windows_mingw
 
 [release.56.offline.windows.x86.msvc2013]
 assign_to_machine_label:    win-msvc2013-Windows8.1-x86
@@ -148,7 +148,7 @@ assign_to_machine_label:    win-msvc2015-Windows10-x86
 arg_configurations_file:    offline_installer_jobs/5.6/win_x86_msvc2015
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-msvc2015-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_windows_msvc2015_32bit
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke_tests_windows_msvc2015_32bit
 
 [release.56.offline.windows.x86.mingw492.android]
 assign_to_machine_label:    win-MinGW4.9.2-Windows7-x86_Android-x86
