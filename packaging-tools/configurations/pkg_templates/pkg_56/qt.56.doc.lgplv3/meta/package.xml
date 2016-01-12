@@ -5,7 +5,8 @@
     <Version>5.6.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Script>installscript.qs</Script>
-    <Dependencies>qt.56.doc.lgplv3.qt3d, qt.56.doc.lgplv3.qtcanvas3d, qt.56.doc.lgplv3.qtquickcontrols2, qt.56.doc.lgplv3.qtlocation, qt.56.doc.lgplv3.qtquickcontrols, qt.56.doc.lgplv3.qtscript, qt.56.doc.lgplv3.qtwebengine, qt.56.doc.lgplv3.qtwebview</Dependencies>
+    <Dependencies>qt.56.doc.lgplv3.qt3d, qt.56.doc.lgplv3.qtcanvas3d, qt.56.doc.lgplv3.qtquickcontrols2, qt.56.doc.lgplv3.qtlocation, qt.56.doc.lgplv3.qtquickcontrols, qt.56.doc.lgplv3.qtwebengine, qt.56.doc.lgplv3.qtwebview</Dependencies>
+    <AutoDependOn>qt.56.src.lgplv3</AutoDependOn>
     <Virtual>true</Virtual>
     <SortingPriority>1</SortingPriority>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>

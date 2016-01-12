@@ -46,132 +46,116 @@ target_install_base:    /Examples/Qt-5.6/
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qt-everywhere-examples-@QT_VERSION_AND_TAG@.7z
 package_strip_dirs:     1
 
-#[qt.56.doc.lgplv3]
-#[qt.56.doc.lgplv3.qt3d]
-#archives:               56.doc.lgplv3.qt3d
-#target_install_base:    /Docs/Qt-5.6/qt3d
-#[56.doc.lgplv3.qt3d]
-#archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qt3d-documentation-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
-#target_install_dir:
-#package_strip_dirs:     1
+[qt.56.doc.lgplv3]
+[qt.56.doc.lgplv3.qt3d]
+archives:               56.doc.lgplv3.qt3d
+target_install_base:    /Docs/Qt-5.6/
+[56.doc.lgplv3.qt3d]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qt3d-documentation.@SRC_ARCHIVE_TYPE@
+target_install_dir:
+package_strip_dirs:     1
 
-#[qt.56.doc.lgplv3.qtcanvas3d]
-#archives:               56.doc.lgplv3.qtcanvas3d
-#target_install_base:    /Docs/Qt-5.6/qtcanvas3d
-#[56.doc.lgplv3.qtcanvas3d]
-#archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qtcanvas3d-documentation-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
-#target_install_dir:
-#package_strip_dirs:     1
+[qt.56.doc.lgplv3.qtcanvas3d]
+archives:               56.doc.lgplv3.qtcanvas3d
+target_install_base:    /Docs/Qt-5.6/
+[56.doc.lgplv3.qtcanvas3d]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qtcanvas3d-documentation.@SRC_ARCHIVE_TYPE@
+target_install_dir:
+package_strip_dirs:     1
 
-#[qt.56.doc.lgplv3.qtlocation]
-#archives:               56.doc.lgplv3.qtlocation
-#target_install_base:    /Docs/Qt-5.6/qtlocation
-#[56.doc.lgplv3.qtlocation]
-#archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qt3d-documentation-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
-#target_install_dir:
-#package_strip_dirs:     1
+[qt.56.doc.lgplv3.qtlocation]
+archives:               56.doc.lgplv3.qtlocation
+target_install_base:    /Docs/Qt-5.6/
+[56.doc.lgplv3.qtlocation]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qt3d-documentation.@SRC_ARCHIVE_TYPE@
+target_install_dir:
+package_strip_dirs:     1
 
-#[qt.56.doc.lgplv3.qtquickcontrols]
-#archives:               56.doc.lgplv3.qtquickcontrols
-#target_install_base:    /Docs/Qt-5.6/qtquickcontrols
-#[56.doc.lgplv3.qtquickcontrols]
-#archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qtquickcontrols-documentation-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
-#target_install_dir:
-#package_strip_dirs:     1
+[qt.56.doc.lgplv3.qtquickcontrols]
+archives:               56.doc.lgplv3.qtquickcontrols
+target_install_base:    /Docs/Qt-5.6/
+[56.doc.lgplv3.qtquickcontrols]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qtquickcontrols-documentation.@SRC_ARCHIVE_TYPE@
+target_install_dir:
+package_strip_dirs:     1
 
-#[qt.56.doc.lgplv3.qtquickcontrols2]
-#archives:               56.doc.lgplv3.qtquickcontrols2
-#target_install_base:    /Docs/Qt-5.6/qtlabscontrols
-#[56.doc.lgplv3.qtquickcontrols2]
-#archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qtquickcontrols2-documentation-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
-#target_install_dir:
-#package_strip_dirs:     1
+[qt.56.doc.lgplv3.qtquickcontrols2]
+archives:               56.doc.lgplv3.qtquickcontrols2
+target_install_base:    /Docs/Qt-5.6/
+[56.doc.lgplv3.qtquickcontrols2]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qtlabscontrols-documentation.@SRC_ARCHIVE_TYPE@
+target_install_dir:
+package_strip_dirs:     1
 
-#[qt.56.doc.lgplv3.qtscript]
-#archives:               56.doc.lgplv3.qtscript
-#target_install_base:    /Docs/Qt-5.6/qtscript
-#[56.doc.lgplv3.qtscript]
-#archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qtscript-documentation-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
-#target_install_dir:
-#package_strip_dirs:     1
+[qt.56.doc.lgplv3.qtwebengine]
+archives:               56.doc.lgplv3.qtwebengine
+target_install_base:    /Docs/Qt-5.6/
+[56.doc.lgplv3.qtwebengine]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qtwebengine-documentation.@SRC_ARCHIVE_TYPE@
+target_install_dir:
+package_strip_dirs:     1
 
-#[qt.56.doc.lgplv3.qtwebengine]
-#archives:               56.doc.lgplv3.qtwebengine
-#target_install_base:    /Docs/Qt-5.6/qtwebengine
-#[56.doc.lgplv3.qtwebengine]
-#archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qtwebengine-documentation-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
-#target_install_dir:
-#package_strip_dirs:     1
+[qt.56.doc.lgplv3.qtwebview]
+archives:               56.doc.lgplv3.qtwebview
+target_install_base:    /Docs/Qt-5.6/
+[56.doc.lgplv3.qtwebview]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qtwebview-documentation.@SRC_ARCHIVE_TYPE@
+target_install_dir:
+package_strip_dirs:     1
 
-#[qt.56.doc.lgplv3.qtwebview]
-#archives:               56.doc.lgplv3.qtwebview
-#target_install_base:    /Docs/Qt-5.6/qtwebview
-#[56.doc.lgplv3.qtwebview]
-#archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qtwebview-documentation-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
-#target_install_dir:
-#package_strip_dirs:     1
+[qt.56.examples.lgplv3]
+[qt.56.examples.lgplv3.qt3d]
+archives:               56.examples.lgplv3.qt3d
+target_install_base:    /Examples/Qt-5.6/
+[56.examples.lgplv3.qt3d]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qt3d-examples-@QT_VERSION_AND_TAG@.7z
+target_install_dir:
+package_strip_dirs:     1
 
-#[qt.56.examples.lgplv3]
-#[qt.56.examples.lgplv3.qt3d]
-#archives:               56.examples.lgplv3.qt3d
-#target_install_base:    /Examples/Qt-5.6/qt3d
-#[56.examples.lgplv3.qt3d]
-#archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qt3d-examples-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
-#target_install_dir:
-#package_strip_dirs:     1
+[qt.56.examples.lgplv3.qtcanvas3d]
+archives:               56.examples.lgplv3.qtcanvas3d
+target_install_base:    /Examples/Qt-5.6/
+[56.examples.lgplv3.qtcanvas3d]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qtcanvas3d-examples-@QT_VERSION_AND_TAG@.7z
+target_install_dir:
+package_strip_dirs:     1
 
-#[qt.56.examples.lgplv3.qtcanvas3d]
-#archives:               56.examples.lgplv3.qtcanvas3d
-#target_install_base:    /Examples/Qt-5.6/qtcanvas3d
-#[56.examples.lgplv3.qtcanvas3d]
-#archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qtcanvas3d-examples-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
-#target_install_dir:
-#package_strip_dirs:     1
+[qt.56.examples.lgplv3.qtlocation]
+archives:               56.examples.lgplv3.qtlocation
+target_install_base:    /Examples/Qt-5.6/
+[56.examples.lgplv3.qtlocation]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qtlocation-examples-@QT_VERSION_AND_TAG@.7z
+target_install_dir:
+package_strip_dirs:     1
 
-#[qt.56.examples.lgplv3.qtlocation]
-#archives:               56.examples.lgplv3.qtlocation
-#target_install_base:    /Examples/Qt-5.6/qtlocation
-#[56.examples.lgplv3.qtlocation]
-#archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qtlocation-examples-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
-#target_install_dir:
-#package_strip_dirs:     1
+[qt.56.examples.lgplv3.qtquickcontrols]
+archives:               56.examples.lgplv3.qtquickcontrols
+target_install_base:    /Examples/Qt-5.6/
+[56.examples.lgplv3.qtquickcontrols]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qtquickcontrols-examples-@QT_VERSION_AND_TAG@.7z
+target_install_dir:
+package_strip_dirs:     1
 
-#[qt.56.examples.lgplv3.qtquickcontrols]
-#archives:               56.examples.lgplv3.qtquickcontrols
-#target_install_base:    /Examples/Qt-5.6/qtquickcontrols
-#[56.examples.lgplv3.qtquickcontrols]
-#archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qtquickcontrols-examples-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
-#target_install_dir:
-#package_strip_dirs:     1
+[qt.56.examples.lgplv3.qtquickcontrols2]
+archives:               56.examples.lgplv3.qtquickcontrols2
+target_install_base:    /Examples/Qt-5.6/
+[56.examples.lgplv3.qtquickcontrols2]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qtquickcontrols2-examples-@QT_VERSION_AND_TAG@.7z
+target_install_dir:
+package_strip_dirs:     1
 
-#[qt.56.examples.lgplv3.qtquickcontrols2]
-#archives:               56.examples.lgplv3.qtquickcontrols2
-#target_install_base:    /Examples/Qt-5.6/qtlabscontrols
-#[56.examples.lgplv3.qtquickcontrols2]
-#archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qtquickcontrols2-examples-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
-#target_install_dir:
-#package_strip_dirs:     1
+[qt.56.examples.lgplv3.qtwebengine]
+archives:               56.examples.lgplv3.qtwebengine
+target_install_base:    /Examples/Qt-5.6/
+[56.examples.lgplv3.qtwebengine]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qtwebengine-examples-@QT_VERSION_AND_TAG@.7z
+target_install_dir:
+package_strip_dirs:     1
 
-#[qt.56.examples.lgplv3.qtscript]
-#archives:               56.examples.lgplv3.qtscript
-#target_install_base:    /Examples/Qt-5.6/qtscript
-#[56.examples.lgplv3.qtscript]
-#archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qtscript-examples-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
-#target_install_dir:
-#package_strip_dirs:     1
-
-#[qt.56.examples.lgplv3.qtwebengine]
-#archives:               56.examples.lgplv3.qtwebengine
-#target_install_base:    /Examples/Qt-5.6/qtwebengine
-#[56.examples.lgplv3.qtwebengine]
-#archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qtwebengine-examples-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
-#target_install_dir:
-#package_strip_dirs:     1
-
-#[qt.56.examples.lgplv3.qtwebview]
-#archives:               56.examples.lgplv3.qtwebview
-#target_install_base:    /Examples/Qt-5.6/qtwebview
-#[56.examples.lgplv3.qtwebview]
-#archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qtwebview-examples-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
-#target_install_dir:
-#package_strip_dirs:     1
+[qt.56.examples.lgplv3.qtwebview]
+archives:               56.examples.lgplv3.qtwebview
+target_install_base:    /Examples/Qt-5.6/
+[56.examples.lgplv3.qtwebview]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qtwebview-examples-@QT_VERSION_AND_TAG@.7z
+target_install_dir:
+package_strip_dirs:     1
