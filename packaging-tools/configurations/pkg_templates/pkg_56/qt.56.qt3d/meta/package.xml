@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>Qt3D</DisplayName>
+    <DisplayName>Qt3D (TP)</DisplayName>
     <Description>License options: LGPLv3, GPLv2.0 or later, Commercial&lt;br&gt;&lt;br&gt;NOTE: Not licensed under LGPLv2.1&lt;br&gt;&lt;br&gt;Qt3D provides functionality for near-realtime simulation systems with support for 2D and 3D rendering in both Qt C++ and Qt Quick applications.&lt;br&gt;&lt;br&gt;The release of this API with Qt 5.6 is a Technology Preview.</Description>
     <Version>5.6.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
