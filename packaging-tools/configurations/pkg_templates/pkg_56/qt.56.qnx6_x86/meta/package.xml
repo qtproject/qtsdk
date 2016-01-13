@@ -4,7 +4,7 @@
     <Description>License options: LGPLv3, LGPLv2.1, Commercial&lt;br&gt;&lt;br&gt;Qt 5.6.0 Prebuilt Components for QNX 6.6 x86</Description>
     <Version>5.6.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Dependencies>qt.tools.qtcreator, qt.qnx6.sdp.x86</Dependencies>
+    <Dependencies>qt.tools.qtcreator, qt.qnx6.sdp.x86, qt.56.doc, qt.56.examples</Dependencies>
     <Default>true</Default>
     <Script>installscript.qs</Script>   <!-- File name of a script being loaded - optional. -->
     <SortingPriority>250</SortingPriority> <!-- Priority of this component when visible in the tree. Highest priority number is on top. -->
