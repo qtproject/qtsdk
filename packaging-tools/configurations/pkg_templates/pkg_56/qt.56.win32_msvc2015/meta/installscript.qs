@@ -61,22 +61,22 @@ function createShortcuts()
     var cmdLocation = windir + "\\system32\\cmd.exe";
     component.addOperation( "CreateShortcut",
                             cmdLocation,
-                            "@StartMenuDir@/" + qtStringVersion + "/MSVC 2013 (32-bit)/Qt " + qtStringVersion + " 32-bit for Desktop (MSVC 2013).lnk",
+                            "@StartMenuDir@/" + qtStringVersion + "/MSVC 2015 (32-bit)/Qt " + qtStringVersion + " 32-bit for Desktop (MSVC 2015).lnk",
                             "/A /Q /K " + batchFileName);
     // Assistant
     component.addOperation( "CreateShortcut",
                             component_root_path + "/bin/assistant.exe",
-                            "@StartMenuDir@/" + qtStringVersion + "/MSVC 2013 (32-bit)/Assistant.lnk");
+                            "@StartMenuDir@/" + qtStringVersion + "/MSVC 2015 (32-bit)/Assistant.lnk");
 
     // Designer
     component.addOperation( "CreateShortcut",
                             component_root_path + "/bin/designer.exe",
-                            "@StartMenuDir@/" + qtStringVersion + "/MSVC 2013 (32-bit)/Designer.lnk");
+                            "@StartMenuDir@/" + qtStringVersion + "/MSVC 2015 (32-bit)/Designer.lnk");
 
     // Linguist
     component.addOperation( "CreateShortcut",
                             component_root_path + "/bin/linguist.exe",
-                            "@StartMenuDir@/" + qtStringVersion + "/MSVC 2013 (32-bit)/Linguist.lnk");
+                            "@StartMenuDir@/" + qtStringVersion + "/MSVC 2015 (32-bit)/Linguist.lnk");
 }
 
 Component.prototype.beginInstallation = function()
@@ -103,7 +103,7 @@ Component.prototype.createOperations = function()
             component.addOperation("Execute",
                                    ["@SDKToolBinary@", "addQt",
                                     "--id", component.name,
-                                    "--name", "Qt %{Qt:Version} MSVC2013 32bit",
+                                    "--name", "Qt %{Qt:Version} MSVC2015 32bit",
                                     "--type", "Qt4ProjectManager.QtVersion.Desktop",
                                     "--qmake", qmakeBinary,
                                     "UNDOEXECUTE",
@@ -113,7 +113,7 @@ Component.prototype.createOperations = function()
             component.addOperation("Execute",
                                    ["@SDKToolBinary@", "addKit",
                                     "--id", kitName,
-                                    "--name", "Desktop Qt %{Qt:Version} MSVC2013 32bit",
+                                    "--name", "Desktop Qt %{Qt:Version} MSVC2015 32bit",
                                     "--toolchain", "x86-windows-msvc2015-pe-32bit",
                                     "--qt", component.name,
                                     "--debuggerengine", "4",
