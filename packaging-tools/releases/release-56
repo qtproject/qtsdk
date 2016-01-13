@@ -117,7 +117,7 @@ rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke_tests_mac_io
 ################################################################################
 [release.56.offline.windows.x86.mingw492]
 assign_to_machine_label:    win-MinGW4.9.2-Windows7-x86
-arg_configurations_file:    offline_installer_jobs/5.6/win_x86_mingw492
+arg_configurations_file:    offline_installer_jobs/5.6/win_x86_mingw49
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-mingw492-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke_tests_windows_mingw
@@ -152,7 +152,7 @@ rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke_tests_window
 
 [release.56.offline.windows.x86.mingw492.android]
 assign_to_machine_label:    win-MinGW4.9.2-Windows7-x86_Android-x86
-arg_configurations_file:    offline_installer_jobs/5.6/win_x86_mingw492_android
+arg_configurations_file:    offline_installer_jobs/5.6/win_x86_mingw49_android
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-android-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke_tests_windows_android
