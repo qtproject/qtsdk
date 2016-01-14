@@ -66,7 +66,7 @@ package_strip_dirs:     1
 archives:               56.doc.lgplv3.qtlocation
 target_install_base:    /Docs/Qt-5.6/
 [56.doc.lgplv3.qtlocation]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qt3d-documentation.@SRC_ARCHIVE_TYPE@
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qtlocation-documentation.@SRC_ARCHIVE_TYPE@
 target_install_dir:
 package_strip_dirs:     1
 
