@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>Qt Script for Android armv7</DisplayName>
+    <DisplayName>Qt Script for Android ARMv7</DisplayName>
     <Description></Description>
     <Version>5.6.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
