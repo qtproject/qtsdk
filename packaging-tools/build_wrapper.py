@@ -579,7 +579,7 @@ def initialize_extra_module_build_src(bld_command):
 def handle_qt_licheck_build(bld_command):
     if bld_command.license == 'enterprise':
         # Build license checker
-        exe_dir = WORK_DIR + '/qtsdk-enterprise/license-managing/licheck'
+        exe_dir = WORK_DIR + '/license-managing/licheck'
         upload_path = bld_command.pkg_server_addr + ':' + bld_command.path + '/' + bld_command.license + '/licheck/'
         if bld_command.target_env.lower().startswith("win"):
             cmd_args = [r'c:\Utils\jom\jom.exe', '-f', 'Makefile_win']
