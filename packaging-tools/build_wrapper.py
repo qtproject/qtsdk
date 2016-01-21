@@ -1348,17 +1348,18 @@ def handle_qt_creator_build(bld_command):
     Plugin = collections.namedtuple('Plugin', ['name', 'path', 'dependencies', 'modules', 'additional_arguments', 'include_in_package'])
     Plugin.__new__.__defaults__ = ([], [], [], True) # 'name' and 'path' are mandatory
     additional_plugins = [Plugin(name='licensechecker', path='licensechecker'),
-                          Plugin(name='qmlprofiler', path='qmlprofiler',
-                                 dependencies=['licensechecker']),
-                          Plugin(name='clangstaticanalyzer', path='clangstaticanalyzer',
-                                 dependencies=['licensechecker']),
-                          Plugin(name='autotest-qtcreator-plugin', path='autotest-qtcreator-plugin',
-                                 dependencies=['licensechecker']),
                           Plugin(name='vxworks-qtcreator-plugin', path='vxworks-qtcreator-plugin',
                                  dependencies=['licensechecker']),
                           Plugin(name='isoiconbrowser', path='qtquickdesigner',
                                  dependencies=['licensechecker'])
                           ]
+    if bld_command.qtcreator_version.startswith("3.6"):
+        additional_plugins.extend([Plugin(name='clangstaticanalyzer', path='clangstaticanalyzer',
+                                          dependencies=['licensechecker']),
+                                   Plugin(name='qmlprofiler', path='qmlprofiler',
+                                          dependencies=['licensechecker']),
+                                   Plugin(name='autotest-qtcreator-plugin', path='autotest-qtcreator-plugin',
+                                          dependencies=['licensechecker'])])
     if bldinstallercommon.is_linux_platform():
         # download and extract graphviz
         graphviz_download_filepath = os.path.join(WORK_DIR, 'qt-creator_temp', 'graphviz.7z')
