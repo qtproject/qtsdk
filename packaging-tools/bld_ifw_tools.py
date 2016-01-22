@@ -106,7 +106,7 @@ def get_default_qt5_configure_options():
     options += '-no-sql-sqlite -no-qml-debug '
     options += '-skip qtenginio -skip qtlocation -skip qtmultimedia -skip qtserialport '
     options += '-skip qtquick1 -skip qtquickcontrols -skip qtscript -skip qtsensors '
-    options += '-skip qtwebkit -skip qtwebsockets -skip qtxmlpatterns -skip qtactiveqt '
+    options += '-skip qtwebsockets -skip qtxmlpatterns -skip qtactiveqt '
     # Windows
     if plat.startswith('win'):
         options += '-target xp -no-opengl -no-icu '
@@ -138,7 +138,7 @@ def get_default_qt_configure_options(qt5_build = True):
 ###############################
 class IfwOptions:
 
-    default_qt5_src_pkg = 'http://download.qt.io/official_releases/qt/5.4/5.4.0/single/qt-everywhere-opensource-src-5.4.0' + ARCH_EXT
+    default_qt5_src_pkg = 'http://download.qt.io/official_releases/qt/5.5/5.5.1/single/qt-everywhere-opensource-src-5.5.1' + ARCH_EXT
     default_qt4_src_pkg = 'http://download.qt.io/development_releases/prebuilt/qt-src-for-ifw/qt-everywhere-opensource-src-4.8.6-ifw-patch' + ARCH_EXT
 
     default_qt_installer_framework_url          = 'git://code.qt.io/installer-framework/installer-framework.git'
