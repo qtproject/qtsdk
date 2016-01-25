@@ -106,7 +106,7 @@ def get_default_qt5_configure_options():
     options += '-no-sql-sqlite -no-qml-debug '
     options += '-skip qtenginio -skip qtlocation -skip qtmultimedia -skip qtserialport '
     options += '-skip qtquick1 -skip qtquickcontrols -skip qtscript -skip qtsensors '
-    options += '-skip qtwebsockets -skip qtxmlpatterns -skip qtactiveqt '
+    options += '-skip qtwebkit -skip qtwebsockets -skip qtxmlpatterns -skip qtactiveqt '
     # Windows
     if plat.startswith('win'):
         options += '-target xp -no-opengl -no-icu '
