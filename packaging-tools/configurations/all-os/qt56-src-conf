@@ -101,3 +101,9 @@ target_install_base:    /5.6/Src/qtserialbus
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/src/submodules/qtserialbus-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 
+[qt.56.src.qtscript]
+archives:               56.src.qtscript
+target_install_base:    /5.6/Src/qtscript
+[56.src.qtscript]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/src/submodules/qtscript-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
