@@ -53,7 +53,7 @@ archives:               56.win32_msvc2013.qtbase,
                         56.win32_msvc2013.icu_541_release.win_32,
                         56.win32_msvc2013.d3d_compiler_47.x86,
                         56.win32_msvc2013.opengl32sw.x86
-target_install_base:    /5.6/msvc2013
+target_install_base:    /@QT_VERSION_MINOR@/msvc2013
 [56.win32_msvc2013.qtbase]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtbase/qtbase-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86.7z
 [56.win32_msvc2013.qtconnectivity]
@@ -106,7 +106,7 @@ target_install_dir:     /bin
 [qt.56.qtwebengine.win32_msvc2013]
 optional_for_offline:   yes
 archives:               56.qtwebengine.win32_msvc2013
-target_install_base:    /5.6/msvc2013
+target_install_base:    /@QT_VERSION_MINOR@/msvc2013
 [56.qtwebengine.win32_msvc2013]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebengine/qtwebengine-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86.7z
 
@@ -114,7 +114,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebengine/qtwebengine-Wi
 [qt.56.qtscript]
 [qt.56.qtscript.win32_msvc2013]
 archives:               56.qtscript.win32_msvc2013
-target_install_base:    /5.6/msvc2013
+target_install_base:    /@QT_VERSION_MINOR@/msvc2013
 [56.qtscript.win32_msvc2013]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86.7z
 
@@ -122,7 +122,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-Windows-
 [qt.56.qtquickcontrols]
 [qt.56.qtquickcontrols.win32_msvc2013]
 archives:               56.qtquickcontrols.win32_msvc2013
-target_install_base:    /5.6/msvc2013
+target_install_base:    /@QT_VERSION_MINOR@/msvc2013
 [56.qtquickcontrols.win32_msvc2013]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcontrols-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86.7z
 
@@ -130,7 +130,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcon
 [qt.56.qtquickcontrols2]
 [qt.56.qtquickcontrols2.win32_msvc2013]
 archives:               56.qtquickcontrols2.win32_msvc2013
-target_install_base:    /5.6/msvc2013
+target_install_base:    /@QT_VERSION_MINOR@/msvc2013
 [56.qtquickcontrols2.win32_msvc2013]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickcontrols2-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86.7z
 
@@ -138,7 +138,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickco
 [qt.56.qtlocation]
 [qt.56.qtlocation.win32_msvc2013]
 archives:               56.qtlocation.win32_msvc2013
-target_install_base:    /5.6/msvc2013
+target_install_base:    /@QT_VERSION_MINOR@/msvc2013
 [56.qtlocation.win32_msvc2013]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86.7z
 
@@ -146,7 +146,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Wind
 [qt.56.qt3d]
 [qt.56.qt3d.win32_msvc2013]
 archives:               56.qt3d.win32_msvc2013
-target_install_base:    /5.6/msvc2013
+target_install_base:    /@QT_VERSION_MINOR@/msvc2013
 [56.qt3d.win32_msvc2013]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86.7z
 
@@ -154,7 +154,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Windows-Windows_
 [qt.56.qtcanvas3d]
 [qt.56.qtcanvas3d.win32_msvc2013]
 archives:               56.qtcanvas3d.win32_msvc2013
-target_install_base:    /5.6/msvc2013
+target_install_base:    /@QT_VERSION_MINOR@/msvc2013
 [56.qtcanvas3d.win32_msvc2013]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86.7z
 
@@ -162,7 +162,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Wind
 [qt.56.qtwebview]
 [qt.56.qtwebview.win32_msvc2013]
 archives:               56.qtwebview.win32_msvc2013
-target_install_base:    /5.6/msvc2013
+target_install_base:    /@QT_VERSION_MINOR@/msvc2013
 [56.qtwebview.win32_msvc2013]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86.7z
 

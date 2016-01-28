@@ -50,7 +50,7 @@ archives:               56.android_armv7.qtbase,
                         56.android_armv7.qtserialport,
                         56.android_armv7.qtenginio,
                         56.android_armv7.qtgraphicaleffects
-target_install_base:    /5.6/android_armv7
+target_install_base:    /@QT_VERSION_MINOR@/android_armv7
 [56.android_armv7.qtbase]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtbase/qtbase-OSX-OSX_10_10-GCC-Android-Android_22-ARMv7.7z
 [56.android_armv7.qtxmlpatterns]
@@ -86,12 +86,11 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtenginio/qtenginio-OSX-OS
 [56.android_armv7.qtgraphicaleffects]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtgraphicaleffects/qtgraphicaleffects-OSX-OSX_10_10-GCC-Android-Android_22-ARMv7.7z
 
-
 # QtScript provided as separate installable component in installer
 [qt.56.qtscript]
 [qt.56.qtscript.android_armv7]
 archives:               56.qtscript.android_armv7
-target_install_base:    /5.6/android_armv7
+target_install_base:    /@QT_VERSION_MINOR@/android_armv7
 [56.qtscript.android_armv7]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-OSX-OSX_10_10-GCC-Android-Android_22-ARMv7.7z
 
@@ -99,7 +98,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-OSX-OSX_
 [qt.56.qtquickcontrols]
 [qt.56.qtquickcontrols.android_armv7]
 archives:               56.qtquickcontrols.android_armv7
-target_install_base:    /5.6/android_armv7
+target_install_base:    /@QT_VERSION_MINOR@/android_armv7
 [56.qtquickcontrols.android_armv7]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcontrols-OSX-OSX_10_10-GCC-Android-Android_22-ARMv7.7z
 
@@ -107,7 +106,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcon
 [qt.56.qtquickcontrols2]
 [qt.56.qtquickcontrols2.android_armv7]
 archives:               56.qtquickcontrols2.android_armv7
-target_install_base:    /5.6/android_armv7
+target_install_base:    /@QT_VERSION_MINOR@/android_armv7
 [56.qtquickcontrols2.android_armv7]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickcontrols2-OSX-OSX_10_10-GCC-Android-Android_22-ARMv7.7z
 
@@ -115,7 +114,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickco
 [qt.56.qtlocation]
 [qt.56.qtlocation.android_armv7]
 archives:               56.qtlocation.android_armv7
-target_install_base:    /5.6/android_armv7
+target_install_base:    /@QT_VERSION_MINOR@/android_armv7
 [56.qtlocation.android_armv7]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-OSX-OSX_10_10-GCC-Android-Android_22-ARMv7.7z
 
@@ -123,7 +122,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-OSX-
 [qt.56.qt3d]
 [qt.56.qt3d.android_armv7]
 archives:               56.qt3d.android_armv7
-target_install_base:    /5.6/android_armv7
+target_install_base:    /@QT_VERSION_MINOR@/android_armv7
 [56.qt3d.android_armv7]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-OSX-OSX_10_10-GCC-Android-Android_22-ARMv7.7z
 
@@ -131,7 +130,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-OSX-OSX_10_10-GC
 [qt.56.qtcanvas3d]
 [qt.56.qtcanvas3d.android_armv7]
 archives:               56.qtcanvas3d.android_armv7
-target_install_base:    /5.6/android_armv7
+target_install_base:    /@QT_VERSION_MINOR@/android_armv7
 [56.qtcanvas3d.android_armv7]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-OSX-OSX_10_10-GCC-Android-Android_22-ARMv7.7z
 
@@ -139,6 +138,6 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-OSX-
 [qt.56.qtwebview]
 [qt.56.qtwebview.android_armv7]
 archives:               56.qtwebview.android_armv7
-target_install_base:    /5.6/android_armv7
+target_install_base:    /@QT_VERSION_MINOR@/android_armv7
 [56.qtwebview.android_armv7]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-OSX-OSX_10_10-GCC-Android-Android_22-ARMv7.7z

@@ -39,9 +39,9 @@ identifier:             windows
 
 [PackageConfigurationFiles]
 file_list:              x86-qt56-mingw49_32-conf,
+                        x86-qt56-msvc2015_32-conf,
                         x86-qt56-msvc2013_32-conf,
                         x86_64-qt56-msvc2013_64-conf,
-                        x86-qt56-msvc2015_32-conf,
                         x86_64-qt56-msvc2015_64-conf
 
 [PackageTemplates]

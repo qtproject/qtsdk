@@ -39,7 +39,6 @@ identifier:             windows
 
 [PackageConfigurationFiles]
 file_list:              android-qt56-x86-conf,
-                        android-qt56-armv5-conf,
                         android-qt56-armv7-conf
 
 [PackageTemplates]

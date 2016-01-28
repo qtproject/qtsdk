@@ -51,7 +51,7 @@ archives:               56.gcc_64.qtbase,
                         56.gcc_64.qtpositioning,
                         56.gcc_64.qtserialport,
                         56.gcc_64.icu_541
-target_install_base:    /5.6/gcc_64
+target_install_base:    /@QT_VERSION_MINOR@/gcc_64
 [56.gcc_64.qtbase]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtbase/qtbase-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
 [56.gcc_64.qtconnectivity]
@@ -96,7 +96,7 @@ archive_name:           icu-linux-Rhel6.6-x64.7z
 [qt.56.qtwebengine]
 [qt.56.qtwebengine.gcc_64]
 archives:               56.qtwebengine.gcc_64
-target_install_base:    /5.6/gcc_64
+target_install_base:    /@QT_VERSION_MINOR@/gcc_64
 [56.qtwebengine.gcc_64]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebengine/qtwebengine-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
 
@@ -104,7 +104,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebengine/qtwebengine-Li
 [qt.56.qtscript]
 [qt.56.qtscript.gcc_64]
 archives:               56.qtscript.gcc_64
-target_install_base:    /5.6/gcc_64
+target_install_base:    /@QT_VERSION_MINOR@/gcc_64
 [56.qtscript.gcc_64]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
 
@@ -112,7 +112,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-Linux-RH
 [qt.56.qtquickcontrols]
 [qt.56.qtquickcontrols.gcc_64]
 archives:               56.qtquickcontrols.gcc_64
-target_install_base:    /5.6/gcc_64
+target_install_base:    /@QT_VERSION_MINOR@/gcc_64
 [56.qtquickcontrols.gcc_64]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcontrols-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
 
@@ -120,7 +120,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcon
 [qt.56.qtquickcontrols2]
 [qt.56.qtquickcontrols2.gcc_64]
 archives:               56.qtquickcontrols2.gcc_64
-target_install_base:    /5.6/gcc_64
+target_install_base:    /@QT_VERSION_MINOR@/gcc_64
 [56.qtquickcontrols2.gcc_64]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickcontrols2-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
 
@@ -128,7 +128,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickco
 [qt.56.qtlocation]
 [qt.56.qtlocation.gcc_64]
 archives:               56.qtlocation.gcc_64
-target_install_base:    /5.6/gcc_64
+target_install_base:    /@QT_VERSION_MINOR@/gcc_64
 [56.qtlocation.gcc_64]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
 
@@ -136,7 +136,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Linu
 [qt.56.qt3d]
 [qt.56.qt3d.gcc_64]
 archives:               56.qt3d.gcc_64
-target_install_base:    /5.6/gcc_64
+target_install_base:    /@QT_VERSION_MINOR@/gcc_64
 [56.qt3d.gcc_64]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
 
@@ -144,7 +144,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Linux-RHEL_6_6-G
 [qt.56.qtcanvas3d]
 [qt.56.qtcanvas3d.gcc_64]
 archives:               56.qtcanvas3d.gcc_64
-target_install_base:    /5.6/gcc_64
+target_install_base:    /@QT_VERSION_MINOR@/gcc_64
 [56.qtcanvas3d.gcc_64]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
 
@@ -152,6 +152,6 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Linu
 [qt.56.qtwebview]
 [qt.56.qtwebview.gcc_64]
 archives:               56.qtwebview.gcc_64
-target_install_base:    /5.6/gcc_64
+target_install_base:    /@QT_VERSION_MINOR@/gcc_64
 [56.qtwebview.gcc_64]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z

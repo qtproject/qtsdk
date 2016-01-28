@@ -48,7 +48,7 @@ archives:               56.win64_msvc2013_winphone_x86.qtbase,
                         56.win64_msvc2013_winphone_x86.qtsensors,
                         56.win64_msvc2013_winphone_x86.qtenginio,
                         56.win64_msvc2013_winphone_x86.qtpositioning
-target_install_base:    /5.6/winphone_x86
+target_install_base:    /@QT_VERSION_MINOR@/winphone_x86
 [56.win64_msvc2013_winphone_x86.qtbase]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtbase/qtbase-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-X86.7z
 [56.win64_msvc2013_winphone_x86.qtconnectivity]
@@ -84,7 +84,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtpositioning-W
 [qt.56.qtquickcontrols]
 [qt.56.qtquickcontrols.win64_msvc2013_winphone_x86]
 archives:               56.qtquickcontrols.win64_msvc2013_winphone_x86
-target_install_base:    /5.6/winphone_x86
+target_install_base:    /@QT_VERSION_MINOR@/winphone_x86
 [56.qtquickcontrols.win64_msvc2013_winphone_x86]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcontrols-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-X86.7z
 
@@ -92,7 +92,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcon
 [qt.56.qtquickcontrols2]
 [qt.56.qtquickcontrols2.win64_msvc2013_winphone_x86]
 archives:               56.qtquickcontrols2.win64_msvc2013_winphone_x86
-target_install_base:    /5.6/winphone_x86
+target_install_base:    /@QT_VERSION_MINOR@/winphone_x86
 [56.qtquickcontrols2.win64_msvc2013_winphone_x86]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickcontrols2-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-X86.7z
 
@@ -100,7 +100,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickco
 [qt.56.qtlocation]
 [qt.56.qtlocation.win64_msvc2013_winphone_x86]
 archives:               56.qtlocation.win64_msvc2013_winphone_x86
-target_install_base:    /5.6/winphone_x86
+target_install_base:    /@QT_VERSION_MINOR@/winphone_x86
 [56.qtlocation.win64_msvc2013_winphone_x86]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-X86.7z
 
@@ -108,7 +108,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Wind
 [qt.56.qt3d]
 [qt.56.qt3d.win64_msvc2013_winphone_x86]
 archives:               56.qt3d.win64_msvc2013_winphone_x86
-target_install_base:    /5.6/winphone_x86
+target_install_base:    /@QT_VERSION_MINOR@/winphone_x86
 [56.qt3d.win64_msvc2013_winphone_x86]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-X86.7z
 
@@ -116,7 +116,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Windows-Windows_
 [qt.56.qtcanvas3d]
 [qt.56.qtcanvas3d.win64_msvc2013_winphone_x86]
 archives:               56.qtcanvas3d.win64_msvc2013_winphone_x86
-target_install_base:    /5.6/winphone_x86
+target_install_base:    /@QT_VERSION_MINOR@/winphone_x86
 [56.qtcanvas3d.win64_msvc2013_winphone_x86]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-X86.7z
 
@@ -124,6 +124,6 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Wind
 [qt.56.qtwebview]
 [qt.56.qtwebview.win64_msvc2013_winphone_x86]
 archives:               56.qtwebview.win64_msvc2013_winphone_x86
-target_install_base:    /5.6/winphone_x86
+target_install_base:    /@QT_VERSION_MINOR@/winphone_x86
 [56.qtwebview.win64_msvc2013_winphone_x86]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-X86.7z

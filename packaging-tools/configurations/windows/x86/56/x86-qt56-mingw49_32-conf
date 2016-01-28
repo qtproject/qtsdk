@@ -54,7 +54,7 @@ archives:               56.win32_mingw49.qtbase,
                         56.win32_mingw49.icu_541.mingw_32,
                         56.win32_mingw49.runtime,
                         56.win32_mingw49.opengl32sw.x86
-target_install_base:    /5.6/mingw49_32
+target_install_base:    /@QT_VERSION_MINOR@/mingw49_32
 [56.win32_mingw49.qtbase]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtbase/qtbase-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
 [56.win32_mingw49.qtconnectivity]
@@ -106,7 +106,7 @@ target_install_dir:     /bin
 [qt.56.qtscript]
 [qt.56.qtscript.win32_mingw49]
 archives:               56.qtscript.win32_mingw49
-target_install_base:    /5.6/mingw49_32
+target_install_base:    /@QT_VERSION_MINOR@/mingw49_32
 [56.qtscript.win32_mingw49]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
 
@@ -114,7 +114,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-Windows-
 [qt.56.qtquickcontrols]
 [qt.56.qtquickcontrols.win32_mingw49]
 archives:               56.qtquickcontrols.win32_mingw49
-target_install_base:    /5.6/mingw49_32
+target_install_base:    /@QT_VERSION_MINOR@/mingw49_32
 [56.qtquickcontrols.win32_mingw49]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcontrols-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
 
@@ -122,7 +122,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcon
 [qt.56.qtquickcontrols2]
 [qt.56.qtquickcontrols2.win32_mingw49]
 archives:               56.qtquickcontrols2.win32_mingw49
-target_install_base:    /5.6/mingw49_32
+target_install_base:    /@QT_VERSION_MINOR@/mingw49_32
 [56.qtquickcontrols2.win32_mingw49]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickcontrols2-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
 
@@ -130,7 +130,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickco
 [qt.56.qtlocation]
 [qt.56.qtlocation.win32_mingw49]
 archives:               56.qtlocation.win32_mingw49
-target_install_base:    /5.6/mingw49_32
+target_install_base:    /@QT_VERSION_MINOR@/mingw49_32
 [56.qtlocation.win32_mingw49]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
 
@@ -138,7 +138,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Wind
 [qt.56.qt3d]
 [qt.56.qt3d.win32_mingw49]
 archives:               56.qt3d.win32_mingw49
-target_install_base:    /5.6/mingw49_32
+target_install_base:    /@QT_VERSION_MINOR@/mingw49_32
 [56.qt3d.win32_mingw49]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
 
@@ -146,6 +146,6 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Windows-Windows_
 [qt.56.qtcanvas3d]
 [qt.56.qtcanvas3d.win32_mingw49]
 archives:               56.qtcanvas3d.win32_mingw49
-target_install_base:    /5.6/mingw49_32
+target_install_base:    /@QT_VERSION_MINOR@/mingw49_32
 [56.qtcanvas3d.win32_mingw49]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z

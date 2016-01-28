@@ -48,7 +48,7 @@ archives:               56.ios.qtbase,
                         56.ios.qtconnectivity,
                         56.ios.qtenginio,
                         56.ios.qtpositioning
-target_install_base:    /5.6/ios
+target_install_base:    /@QT_VERSION_MINOR@/ios
 [56.ios.qtbase]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtbase/qtbase-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
 [56.ios.qtsensors]
@@ -85,7 +85,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtpositioning-O
 [qt.56.qtscript]
 [qt.56.qtscript.ios]
 archives:               56.qtscript.ios
-target_install_base:    /5.6/ios
+target_install_base:    /@QT_VERSION_MINOR@/ios
 [56.qtscript.ios]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
 
@@ -93,7 +93,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-OSX-OSX_
 [qt.56.qtquickcontrols]
 [qt.56.qtquickcontrols.ios]
 archives:               56.qtquickcontrols.ios
-target_install_base:    /5.6/ios
+target_install_base:    /@QT_VERSION_MINOR@/ios
 [56.qtquickcontrols.ios]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcontrols-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
 
@@ -101,7 +101,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcon
 [qt.56.qtquickcontrols2]
 [qt.56.qtquickcontrols2.ios]
 archives:               56.qtquickcontrols2.ios
-target_install_base:    /5.6/ios
+target_install_base:    /@QT_VERSION_MINOR@/ios
 [56.qtquickcontrols2.ios]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickcontrols2-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
 
@@ -109,7 +109,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickco
 [qt.56.qtlocation]
 [qt.56.qtlocation.ios]
 archives:               56.qtlocation.ios
-target_install_base:    /5.6/ios
+target_install_base:    /@QT_VERSION_MINOR@/ios
 [56.qtlocation.ios]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
 
@@ -117,7 +117,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-OSX-
 [qt.56.qt3d]
 [qt.56.qt3d.ios]
 archives:               56.qt3d.ios
-target_install_base:    /5.6/ios
+target_install_base:    /@QT_VERSION_MINOR@/ios
 [56.qt3d.ios]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
 
@@ -125,7 +125,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-OSX-OSX_10_10-Cl
 [qt.56.qtcanvas3d]
 [qt.56.qtcanvas3d.ios]
 archives:               56.qtcanvas3d.ios
-target_install_base:    /5.6/ios
+target_install_base:    /@QT_VERSION_MINOR@/ios
 [56.qtcanvas3d.ios]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
 
@@ -133,6 +133,6 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-OSX-
 [qt.56.qtwebview]
 [qt.56.qtwebview.ios]
 archives:               56.qtwebview.ios
-target_install_base:    /5.6/ios
+target_install_base:    /@QT_VERSION_MINOR@/ios
 [56.qtwebview.ios]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
