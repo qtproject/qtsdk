@@ -1621,6 +1621,8 @@ def handle_installer_build(installer_type, bld_command):
     else:
         arch = 'x86'
 
+    # Project name, default is always "qt"
+    project_name = os.getenv('PROJECT_NAME', 'qt')
     # Determine local installer output directory
     installer_output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.INSTALLER_OUTPUT_DIR_NAME)
     # Create all installers for this host
@@ -1635,15 +1637,15 @@ def handle_installer_build(installer_type, bld_command):
     create_remote_dirs(bld_command.pkg_server_addr, remote_path_top_level_latest_available)
     #Update latest link
     update_latest_link(bld_command, remote_path_top_level, remote_path_top_level_latest)
-    # Create remote directories under <LICENSE>/qt/<version>
+    # Create remote directories under <LICENSE>/<project_name>/<version>
     if installer_type == 'offline':
-        remote_path_base_qt                     = remote_path_base + 'qt' + '/' + bld_command.version + '/'
-        remote_path_qt_latest                   = remote_path_base_qt + 'latest' + '/' + 'offline_installers' + '/'
-        remote_path_qt_latest_available         = remote_path_base_qt + 'latest_available_offline_installers'
+        remote_path_base                        = remote_path_base + project_name + '/' + bld_command.version + '/'
+        remote_path_latest                      = remote_path_base + 'latest' + '/' + 'offline_installers' + '/'
+        remote_path_latest_available            = remote_path_base + 'latest_available_offline_installers'
         remote_path_top_level_latest_successful = remote_path_base + 'offline_installers/latest_successful'
         # ensure remote directories exist
-        create_remote_dirs(bld_command.pkg_server_addr, remote_path_qt_latest)
-        create_remote_dirs(bld_command.pkg_server_addr, remote_path_qt_latest_available)
+        create_remote_dirs(bld_command.pkg_server_addr, remote_path_latest)
+        create_remote_dirs(bld_command.pkg_server_addr, remote_path_latest_available)
         create_remote_dirs(bld_command.pkg_server_addr, remote_path_top_level_latest_successful)
 
     # Create remote dirs on opensource distribution server
@@ -1652,7 +1654,7 @@ def handle_installer_build(installer_type, bld_command):
         ext_server_base_url  = os.environ['EXT_SERVER_BASE_URL']
         ext_server_base_path = os.environ['EXT_SERVER_BASE_PATH']
         # opensource distribution server directories
-        ext_dest_dir = ext_server_base_path + '/snapshots/qt/' + bld_command.version[:3] + '/' + bld_command.full_version + '/' + bld_command.build_number
+        ext_dest_dir = ext_server_base_path + '/snapshots/' + project_name + '/' + bld_command.version[:3] + '/' + bld_command.full_version + '/' + bld_command.build_number
         cmd_args_mkdir_pkg = [SSH_COMMAND, bld_command.pkg_server_addr]
         cmd_args_mkdir_ext = cmd_args_mkdir_pkg + ['ssh', ext_server_base_url, 'mkdir -p', ext_dest_dir]
         bldinstallercommon.do_execute_sub_process(cmd_args_mkdir_ext, SCRIPT_ROOT_DIR)
@@ -1669,10 +1671,10 @@ def handle_installer_build(installer_type, bld_command):
         # copy installer(s) to various locations:
         if installer_type == 'offline':
             # under:
-            # <LICENSE>/qt/<version>/latest/offline_installers/    i.e. the snapshot directory, may not contain all installers
-            remote_copy_installer(bld_command, remote_path_qt_latest, installer_name, installer_output_dir, installer_name_final)
-            # <LICENSE>/qt/<version>/latest_available_offline_installers/    may contain installer from different builds, always the latest successful ones
-            replace_latest_successful_installer(bld_command, installer_name, installer_name_final, remote_path_qt_latest_available, installer_output_dir)
+            # <LICENSE>/<project_name>/<version>/latest/offline_installers/    i.e. the snapshot directory, may not contain all installers
+            remote_copy_installer(bld_command, remote_path_latest, installer_name, installer_output_dir, installer_name_final)
+            # <LICENSE>/<project_name>/<version>/latest_available_offline_installers/    may contain installer from different builds, always the latest successful ones
+            replace_latest_successful_installer(bld_command, installer_name, installer_name_final, remote_path_latest_available, installer_output_dir)
             # <LICENSE>/offline_installers/latest_successful
             replace_latest_successful_installer(bld_command, installer_name, installer_name_final, remote_path_top_level_latest_successful, installer_output_dir)
 
