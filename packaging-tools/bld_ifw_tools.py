@@ -109,7 +109,7 @@ def get_default_qt5_configure_options():
     options += '-skip qtwebkit -skip qtwebsockets -skip qtxmlpatterns -skip qtactiveqt '
     # Windows
     if plat.startswith('win'):
-        options += '-target xp -no-opengl -no-icu '
+        options += '-target xp -no-icu '
         options += '-openssl-linked OPENSSL_LIBS="-lssleay32MT -llibeay32MT -lcrypt32 -lgdi32" '
     # Unix
     else:
