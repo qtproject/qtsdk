@@ -108,6 +108,14 @@ target_install_base:    /@QT_VERSION_MINOR@/gcc_64
 [56.qtscript.gcc_64]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
 
+# QtSerialbus provided as separate installable component in installer
+[qt.56.qtserialbus]
+[qt.56.qtserialbus.gcc_64]
+archives:               56.qtserialbus.gcc_64
+target_install_base:    /@QT_VERSION_MINOR@/gcc_64
+[56.qtserialbus.gcc_64]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialbus/qtserialbus-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+
 # QtQuickControls provided as separate installable component in installer
 [qt.56.qtquickcontrols]
 [qt.56.qtquickcontrols.gcc_64]

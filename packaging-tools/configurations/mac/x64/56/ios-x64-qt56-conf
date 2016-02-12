@@ -89,6 +89,14 @@ target_install_base:    /@QT_VERSION_MINOR@/ios
 [56.qtscript.ios]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
 
+# QtSerialbus provided as separate installable component in installer
+[qt.56.qtserialbus]
+[qt.56.qtserialbus.ios]
+archives:               56.qtserialbus.ios
+target_install_base:    /@QT_VERSION_MINOR@/ios
+[56.qtserialbus.ios]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialbus/qtserialbus-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
+
 # QtQuickControls provided as separate installable component in installer
 [qt.56.qtquickcontrols]
 [qt.56.qtquickcontrols.ios]

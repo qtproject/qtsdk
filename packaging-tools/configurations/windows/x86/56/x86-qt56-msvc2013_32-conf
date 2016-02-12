@@ -118,6 +118,14 @@ target_install_base:    /@QT_VERSION_MINOR@/msvc2013
 [56.qtscript.win32_msvc2013]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86.7z
 
+# QtSerialbus provided as separate installable component in installer
+[qt.56.qtserialbus]
+[qt.56.qtserialbus.win32_msvc2013]
+archives:               56.qtserialbus.win32_msvc2013
+target_install_base:    /@QT_VERSION_MINOR@/msvc2013
+[56.qtserialbus.win32_msvc2013]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialbus/qtserialbus-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86.7z
+
 # QtQuickControls provided as separate installable component in installer
 [qt.56.qtquickcontrols]
 [qt.56.qtquickcontrols.win32_msvc2013]

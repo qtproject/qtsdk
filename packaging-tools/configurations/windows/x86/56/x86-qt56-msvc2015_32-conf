@@ -118,6 +118,14 @@ target_install_base:    /@QT_VERSION_MINOR@/msvc2015
 [56.qtscript.win32_msvc2015]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z
 
+# QtSerialbus provided as separate installable component in installer
+[qt.56.qtserialbus]
+[qt.56.qtserialbus.win32_msvc2015]
+archives:               56.qtserialbus.win32_msvc2015
+target_install_base:    /@QT_VERSION_MINOR@/msvc2015
+[56.qtserialbus.win32_msvc2015]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialbus/qtserialbus-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z
+
 # QtQuickControls provided as separate installable component in installer
 [qt.56.qtquickcontrols]
 [qt.56.qtquickcontrols.win32_msvc2015]
