@@ -1222,6 +1222,11 @@ def handle_gammaray_build(bld_command):
                    '-o' + graphviz_target_path]
     bldinstallercommon.do_execute_sub_process(extract_graphviz_cmd, WORK_DIR)
 
+    build_environment = dict(os.environ)
+    if bldinstallercommon.is_linux_platform():
+        build_environment['LD_LIBRARY_PATH'] = ':'.join(filter(None, [os.path.join(graphviz_target_path, 'lib'),
+                                                                      build_environment.get('LD_LIBRARY_PATH')]))
+
     def common_gammaray_args():
         cmd_args = ['python', '-u', os.path.join(SCRIPT_ROOT_DIR, 'bld_module.py'),
                     '--clean',
@@ -1246,7 +1251,7 @@ def handle_gammaray_build(bld_command):
                      '--add-config-arg=-DBUILD_EXAMPLES=OFF',
                      '--add-config-arg=-DBUILD_TESTING=OFF',
                      '--add-config-arg=-DGRAPHVIZ_ROOT={0}'.format(graphviz_target_path)])
-    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR)
+    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, extra_env=build_environment)
 
     # build gammaray
     cmd_args = common_gammaray_args()
@@ -1255,7 +1260,7 @@ def handle_gammaray_build(bld_command):
                      '--qt5path', os.path.join(WORK_DIR, 'gammaray_qt5_install'),
                      '--add-config-arg=-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=FALSE',
                      '--qt5_module_url', bld_utils.file_url(os.path.join(SCRIPT_ROOT_DIR, 'module_archives', 'qt5_kdsme.7z'))])
-    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR)
+    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, extra_env=build_environment)
 
     # upload
     base_path = bld_command.path + '/gammaray/' + gammaray_version
