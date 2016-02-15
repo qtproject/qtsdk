@@ -162,14 +162,14 @@ assign_to_machine_label:    win-msvc2013-Windows8.1-x64_WinRT
 arg_configurations_file:    offline_installer_jobs/5.6/win_x64_winrt_msvc2013
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-winrt-msvc2013-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_windows_winrt_msvc2013
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke_tests_windows_winrt_msvc2013_64bit
 
 [release.56.offline.windows.x86.winrt_msvc2015]
 assign_to_machine_label:    win-msvc2015-Windows10-x64_WinRT
 arg_configurations_file:    offline_installer_jobs/5.6/win_x64_winrt_msvc2015
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-winrt-msvc2015-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_windows_winrt_msvc2015
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke_tests_windows_winrt_msvc2015_64bit
 
 ################################################################################
 ## Linux repository
