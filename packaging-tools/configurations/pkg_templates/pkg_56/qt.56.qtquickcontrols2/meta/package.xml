@@ -5,7 +5,7 @@
     <Version>5.6.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Default>true</Default>
-    <SortingPriority></SortingPriority>
+    <SortingPriority>11</SortingPriority>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
 

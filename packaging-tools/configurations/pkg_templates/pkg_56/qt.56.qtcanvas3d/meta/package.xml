@@ -6,7 +6,7 @@
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.56.qtquickcontrols</Dependencies>
     <Default>true</Default>
-    <SortingPriority></SortingPriority>
+    <SortingPriority>17</SortingPriority>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
 
