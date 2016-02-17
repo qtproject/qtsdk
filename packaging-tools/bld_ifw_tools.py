@@ -65,7 +65,7 @@ def get_common_allos_qt_configure_options():
 ##################################################################
 def get_common_unix_qt_configure_options():
     options = '-qt-zlib -qt-libpng -qt-libjpeg -no-cups '
-    options += '-openssl-linked '
+    options += '-openssl '
     return options
 
 
