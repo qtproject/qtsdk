@@ -46,7 +46,6 @@ archives:               56.win64_msvc2013_64.qtbase,
                         56.win64_msvc2013_64.qttools,
                         56.win64_msvc2013_64.qtxmlpatterns,
                         56.win64_msvc2013_64.qtsensors,
-                        56.win64_msvc2013_64.qtenginio,
                         56.win64_msvc2013_64.qtwebsockets,
                         56.win64_msvc2013_64.qtwebchannel,
                         56.win64_msvc2013_64.qtpositioning,
@@ -81,8 +80,6 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qttools/qttools-Windows-Wi
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtxmlpatterns/qtxmlpatterns-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z
 [56.win64_msvc2013_64.qtsensors]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtsensors/qtsensors-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z
-[56.win64_msvc2013_64.qtenginio]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtenginio/qtenginio-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z
 [56.win64_msvc2013_64.qtwebsockets]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebsockets/qtwebsockets-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z
 [56.win64_msvc2013_64.qtwebchannel]

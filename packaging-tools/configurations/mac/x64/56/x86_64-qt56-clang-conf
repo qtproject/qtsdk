@@ -36,7 +36,6 @@
 archives:               56.clang_64.qtbase,
                         56.clang_64.qtconnectivity,
                         56.clang_64.qtdeclarative,
-                        56.clang_64.qtenginio,
                         56.clang_64.qtgraphicaleffects,
                         56.clang_64.qtimageformats,
                         56.clang_64.qtmacextras,
@@ -58,8 +57,6 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtbase/qtbase-OSX-OSX_10_1
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtconnectivity/qtconnectivity-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
 [56.clang_64.qtdeclarative]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdeclarative/qtdeclarative-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
-[56.clang_64.qtenginio]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtenginio/qtenginio-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
 [56.clang_64.qtgraphicaleffects]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtgraphicaleffects/qtgraphicaleffects-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
 [56.clang_64.qtimageformats]

@@ -46,7 +46,6 @@ archives:               56.ios.qtbase,
                         56.ios.qtwebchannel,
                         56.ios.qtwebsockets,
                         56.ios.qtconnectivity,
-                        56.ios.qtenginio,
                         56.ios.qtpositioning
 target_install_base:    /@QT_VERSION_MINOR@/ios
 [56.ios.qtbase]
@@ -75,8 +74,6 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebchannel/qtwebchannel-
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebsockets/qtwebsockets-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
 [56.ios.qtconnectivity]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtconnectivity/qtconnectivity-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
-[56.ios.qtenginio]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtenginio/qtenginio-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
 [56.ios.qtpositioning]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtpositioning-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
 

@@ -48,8 +48,7 @@ archives:               56.android_x86.qtbase,
                         56.android_x86.qtxmlpatterns,
                         56.android_x86.qtsensors,
                         56.android_x86.qtpositioning,
-                        56.android_x86.qtserialport,
-                        56.android_x86.qtenginio
+                        56.android_x86.qtserialport
 target_install_base:    /@QT_VERSION_MINOR@/android_x86
 [56.android_x86.qtbase]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtbase/qtbase-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
@@ -83,8 +82,6 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtsensors/qtsensors-Linux-
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtpositioning-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
 [56.android_x86.qtserialport]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialport/qtserialport-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
-[56.android_x86.qtenginio]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtenginio/qtenginio-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
 
 
 # QtScript provided as separate installable component in installer

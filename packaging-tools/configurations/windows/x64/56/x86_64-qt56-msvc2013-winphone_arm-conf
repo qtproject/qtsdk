@@ -45,7 +45,6 @@ archives:               56.win64_msvc2013_winphone_arm.qtbase,
                         56.win64_msvc2013_winphone_arm.qttools,
                         56.win64_msvc2013_winphone_arm.qtxmlpatterns,
                         56.win64_msvc2013_winphone_arm.qtsensors,
-                        56.win64_msvc2013_winphone_arm.qtenginio,
                         56.win64_msvc2013_winphone_arm.qtpositioning
 target_install_base:    /@QT_VERSION_MINOR@/winphone_arm
 [56.win64_msvc2013_winphone_arm.qtbase]
@@ -74,8 +73,6 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qttools/qttools-Windows-Wi
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtxmlpatterns/qtxmlpatterns-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-ARMv4.7z
 [56.win64_msvc2013_winphone_arm.qtsensors]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtsensors/qtsensors-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-ARMv4.7z
-[56.win64_msvc2013_winphone_arm.qtenginio]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtenginio/qtenginio-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-ARMv4.7z
 [56.win64_msvc2013_winphone_arm.qtpositioning]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtpositioning-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_8_1-ARMv4.7z
 

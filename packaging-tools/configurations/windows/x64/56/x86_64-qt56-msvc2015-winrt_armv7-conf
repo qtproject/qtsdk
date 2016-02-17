@@ -46,7 +46,6 @@ archives:               56.win64_msvc2015_winrt_armv7.qtbase,
                         56.win64_msvc2015_winrt_armv7.qttools,
                         56.win64_msvc2015_winrt_armv7.qtxmlpatterns,
                         56.win64_msvc2015_winrt_armv7.qtsensors,
-                        56.win64_msvc2015_winrt_armv7.qtenginio,
                         56.win64_msvc2015_winrt_armv7.qtpositioning
 target_install_base:    /@QT_VERSION_MINOR@/winrt_armv7_msvc2015
 [56.win64_msvc2015_winrt_armv7.qtbase]
@@ -75,8 +74,6 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qttools/qttools-Windows-Wi
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtxmlpatterns/qtxmlpatterns-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-ARMv7.7z
 [56.win64_msvc2015_winrt_armv7.qtsensors]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtsensors/qtsensors-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-ARMv7.7z
-[56.win64_msvc2015_winrt_armv7.qtenginio]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtenginio/qtenginio-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-ARMv7.7z
 [56.win64_msvc2015_winrt_armv7.qtpositioning]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtpositioning-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-ARMv7.7z
 
