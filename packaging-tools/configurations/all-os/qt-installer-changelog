@@ -32,14 +32,14 @@
 #############################################################################
 
 
-[qt.56.changelog]
+[qt.installer.changelog]
 archives:               changelog_file
 target_install_base:    /dist
 
 [changelog_file]
-archive_uri:            changes-5.6.0
+archive_uri:            installer-changelog
 package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:
-archive_name:           changes-5.6.0.7z
+archive_name:           installer-changelog.7z
 

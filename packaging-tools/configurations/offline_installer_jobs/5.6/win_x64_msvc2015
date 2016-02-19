@@ -40,7 +40,7 @@ identifier:             windows
 [PackageConfigurationFiles]
 file_list:              qt-conf,
                         qt-license-conf,
-                        qt-installer-changelog-56,
+                        qt-installer-changelog,
                         qt56-src-conf,
                         qt56-doc-examples-conf,
                         x86_64-qt56-msvc2015_64-conf,
