@@ -44,7 +44,12 @@ function Component()
         var android_armv7 = installer.componentByName("qt.56.android_armv7");
         var winphone_arm = installer.componentByName("qt.56.win64_msvc2013_winphone_arm");
         var winphone_x86 = installer.componentByName("qt.56.win64_msvc2013_winphone_x86");
-        var winrt_x64 = installer.componentByName("qt.56.win64_msvc2013_winrt_x64");
+        var msvc2013_winphone_arm = installer.componentByName("qt.56.win64_msvc2013_winphone_arm");
+        var msvc2013_winphone_x86 = installer.componentByName("qt.56.win64_msvc2013_winphone_x86");
+        var msvc2013_winrt_x64 = installer.componentByName("qt.56.win64_msvc2013_winrt_x64");
+        var msvc2015_winrt_armv7 = installer.componentByName("qt.56.win64_msvc2015_winrt_armv7");
+        var msvc2015_winrt_x64 = installer.componentByName("qt.56.win64_msvc2015_winrt_x64");
+        var msvc2015_winrt_x86 = installer.componentByName("qt.56.win64_msvc2015_winrt_x86");
 
         // first reset the latest Qt5.x.x package default values to false
         installer.componentByName("qt.56.win32_mingw49").setValue("Default", "false");
@@ -61,20 +66,23 @@ function Component()
             winphone_arm.setValue("Default", "false");
         if (winphone_x86)
             winphone_x86.setValue("Default", "false");
-        if (winrt_x64)
-            winrt_x64.setValue("Default", "false");
+        if (msvc2013_winphone_arm)
+            msvc2013_winphone_arm.setValue("Default", "false");
+        if (msvc2013_winphone_x86)
+            msvc2013_winphone_x86.setValue("Default", "false");
+        if (msvc2013_winrt_x64)
+            msvc2013_winrt_x64.setValue("Default", "false");
+        if (msvc2015_winrt_armv7)
+            msvc2015_winrt_armv7.setValue("Default", "false");
+        if (msvc2015_winrt_x64)
+            msvc2015_winrt_x64.setValue("Default", "false");
+        if (msvc2015_winrt_x86)
+            msvc2015_winrt_x86.setValue("Default", "false");
 
         // if 32bit windows hide the 64bit packages
         if (installer.environmentVariable("ProgramFiles(x86)") == "" ) {
             installer.componentByName("qt.56.win64_msvc2013_64").setValue("Virtual", "true");
             installer.componentByName("qt.56.win64_msvc2015_64").setValue("Virtual", "true");
-
-            if (winphone_arm)
-                winphone_arm.setValue("Virtual", "true");
-            if (winphone_x86)
-                winphone_x86.setValue("Virtual", "true");
-            if (winrt_x64)
-                winrt_x64.setValue("Virtual", "true");
         }
 
         // now try to determine which tool chains to select by default
