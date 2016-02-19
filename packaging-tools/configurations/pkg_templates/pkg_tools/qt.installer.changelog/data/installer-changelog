@@ -1,1 +1,12 @@
-TODO
+
+****************************************************************************
+*                        2.0.3                                             *
+****************************************************************************
+
+- Installer (Installer-Framework) compiled against Qt5.5.1
+- Fix crash when updating admin installation with user/temp repository (QTIFW-740)
+- Fix target directory check for reserved words on Windows
+- Fix errors when running updates in a directory requiring elevation (QTIFW-746)
+- Fix usage of system proxy with credentials (QTBUG-46547)
+- Fix: .dat file gets deleted after multiple component changes (QTIFW-689)
+- Fix maintenance tool upgrade on OSX
