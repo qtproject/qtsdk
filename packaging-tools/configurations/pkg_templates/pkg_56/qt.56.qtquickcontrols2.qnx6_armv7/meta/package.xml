@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt Quick Controls 2 for QNX 6.6 armv7</DisplayName>
     <Description></Description>
-    <Version>5.6.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.6.0-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <AutoDependOn>qt.56.qtquickcontrols2, qt.56.qnx6_armv7</AutoDependOn>
     <Dependencies>qt.56.qnx6_armv7</Dependencies>
