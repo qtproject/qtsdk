@@ -37,11 +37,18 @@
 [qt.56.src]
 
 [qt.56.src.qteverywhere]
-archives:               56.src.qteverywhere
+archives:               56.src.qteverywhere, 56.src.qtenginio, 56.src.qtwayland
 target_install_base:    /@QT_VERSION_MINOR@/Src/
 [56.src.qteverywhere]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/src/single/installer-qt-everywhere-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
+[56.src.qtenginio]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/src/submodules/qtenginio-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+[56.src.qtwayland]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/src/submodules/qtwayland-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
 
 [qt.56.src.lgplv3]
 
