@@ -8,7 +8,7 @@ version:                1.6.0
 version_tag:            %MAINTENANCE_TOOL_VERSION%
 package_default:        true
 [tools.maintenance]
-archive_uri:            /ifw/repo/installerbase-linux-x86.7z
+archive_uri:            /opensource/ifw/repo/installerbase-linux-x86.7z
 package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:
