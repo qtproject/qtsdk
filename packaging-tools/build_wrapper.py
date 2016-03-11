@@ -1279,6 +1279,7 @@ def handle_gammaray_build(bld_command):
 ###############################
 def handle_qt_creator_build(bld_command):
     sanity_check_packaging_server(bld_command)
+    installer_version_number = os.environ['QTC_INSTALLER_VERSION']
     target_env_dir = BIN_TARGET_DIRS[bld_command.target_env]
 
     # gammaray and graphviz
@@ -1466,9 +1467,12 @@ def handle_qt_creator_build(bld_command):
     else: # -> windows
         installer_basename_template = 'qt-creator-{0}-windows-' + postfix
     common_args = ['python', '-u', os.path.join(WORK_DIR, 'qt-creator', 'scripts', 'packageIfw.py'),
-        '-v', '3.6.1', # TODO: hardcoded is bad... anyhow hopefully this code is gone soon
+        '-v', installer_version_number]
+    if not bld_command.qtcreator_version.startswith("3.6"):
+        common_args.extend(['-d', bld_command.qtcreator_version])
+    common_args.extend([
         '-i', ifw_path,
-        '-a', os.path.join(WORK_DIR, 'qt-creator_build/qtcreator.7z')]
+        '-a', os.path.join(WORK_DIR, 'qt-creator_build/qtcreator.7z')])
     # opensource installers
     cmd_args = list(common_args) + [installer_basename_template.format('opensource')]
     bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR)
