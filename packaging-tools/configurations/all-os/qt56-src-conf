@@ -45,9 +45,11 @@ package_strip_dirs:     1
 [56.src.qtenginio]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/src/submodules/qtenginio-@LICENSE@-src-@QTENGINIO_VERSION@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
+target_install_dir:     /qtenginio
 [56.src.qtwayland]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/src/submodules/qtwayland-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
+target_install_dir:     /qtwayland
 
 
 [qt.56.src.lgplv3]
