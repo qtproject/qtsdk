@@ -91,14 +91,6 @@ target_install_base:    /@QT_VERSION_MINOR@/android_armv7
 [56.qtscript.android_armv7]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-OSX-OSX_10_10-GCC-Android-Android_22-ARMv7.7z
 
-# QtSerialbus provided as separate installable component in installer
-[qt.56.qtserialbus]
-[qt.56.qtserialbus.android_armv7]
-archives:               56.qtserialbus.android_armv7
-target_install_base:    /@QT_VERSION_MINOR@/android_armv7
-[56.qtserialbus.android_armv7]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialbus/qtserialbus-OSX-OSX_10_10-GCC-Android-Android_22-ARMv7.7z
-
 # QtQuickControls provided as separate installable component in installer
 [qt.56.qtquickcontrols]
 [qt.56.qtquickcontrols.android_armv7]

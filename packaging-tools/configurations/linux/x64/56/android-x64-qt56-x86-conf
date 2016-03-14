@@ -92,14 +92,6 @@ target_install_base:    /@QT_VERSION_MINOR@/android_x86
 [56.qtscript.android_x86]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
 
-# QtSerialbus provided as separate installable component in installer
-[qt.56.qtserialbus]
-[qt.56.qtserialbus.android_x86]
-archives:               56.qtserialbus.android_x86
-target_install_base:    /@QT_VERSION_MINOR@/android_x86
-[56.qtserialbus.android_x86]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialbus/qtserialbus-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
-
 # QtQuickControls provided as separate installable component in installer
 [qt.56.qtquickcontrols]
 [qt.56.qtquickcontrols.android_x86]
