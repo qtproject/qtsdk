@@ -48,6 +48,8 @@ identifier:             all-os
 [PackageTemplates]
 template_dirs:          pkg_tools
 
+[PackageConfigurationFiles]
+file_list:              qt-installer-changelog
 
 [qt]
 
