@@ -1305,7 +1305,7 @@ def handle_qt_creator_build(bld_command):
     else:
         qt_modules = ['qtbase', 'qtdeclarative', 'qtgraphicaleffects',
                       'qtimageformats', 'qtlocation', 'qtmacextras',
-                      'qtquickcontrols', 'qtscript', 'qtsvg', 'qttools',
+                      'qtquickcontrols', 'qtquickcontrols2', 'qtscript', 'qtsvg', 'qttools',
                       'qttranslations', 'qtx11extras', 'qtxmlpatterns']
         qt_postfix = CI_TARGET_POSTFIX[bld_command.target_env]
         qt_module_filenames = [module + '-' + qt_postfix + '.7z' for module in qt_modules]
