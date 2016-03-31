@@ -1,0 +1,90 @@
+#############################################################################
+##
+## Copyright (C) 2016 The Qt Company Ltd.
+## Contact: https://www.qt.io/licensing/
+##
+## This file is part of the release tools of the Qt Toolkit.
+##
+## $QT_BEGIN_LICENSE:GPL-EXCEPT$
+## Commercial License Usage
+## Licensees holding valid commercial Qt licenses may use this file in
+## accordance with the commercial license agreement provided with the
+## Software or, alternatively, in accordance with the terms contained in
+## a written agreement between you and The Qt Company. For licensing terms
+## and conditions see https://www.qt.io/terms-conditions. For further
+## information use the contact form at https://www.qt.io/contact-us.
+##
+## GNU General Public License Usage
+## Alternatively, this file may be used under the terms of the GNU
+## General Public License version 3 as published by the Free Software
+## Foundation with exceptions as appearing in the file LICENSE.GPL3-EXCEPT
+## included in the packaging of this file. Please review the following
+## information to ensure the GNU General Public License requirements will
+## be met: https://www.gnu.org/licenses/gpl-3.0.html.
+##
+## $QT_END_LICENSE$
+##
+#############################################################################
+
+
+[qt.57.doc]
+archives:               57.doc
+target_install_base:    /Docs/Qt-5.7/
+[57.doc]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qt-everywhere-documentation-@QT_VERSION_AND_TAG@.7z
+package_strip_dirs:     1
+
+[qt.57.examples]
+archives:               57.examples
+target_install_base:    /Examples/Qt-5.7/
+[57.examples]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qt-everywhere-examples-@QT_VERSION_AND_TAG@.7z
+package_strip_dirs:     1
+
+[qt.57.doc.qtscript]
+archives:               57.doc.qtscript
+target_install_base:    /Docs/Qt-5.7/
+[57.doc.qtscript]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qtscript-documentation.@SRC_ARCHIVE_TYPE@
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.57.doc.qtscxml]
+archives:               57.doc.qtscxml
+target_install_base:    /Docs/Qt-5.7/
+[57.doc.qtscxml]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qtscxml-documentation.@SRC_ARCHIVE_TYPE@
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.57.doc.qtgamepad]
+archives:               57.doc.qtgamepad
+target_install_base:    /Docs/Qt-5.7/
+[57.doc.qtgamepad]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qtgamepad-documentation.@SRC_ARCHIVE_TYPE@
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.57.examples.qtscript]
+archives:               57.examples.qtscript
+target_install_base:    /Examples/Qt-5.7/
+[57.examples.qtscript]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qtscript-examples-@QT_VERSION_AND_TAG@.7z
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.57.examples.qtscxml]
+archives:               57.examples.qtscxml
+target_install_base:    /Examples/Qt-5.7/
+[57.examples.qtscxml]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qtscxml-examples-@QT_VERSION_AND_TAG@.7z
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.57.examples.qtgamepad]
+archives:               57.examples.qtgamepad
+target_install_base:    /Examples/Qt-5.7/
+[57.examples.qtgamepad]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qtgamepad-examples-@QT_VERSION_AND_TAG@.7z
+target_install_dir:
+package_strip_dirs:     1

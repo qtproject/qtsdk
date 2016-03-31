@@ -1,0 +1,141 @@
+#############################################################################
+##
+## Copyright (C) 2016 The Qt Company Ltd.
+## Contact: https://www.qt.io/licensing/
+##
+## This file is part of the release tools of the Qt Toolkit.
+##
+## $QT_BEGIN_LICENSE:GPL-EXCEPT$
+## Commercial License Usage
+## Licensees holding valid commercial Qt licenses may use this file in
+## accordance with the commercial license agreement provided with the
+## Software or, alternatively, in accordance with the terms contained in
+## a written agreement between you and The Qt Company. For licensing terms
+## and conditions see https://www.qt.io/terms-conditions. For further
+## information use the contact form at https://www.qt.io/contact-us.
+##
+## GNU General Public License Usage
+## Alternatively, this file may be used under the terms of the GNU
+## General Public License version 3 as published by the Free Software
+## Foundation with exceptions as appearing in the file LICENSE.GPL3-EXCEPT
+## included in the packaging of this file. Please review the following
+## information to ensure the GNU General Public License requirements will
+## be met: https://www.gnu.org/licenses/gpl-3.0.html.
+##
+## $QT_END_LICENSE$
+##
+#############################################################################
+
+
+[qt.57.gcc_64]
+archives:               57.gcc_64.qtbase,
+                        57.gcc_64.qtconnectivity,
+                        57.gcc_64.qtx11extras,
+                        57.gcc_64.qtwebchannel,
+                        57.gcc_64.qtmultimedia,
+                        57.gcc_64.qttranslations,
+                        57.gcc_64.qtgraphicaleffects,
+                        57.gcc_64.qtsvg,
+                        57.gcc_64.qtdeclarative,
+                        57.gcc_64.qtwebsockets,
+                        57.gcc_64.qtimageformats,
+                        57.gcc_64.qttools,
+                        57.gcc_64.qtxmlpatterns,
+                        57.gcc_64.qtsensors,
+                        57.gcc_64.qtserialport,
+                        57.gcc_64.qtlocation,
+                        57.gcc_64.qtwebengine,
+#                        57.gcc_64.qtserialbus,
+                        57.gcc_64.qtquickcontrols,
+                        57.gcc_64.qtquickcontrols2,
+                        57.gcc_64.qt3d,
+                        57.gcc_64.qtcanvas3d,
+                        57.gcc_64.qtwebview,
+                        57.gcc_64.qtcharts,
+                        57.gcc_64.qtpurchasing,
+                        57.gcc_64.qtdatavis3d,
+                        57.gcc_64.qtvirtualkeyboard,
+                        57.gcc_64.icu_561
+target_install_base:    /@QT_VERSION_MINOR@/gcc_64
+[57.gcc_64.qtbase]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtbase/qtbase-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+[57.gcc_64.qtconnectivity]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtconnectivity/qtconnectivity-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+[57.gcc_64.qtx11extras]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtx11extras/qtx11extras-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+[57.gcc_64.qtwebchannel]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebchannel/qtwebchannel-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+[57.gcc_64.qtmultimedia]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtmultimedia/qtmultimedia-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+[57.gcc_64.qttranslations]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qttranslations/qttranslations-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+[57.gcc_64.qtgraphicaleffects]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtgraphicaleffects/qtgraphicaleffects-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+[57.gcc_64.qtsvg]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtsvg/qtsvg-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+[57.gcc_64.qtdeclarative]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdeclarative/qtdeclarative-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+[57.gcc_64.qtwebsockets]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebsockets/qtwebsockets-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+[57.gcc_64.qtimageformats]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtimageformats/qtimageformats-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+[57.gcc_64.qttools]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qttools/qttools-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+[57.gcc_64.qtxmlpatterns]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtxmlpatterns/qtxmlpatterns-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+[57.gcc_64.qtsensors]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtsensors/qtsensors-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+[57.gcc_64.qtlocation]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+[57.gcc_64.qtserialport]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialport/qtserialport-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+[57.gcc_64.qtwebengine]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebengine/qtwebengine-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+#[57.gcc_64.qtserialbus]
+#archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialbus/qtserialbus-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+[57.gcc_64.qtquickcontrols]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcontrols-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+[57.gcc_64.qtquickcontrols2]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickcontrols2-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+[57.gcc_64.qt3d]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+[57.gcc_64.qtcanvas3d]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+[57.gcc_64.qtwebview]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+[57.gcc_64.qtcharts]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcharts/qtcharts-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+[57.gcc_64.qtpurchasing]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtpurchasing/qtpurchasing-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+[57.gcc_64.qtdatavis3d]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdatavis3d/qtdatavis3d-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+[57.gcc_64.qtvirtualkeyboard]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtvirtualkeyboard/qtvirtualkeyboard-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+[57.gcc_64.icu_561]
+archive_uri:            http://download.qt.io/development_releases/prebuilt/icu/prebuilt/56.1/icu-linux-g++-Rhel6.6-x64.7z
+target_install_dir:     /lib
+archive_name:           icu-linux-Rhel6.6-x64.7z
+
+# QtScript provided as separate installable component in installer
+[qt.57.qtscript]
+[qt.57.qtscript.gcc_64]
+archives:               57.qtscript.gcc_64
+target_install_base:    /@QT_VERSION_MINOR@/gcc_64
+[57.qtscript.gcc_64]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+
+# QtGamePad provided as separate installable component in installer
+[qt.57.qtgamepad]
+[qt.57.qtgamepad.gcc_64]
+archives:               57.qtgamepad.gcc_64
+target_install_base:    /@QT_VERSION_MINOR@/gcc_64
+[57.qtgamepad.gcc_64]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtgamepad/qtgamepad-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+
+# QtScxml provided as separate installable component in installer
+[qt.57.qtscxml]
+[qt.57.qtscxml.gcc_64]
+archives:               57.qtscxml.gcc_64
+target_install_base:    /@QT_VERSION_MINOR@/gcc_64
+[57.qtscxml.gcc_64]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscxml/qtscxml-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
