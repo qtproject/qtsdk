@@ -12,4 +12,7 @@ Makefile
 /packaging-tools/repository
 /packaging-tools/pkg
 /packaging-tools/config
-/packaging-tools/build_artifacts
+/packaging-tools/ifw_build_artifacts
+/packaging-tools/qt-bld-dynamic
+/packaging-tools/qt-install-dynamic
+/packaging-tools/ifw-pkg

@@ -133,6 +133,23 @@ def get_default_qt_configure_options(qt5_build = True):
         return get_default_qt4_configure_options()
 
 
+##################################################################
+# Configure options for separate Qt build if doc build is needed.
+##################################################################
+def get_dynamic_qt_configure_options():
+    options = '-release -opensource -confirm-license '
+    options += '-nomake examples -nomake tests '
+    options += '-accessibility -qt-sql-sqlite '
+    options += '-skip qt3d -skip qtconnectivity -skip qtxmlpatterns '
+    options += '-skip qtx11extras -skip qtwinextras -skip qtmacextras -skip qtandroidextras '
+    options += '-skip qtwebsockets -skip qtwebengine -skip qtwebchannel -skip qtwebkit '
+    options += '-skip qtwayland -skip qtserialport -skip qtsensors '
+    options += '-skip qtquickcontrols -skip qtquick1 -skip qtmultimedia '
+    options += '-skip qtenginio -skip qtdeclarative '
+    options += '-skip qtlocation -skip qtcanvas3d '
+    return options
+
+
 ###############################
 # Option class for ifw build
 ###############################
@@ -162,13 +179,18 @@ class IfwOptions:
         self.qt5_build                                  = qt5_build
         self.qt_source_dir                              = os.path.join(ROOT_DIR, 'qt-src')
         self.qt_build_dir                               = os.path.join(ROOT_DIR, 'qt-bld')
+        self.qt_build_dir_dynamic                       = os.path.join(ROOT_DIR, 'qt-bld-dynamic')
+        self.qt_install_dir_dynamic                     = os.path.join(ROOT_DIR, 'qt-install-dynamic')
         self.installer_framework_source_dir             = os.path.join(ROOT_DIR, 'ifw-src')
         self.installer_framework_build_dir              = os.path.join(ROOT_DIR, 'ifw-bld')
+        self.installer_framework_pkg_dir                = os.path.join(ROOT_DIR, 'ifw-pkg')
+        self.installer_framework_target_dir             = os.path.join(ROOT_DIR, 'ifw-target')
         self.qt_installer_framework_url                 = qt_installer_framework_url
         self.qt_installer_framework_branch              = qt_installer_framework_branch
         self.qt_installer_framework_qmake_args          = qt_installer_framework_qmake_args
         if bldinstallercommon.is_win_platform():
             self.make_cmd                               = 'nmake'
+            self.make_doc_cmd                           = 'nmake'
             self.make_install_cmd                       = 'nmake install'
             self.qt_qmake_bin                           = 'qmake.exe'
             if qt5_build:
@@ -177,6 +199,7 @@ class IfwOptions:
                 self.qt_configure_bin                       = self.qt_source_dir + os.sep + 'configure.exe'
         else:
             self.make_cmd                               = 'make -j' + str(multiprocessing.cpu_count() + 1)
+            self.make_doc_cmd                           = 'make'
             self.make_install_cmd                       = 'make install'
             self.qt_qmake_bin                           = 'qmake'
             self.qt_configure_bin                       = self.qt_source_dir + os.sep + 'configure'
@@ -240,11 +263,14 @@ class IfwOptions:
     def print_data(self):
         print('-----------------------------------------')
         print('make cmd:                                {0}'.format(self.make_cmd))
+        print('make doc_cmd:                            {0}'.format(self.make_doc_cmd))
         print('Qt5 usage:                               {0}'.format(self.qt5_build))
         print('qt_source_package_uri:                   {0}'.format(self.qt_source_package_uri))
         print('qt_source_package_uri_saveas:            {0}'.format(self.qt_source_package_uri_saveas))
         print('qt_source_dir:                           {0}'.format(self.qt_source_dir))
         print('qt_build_dir:                            {0}'.format(self.qt_build_dir))
+        print('qt_build_dir_dynamic:                    {0}'.format(self.qt_build_dir_dynamic))
+        print('qt_install_dir_dynamic:                  {0}'.format(self.qt_install_dir_dynamic))
         print('qt_configure_options:                    {0}'.format(self.qt_configure_options))
         print('qt_qmake_bin:                            {0}'.format(self.qt_qmake_bin))
         print('qt_configure_bin:                        {0}'.format(self.qt_configure_bin))
@@ -255,6 +281,8 @@ class IfwOptions:
         print('installer_framework_build_dir:           {0}'.format(self.installer_framework_build_dir))
         print('installer_framework_archive_name:        {0}'.format(self.installer_framework_archive_name))
         print('installer_base_archive_name:             {0}'.format(self.installer_base_archive_name))
+        print('installer_framework_pkg_dir:             {0}'.format(self.installer_framework_pkg_dir))
+        print('installer_framework_target_dir:          {0}'.format(self.installer_framework_target_dir))
         print('product_key_checker:                     {0}'.format(self.product_key_checker_pri))
         if platform.system().lower().startswith('win'):
             print('openssl_dir:              {0}'.format(self.openssl_dir))
@@ -265,7 +293,7 @@ class IfwOptions:
 ###############################
 # Build IFW
 ###############################
-def build_ifw(options):
+def build_ifw(options, create_installer=False):
     # verbose
     options.print_data()
     #clean environment first
@@ -275,9 +303,16 @@ def build_ifw(options):
     # copy qt sources
     prepare_qt_sources(options)
     # build qt
-    build_qt(options)
+    build_qt(options, options.qt_build_dir, options.qt_configure_options)
     # build installer framework
     build_installer_framework(options)
+    # steps when creating ifw installer
+    if create_installer:
+        configure_options = get_dynamic_qt_configure_options() + '-prefix ' + options.qt_install_dir_dynamic
+        build_qt(options, options.qt_build_dir_dynamic, configure_options)
+        install_qt(options, options.qt_build_dir_dynamic, options.qt_install_dir_dynamic)
+        build_docs(options)
+        create_installer_package(options)
     #archive
     archive_installerbase(options)
     archive_installer_framework(options)
@@ -323,26 +358,58 @@ def prepare_qt_sources(options):
 ###############################
 # function
 ###############################
-def build_qt(options):
+def build_qt(options, qt_build_dir, qt_configure_options):
     if options.incremental_mode:
-        qmake_bin = bldinstallercommon.locate_file(options.qt_build_dir, options.qt_qmake_bin)
-        qt_lib_dir = bldinstallercommon.locate_directory(options.qt_build_dir, 'lib')
+        qmake_bin = bldinstallercommon.locate_file(qt_build_dir, options.qt_qmake_bin)
+        qt_lib_dir = bldinstallercommon.locate_directory(qt_build_dir, 'lib')
         if os.path.isfile(qmake_bin) and os.path.isdir(qt_lib_dir):
             return
 
-    bldinstallercommon.create_dirs(options.qt_build_dir)
+    bldinstallercommon.create_dirs(qt_build_dir)
     # configure first
     print('--------------------------------------------------------------------')
     print('Configuring Qt')
-    configure_options = re.sub(' +', ' ', options.qt_configure_options)
+    configure_options = re.sub(' +', ' ', qt_configure_options)
     cmd_args = options.qt_configure_bin + ' ' + configure_options
     # shlex does not like backslashes
     cmd_args = cmd_args.replace('\\', '/')
-    bldinstallercommon.do_execute_sub_process(shlex.split(cmd_args), options.qt_build_dir)
+    bldinstallercommon.do_execute_sub_process(shlex.split(cmd_args), qt_build_dir)
     print('--------------------------------------------------------------------')
     print('Building Qt')
     cmd_args = options.make_cmd
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), options.qt_build_dir)
+    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), qt_build_dir)
+
+
+###############################
+# function
+###############################
+def install_qt(options, qt_build_dir, qt_install_dir):
+    if options.incremental_mode:
+        qmake_bin = bldinstallercommon.locate_file(qt_install_dir, options.qt_qmake_bin)
+        if os.path.isfile(qmake_bin):
+            return
+
+    print('--------------------------------------------------------------------')
+    print('Installing Qt')
+    cmd_args = options.make_install_cmd
+    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), qt_build_dir)
+    # Write qt.conf
+    bin_dir = bldinstallercommon.locate_directory(options.qt_install_dir_dynamic, 'bin')
+    if not os.path.isdir(bin_dir):
+        print('*** Unable to find bin directory from: {0}'.format(bin_dir))
+        sys.exit(-1)
+    patch_qt(bin_dir)
+
+
+###############################
+# function
+###############################
+def patch_qt(qt_bin_path):
+    print('Writing qt.conf into: {0}'.format(qt_bin_path))
+    qtConfFile = open(os.path.join(qt_bin_path, 'qt.conf'), "w")
+    qtConfFile.write("[Paths]" + os.linesep)
+    qtConfFile.write("Prefix=.." + os.linesep)
+    qtConfFile.close()
 
 
 ###############################
@@ -369,6 +436,7 @@ def build_installer_framework(options):
             file_to_check += '.exe'
         if os.path.exists(file_to_check):
             return
+
     print('--------------------------------------------------------------------')
     print('Building Installer Framework')
     qmake_bin = bldinstallercommon.locate_file(options.qt_build_dir, options.qt_qmake_bin)
@@ -389,6 +457,70 @@ def build_installer_framework(options):
 ###############################
 # function
 ###############################
+def build_docs(options):
+    print('--------------------------------------------------------------------')
+    print('Building Qt Installer Framework Documentation')
+    qmake_bin = bldinstallercommon.locate_file(options.qt_install_dir_dynamic, options.qt_qmake_bin)
+    if not os.path.isfile(qmake_bin):
+        print('*** Aborting doc build, unable to find qmake from: {0}'.format(options.qt_install_dir_dynamic))
+        sys.exit(-1)
+    cmd_args = qmake_bin + ' ' + options.installer_framework_source_dir
+    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), options.installer_framework_build_dir)
+    cmd_args = options.make_doc_cmd + ' docs'
+    env = dict(os.environ)
+    env['LD_LIBRARY_PATH'] = os.path.normpath(os.path.join(os.path.dirname(qmake_bin), '..', 'lib'))
+    bldinstallercommon.do_execute_sub_process(args=cmd_args.split(' '), execution_path=options.installer_framework_build_dir,
+                                              abort_on_fail=True, get_output=False, extra_env=env)
+
+
+################################################################
+# Create installer containing the Qt Installer Framework itself
+################################################################
+def create_installer_package(options):
+    print('--------------------------------------------------------------------')
+    print('Creating installer for Qt Installer Framework')
+    # Temporary dir for creating installer containing the Qt Installer Framework itself
+    package_dir = options.installer_framework_pkg_dir
+    os.makedirs(package_dir)
+    # Final directory for the installer containing the Qt Installer Framework itself
+    os.makedirs(options.installer_framework_target_dir)
+    target_dir = os.path.join(options.installer_framework_target_dir, 'Qt Installer Framework')
+
+    current_dir = os.getcwd()
+    os.chdir(package_dir)
+    shutil.copytree(os.path.join(options.installer_framework_build_dir, 'bin'), os.path.join(package_dir, 'bin'), ignore = shutil.ignore_patterns("*.exe.manifest","*.exp","*.lib"))
+    if sys.platform == 'linux2':
+        bldinstallercommon.do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/archivegen')), execution_path=package_dir)
+        bldinstallercommon.do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/binarycreator')), execution_path=package_dir)
+        bldinstallercommon.do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/devtool')), execution_path=package_dir)
+        bldinstallercommon.do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/installerbase')), execution_path=package_dir)
+        bldinstallercommon.do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/repogen')), execution_path=package_dir)
+    shutil.copytree(os.path.join(options.installer_framework_build_dir, 'doc'), os.path.join(package_dir, 'doc'))
+    shutil.copytree(os.path.join(options.installer_framework_source_dir, 'examples'), os.path.join(package_dir, 'examples'))
+    shutil.copy(os.path.join(options.installer_framework_source_dir, 'README'), package_dir)
+    # create 7z
+    archive_file = os.path.join(options.installer_framework_source_dir, 'dist', 'packages', 'org.qtproject.ifw.binaries', 'data', 'data.7z')
+    if not os.path.exists(os.path.dirname(archive_file)):
+        os.makedirs(os.path.dirname(archive_file))
+    bldinstallercommon.do_execute_sub_process(args=(os.path.join(package_dir, 'bin', 'archivegen'), archive_file, '*'), execution_path=package_dir)
+    # run installer
+    binary_creator = os.path.join(options.installer_framework_build_dir, 'bin', 'binarycreator')
+    config_file = os.path.join(options.installer_framework_source_dir, 'dist', 'config', 'config.xml')
+    package_dir = os.path.join(options.installer_framework_source_dir, 'dist', 'packages')
+    bldinstallercommon.do_execute_sub_process(args=(binary_creator, '--offline-only', '-c', config_file, '-p', package_dir, target_dir), execution_path=package_dir)
+    if sys.platform == 'darwin':
+        qt_menu_nib = os.path.join(options.qt_source_dir, 'src', 'gui', 'mac', 'qt_menu.nib')
+        shutil.copytree(qt_menu_nib, target_dir + '.app/Contents/Resources/qt_menu.nib')
+    print('Installer package is at: {0}'.format(target_dir))
+    artifacts = os.listdir(options.installer_framework_target_dir)
+    for artifact in artifacts:
+        shutil.move(os.path.join(options.installer_framework_target_dir, artifact), options.build_artifacts_dir)
+    os.chdir(current_dir)
+
+
+###############################
+# function
+###############################
 def clean_build_environment(options):
     if os.path.isfile(options.installer_framework_archive_name):
         os.remove(options.installer_framework_archive_name)
@@ -397,6 +529,11 @@ def clean_build_environment(options):
     bldinstallercommon.create_dirs(options.build_artifacts_dir)
     if os.path.exists(options.installer_framework_build_dir):
         bldinstallercommon.remove_tree(options.installer_framework_build_dir)
+
+    if os.path.exists(options.installer_framework_pkg_dir):
+        shutil.rmtree(options.installer_framework_pkg_dir)
+    if os.path.exists(options.installer_framework_target_dir):
+        shutil.rmtree(options.installer_framework_target_dir)
 
     if options.incremental_mode:
         return
@@ -520,6 +657,8 @@ def patch_win32_mkspecs(mkspecsdir):
 def setup_argument_parser():
     parser = argparse.ArgumentParser(prog = os.path.basename(sys.argv[0]),
               add_help=True, description="Build Qt Installer-Framework",
+              epilog="Builds Qt Installer Framework against static Qt libraries and archives the build artifacts for further usage. \n"
+                     "To create an installer which installs the built Installer Framework libraries and tools use \"--create_installer\" option.",
                formatter_class=argparse.RawTextHelpFormatter)
 
     parser.add_argument('--qt4', help="For legacy Qt4 based Installer-Framework build", required=False, action='store_true', default=False)
@@ -531,6 +670,7 @@ def setup_argument_parser():
     parser.add_argument('--product_key_checker_pri', help="Custom product key checker (.pri file)", required=False)
     parser.add_argument('--openssl_dir', help="Path where it can find the openssl installation(libs, includes) on windows.", required=False, default='C:\\OpenSSL')
     parser.add_argument('--debug', help="Build the ifw in debug mode", action='store_true', required=False, default=False)
+    parser.add_argument('--create_installer', help="Build the ifw and wrap it in the installer", action='store_true', required=False, default=False)
     parser.add_argument('--incremental', help="Build the ifw in incremental mode", action='store_true', required=False, default=False)
     return parser
 
@@ -571,6 +711,6 @@ if __name__ == "__main__":
                          CARGS.incremental
                         )
     # build ifw tools
-    build_ifw(OPTIONS)
+    build_ifw(OPTIONS, CARGS.create_installer)
 
 
