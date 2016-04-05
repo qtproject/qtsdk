@@ -1627,8 +1627,8 @@ def handle_installer_build(installer_type, bld_command):
     installer_output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.INSTALLER_OUTPUT_DIR_NAME)
     # Create all installers for this host
     release_build_handler.handle_installer_build(conf_file, installer_type, bld_command.license, branch, PLATFORM, arch, bld_command.pkg_server_addr_http)
-    # Create directories under <LICENSE>/<installer_type>_installers/
-    remote_path_base = bld_command.path + '/' + bld_command.license + '/'
+    # Create directories under <installer_type>_installers/
+    remote_path_base                        = bld_command.path + '/'
     remote_path_top_level_base              = remote_path_base + '/' + installer_type + '_installers' + '/' + bld_command.version + '/'
     remote_path_top_level                   = remote_path_top_level_base + bld_command.build_number
     remote_path_top_level_latest            = remote_path_top_level_base + '/' + 'latest'
@@ -1637,7 +1637,7 @@ def handle_installer_build(installer_type, bld_command):
     create_remote_dirs(bld_command.pkg_server_addr, remote_path_top_level_latest_available)
     #Update latest link
     update_latest_link(bld_command, remote_path_top_level, remote_path_top_level_latest)
-    # Create remote directories under <LICENSE>/<project_name>/<version>
+    # Create remote directories under <project_name>/<version>
     if installer_type == 'offline':
         remote_path_base                        = remote_path_base + project_name + '/' + bld_command.version + '/'
         remote_path_latest                      = remote_path_base + 'latest' + '/' + 'offline_installers' + '/'
@@ -1671,18 +1671,18 @@ def handle_installer_build(installer_type, bld_command):
         # copy installer(s) to various locations:
         if installer_type == 'offline':
             # under:
-            # <LICENSE>/<project_name>/<version>/latest/offline_installers/    i.e. the snapshot directory, may not contain all installers
+            # <project_name>/<version>/latest/offline_installers/    i.e. the snapshot directory, may not contain all installers
             remote_copy_installer(bld_command, remote_path_latest, installer_name, installer_output_dir, installer_name_final)
-            # <LICENSE>/<project_name>/<version>/latest_available_offline_installers/    may contain installer from different builds, always the latest successful ones
+            # <project_name>/<version>/latest_available_offline_installers/    may contain installer from different builds, always the latest successful ones
             replace_latest_successful_installer(bld_command, installer_name, installer_name_final, remote_path_latest_available, installer_output_dir)
-            # <LICENSE>/offline_installers/latest_successful
+            # offline_installers/latest_successful
             replace_latest_successful_installer(bld_command, installer_name, installer_name_final, remote_path_top_level_latest_successful, installer_output_dir)
 
         # under:
         # i.e. separate location where offline installers only reside, separated by version number in path
-        # <LICENSE>/<installer_type>_installers/<version>/<time_stamp>/
+        # <installer_type>_installers/<version>/<time_stamp>/
         remote_copy_installer(bld_command, remote_path_top_level_latest, installer_name, installer_output_dir, installer_name_final)
-        # <LICENSE>/<installer_type>_installers/<version>/latest_available_offline_installers/
+        # <installer_type>_installers/<version>/latest_available_offline_installers/
         replace_latest_successful_installer(bld_command, installer_name, installer_name_final, remote_path_top_level_latest_available, installer_output_dir)
 
         # copy offline installer to mirror brain server
