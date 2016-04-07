@@ -1568,14 +1568,70 @@ def handle_qt_creator_build(bld_command):
 # handle_offline_installer_build
 ###############################
 def handle_offline_installer_build(bld_command):
-    handle_installer_build('offline', bld_command)
+    # Project name, default is always "qt"
+    project_name = os.getenv('PROJECT_NAME', 'qt')
+    handle_installer_build(bld_command, project_name, 'offline')
 
 
 ###############################
 # handle_online_installer_build
 ###############################
 def handle_online_installer_build(bld_command):
-    handle_installer_build('online', bld_command)
+    # Project name, default is always "qt"
+    project_name = os.getenv('PROJECT_NAME', 'online_installers')
+    handle_installer_build(bld_command, project_name, 'online')
+
+
+###############################
+# handle_installer_build
+###############################
+def handle_installer_build(bld_command, project_name, installer_type):
+    sanity_check_packaging_server(bld_command)
+    # Create remote directories under <project_name>/<version>
+    remote_path_base                        = bld_command.path + '/' + project_name + '/' + bld_command.version + '/' + 'installers'
+    remote_path_snapshot                    = remote_path_base + '/' + bld_command.build_number
+    remote_path_latest_available            = remote_path_base + '/' + 'latest_available'
+    # ensure remote directories exist
+    create_remote_dirs(bld_command.pkg_server_addr, remote_path_snapshot)
+    create_remote_dirs(bld_command.pkg_server_addr, remote_path_latest_available)
+    # Determine local installer output directory
+    installer_output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.INSTALLER_OUTPUT_DIR_NAME)
+    # Create all installers for this host
+    arch = 'x64' if (bld_command.target_env.find('64') != -1) else 'x86'
+    release_build_handler.handle_installer_build(bld_command.release_description_file, installer_type, bld_command.license, 'release', PLATFORM, arch, bld_command.pkg_server_addr_http)
+    # Generate installer file name list
+    installer_list = []
+    dir_list = os.listdir(installer_output_dir)
+    for file_name in dir_list:
+        installer_name, installer_name_base, installer_name_final = generate_installer_final_name(bld_command, file_name)
+        installer_list.append((file_name, installer_name, installer_name_base, installer_name_final))
+    # Sign and copy to network drive
+    for item in installer_list:
+        installer_name = item[1]
+        installer_name_base = item[2]
+        installer_name_final = item[3]
+        # sign
+        sign_installer(installer_output_dir, installer_name, installer_name_base)
+        # copy installer(s) to various locations:
+        remote_copy_installer(bld_command, remote_path_snapshot, installer_name, installer_output_dir, installer_name_final)
+        remote_copy_installer(bld_command, remote_path_latest_available, installer_name, installer_output_dir, installer_name_final)
+        # Keep only the latest one in the "latest_available" directory i.e. delete the previous one
+        replace_latest_successful_installer(bld_command, installer_name, installer_name_final, remote_path_latest_available, installer_output_dir)
+    # Trigger rta cases
+    trigger_rta(os.path.join(SCRIPT_ROOT_DIR, pkg_constants.RTA_DESCRIPTION_FILE_DIR_NAME))
+    # Do we upload the installers to opensource/public network drive?
+    if os.getenv('EXPORT_OPENSOURCE_INSTALLER'):
+        # opensource distribution server address and path
+        ext_server_base_url  = os.environ['EXT_SERVER_BASE_URL']
+        ext_server_base_path = os.environ['EXT_SERVER_BASE_PATH']
+        # opensource distribution server directories
+        ext_dest_dir = ext_server_base_path + '/snapshots/' + project_name + '/' + bld_command.version[:3] + '/' + bld_command.full_version + '/' + bld_command.build_number
+        cmd_args_mkdir_pkg = [SSH_COMMAND, bld_command.pkg_server_addr]
+        cmd_args_mkdir_ext = cmd_args_mkdir_pkg + ['ssh', ext_server_base_url, 'mkdir -p', ext_dest_dir]
+        bldinstallercommon.do_execute_sub_process(cmd_args_mkdir_ext, SCRIPT_ROOT_DIR)
+        # Copy installers
+        for item in installer_list:
+            remote_copy_installer_opensource(bld_command, remote_path_snapshot, ext_server_base_url, ext_dest_dir, item[3])
 
 
 ###############################
@@ -1600,105 +1656,6 @@ def replace_latest_successful_installer(bld_command, installer_name, installer_n
         # save new installer to latest_successful directory
         cmd_args = [SCP_COMMAND, installer_name, bld_command.pkg_server_addr + ':' + ls_installer_dir + '/' + installer_name_final]
         bldinstallercommon.do_execute_sub_process(cmd_args, installer_output)
-
-
-###############################
-# generic handle installer build
-###############################
-def handle_installer_build(installer_type, bld_command):
-    sanity_check_packaging_server(bld_command)
-    conf_file = bld_command.release_description_file
-    if not os.path.exists(conf_file):
-        print('*** The given file does not exist: {0}'.format(conf_file))
-        sys.exit(-1)
-    export_opensource_offline_installer = False
-    # Is this opensource offline build job?
-    if bld_command.license == 'opensource' and installer_type == 'offline':
-        export_opensource_offline_installer = True
-    branch = 'release' # TODO
-    if bld_command.target_env.find('64') != -1:
-        arch = 'x64'
-    else:
-        arch = 'x86'
-
-    # Project name, default is always "qt"
-    project_name = os.getenv('PROJECT_NAME', 'qt')
-    # Determine local installer output directory
-    installer_output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.INSTALLER_OUTPUT_DIR_NAME)
-    # Create all installers for this host
-    release_build_handler.handle_installer_build(conf_file, installer_type, bld_command.license, branch, PLATFORM, arch, bld_command.pkg_server_addr_http)
-    # Create directories under <installer_type>_installers/
-    remote_path_base                        = bld_command.path + '/'
-    remote_path_top_level_base              = remote_path_base + '/' + installer_type + '_installers' + '/' + bld_command.version + '/'
-    remote_path_top_level                   = remote_path_top_level_base + bld_command.build_number
-    remote_path_top_level_latest            = remote_path_top_level_base + '/' + 'latest'
-    remote_path_top_level_latest_available  = remote_path_top_level_base + '/' + 'latest_available_' + installer_type + '_installers'
-    create_remote_dirs(bld_command.pkg_server_addr, remote_path_top_level)
-    create_remote_dirs(bld_command.pkg_server_addr, remote_path_top_level_latest_available)
-    #Update latest link
-    update_latest_link(bld_command, remote_path_top_level, remote_path_top_level_latest)
-    # Create remote directories under <project_name>/<version>
-    if installer_type == 'offline':
-        remote_path_base                        = remote_path_base + project_name + '/' + bld_command.version + '/'
-        remote_path_latest                      = remote_path_base + 'latest' + '/' + 'offline_installers' + '/'
-        remote_path_latest_available            = remote_path_base + 'latest_available_offline_installers'
-        remote_path_top_level_latest_successful = remote_path_base + 'offline_installers/latest_successful'
-        # ensure remote directories exist
-        create_remote_dirs(bld_command.pkg_server_addr, remote_path_latest)
-        create_remote_dirs(bld_command.pkg_server_addr, remote_path_latest_available)
-        create_remote_dirs(bld_command.pkg_server_addr, remote_path_top_level_latest_successful)
-
-    # Create remote dirs on opensource distribution server
-    if export_opensource_offline_installer:
-        # opensource distribution server address and path
-        ext_server_base_url  = os.environ['EXT_SERVER_BASE_URL']
-        ext_server_base_path = os.environ['EXT_SERVER_BASE_PATH']
-        # opensource distribution server directories
-        ext_dest_dir = ext_server_base_path + '/snapshots/' + project_name + '/' + bld_command.version[:3] + '/' + bld_command.full_version + '/' + bld_command.build_number
-        cmd_args_mkdir_pkg = [SSH_COMMAND, bld_command.pkg_server_addr]
-        cmd_args_mkdir_ext = cmd_args_mkdir_pkg + ['ssh', ext_server_base_url, 'mkdir -p', ext_dest_dir]
-        bldinstallercommon.do_execute_sub_process(cmd_args_mkdir_ext, SCRIPT_ROOT_DIR)
-
-    # Copy all installers from 'installer_output_dir' into network disk
-    dir_list = os.listdir(installer_output_dir)
-    for file_name in dir_list:
-        installer_name, installer_name_base, installer_name_final = generate_installer_final_name(bld_command, file_name)
-        if not (installer_name and installer_name_base and installer_name_final):
-            print('*** Skipped file: {0}'.format(file_name))
-            continue
-        # sign
-        sign_installer(installer_output_dir, installer_name, installer_name_base)
-        # copy installer(s) to various locations:
-        if installer_type == 'offline':
-            # under:
-            # <project_name>/<version>/latest/offline_installers/    i.e. the snapshot directory, may not contain all installers
-            remote_copy_installer(bld_command, remote_path_latest, installer_name, installer_output_dir, installer_name_final)
-            # <project_name>/<version>/latest_available_offline_installers/    may contain installer from different builds, always the latest successful ones
-            replace_latest_successful_installer(bld_command, installer_name, installer_name_final, remote_path_latest_available, installer_output_dir)
-            # offline_installers/latest_successful
-            replace_latest_successful_installer(bld_command, installer_name, installer_name_final, remote_path_top_level_latest_successful, installer_output_dir)
-
-        # under:
-        # i.e. separate location where offline installers only reside, separated by version number in path
-        # <installer_type>_installers/<version>/<time_stamp>/
-        remote_copy_installer(bld_command, remote_path_top_level_latest, installer_name, installer_output_dir, installer_name_final)
-        # <installer_type>_installers/<version>/latest_available_offline_installers/
-        replace_latest_successful_installer(bld_command, installer_name, installer_name_final, remote_path_top_level_latest_available, installer_output_dir)
-
-        # copy offline installer to mirror brain server
-        if export_opensource_offline_installer:
-            remote_copy_installer_opensource(bld_command, remote_path_top_level, ext_server_base_url, ext_dest_dir, installer_name_final)
-
-    # Copy rta description file(s) to network drive
-    rta_descr_output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.RTA_DESCRIPTION_FILE_DIR_NAME)
-    for file_name in rta_descr_output_dir:
-        if file_name.startswith(pkg_constants.RTA_DESCRIPTION_FILE_NAME_BASE):
-            cmd_args = [SCP_COMMAND, file_name, bld_command.pkg_server_addr + ':' + remote_path_top_level + '/' + file_name]
-            bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir)
-
-    # Trigger rta cases
-    rta_descr_output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.RTA_DESCRIPTION_FILE_DIR_NAME)
-    trigger_rta(rta_descr_output_dir)
 
 
 ###############################
