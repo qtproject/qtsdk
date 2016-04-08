@@ -737,9 +737,10 @@ def handle_ifw_build(bld_command):
     # Product Key Checker
     product_key_checker_pri = ''
     if bld_command.license == 'enterprise':
-        product_key_checker_pri = os.environ['PRODUCT_KEY_CHECKER_PRI']
-        temp = bldinstallercommon.locate_file(os.environ['PKG_NODE_ROOT'], product_key_checker_pri)
-        product_key_checker_pri = temp if temp else product_key_checker_pri
+        product_key_checker_pri = os.environ.get('PRODUCT_KEY_CHECKER_PRI')
+        if product_key_checker_pri:
+            temp = bldinstallercommon.locate_file(os.environ['PKG_NODE_ROOT'], product_key_checker_pri)
+            product_key_checker_pri = temp if temp else product_key_checker_pri
     # OpenSSL
     openssl_dir = os.environ.get('IFW_OPENSSL_DIR')
 
@@ -751,7 +752,8 @@ def handle_ifw_build(bld_command):
                                  product_key_checker_pri,
                                  openssl_dir)
     # build ifw tools
-    bld_ifw_tools.build_ifw(ifw_bld_options)
+    bld_ifw_installer = True if os.environ.get('CREATE_IFW_INSTALLER') else False
+    bld_ifw_tools.build_ifw(ifw_bld_options, bld_ifw_installer)
 
     ## create destination dirs on network disk
     # internal
