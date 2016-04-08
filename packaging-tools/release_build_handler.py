@@ -259,7 +259,6 @@ def get_job_list(conf_file, job_type_specifier, license_type, branch, platform, 
             arg_substitution_list = bldinstallercommon.safe_config_key_fetch(parser, s, 'arg_substitution_list')
             arg_substitution_list += ',' + global_arg_substitution_list
             arg_substitution_list = arg_substitution_list.replace('\n', '')
-            arg_substitution_list = arg_substitution_list.replace(os.sep, '')
             arg_substitution_list = preformat_global_version_and_tag(arg_substitution_list, global_version, global_version_tag)
             repo_content_type           = ''
             repo_components_to_update   = ''
