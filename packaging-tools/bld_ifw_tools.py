@@ -107,7 +107,10 @@ def get_default_qt4_configure_options():
 # Get static Qt5 configure arguments. Platform is detected.
 ##################################################################
 def get_static_qt5_configure_options():
-    return get_default_qt5_configure_options() + '-static '
+    options = get_default_qt5_configure_options() + '-static '
+    if platform.system().lower().startswith('win'):
+        options += '-static-runtime '
+    return options
 
 
 ##################################################################
@@ -125,7 +128,7 @@ def get_default_qt5_configure_options():
     options += '-skip qtxmlpatterns -skip qtactiveqt -skip qt3d -skip qtcanvas3d '
     # Windows
     if plat.startswith('win'):
-        options += '-static-runtime -target xp -no-icu '
+        options += '-target xp -no-icu '
         options += '-openssl-linked OPENSSL_LIBS="-lssleay32MT -llibeay32MT -lcrypt32 -lgdi32" '
     # Unix
     else:
