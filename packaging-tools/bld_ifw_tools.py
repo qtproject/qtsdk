@@ -54,7 +54,7 @@ ARCH_EXT = '.zip' if platform.system().lower().startswith('win') else '.tar.gz'
 # Get common Qt configure arguments for all platforms (qt4 & qt5)
 ##################################################################
 def get_common_allos_qt_configure_options():
-    options = '-static -release -opensource -confirm-license '
+    options = '-release -opensource -confirm-license '
     options += '-nomake examples -nomake tests '
     options += '-accessibility '
     return options
@@ -67,6 +67,13 @@ def get_common_unix_qt_configure_options():
     options = '-qt-zlib -qt-libpng -qt-libjpeg -no-cups '
     options += '-openssl '
     return options
+
+
+##################################################################
+# Get static Qt4 configure arguments. Platform is detected.
+##################################################################
+def get_static_qt4_configure_options():
+    return get_default_qt4_configure_options() + '-static '
 
 
 ##################################################################
@@ -97,6 +104,13 @@ def get_default_qt4_configure_options():
 
 
 ##################################################################
+# Get static Qt5 configure arguments. Platform is detected.
+##################################################################
+def get_static_qt5_configure_options():
+    return get_default_qt5_configure_options() + '-static '
+
+
+##################################################################
 # Get default Qt5 configure arguments. Platform is detected.
 ##################################################################
 def get_default_qt5_configure_options():
@@ -106,7 +120,9 @@ def get_default_qt5_configure_options():
     options += '-no-sql-sqlite -no-qml-debug '
     options += '-skip qtenginio -skip qtlocation -skip qtmultimedia -skip qtserialport '
     options += '-skip qtquick1 -skip qtquickcontrols -skip qtscript -skip qtsensors '
-    options += '-skip qtwebkit -skip qtwebsockets -skip qtxmlpatterns -skip qtactiveqt -skip qt3d '
+    options += '-skip qtconnectivity -skip qtwayland '
+    options += '-skip qtwebkit -skip qtwebengine -skip qtwebsockets -skip qtwebchannel '
+    options += '-skip qtxmlpatterns -skip qtactiveqt -skip qt3d -skip qtcanvas3d '
     # Windows
     if plat.startswith('win'):
         options += '-static-runtime -target xp -no-icu '
@@ -126,27 +142,21 @@ def get_default_qt5_configure_options():
 ##################################################################
 # Get default Qt configure arguments. Platform is detected.
 ##################################################################
-def get_default_qt_configure_options(qt5_build = True):
+def get_static_qt_configure_options(qt5_build = True):
     if qt5_build:
-        return get_default_qt5_configure_options()
+        return get_static_qt5_configure_options()
     else:
-        return get_default_qt4_configure_options()
+        return get_static_qt4_configure_options()
 
 
 ##################################################################
 # Configure options for separate Qt build if doc build is needed.
 ##################################################################
 def get_dynamic_qt_configure_options():
-    options = '-release -opensource -confirm-license '
-    options += '-nomake examples -nomake tests '
-    options += '-accessibility -qt-sql-sqlite '
-    options += '-skip qt3d -skip qtconnectivity -skip qtxmlpatterns '
+    options = get_default_qt5_configure_options()
+    options += '-qt-sql-sqlite '
     options += '-skip qtx11extras -skip qtwinextras -skip qtmacextras -skip qtandroidextras '
-    options += '-skip qtwebsockets -skip qtwebengine -skip qtwebchannel -skip qtwebkit '
-    options += '-skip qtwayland -skip qtserialport -skip qtsensors '
-    options += '-skip qtquickcontrols -skip qtquick1 -skip qtmultimedia '
-    options += '-skip qtenginio -skip qtdeclarative '
-    options += '-skip qtlocation -skip qtcanvas3d '
+    options += '-skip qtdeclarative '
     return options
 
 
@@ -687,11 +697,11 @@ if __name__ == "__main__":
     qt5_build = True if not CARGS.qt4 else False
     if qt5_build:
         qt_src               = IfwOptions.default_qt5_src_pkg if not CARGS.qt_archive_uri else CARGS.qt_archive_uri
-        qt_configure_options = get_default_qt5_configure_options() if not CARGS.qt_configure_options else CARGS.qt_configure_options
+        qt_configure_options = get_static_qt5_configure_options() if not CARGS.qt_configure_options else CARGS.qt_configure_options
         ifw_branch           = IfwOptions.default_qt_installer_framework_branch_qt5 if not CARGS.ifw_branch else CARGS.ifw_branch
     else:
         qt_src               = IfwOptions.default_qt4_src_pkg if not CARGS.qt_archive_uri else CARGS.qt_archive_uri
-        qt_configure_options = get_default_qt4_configure_options() if not CARGS.qt_configure_options else CARGS.qt_configure_options
+        qt_configure_options = get_static_qt4_configure_options() if not CARGS.qt_configure_options else CARGS.qt_configure_options
         ifw_branch           = IfwOptions.default_qt_installer_framework_branch_qt4 if not CARGS.ifw_branch else CARGS.ifw_branch
 
     qt_conf_args = CARGS.qt_configure_options
