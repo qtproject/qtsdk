@@ -1603,7 +1603,7 @@ def handle_installer_build(bld_command, project_name, installer_type):
     release_build_handler.handle_installer_build(bld_command.release_description_file, installer_type, bld_command.license, 'release', PLATFORM, arch, bld_command.pkg_server_addr_http)
     # Generate installer file name list
     installer_list = []
-    dir_list = os.listdir(installer_output_dir)
+    dir_list = [f for f in os.listdir(installer_output_dir) if not f.endswith(".app")]
     for file_name in dir_list:
         installer_name, installer_name_base, installer_name_final = generate_installer_final_name(bld_command, file_name)
         installer_list.append((file_name, installer_name, installer_name_base, installer_name_final))
