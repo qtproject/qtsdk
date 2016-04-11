@@ -142,7 +142,7 @@ def get_default_qt5_configure_options():
 ##################################################################
 # Get default Qt configure arguments. Platform is detected.
 ##################################################################
-def get_static_qt_configure_options(qt5_build = True):
+def get_default_qt_configure_options(qt5_build = True):
     if qt5_build:
         return get_static_qt5_configure_options()
     else:
