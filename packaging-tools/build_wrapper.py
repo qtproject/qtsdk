@@ -1698,24 +1698,10 @@ def remote_copy_installer_opensource(bld_command, remote_dest_dir, ext_server_ba
 # Helper to generate installer final name
 ###############################
 def generate_installer_final_name(bld_command, file_name):
-    installer_name = ''
-    installer_name_base = ''
-    installer_name_final = ''
-    # Linux
-    if file_name.endswith(".run"):
-        installer_name = file_name
-        installer_name_base = os.path.splitext(file_name)[0]
-        installer_name_final = installer_name_base + '_' + bld_command.build_number + '.run'
-    # Mac
-    if file_name.endswith(".dmg"):
-        installer_name = file_name
-        installer_name_base = os.path.splitext(file_name)[0]
-        installer_name_final = installer_name_base + '_' + bld_command.build_number + '.dmg'
-    # Windows
-    if file_name.endswith(".exe"):
-        installer_name = file_name
-        installer_name_base = os.path.splitext(file_name)[0]
-        installer_name_final = installer_name_base + '_' + bld_command.build_number + '.exe'
+    suffix = file_name.split(".")[-1]
+    installer_name = file_name
+    installer_name_base = os.path.splitext(file_name)[0]
+    installer_name_final = installer_name_base + '_' + bld_command.build_number + '.' + suffix
     return installer_name, installer_name_base, installer_name_final
 
 
