@@ -51,7 +51,24 @@ ARCH_EXT = '.zip' if platform.system().lower().startswith('win') else '.tar.gz'
 
 
 ##################################################################
-# Get common Qt configure arguments for all platforms (qt4 & qt5)
+# Get default Qt configure arguments. Platform is detected.
+##################################################################
+def get_default_qt_configure_options():
+    return get_static_qt_configure_options()
+
+
+##################################################################
+# Get static Qt configure arguments. Platform is detected.
+##################################################################
+def get_static_qt_configure_options():
+    options = get_common_qt_configure_options() + '-static '
+    if platform.system().lower().startswith('win'):
+        options += '-static-runtime '
+    return options
+
+
+##################################################################
+# Get common Qt configure arguments for all platforms
 ##################################################################
 def get_common_allos_qt_configure_options():
     options = '-release -opensource -confirm-license '
@@ -61,7 +78,7 @@ def get_common_allos_qt_configure_options():
 
 
 ##################################################################
-# Get common Qt configure arguments for unix platform (qt4 & qt5)
+# Get common Qt configure arguments for unix platform
 ##################################################################
 def get_common_unix_qt_configure_options():
     options = '-qt-zlib -qt-libpng -qt-libjpeg -no-cups '
@@ -70,53 +87,9 @@ def get_common_unix_qt_configure_options():
 
 
 ##################################################################
-# Get static Qt4 configure arguments. Platform is detected.
+# Get default Qt configure arguments. Platform is detected.
 ##################################################################
-def get_static_qt4_configure_options():
-    return get_default_qt4_configure_options() + '-static '
-
-
-##################################################################
-# Get default Qt4 configure arguments. Platform is detected.
-##################################################################
-def get_default_qt4_configure_options():
-    plat = platform.system().lower()
-    # common
-    options = get_common_allos_qt_configure_options()
-    options += '-nomake demos -nomake docs '
-    options += '-no-webkit -no-phonon -no-phonon-backend -no-opengl -no-dbus '
-    options += '-no-xmlpatterns -no-qt3support -no-multimedia -no-declarative -no-declarative-debug '
-    # Windows
-    if plat.startswith('win'):
-        options += '-openssl-linked OPENSSL_LIBS="-lssleay32MD -llibeay32MD -lcrypt32" '
-    # Unix
-    else:
-        options += get_common_unix_qt_configure_options()
-        options += '-silent -nomake plugins -qt-libtiff -qt-libmng '
-        options += '-no-svg -no-nis -no-audio-backend '
-        # Mac
-        if plat.startswith('darwin'):
-            options += '-no-pch '
-        # Linux
-        else:
-            options += '-no-gtkstyle -no-glib '
-    return options
-
-
-##################################################################
-# Get static Qt5 configure arguments. Platform is detected.
-##################################################################
-def get_static_qt5_configure_options():
-    options = get_default_qt5_configure_options() + '-static '
-    if platform.system().lower().startswith('win'):
-        options += '-static-runtime '
-    return options
-
-
-##################################################################
-# Get default Qt5 configure arguments. Platform is detected.
-##################################################################
-def get_default_qt5_configure_options():
+def get_common_qt_configure_options():
     plat = platform.system().lower()
     # common
     options = get_common_allos_qt_configure_options()
@@ -143,20 +116,10 @@ def get_default_qt5_configure_options():
 
 
 ##################################################################
-# Get default Qt configure arguments. Platform is detected.
-##################################################################
-def get_default_qt_configure_options(qt5_build = True):
-    if qt5_build:
-        return get_static_qt5_configure_options()
-    else:
-        return get_static_qt4_configure_options()
-
-
-##################################################################
 # Configure options for separate Qt build if doc build is needed.
 ##################################################################
 def get_dynamic_qt_configure_options():
-    options = get_default_qt5_configure_options()
+    options = get_common_qt_configure_options()
     options += '-qt-sql-sqlite '
     options += '-skip qtx11extras -skip qtwinextras -skip qtmacextras -skip qtandroidextras '
     options += '-skip qtdeclarative '
@@ -168,18 +131,12 @@ def get_dynamic_qt_configure_options():
 ###############################
 class IfwOptions:
 
-    default_qt5_src_pkg = 'http://download.qt.io/official_releases/qt/5.5/5.5.1/single/qt-everywhere-opensource-src-5.5.1' + ARCH_EXT
-    default_qt4_src_pkg = 'http://download.qt.io/development_releases/prebuilt/qt-src-for-ifw/qt-everywhere-opensource-src-4.8.6-ifw-patch' + ARCH_EXT
-
+    default_qt_src_pkg = 'http://download.qt.io/official_releases/qt/5.5/5.5.1/single/qt-everywhere-opensource-src-5.5.1' + ARCH_EXT
     default_qt_installer_framework_url          = 'git://code.qt.io/installer-framework/installer-framework.git'
-
-    default_qt_installer_framework_branch_qt4   = '1.6'
-    default_qt_installer_framework_branch_qt5   = '2.0'
-
+    default_qt_installer_framework_branch_qt    = '2.0'
     default_qt_installer_framework_qmake_args   = ['-config', 'release', '-config', 'static']
 
     def __init__(self,
-                 qt5_build,
                  qt_source_package_uri,
                  qt_configure_options,
                  qt_installer_framework_url,
@@ -189,7 +146,6 @@ class IfwOptions:
                  openssl_dir,
                  incremental_build = False):
         self.incremental_mode                           = incremental_build
-        self.qt5_build                                  = qt5_build
         self.qt_source_dir                              = os.path.join(ROOT_DIR, 'qt-src')
         self.qt_build_dir                               = os.path.join(ROOT_DIR, 'qt-bld')
         self.qt_build_dir_dynamic                       = os.path.join(ROOT_DIR, 'qt-bld-dynamic')
@@ -206,10 +162,7 @@ class IfwOptions:
             self.make_doc_cmd                           = 'nmake'
             self.make_install_cmd                       = 'nmake install'
             self.qt_qmake_bin                           = 'qmake.exe'
-            if qt5_build:
-                self.qt_configure_bin                       = self.qt_source_dir + os.sep + 'configure.bat'
-            else:
-                self.qt_configure_bin                       = self.qt_source_dir + os.sep + 'configure.exe'
+            self.qt_configure_bin                       = self.qt_source_dir + os.sep + 'configure.bat'
         else:
             self.make_cmd                               = 'make -j' + str(multiprocessing.cpu_count() + 1)
             self.make_doc_cmd                           = 'make'
@@ -239,9 +192,7 @@ class IfwOptions:
         self.qt_source_package_uri                      = qt_source_package_uri
         self.qt_source_package_uri_saveas               = os.path.join(ROOT_DIR, os.path.basename(self.qt_source_package_uri))
         # Set Qt build prefix
-        qt_prefix = ' -prefix ' + self.qt_build_dir
-        if qt5_build:
-            qt_prefix += os.sep + 'qtbase'
+        qt_prefix = ' -prefix ' + self.qt_build_dir + os.sep + 'qtbase'
         self.qt_configure_options = qt_configure_options + qt_prefix
         # OpenSSL (Win)
         if platform.system().lower().startswith('win'):
@@ -254,8 +205,6 @@ class IfwOptions:
                 self.qt_installer_framework_qmake_args      += ['-r', 'PRODUCTKEYCHECK_PRI_FILE=' + self.product_key_checker_pri]
         # Mac specific
         if bldinstallercommon.is_mac_platform():
-            if not qt5_build:
-                self.qt_installer_framework_qmake_args += ['QT_MENU_NIB_DIR=' + self.qt_source_dir + os.sep + 'src/gui/mac/qt_menu.nib']
             self.qt_installer_framework_qmake_args += ['-r', '"LIBS+=-framework IOKit"']
         # sanity check
         self.sanity_check()
@@ -277,7 +226,6 @@ class IfwOptions:
         print('-----------------------------------------')
         print('make cmd:                                {0}'.format(self.make_cmd))
         print('make doc_cmd:                            {0}'.format(self.make_doc_cmd))
-        print('Qt5 usage:                               {0}'.format(self.qt5_build))
         print('qt_source_package_uri:                   {0}'.format(self.qt_source_package_uri))
         print('qt_source_package_uri_saveas:            {0}'.format(self.qt_source_package_uri_saveas))
         print('qt_source_dir:                           {0}'.format(self.qt_source_dir))
@@ -329,10 +277,6 @@ def build_ifw(options, create_installer=False):
     #archive
     archive_installerbase(options)
     archive_installer_framework(options)
-    # for mac we do some extra work
-    if bldinstallercommon.is_mac_platform() and not options.qt5_build:
-        archive_nib(options)
-        archive_macdeployqt(options)
     return os.path.basename(options.installer_framework_build_dir)
 
 
@@ -674,7 +618,6 @@ def setup_argument_parser():
                      "To create an installer which installs the built Installer Framework libraries and tools use \"--create_installer\" option.",
                formatter_class=argparse.RawTextHelpFormatter)
 
-    parser.add_argument('--qt4', help="For legacy Qt4 based Installer-Framework build", required=False, action='store_true', default=False)
     parser.add_argument('--qt_archive_uri', help="Qt source package for Qt Installer-Framework", required=False)
     parser.add_argument('--qt_configure_options', help="Configure options for (static) Qt build", required=False)
     parser.add_argument('--ifw_url', help="Git URL for Qt Installer-Framework", required=False, default=IfwOptions.default_qt_installer_framework_url)
@@ -697,15 +640,9 @@ if __name__ == "__main__":
     PARSER = setup_argument_parser()
     # parse args
     CARGS = PARSER.parse_args()
-    qt5_build = True if not CARGS.qt4 else False
-    if qt5_build:
-        qt_src               = IfwOptions.default_qt5_src_pkg if not CARGS.qt_archive_uri else CARGS.qt_archive_uri
-        qt_configure_options = get_static_qt5_configure_options() if not CARGS.qt_configure_options else CARGS.qt_configure_options
-        ifw_branch           = IfwOptions.default_qt_installer_framework_branch_qt5 if not CARGS.ifw_branch else CARGS.ifw_branch
-    else:
-        qt_src               = IfwOptions.default_qt4_src_pkg if not CARGS.qt_archive_uri else CARGS.qt_archive_uri
-        qt_configure_options = get_static_qt4_configure_options() if not CARGS.qt_configure_options else CARGS.qt_configure_options
-        ifw_branch           = IfwOptions.default_qt_installer_framework_branch_qt4 if not CARGS.ifw_branch else CARGS.ifw_branch
+    qt_src               = IfwOptions.default_qt_src_pkg if not CARGS.qt_archive_uri else CARGS.qt_archive_uri
+    qt_configure_options = get_static_qt_configure_options() if not CARGS.qt_configure_options else CARGS.qt_configure_options
+    ifw_branch           = IfwOptions.default_qt_installer_framework_branch_qt if not CARGS.ifw_branch else CARGS.ifw_branch
 
     qt_conf_args = CARGS.qt_configure_options
     ifw_qmake_args = CARGS.ifw_qmake_args
@@ -713,8 +650,7 @@ if __name__ == "__main__":
         qt_conf_args = qt_conf_args.replace('-release', '-debug')
         ifw_qmake_args = ifw_qmake_args.replace('-config release', '-config debug')
     # create options object
-    OPTIONS = IfwOptions(qt5_build,
-                         qt_src,
+    OPTIONS = IfwOptions(qt_src,
                          qt_configure_options,
                          CARGS.ifw_url,
                          ifw_branch,

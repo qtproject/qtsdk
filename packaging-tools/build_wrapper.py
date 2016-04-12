@@ -713,12 +713,7 @@ def handle_ifw_build(bld_command):
     os.chdir(SCRIPT_ROOT_DIR)
     # Qt
     qt_src_pkg = os.environ['IFW_QT_SRC_PKG'] # mandatory env variable
-    is_qt5_ifw_build = True
-    regex = re.compile(r'-((5)\.\d.\d)')
-    regex_result = regex.findall(qt_src_pkg)
-    if not regex_result:
-        is_qt5_ifw_build = False
-    qt_configure_options = bld_ifw_tools.get_default_qt_configure_options(is_qt5_ifw_build)
+    qt_configure_options = bld_ifw_tools.get_default_qt_configure_options()
     # Installer-Framework
     ifw_url    = os.environ['IFW_GIT_URL'] # mandatory env variable
     ifw_branch = os.environ['IFW_GIT_VERSION'] # mandatory env variable
@@ -745,7 +740,7 @@ def handle_ifw_build(bld_command):
     openssl_dir = os.environ.get('IFW_OPENSSL_DIR')
 
     # options object for ifw build
-    ifw_bld_options = IfwOptions(is_qt5_ifw_build, qt_src_pkg,
+    ifw_bld_options = IfwOptions(qt_src_pkg,
                                  qt_configure_options,
                                  ifw_url, ifw_branch,
                                  ifw_qmake_args,
