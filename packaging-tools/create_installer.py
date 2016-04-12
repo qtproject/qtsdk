@@ -269,7 +269,8 @@ def setup_option_parser():
                              action="store", type="string", dest="installer_framework_qt_archive_uri", default=IfwOptions.default_qt_src_pkg,
                              help="If you wish to build ifw: qt source package uri for that")
     OPTION_PARSER.add_option("--installer-framework-qt-configure_options",
-                             action="store", type="string", dest="installer_framework_qt_configure_options", default=bld_ifw_tools.get_default_qt_configure_options(),
+                             action="store", type="string", dest="installer_framework_qt_configure_options",
+                             default=bld_ifw_tools.get_default_qt_configure_options(os.environ.get('IFW_OPENSSL_DIR')),
                              help="If you wish to build ifw: qt configure optionss for static build")
     OPTION_PARSER.add_option("--installer-framework-url",
                              action="store", type="string", dest="installer_framework_url", default=IfwOptions.default_qt_installer_framework_url,

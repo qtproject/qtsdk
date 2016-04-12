@@ -713,7 +713,9 @@ def handle_ifw_build(bld_command):
     os.chdir(SCRIPT_ROOT_DIR)
     # Qt
     qt_src_pkg = os.environ['IFW_QT_SRC_PKG'] # mandatory env variable
-    qt_configure_options = bld_ifw_tools.get_default_qt_configure_options()
+    # OpenSSL
+    openssl_dir = os.environ.get('IFW_OPENSSL_DIR')
+    qt_configure_options = bld_ifw_tools.get_default_qt_configure_options(openssl_dir)
     # Installer-Framework
     ifw_url    = os.environ['IFW_GIT_URL'] # mandatory env variable
     ifw_branch = os.environ['IFW_GIT_VERSION'] # mandatory env variable
@@ -736,8 +738,6 @@ def handle_ifw_build(bld_command):
         if product_key_checker_pri:
             temp = bldinstallercommon.locate_file(os.environ['PKG_NODE_ROOT'], product_key_checker_pri)
             product_key_checker_pri = temp if temp else product_key_checker_pri
-    # OpenSSL
-    openssl_dir = os.environ.get('IFW_OPENSSL_DIR')
 
     # options object for ifw build
     ifw_bld_options = IfwOptions(qt_src_pkg,

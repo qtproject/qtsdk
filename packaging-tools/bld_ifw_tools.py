@@ -53,17 +53,20 @@ ARCH_EXT = '.zip' if platform.system().lower().startswith('win') else '.tar.gz'
 ##################################################################
 # Get default Qt configure arguments. Platform is detected.
 ##################################################################
-def get_default_qt_configure_options():
-    return get_static_qt_configure_options()
+def get_default_qt_configure_options(openssl_dir):
+    return get_static_qt_configure_options(openssl_dir)
 
 
 ##################################################################
 # Get static Qt configure arguments. Platform is detected.
 ##################################################################
-def get_static_qt_configure_options():
+def get_static_qt_configure_options(openssl_dir):
     options = get_common_qt_configure_options() + '-static '
     if platform.system().lower().startswith('win'):
         options += '-static-runtime '
+        if openssl_dir:
+            options += '-openssl-linked OPENSSL_LIBS="-lssleay32MT -llibeay32MT -lcrypt32 -lgdi32" '
+            options += '-I {0}\\include -L {0}\\lib\\VC\\static '.format(openssl_dir)
     return options
 
 
@@ -102,7 +105,6 @@ def get_common_qt_configure_options():
     # Windows
     if plat.startswith('win'):
         options += '-target xp -no-icu '
-        options += '-openssl-linked OPENSSL_LIBS="-lssleay32MT -llibeay32MT -lcrypt32 -lgdi32" '
     # Unix
     else:
         # OSX and Linux
@@ -122,7 +124,7 @@ def get_dynamic_qt_configure_options():
     options = get_common_qt_configure_options()
     options += '-qt-sql-sqlite '
     options += '-skip qtx11extras -skip qtwinextras -skip qtmacextras -skip qtandroidextras '
-    options += '-skip qtdeclarative '
+    options += '-skip qtdeclarative -no-dbus '
     return options
 
 
@@ -143,7 +145,6 @@ class IfwOptions:
                  qt_installer_framework_branch,
                  qt_installer_framework_qmake_args,
                  product_key_checker_pri,
-                 openssl_dir,
                  incremental_build = False):
         self.incremental_mode                           = incremental_build
         self.qt_source_dir                              = os.path.join(ROOT_DIR, 'qt-src')
@@ -174,30 +175,26 @@ class IfwOptions:
         self.mac_deploy_qt_archive_name                 = 'macdeployqt.7z'
         self.mac_qt_menu_nib_archive_name               = 'qt_menu.nib.7z'
         # determine filenames used later on
-        architecture = ''
+        self.architecture = ''
         # if this is cross-compilation attempt to parse the target architecture from the given -platform
         if '-platform' in qt_configure_options:
             temp = qt_configure_options.split(' ')
             plat = temp[temp.index('-platform') + 1]
             bits = ''.join(re.findall(r'\d+', plat))
             if bits == '32':
-                architecture = 'x86'
+                self.architecture = 'x86'
             else:
-                architecture = 'x64'
-        if not architecture:
-            architecture = bldinstallercommon.get_architecture()
-        plat_suffix                                     = bldinstallercommon.get_platform_suffix()
-        self.installer_framework_archive_name           = 'installer-framework-build-' + plat_suffix + '-' + architecture + '.7z'
-        self.installer_base_archive_name                = 'installerbase-' + plat_suffix + '-' + architecture + '.7z'
+                self.architecture = 'x64'
+        if not self.architecture:
+            self.architecture = bldinstallercommon.get_architecture()
+        self.plat_suffix                                = bldinstallercommon.get_platform_suffix()
+        self.installer_framework_archive_name           = 'installer-framework-build-' + self.plat_suffix + '-' + self.architecture + '.7z'
+        self.installer_base_archive_name                = 'installerbase-' + self.plat_suffix + '-' + self.architecture + '.7z'
         self.qt_source_package_uri                      = qt_source_package_uri
         self.qt_source_package_uri_saveas               = os.path.join(ROOT_DIR, os.path.basename(self.qt_source_package_uri))
         # Set Qt build prefix
         qt_prefix = ' -prefix ' + self.qt_build_dir + os.sep + 'qtbase'
         self.qt_configure_options = qt_configure_options + qt_prefix
-        # OpenSSL (Win)
-        if platform.system().lower().startswith('win'):
-            self.qt_configure_options += ' -I {0}\\include -L {0}\\lib\\VC\\static'.format(openssl_dir)
-        self.openssl_dir                                = openssl_dir
         # Product key checker
         self.product_key_checker_pri                    = product_key_checker_pri
         if product_key_checker_pri:
@@ -245,8 +242,6 @@ class IfwOptions:
         print('installer_framework_pkg_dir:             {0}'.format(self.installer_framework_pkg_dir))
         print('installer_framework_target_dir:          {0}'.format(self.installer_framework_target_dir))
         print('product_key_checker:                     {0}'.format(self.product_key_checker_pri))
-        if platform.system().lower().startswith('win'):
-            print('openssl_dir:              {0}'.format(self.openssl_dir))
         print('-----------------------------------------')
 
 
@@ -441,7 +436,7 @@ def create_installer_package(options):
     os.makedirs(package_dir)
     # Final directory for the installer containing the Qt Installer Framework itself
     os.makedirs(options.installer_framework_target_dir)
-    target_dir = os.path.join(options.installer_framework_target_dir, 'Qt Installer Framework')
+    target_dir = os.path.join(options.installer_framework_target_dir, 'QtInstallerFramework' + '-' + options.plat_suffix + '-' + options.architecture)
 
     current_dir = os.getcwd()
     os.chdir(package_dir)
@@ -465,9 +460,6 @@ def create_installer_package(options):
     config_file = os.path.join(options.installer_framework_source_dir, 'dist', 'config', 'config.xml')
     package_dir = os.path.join(options.installer_framework_source_dir, 'dist', 'packages')
     bldinstallercommon.do_execute_sub_process(args=(binary_creator, '--offline-only', '-c', config_file, '-p', package_dir, target_dir), execution_path=package_dir)
-    if sys.platform == 'darwin':
-        qt_menu_nib = os.path.join(options.qt_source_dir, 'src', 'gui', 'mac', 'qt_menu.nib')
-        shutil.copytree(qt_menu_nib, target_dir + '.app/Contents/Resources/qt_menu.nib')
     print('Installer package is at: {0}'.format(target_dir))
     artifacts = os.listdir(options.installer_framework_target_dir)
     for artifact in artifacts:
@@ -641,7 +633,7 @@ if __name__ == "__main__":
     # parse args
     CARGS = PARSER.parse_args()
     qt_src               = IfwOptions.default_qt_src_pkg if not CARGS.qt_archive_uri else CARGS.qt_archive_uri
-    qt_configure_options = get_static_qt_configure_options() if not CARGS.qt_configure_options else CARGS.qt_configure_options
+    qt_configure_options = get_static_qt_configure_options(CARGS.openssl_dir) if not CARGS.qt_configure_options else CARGS.qt_configure_options
     ifw_branch           = IfwOptions.default_qt_installer_framework_branch_qt if not CARGS.ifw_branch else CARGS.ifw_branch
 
     qt_conf_args = CARGS.qt_configure_options
@@ -656,7 +648,6 @@ if __name__ == "__main__":
                          ifw_branch,
                          ifw_qmake_args,
                          CARGS.product_key_checker_pri,
-                         CARGS.openssl_dir,
                          CARGS.incremental
                         )
     # build ifw tools
