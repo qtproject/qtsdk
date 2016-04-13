@@ -764,17 +764,32 @@ def handle_ifw_build(bld_command):
         cmd_args_mkdir_ext = cmd_args_mkdir_pkg + ['ssh', ext_server_base_url, 'mkdir', '-p', ext_dest_dir]
         bldinstallercommon.do_execute_sub_process(cmd_args_mkdir_ext, SCRIPT_ROOT_DIR)
 
-    if bldinstallercommon.is_win_platform():
-        file_list = os.listdir(SCRIPT_ROOT_DIR+'/' + pkg_constants.IFW_BUILD_ARTIFACTS_DIR)
-        for item in file_list:
-            if os.path.isfile(item):
-                cmd_args = [SCP_COMMAND, item, bld_command.pkg_server_addr + ':' + bld_command.path + '/' + bld_command.license + '/ifw/' + ifw_dest_dir_name + '/']
-                bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + '/' + pkg_constants.IFW_BUILD_ARTIFACTS_DIR)
-    else:
-        cmd_args = ['rsync', '-r', './', bld_command.pkg_server_addr + ':' + bld_command.path + '/' + bld_command.license + '/ifw/' + ifw_dest_dir_name + '/']
-        bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR + '/' + pkg_constants.IFW_BUILD_ARTIFACTS_DIR)
-
-    # copy ifw snapshot to public server
+    artifacts_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.IFW_BUILD_ARTIFACTS_DIR)
+    # Create disk image(s) if any .app found
+    if bldinstallercommon.is_mac_platform():
+        artifact_list = [f for f in os.listdir(artifacts_dir) if f.endswith(".app")]
+        for item in artifact_list:
+            base_name = item.split(".app")[0]
+            # create disk image
+            cmd_args = ['hdiutil', 'create', '-srcfolder', os.path.join(artifacts_dir, item),
+                        '-volname', base_name, '-format', 'UDBZ',
+                        os.path.join(artifacts_dir, base_name + '.dmg'),
+                        '-ov', '-scrub', '-size', '1g']
+            bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
+    # Sign if there is anything to be signed
+    file_list = [f for f in os.listdir(artifacts_dir) if f.endswith((".dmg", ".run", ".exe"))]
+    for file_name in file_list:
+        installer_name, installer_name_base, installer_name_final = generate_installer_final_name(bld_command, file_name)
+        sign_installer(artifacts_dir, installer_name, installer_name_base)
+    # Upload
+    files_to_upload = [f for f in os.listdir(artifacts_dir) if f.endswith((".dmg", ".run", ".exe", ".7z"))]
+    for item in files_to_upload:
+        if bldinstallercommon.is_win_platform():
+            cmd_args = [SCP_COMMAND, item, bld_command.pkg_server_addr + ':' + bld_command.path + '/' + bld_command.license + '/ifw/' + ifw_dest_dir_name + '/']
+        else:
+            cmd_args = ['rsync', '-r', './', bld_command.pkg_server_addr + ':' + bld_command.path + '/' + bld_command.license + '/ifw/' + ifw_dest_dir_name + '/']
+        bldinstallercommon.do_execute_sub_process(cmd_args, artifacts_dir)
+    # Copy ifw .7z files to public server
     if bld_command.license == 'opensource':
         cmd_args_copy_ifw_pkg = [SSH_COMMAND, bld_command.pkg_server_addr]
         cmd_args_copy_ifw_ext = cmd_args_copy_ifw_pkg + ['scp', bld_command.path + '/' + bld_command.license + '/ifw/' + ifw_dest_dir_name + '/' + 'installer-framework-build*.7z', ext_server_base_url + ':' + ext_dest_dir]
