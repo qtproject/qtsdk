@@ -67,5 +67,9 @@ Component.prototype.createOperations = function()
     var installationPath = installer.value("TargetDir") + "%TARGET_INSTALL_DIR%";
     print("Register documentation and examples for: " + installationPath);
     patchQtExamplesAndDoc(component, installationPath, "Qt-5.7");
+
+    // patch qt edition
+    var qconfigFile = qtPath + "/mkspecs/qconfig.pri";
+    component.addOperation("LineReplace", qconfigFile, "QT_EDITION =", "QT_EDITION = OpenSource");
 }
 

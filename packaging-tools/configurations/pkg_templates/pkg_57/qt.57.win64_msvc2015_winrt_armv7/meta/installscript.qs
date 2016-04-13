@@ -31,6 +31,29 @@ function Component()
 {
 }
 
+function createShortcuts()
+{
+    var qtStringVersion = "5.7";
+    // Create a batch file with the development environment
+    var component_root_path = installer.value("TargetDir") + "%TARGET_INSTALL_DIR%";
+    component_root_path = component_root_path.replace(/\//g, "\\");
+
+    var batchFileName = component_root_path + "\\" + "bin" + "\\" + "qtenv2.bat";
+    var contentString = "echo off\r\n";
+    contentString += "echo Setting up environment for Qt usage...\r\n";
+    contentString += "set PATH="  + component_root_path + "\\bin;%PATH%\r\n";
+    contentString += "cd /D " + component_root_path + "\r\n";
+    contentString += "echo Remember to call vcvarsall.bat to complete environment setup!\r\n";
+    // Dump batch file
+    component.addOperation("AppendFile", batchFileName, contentString);
+
+    var windir = installer.environmentVariable("WINDIR");
+    if (windir == "") {
+        QMessageBox["warning"]( "Error" , "Error", "Could not find windows installation directory");
+        return;
+    }
+}
+
 Component.prototype.beginInstallation = function()
 {
     installer.setValue(component.name + "_qtpath", "@TargetDir@" + "%TARGET_INSTALL_DIR%");
@@ -45,6 +68,9 @@ Component.prototype.createOperations = function()
             var qtPath = "@TargetDir@" + "%TARGET_INSTALL_DIR%";
             var qmakeBinary = "@TargetDir@" + "%TARGET_INSTALL_DIR%/bin/qmake.exe";
             addInitQtPatchOperation(component, "windows", qtPath, qmakeBinary, "emb-arm-qt5");
+
+            // Create a batch file and shortcuts with the development environment
+            createShortcuts();
 
             if (installer.value("SDKToolBinary") == "")
                 return;
@@ -63,8 +89,9 @@ Component.prototype.createOperations = function()
                                    ["@SDKToolBinary@", "addKit",
                                     "--id", kitName,
                                     "--name", "Qt %{Qt:Version} for WinRT armv7",
-                                    "--toolchain", "armv-windows-msvc2015-pe-32bit",
+                                    "--toolchain", "arm-windows-msvc2015-pe-32bit",
                                     "--qt", component.name,
+                                    "--debuggerengine", "4",
                                     "--devicetype", "WinRt.Device.Local",
                                     "UNDOEXECUTE",
                                     "@SDKToolBinary@", "rmKit", "--id", kitName]);
@@ -73,6 +100,10 @@ Component.prototype.createOperations = function()
             var installationPath = installer.value("TargetDir") + "%TARGET_INSTALL_DIR%";
             print("Register documentation and examples for: " + installationPath);
             patchQtExamplesAndDoc(component, installationPath, "Qt-5.7");
+
+            // patch qt edition
+            var qconfigFile = qtPath + "/mkspecs/qconfig.pri";
+            component.addOperation("LineReplace", qconfigFile, "QT_EDITION =", "QT_EDITION = OpenSource");
 
         } catch( e ) {
             print( e );
@@ -86,4 +117,5 @@ Component.prototype.createOperations = function()
         }
     }
 }
+
 

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt Data Visualization for iOS</DisplayName>
+    <Description></Description>
+    <Version>5.7.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <AutoDependOn>qt.57.qtdatavis3d, qt.57.ios</AutoDependOn>
+    <Dependencies>qt.57.ios</Dependencies>
+    <Virtual>true</Virtual>
+    <Script>installscript.qs</Script>
+    <SortingPriority></SortingPriority>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt Virtual Keyboard for gcc 64-bit</DisplayName>
+    <Description></Description>
+    <Version>5.7.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <AutoDependOn>qt.57.qtvirtualkeyboard, qt.57.gcc_64</AutoDependOn>
+    <Dependencies>qt.57.gcc_64</Dependencies>
+    <Virtual>true</Virtual>
+    <Script>installscript.qs</Script>
+    <SortingPriority></SortingPriority>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+

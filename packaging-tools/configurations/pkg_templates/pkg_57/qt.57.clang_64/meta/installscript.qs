@@ -79,7 +79,7 @@ Component.prototype.createOperations = function()
                                 "--name", "Desktop Qt %{Qt:Version} clang 64bit",
                                 "--toolchain", "x86-macos-generic-mach_o-64bit",
                                 "--qt", component.name,
-                                "--debuggerengine", "257", // DebuggerEngineType::LldbEngineType
+                                "--debuggerengine", "256", // DebuggerEngineType::LldbEngineType
                                 "--devicetype", "Desktop",
                                 "UNDOEXECUTE",
                                 "@SDKToolBinary@", "rmKit", "--id", kitName]);
@@ -88,6 +88,10 @@ Component.prototype.createOperations = function()
         var installationPath = installer.value("TargetDir") + "%TARGET_INSTALL_DIR%";
         print("Register documentation and examples for: " + installationPath);
         patchQtExamplesAndDoc(component, installationPath, "Qt-5.7");
+
+        // patch qt edition
+        var qconfigFile = qtPath + "/mkspecs/qconfig.pri";
+        component.addOperation("LineReplace", qconfigFile, "QT_EDITION =", "QT_EDITION = OpenSource");
 
         //QTBUG-37650
         patchQtAssistant(component, installationPath, "Qt-5.7");
