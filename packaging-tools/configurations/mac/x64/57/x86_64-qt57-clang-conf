@@ -26,7 +26,6 @@
 ##
 #############################################################################
 
-
 [qt.57.clang_64]
 archives:               57.clang_64.qtbase,
                         57.clang_64.qtconnectivity,
@@ -45,18 +44,12 @@ archives:               57.clang_64.qtbase,
                         57.clang_64.qtserialport,
                         57.clang_64.qttools,
                         57.clang_64.qtwebengine,
-#                        57.clang_64.qtserialbus,
                         57.clang_64.qtquickcontrols,
                         57.clang_64.qtquickcontrols2,
                         57.clang_64.qt3d,
                         57.clang_64.qtcanvas3d,
-                        57.clang_64.qtwebview,
-                        57.clang_64.qtcharts,
-                        57.clang_64.qtpurchasing,
-                        57.clang_64.qtdatavis3d,
-                        57.clang_64.qtvirtualkeyboard
+                        57.clang_64.qtwebview
 target_install_base:    /@QT_VERSION_MINOR@/clang_64
-
 [57.clang_64.qtbase]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtbase/qtbase-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
 [57.clang_64.qtconnectivity]
@@ -91,8 +84,6 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-OSX-
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialport/qtserialport-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
 [57.clang_64.qtwebengine]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebengine/qtwebengine-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
-#[57.clang_64.qtserialbus]
-#archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialbus/qtserialbus-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
 [57.clang_64.qtquickcontrols]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcontrols-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
 [57.clang_64.qtquickcontrols2]
@@ -103,14 +94,55 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-OSX-OSX_10_10-Cl
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
 [57.clang_64.qtwebview]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
-[57.clang_64.qtcharts]
+
+
+# QtCharts provided as separate installable component in installer
+[qt.57.qtcharts]
+[qt.57.qtcharts.clang_64]
+archives:               57.qtcharts.clang_64
+target_install_base:    /@QT_VERSION_MINOR@/clang_64
+[57.qtcharts.clang_64]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcharts/qtcharts-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
-[57.clang_64.qtpurchasing]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtpurchasing/qtpurchasing-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
-[57.clang_64.qtdatavis3d]
+
+# QtDataVisualization provided as separate installable component in installer
+[qt.57.qtdatavis3d]
+[qt.57.qtdatavis3d.clang_64]
+archives:               57.qtdatavis3d.clang_64
+target_install_base:    /@QT_VERSION_MINOR@/clang_64
+[57.qtdatavis3d.clang_64]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdatavis3d/qtdatavis3d-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
-[57.clang_64.qtvirtualkeyboard]
+
+# QtPurchasing provided as separate installable component in installer
+[qt.57.qtpurchasing]
+[qt.57.qtpurchasing.clang_64]
+archives:               57.qtpurchasing.clang_64
+target_install_base:    /@QT_VERSION_MINOR@/clang_64
+[57.qtpurchasing.clang_64]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtpurchasing/qtpurchasing-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
+
+# QtVirtualKeyboard provided as separate installable component in installer
+[qt.57.qtvirtualkeyboard]
+[qt.57.qtvirtualkeyboard.clang_64]
+archives:               57.qtvirtualkeyboard.clang_64
+target_install_base:    /@QT_VERSION_MINOR@/clang_64
+[57.qtvirtualkeyboard.clang_64]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtvirtualkeyboard/qtvirtualkeyboard-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
+
+# QtQuick2DRenderer provided as separate installable component in installer
+[qt.57.qtquick2drenderer]
+[qt.57.qtquick2drenderer.clang_64]
+archives:               57.qtquick2drenderer.clang_64
+target_install_base:    /@QT_VERSION_MINOR@/clang_64
+[57.qtquick2drenderer.clang_64]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdeclarative-render2d/qtdeclarative-render2d-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
+
+# QtWebEngine provided as separate installable component in installer
+[qt.57.qtwebengine]
+[qt.57.qtwebengine.clang_64]
+archives:               57.qtwebengine.clang_64
+target_install_base:    /@QT_VERSION_MINOR@/clang_64
+[57.qtwebengine.clang_64]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebengine/qtwebengine-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
 
 # QtScript provided as separate installable component in installer
 [qt.57.qtscript]
@@ -119,6 +151,14 @@ archives:               57.qtscript.clang_64
 target_install_base:    /@QT_VERSION_MINOR@/clang_64
 [57.qtscript.clang_64]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
+
+# QtSerialBus provided as separate installable component in installer
+[qt.57.qtserialbus]
+[qt.57.qtserialbus.clang_64]
+archives:               57.qtserialbus.clang_64
+target_install_base:    /@QT_VERSION_MINOR@/clang_64
+[57.qtserialbus.clang_64]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialbus/qtserialbus-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
 
 # QtGamePad provided as separate installable component in installer
 [qt.57.qtgamepad]

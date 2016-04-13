@@ -45,16 +45,10 @@ archives:               57.win32_mingw49.qtbase,
                         57.win32_mingw49.qtwebchannel,
                         57.win32_mingw49.qtlocation,
                         57.win32_mingw49.qtserialport,
-#                        57.win32_mingw49.qtserialbus,
                         57.win32_mingw49.qtquickcontrols,
                         57.win32_mingw49.qtquickcontrols2,
                         57.win32_mingw49.qt3d,
                         57.win32_mingw49.qtcanvas3d,
-#                        57.win32_mingw49.qtwebview,
-                        57.win32_mingw49.qtcharts,
-                        57.win32_mingw49.qtpurchasing,
-                        57.win32_mingw49.qtdatavis3d,
-                        57.win32_mingw49.qtvirtualkeyboard,
                         57.win32_mingw49.runtime,
                         57.win32_mingw49.opengl32sw.x86
 target_install_base:    /@QT_VERSION_MINOR@/mingw49_32
@@ -92,8 +86,6 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebchannel/qtwebchannel-
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
 [57.win32_mingw49.qtserialport]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialport/qtserialport-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
-#[57.win32_mingw49.qtserialbus]
-#archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialbus/qtserialbus-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
 [57.win32_mingw49.qtquickcontrols]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcontrols-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
 [57.win32_mingw49.qtquickcontrols2]
@@ -102,16 +94,6 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickco
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
 [57.win32_mingw49.qtcanvas3d]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
-#[57.win32_mingw49.qtwebview]
-#archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
-[57.win32_mingw49.qtcharts]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcharts/qtcharts-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
-[57.win32_mingw49.qtpurchasing]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtpurchasing/qtpurchasing-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
-[57.win32_mingw49.qtdatavis3d]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdatavis3d/qtdatavis3d-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
-[57.win32_mingw49.qtvirtualkeyboard]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtvirtualkeyboard/qtvirtualkeyboard-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
 [57.win32_mingw49.runtime]
 archive_uri:            http://download.qt.io/development_releases/prebuilt/mingw_32/i686-4.9.2-release-posix-dwarf-rt_v3-rev1-runtime.7z
 target_install_dir:     /bin
@@ -120,6 +102,46 @@ archive_uri:            http://download.qt.io/development_releases/prebuilt/llvm
 target_install_dir:     /bin
 
 
+# QtCharts provided as separate installable component in installer
+[qt.57.qtcharts]
+[qt.57.qtcharts.win32_mingw49]
+archives:               57.qtcharts.win32_mingw49
+target_install_base:    /@QT_VERSION_MINOR@/mingw49_32
+[57.qtcharts.win32_mingw49]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcharts/qtcharts-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
+
+# QtDataVisualization provided as separate installable component in installer
+[qt.57.qtdatavis3d]
+[qt.57.qtdatavis3d.win32_mingw49]
+archives:               57.qtdatavis3d.win32_mingw49
+target_install_base:    /@QT_VERSION_MINOR@/mingw49_32
+[57.qtdatavis3d.win32_mingw49]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdatavis3d/qtdatavis3d-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
+
+# QtPurchasing provided as separate installable component in installer
+[qt.57.qtpurchasing]
+[qt.57.qtpurchasing.win32_mingw49]
+archives:               57.qtpurchasing.win32_mingw49
+target_install_base:    /@QT_VERSION_MINOR@/mingw49_32
+[57.qtpurchasing.win32_mingw49]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtpurchasing/qtpurchasing-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
+
+# QtVirtualKeyboard provided as separate installable component in installer
+[qt.57.qtvirtualkeyboard]
+[qt.57.qtvirtualkeyboard.win32_mingw49]
+archives:               57.qtvirtualkeyboard.win32_mingw49
+target_install_base:    /@QT_VERSION_MINOR@/mingw49_32
+[57.qtvirtualkeyboard.win32_mingw49]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtvirtualkeyboard/qtvirtualkeyboard-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
+
+# QtQuick2DRenderer provided as separate installable component in installer
+[qt.57.qtquick2drenderer]
+[qt.57.qtquick2drenderer.win32_mingw49]
+archives:               57.qtquick2drenderer.win32_mingw49
+target_install_base:    /@QT_VERSION_MINOR@/mingw49_32
+[57.qtquick2drenderer.win32_mingw49]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdeclarative-render2d/qtdeclarative-render2d-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
+
 # QtScript provided as separate installable component in installer
 [qt.57.qtscript]
 [qt.57.qtscript.win32_mingw49]
@@ -127,6 +149,14 @@ archives:               57.qtscript.win32_mingw49
 target_install_base:    /@QT_VERSION_MINOR@/mingw49_32
 [57.qtscript.win32_mingw49]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
+
+# QtSerialBus provided as separate installable component in installer
+[qt.57.qtserialbus]
+[qt.57.qtserialbus.win32_mingw49]
+archives:               57.qtserialbus.win32_mingw49
+target_install_base:    /@QT_VERSION_MINOR@/mingw49_32
+[57.qtserialbus.win32_mingw49]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialbus/qtserialbus-Windows-Windows_7-Mingw49-Windows-Windows_7-X86.7z
 
 # QtGamePad provided as separate installable component in installer
 [qt.57.qtgamepad]

@@ -41,17 +41,12 @@ archives:               57.ios.qtbase,
                         57.ios.qtwebchannel,
                         57.ios.qtwebsockets,
                         57.ios.qtconnectivity,
-                        57.ios.qtenginio,
                         57.ios.qtlocation,
                         57.ios.qtquickcontrols,
                         57.ios.qtquickcontrols2,
                         57.ios.qt3d,
                         57.ios.qtcanvas3d,
-                        57.ios.qtwebview,
-                        57.ios.qtcharts,
-                        57.ios.qtpurchasing,
-                        57.ios.qtdatavis3d,
-                        57.ios.qtvirtualkeyboard
+                        57.ios.qtwebview
 target_install_base:    /@QT_VERSION_MINOR@/ios
 [57.ios.qtbase]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtbase/qtbase-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
@@ -79,8 +74,6 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebchannel/qtwebchannel-
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebsockets/qtwebsockets-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
 [57.ios.qtconnectivity]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtconnectivity/qtconnectivity-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
-[57.ios.qtenginio]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtenginio/qtenginio-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
 [57.ios.qtlocation]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
 [57.ios.qtquickcontrols]
@@ -93,15 +86,47 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-OSX-OSX_10_10-Cl
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
 [57.ios.qtwebview]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
-[57.ios.qtcharts]
+
+
+# QtCharts provided as separate installable component in installer
+[qt.57.qtcharts]
+[qt.57.qtcharts.ios]
+archives:               57.qtcharts.ios
+target_install_base:    /@QT_VERSION_MINOR@/ios
+[57.qtcharts.ios]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcharts/qtcharts-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
-[57.ios.qtpurchasing]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtpurchasing/qtpurchasing-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
-[57.ios.qtdatavis3d]
+
+# QtDataVisualization provided as separate installable component in installer
+[qt.57.qtdatavis3d]
+[qt.57.qtdatavis3d.ios]
+archives:               57.qtdatavis3d.ios
+target_install_base:    /@QT_VERSION_MINOR@/ios
+[57.qtdatavis3d.ios]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdatavis3d/qtdatavis3d-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
-[57.ios.qtvirtualkeyboard]
+
+# QtPurchasing provided as separate installable component in installer
+[qt.57.qtpurchasing]
+[qt.57.qtpurchasing.ios]
+archives:               57.qtpurchasing.ios
+target_install_base:    /@QT_VERSION_MINOR@/ios
+[57.qtpurchasing.ios]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtpurchasing/qtpurchasing-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
+
+# QtVirtualKeyboard provided as separate installable component in installer
+[qt.57.qtvirtualkeyboard]
+[qt.57.qtvirtualkeyboard.ios]
+archives:               57.qtvirtualkeyboard.ios
+target_install_base:    /@QT_VERSION_MINOR@/ios
+[57.qtvirtualkeyboard.ios]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtvirtualkeyboard/qtvirtualkeyboard-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
 
+# QtQuick2DRenderer provided as separate installable component in installer
+[qt.57.qtquick2drenderer]
+[qt.57.qtquick2drenderer.ios]
+archives:               57.qtquick2drenderer.ios
+target_install_base:    /@QT_VERSION_MINOR@/ios
+[57.qtquick2drenderer.ios]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdeclarative-render2d/qtdeclarative-render2d-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
 
 # QtScript provided as separate installable component in installer
 [qt.57.qtscript]

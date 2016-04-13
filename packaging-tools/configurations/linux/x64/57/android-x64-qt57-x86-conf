@@ -44,16 +44,11 @@ archives:               57.android_x86.qtbase,
                         57.android_x86.qtsensors,
                         57.android_x86.qtlocation,
                         57.android_x86.qtserialport,
-#                        57.android_x86.qtserialbus,
                         57.android_x86.qtquickcontrols,
                         57.android_x86.qtquickcontrols2,
                         57.android_x86.qt3d,
                         57.android_x86.qtcanvas3d,
-                        57.android_x86.qtwebview,
-                        57.android_x86.qtcharts,
-                        57.android_x86.qtpurchasing,
-                        57.android_x86.qtdatavis3d,
-                        57.android_x86.qtvirtualkeyboard
+                        57.android_x86.qtwebview
 target_install_base:    /@QT_VERSION_MINOR@/android_x86
 [57.android_x86.qtbase]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtbase/qtbase-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
@@ -87,8 +82,6 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtsensors/qtsensors-Linux-
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
 [57.android_x86.qtserialport]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialport/qtserialport-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
-#[57.android_x86.qtserialbus]
-#archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialbus/qtserialbus-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
 [57.android_x86.qtquickcontrols]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcontrols-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
 [57.android_x86.qtquickcontrols2]
@@ -99,15 +92,47 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Linux-RHEL_6_6-G
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
 [57.android_x86.qtwebview]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
-[57.android_x86.qtcharts]
+
+
+# QtCharts provided as separate installable component in installer
+[qt.57.qtcharts]
+[qt.57.qtcharts.android_x86]
+archives:               57.qtcharts.android_x86
+target_install_base:    /@QT_VERSION_MINOR@/android_x86
+[57.qtcharts.android_x86]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcharts/qtcharts-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
-[57.android_x86.qtpurchasing]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtpurchasing/qtpurchasing-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
-[57.android_x86.qtdatavis3d]
+
+# QtDataVisualization provided as separate installable component in installer
+[qt.57.qtdatavis3d]
+[qt.57.qtdatavis3d.android_x86]
+archives:               57.qtdatavis3d.android_x86
+target_install_base:    /@QT_VERSION_MINOR@/android_x86
+[57.qtdatavis3d.android_x86]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdatavis3d/qtdatavis3d-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
-[57.android_x86.qtvirtualkeyboard]
+
+# QtPurchasing provided as separate installable component in installer
+[qt.57.qtpurchasing]
+[qt.57.qtpurchasing.android_x86]
+archives:               57.qtpurchasing.android_x86
+target_install_base:    /@QT_VERSION_MINOR@/android_x86
+[57.qtpurchasing.android_x86]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtpurchasing/qtpurchasing-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
+
+# QtVirtualKeyboard provided as separate installable component in installer
+[qt.57.qtvirtualkeyboard]
+[qt.57.qtvirtualkeyboard.android_x86]
+archives:               57.qtvirtualkeyboard.android_x86
+target_install_base:    /@QT_VERSION_MINOR@/android_x86
+[57.qtvirtualkeyboard.android_x86]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtvirtualkeyboard/qtvirtualkeyboard-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
 
+# QtQuick2DRenderer provided as separate installable component in installer
+[qt.57.qtquick2drenderer]
+[qt.57.qtquick2drenderer.android_x86]
+archives:               57.qtquick2drenderer.android_x86
+target_install_base:    /@QT_VERSION_MINOR@/android_x86
+[57.qtquick2drenderer.android_x86]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdeclarative-render2d/qtdeclarative-render2d-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
 
 # QtScript provided as separate installable component in installer
 [qt.57.qtscript]
@@ -116,6 +141,14 @@ archives:               57.qtscript.android_x86
 target_install_base:    /@QT_VERSION_MINOR@/android_x86
 [57.qtscript.android_x86]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
+
+# QtSerialBus provided as separate installable component in installer
+[qt.57.qtserialbus]
+[qt.57.qtserialbus.android_x86]
+archives:               57.qtserialbus.android_x86
+target_install_base:    /@QT_VERSION_MINOR@/android_x86
+[57.qtserialbus.android_x86]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialbus/qtserialbus-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
 
 # QtGamePad provided as separate installable component in installer
 [qt.57.qtgamepad]

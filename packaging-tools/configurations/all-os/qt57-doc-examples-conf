@@ -41,11 +41,54 @@ target_install_base:    /Examples/Qt-5.7/
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qt-everywhere-examples-@QT_VERSION_AND_TAG@.7z
 package_strip_dirs:     1
 
+[qt.57.doc.qtcharts]
+archives:               57.doc.qtcharts
+target_install_base:    /Docs/Qt-5.7/
+[57.doc.qtcharts]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qtcharts-documentation.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.57.doc.qtdatavis3d]
+archives:               57.doc.qtdatavis3d
+target_install_base:    /Docs/Qt-5.7/
+[57.doc.qtdatavis3d]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qtdatavisualization-documentation.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.57.doc.qtpurchasing]
+archives:               57.doc.qtpurchasing
+target_install_base:    /Docs/Qt-5.7/
+[57.doc.qtpurchasing]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qtpurchasing-documentation.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.57.doc.qtvirtualkeyboard]
+archives:               57.doc.qtvirtualkeyboard
+target_install_base:    /Docs/Qt-5.7/
+[57.doc.qtvirtualkeyboard]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qtvirtualkeyboard-documentation.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
+[qt.57.doc.qtquick2drenderer]
+archives:               57.doc.qtquick2drenderer
+target_install_base:    /Docs/Qt-5.7/
+[57.doc.qtquick2drenderer]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qtquick2drenderer-documentation.@SRC_ARCHIVE_TYPE@
+package_strip_dirs:     1
+
 [qt.57.doc.qtscript]
 archives:               57.doc.qtscript
 target_install_base:    /Docs/Qt-5.7/
 [57.doc.qtscript]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qtscript-documentation.@SRC_ARCHIVE_TYPE@
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.57.doc.qtserialbus]
+archives:               57.doc.qtserialbus
+target_install_base:    /Docs/Qt-5.7/
+[57.doc.qtserialbus]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qtserialbus-documentation.@SRC_ARCHIVE_TYPE@
 target_install_dir:
 package_strip_dirs:     1
 
@@ -65,11 +108,55 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qtgamepad-documentatio
 target_install_dir:
 package_strip_dirs:     1
 
+[qt.57.doc.qtwebengine]
+archives:               57.doc.qtwebengine
+target_install_base:    /Docs/Qt-5.7/
+[57.doc.qtwebengine]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qtwebengine-documentation.@SRC_ARCHIVE_TYPE@
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.57.examples.qtcharts]
+archives:               57.examples.qtcharts
+target_install_base:    /Examples/Qt-5.7/
+[57.examples.qtcharts]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qtcharts-examples-@QT_VERSION_AND_TAG@.7z
+package_strip_dirs:     1
+
+[qt.57.examples.qtdatavis3d]
+archives:               57.examples.qtdatavis3d
+target_install_base:    /Examples/Qt-5.7/
+[57.examples.qtdatavis3d]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qtdatavis3d-examples-@QT_VERSION_AND_TAG@.7z
+package_strip_dirs:     1
+
+[qt.57.examples.qtpurchasing]
+archives:               57.examples.qtpurchasing
+target_install_base:    /Examples/Qt-5.7/
+[57.examples.qtpurchasing]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qtpurchasing-examples-@QT_VERSION_AND_TAG@.7z
+package_strip_dirs:     1
+
+[qt.57.examples.qtvirtualkeyboard]
+archives:               57.examples.qtvirtualkeyboard
+target_install_base:    /Examples/Qt-5.7/
+[57.examples.qtvirtualkeyboard]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qtvirtualkeyboard-examples-@QT_VERSION_AND_TAG@.7z
+package_strip_dirs:     1
+
 [qt.57.examples.qtscript]
 archives:               57.examples.qtscript
 target_install_base:    /Examples/Qt-5.7/
 [57.examples.qtscript]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qtscript-examples-@QT_VERSION_AND_TAG@.7z
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.57.examples.qtserialbus]
+archives:               57.examples.qtserialbus
+target_install_base:    /Examples/Qt-5.7/
+[57.examples.qtserialbus]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qtserialbus-examples-@QT_VERSION_AND_TAG@.7z
 target_install_dir:
 package_strip_dirs:     1
 
@@ -86,5 +173,13 @@ archives:               57.examples.qtgamepad
 target_install_base:    /Examples/Qt-5.7/
 [57.examples.qtgamepad]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qtgamepad-examples-@QT_VERSION_AND_TAG@.7z
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.57.examples.qtwebengine]
+archives:               57.examples.qtwebengine
+target_install_base:    /Examples/Qt-5.7/
+[57.examples.qtwebengine]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/examples/qtwebengine-examples-@QT_VERSION_AND_TAG@.7z
 target_install_dir:
 package_strip_dirs:     1

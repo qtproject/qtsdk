@@ -45,11 +45,7 @@ archives:               57.win64_msvc2013_winphone_x86.qtbase,
                         57.win64_msvc2013_winphone_x86.qtquickcontrols2,
                         57.win64_msvc2013_winphone_x86.qt3d,
                         57.win64_msvc2013_winphone_x86.qtcanvas3d,
-                        57.win64_msvc2013_winphone_x86.qtwebview,
-                        57.win64_msvc2013_winphone_x86.qtcharts,
-                        57.win64_msvc2013_winphone_x86.qtpurchasing,
-                        57.win64_msvc2013_winphone_x86.qtdatavis3d,
-                        57.win64_msvc2013_winphone_x86.qtvirtualkeyboard
+                        57.win64_msvc2013_winphone_x86.qtwebview
 target_install_base:    /@QT_VERSION_MINOR@/winphone_x86
 [57.win64_msvc2013_winphone_x86.qtbase]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtbase/qtbase-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
@@ -89,23 +85,47 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Windows-Windows_
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
 [57.win64_msvc2013_winphone_x86.qtwebview]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
-[57.win64_msvc2013_winphone_x86.qtcharts]
+
+
+# QtCharts provided as separate installable component in installer
+[qt.57.qtcharts]
+[qt.57.qtcharts.win64_msvc2013_winphone_x86]
+archives:               57.qtcharts.win64_msvc2013_winphone_x86
+target_install_base:    /@QT_VERSION_MINOR@/winphone_x86
+[57.qtcharts.win64_msvc2013_winphone_x86]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcharts/qtcharts-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
-[57.win64_msvc2013_winphone_x86.qtpurchasing]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtpurchasing/qtpurchasing-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
-[57.win64_msvc2013_winphone_x86.qtdatavis3d]
+
+# QtDataVisualization provided as separate installable component in installer
+[qt.57.qtdatavis3d]
+[qt.57.qtdatavis3d.win64_msvc2013_winphone_x86]
+archives:               57.qtdatavis3d.win64_msvc2013_winphone_x86
+target_install_base:    /@QT_VERSION_MINOR@/winphone_x86
+[57.qtdatavis3d.win64_msvc2013_winphone_x86]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdatavis3d/qtdatavis3d-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
-[57.win64_msvc2013_winphone_x86.qtvirtualkeyboard]
+
+# QtPurchasing provided as separate installable component in installer
+[qt.57.qtpurchasing]
+[qt.57.qtpurchasing.win64_msvc2013_winphone_x86]
+archives:               57.qtpurchasing.win64_msvc2013_winphone_x86
+target_install_base:    /@QT_VERSION_MINOR@/winphone_x86
+[57.qtpurchasing.win64_msvc2013_winphone_x86]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtpurchasing/qtpurchasing-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
+
+# QtVirtualKeyboard provided as separate installable component in installer
+[qt.57.qtvirtualkeyboard]
+[qt.57.qtvirtualkeyboard.win64_msvc2013_winphone_x86]
+archives:               57.qtvirtualkeyboard.win64_msvc2013_winphone_x86
+target_install_base:    /@QT_VERSION_MINOR@/winphone_x86
+[57.qtvirtualkeyboard.win64_msvc2013_winphone_x86]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtvirtualkeyboard/qtvirtualkeyboard-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
 
-
-# QtGamePad provided as separate installable component in installer
-[qt.57.qtgamepad]
-[qt.57.qtgamepad.win64_msvc2013_winphone_x86]
-archives:               57.qtgamepad.win64_msvc2013_winphone_x86
+# QtQuick2DRenderer provided as separate installable component in installer
+[qt.57.qtquick2drenderer]
+[qt.57.qtquick2drenderer.win64_msvc2013_winphone_x86]
+archives:               57.qtquick2drenderer.win64_msvc2013_winphone_x86
 target_install_base:    /@QT_VERSION_MINOR@/winphone_x86
-[57.qtgamepad.win64_msvc2013_winphone_x86]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtgamepad/qtgamepad-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
+[57.qtquick2drenderer.win64_msvc2013_winphone_x86]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdeclarative-render2d/qtdeclarative-render2d-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
 
 # QtScxml provided as separate installable component in installer
 [qt.57.qtscxml]

@@ -45,17 +45,11 @@ archives:               57.win64_msvc2015_64.qtbase,
                         57.win64_msvc2015_64.qtwebchannel,
                         57.win64_msvc2015_64.qtlocation,
                         57.win64_msvc2015_64.qtserialport,
-                        57.win64_msvc2015_64.qtwebengine,
-                        57.win64_msvc2015_64.qtserialbus,
                         57.win64_msvc2015_64.qtquickcontrols,
                         57.win64_msvc2015_64.qtquickcontrols2,
                         57.win64_msvc2015_64.qt3d,
                         57.win64_msvc2015_64.qtcanvas3d,
                         57.win64_msvc2015_64.qtwebview,
-                        57.win64_msvc2015_64.qtcharts,
-                        57.win64_msvc2015_64.qtpurchasing,
-                        57.win64_msvc2015_64.qtdatavis3d,
-                        57.win64_msvc2015_64.qtvirtualkeyboard,
                         57.win64_msvc2015_64.d3d_compiler_47.x64,
                         57.win64_msvc2015.opengl32sw.x64
 target_install_base:    /@QT_VERSION_MINOR@/msvc2015_64
@@ -93,10 +87,6 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebchannel/qtwebchannel-
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
 [57.win64_msvc2015_64.qtserialport]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialport/qtserialport-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
-[57.win64_msvc2015_64.qtwebengine]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebengine/qtwebengine-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
-[57.win64_msvc2015_64.qtserialbus]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialbus/qtserialbus-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
 [57.win64_msvc2015_64.qtquickcontrols]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcontrols-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
 [57.win64_msvc2015_64.qtquickcontrols2]
@@ -107,20 +97,53 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Windows-Windows_
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
 [57.win64_msvc2015_64.qtwebview]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
-[57.win64_msvc2015_64.qtcharts]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcharts/qtcharts-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
-[57.win64_msvc2015_64.qtpurchasing]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtpurchasing/qtpurchasing-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
-[57.win64_msvc2015_64.qtdatavis3d]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdatavis3d/qtdatavis3d-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
-[57.win64_msvc2015_64.qtvirtualkeyboard]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtvirtualkeyboard/qtvirtualkeyboard-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
 [57.win64_msvc2015_64.d3d_compiler_47.x64]
 archive_uri:            http://download.qt.io/development_releases/prebuilt/d3dcompiler/msvc2013/d3dcompiler_47-x64.7z
 target_install_dir:     /bin
 [57.win64_msvc2015.opengl32sw.x64]
 archive_uri:            http://download.qt.io/development_releases/prebuilt/llvmpipe/windows/opengl32sw-64.7z
 target_install_dir:     /bin
+
+
+# QtCharts provided as separate installable component in installer
+[qt.57.qtcharts]
+[qt.57.qtcharts.win64_msvc2015_64]
+archives:               57.qtcharts.win64_msvc2015_64
+target_install_base:    /@QT_VERSION_MINOR@/msvc2015_64
+[57.qtcharts.win64_msvc2015_64]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcharts/qtcharts-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
+
+# QtDataVisualization provided as separate installable component in installer
+[qt.57.qtdatavis3d]
+[qt.57.qtdatavis3d.win64_msvc2015_64]
+archives:               57.qtdatavis3d.win64_msvc2015_64
+target_install_base:    /@QT_VERSION_MINOR@/msvc2015_64
+[57.qtdatavis3d.win64_msvc2015_64]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdatavis3d/qtdatavis3d-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
+
+# QtPurchasing provided as separate installable component in installer
+[qt.57.qtpurchasing]
+[qt.57.qtpurchasing.win64_msvc2015_64]
+archives:               57.qtpurchasing.win64_msvc2015_64
+target_install_base:    /@QT_VERSION_MINOR@/msvc2015_64
+[57.qtpurchasing.win64_msvc2015_64]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtpurchasing/qtpurchasing-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
+
+# QtVirtualKeyboard provided as separate installable component in installer
+[qt.57.qtvirtualkeyboard]
+[qt.57.qtvirtualkeyboard.win64_msvc2015_64]
+archives:               57.qtvirtualkeyboard.win64_msvc2015_64
+target_install_base:    /@QT_VERSION_MINOR@/msvc2015_64
+[57.qtvirtualkeyboard.win64_msvc2015_64]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtvirtualkeyboard/qtvirtualkeyboard-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
+
+# QtQuick2DRenderer provided as separate installable component in installer
+[qt.57.qtquick2drenderer]
+[qt.57.qtquick2drenderer.win64_msvc2015_64]
+archives:               57.qtquick2drenderer.win64_msvc2015_64
+target_install_base:    /@QT_VERSION_MINOR@/msvc2015_64
+[57.qtquick2drenderer.win64_msvc2015_64]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdeclarative-render2d/qtdeclarative-render2d-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
 
 # QtScript provided as separate installable component in installer
 [qt.57.qtscript]
@@ -129,6 +152,14 @@ archives:               57.qtscript.win64_msvc2015_64
 target_install_base:    /@QT_VERSION_MINOR@/msvc2015_64
 [57.qtscript.win64_msvc2015_64]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
+
+# QtSerialBus provided as separate installable component in installer
+[qt.57.qtserialbus]
+[qt.57.qtserialbus.win64_msvc2015_64]
+archives:               57.qtserialbus.win64_msvc2015_64
+target_install_base:    /@QT_VERSION_MINOR@/msvc2015_64
+[57.qtserialbus.win64_msvc2015_64]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialbus/qtserialbus-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
 
 # QtGamePad provided as separate installable component in installer
 [qt.57.qtgamepad]
@@ -145,4 +176,12 @@ archives:               57.qtscxml.win64_msvc2015_64
 target_install_base:    /@QT_VERSION_MINOR@/msvc2015_64
 [57.qtscxml.win64_msvc2015_64]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscxml/qtscxml-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
+
+# QtWebEngine provided as separate installable component in installer
+[qt.57.qtwebengine]
+[qt.57.qtwebengine.win64_msvc2015_64]
+archives:               57.qtwebengine.win64_msvc2015_64
+target_install_base:    /@QT_VERSION_MINOR@/msvc2015_64
+[57.qtwebengine.win64_msvc2015_64]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebengine/qtwebengine-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
 

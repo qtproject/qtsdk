@@ -31,26 +31,17 @@
 [qt.57]
 
 [qt.57.src]
-
-[qt.57.src.qteverywhere]
-archives:               57.src.qteverywhere
+archives:               57.src
 target_install_base:    /@QT_VERSION_MINOR@/Src/
-[57.src.qteverywhere]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/src/single/installer-qt-everywhere-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+[57.src]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/src/single/qt-everywhere-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 
-[qt.57.src.techpreview.qtscxml]
-archives:               57.src.techpreview.qtscxml
-target_install_base:    /@QT_VERSION_MINOR@/Src/qtscxml
-[57.src.techpreview.qtscxml]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/src/submodules/qtscxml-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
-package_strip_dirs:     1
-
-[qt.57.src.techpreview.qtgamepad]
-archives:               57.src.techpreview.qtgamepad
-target_install_base:    /@QT_VERSION_MINOR@/Src/qtgamepad
-[57.src.techpreview.qtgamepad]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/src/submodules/qtgamepad-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+[qt.57.src.qtquick2drenderer]
+archives:               57.src.qtquick2drenderer
+target_install_base:    /@QT_VERSION_MINOR@/Src/qtdeclarative-render2d
+[57.src.qtquick2drenderer]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/src/submodules/qtdeclarative-render2d-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
 package_strip_dirs:     1
 
 [qt.57.src.qtscript]

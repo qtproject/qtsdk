@@ -44,17 +44,11 @@ archives:               57.gcc_64.qtbase,
                         57.gcc_64.qtsensors,
                         57.gcc_64.qtserialport,
                         57.gcc_64.qtlocation,
-                        57.gcc_64.qtwebengine,
-#                        57.gcc_64.qtserialbus,
                         57.gcc_64.qtquickcontrols,
                         57.gcc_64.qtquickcontrols2,
                         57.gcc_64.qt3d,
                         57.gcc_64.qtcanvas3d,
                         57.gcc_64.qtwebview,
-                        57.gcc_64.qtcharts,
-                        57.gcc_64.qtpurchasing,
-                        57.gcc_64.qtdatavis3d,
-                        57.gcc_64.qtvirtualkeyboard,
                         57.gcc_64.icu_561
 target_install_base:    /@QT_VERSION_MINOR@/gcc_64
 [57.gcc_64.qtbase]
@@ -89,10 +83,6 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtsensors/qtsensors-Linux-
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
 [57.gcc_64.qtserialport]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialport/qtserialport-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
-[57.gcc_64.qtwebengine]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebengine/qtwebengine-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
-#[57.gcc_64.qtserialbus]
-#archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialbus/qtserialbus-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
 [57.gcc_64.qtquickcontrols]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcontrols-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
 [57.gcc_64.qtquickcontrols2]
@@ -103,18 +93,59 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Linux-RHEL_6_6-G
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
 [57.gcc_64.qtwebview]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
-[57.gcc_64.qtcharts]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcharts/qtcharts-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
-[57.gcc_64.qtpurchasing]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtpurchasing/qtpurchasing-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
-[57.gcc_64.qtdatavis3d]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdatavis3d/qtdatavis3d-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
-[57.gcc_64.qtvirtualkeyboard]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtvirtualkeyboard/qtvirtualkeyboard-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
 [57.gcc_64.icu_561]
 archive_uri:            http://download.qt.io/development_releases/prebuilt/icu/prebuilt/56.1/icu-linux-g++-Rhel6.6-x64.7z
 target_install_dir:     /lib
 archive_name:           icu-linux-Rhel6.6-x64.7z
+
+
+# QtCharts provided as separate installable component in installer
+[qt.57.qtcharts]
+[qt.57.qtcharts.gcc_64]
+archives:               57.qtcharts.gcc_64
+target_install_base:    /@QT_VERSION_MINOR@/gcc_64
+[57.qtcharts.gcc_64]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcharts/qtcharts-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+
+# QtDataVisualization provided as separate installable component in installer
+[qt.57.qtdatavis3d]
+[qt.57.qtdatavis3d.gcc_64]
+archives:               57.qtdatavis3d.gcc_64
+target_install_base:    /@QT_VERSION_MINOR@/gcc_64
+[57.qtdatavis3d.gcc_64]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdatavis3d/qtdatavis3d-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+
+# QtPurchasing provided as separate installable component in installer
+[qt.57.qtpurchasing]
+[qt.57.qtpurchasing.gcc_64]
+archives:               57.qtpurchasing.gcc_64
+target_install_base:    /@QT_VERSION_MINOR@/gcc_64
+[57.qtpurchasing.gcc_64]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtpurchasing/qtpurchasing-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+
+# QtVirtualKeyboard provided as separate installable component in installer
+[qt.57.qtvirtualkeyboard]
+[qt.57.qtvirtualkeyboard.gcc_64]
+archives:               57.qtvirtualkeyboard.gcc_64
+target_install_base:    /@QT_VERSION_MINOR@/gcc_64
+[57.qtvirtualkeyboard.gcc_64]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtvirtualkeyboard/qtvirtualkeyboard-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+
+# QtQuick2DRenderer provided as separate installable component in installer
+[qt.57.qtquick2drenderer]
+[qt.57.qtquick2drenderer.gcc_64]
+archives:               57.qtquick2drenderer.gcc_64
+target_install_base:    /@QT_VERSION_MINOR@/gcc_64
+[57.qtquick2drenderer.gcc_64]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdeclarative-render2d/qtdeclarative-render2d-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+
+# QtWebEngine provided as separate installable component in installer
+[qt.57.qtwebengine]
+[qt.57.qtwebengine.gcc_64]
+archives:               57.qtwebengine.gcc_64
+target_install_base:    /@QT_VERSION_MINOR@/gcc_64
+[57.qtwebengine.gcc_64]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebengine/qtwebengine-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
 
 # QtScript provided as separate installable component in installer
 [qt.57.qtscript]
@@ -123,6 +154,14 @@ archives:               57.qtscript.gcc_64
 target_install_base:    /@QT_VERSION_MINOR@/gcc_64
 [57.qtscript.gcc_64]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
+
+# QtSerialBus provided as separate installable component in installer
+[qt.57.qtserialbus]
+[qt.57.qtserialbus.gcc_64]
+archives:               57.qtserialbus.gcc_64
+target_install_base:    /@QT_VERSION_MINOR@/gcc_64
+[57.qtserialbus.gcc_64]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialbus/qtserialbus-Linux-RHEL_6_6-GCC-Linux-RHEL_6_6-X86_64.7z
 
 # QtGamePad provided as separate installable component in installer
 [qt.57.qtgamepad]
