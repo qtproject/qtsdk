@@ -119,7 +119,7 @@ def get_dynamic_qt_configure_options():
     options = get_common_qt_configure_options()
     options += '-qt-sql-sqlite '
     options += '-skip qtx11extras -skip qtwinextras -skip qtmacextras -skip qtandroidextras '
-    options += '-skip qtdeclarative -no-dbus '
+    options += '-no-dbus '
     return options
 
 
