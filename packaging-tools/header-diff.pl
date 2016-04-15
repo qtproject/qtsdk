@@ -72,8 +72,9 @@ for my $repo (<$srcdir/*>) {
 }
 
 PRO: for my $pro (@modules_pro) {
-    my ($module) = $pro =~ m/\.\/(.*?)\//;
-    #print "Processing .pro file $pro\n";
+    my $path = substr($pro, length($srcdir));
+    my ($module) = $path =~ m|/([^/]+)/|;
+    #print "Processing .pro file '$pro' (module '$module')\n";
     open PRO, "<", $pro
         or die("Could not open $pro: $!");
     my $name;
