@@ -125,11 +125,24 @@ PRO: for my $pro (@modules_pro) {
         or die("Could not run git diff: $!");
     my $wrote_anything = 0;
     my $reading_header = 0;
+    my $preamble;
     while (<DIFF>) {
-        if (/^\@\@ -(\d+),(\d+) /) {
-            # Ignore changes to the first 40 lines of a header
-            # They're copyright changes
+        if (/^diff --git/) {
+            # Don't emit unless we see a non-header hunk:
+            $preamble = $_;
+            next;
+        } elsif (/^\@\@ -(\d+),(\d+) /) { # new hunk
+            # The first 40 lines are copyright notices; ignore changes here.
             $reading_header = $1 + $2 < 40;
+            if (!$reading_header && defined($preamble)) {
+                # First non-header hunk of the file; needs its preamble.
+                print OUTPUT $preamble;
+                $preamble = undef;
+            }
+        } elsif (defined($preamble) && !$reading_header) {
+            # Between diff-line and first hunk of file: we don't yet know whether to emit.
+            $preamble .= $_;
+            next;
         }
         next if $reading_header;
         $wrote_anything = 1;
