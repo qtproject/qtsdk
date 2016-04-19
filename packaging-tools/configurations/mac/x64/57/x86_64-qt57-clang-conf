@@ -43,7 +43,6 @@ archives:               57.clang_64.qtbase,
                         57.clang_64.qtlocation,
                         57.clang_64.qtserialport,
                         57.clang_64.qttools,
-                        57.clang_64.qtwebengine,
                         57.clang_64.qtquickcontrols,
                         57.clang_64.qtquickcontrols2,
                         57.clang_64.qt3d,
@@ -82,8 +81,6 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtxmlpatterns/qtxmlpattern
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
 [57.clang_64.qtserialport]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialport/qtserialport-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
-[57.clang_64.qtwebengine]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebengine/qtwebengine-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
 [57.clang_64.qtquickcontrols]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcontrols-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
 [57.clang_64.qtquickcontrols2]
