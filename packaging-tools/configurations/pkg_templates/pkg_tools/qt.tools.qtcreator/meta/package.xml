@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>Qt Creator 4.0.0</DisplayName>
+    <DisplayName>Qt Creator 4.0.0 RC1</DisplayName>
     <Description>IDE for Qt application development</Description>
-    <Version>4.0.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>3.6.83-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Script>installscript.qs</Script>
     <UserInterfaces>
