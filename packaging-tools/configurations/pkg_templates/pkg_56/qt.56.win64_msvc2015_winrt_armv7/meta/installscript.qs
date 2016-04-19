@@ -96,8 +96,7 @@ Component.prototype.createOperations = function()
                                     "--name", "Qt %{Qt:Version} for WinRT armv7",
                                     "--toolchain", "arm-windows-msvc2015-pe-32bit",
                                     "--qt", component.name,
-                                    "--debuggerengine", "4",
-                                    "--devicetype", "WinRt.Device.Local",
+                                    "--devicetype", "WinRt.Device.Phone",
                                     "UNDOEXECUTE",
                                     "@SDKToolBinary@", "rmKit", "--id", kitName]);
 
