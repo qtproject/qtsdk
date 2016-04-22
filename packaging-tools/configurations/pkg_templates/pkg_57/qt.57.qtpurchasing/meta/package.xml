@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
     <DisplayName>Qt Purchasing</DisplayName>
-    <Description>License options: GPLv3 or Commercial&lt;br&gt;&lt;br&gt;NOTE: Not licensed under LGPLv3&lt;br&gt;&lt;br&gt;Qt Purchasing. Cross-platform APIs for handling in-app purchases on Android and iOS.</Description>
+    <Description>Qt Purchasing. Cross-platform APIs for handling in-app purchases on Android and iOS.</Description>
     <Version>5.7.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Default>true</Default>
