@@ -221,14 +221,8 @@ Component.prototype.createOperations = function()
     if (!installer.isOfflineOnly()) {
         // Configure UpdateInfo plugin
         component.addOperation("Settings", "path="+settingsFile, "method=set",
-                               "key=Updater/Application",
+                               "key=Updater/MaintenanceTool",
                                "value="+maintenanceToolPath);
-        component.addOperation("Settings", "path="+settingsFile, "method=set",
-                               "key=Updater/RunUiArgument",
-                               "value=--updater");
-        component.addOperation("Settings", "path="+settingsFile, "method=set",
-                               "key=Updater/CheckOnlyArgument",
-                               "value=--checkupdates");
     }
 }
 
