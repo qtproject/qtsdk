@@ -93,9 +93,9 @@ def get_common_qt_configure_options():
     options = get_common_allos_qt_configure_options()
     options += '-no-sql-sqlite -no-qml-debug '
     options += '-skip qtenginio -skip qtlocation -skip qtmultimedia -skip qtserialport '
-    options += '-skip qtquick1 -skip qtquickcontrols -skip qtscript -skip qtsensors '
+    options += '-skip qtquickcontrols -skip qtscript -skip qtsensors '
     options += '-skip qtconnectivity -skip qtwayland '
-    options += '-skip qtwebkit -skip qtwebengine -skip qtwebsockets -skip qtwebchannel '
+    options += '-skip qtwebview -skip qtwebengine -skip qtwebsockets -skip qtwebchannel '
     options += '-skip qtxmlpatterns -skip qtactiveqt -skip qt3d -skip qtcanvas3d '
     # Windows
     if plat.startswith('win'):
