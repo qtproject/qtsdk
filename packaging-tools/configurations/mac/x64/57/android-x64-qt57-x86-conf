@@ -118,14 +118,6 @@ target_install_base:    /@QT_VERSION_MINOR@/android_x86
 [57.qtpurchasing.android_x86]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtpurchasing/qtpurchasing-OSX-OSX_10_10-GCC-Android-Android_22-X86.7z
 
-# QtVirtualKeyboard provided as separate installable component in installer
-[qt.57.qtvirtualkeyboard]
-[qt.57.qtvirtualkeyboard.android_x86]
-archives:               57.qtvirtualkeyboard.android_x86
-target_install_base:    /@QT_VERSION_MINOR@/android_x86
-[57.qtvirtualkeyboard.android_x86]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtvirtualkeyboard/qtvirtualkeyboard-OSX-OSX_10_10-GCC-Android-Android_22-X86.7z
-
 # QtQuick2DRenderer provided as separate installable component in installer
 [qt.57.qtquick2drenderer]
 [qt.57.qtquick2drenderer.android_x86]

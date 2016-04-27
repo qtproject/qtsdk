@@ -112,14 +112,6 @@ target_install_base:    /@QT_VERSION_MINOR@/winrt_x64_msvc2015
 [57.qtpurchasing.win64_msvc2015_winrt_x64]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtpurchasing/qtpurchasing-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
 
-# QtVirtualKeyboard provided as separate installable component in installer
-[qt.57.qtvirtualkeyboard]
-[qt.57.qtvirtualkeyboard.win64_msvc2015_winrt_x64]
-archives:               57.qtvirtualkeyboard.win64_msvc2015_winrt_x64
-target_install_base:    /@QT_VERSION_MINOR@/winrt_x64_msvc2015
-[57.qtvirtualkeyboard.win64_msvc2015_winrt_x64]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtvirtualkeyboard/qtvirtualkeyboard-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
-
 # QtQuick2DRenderer provided as separate installable component in installer
 [qt.57.qtquick2drenderer]
 [qt.57.qtquick2drenderer.win64_msvc2015_winrt_x64]

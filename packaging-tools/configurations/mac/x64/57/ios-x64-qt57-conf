@@ -112,14 +112,6 @@ target_install_base:    /@QT_VERSION_MINOR@/ios
 [57.qtpurchasing.ios]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtpurchasing/qtpurchasing-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
 
-# QtVirtualKeyboard provided as separate installable component in installer
-[qt.57.qtvirtualkeyboard]
-[qt.57.qtvirtualkeyboard.ios]
-archives:               57.qtvirtualkeyboard.ios
-target_install_base:    /@QT_VERSION_MINOR@/ios
-[57.qtvirtualkeyboard.ios]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtvirtualkeyboard/qtvirtualkeyboard-OSX-OSX_10_10-Clang-IOS-IOS_05-Multi.7z
-
 # QtQuick2DRenderer provided as separate installable component in installer
 [qt.57.qtquick2drenderer]
 [qt.57.qtquick2drenderer.ios]

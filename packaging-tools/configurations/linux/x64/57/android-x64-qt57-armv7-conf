@@ -118,14 +118,6 @@ target_install_base:    /@QT_VERSION_MINOR@/android_armv7
 [57.qtpurchasing.android_armv7]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtpurchasing/qtpurchasing-Linux-RHEL_6_6-GCC-Android-Android_22-ARMv7.7z
 
-# QtVirtualKeyboard provided as separate installable component in installer
-[qt.57.qtvirtualkeyboard]
-[qt.57.qtvirtualkeyboard.android_armv7]
-archives:               57.qtvirtualkeyboard.android_armv7
-target_install_base:    /@QT_VERSION_MINOR@/android_armv7
-[57.qtvirtualkeyboard.android_armv7]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtvirtualkeyboard/qtvirtualkeyboard-Linux-RHEL_6_6-GCC-Android-Android_22-ARMv7.7z
-
 # QtQuick2DRenderer provided as separate installable component in installer
 [qt.57.qtquick2drenderer]
 [qt.57.qtquick2drenderer.android_armv7]
