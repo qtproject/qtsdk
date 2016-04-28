@@ -39,6 +39,7 @@
 
 use strict;
 use warnings;
+use FileHandle;
 use Text::Wrap;
 my %log;
 
@@ -50,12 +51,28 @@ sub help {
     exit 0;
 }
 
+sub isMasterRepo
+{
+    my $modulesFileName = '.gitmodules';
+    return 0 unless -e $modulesFileName;
+    my $modulesFile = new IO::File('<' . $modulesFileName) or return 0;
+    while (my $line = <$modulesFile>) {
+        if ($line =~ /\[submodule\s*"qtbase"\]/) {
+            $modulesFile->close();
+            return 1;
+        }
+    }
+    $modulesFile->close();
+    return 0;
+}
+
 sub collect_entries {
     # Run git submodule foreach
     chdir(shift @ARGV) if (scalar @ARGV);
     my @revListCommand = ("git rev-list --reverse --grep '^\\[ChangeLog\\]' " . $ARGV[0] .
         " 2> /dev/null | git cat-file --batch || true");
-    unshift(@revListCommand, 'git', 'submodule', 'foreach', '--quiet') if -e '.gitmodules';
+    unshift(@revListCommand, 'git', 'submodule', 'foreach', '--quiet') if isMasterRepo();
+    print STDERR "Running: ", join(' ', @revListCommand), "\n";
     open FOREACH, '-|', @revListCommand;
 
     # Collect all entries
