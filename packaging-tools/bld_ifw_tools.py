@@ -109,6 +109,8 @@ def get_common_qt_configure_options():
             options += '-qt-xcb -no-opengl -no-icu -no-libudev '
             options += '-qt-pcre -qt-freetype -no-glib -no-egl -no-xinput '
             options += '-no-xinput2 -no-sm '
+        if bldinstallercommon.is_mac_platform():
+            options += '-no-freetype '
     return options
 
 
