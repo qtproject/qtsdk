@@ -57,6 +57,12 @@ function createShortcuts()
         QMessageBox["warning"]( "Error" , "Error", "Could not find windows installation directory");
         return;
     }
+
+    var cmdLocation = windir + "\\system32\\cmd.exe";
+    component.addOperation( "CreateShortcut",
+                            cmdLocation,
+                            "@StartMenuDir@/" + qtStringVersion + "/MSVC 2015 (64-bit)/Qt " + qtStringVersion + " 64-bit for Windows Runtime armv7 (MSVC 2015).lnk",
+                            "/A /Q /K " + batchFileName);
 }
 
 Component.prototype.beginInstallation = function()
