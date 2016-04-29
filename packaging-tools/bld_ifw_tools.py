@@ -57,10 +57,16 @@ def get_default_qt_configure_options(openssl_dir):
 ##################################################################
 def get_static_qt_configure_options(openssl_dir):
     options = get_common_qt_configure_options() + '-static '
+    if bldinstallercommon.is_mac_platform():
+        options += '-securetransport '
+    else:
+        options += '-openssl-linked '
+    if bldinstallercommon.is_linux_platform() and openssl_dir:
+        options += '-I {0}/include -L {0}/lib '.format(openssl_dir)
     if platform.system().lower().startswith('win'):
         options += '-static-runtime '
         if openssl_dir:
-            options += '-openssl-linked OPENSSL_LIBS="-lssleay32MT -llibeay32MT -lcrypt32 -lgdi32" '
+            options += 'OPENSSL_LIBS="-lssleay32MT -llibeay32MT -lcrypt32 -lgdi32" '
             options += '-I {0}\\include -L {0}\\lib\\VC\\static '.format(openssl_dir)
     return options
 
@@ -80,7 +86,6 @@ def get_common_allos_qt_configure_options():
 ##################################################################
 def get_common_unix_qt_configure_options():
     options = '-qt-zlib -qt-libpng -qt-libjpeg -no-cups '
-    options += '-openssl '
     return options
 
 
