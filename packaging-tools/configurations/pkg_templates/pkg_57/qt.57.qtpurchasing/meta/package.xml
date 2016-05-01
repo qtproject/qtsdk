@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
     <DisplayName>Qt Purchasing</DisplayName>
-    <Description>Qt Purchasing. Cross-platform APIs for handling in-app purchases on Android and iOS.</Description>
+    <Description>Qt Purchasing. Cross-platform APIs for handling in-app purchases on Android, iOS, and OS X.</Description>
     <Version>5.7.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Default>true</Default>
