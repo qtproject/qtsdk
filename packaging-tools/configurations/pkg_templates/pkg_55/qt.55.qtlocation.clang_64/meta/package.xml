@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>Qt Location for clang 64-bit</DisplayName>
+    <DisplayName>Qt Location for OS X</DisplayName>
     <Description></Description>
     <Version>5.5.2-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
     <DisplayName>Essential modules</DisplayName>
-    <Description>Qt 5.0.2 Prebuilt Essential modules for clang 64-bit</Description>
+    <Description>Qt 5.0.2 Prebuilt Essential modules for OS X</Description>
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.tools.qtcreator</Dependencies>

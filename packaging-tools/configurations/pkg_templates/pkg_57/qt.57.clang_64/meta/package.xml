@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>clang 64-bit</DisplayName>
-    <Description>Qt 5.7.0 Prebuilt Components for clang 64-bit</Description>
+    <DisplayName>OS X</DisplayName>
+    <Description>Qt 5.7.0 Prebuilt Components for OS X</Description>
     <Version>5.7.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.tools.qtcreator, qt.57.doc, qt.57.examples</Dependencies>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>Qt Enginio for clang 64-bit</DisplayName>
+    <DisplayName>Qt Enginio for OS X</DisplayName>
     <Description></Description>
     <Version>1.0.2-1</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
