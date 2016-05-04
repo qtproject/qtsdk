@@ -543,3 +543,824 @@
         - configuration file for building Qt Installer-Framework
 
 
+6.  Examples for creating installers and online repositories
+
+    For a complete online setup the following is needed:
+
+    1) A server hosting the online repositories
+
+       Https protocol support is optional but preferred.
+
+    2) Online installer
+
+       - See 6.1.1 and 6.1.2 how to create online installer
+
+    3) Create online repositories
+
+       - See 6.1.3 and examples below
+       - Preferably automatise the online repository upload to testing/production
+         environments
+
+
+6.1 Build online installer and online repositories with given content
+
+6.1.1 Build IFW tool package
+
+      > python bld_ifw_tools.py
+
+      It uses the default options. To customize e.g. used Qt src package or Qt configure options
+      run the script with "--help".
+      This will create an archive containing all the tools required for the rest of the steps.
+
+        packaging-tools/ifw_build_artifacts/installer-framework-build-linux-x64.7z
+        packaging-tools/ifw_build_artifacts/installerbase-linux-x64.7z
+
+
+6.1.2 Create online installer
+
+      To create customized online installer you need:
+
+      1) Address where your online repository is hosted
+      2) Customized graphics (E.g. company logo)
+
+      This is defined in the config.xml file.
+      The qtsdk provides some templates which can be used as an example.
+
+      Open: packaging-tools/configurations/linux/config.xml.template.linux-x64.qt5-sdk
+
+        Documentation for all settings there can be found here: https://doc.qt.io/qtinstallerframework/ifw-globalconfig.html
+
+      The important part here is to define the correct remote repository where your online repository resides.
+      Flexible approach is the define only one remote root respository here. E.g.
+
+        https://my.company.com/online/qtsdkrepository/linux_x64/root/
+
+      Then under this path Updates.xml should exist. In this Updates.xml you can add the actual payload repositories.
+      For example see:
+
+        http://download.qt.io/online/qtsdkrepository/linux_x64/root/qt/Updates.xml
+
+      When all the settings in your config.xml are in place:
+
+        > python create_installer.py <options>
+
+            --online                                                                                                      (will create online installer instance)
+            --ifw-tools=/home/foobar/dev/qtsdk/packaging-tools/ifw_build_artifacts/installer-framework-build-linux-x64.7z (this is the one you built in step 6.1.1)
+            -c /home/foobar/qtsdk/packaging-tools/configurations                                                          (base path for all configuration files)
+            -f /home/foobar/qtsdk/packaging-tools/configurations/online_installer_jobs/unifiedqt/linux_x64_online         (main configuration file)
+            --preferred-installer-name=my-installer-name
+            --add-substitution=@SRC_ARCHIVE_TYPE@=tar.gz                                                                  (search and substitute this in configuration files)
+            --add-substitution=@SOME_VERSION_NUMBER_IN_CONF_FILES@=1.2.3                                                  (search and substitute this in configuration files)
+            -u http://<my_network_drive>/some/base/path/                                                                  (base path where the script will look for payload if needed)
+
+      For custom projects you can crete dedicated directory (repository) where you put your own configuration files. Use the same structure as used in qtsdk.git.
+      The configuration files in the qtsdk.git point into payload using relative paths. For example see:
+
+        packaging-tools/configurations/linux/x64/56/x86_64-qt56-gcc-conf
+
+      See "archive_uri:" part. The script will first check if that is an absolute path e.g. is the file residing on file system. If not then it will pre-pend the value of "-u" (see above)
+      to the path. The configuration files in qtsdk.git mostly use relative paths and by "-u" the installer is able to locate the files from the network disk where all build artifacts
+      are saved.
+
+      Note! If you rebuild the IFW meanwhile and want to use the new version, delete "packaging-tools/ifwt" directory, the script unpacks the archive given by "--ifw-tools" into this directory
+      and uses it from there if the directory exists.
+
+
+6.1.3 Create online repository
+
+      Easiest way to start is to open for example: "packaging-tools/configurations/repository_configs/desktop_qt5/linux_x64_repository_56" and edit for your needs.
+      The important parts:
+
+        "file_list:"        comma separated list of additional configuration files residing under "-c" (see example above)
+        "template_dirs:"    comma separated list where to search for actual installer-framework pkg templates (these contain the package.xml and installscript.qs files)
+
+      When you have the configuration files and pkg templates set:
+
+        > python create_installer.py <options>
+
+            --create-repo
+            --ifw-tools=/home/foobar/dev/qtsdk/packaging-tools/ifw_build_artifacts/installer-framework-build-linux-x64.7z (this is the one you built in step 6.1.1)
+            -c /home/foobar/qtsdk/packaging-tools/configurations
+            -f /home/foobar/qtsdk/packaging-tools/configurations/repository_configs/desktop_qt5/linux_x64_repository_56
+            -u http://<my_network_drive>/some/base/path/
+            --add-substitution=@SRC_ARCHIVE_TYPE@=tar.gz                                                                  (search and substitute this in configuration files)
+            --add-substitution=@SOME_VERSION_NUMBER_IN_CONF_FILES@=1.2.3                                                  (search and substitute this in configuration files)
+
+      The generated online repository will end up into:
+
+        /packaging-tools/repository
+
+      To make this available to online users you need to:
+
+        1) Upload this somewhere under your domain, e.g.: https://my.company.com/online/qtsdkrepository/linux_x64/<my_repo_name>
+        2) Add this repo into root Updates.xml, e.g.: https://my.company.com/online/qtsdkrepository/linux_x64/root/Updates.xml  (see http://download.qt.io/online/qtsdkrepository/linux_x64/root/qt/Updates.xml)
+
+
+6.1.4 Simplified example
+
+      1) Create network drive where to put all binary content (payload for the online repositories)
+
+        http://mycompany.intranet/packaging
+
+      2) Establish public(?) domain for the releasable online content
+
+        http(s)://mycompany.com/online/repository/linux_x64
+
+      3) Create IFW tools
+
+        > python bld_ifw_tools.py
+
+      4) Create root online repository
+
+        > python create_installer.py
+            --create-repo
+            --ifw-tools=/home/foobar/qtsdk/packaging-tools/ifw_build_artifacts/installer-framework-build-linux-x64.7z
+            -c /home/foobar/qtsdk/packaging-tools/configurations
+            -f /home/foobar/qtsdk/packaging-tools/configurations/repository_configs/tools_desktop/mycompany_example_root_repository
+            -u http://mycompany.intranet/packaging  (Usually theroot component does not require any payload but the script requires this parameter)
+
+        -> Upload the root repository from packaging-tools/repository e.g. into:
+
+            http(s)://mycompany.com/online/repository/linux_x64/root/
+
+      5) Build binary artifacts for product "foobar 1.2.3"
+
+         Upload the binary artifacts into:
+
+            http://mycompany.intranet/packaging/foobar/123/
+
+      6) Create online repository for product "foobar" with version 1.2.3
+
+        > python create_installer.py
+            --create-repo
+            --ifw-tools=/home/foobar/qtsdk/packaging-tools/ifw_build_artifacts/installer-framework-build-linux-x64.7z
+            -c /home/foobar/qtsdk/packaging-tools/configurations
+            -f /home/foobar/qtsdk/packaging-tools/configurations/repository_configs/desktop_qt5/linux_x64_repository_mycompany_foobar_123
+            -u http://mycompany.intranet/packaging  (Usually theroot component does not require any payload but the script requires this parameter)
+
+          Note! Edit the "linux_x64_repository_mycompany_foobar_123" file so that the relative paths point into correct
+          files under: http://mycompany.intranet/packaging/foobar/123/
+
+        -> Upload the online repository into e.g.
+
+            http(s)://mycompany.com/online/repository/linux_x64/foobar_123
+
+        -> Edit http(s)://mycompany.com/online/repository/linux_x64/root/Updates.xml
+
+            <RepositoryUpdate>
+                <Repository action="add" url="http(s)://mycompany.com/online/repository/linux_x64/foobar_123" displayname="FooBar 1.2.3 online repository"/>
+            </RepositoryUpdate>
+
+      7) Further notes
+
+            - When updating online content make sure the payload (.7z files) is in sync before updating metadata (Updates.xml) files.
+              If you upload them both at the same time the metadata may be in sync (visible to users) before the actual payload. This will
+              result in an error when using the installer when it verifies the content.
+
+              If you update existing online content the above becomes even more important.
+
+
+6.2.0 Qt 5.6 Linux examples
+
+      Below an example how to produce all Qt5.6 related online repositories for Linux x64.
+      This example assumes that the actual binary content is availbale under $PAYLOAD_SERVER_HTTP_BASE (see below).
+
+      1) Run step 6.1.1 (Build IFW tool package)
+
+      2) Create repositories
+
+        export IFW_TOOLS=/home/qtsdk/packaging-tools/ifw_build_artifacts/installer-framework-build-linux-x64.7z
+        export CONF_BASE_DIR=/home/qtsdk/packaging-tools/configurations
+        export PAYLOAD_SERVER_HTTP_BASE=http://mycompany.intranet/packaging
+
+        > python --create-repo -u $PAYLOAD_SERVER_HTTP_BASE --ifw-tools=$IFW_TOOLS -c $CONF_BASE_DIR -f $CONF_BASE_DIR/repository_configs/desktop_qt5/linux_x64_repository_56
+        > python --create-repo -u $PAYLOAD_SERVER_HTTP_BASE --ifw-tools=$IFW_TOOLS -c $CONF_BASE_DIR -f $CONF_BASE_DIR/repository_configs/desktop_qt5/repository_56_src_doc_examples
+        > python --create-repo -u $PAYLOAD_SERVER_HTTP_BASE --ifw-tools=$IFW_TOOLS -c $CONF_BASE_DIR -f $CONF_BASE_DIR/repository_configs/android_qt5/linux_x64_android_repository_56
+
+        After creating each invidual repository one needs to copy it into production or testing environment so that the content is visible under some http(s) address.
+        For example:
+            http(s)://mycompany.com/online/repository/linux_x64/desktop/qt5_56
+            http(s)://mycompany.com/online/repository/linux_x64/desktop/qt5_src_doc_examples
+            http(s)://mycompany.com/online/repository/linux_x64/android/qt5_56
+
+
+7 Building binary packages i.e. payload for the installers/online repositories
+
+7.1 Create qt source package(s)
+
+    1) Check out the qt source code from preferred branch/tag
+
+        /home/builder/work/qt5
+
+    2) Create source packages
+
+        > packaging-tools/mksrc.sh -u /home/builder/work/qt5 -v 5.5.2 -m -N -l opensource -i qtdocgallery -i qtfeedback -i qtjsondb -i qtpim -i qtqa -i qtrepotools -i qtsystems
+
+        (see mksrc.sh -h for details)
+
+        In the online repository example 6.2.0 above it was expected that the src packages reside on the network disk ($PAYLOAD_SERVER_HTTP_BASE).
+        So after this step the source packages would be uploaded to the network disk.
+
+    3) Build binary package
+
+        Note! Building the various targets requires to set up the build machine environment properly for each target (RHEL, MinGW, MSVC_XXXX, OSX, Android, IOS, WINRT, ...).
+
+        > python mkqt5bld.py <options>
+
+            --src-url=
+            --make_cmd=make                                         # e.g. "jom" or "mingw-make" can be used on windows
+            --jobs=<cpu count>
+            --ignore=<qt module name which you want to ignore>      # use for each excluded module separately
+            --configure=<configure options used for the build>
+            --prefix=<prefix for the qt build>
+            --module-separate-install-list=<comma separated list>   # E.g. if you want to split qt3d as a separate binary package from the main qt binary package
+
+        Upload the binary archive into network drive.
+
+    4) Example layout of the network disk how binary packages are structured. Note that the installer configuration files refer to this directory/filename structure.
+
+        <network storage base path>/qt/5.5.1/latest
+            .
+            ├── android_armv5
+            │   ├── linux_x64
+            │   │   ├── qt5_addons.7z
+            │   │   ├── qt5_essentials.7z
+            │   │   ├── qt5_qt3d.7z
+            │   │   ├── qt5_qtcanvas3d.7z
+            │   │   ├── qt5_qtlocation.7z
+            │   │   ├── qt5_qtpositioning.7z
+            │   │   ├── qt5_qtquick1.7z
+            │   │   ├── qt5_qtquickcontrols.7z
+            │   │   └── qt5_qtscript.7z
+            │   ├── linux_x86
+            │   │   ├── qt5_addons.7z
+            │   │   ├── qt5_essentials.7z
+            │   │   ├── qt5_qt3d.7z
+            │   │   ├── qt5_qtcanvas3d.7z
+            │   │   ├── qt5_qtlocation.7z
+            │   │   ├── qt5_qtpositioning.7z
+            │   │   ├── qt5_qtquick1.7z
+            │   │   ├── qt5_qtquickcontrols.7z
+            │   │   └── qt5_qtscript.7z
+            │   ├── mac_x64
+            │   │   ├── qt5_addons.7z
+            │   │   ├── qt5_essentials.7z
+            │   │   ├── qt5_qt3d.7z
+            │   │   ├── qt5_qtcanvas3d.7z
+            │   │   ├── qt5_qtlocation.7z
+            │   │   ├── qt5_qtpositioning.7z
+            │   │   ├── qt5_qtquick1.7z
+            │   │   ├── qt5_qtquickcontrols.7z
+            │   │   └── qt5_qtscript.7z
+            │   └── mingw_x86
+            │       ├── qt5_addons.7z
+            │       ├── qt5_essentials.7z
+            │       ├── qt5_qt3d.7z
+            │       ├── qt5_qtcanvas3d.7z
+            │       ├── qt5_qtlocation.7z
+            │       ├── qt5_qtpositioning.7z
+            │       ├── qt5_qtquick1.7z
+            │       ├── qt5_qtquickcontrols.7z
+            │       └── qt5_qtscript.7z
+            ├── android_armv7
+            │   ├── linux_x64
+            │   │   ├── qt5_addons.7z
+            │   │   ├── qt5_essentials.7z
+            │   │   ├── qt5_qt3d.7z
+            │   │   ├── qt5_qtcanvas3d.7z
+            │   │   ├── qt5_qtlocation.7z
+            │   │   ├── qt5_qtpositioning.7z
+            │   │   ├── qt5_qtquick1.7z
+            │   │   ├── qt5_qtquickcontrols.7z
+            │   │   └── qt5_qtscript.7z
+            │   ├── linux_x86
+            │   │   ├── qt5_addons.7z
+            │   │   ├── qt5_essentials.7z
+            │   │   ├── qt5_qt3d.7z
+            │   │   ├── qt5_qtcanvas3d.7z
+            │   │   ├── qt5_qtlocation.7z
+            │   │   ├── qt5_qtpositioning.7z
+            │   │   ├── qt5_qtquick1.7z
+            │   │   ├── qt5_qtquickcontrols.7z
+            │   │   └── qt5_qtscript.7z
+            │   ├── mac_x64
+            │   │   ├── qt5_addons.7z
+            │   │   ├── qt5_essentials.7z
+            │   │   ├── qt5_qt3d.7z
+            │   │   ├── qt5_qtcanvas3d.7z
+            │   │   ├── qt5_qtlocation.7z
+            │   │   ├── qt5_qtpositioning.7z
+            │   │   ├── qt5_qtquick1.7z
+            │   │   ├── qt5_qtquickcontrols.7z
+            │   │   └── qt5_qtscript.7z
+            │   └── mingw_x86
+            │       ├── qt5_addons.7z
+            │       ├── qt5_essentials.7z
+            │       ├── qt5_qt3d.7z
+            │       ├── qt5_qtcanvas3d.7z
+            │       ├── qt5_qtlocation.7z
+            │       ├── qt5_qtpositioning.7z
+            │       ├── qt5_qtquick1.7z
+            │       ├── qt5_qtquickcontrols.7z
+            │       └── qt5_qtscript.7z
+            ├── android_x86
+            │   ├── linux_x64
+            │   │   ├── qt5_addons.7z
+            │   │   ├── qt5_essentials.7z
+            │   │   ├── qt5_qt3d.7z
+            │   │   ├── qt5_qtcanvas3d.7z
+            │   │   ├── qt5_qtlocation.7z
+            │   │   ├── qt5_qtpositioning.7z
+            │   │   ├── qt5_qtquick1.7z
+            │   │   ├── qt5_qtquickcontrols.7z
+            │   │   └── qt5_qtscript.7z
+            │   ├── linux_x86
+            │   │   ├── qt5_addons.7z
+            │   │   ├── qt5_essentials.7z
+            │   │   ├── qt5_qt3d.7z
+            │   │   ├── qt5_qtcanvas3d.7z
+            │   │   ├── qt5_qtlocation.7z
+            │   │   ├── qt5_qtpositioning.7z
+            │   │   ├── qt5_qtquick1.7z
+            │   │   ├── qt5_qtquickcontrols.7z
+            │   │   └── qt5_qtscript.7z
+            │   ├── mac_x64
+            │   │   ├── qt5_addons.7z
+            │   │   ├── qt5_essentials.7z
+            │   │   ├── qt5_qt3d.7z
+            │   │   ├── qt5_qtcanvas3d.7z
+            │   │   ├── qt5_qtlocation.7z
+            │   │   ├── qt5_qtpositioning.7z
+            │   │   ├── qt5_qtquick1.7z
+            │   │   ├── qt5_qtquickcontrols.7z
+            │   │   └── qt5_qtscript.7z
+            │   └── mingw_x86
+            │       ├── qt5_addons.7z
+            │       ├── qt5_essentials.7z
+            │       ├── qt5_qt3d.7z
+            │       ├── qt5_qtcanvas3d.7z
+            │       ├── qt5_qtlocation.7z
+            │       ├── qt5_qtpositioning.7z
+            │       ├── qt5_qtquick1.7z
+            │       ├── qt5_qtquickcontrols.7z
+            │       └── qt5_qtscript.7z
+            ├── ios
+            │   └── mac_x64
+            │       ├── qt5_addons.7z
+            │       ├── qt5_docs.7z
+            │       ├── qt5_essentials.7z
+            │       ├── qt5_qt3d.7z
+            │       ├── qt5_qtcanvas3d.7z
+            │       ├── qt5_qtlocation.7z
+            │       ├── qt5_qtpositioning.7z
+            │       ├── qt5_qtquick1.7z
+            │       ├── qt5_qtquickcontrols.7z
+            │       └── qt5_qtscript.7z
+            ├── linux_gcc_32_rhel66
+            │   ├── qt5_addons.7z
+            │   ├── qt5_docs.7z
+            │   ├── qt5_essentials.7z
+            │   ├── qt5_qt3d.7z
+            │   ├── qt5_qtcanvas3d.7z
+            │   ├── qt5_qtlocation.7z
+            │   ├── qt5_qtpositioning.7z
+            │   ├── qt5_qtquick1.7z
+            │   ├── qt5_qtquickcontrols.7z
+            │   ├── qt5_qtscript.7z
+            │   └── qt5_qtwebengine.7z
+            ├── linux_gcc_64_rhel66
+            │   ├── qt5_addons.7z
+            │   ├── qt5_docs.7z
+            │   ├── qt5_essentials.7z
+            │   ├── qt5_qt3d.7z
+            │   ├── qt5_qtcanvas3d.7z
+            │   ├── qt5_qtlocation.7z
+            │   ├── qt5_qtpositioning.7z
+            │   ├── qt5_qtquick1.7z
+            │   ├── qt5_qtquickcontrols.7z
+            │   ├── qt5_qtscript.7z
+            │   └── qt5_qtwebengine.7z
+            ├── mac_x64
+            │   ├── qt5_addons.7z
+            │   ├── qt5_docs.7z
+            │   ├── qt5_essentials.7z
+            │   ├── qt5_qt3d.7z
+            │   ├── qt5_qtcanvas3d.7z
+            │   ├── qt5_qtlocation.7z
+            │   ├── qt5_qtpositioning.7z
+            │   ├── qt5_qtquick1.7z
+            │   ├── qt5_qtquickcontrols.7z
+            │   ├── qt5_qtscript.7z
+            │   └── qt5_qtwebengine.7z
+            ├── src
+            │   ├── doc
+            │   │   └── qt5_docs.7z
+            │   ├── examples_injection
+            │   │   └── qt5_examples.7z
+            │   ├── single
+            │   │   ├── qt-everywhere-opensource-src-5.5.1.7z
+            │   │   ├── qt-everywhere-opensource-src-5.5.1.tar.gz
+            │   │   ├── qt-everywhere-opensource-src-5.5.1.tar.xz
+            │   │   └── qt-everywhere-opensource-src-5.5.1.zip
+            │   └── submodules
+            │       ├── qt3d-opensource-src-5.5.1.7z
+            │       ├── qt3d-opensource-src-5.5.1.tar.gz
+            │       ├── qt3d-opensource-src-5.5.1.tar.xz
+            │       ├── qt3d-opensource-src-5.5.1.zip
+            │       ├── qt5-opensource-src-5.5.1.7z
+            │       ├── qt5-opensource-src-5.5.1.tar.gz
+            │       ├── qt5-opensource-src-5.5.1.tar.xz
+            │       ├── qt5-opensource-src-5.5.1.zip
+            │       ├── qtactiveqt-opensource-src-5.5.1.7z
+            │       ├── qtactiveqt-opensource-src-5.5.1.tar.gz
+            │       ├── qtactiveqt-opensource-src-5.5.1.tar.xz
+            │       ├── qtactiveqt-opensource-src-5.5.1.zip
+            │       ├── qtandroidextras-opensource-src-5.5.1.7z
+            │       ├── qtandroidextras-opensource-src-5.5.1.tar.gz
+            │       ├── qtandroidextras-opensource-src-5.5.1.tar.xz
+            │       ├── qtandroidextras-opensource-src-5.5.1.zip
+            │       ├── qtbase-opensource-src-5.5.1.7z
+            │       ├── qtbase-opensource-src-5.5.1.tar.gz
+            │       ├── qtbase-opensource-src-5.5.1.tar.xz
+            │       ├── qtbase-opensource-src-5.5.1.zip
+            │       ├── qtcanvas3d-opensource-src-5.5.1.7z
+            │       ├── qtcanvas3d-opensource-src-5.5.1.tar.gz
+            │       ├── qtcanvas3d-opensource-src-5.5.1.tar.xz
+            │       ├── qtcanvas3d-opensource-src-5.5.1.zip
+            │       ├── qtconnectivity-opensource-src-5.5.1.7z
+            │       ├── qtconnectivity-opensource-src-5.5.1.tar.gz
+            │       ├── qtconnectivity-opensource-src-5.5.1.tar.xz
+            │       ├── qtconnectivity-opensource-src-5.5.1.zip
+            │       ├── qtdeclarative-opensource-src-5.5.1.7z
+            │       ├── qtdeclarative-opensource-src-5.5.1.tar.gz
+            │       ├── qtdeclarative-opensource-src-5.5.1.tar.xz
+            │       ├── qtdeclarative-opensource-src-5.5.1.zip
+            │       ├── qtdoc-opensource-src-5.5.1.7z
+            │       ├── qtdoc-opensource-src-5.5.1.tar.gz
+            │       ├── qtdoc-opensource-src-5.5.1.tar.xz
+            │       ├── qtdoc-opensource-src-5.5.1.zip
+            │       ├── qtenginio-opensource-src-5.5.1.7z
+            │       ├── qtenginio-opensource-src-5.5.1.tar.gz
+            │       ├── qtenginio-opensource-src-5.5.1.tar.xz
+            │       ├── qtenginio-opensource-src-5.5.1.zip
+            │       ├── qtgraphicaleffects-opensource-src-5.5.1.7z
+            │       ├── qtgraphicaleffects-opensource-src-5.5.1.tar.gz
+            │       ├── qtgraphicaleffects-opensource-src-5.5.1.tar.xz
+            │       ├── qtgraphicaleffects-opensource-src-5.5.1.zip
+            │       ├── qtimageformats-opensource-src-5.5.1.7z
+            │       ├── qtimageformats-opensource-src-5.5.1.tar.gz
+            │       ├── qtimageformats-opensource-src-5.5.1.tar.xz
+            │       ├── qtimageformats-opensource-src-5.5.1.zip
+            │       ├── qtlocation-opensource-src-5.5.1.7z
+            │       ├── qtlocation-opensource-src-5.5.1.tar.gz
+            │       ├── qtlocation-opensource-src-5.5.1.tar.xz
+            │       ├── qtlocation-opensource-src-5.5.1.zip
+            │       ├── qtmacextras-opensource-src-5.5.1.7z
+            │       ├── qtmacextras-opensource-src-5.5.1.tar.gz
+            │       ├── qtmacextras-opensource-src-5.5.1.tar.xz
+            │       ├── qtmacextras-opensource-src-5.5.1.zip
+            │       ├── qtmultimedia-opensource-src-5.5.1.7z
+            │       ├── qtmultimedia-opensource-src-5.5.1.tar.gz
+            │       ├── qtmultimedia-opensource-src-5.5.1.tar.xz
+            │       ├── qtmultimedia-opensource-src-5.5.1.zip
+            │       ├── qtquick1-opensource-src-5.5.1.7z
+            │       ├── qtquick1-opensource-src-5.5.1.tar.gz
+            │       ├── qtquick1-opensource-src-5.5.1.tar.xz
+            │       ├── qtquick1-opensource-src-5.5.1.zip
+            │       ├── qtquickcontrols-opensource-src-5.5.1.7z
+            │       ├── qtquickcontrols-opensource-src-5.5.1.tar.gz
+            │       ├── qtquickcontrols-opensource-src-5.5.1.tar.xz
+            │       ├── qtquickcontrols-opensource-src-5.5.1.zip
+            │       ├── qtscript-opensource-src-5.5.1.7z
+            │       ├── qtscript-opensource-src-5.5.1.tar.gz
+            │       ├── qtscript-opensource-src-5.5.1.tar.xz
+            │       ├── qtscript-opensource-src-5.5.1.zip
+            │       ├── qtsensors-opensource-src-5.5.1.7z
+            │       ├── qtsensors-opensource-src-5.5.1.tar.gz
+            │       ├── qtsensors-opensource-src-5.5.1.tar.xz
+            │       ├── qtsensors-opensource-src-5.5.1.zip
+            │       ├── qtserialport-opensource-src-5.5.1.7z
+            │       ├── qtserialport-opensource-src-5.5.1.tar.gz
+            │       ├── qtserialport-opensource-src-5.5.1.tar.xz
+            │       ├── qtserialport-opensource-src-5.5.1.zip
+            │       ├── qtsvg-opensource-src-5.5.1.7z
+            │       ├── qtsvg-opensource-src-5.5.1.tar.gz
+            │       ├── qtsvg-opensource-src-5.5.1.tar.xz
+            │       ├── qtsvg-opensource-src-5.5.1.zip
+            │       ├── qttools-opensource-src-5.5.1.7z
+            │       ├── qttools-opensource-src-5.5.1.tar.gz
+            │       ├── qttools-opensource-src-5.5.1.tar.xz
+            │       ├── qttools-opensource-src-5.5.1.zip
+            │       ├── qttranslations-opensource-src-5.5.1.7z
+            │       ├── qttranslations-opensource-src-5.5.1.tar.gz
+            │       ├── qttranslations-opensource-src-5.5.1.tar.xz
+            │       ├── qttranslations-opensource-src-5.5.1.zip
+            │       ├── qtwayland-opensource-src-5.5.1.7z
+            │       ├── qtwayland-opensource-src-5.5.1.tar.gz
+            │       ├── qtwayland-opensource-src-5.5.1.tar.xz
+            │       ├── qtwayland-opensource-src-5.5.1.zip
+            │       ├── qtwebchannel-opensource-src-5.5.1.7z
+            │       ├── qtwebchannel-opensource-src-5.5.1.tar.gz
+            │       ├── qtwebchannel-opensource-src-5.5.1.tar.xz
+            │       ├── qtwebchannel-opensource-src-5.5.1.zip
+            │       ├── qtwebengine-opensource-src-5.5.1.7z
+            │       ├── qtwebengine-opensource-src-5.5.1.tar.gz
+            │       ├── qtwebengine-opensource-src-5.5.1.tar.xz
+            │       ├── qtwebengine-opensource-src-5.5.1.zip
+            │       ├── qtwebkit-examples-opensource-src-5.5.1.7z
+            │       ├── qtwebkit-examples-opensource-src-5.5.1.tar.gz
+            │       ├── qtwebkit-examples-opensource-src-5.5.1.tar.xz
+            │       ├── qtwebkit-examples-opensource-src-5.5.1.zip
+            │       ├── qtwebkit-opensource-src-5.5.1.7z
+            │       ├── qtwebkit-opensource-src-5.5.1.tar.gz
+            │       ├── qtwebkit-opensource-src-5.5.1.tar.xz
+            │       ├── qtwebkit-opensource-src-5.5.1.zip
+            │       ├── qtwebsockets-opensource-src-5.5.1.7z
+            │       ├── qtwebsockets-opensource-src-5.5.1.tar.gz
+            │       ├── qtwebsockets-opensource-src-5.5.1.tar.xz
+            │       ├── qtwebsockets-opensource-src-5.5.1.zip
+            │       ├── qtwinextras-opensource-src-5.5.1.7z
+            │       ├── qtwinextras-opensource-src-5.5.1.tar.gz
+            │       ├── qtwinextras-opensource-src-5.5.1.tar.xz
+            │       ├── qtwinextras-opensource-src-5.5.1.zip
+            │       ├── qtx11extras-opensource-src-5.5.1.7z
+            │       ├── qtx11extras-opensource-src-5.5.1.tar.gz
+            │       ├── qtx11extras-opensource-src-5.5.1.tar.xz
+            │       ├── qtx11extras-opensource-src-5.5.1.zip
+            │       ├── qtxmlpatterns-opensource-src-5.5.1.7z
+            │       ├── qtxmlpatterns-opensource-src-5.5.1.tar.gz
+            │       ├── qtxmlpatterns-opensource-src-5.5.1.tar.xz
+            │       └── qtxmlpatterns-opensource-src-5.5.1.zip
+            ├── windows_mingw492_x86
+            │   ├── qt5_addons.7z
+            │   ├── qt5_docs.7z
+            │   ├── qt5_essentials.7z
+            │   ├── qt5_qt3d.7z
+            │   ├── qt5_qtcanvas3d.7z
+            │   ├── qt5_qtlocation.7z
+            │   ├── qt5_qtpositioning.7z
+            │   ├── qt5_qtquick1.7z
+            │   ├── qt5_qtquickcontrols.7z
+            │   └── qt5_qtscript.7z
+            ├── windows_vs2010_32
+            │   ├── qt5_addons.7z
+            │   ├── qt5_docs.7z
+            │   ├── qt5_essentials.7z
+            │   ├── qt5_qt3d.7z
+            │   ├── qt5_qtcanvas3d.7z
+            │   ├── qt5_qtlocation.7z
+            │   ├── qt5_qtpositioning.7z
+            │   ├── qt5_qtquick1.7z
+            │   ├── qt5_qtquickcontrols.7z
+            │   └── qt5_qtscript.7z
+            ├── windows_vs2012_32
+            │   ├── qt5_addons.7z
+            │   ├── qt5_docs.7z
+            │   ├── qt5_essentials.7z
+            │   ├── qt5_qt3d.7z
+            │   ├── qt5_qtcanvas3d.7z
+            │   ├── qt5_qtlocation.7z
+            │   ├── qt5_qtpositioning.7z
+            │   ├── qt5_qtquick1.7z
+            │   ├── qt5_qtquickcontrols.7z
+            │   └── qt5_qtscript.7z
+            ├── windows_vs2013_32
+            │   ├── qt5_addons.7z
+            │   ├── qt5_docs.7z
+            │   ├── qt5_essentials.7z
+            │   ├── qt5_qt3d.7z
+            │   ├── qt5_qtcanvas3d.7z
+            │   ├── qt5_qtlocation.7z
+            │   ├── qt5_qtpositioning.7z
+            │   ├── qt5_qtquick1.7z
+            │   ├── qt5_qtquickcontrols.7z
+            │   ├── qt5_qtscript.7z
+            │   └── qt5_qtwebengine.7z
+            ├── windows_vs2013_64
+            │   ├── qt5_addons.7z
+            │   ├── qt5_docs.7z
+            │   ├── qt5_essentials.7z
+            │   ├── qt5_qt3d.7z
+            │   ├── qt5_qtcanvas3d.7z
+            │   ├── qt5_qtlocation.7z
+            │   ├── qt5_qtpositioning.7z
+            │   ├── qt5_qtquick1.7z
+            │   ├── qt5_qtquickcontrols.7z
+            │   ├── qt5_qtscript.7z
+            │   └── qt5_qtwebengine.7z
+            ├── windows_vs2013_winrt_x64
+            │   ├── qt5_addons.7z
+            │   ├── qt5_docs.7z
+            │   ├── qt5_essentials.7z
+            │   ├── qt5_qt3d.7z
+            │   ├── qt5_qtcanvas3d.7z
+            │   ├── qt5_qtlocation.7z
+            │   ├── qt5_qtpositioning.7z
+            │   └── qt5_qtquickcontrols.7z
+            └── winphone81
+                ├── arm
+                │   ├── qt5_addons.7z
+                │   ├── qt5_docs.7z
+                │   ├── qt5_essentials.7z
+                │   ├── qt5_qt3d.7z
+                │   ├── qt5_qtcanvas3d.7z
+                │   ├── qt5_qtlocation.7z
+                │   ├── qt5_qtpositioning.7z
+                │   └── qt5_qtquickcontrols.7z
+                └── x86
+                    ├── qt5_addons.7z
+                    ├── qt5_docs.7z
+                    ├── qt5_essentials.7z
+                    ├── qt5_qt3d.7z
+                    ├── qt5_qtcanvas3d.7z
+                    ├── qt5_qtlocation.7z
+                    ├── qt5_qtpositioning.7z
+                    └── qt5_qtquickcontrols.7z
+
+8 build_wrapper.py
+
+    For more complete build management there exists 'build_wrapper.py' which takes care of most of the build steps.
+    Note that this script is used in conjunction with Jenkins (https://jenkins.io/) but should work with other systems as well with minor modifications.
+
+    The 'build_wrapper.py' handles the overall build flow in steps:
+
+        1) Init step
+            - Creates directory structure on network disk (or local host if chosen)
+        2) Src package creation step
+            - Creates src packages and uploads them to the network drive
+        3) Binary build step
+            - Builds the binary package and uploads them to the network drive
+        4) Offline installer build step
+            - Creates offline installers and uploads them to the network drive
+        5) Online repository build step
+            - Creates online repositories and triggers online repository update (usually staging/test server)
+
+    In Jenkins each step is a separate job and after successful execution of the step it triggers the next step.
+    Failed step can be re-run without the needs starting from the beginning.
+    If building multiple targets then the steps 3-5 can be executed in parallel in Jenkins.
+
+    Simplified example flow:
+
+    1-->2-->3 (Linux gcc_64 binaries) --> 4 (Linux gcc_64 offline installer)
+         |                            L-> 5 (Linux gcc_64 online repository)
+         |->3 (OSX clang binaries)    --> 4 (OSX clang offline installer)
+         |                            L-> 5 (OSX clang online repository)
+         |->3 (Win 7 binaries)        --> 4 (Win 7 offline installer)
+         |                            L-> 5 (Win 7 online repository)
+
+    8.1 Environment
+
+        Package storage server / network drive where the build artifacts are to be uploaded by the 'build_wrapper.py'
+
+            - ssh access (no passwd prompt) from build slaves to the server
+            - http(s) access into network drive for the build artifacts
+
+        Online repository test/staging server
+
+            - ssh access (no passwd prompt) from build slaves to the server
+            - http(s) access into network drive -> accessible by the (test) online installers
+
+        Each build agent should have the following environment setup:
+
+            LICENSE                             opensource|enterprise
+            PACKAGE_STORAGE_SERVER              Name of the packaging server
+            PACKAGE_STORAGE_SERVER_USER         Username for accessing the packaging server
+            PACKAGE_STORAGE_SERVER_BASE_DIR     Base path on the package storage under which all build artifacts reside
+            PACKAGE_STORAGE_SERVER_PATH_HTTP    E.g. 'http://mycompany.intranet/packaging' which maps to $PACKAGE_STORAGE_SERVER:$PACKAGE_STORAGE_SERVER_BASE_DIR
+            PKG_NODE_ROOT                       Base working directory, qtsdk.git and the rest should be under this base directory
+SIGNING_SERVER
+SIGNING_PASSWORD
+
+
+        For each Qt version a top level configuration file
+
+            RELEASE_DESCRIPTION_FILE
+
+
+    8.2 Build
+
+        1) Init step
+
+            export RELEASE_DESCRIPTION_FILE=<your_qtsdk_checkout_dir>/packaging-tools/releases/release-55
+
+            python build_wrapper.py -c init -l $LICENSE -b $BUILD_NUMBER -s $PACKAGE_STORAGE_SERVER_USER@$PACKAGE_STORAGE_SERVER -p $PACKAGE_STORAGE_SERVER_BASE_DIR
+
+            Output:
+
+                $PACKAGE_STORAGE_SERVER:$PACKAGE_STORAGE_SERVER_BASE_DIR/qt/5.5/$BUILD_NUMBER
+                $PACKAGE_STORAGE_SERVER:$PACKAGE_STORAGE_SERVER_BASE_DIR/qt/5.5/latest          # symlink to above directory, installer configs always point into "latest" snapshot dir
+
+                mycompany-file-server:/some_base_path_here/qt/5.5/90837356
+                mycompany-file-server:/some_base_path_here/qt/5.5/latest
+
+
+        2) Create Qt src package
+
+            export RELEASE_DESCRIPTION_FILE=<your_qtsdk_checkout_dir>/packaging-tools/releases/release-55
+            export QT5_GIT_MIRROR=<where to pull qt5 sources>
+            export cfg=linux-g++-Rhel6.6-x64 # Note! See 8.3 about build node labels
+
+            python build_wrapper.py -c build_src -l $LICENSE -b $BUILD_NUMBER -s $PACKAGE_STORAGE_SERVER_USER@$PACKAGE_STORAGE_SERVER -p $PACKAGE_STORAGE_SERVER_BASE_DIR -e $cfg
+
+            Output:
+
+                mycompany-file-server:/some_base_path_here/qt/5.5/90837356/src/single/qt-everywhere-opensource-src-5.5.1.tar.gz   (+ .7z, .tar.gz, .zip)
+                mycompany-file-server:/some_base_path_here/qt/5.5/90837356/src/submodules/...
+
+
+        3) Create Qt binary packages
+
+            export RELEASE_BUILD_QT_CONFIGURE_OPTIONS_FILE=<your_qtsdk_checkout_dir>/packaging-tools/releases/release-55
+            export RELEASE_DESCRIPTION_FILE=<your_qtsdk_checkout_dir>/packaging-tools/releases/release-55
+            export cfg=linux-g++-Rhel6.6-x64 # Note! See 8.3 about build node labels
+
+            python build_wrapper.py -c build_bin -l $LICENSE -b $BUILD_NUMBER -s $PACKAGE_STORAGE_SERVER_USER@$PACKAGE_STORAGE_SERVER -p $PACKAGE_STORAGE_SERVER_BASE_DIR -e $cfg
+
+            Output:
+
+                mycompany-file-server:/some_base_path_here/qt/5.5/90837356/linux_gcc_64_rhel66/qt5_addons.7z
+                                                                                               qt5_docs.7z
+                                                                                               qt5_essentials.7z
+                                                                                               qt5_qtquick1.7z
+                                                                                               qt5_qtscript.7z
+                                                                                               qt5_qtwebengine.7z
+                                                                                               qt5_qtwebkit.7z
+
+        4) Create Qt offline installer
+
+            export RELEASE_DESCRIPTION_FILE=<your_qtsdk_checkout_dir>/packaging-tools/releases/release-55
+            export cfg=linux-g++-Rhel6.6-x64 # Note! See 8.3 about build node labels
+
+            python build_wrapper.py -c offline_installer -l $LICENSE -b $BUILD_NUMBER -s $PACKAGE_STORAGE_SERVER_USER@$PACKAGE_STORAGE_SERVER -p $PACKAGE_STORAGE_SERVER_BASE_DIR -e $cfg
+
+            Output:
+
+                mycompany-file-server:/some_base_path_here/qt/5.5.1/installers/latest_available/qt-opensource-linux-x64-5.6.1_<running_snapshot_number>.run
+
+        5) Create online repositories
+
+            For online repository test server:
+
+                PKG_STAGING_SERVER                          # E.g. "mycompany.online.test.server"
+                PKG_STAGING_SERVER_UNAME                    # E.g. "qt-builder"
+                STAGING_SRV_ONLINE_REPO_BASE_PATH           # E.g. "/data/online/mycompany_sdk"
+                REPO_STAGING_SERVER_HOME                    # Home directory under which it expects to find qtsdk.git clone. To perform online repository
+                                                              updates remotely it needs additional scripts
+                                                              E.g. "/home/qt-builder/qtsdk"
+
+            For production online server 'pending area'
+
+                PROD_ADDR                                   # E.g. master.mycompany.com
+                PROD_USER                                   # E.g. "qt-builder"
+                PROD_SRV_REPO_BASE_PATH                     # E.g. /data/production/online/mycompany_qtsdk
+                PROD_SRV_REPO_PENDING_AREA_DIR              # E.g. /data/pending_content_for_online_production_updates
+
+
+            PACKAGE_STORAGE_SERVER_PATH_HTTP                # E.g. "http://mycompany.intranet/packaging" <- under this the Qt binary artifacts are downloaded for the installers
+            IFW_TOOLS_BASE_URL                              # E.g. "http://mycompany.intranet/packaging/installer-framework/"  <- expects to find 'installer-framework-build-linux-x64.7z' here
+            CONFIGURATIONS_FILE_BASE_DIR                    # "/work/build/qtsdk/packaging-tools/configurations" <- depending where it is cloned on the build slave
+
+
+            export RELEASE_DESCRIPTION_FILE=<your_qtsdk_checkout_dir>/packaging-tools/releases/release-55
+            export cfg=linux-g++-Rhel6.6-x64 # Note! See 8.3 about build node labels
+
+            python build_wrapper.py -c repo_build -l $LICENSE -e $cfg
+
+            Output:
+
+                Staging/test server:
+
+                    http://mycompany.online.test.server/mycompany_sdk/linux_x64/desktop/qt5_55/<REPO CONTENT>
+                    http://mycompany.online.test.server/mycompany_sdk/linux_x64/desktop/qt5_55_src_doc_examples/<REPO CONTENT>
+
+                Production server:
+
+                    master.mycompany.com:/data/pending_content_for_online_production_updates/mycompany_sdk/linux_x64/desktop/qt5_55/<REPO CONTENT>
+                    master.mycompany.com:/data/pending_content_for_online_production_updates/mycompany_sdk/linux_x64/desktop/qt5_55_src_doc_examples/<REPO CONTENT>
+
+
+    8.3 Build node labels
+
+        The release description file, e.g. packaging-tools/releases/release-55, has all Qt configure options defined for all targets.
+        Let's see an example from the above file:
+
+            [release.qt.configure_options.linux]
+            build_node_labels:      linux-g++-Rhel6.6-x86, linux-g++-Rhel6.6-x64
+            configure_options:      -opensource -confirm-license -debug-and-release -release -nomake tests -nomake examples -qt-zlib
+                                    -qt-libjpeg -qt-libpng -qt-xcb -sysconfdir /etc/xdg -plugin-sql-mysql -plugin-sql-psql -plugin-sql-sqlite
+                                    -openssl -no-libudev -icu -no-egl
+
+        The section name 'release.qt.configure_options.linux' can be anything as long it:
+
+            - is unique
+            - starts with "release.qt.configure_options" keyword
+
+        The "build_node_labels" matches the the agent labels in Jenkins based build system.
+        Each build slave has a label and that label is set into environment variable called "cfg". In the above examples you could see the "$cfg" being used.
+        By this we tell the 'build_wrapper.py' to pick correct Qt configure options when it is running on a particular build slave.
+
+        The "configure_options" defines the Qt configure options used when making the particular build on the listed slaves (linux-g++-Rhel6.6-x86 and linux-g++-Rhel6.6-x64
+        in the above example)
+
+
+

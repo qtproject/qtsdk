@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<Installer>
+    <Name>MyCompany</Name>
+    <Version>1.0.0</Version>
+    <Title>MyCompany</Title>
+    <Publisher>MyCompany Plc</Publisher>
+    <Logo>logo.png</Logo>
+    <InstallerWindowIcon>logo-small</InstallerWindowIcon>
+    <InstallerApplicationIcon>logo-small</InstallerApplicationIcon>
+    <Watermark>watermark.png</Watermark>
+    <StartMenuDir>MyCompany</StartMenuDir>
+    <ProductUrl>http://www.mycompany.com/</ProductUrl>
+    <!--<Background>background.png</Background>-->
+    <UninstallerName>MaintenanceTool</UninstallerName>
+    <RemoteRepositories>
+        <Repository>
+            <Url>http://mycompany.com/online/repository/linux_x64/root/</Url>
+            <Enabled>1</Enabled>
+            <DisplayName>MyCompany root repository</DisplayName>
+        </Repository>
+    </RemoteRepositories>
+    <!-- @homeDir@ and @rootDir@ are some of the supported vars -->
+    <TargetDir>@homeDir@/MyCompany</TargetDir>
+    <AdminTargetDir>/opt/Qt</AdminTargetDir>
+    <AllowSpaceInPath>false</AllowSpaceInPath>
+</Installer>
