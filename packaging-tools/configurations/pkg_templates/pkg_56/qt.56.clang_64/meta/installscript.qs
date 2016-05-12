@@ -97,6 +97,10 @@ Component.prototype.createOperations = function()
         // patch qt edition
         var qconfigFile = qtPath + "/mkspecs/qconfig.pri";
         component.addOperation("LineReplace", qconfigFile, "QT_EDITION =", "QT_EDITION = OpenSource");
+
+        //QTBUG-37650
+        patchQtAssistant(component, installationPath, "Qt-5.6");
+
     } catch(e) {
         print(e);
     }
