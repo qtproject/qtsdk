@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>Qt Quick Controls for Runtime 8.1 x64 (MSVC2013)</DisplayName>
+    <DisplayName>Qt Quick Controls for Windows Runtime 8.1 x64 (MSVC2013)</DisplayName>
     <Description></Description>
     <Version>5.5.2-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>

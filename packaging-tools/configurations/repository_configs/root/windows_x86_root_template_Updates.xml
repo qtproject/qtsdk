@@ -17,15 +17,15 @@
         <Repository action="add" url="http://download.qt.io/online/qtsdkrepository/windows_x86/desktop/qt5_53" displayname="Qt Windows-x86 Desktop Qt5 online repository"/>
         <Repository action="add" url="http://download.qt.io/online/qtsdkrepository/windows_x86/desktop/qt5_53_src_doc_examples" displayname="Qt Windows-x86 Qt5 src online repository"/>
         <Repository action="add" url="http://download.qt.io/online/qtsdkrepository/windows_x86/android/qt5_53" displayname="Qt Windows-x86 Android online repository"/>
-        <Repository action="add" url="http://download.qt.io/online/qtsdkrepository/windows_x86/winrt/qt5_53" displayname="Qt Windows-x86 WinRT online repository"/>
+        <Repository action="add" url="http://download.qt.io/online/qtsdkrepository/windows_x86/winrt/qt5_53" displayname="Qt Windows-x86 Windows Runtime online repository"/>
         <Repository action="add" url="http://download.qt.io/online/qtsdkrepository/windows_x86/desktop/qt5_54" displayname="Qt Windows-x86 Desktop Qt5.4 online repository"/>
         <Repository action="add" url="http://download.qt.io/online/qtsdkrepository/windows_x86/desktop/qt5_54_src_doc_examples" displayname="Qt Windows-x86 Qt5.4 src online repository"/>
         <Repository action="add" url="http://download.qt.io/online/qtsdkrepository/windows_x86/android/qt5_54" displayname="Qt Windows-x86 Android Qt5.4 online repository"/>
-        <Repository action="add" url="http://download.qt.io/online/qtsdkrepository/windows_x86/winrt/qt5_54" displayname="Qt Windows-x86 WinRT Qt5.4 online repository"/>
+        <Repository action="add" url="http://download.qt.io/online/qtsdkrepository/windows_x86/winrt/qt5_54" displayname="Qt Windows-x86 Windows Runtime Qt5.4 online repository"/>
         <Repository action="add" url="http://download.qt.io/online/qtsdkrepository/windows_x86/desktop/qt5_55" displayname="Qt Windows-x86 Desktop Qt5.5 online repository"/>
         <Repository action="add" url="http://download.qt.io/online/qtsdkrepository/windows_x86/desktop/qt5_55_src_doc_examples" displayname="Qt Windows-x86 Qt5.5 src online repository"/>
         <Repository action="add" url="http://download.qt.io/online/qtsdkrepository/windows_x86/android/qt5_55" displayname="Qt Windows-x86 Android Qt5.5 online repository"/>
-        <Repository action="add" url="http://download.qt.io/online/qtsdkrepository/windows_x86/winrt/qt5_55" displayname="Qt Windows-x86 WinRT Qt5.5 online repository"/>
+        <Repository action="add" url="http://download.qt.io/online/qtsdkrepository/windows_x86/winrt/qt5_55" displayname="Qt Windows-x86 Windows Runtime Qt5.5 online repository"/>
         <!--  Extras repositories START  -->
         <Repository action="add" url="http://download.qt.io/online/qtsdkrepository/windows_x86/desktop/extras_src/qtcanvas3d" displayname="Qt Canvas 3D online repository"/>
         <Repository action="add" url="http://download.qt.io/online/qtsdkrepository/windows_x86/desktop/extras_src/qtwebview" displayname="Qt WebView src online repository"/>

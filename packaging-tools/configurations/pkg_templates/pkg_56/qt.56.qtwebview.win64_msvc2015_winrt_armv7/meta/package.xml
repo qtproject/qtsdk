@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>Qt WebView for WinRT armv7 (MSVC2015)</DisplayName>
+    <DisplayName>Qt WebView for Windows Runtime armv7 (MSVC2015)</DisplayName>
     <Description></Description>
     <Version>5.6.1-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>

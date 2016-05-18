@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>Qt Enginio for msvc2013 WinRT 64-bit</DisplayName>
+    <DisplayName>Qt Enginio for msvc2013 Windows Runtime 64-bit</DisplayName>
     <Description></Description>
     <Version>1.0.2</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>Qt Purchasing for WinRT x86 (MSVC2015)</DisplayName>
+    <DisplayName>Qt Purchasing for Windows Runtime x86 (MSVC2015)</DisplayName>
     <Description></Description>
     <Version>5.7.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
