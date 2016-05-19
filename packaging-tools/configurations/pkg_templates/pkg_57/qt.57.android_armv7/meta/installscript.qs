@@ -29,9 +29,9 @@
 // constructor
 function Component()
 {
-    // add dynamic dependency for mingw492 TC for Android packages on Windows
+    // add dynamic dependency for mingw530 TC for Android packages on Windows
     if (installer.value("os") == "win") {
-        var mingw_tc_component = "qt.tools.win32_mingw492";
+        var mingw_tc_component = "qt.tools.win32_mingw530";
         component.addDependency(mingw_tc_component);
     }
 }
