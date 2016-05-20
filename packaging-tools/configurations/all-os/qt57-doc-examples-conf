@@ -77,10 +77,14 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qtquick2drenderer-docu
 package_strip_dirs:     1
 
 [qt.57.doc.qtscript]
-archives:               57.doc.qtscript
+archives:               57.doc.qtscript, 57.doc.qtscripttools
 target_install_base:    /Docs/Qt-5.7/
 [57.doc.qtscript]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qtscript-documentation.@SRC_ARCHIVE_TYPE@
+target_install_dir:
+package_strip_dirs:     1
+[57.doc.qtscripttools]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/doc/qtscripttools-documentation.@SRC_ARCHIVE_TYPE@
 target_install_dir:
 package_strip_dirs:     1
 
