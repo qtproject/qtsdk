@@ -56,7 +56,7 @@ function createShortcuts()
     var cmdLocation = windir + "\\system32\\cmd.exe";
     component.addOperation( "CreateShortcut",
                             cmdLocation,
-                            "@StartMenuDir@/" + qtStringVersion + "/MSVC 2015 (64-bit)/Qt " + qtStringVersion + " 64-bit for Windows Runtime (MSVC 2015).lnk",
+                            "@StartMenuDir@/" + qtStringVersion + "/MSVC 2015 (64-bit)/Qt " + qtStringVersion + " 64-bit for Universal Windows Platform (MSVC 2015).lnk",
                             "/A /Q /K " + batchFileName);
 }
 
@@ -84,7 +84,7 @@ Component.prototype.createOperations = function()
             component.addOperation("Execute",
                                    ["@SDKToolBinary@", "addQt",
                                     "--id", component.name,
-                                    "--name", "Qt %{Qt:Version} for Windows Runtime 64bit",
+                                    "--name", "Qt %{Qt:Version} for Universal Windows Platform 64bit",
                                     "--type", "WinRt.QtVersion.WindowsRuntime",
                                     "--qmake", qmakeBinary,
                                     "UNDOEXECUTE",
@@ -94,7 +94,7 @@ Component.prototype.createOperations = function()
             component.addOperation("Execute",
                                    ["@SDKToolBinary@", "addKit",
                                     "--id", kitName,
-                                    "--name", "Qt %{Qt:Version} for Windows Runtime 64bit",
+                                    "--name", "Qt %{Qt:Version} for Universal Windows Platform 64bit",
                                     "--toolchain", "x86-windows-msvc2015-pe-64bit",
                                     "--qt", component.name,
                                     "--debuggerengine", "4",

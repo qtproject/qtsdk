@@ -56,7 +56,7 @@ function createShortcuts()
     var cmdLocation = windir + "\\system32\\cmd.exe";
     component.addOperation( "CreateShortcut",
                             cmdLocation,
-                            "@StartMenuDir@/" + qtStringVersion + "/MSVC 2015 (64-bit)/Qt " + qtStringVersion + " 64-bit for Windows Runtime armv7 (MSVC 2015).lnk",
+                            "@StartMenuDir@/" + qtStringVersion + "/MSVC 2015 (64-bit)/Qt " + qtStringVersion + " 64-bit for Universal Windows Platform armv7 (MSVC 2015).lnk",
                             "/A /Q /K " + batchFileName);
 }
 
@@ -84,7 +84,7 @@ Component.prototype.createOperations = function()
             component.addOperation("Execute",
                                    ["@SDKToolBinary@", "addQt",
                                     "--id", component.name,
-                                    "--name", "Qt %{Qt:Version} for Windows Runtime armv7",
+                                    "--name", "Qt %{Qt:Version} for Universal Windows Platform armv7",
                                     "--type", "WinRt.QtVersion.WindowsRuntime",
                                     "--qmake", qmakeBinary,
                                     "UNDOEXECUTE",
@@ -94,7 +94,7 @@ Component.prototype.createOperations = function()
             component.addOperation("Execute",
                                    ["@SDKToolBinary@", "addKit",
                                     "--id", kitName,
-                                    "--name", "Qt %{Qt:Version} for Windows Runtime armv7",
+                                    "--name", "Qt %{Qt:Version} for Universal Windows Platform armv7",
                                     "--toolchain", "arm-windows-msvc2015-pe-32bit",
                                     "--qt", component.name,
                                     "--devicetype", "WinRt.Device.Phone",
