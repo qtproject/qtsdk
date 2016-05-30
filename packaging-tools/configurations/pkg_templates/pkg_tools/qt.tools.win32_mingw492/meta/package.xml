@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>MinGW 4.9.2</DisplayName>
     <Description>MinGW-builds 4.9.2 32 bit toolchain.</Description>
-    <Version>4.9.2-0</Version>
+    <Version>4.9.2-1</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.tools.qtcreator</Dependencies>
     <Default>false</Default>

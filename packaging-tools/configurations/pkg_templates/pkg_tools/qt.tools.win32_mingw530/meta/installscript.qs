@@ -39,8 +39,7 @@ Component.prototype.reactOnTargetDirChange = function(key, value)
 {
     if (key == "TargetDir") {
         var path = value + "%TARGET_INSTALL_DIR%";
-        path = path.replace(/\//g, "\\");
-        installer.setValue("MINGW530_DIR", path);
+        installer.setValue("MINGW530_DIR", path.replace(/\\/g, "/"););
     }
 }
 
@@ -62,7 +61,7 @@ Component.prototype.createOperations = function()
                                    ["{0,2}", "@SDKToolBinary@", "addTC",
                                     "--id", tcId,
                                     "--name", "MinGW 5.3.0 32bit",
-                                    "--path", "@MINGW530_DIR@\\bin\\g++.exe",
+                                    "--path", "@MINGW530_DIR@/bin/g++.exe",
                                     "--abi", "x86-windows-msys-pe-32bit",
                                     "--supportedAbis", "x86-windows-msys-pe-32bit",
                                     "UNDOEXECUTE",
@@ -72,7 +71,7 @@ Component.prototype.createOperations = function()
                                    ["{0,2}", "@SDKToolBinary@", "addDebugger",
                                     "--id", dbgId,
                                     "--name", "GNU gdb 7.10.1 for MinGW 5.3.0 32bit",
-                                    "--binary", "@MINGW530_DIR@\\bin\\gdb.exe",
+                                    "--binary", "@MINGW530_DIR@/bin/gdb.exe",
                                     "--abis", "x86-windows-msys-pe-32bit",
                                     "--engine", "1",
                                     "UNDOEXECUTE",
@@ -80,7 +79,7 @@ Component.prototype.createOperations = function()
 
             component.addOperation("Execute",
                                    ["{0,4}", "@SDKToolBinary@", "addKeys",
-                                    "android", "MakeExtraSearchDirectory", "QString:@MINGW530_DIR@\\bin"]);
+                                    "android", "MakeExtraSearchDirectory", "QString:@MINGW530_DIR@/bin"]);
         } catch( e ) {
             print( e );
         }
