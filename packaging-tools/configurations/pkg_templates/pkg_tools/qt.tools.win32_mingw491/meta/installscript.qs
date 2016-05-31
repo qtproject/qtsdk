@@ -52,7 +52,7 @@ Component.prototype.reactOnTargetDirChange = function(key, value)
 {
     if (key == "TargetDir") {
         var path = value + "%TARGET_INSTALL_DIR%";
-        installer.setValue("MINGW491_DIR", path.replace(/\\/g, "/"););
+        installer.setValue("MINGW491_DIR", path.replace(/\\/g, "/"));
     }
 }
 
