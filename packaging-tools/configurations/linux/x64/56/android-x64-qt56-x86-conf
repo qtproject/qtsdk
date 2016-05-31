@@ -51,37 +51,37 @@ archives:               56.android_x86.qtbase,
                         56.android_x86.qtserialport
 target_install_base:    /@QT_VERSION_MINOR@/android_x86
 [56.android_x86.qtbase]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtbase/qtbase-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtbase/qtbase-Linux-RHEL_6_6-GCC-Android-Android_ANY-X86.7z
 [56.android_x86.qtconnectivity]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtconnectivity/qtconnectivity-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtconnectivity/qtconnectivity-Linux-RHEL_6_6-GCC-Android-Android_ANY-X86.7z
 [56.android_x86.qtandroidextras]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtandroidextras/qtandroidextras-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtandroidextras/qtandroidextras-Linux-RHEL_6_6-GCC-Android-Android_ANY-X86.7z
 [56.android_x86.qtwebchannel]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebchannel/qtwebchannel-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebchannel/qtwebchannel-Linux-RHEL_6_6-GCC-Android-Android_ANY-X86.7z
 [56.android_x86.qtmultimedia]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtmultimedia/qtmultimedia-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtmultimedia/qtmultimedia-Linux-RHEL_6_6-GCC-Android-Android_ANY-X86.7z
 [56.android_x86.qttranslations]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qttranslations/qttranslations-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qttranslations/qttranslations-Linux-RHEL_6_6-GCC-Android-Android_ANY-X86.7z
 [56.android_x86.qtgraphicaleffects]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtgraphicaleffects/qtgraphicaleffects-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtgraphicaleffects/qtgraphicaleffects-Linux-RHEL_6_6-GCC-Android-Android_ANY-X86.7z
 [56.android_x86.qtsvg]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtsvg/qtsvg-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtsvg/qtsvg-Linux-RHEL_6_6-GCC-Android-Android_ANY-X86.7z
 [56.android_x86.qtdeclarative]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdeclarative/qtdeclarative-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdeclarative/qtdeclarative-Linux-RHEL_6_6-GCC-Android-Android_ANY-X86.7z
 [56.android_x86.qtwebsockets]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebsockets/qtwebsockets-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebsockets/qtwebsockets-Linux-RHEL_6_6-GCC-Android-Android_ANY-X86.7z
 [56.android_x86.qtimageformats]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtimageformats/qtimageformats-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtimageformats/qtimageformats-Linux-RHEL_6_6-GCC-Android-Android_ANY-X86.7z
 [56.android_x86.qttools]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qttools/qttools-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qttools/qttools-Linux-RHEL_6_6-GCC-Android-Android_ANY-X86.7z
 [56.android_x86.qtxmlpatterns]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtxmlpatterns/qtxmlpatterns-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtxmlpatterns/qtxmlpatterns-Linux-RHEL_6_6-GCC-Android-Android_ANY-X86.7z
 [56.android_x86.qtsensors]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtsensors/qtsensors-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtsensors/qtsensors-Linux-RHEL_6_6-GCC-Android-Android_ANY-X86.7z
 [56.android_x86.qtpositioning]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtpositioning-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtpositioning-Linux-RHEL_6_6-GCC-Android-Android_ANY-X86.7z
 [56.android_x86.qtserialport]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialport/qtserialport-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialport/qtserialport-Linux-RHEL_6_6-GCC-Android-Android_ANY-X86.7z
 
 
 # QtScript provided as separate installable component in installer
@@ -90,7 +90,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialport/qtserialport-
 archives:               56.qtscript.android_x86
 target_install_base:    /@QT_VERSION_MINOR@/android_x86
 [56.qtscript.android_x86]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-Linux-RHEL_6_6-GCC-Android-Android_ANY-X86.7z
 
 # QtQuickControls provided as separate installable component in installer
 [qt.56.qtquickcontrols]
@@ -98,7 +98,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-Linux-RH
 archives:               56.qtquickcontrols.android_x86
 target_install_base:    /@QT_VERSION_MINOR@/android_x86
 [56.qtquickcontrols.android_x86]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcontrols-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcontrols-Linux-RHEL_6_6-GCC-Android-Android_ANY-X86.7z
 
 # QtQuickControls2 provided as separate installable component in installer
 [qt.56.qtquickcontrols2]
@@ -106,7 +106,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcon
 archives:               56.qtquickcontrols2.android_x86
 target_install_base:    /@QT_VERSION_MINOR@/android_x86
 [56.qtquickcontrols2.android_x86]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickcontrols2-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickcontrols2-Linux-RHEL_6_6-GCC-Android-Android_ANY-X86.7z
 
 # QtLocation provided as separate installable component in installer
 [qt.56.qtlocation]
@@ -114,7 +114,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickco
 archives:               56.qtlocation.android_x86
 target_install_base:    /@QT_VERSION_MINOR@/android_x86
 [56.qtlocation.android_x86]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Linux-RHEL_6_6-GCC-Android-Android_ANY-X86.7z
 
 # Qt3D provided as separate installable component in installer
 [qt.56.qt3d]
@@ -122,7 +122,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Linu
 archives:               56.qt3d.android_x86
 target_install_base:    /@QT_VERSION_MINOR@/android_x86
 [56.qt3d.android_x86]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Linux-RHEL_6_6-GCC-Android-Android_ANY-X86.7z
 
 # QtCanvas3D provided as separate installable component in installer
 [qt.56.qtcanvas3d]
@@ -130,7 +130,7 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Linux-RHEL_6_6-G
 archives:               56.qtcanvas3d.android_x86
 target_install_base:    /@QT_VERSION_MINOR@/android_x86
 [56.qtcanvas3d.android_x86]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Linux-RHEL_6_6-GCC-Android-Android_ANY-X86.7z
 
 # QtWebView provided as separate installable component in installer
 [qt.56.qtwebview]
@@ -138,4 +138,4 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Linu
 archives:               56.qtwebview.android_x86
 target_install_base:    /@QT_VERSION_MINOR@/android_x86
 [56.qtwebview.android_x86]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-Linux-RHEL_6_6-GCC-Android-Android_22-X86.7z
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-Linux-RHEL_6_6-GCC-Android-Android_ANY-X86.7z
