@@ -48,6 +48,7 @@ archives:               57.win32_msvc2015.qtbase,
                         57.win32_msvc2015.qtquickcontrols2,
                         57.win32_msvc2015.qt3d,
                         57.win32_msvc2015.qtcanvas3d,
+                        57.win32_msvc2015.qtwebview,
                         57.win32_msvc2015.d3d_compiler_47.x86,
                         57.win32_msvc2015.opengl32sw.x86
 target_install_base:    /@QT_VERSION_MINOR@/msvc2015
@@ -93,6 +94,8 @@ archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickco
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z
 [57.win32_msvc2015.qtcanvas3d]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z
+[57.win32_msvc2015.qtwebview]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z
 [57.win32_msvc2015.d3d_compiler_47.x86]
 archive_uri:            http://download.qt.io/development_releases/prebuilt/d3dcompiler/msvc2013/d3dcompiler_47-x86.7z
 target_install_dir:     /bin
@@ -172,3 +175,12 @@ archives:               57.qtscxml.win32_msvc2015
 target_install_base:    /@QT_VERSION_MINOR@/msvc2015
 [57.qtscxml.win32_msvc2015]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscxml/qtscxml-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z
+
+# QtWebEngine provided as separate installable component in installer
+[qt.57.qtwebengine]
+[qt.57.qtwebengine.win32_msvc2015]
+archives:               57.qtwebengine.win32_msvc2015
+target_install_base:    /@QT_VERSION_MINOR@/msvc2015
+[57.qtwebengine.win32_msvc2015]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebengine/qtwebengine-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z
+
