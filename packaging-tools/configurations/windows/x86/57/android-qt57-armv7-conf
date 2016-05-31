@@ -138,6 +138,14 @@ target_install_base:    /@QT_VERSION_MINOR@/android_armv7
 [57.qtscript.android_armv7]
 archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscript/qtscript-Windows-Windows_7-Mingw49-Android-Android_ANY-ARMv7.7z
 
+# QtSerialBus provided as separate installable component in installer
+[qt.57.qtserialbus]
+[qt.57.qtserialbus.android_armv7]
+archives:               57.qtserialbus.android_armv7
+target_install_base:    /@QT_VERSION_MINOR@/android_armv7
+[57.qtserialbus.android_armv7]
+archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtserialbus/qtserialbus-Windows-Windows_7-Mingw49-Android-Android_ANY-ARMv7.7z
+
 # QtGamePad provided as separate installable component in installer
 [qt.57.qtgamepad]
 [qt.57.qtgamepad.android_armv7]
