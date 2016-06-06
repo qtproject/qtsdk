@@ -312,6 +312,11 @@ ci_target_postfix:          OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64
 build_target_dir:           mac_x64
 build_node_labels:          mac-clang-10.10-x64
 
+[meta.mac_1011.x64.clang]
+ci_target_postfix:          OSX-OSX_10_11-Clang-OSX-OSX_10_11-X86_64
+build_target_dir:           mac_x64
+build_node_labels:          mac-clang-10.11-x64
+
 [meta.mac_1010.x64.android_armv5]
 build_target_dir:           android_armv5/mac_x64
 build_node_labels:          mac-clang-10.10-x64_Android-armv5
