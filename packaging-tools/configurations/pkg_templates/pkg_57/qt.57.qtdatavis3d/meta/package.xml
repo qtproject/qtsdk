@@ -4,7 +4,7 @@
     <Description>License options: GPLv3 or Commercial&lt;br&gt;&lt;br&gt;NOTE: Not licensed under LGPLv3&lt;br&gt;&lt;br&gt;Qt Data Visualization is a module which provides a way to visualize data in 3D. There are C++ classes and QML types for displaying bar graphs, scatter graphs, surface graphs and ways of manipulating the 3D scene. In addition, the graphs are fully customizable with different themes.</Description>
     <Version>5.7.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Default>true</Default>
+    <Default>false</Default>
     <SortingPriority>88</SortingPriority>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
