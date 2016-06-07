@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Examples for Qt Scxml (Technology Preview)</DisplayName>
     <Description>Examples for Qt Scxml (Technology Preview)</Description>
-    <Version>5.7.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.7.0-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <AutoDependOn>qt.57.qtscxml</AutoDependOn>
     <Virtual>true</Virtual>

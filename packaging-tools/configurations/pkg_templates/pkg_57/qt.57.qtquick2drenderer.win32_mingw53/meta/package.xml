@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt Quick 2D Renderer for MinGW 5.3.0 32-bit</DisplayName>
     <Description></Description>
-    <Version>5.7.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.7.0-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <AutoDependOn>qt.57.qtquick2drenderer, qt.57.win32_mingw53</AutoDependOn>
     <Dependencies>qt.57.win32_mingw53</Dependencies>

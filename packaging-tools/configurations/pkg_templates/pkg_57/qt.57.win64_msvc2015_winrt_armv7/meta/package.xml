@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Universal Windows Platform armv7 (MSVC2015)</DisplayName>
     <Description>Qt 5.7.0 Prebuilt Components for Universal Windows Platform</Description>
-    <Version>5.7.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.7.0-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.tools.qtcreator, qt.57.doc, qt.57.examples</Dependencies>
     <Default>true</Default>

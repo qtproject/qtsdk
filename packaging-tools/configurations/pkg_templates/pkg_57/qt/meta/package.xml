@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt</DisplayName>
     <Description>Qt 5.7.0</Description>
-    <Version>5.7.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.7.0-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.license.thirdparty, qt.license.lgpl</Dependencies>
     <Script>installscript.qs</Script>

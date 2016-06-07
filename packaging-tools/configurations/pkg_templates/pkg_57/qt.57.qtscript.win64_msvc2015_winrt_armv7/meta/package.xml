@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt Script for Universal Windows Platform armv7 (MSVC2015)</DisplayName>
     <Description></Description>
-    <Version>5.7.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.7.0-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <AutoDependOn>qt.57.qtscript, qt.57.win64_msvc2015_winrt_armv7</AutoDependOn>
     <Dependencies>qt.57.win64_msvc2015_winrt_armv7</Dependencies>

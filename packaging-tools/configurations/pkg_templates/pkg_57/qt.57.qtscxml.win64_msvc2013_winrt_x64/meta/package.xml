@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt Scxml for Windows Runtime 8.1 x64 (MSVC2013)</DisplayName>
     <Description></Description>
-    <Version>5.7.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.7.0-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <AutoDependOn>qt.57.qtscxml, qt.57.win64_msvc2013_winrt_x64</AutoDependOn>
     <Dependencies>qt.57.win64_msvc2013_winrt_x64</Dependencies>

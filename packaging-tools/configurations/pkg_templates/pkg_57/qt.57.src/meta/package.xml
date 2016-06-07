@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Sources</DisplayName>
     <Description>Qt 5.7.0 Source Components</Description>
-    <Version>5.7.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.7.0-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Script>installscript.qs</Script>
     <SortingPriority>100</SortingPriority> <!-- Priority of this component when visible in the tree. Highest priority number is on top. -->
