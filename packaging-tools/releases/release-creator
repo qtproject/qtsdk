@@ -11,9 +11,9 @@ linux-x64:                  installer-framework-build-linux-x64.7z
 mac-x64:                    installer-framework-build-mac-x64.7z
 
 [release.global]
-version:                    4.0.1
+version:                    4.0.2
 version_tag:
-arg_substitution_list:      @QT_CREATOR_BASE_PATH@=snapshots/4.0.1_56x/latest_successful
+arg_substitution_list:      @QT_CREATOR_BASE_PATH@=snapshots/4.0.2_57x/latest_successful
 
 
 ################################################################################
