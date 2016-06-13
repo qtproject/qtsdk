@@ -617,6 +617,8 @@ def substitute_global_tags():
     print '%PACKAGE_CREATION_DATE%        = ' + BUILD_TIMESTAMP
     print '%SDK_VERSION_NUM%              = ' + INSTALLER_NAMING_SCHEME_VERSION_NUM
     print '%VERSION_NUMBER_AUTO_INCREASE% = ' + VERSION_NUMBER_AUTO_INCREASE_VALUE
+    for item in KEY_SUBSTITUTION_LIST:
+        print item[0] + ' = ' + item[1]
 
     # initialize the file list
     fileslist = []
@@ -629,6 +631,8 @@ def substitute_global_tags():
     bldinstallercommon.replace_in_files(fileslist, SDK_VERSION_NUM_TAG, INSTALLER_NAMING_SCHEME_VERSION_NUM)
     bldinstallercommon.replace_in_files(fileslist, PACKAGE_CREATION_DATE_TAG, BUILD_TIMESTAMP)
     bldinstallercommon.replace_in_files(fileslist, VERSION_NUMBER_AUTO_INCREASE_TAG, VERSION_NUMBER_AUTO_INCREASE_VALUE)
+    for item in KEY_SUBSTITUTION_LIST:
+        bldinstallercommon.replace_in_files(fileslist, item[0], item[1])
 
 
 ##############################################################
@@ -1372,4 +1376,3 @@ def create_installer():
 # Start build process
 ##############################################################
 main()
-
