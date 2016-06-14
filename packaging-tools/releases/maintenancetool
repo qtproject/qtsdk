@@ -43,7 +43,7 @@ repo_url_specifier:         windows_x86/desktop/tools_maintenance
 
 
 ################################################################################
-## Mac repository
+## macOS repository
 ################################################################################
 [release.maintenancetool.repository.mac.x64]
 arg_configurations_file:    repository_configs/tools_desktop/mac_x64_repository_tools_maintenancetool

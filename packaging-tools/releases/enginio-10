@@ -43,7 +43,7 @@ repo_url_specifier:         windows_x86/desktop/enginio_src
 
 
 ################################################################################
-## Mac repository
+## macOS repository
 ################################################################################
 [release.enginio.repository.mac.x64.enginio_src]
 arg_configurations_file:    repository_configs/enginio/repository_enginio_src

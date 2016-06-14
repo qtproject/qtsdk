@@ -68,7 +68,7 @@ repo_url_specifier:         windows_x86/android/extras/qtwebview
 
 
 ################################################################################
-## Mac repository
+## macOS repository
 ################################################################################
 
 [release.qtwebview.repository.mac.x64]

@@ -16,7 +16,7 @@
         <Repository>
             <Url>http://download.qt.io/online/qtsdkrepository/mac_x64/root/qt/</Url>
             <Enabled>1</Enabled>
-            <DisplayName>Qt Mac-x64 online root repository</DisplayName>
+            <DisplayName>Qt macOS-x64 online root repository</DisplayName>
         </Repository>
     </RemoteRepositories>
     <!-- @homeDir@ and @rootDir@ are some of the supported vars -->

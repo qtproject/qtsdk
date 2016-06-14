@@ -53,7 +53,7 @@ installer_name:             qt-opensource-testclient-windows-x86-%GLOBAL_VERSION
 rta_key_list:               Qt_RTA_opensource_onlineInstaller_tests_windows_mingw_msvc_LatestQt, Qt_RTA_opensource_onlineInstaller_tests_windows_android_LatestQt, Qt_RTA_opensource_onlineInstaller_tests_windows_winrt_LatestQt
 
 ################################################################################
-## Mac online client
+## macOS online client
 ################################################################################
 [release.onlineclient.online.mac.x64]
 arg_configurations_file:    online_installer_jobs/opensource/mac_x64_online

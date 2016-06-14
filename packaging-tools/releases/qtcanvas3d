@@ -43,7 +43,7 @@ repo_url_specifier:         windows_x86/desktop/extras_src/qtcanvas3d
 
 
 ################################################################################
-## Mac repository
+## macOS repository
 ################################################################################
 [release.qtcanvas3d.repository.mac.x64.src]
 arg_configurations_file:    repository_configs/extras/qtcanvas3d/repository_qtcanvas3d_src_doc_examples

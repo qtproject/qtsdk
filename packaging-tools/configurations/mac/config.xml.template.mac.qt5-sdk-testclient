@@ -17,7 +17,7 @@
         <Repository>
             <Url>http://it-ap144-hki.ci.local/opensource/qtsdkrepository/mac_x64/root/qt</Url>
             <Enabled>1</Enabled>
-            <DisplayName>Online Test Server: Qt Mac-x64 root online repository</DisplayName>
+            <DisplayName>Online Test Server: Qt macOS-x64 root online repository</DisplayName>
         </Repository>
     </RemoteRepositories>
     <!-- @homeDir@ and @rootDir@ are some of the supported vars -->

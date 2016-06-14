@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
     <DisplayName>Add-On modules</DisplayName>
-    <Description>Qt 5.2.0 Prebuilt Add-on modules for OS X</Description>
+    <Description>Qt 5.2.0 Prebuilt Add-on modules for macOS</Description>
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.520.clang_64.essentials</Dependencies> <!-- Comma-separated list of dependencies - optional -->

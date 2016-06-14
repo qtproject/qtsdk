@@ -95,7 +95,7 @@ rta_key_list:               Qt_RTA_opensource_offlineInstallerQtMinor_tests_linu
 
 
 ################################################################################
-## Mac offline
+## macOS offline
 ################################################################################
 [release.55.offline.mac.x64]
 arg_configurations_file:    offline_installer_jobs/5.5/mac_x64
@@ -248,7 +248,7 @@ rta_key_list:
 
 
 ################################################################################
-## Mac repository
+## macOS repository
 ################################################################################
 [release.55.repository.mac.x64]
 arg_configurations_file:    repository_configs/desktop_qt5/mac_x64_repository_55

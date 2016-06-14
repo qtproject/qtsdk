@@ -43,7 +43,7 @@ repo_url_specifier:         windows_x86/desktop/tools_generic
 
 
 ################################################################################
-## Mac repository
+## macOS repository
 ################################################################################
 [release.root.repository.mac.x64]
 arg_configurations_file:    repository_configs/qt/mac_x64_repository_qt

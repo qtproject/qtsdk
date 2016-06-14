@@ -43,7 +43,7 @@ repo_url_specifier:         windows_x86/desktop/qt5_doc_examples
 
 
 ################################################################################
-## Mac repository
+## macOS repository
 ################################################################################
 [release.53.repository.mac.x64]
 arg_configurations_file:    repository_configs/desktop_qt5/repository_53_doc_examples

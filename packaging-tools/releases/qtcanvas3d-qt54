@@ -76,7 +76,7 @@ repo_url_specifier:         windows_x86/winrt/extras/qtcanvas3d
 
 
 ################################################################################
-## Mac repository
+## macOS repository
 ################################################################################
 
 [release.qtcanvas3d.repository.mac.x64]

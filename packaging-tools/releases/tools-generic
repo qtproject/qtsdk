@@ -42,7 +42,7 @@ repo_url_specifier:         windows_x86/desktop/tools_generic
 
 
 ################################################################################
-## Mac repository
+## macOS repository
 ################################################################################
 [release.tools.repository.mac.x64]
 arg_configurations_file:    repository_configs/tools_desktop/repository_generic

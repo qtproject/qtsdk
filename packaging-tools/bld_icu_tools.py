@@ -225,7 +225,7 @@ def get_icu_env(icu_lib_path, icu_include_path):
         icu_environment['CPLUS_INCLUDE_PATH'] = icu_include_path
         icu_environment['CPATH'] = icu_include_path
     elif bldinstallercommon.is_mac_platform():
-        print('*** ICU build for Mac not implemented yet!')
+        print('*** ICU build for macOS not implemented yet!')
     elif bldinstallercommon.is_win_platform():
         icu_environment['PATH'] = icu_lib_path
         icu_environment['LIB'] = icu_lib_path
@@ -333,7 +333,7 @@ def init_build_icu(icu_src, icu_version = '', archive_icu = False, environment =
     if bldinstallercommon.is_linux_platform():
         icu_configuration = build_icu_linux(environment, os.path.join(SCRIPT_ROOT_DIR, icu_src_dir), archive_icu)
     elif bldinstallercommon.is_mac_platform():
-        print('*** ICU build for Mac not implemented yet!')
+        print('*** ICU build for macOS not implemented yet!')
     elif bldinstallercommon.is_win_platform():
         icu_configuration = build_icu_win(environment, os.path.join(SCRIPT_ROOT_DIR, icu_src_dir), archive_icu)
     else:

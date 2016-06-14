@@ -99,7 +99,7 @@ rta_key_list:               Qt5_RTA_opensource_installer_tests_linux_android_64b
 
 
 ################################################################################
-## Mac offline
+## macOS offline
 ################################################################################
 [release.53.offline.mac.x64]
 arg_configurations_file:    offline_installer_jobs/5.3/mac_x64
@@ -269,7 +269,7 @@ repo_url_specifier:         windows_x86/winrt/qt5_53
 
 
 ################################################################################
-## Mac repository
+## macOS repository
 ################################################################################
 [release.53.repository.mac.x64]
 arg_configurations_file:    repository_configs/desktop_qt5/mac_x64_repository_53

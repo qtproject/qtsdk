@@ -42,7 +42,7 @@ repo_url_specifier:         windows_x86/desktop/licenses
 
 
 ################################################################################
-## Mac repository
+## macOS repository
 ################################################################################
 [release.tools.repository.mac.x64]
 arg_configurations_file:    repository_configs/licenses/repository_licenses

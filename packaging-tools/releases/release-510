@@ -21,7 +21,7 @@ version_tag:
 
 
 ################################################################################
-## Mac offline
+## macOS offline
 ################################################################################
 
 
@@ -81,7 +81,7 @@ repo_url_specifier:         windows_x86/android/qt5
 
 
 ################################################################################
-## Mac repository
+## macOS repository
 ################################################################################
 [release.510.repository.mac.x64]
 arg_configurations_file:    repository_configs/desktop_qt5/mac_x64_repository_510

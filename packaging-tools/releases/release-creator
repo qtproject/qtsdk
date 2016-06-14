@@ -46,7 +46,7 @@ repo_url_specifier:         windows_x86/desktop/tools_qtcreator
 
 
 ################################################################################
-## Mac repository
+## macOS repository
 ################################################################################
 [release.qtcreator.repository.mac.x64]
 arg_configurations_file:    repository_configs/tools_desktop/mac_x64_repository_tools_qtcreator

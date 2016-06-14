@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>OS X</DisplayName>
-    <Description>Qt 5.0.2 Prebuilt Components for OS X</Description>
+    <DisplayName>macOS</DisplayName>
+    <Description>Qt 5.0.2 Prebuilt Components for macOS</Description>
     <Version>%QT_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <!--<Dependencies></Dependencies>--> <!-- Comma-separated list of dependencies - optional -->

@@ -43,7 +43,7 @@ repo_url_specifier:         windows_x86/desktop/extras_src/qtwebview
 
 
 ################################################################################
-## Mac repository
+## macOS repository
 ################################################################################
 [release.qtwebview.repository.mac.x64.src]
 arg_configurations_file:    repository_configs/extras/qtwebview/qt5.4/repository_qtwebview_src_doc_examples

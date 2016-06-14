@@ -40,7 +40,7 @@ arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=ta
 
 
 ################################################################################
-## Mac offline
+## macOS offline
 ################################################################################
 [release.511.offline.mac.x64]
 arg_configurations_file:    mac_x86_64_offline
@@ -130,7 +130,7 @@ repo_url_specifier:         windows_x86/android/qt5
 
 
 ################################################################################
-## Mac repository
+## macOS repository
 ################################################################################
 [release.511.repository.mac.x64]
 arg_configurations_file:    repository_configs/desktop_qt5/mac_x64_repository_511

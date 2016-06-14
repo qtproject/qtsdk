@@ -99,7 +99,7 @@ rta_key_list:               Qt_RTA_opensource_offlineInstallerQt54x_tests_linux_
 
 
 ################################################################################
-## Mac offline
+## macOS offline
 ################################################################################
 [release.54.offline.mac.x64]
 arg_configurations_file:    offline_installer_jobs/5.4/mac_x64
@@ -270,7 +270,7 @@ rta_key_list:
 
 
 ################################################################################
-## Mac repository
+## macOS repository
 ################################################################################
 [release.54.repository.mac.x64]
 arg_configurations_file:    repository_configs/desktop_qt5/mac_x64_repository_54

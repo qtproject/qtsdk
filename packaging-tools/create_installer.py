@@ -1293,9 +1293,9 @@ def inject_update_rcc_to_archive(archive_file_path, file_to_be_injected):
 # Create the final installer binary
 ##############################################################
 def create_mac_disk_image():
-    """Create Mac disk image."""
+    """Create Apple disk image."""
     print '=================================================='
-    print '= Create mac disk image'
+    print '= Create Apple disk image'
     print '=================================================='
 
     # create disk image

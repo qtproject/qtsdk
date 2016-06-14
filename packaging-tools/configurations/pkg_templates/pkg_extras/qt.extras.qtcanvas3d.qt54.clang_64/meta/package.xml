@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>Qt Canvas 3D for OS X</DisplayName>
+    <DisplayName>Qt Canvas 3D for macOS</DisplayName>
     <Description></Description>
     <Version>1.0.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>

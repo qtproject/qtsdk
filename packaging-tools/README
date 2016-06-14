@@ -21,7 +21,7 @@
     - 7z
 
     Build requirements:
-    - Linux/Mac: gcc toolchain
+    - Linux/macOS: gcc toolchain
     - Windows: MinGW/Visual Studio toolchain
 
 3.  Quick start
@@ -106,7 +106,7 @@
                 OR
                 python create_installer.py linux -f linux_x86_64_beta --offline --devmode
 
-    Mac:        python create_installer.py mac -f mac_x86_64_beta --offline --devmode
+    macOS:      python create_installer.py mac -f mac_x86_64_beta --offline --devmode
 
     Windows:    python create_installer.py -f win_x86_beta --offline --devmode
 
@@ -403,7 +403,7 @@
     'devmode' the script will build the Qt Installer-Framework and static
     Qt libraries for it on the fly.
 
-    For each platform (Linux, Windows, Mac) there is corresponding
+    For each platform (Linux, Windows, macOS) there is corresponding
     'installer-framework' configuration file:
 
         '/configurations/linux/installer-framework'

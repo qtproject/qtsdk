@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>OS X</DisplayName>
-    <Description>License options: LGPLv3, LGPLv2.1, Commercial&lt;br&gt;&lt;br&gt;Qt 5.6.1 Prebuilt Components for OS X</Description>
+    <DisplayName>macOS</DisplayName>
+    <Description>License options: LGPLv3, LGPLv2.1, Commercial&lt;br&gt;&lt;br&gt;Qt 5.6.1 Prebuilt Components for macOS</Description>
     <Version>5.6.1-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.tools.qtcreator, qt.56.doc, qt.56.examples</Dependencies>

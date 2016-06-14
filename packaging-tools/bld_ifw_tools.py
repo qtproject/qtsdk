@@ -202,7 +202,7 @@ class IfwOptions:
         if product_key_checker_pri:
             if os.path.isfile(product_key_checker_pri):
                 self.qt_installer_framework_qmake_args      += ['-r', 'PRODUCTKEYCHECK_PRI_FILE=' + self.product_key_checker_pri]
-        # Mac specific
+        # macOS specific
         if bldinstallercommon.is_mac_platform():
             self.qt_installer_framework_qmake_args += ['-r', '"LIBS+=-framework IOKit"']
         # sanity check

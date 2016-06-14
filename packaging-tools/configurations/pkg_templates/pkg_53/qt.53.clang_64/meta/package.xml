@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>OS X</DisplayName>
-    <Description>Qt 5.3.2 Prebuilt Components for OS X</Description>
+    <DisplayName>macOS</DisplayName>
+    <Description>Qt 5.3.2 Prebuilt Components for macOS</Description>
     <Version>5.3.2-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.tools.qtcreator</Dependencies>

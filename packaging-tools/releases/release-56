@@ -93,7 +93,7 @@ rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-561_tests_li
 
 
 ################################################################################
-## Mac offline
+## macOS offline
 ################################################################################
 [release.56.offline.mac.x64]
 arg_configurations_file:    offline_installer_jobs/5.6/mac_x64
@@ -259,7 +259,7 @@ rta_key_list:               Qt_RTA_opensource_onlineInstaller_tests_windows_winr
 
 
 ################################################################################
-## Mac repository
+## macOS repository
 ################################################################################
 [release.56.repository.mac.x64]
 arg_configurations_file:    repository_configs/desktop_qt5/mac_x64_repository_56

@@ -73,7 +73,7 @@ repo_url_specifier:         windows_x86/android/enginio
 
 
 ################################################################################
-## Mac repository
+## macOS repository
 ################################################################################
 [release.enginio.repository.mac.x64]
 arg_configurations_file:    repository_configs/enginio/qt53/mac_x64_repository_enginio
