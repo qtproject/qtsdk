@@ -46,83 +46,83 @@ archives:               57.win64_msvc2013_winphone_arm.qtbase,
                         57.win64_msvc2013_winphone_arm.qt3d,
                         57.win64_msvc2013_winphone_arm.qtcanvas3d,
                         57.win64_msvc2013_winphone_arm.qtwebview
-target_install_base:    /@QT_VERSION_MINOR@/winphone_arm
+target_install_base:    /%QT_VERSION_MINOR%/winphone_arm
 [57.win64_msvc2013_winphone_arm.qtbase]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtbase/qtbase-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtbase/qtbase-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
 [57.win64_msvc2013_winphone_arm.qtconnectivity]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtconnectivity/qtconnectivity-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtconnectivity/qtconnectivity-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
 [57.win64_msvc2013_winphone_arm.qtwebchannel]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebchannel/qtwebchannel-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebchannel/qtwebchannel-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
 [57.win64_msvc2013_winphone_arm.qtmultimedia]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtmultimedia/qtmultimedia-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtmultimedia/qtmultimedia-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
 [57.win64_msvc2013_winphone_arm.qttranslations]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qttranslations/qttranslations-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qttranslations/qttranslations-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
 [57.win64_msvc2013_winphone_arm.qtgraphicaleffects]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtgraphicaleffects/qtgraphicaleffects-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgraphicaleffects/qtgraphicaleffects-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
 [57.win64_msvc2013_winphone_arm.qtsvg]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtsvg/qtsvg-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtsvg/qtsvg-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
 [57.win64_msvc2013_winphone_arm.qtdeclarative]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdeclarative/qtdeclarative-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtdeclarative/qtdeclarative-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
 [57.win64_msvc2013_winphone_arm.qtwebsockets]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebsockets/qtwebsockets-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebsockets/qtwebsockets-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
 [57.win64_msvc2013_winphone_arm.qtimageformats]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtimageformats/qtimageformats-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtimageformats/qtimageformats-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
 [57.win64_msvc2013_winphone_arm.qttools]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qttools/qttools-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qttools/qttools-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
 [57.win64_msvc2013_winphone_arm.qtxmlpatterns]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtxmlpatterns/qtxmlpatterns-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtxmlpatterns/qtxmlpatterns-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
 [57.win64_msvc2013_winphone_arm.qtsensors]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtsensors/qtsensors-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtsensors/qtsensors-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
 [57.win64_msvc2013_winphone_arm.qtlocation]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtlocation/qtlocation-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
 [57.win64_msvc2013_winphone_arm.qtquickcontrols]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcontrols-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtquickcontrols/qtquickcontrols-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
 [57.win64_msvc2013_winphone_arm.qtquickcontrols2]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickcontrols2-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtquickcontrols2/qtquickcontrols2-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
 [57.win64_msvc2013_winphone_arm.qt3d]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qt3d/qt3d-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
 [57.win64_msvc2013_winphone_arm.qtcanvas3d]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtcanvas3d/qtcanvas3d-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
 [57.win64_msvc2013_winphone_arm.qtwebview]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebview/qtwebview-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
 
 
 # QtCharts provided as separate installable component in installer
 [qt.57.qtcharts]
 [qt.57.qtcharts.win64_msvc2013_winphone_arm]
 archives:               57.qtcharts.win64_msvc2013_winphone_arm
-target_install_base:    /@QT_VERSION_MINOR@/winphone_arm
+target_install_base:    /%QT_VERSION_MINOR%/winphone_arm
 [57.qtcharts.win64_msvc2013_winphone_arm]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcharts/qtcharts-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtcharts/qtcharts-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
 
 # QtDataVisualization provided as separate installable component in installer
 [qt.57.qtdatavis3d]
 [qt.57.qtdatavis3d.win64_msvc2013_winphone_arm]
 archives:               57.qtdatavis3d.win64_msvc2013_winphone_arm
-target_install_base:    /@QT_VERSION_MINOR@/winphone_arm
+target_install_base:    /%QT_VERSION_MINOR%/winphone_arm
 [57.qtdatavis3d.win64_msvc2013_winphone_arm]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdatavis3d/qtdatavis3d-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtdatavis3d/qtdatavis3d-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
 
 # QtPurchasing provided as separate installable component in installer
 [qt.57.qtpurchasing]
 [qt.57.qtpurchasing.win64_msvc2013_winphone_arm]
 archives:               57.qtpurchasing.win64_msvc2013_winphone_arm
-target_install_base:    /@QT_VERSION_MINOR@/winphone_arm
+target_install_base:    /%QT_VERSION_MINOR%/winphone_arm
 [57.qtpurchasing.win64_msvc2013_winphone_arm]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtpurchasing/qtpurchasing-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtpurchasing/qtpurchasing-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
 
 # QtQuick2DRenderer provided as separate installable component in installer
 [qt.57.qtquick2drenderer]
 [qt.57.qtquick2drenderer.win64_msvc2013_winphone_arm]
 archives:               57.qtquick2drenderer.win64_msvc2013_winphone_arm
-target_install_base:    /@QT_VERSION_MINOR@/winphone_arm
+target_install_base:    /%QT_VERSION_MINOR%/winphone_arm
 [57.qtquick2drenderer.win64_msvc2013_winphone_arm]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdeclarative-render2d/qtdeclarative-render2d-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtdeclarative-render2d/qtdeclarative-render2d-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
 
 # QtScxml provided as separate installable component in installer
 [qt.57.qtscxml]
 [qt.57.qtscxml.win64_msvc2013_winphone_arm]
 archives:               57.qtscxml.win64_msvc2013_winphone_arm
-target_install_base:    /@QT_VERSION_MINOR@/winphone_arm
+target_install_base:    /%QT_VERSION_MINOR%/winphone_arm
 [57.qtscxml.win64_msvc2013_winphone_arm]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtscxml/qtscxml-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscxml/qtscxml-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z

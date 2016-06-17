@@ -45,5 +45,5 @@
 archives:               53.qnx6_x86.essentials
 target_install_base:    /5.3/qnx6-x86
 [53.qnx6_x86.essentials]
-archive_uri:            /qt/@QT_VERSION@/latest/qnx6_x86/linux_x64/qt5_essentials.7z
+archive_uri:            /qt/%QT_VERSION%/latest/qnx6_x86/linux_x64/qt5_essentials.7z
 package_finalize_items: delete_doc_directory

@@ -42,9 +42,9 @@
 
 [qt.cloudservices.enginio.102_1.win64_msvc2013_64_opengl]
 archives:               cloudservices.enginio.102_1.win64_msvc2013_64_opengl
-target_install_base:    /@QT_INSTALL_DIR_NAME@/msvc2013_64_opengl
+target_install_base:    /%QT_INSTALL_DIR_NAME%/msvc2013_64_opengl
 [cloudservices.enginio.102_1.win64_msvc2013_64_opengl]
-archive_uri:            /qtenginio/@QTENGINIO_VERSION@/latest/windows_vs2013_64_opengl/qt5_qtenginio.7z
+archive_uri:            /qtenginio/%QTENGINIO_VERSION%/latest/windows_vs2013_64_opengl/qt5_qtenginio.7z
 package_strip_dirs:     1
 package_finalize_items: delete_doc_directory
 

@@ -40,10 +40,10 @@ archives:               56.win64_mingw492.essentials,
                         54.win64_mingw492.opengl32sw.x64
 target_install_base:    /5.6/mingw492_64
 [56.win64_mingw492.essentials]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_mingw_64/qt5_essentials.7z
+archive_uri:            /qt/%QT_VERSION%/latest/windows_mingw_64/qt5_essentials.7z
 package_finalize_items: delete_doc_directory
 [56.win64_mingw492.addons]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_mingw_64/qt5_addons.7z
+archive_uri:            /qt/%QT_VERSION%/latest/windows_mingw_64/qt5_addons.7z
 package_finalize_items: delete_doc_directory
 [56.win64_mingw492.icu_541.mingw_64]
 archive_uri:            http://download.qt.io/development_releases/prebuilt/icu/prebuilt/54.1/icu-win-MinGW4.9.2-Windows7-x64.7z

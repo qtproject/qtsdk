@@ -36,7 +36,7 @@ optional_for_offline:   true
 archives:               extras.qtcanvas3d.qt54.win32_msvc2010_opengl
 target_install_base:    /5.4/msvc2010_opengl
 [extras.qtcanvas3d.qt54.win32_msvc2010_opengl]
-archive_uri:            /qtcanvas3d/@QTCANVAS3D_VERSION@/@QT_VERSION_MINOR@/latest_successful/windows_vs2010_32_opengl/qt5_qtcanvas3d.7z
+archive_uri:            /qtcanvas3d/%QTCANVAS3D_VERSION%/%QT_VERSION_MINOR%/latest_successful/windows_vs2010_32_opengl/qt5_qtcanvas3d.7z
 package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:

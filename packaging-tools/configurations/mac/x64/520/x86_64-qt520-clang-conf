@@ -46,7 +46,7 @@ version_tag:            %QT_VERSION%
 
 [qt.520.clang_64.essentials]
 archives:               520.clang_64.essentials
-target_install_base:    /@QT_VERSION@/clang_64
+target_install_base:    /%QT_VERSION%/clang_64
 version:                5.2.0
 version_tag:            %QT_VERSION%
 package_default:        true
@@ -59,7 +59,7 @@ archive_name:           clang_64_mac_qt5_essentials.7z
 
 [qt.520.clang_64.addons]
 archives:               520.clang_64.addons
-target_install_base:    /@QT_VERSION@/clang_64
+target_install_base:    /%QT_VERSION%/clang_64
 version:                5.2.0
 version_tag:            %QT_VERSION%
 package_default:        true

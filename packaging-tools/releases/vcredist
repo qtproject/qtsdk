@@ -18,7 +18,7 @@ version_tag:
 ################################################################################
 [release.vcredist.repository.windows.x86]
 arg_configurations_file:    repository_configs/tools_desktop/win_x86_repository_tools_vcredist
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
 repo_content_type:          vcredist
 repo_components_to_update:  qt.tools.vcredist,qt.tools.vcredist_64,qt.tools.vcredist_msvc2013_x86,qt.tools.vcredist_msvc2015_x86
 repo_url_specifier:         windows_x86/desktop/tools_vcredist

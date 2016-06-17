@@ -35,7 +35,7 @@
 archives:               extras.qtwebview.qt55.android_armv7
 target_install_base:    /5.5/android_armv7
 [extras.qtwebview.qt55.android_armv7]
-archive_uri:            /qtwebview/@QTWEBVIEW_VERSION@/@QT_VERSION_MINOR@/latest_successful/android_armv7/linux_x86/qt5_qtwebview.7z
+archive_uri:            /qtwebview/%QTWEBVIEW_VERSION%/%QT_VERSION_MINOR%/latest_successful/android_armv7/linux_x86/qt5_qtwebview.7z
 package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:

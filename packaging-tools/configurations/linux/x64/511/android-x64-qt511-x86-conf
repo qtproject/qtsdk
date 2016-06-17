@@ -50,7 +50,7 @@ version_tag:            %QT_VERSION%
 
 [qt.511.android_x86.essentials]
 archives:               511.android_x86.essentials
-target_install_base:    /@QT_VERSION@/android_x86
+target_install_base:    /%QT_VERSION%/android_x86
 version:                5.1.1
 version_tag:            %QT_VERSION%
 package_default:        true
@@ -63,7 +63,7 @@ archive_name:           android_x86_qt5_essentials.7z
 
 [qt.511.android_x86.addons]
 archives:               511.android_x86.addons
-target_install_base:    /@QT_VERSION@/android_x86
+target_install_base:    /%QT_VERSION%/android_x86
 version:                5.1.1
 version_tag:            %QT_VERSION%
 package_default:        true

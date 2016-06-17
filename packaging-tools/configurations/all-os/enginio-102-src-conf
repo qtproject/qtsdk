@@ -47,7 +47,7 @@
 archives:               enginio.10.src
 target_install_base:    /CloudServices/Enginio/1.0/Src
 [enginio.10.src]
-archive_uri:            /qtenginio/@QTENGINIO_VERSION@/latest/src/single/qtenginio-@LICENSE@-src-@QTENGINIO_VERSION@.@SRC_ARCHIVE_TYPE@
+archive_uri:            /qtenginio/%QTENGINIO_VERSION%/latest/src/single/qtenginio-%LICENSE%-src-%QTENGINIO_VERSION%.%SRC_ARCHIVE_TYPE%
 target_install_dir:
 package_strip_dirs:     1
 
@@ -55,7 +55,7 @@ package_strip_dirs:     1
 archives:               enginio.10.doc
 target_install_base:    /Docs/QtEnginio-1.0/
 [enginio.10.doc]
-archive_uri:            /qtenginio/@QTENGINIO_VERSION@/latest/src/doc/qtenginio-@LICENSE@-doc-@QTENGINIO_VERSION@.7z
+archive_uri:            /qtenginio/%QTENGINIO_VERSION%/latest/src/doc/qtenginio-%LICENSE%-doc-%QTENGINIO_VERSION%.7z
 target_install_dir:
 package_strip_dirs:     1
 
@@ -63,7 +63,7 @@ package_strip_dirs:     1
 archives:               enginio.10.examples
 target_install_base:    /Examples/QtEnginio-1.0/
 [enginio.10.examples]
-archive_uri:            /qtenginio/@QTENGINIO_VERSION@/latest/src/examples_injection/examples_qtenginio.7z
+archive_uri:            /qtenginio/%QTENGINIO_VERSION%/latest/src/examples_injection/examples_qtenginio.7z
 target_install_dir:
 package_strip_dirs:     2
 

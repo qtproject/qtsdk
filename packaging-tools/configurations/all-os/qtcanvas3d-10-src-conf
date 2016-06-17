@@ -37,6 +37,6 @@ optional_for_offline:   true
 archives:               qtcanvas3d.10.src
 target_install_base:    /Extras/QtCanvas3D/1.0/Src
 [qtcanvas3d.10.src]
-archive_uri:            /qtcanvas3d/@QTCANVAS3D_VERSION@/latest_successful/src/qtcanvas3d-@LICENSE@-src-@QTCANVAS3D_VERSION@.@SRC_ARCHIVE_TYPE@
+archive_uri:            /qtcanvas3d/%QTCANVAS3D_VERSION%/latest_successful/src/qtcanvas3d-%LICENSE%-src-%QTCANVAS3D_VERSION%.%SRC_ARCHIVE_TYPE%
 target_install_dir:
 package_strip_dirs:     1

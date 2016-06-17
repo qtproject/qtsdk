@@ -36,7 +36,7 @@
 archives:               extras.qtwebview.qt55.gcc
 target_install_base:    /5.5/gcc
 [extras.qtwebview.qt55.gcc]
-archive_uri:            /qtwebview/@QTWEBVIEW_VERSION@/@QT_VERSION_MINOR@/latest_successful/linux_gcc_32_rhel66/qt5_qtwebview.7z
+archive_uri:            /qtwebview/%QTWEBVIEW_VERSION%/%QT_VERSION_MINOR%/latest_successful/linux_gcc_32_rhel66/qt5_qtwebview.7z
 package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:           /lib

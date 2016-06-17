@@ -46,13 +46,13 @@ archives:               55.android_x86.essentials,
                         55.android_x86.qtpositioning
 target_install_base:    /5.5/android_x86
 [55.android_x86.essentials]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/android_x86/linux_x86/qt5_essentials.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/android_x86/linux_x86/qt5_essentials.7z
 package_finalize_items: delete_doc_directory
 [55.android_x86.addons]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/android_x86/linux_x86/qt5_addons.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/android_x86/linux_x86/qt5_addons.7z
 package_finalize_items: delete_doc_directory
 [55.android_x86.qtpositioning]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/android_x86/linux_x86/qt5_qtpositioning.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/android_x86/linux_x86/qt5_qtpositioning.7z
 package_finalize_items: delete_doc_directory
 
 # QtQuick1 provided as separate installable component in installer
@@ -61,7 +61,7 @@ package_finalize_items: delete_doc_directory
 archives:               55.qtquick1.android_x86
 target_install_base:    /5.5/android_x86
 [55.qtquick1.android_x86]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/android_x86/linux_x86/qt5_qtquick1.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/android_x86/linux_x86/qt5_qtquick1.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -71,7 +71,7 @@ package_finalize_items: delete_doc_directory
 archives:               55.qtscript.android_x86
 target_install_base:    /5.5/android_x86
 [55.qtscript.android_x86]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/android_x86/linux_x86/qt5_qtscript.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/android_x86/linux_x86/qt5_qtscript.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -82,7 +82,7 @@ package_finalize_items: delete_doc_directory
 archives:               55.qtquickcontrols.android_x86
 target_install_base:    /5.5/android_x86
 [55.qtquickcontrols.android_x86]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/android_x86/linux_x86/qt5_qtquickcontrols.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/android_x86/linux_x86/qt5_qtquickcontrols.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -92,7 +92,7 @@ package_finalize_items: delete_doc_directory
 archives:               55.qtlocation.android_x86
 target_install_base:    /5.5/android_x86
 [55.qtlocation.android_x86]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/android_x86/linux_x86/qt5_qtlocation.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/android_x86/linux_x86/qt5_qtlocation.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -102,7 +102,7 @@ package_finalize_items: delete_doc_directory
 archives:               55.qt3d.android_x86
 target_install_base:    /5.5/android_x86
 [55.qt3d.android_x86]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/android_x86/linux_x86/qt5_qt3d.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/android_x86/linux_x86/qt5_qt3d.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -112,6 +112,6 @@ package_finalize_items: delete_doc_directory
 archives:               55.qtcanvas3d.android_x86
 target_install_base:    /5.5/android_x86
 [55.qtcanvas3d.android_x86]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/android_x86/linux_x86/qt5_qtcanvas3d.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/android_x86/linux_x86/qt5_qtcanvas3d.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory

@@ -45,7 +45,7 @@ version_tag:            %QT_VERSION%
 
 [qt.521.ios.essentials]
 archives:               521.ios.essentials, 521.ios.essentials.docs, 521.ios.essentials.examples
-target_install_base:    /@QT_VERSION@/ios
+target_install_base:    /%QT_VERSION%/ios
 version:                5.2.1
 version_tag:            %QT_VERSION%
 package_default:        true
@@ -69,7 +69,7 @@ rpath_target:
 
 [qt.521.ios.addons]
 archives:               521.ios.addons, 521.ios.addons.examples
-target_install_base:    /@QT_VERSION@/ios
+target_install_base:    /%QT_VERSION%/ios
 version:                5.2.1
 version_tag:            %QT_VERSION%
 package_default:        true

@@ -46,11 +46,11 @@ archives:               53.gcc.essentials,
                         53.gcc.icu_521
 target_install_base:    /5.3/gcc
 [53.gcc.essentials]
-archive_uri:            /qt/@QT_VERSION@/latest/linux_gcc_32_ubuntu1110/qt5_essentials.7z
+archive_uri:            /qt/%QT_VERSION%/latest/linux_gcc_32_ubuntu1110/qt5_essentials.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 [53.gcc.addons]
-archive_uri:            /qt/@QT_VERSION@/latest/linux_gcc_32_ubuntu1110/qt5_addons.7z
+archive_uri:            /qt/%QT_VERSION%/latest/linux_gcc_32_ubuntu1110/qt5_addons.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 [53.gcc.icu_521]

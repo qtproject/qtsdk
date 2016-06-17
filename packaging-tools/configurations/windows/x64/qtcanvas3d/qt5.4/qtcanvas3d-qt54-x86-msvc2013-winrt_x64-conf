@@ -37,6 +37,6 @@ optional_for_offline:   true
 archives:               extras.qtcanvas3d.qt54.win64_msvc2013_winrt_x64
 target_install_base:    /5.4/winrt_x64
 [extras.qtcanvas3d.qt54.win64_msvc2013_winrt_x64]
-archive_uri:            /qtcanvas3d/@QTCANVAS3D_VERSION@/@QT_VERSION_MINOR@/latest_successful/windows_vs2013_winrt_x64/qt5_qtcanvas3d.7z
+archive_uri:            /qtcanvas3d/%QTCANVAS3D_VERSION%/%QT_VERSION_MINOR%/latest_successful/windows_vs2013_winrt_x64/qt5_qtcanvas3d.7z
 package_strip_dirs:     1
 package_finalize_items: delete_doc_directory

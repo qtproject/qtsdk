@@ -45,10 +45,10 @@ archives:               54.clang_64.essentials,
                         54.clang_64.addons
 target_install_base:    /5.4/clang_64
 [54.clang_64.essentials]
-archive_uri:            /qt/@QT_VERSION@/latest/mac_x64/qt5_essentials.7z
+archive_uri:            /qt/%QT_VERSION%/latest/mac_x64/qt5_essentials.7z
 package_finalize_items: delete_doc_directory
 [54.clang_64.addons]
-archive_uri:            /qt/@QT_VERSION@/latest/mac_x64/qt5_addons.7z
+archive_uri:            /qt/%QT_VERSION%/latest/mac_x64/qt5_addons.7z
 package_finalize_items: delete_doc_directory
 
 
@@ -58,6 +58,6 @@ package_finalize_items: delete_doc_directory
 archives:               54.qtwebengine.clang_64
 target_install_base:    /5.4/clang_64
 [54.qtwebengine.clang_64]
-archive_uri:            /qt/@QT_VERSION@/latest/mac_x64/qt5_qtwebengine.7z
+archive_uri:            /qt/%QT_VERSION%/latest/mac_x64/qt5_qtwebengine.7z
 package_finalize_items: delete_doc_directory
 

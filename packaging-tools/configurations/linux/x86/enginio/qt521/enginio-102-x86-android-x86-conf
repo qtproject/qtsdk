@@ -42,22 +42,22 @@
 
 [qt.cloudservices.enginio.10.android_x86]
 archives:               cloudservices.enginio.10.android_x86, cloudservices.enginio.10.android_x86_examples, cloudservices.enginio.10.android_x86_docs
-target_install_base:    /@QT_VERSION@/android_x86
+target_install_base:    /%QT_VERSION%/android_x86
 version:                1.0.2
 version_tag:            %ENGINIO_VERSION%
 package_default:        false
 [cloudservices.enginio.10.android_x86]
-archive_uri:            /qtenginio/@QTENGINIO_VERSION@/latest/android_x86/linux_x86/qt5_qtenginio.7z
+archive_uri:            /qtenginio/%QTENGINIO_VERSION%/latest/android_x86/linux_x86/qt5_qtenginio.7z
 package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:
 [cloudservices.enginio.10.android_x86_examples]
-archive_uri:            qtenginio/@QTENGINIO_VERSION@/latest/src/examples_injection/examples_qtenginio.@SRC_ARCHIVE_TYPE@
+archive_uri:            qtenginio/%QTENGINIO_VERSION%/latest/src/examples_injection/examples_qtenginio.%SRC_ARCHIVE_TYPE%
 package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:
 [cloudservices.enginio.10.android_x86_docs]
-archive_uri:            qtenginio/@QTENGINIO_VERSION@/latest/src/doc/qtenginio-@LICENSE@-doc-@QTENGINIO_VERSION@.7z
+archive_uri:            qtenginio/%QTENGINIO_VERSION%/latest/src/doc/qtenginio-%LICENSE%-doc-%QTENGINIO_VERSION%.7z
 package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:

@@ -37,7 +37,7 @@ optional_for_offline:   true
 archives:               extras.qtcanvas3d.qt54.android_armv5
 target_install_base:    /5.4/android_armv5
 [extras.qtcanvas3d.qt54.android_armv5]
-archive_uri:            /qtcanvas3d/@QTCANVAS3D_VERSION@/@QT_VERSION_MINOR@/latest_successful/android_armv5/mingw_x86/qt5_qtcanvas3d.7z
+archive_uri:            /qtcanvas3d/%QTCANVAS3D_VERSION%/%QT_VERSION_MINOR%/latest_successful/android_armv5/mingw_x86/qt5_qtcanvas3d.7z
 package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:

@@ -50,7 +50,7 @@ version_tag:            %QT_VERSION%
 
 [qt.521.android_x86.essentials]
 archives:               521.android_x86.essentials, 521.android_x86.icu_51.mingw_32, 521.android_x86.mingw48.runtime, 521.android_x86.docs, 521.android_x86.examples
-target_install_base:    /@QT_VERSION@/android_x86
+target_install_base:    /%QT_VERSION%/android_x86
 version:                5.2.1
 version_tag:            %QT_VERSION%
 package_default:        true

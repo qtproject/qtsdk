@@ -37,6 +37,6 @@ optional_for_offline:   true
 archives:               extras.qtwebview.qt54.win64_msvc2013_64_opengl
 target_install_base:    /5.4/msvc2013_64_opengl
 [extras.qtwebview.qt54.win64_msvc2013_64_opengl]
-archive_uri:            /qtwebview/@QTWEBVIEW_VERSION@/@QT_VERSION_MINOR@/latest_successful/windows_vs2013_64_opengl/qt5_qtwebview.7z
+archive_uri:            /qtwebview/%QTWEBVIEW_VERSION%/%QT_VERSION_MINOR%/latest_successful/windows_vs2013_64_opengl/qt5_qtwebview.7z
 package_strip_dirs:     1
 package_finalize_items: delete_doc_directory

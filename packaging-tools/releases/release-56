@@ -16,12 +16,12 @@ version:                        5.6.1
 version_tag:
 module_exclude_list:            qtdocgallery, qtfeedback, qtjsondb, qtpim, qtqa, qtrepotools, qtserialbus, qtsystems
 module_separate_install_list:   qtwebengine, qtscript, qt3d, qtcanvas3d, qtlocation, qtquickcontrols, qtwebview, qtserialbus
-arg_substitution_list:          @QT_VERSION@=%GLOBAL_VERSION%,
-                                @QT_VERSION_MINOR@=5.6,
-                                @QT_VERSION_AND_TAG@=%GLOBAL_VERSION_AND_TAG%,
-                                @QT_INSTALL_DIR_NAME@=5.6,
-                                @QTENGINIO_VERSION@=1.6.1,
-                                @QT_CREATOR_BASE_PATH@=archive/qtcreator/4.0.1
+arg_substitution_list:          %QT_VERSION%=%GLOBAL_VERSION%,
+                                %QT_VERSION_MINOR%=5.6,
+                                %QT_VERSION_AND_TAG%=%GLOBAL_VERSION_AND_TAG%,
+                                %QT_INSTALL_DIR_NAME%=5.6,
+                                %QTENGINIO_VERSION%=1.6.1,
+                                %QT_CREATOR_BASE_PATH%=archive/qtcreator/4.0.1
 
 [release.qt.configure_options.android_armv7]
 build_node_labels:      linux-g++-Rhel6.6-x86_Android-armv7, linux-g++-Rhel6.6-x64_Android-armv7, mac-clang-10.10-x64_Android-armv7, win-MinGW4.9.2-Windows7-x86_Android-armv7
@@ -69,25 +69,25 @@ configure_options:      -opensource -confirm-license -debug-and-release -release
 ################################################################################
 [release.56.offline.linux.x86]
 arg_configurations_file:    offline_installer_jobs/5.6/linux_x86
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
 installer_name:             qt-opensource-linux-x86-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_linux_32bit
 
 [release.56.offline.linux.x86.android]
 arg_configurations_file:    offline_installer_jobs/5.6/linux_x86_android
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
 installer_name:             qt-opensource-linux-x86-android-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstaller_tests_linux_android_32bit
 
 [release.56.offline.linux.x64]
 arg_configurations_file:    offline_installer_jobs/5.6/linux_x64
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
 installer_name:             qt-opensource-linux-x64-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-561_tests_linux_64bit
 
 [release.56.offline.linux.x64.android]
 arg_configurations_file:    offline_installer_jobs/5.6/linux_x64_android
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
 installer_name:             qt-opensource-linux-x64-android-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-561_tests_linux_android_64bit
 
@@ -97,19 +97,19 @@ rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-561_tests_li
 ################################################################################
 [release.56.offline.mac.x64]
 arg_configurations_file:    offline_installer_jobs/5.6/mac_x64
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
 installer_name:             qt-opensource-mac-x64-clang-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-561_tests_mac_64bit
 
 [release.56.offline.mac.x64.android]
 arg_configurations_file:    offline_installer_jobs/5.6/mac_x64_android
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
 installer_name:             qt-opensource-mac-x64-android-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-561_tests_mac_android
 
 [release.56.offline.mac.x64.android_and_ios]
 arg_configurations_file:    offline_installer_jobs/5.6/mac_x64_android_ios
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
 installer_name:             qt-opensource-mac-x64-android-ios-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-561_tests_mac_ios
 
@@ -120,56 +120,56 @@ rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-561_tests_ma
 [release.56.offline.windows.x86.mingw492]
 assign_to_machine_label:    win-MinGW4.9.2-Windows7-x86
 arg_configurations_file:    offline_installer_jobs/5.6/win_x86_mingw49
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
 installer_name:             qt-opensource-windows-x86-mingw492-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-561_tests_windows_mingw
 
 [release.56.offline.windows.x86.msvc2013]
 assign_to_machine_label:    win-msvc2013-Windows8.1-x86
 arg_configurations_file:    offline_installer_jobs/5.6/win_x86_msvc2013
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
 installer_name:             qt-opensource-windows-x86-msvc2013-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-561_tests_windows_msvc2013_32bit
 
 [release.56.offline.windows.x86.x64-msvc2013]
 assign_to_machine_label:    win-msvc2013-Windows8.1-x64
 arg_configurations_file:    offline_installer_jobs/5.6/win_x64_msvc2013
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
 installer_name:             qt-opensource-windows-x86-msvc2013_64-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-561_tests_windows_msvc2013_64bit
 
 [release.56.offline.windows.x86.x64-msvc2015]
 assign_to_machine_label:    win-msvc2015-Windows10-x64
 arg_configurations_file:    offline_installer_jobs/5.6/win_x64_msvc2015
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
 installer_name:             qt-opensource-windows-x86-msvc2015_64-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-561_tests_windows_msvc2015_64bit
 
 [release.56.offline.windows.x86.msvc2015]
 assign_to_machine_label:    win-msvc2015-Windows10-x86
 arg_configurations_file:    offline_installer_jobs/5.6/win_x86_msvc2015
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
 installer_name:             qt-opensource-windows-x86-msvc2015-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-561_tests_windows_msvc2015_32bit
 
 [release.56.offline.windows.x86.mingw492.android]
 assign_to_machine_label:    win-MinGW4.9.2-Windows7-x86_Android-x86
 arg_configurations_file:    offline_installer_jobs/5.6/win_x86_mingw49_android
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
 installer_name:             qt-opensource-windows-x86-android-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-561_tests_windows_android
 
 [release.56.offline.windows.x86.winrt_msvc2013]
 assign_to_machine_label:    win-msvc2013-Windows8.1-x64_WinRT
 arg_configurations_file:    offline_installer_jobs/5.6/win_x64_winrt_msvc2013
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
 installer_name:             qt-opensource-windows-x86-winrt-msvc2013-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-561_tests_windows_winrt_msvc2013_64bit
 
 [release.56.offline.windows.x86.winrt_msvc2015]
 assign_to_machine_label:    win-msvc2015-Windows10-x64_WinRT
 arg_configurations_file:    offline_installer_jobs/5.6/win_x64_winrt_msvc2015
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
 installer_name:             qt-opensource-windows-x86-winrt-msvc2015-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-561_tests_windows_winrt_msvc2015_64bit
 
@@ -178,7 +178,7 @@ rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-561_tests_wi
 ################################################################################
 [release.56.repository.linux.x86]
 arg_configurations_file:    repository_configs/desktop_qt5/linux_x86_repository_56
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
 repo_content_type:          56
 repo_components_to_update:  qt.56.*
 repo_url_specifier:         linux_x86/desktop/qt5_56
@@ -186,14 +186,14 @@ rta_key_list:               Qt_RTA_opensource_onlineInstaller_tests_linux_32bit_
 
 [release.56.repository.linux.x86.src_doc_examples]
 arg_configurations_file:    repository_configs/desktop_qt5/repository_56_src_doc_examples
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
 repo_content_type:          src_doc_examples
 repo_components_to_update:  qt.56.*
 repo_url_specifier:         linux_x86/desktop/qt5_56_src_doc_examples
 
 [release.56.repository.linux.x86.android]
 arg_configurations_file:    repository_configs/android_qt5/linux_x86_android_repository_56
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
 repo_content_type:          56
 repo_components_to_update:  qt.56.*
 repo_url_specifier:         linux_x86/android/qt5_56
@@ -201,7 +201,7 @@ rta_key_list:               Qt_RTA_opensource_onlineInstaller_tests_linux_androi
 
 [release.56.repository.linux.x64]
 arg_configurations_file:    repository_configs/desktop_qt5/linux_x64_repository_56
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
 repo_content_type:          56
 repo_components_to_update:  qt.56.*
 repo_url_specifier:         linux_x64/desktop/qt5_56
@@ -209,14 +209,14 @@ rta_key_list:               Qt_RTA_opensource_onlineInstaller_tests_linux_64bit_
 
 [release.56.repository.linux.x64.src_doc_examples]
 arg_configurations_file:    repository_configs/desktop_qt5/repository_56_src_doc_examples
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
 repo_content_type:          src_doc_examples
 repo_components_to_update:  qt.56.*
 repo_url_specifier:         linux_x64/desktop/qt5_56_src_doc_examples
 
 [release.56.repository.linux.x64.android]
 arg_configurations_file:    repository_configs/android_qt5/linux_x64_android_repository_56
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
 repo_content_type:          56
 repo_components_to_update:  qt.56.*
 repo_url_specifier:         linux_x64/android/qt5_56
@@ -228,7 +228,7 @@ rta_key_list:               Qt_RTA_opensource_onlineInstaller_tests_linux_androi
 ################################################################################
 [release.56.repository.windows.x86]
 arg_configurations_file:    repository_configs/desktop_qt5/win_x86_repository_56
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
 repo_content_type:          56
 repo_components_to_update:  qt.56.*
 repo_url_specifier:         windows_x86/desktop/qt5_56
@@ -236,14 +236,14 @@ rta_key_list:               Qt_RTA_opensource_onlineInstaller_tests_windows_ming
 
 [release.56.repository.windows.x86.src_doc_examples]
 arg_configurations_file:    repository_configs/desktop_qt5/repository_56_src_doc_examples
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
 repo_content_type:          src_doc_examples
 repo_components_to_update:  qt.56.*
 repo_url_specifier:         windows_x86/desktop/qt5_56_src_doc_examples
 
 [release.56.repository.windows.x86.android]
 arg_configurations_file:    repository_configs/android_qt5/win_x86_android_repository_56
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
 repo_content_type:          56
 repo_components_to_update:  qt.56.*
 repo_url_specifier:         windows_x86/android/qt5_56
@@ -251,7 +251,7 @@ rta_key_list:               Qt_RTA_opensource_onlineInstaller_tests_windows_andr
 
 [release.56.repository.windows.x86.winrt]
 arg_configurations_file:    repository_configs/winrt_qt5/win_x64_winrt_repository_56
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
 repo_content_type:          56
 repo_components_to_update:  qt.56.*
 repo_url_specifier:         windows_x86/winrt/qt5_56
@@ -263,7 +263,7 @@ rta_key_list:               Qt_RTA_opensource_onlineInstaller_tests_windows_winr
 ################################################################################
 [release.56.repository.mac.x64]
 arg_configurations_file:    repository_configs/desktop_qt5/mac_x64_repository_56
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
 repo_content_type:          56
 repo_components_to_update:  qt.56.*
 repo_url_specifier:         mac_x64/desktop/qt5_56
@@ -271,14 +271,14 @@ rta_key_list:               Qt_RTA_opensource_onlineInstaller_tests_mac_LatestQt
 
 [release.56.repository.mac.x64.src_doc_examples]
 arg_configurations_file:    repository_configs/desktop_qt5/repository_56_src_doc_examples
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
 repo_content_type:          src_doc_examples
 repo_components_to_update:  qt.56.*
 repo_url_specifier:         mac_x64/desktop/qt5_56_src_doc_examples
 
 [release.56.repository.mac.x64.android]
 arg_configurations_file:    repository_configs/android_qt5/mac_x64_android_repository_56
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
 repo_content_type:          56
 repo_components_to_update:  qt.56.*
 repo_url_specifier:         mac_x64/android/qt5_56
@@ -286,7 +286,7 @@ rta_key_list:               Qt_RTA_opensource_onlineInstaller_tests_mac_android_
 
 [release.56.repository.mac.x64.ios]
 arg_configurations_file:    repository_configs/ios_qt5/mac_x64_ios_repository_56
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
 repo_content_type:          56
 repo_components_to_update:  qt.56.*
 repo_url_specifier:         mac_x64/ios/qt5_56

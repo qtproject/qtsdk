@@ -50,7 +50,7 @@ version_tag:            %QT_VERSION%
 
 [qt.521.android_armv5.essentials]
 archives:               521.android_armv5.essentials, 521.android_armv5.essentials.docs, 521.android_armv5.essentials.examples
-target_install_base:    /@QT_VERSION@/android_armv5
+target_install_base:    /%QT_VERSION%/android_armv5
 version:                5.2.1
 version_tag:            %QT_VERSION%
 package_default:        true
@@ -74,7 +74,7 @@ rpath_target:
 
 [qt.521.android_armv5.addons]
 archives:               521.android_armv5.addons, 521.android_armv5.addons.examples
-target_install_base:    /@QT_VERSION@/android_armv5
+target_install_base:    /%QT_VERSION%/android_armv5
 version:                5.2.1
 version_tag:            %QT_VERSION%
 package_default:        true

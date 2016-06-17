@@ -46,9 +46,9 @@ archives:               54.win64_msvc2013_winphone_arm.essentials,
 target_install_base:    /5.4/winphone_arm
 
 [54.win64_msvc2013_winphone_arm.essentials]
-archive_uri:            /qt/@QT_VERSION@/latest/winphone81/arm/qt5_essentials.7z
+archive_uri:            /qt/%QT_VERSION%/latest/winphone81/arm/qt5_essentials.7z
 package_finalize_items: delete_doc_directory
 [54.win64_msvc2013_winphone_arm.addons]
-archive_uri:            /qt/@QT_VERSION@/latest/winphone81/arm/qt5_addons.7z
+archive_uri:            /qt/%QT_VERSION%/latest/winphone81/arm/qt5_addons.7z
 package_finalize_items: delete_doc_directory
 

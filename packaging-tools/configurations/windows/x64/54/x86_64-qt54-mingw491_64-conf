@@ -39,10 +39,10 @@ archives:               54.win64_mingw491.essentials,
                         54.win64_mingw491.runtime
 target_install_base:    /5.4/mingw491_64
 [54.win64_mingw491.essentials]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_mingw_64/qt5_essentials.7z
+archive_uri:            /qt/%QT_VERSION%/latest/windows_mingw_64/qt5_essentials.7z
 package_finalize_items: delete_doc_directory
 [54.win64_mingw491.addons]
-archive_uri:            /qt/@QT_VERSION@/latest/windows_mingw_64/qt5_addons.7z
+archive_uri:            /qt/%QT_VERSION%/latest/windows_mingw_64/qt5_addons.7z
 package_finalize_items: delete_doc_directory
 [54.win64_mingw491.icu_531.mingw_64]
 archive_uri:            http://download.qt.io/development_releases/prebuilt/icu/prebuilt/mingw/icu_53_1_mingw_builds_4_9_1_posix_seh_64.7z

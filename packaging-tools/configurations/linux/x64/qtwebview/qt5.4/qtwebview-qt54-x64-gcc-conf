@@ -37,7 +37,7 @@ optional_for_offline:   true
 archives:               extras.qtwebview.qt54.gcc_64
 target_install_base:    /5.4/gcc_64
 [extras.qtwebview.qt54.gcc_64]
-archive_uri:            /qtwebview/@QTWEBVIEW_VERSION@/@QT_VERSION_MINOR@/latest_successful/linux_gcc_64_ubuntu1110/qt5_qtwebview.7z
+archive_uri:            /qtwebview/%QTWEBVIEW_VERSION%/%QT_VERSION_MINOR%/latest_successful/linux_gcc_64_ubuntu1110/qt5_qtwebview.7z
 package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:           /lib

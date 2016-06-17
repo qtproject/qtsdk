@@ -13,7 +13,7 @@ mac-x64:                    installer-framework-build-mac-x64.7z
 [release.global]
 version:                    4.0.3
 version_tag:
-arg_substitution_list:      @QT_CREATOR_BASE_PATH@=qtcreator/snapshots/4.0.3_57x/latest_successful
+arg_substitution_list:      %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.0.3_57x/latest_successful
 
 
 ################################################################################
@@ -21,14 +21,14 @@ arg_substitution_list:      @QT_CREATOR_BASE_PATH@=qtcreator/snapshots/4.0.3_57x
 ################################################################################
 [release.qtcreator.repository.linux.x86]
 arg_configurations_file:    repository_configs/tools_desktop/linux_x86_repository_tools_qtcreator
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
 repo_content_type:          qtcreator
 repo_components_to_update:  qt.tools.qtcreator.*
 repo_url_specifier:         linux_x86/desktop/tools_qtcreator
 
 [release.qtcreator.repository.linux.x64]
 arg_configurations_file:    repository_configs/tools_desktop/linux_x64_repository_tools_qtcreator
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
 repo_content_type:          qtcreator
 repo_components_to_update:  qt.tools.qtcreator.*
 repo_url_specifier:         linux_x64/desktop/tools_qtcreator
@@ -39,7 +39,7 @@ repo_url_specifier:         linux_x64/desktop/tools_qtcreator
 ################################################################################
 [release.qtcreator.repository.windows.x86]
 arg_configurations_file:    repository_configs/tools_desktop/win_x86_repository_tools_qtcreator
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
 repo_content_type:          qtcreator
 repo_components_to_update:  qt.tools.qtcreator.*
 repo_url_specifier:         windows_x86/desktop/tools_qtcreator
@@ -50,7 +50,7 @@ repo_url_specifier:         windows_x86/desktop/tools_qtcreator
 ################################################################################
 [release.qtcreator.repository.mac.x64]
 arg_configurations_file:    repository_configs/tools_desktop/mac_x64_repository_tools_qtcreator
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
 repo_content_type:          qtcreator
 repo_components_to_update:  qt.tools.qtcreator.*
 repo_url_specifier:         mac_x64/desktop/tools_qtcreator

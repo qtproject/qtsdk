@@ -24,19 +24,19 @@ module_exclude_list:        qlalr, qt3d, qtconnectivity, qtdocgallery, qtfeedbac
 ################################################################################
 [release.511.offline.linux.x86]
 arg_configurations_file:    linux_x86_32_u1110_offline
-arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %QT_VERSION%=%GLOBAL_VERSION%, %SRC_ARCHIVE_TYPE%=tar.gz
 
 [release.511.offline.linux.x86.android]
 arg_configurations_file:    linux_x86_32_u1110_android_offline
-arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %QT_VERSION%=%GLOBAL_VERSION%, %SRC_ARCHIVE_TYPE%=tar.gz
 
 [release.511.offline.linux.x64]
 arg_configurations_file:    linux_x86_64_u1110_offline
-arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %QT_VERSION%=%GLOBAL_VERSION%, %SRC_ARCHIVE_TYPE%=tar.gz
 
 [release.511.offline.linux.x64.android]
 arg_configurations_file:    linux_x86_64_u1110_android_offline
-arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %QT_VERSION%=%GLOBAL_VERSION%, %SRC_ARCHIVE_TYPE%=tar.gz
 
 
 ################################################################################
@@ -44,7 +44,7 @@ arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=ta
 ################################################################################
 [release.511.offline.mac.x64]
 arg_configurations_file:    mac_x86_64_offline
-arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %QT_VERSION%=%GLOBAL_VERSION%, %SRC_ARCHIVE_TYPE%=tar.gz
 
 
 ################################################################################
@@ -52,31 +52,31 @@ arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=ta
 ################################################################################
 [release.511.offline.windows.x86.mingw48]
 arg_configurations_file:    win_x86_32_mingw48_offline
-arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
+arg_substitution_list:      %QT_VERSION%=%GLOBAL_VERSION%, %SRC_ARCHIVE_TYPE%=zip
 
 [release.511.offline.windows.x86.msvc2010_angle]
 arg_configurations_file:    win_x86_32_msvc2010_offline
-arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
+arg_substitution_list:      %QT_VERSION%=%GLOBAL_VERSION%, %SRC_ARCHIVE_TYPE%=zip
 
 [release.511.offline.windows.x86.msvc2010_opengl]
 arg_configurations_file:    win_x86_32_msvc2010_opengl_offline
-arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
+arg_substitution_list:      %QT_VERSION%=%GLOBAL_VERSION%, %SRC_ARCHIVE_TYPE%=zip
 
 [release.511.offline.windows.x86.msvc2012_angle]
 arg_configurations_file:    win_x86_32_msvc2012_offline
-arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
+arg_substitution_list:      %QT_VERSION%=%GLOBAL_VERSION%, %SRC_ARCHIVE_TYPE%=zip
 
 [release.511.offline.windows.x86.x64-msvc2012_angle]
 arg_configurations_file:    win_x86_64_msvc2012_offline
-arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
+arg_substitution_list:      %QT_VERSION%=%GLOBAL_VERSION%, %SRC_ARCHIVE_TYPE%=zip
 
 [release.511.offline.windows.x86.x64-msvc2012_opengl]
 arg_configurations_file:    win_x86_64_msvc2012_opengl_offline
-arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
+arg_substitution_list:      %QT_VERSION%=%GLOBAL_VERSION%, %SRC_ARCHIVE_TYPE%=zip
 
 [release.511.offline.windows.x86.mingw48.android]
 arg_configurations_file:    win_x86_32_mingw48_android_offline
-arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
+arg_substitution_list:      %QT_VERSION%=%GLOBAL_VERSION%, %SRC_ARCHIVE_TYPE%=zip
 
 
 ################################################################################
@@ -84,28 +84,28 @@ arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zi
 ################################################################################
 [release.511.repository.linux.x86]
 arg_configurations_file:    repository_configs/desktop_qt5/linux_x86_repository_511
-arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %QT_VERSION%=%GLOBAL_VERSION%, %SRC_ARCHIVE_TYPE%=tar.gz
 repo_content_type:          511
 repo_components_to_update:  qt.511.*
 repo_url_specifier:         linux_x86/desktop/qt5
 
 [release.511.repository.linux.x86.android]
 arg_configurations_file:    repository_configs/android_qt5/linux_x86_android_repository_511
-arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %QT_VERSION%=%GLOBAL_VERSION%, %SRC_ARCHIVE_TYPE%=tar.gz
 repo_content_type:          511
 repo_components_to_update:  qt.511.*
 repo_url_specifier:         linux_x86/android/qt5
 
 [release.511.repository.linux.x64]
 arg_configurations_file:    repository_configs/desktop_qt5/linux_x64_repository_511
-arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %QT_VERSION%=%GLOBAL_VERSION%, %SRC_ARCHIVE_TYPE%=tar.gz
 repo_content_type:          511
 repo_components_to_update:  qt.511.*
 repo_url_specifier:         linux_x64/desktop/qt5
 
 [release.511.repository.linux.x64.android]
 arg_configurations_file:    repository_configs/android_qt5/linux_x64_android_repository_511
-arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %QT_VERSION%=%GLOBAL_VERSION%, %SRC_ARCHIVE_TYPE%=tar.gz
 repo_content_type:          511
 repo_components_to_update:  qt.511.*
 repo_url_specifier:         linux_x64/android/qt5
@@ -116,14 +116,14 @@ repo_url_specifier:         linux_x64/android/qt5
 ################################################################################
 [release.511.repository.windows.x86]
 arg_configurations_file:    repository_configs/desktop_qt5/win_x86_repository_511
-arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
+arg_substitution_list:      %QT_VERSION%=%GLOBAL_VERSION%, %SRC_ARCHIVE_TYPE%=zip
 repo_content_type:          511
 repo_components_to_update:  qt.511.*
 repo_url_specifier:         windows_x86/desktop/qt5
 
 [release.511.repository.windows.x86.android]
 arg_configurations_file:    repository_configs/android_qt5/win_x86_android_repository_511
-arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=zip
+arg_substitution_list:      %QT_VERSION%=%GLOBAL_VERSION%, %SRC_ARCHIVE_TYPE%=zip
 repo_content_type:          511
 repo_components_to_update:  qt.511.*
 repo_url_specifier:         windows_x86/android/qt5
@@ -134,7 +134,7 @@ repo_url_specifier:         windows_x86/android/qt5
 ################################################################################
 [release.511.repository.mac.x64]
 arg_configurations_file:    repository_configs/desktop_qt5/mac_x64_repository_511
-arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%, @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %QT_VERSION%=%GLOBAL_VERSION%, %SRC_ARCHIVE_TYPE%=tar.gz
 repo_content_type:          511
 repo_components_to_update:  qt.511.*
 repo_url_specifier:         mac_x64/desktop/qt5

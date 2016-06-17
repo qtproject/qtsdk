@@ -36,7 +36,7 @@
 archives:               extras.qtwebview.qt55.win32_mingw492
 target_install_base:    /5.5/mingw492_32
 [extras.qtwebview.qt55.win32_mingw492]
-archive_uri:            /qtwebview/@QTWEBVIEW_VERSION@/@QT_VERSION_MINOR@/latest_successful/windows_mingw492_x86/qt5_qtwebview.7z
+archive_uri:            /qtwebview/%QTWEBVIEW_VERSION%/%QT_VERSION_MINOR%/latest_successful/windows_mingw492_x86/qt5_qtwebview.7z
 package_strip_dirs:     1
 target_install_dir:     /
 package_finalize_items: delete_doc_directory

@@ -37,6 +37,6 @@ optional_for_offline:   true
 archives:               extras.qtwebview.qt54.win64_windows_mingw491
 target_install_base:    /5.4/mingw491_x64
 [extras.qtwebview.qt54.win64_windows_mingw491]
-archive_uri:            /qtwebview/@QTWEBVIEW_VERSION@/@QT_VERSION_MINOR@/latest_successful/windows_mingw_x64/qt5_qtwebview.7z
+archive_uri:            /qtwebview/%QTWEBVIEW_VERSION%/%QT_VERSION_MINOR%/latest_successful/windows_mingw_x64/qt5_qtwebview.7z
 package_strip_dirs:     1
 package_finalize_items: delete_doc_directory

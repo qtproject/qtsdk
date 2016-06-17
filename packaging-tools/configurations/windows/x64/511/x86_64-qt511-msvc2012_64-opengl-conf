@@ -45,7 +45,7 @@ version_tag:            %QT_VERSION%
 
 [qt.511.win64_msvc2012_64_opengl.essentials]
 archives:               511.msvc2012_64_opengl.essentials, 511.msvc2012_64_opengl.icu_51_release.win_64
-target_install_base:    /@QT_VERSION@/msvc2012_64_opengl
+target_install_base:    /%QT_VERSION%/msvc2012_64_opengl
 version:                5.1.1
 version_tag:            %QT_VERSION%
 package_default:        true
@@ -64,7 +64,7 @@ archive_name:           icu_51_1_msvc_2012_64.7z
 
 [qt.511.win64_msvc2012_64_opengl.addons]
 archives:               511.msvc2012_64_opengl.addons
-target_install_base:    /@QT_VERSION@/msvc2012_64_opengl
+target_install_base:    /%QT_VERSION%/msvc2012_64_opengl
 version:                5.1.1
 version_tag:            %QT_VERSION%
 package_default:        true

@@ -46,7 +46,7 @@ version_tag:            %QT_VERSION%
 
 [qt.520.win32_msvc2010_opengl.essentials]
 archives:               520.msvc2010_opengl.essentials, 520.msvc2010_opengl.icu_51_release.win_32
-target_install_base:    /@QT_VERSION@/msvc2010_opengl
+target_install_base:    /%QT_VERSION%/msvc2010_opengl
 version:                5.2.0
 version_tag:            %QT_VERSION%
 package_default:        true
@@ -65,7 +65,7 @@ archive_name:           icu_51_1_msvc_2010_32.7z
 
 [qt.520.win32_msvc2010_opengl.addons]
 archives:               520.msvc2010_opengl.addons
-target_install_base:    /@QT_VERSION@/msvc2010_opengl
+target_install_base:    /%QT_VERSION%/msvc2010_opengl
 version:                5.2.0
 version_tag:            %QT_VERSION%
 package_default:        true

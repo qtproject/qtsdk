@@ -46,7 +46,7 @@ version_tag:            %QT_VERSION%
 
 [qt.510.win32_mingw47.essentials]
 archives:               510.mingw47.essentials, 510.mingw47.icu_51.mingw_32, 510.mingw47.runtime
-target_install_base:    /@QT_VERSION@/mingw47_32
+target_install_base:    /%QT_VERSION%/mingw47_32
 version:                5.1.0
 version_tag:            %QT_VERSION%
 package_default:        false
@@ -71,7 +71,7 @@ archive_name:           x32-4.7.2-release-posix-sjlj-rev8-runtime.7z
 
 [qt.510.win32_mingw47.addons]
 archives:               510.mingw47.addons
-target_install_base:    /@QT_VERSION@/mingw47_32
+target_install_base:    /%QT_VERSION%/mingw47_32
 version:                5.1.0
 version_tag:            %QT_VERSION%
 package_default:        false

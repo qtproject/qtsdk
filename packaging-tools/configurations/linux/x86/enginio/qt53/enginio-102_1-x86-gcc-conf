@@ -42,9 +42,9 @@
 
 [qt.cloudservices.enginio.102_1.gcc]
 archives:               cloudservices.enginio.102_1.gcc
-target_install_base:    /@QT_INSTALL_DIR_NAME@/gcc
+target_install_base:    /%QT_INSTALL_DIR_NAME%/gcc
 [cloudservices.enginio.102_1.gcc]
-archive_uri:            /qtenginio/@QTENGINIO_VERSION@/latest/linux_gcc_32_ubuntu1110/qt5_qtenginio.7z
+archive_uri:            /qtenginio/%QTENGINIO_VERSION%/latest/linux_gcc_32_ubuntu1110/qt5_qtenginio.7z
 package_strip_dirs:     1
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory

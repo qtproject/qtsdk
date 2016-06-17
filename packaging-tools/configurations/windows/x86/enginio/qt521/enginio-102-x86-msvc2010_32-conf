@@ -42,17 +42,17 @@
 
 [qt.cloudservices.enginio.10.win32_msvc2010]
 archives:               cloudservices.enginio.10.win32_msvc2010, cloudservices.enginio.10.win32_msvc2010_examples
-target_install_base:    /@QT_VERSION@/msvc2010
+target_install_base:    /%QT_VERSION%/msvc2010
 version:                1.0.2
 version_tag:            %ENGINIO_VERSION%
 package_default:        false
 [cloudservices.enginio.10.win32_msvc2010]
-archive_uri:            /qtenginio/@QTENGINIO_VERSION@/latest/windows_vs2010_32/qt5_qtenginio.7z
+archive_uri:            /qtenginio/%QTENGINIO_VERSION%/latest/windows_vs2010_32/qt5_qtenginio.7z
 package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:
 [cloudservices.enginio.10.win32_msvc2010_examples]
-archive_uri:            qtenginio/@QTENGINIO_VERSION@/latest/src/examples_injection/examples_qtenginio.7z
+archive_uri:            qtenginio/%QTENGINIO_VERSION%/latest/src/examples_injection/examples_qtenginio.7z
 package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:

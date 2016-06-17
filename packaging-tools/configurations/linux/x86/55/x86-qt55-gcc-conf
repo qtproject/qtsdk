@@ -47,15 +47,15 @@ archives:               55.gcc.essentials,
                         55.gcc.qtpositioning
 target_install_base:    /5.5/gcc
 [55.gcc.essentials]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/linux_gcc_32_rhel66/qt5_essentials.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/linux_gcc_32_rhel66/qt5_essentials.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 [55.gcc.addons]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/linux_gcc_32_rhel66/qt5_addons.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/linux_gcc_32_rhel66/qt5_addons.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 [55.gcc.qtpositioning]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/linux_gcc_32_rhel66/qt5_qtpositioning.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/linux_gcc_32_rhel66/qt5_qtpositioning.7z
 package_finalize_items: delete_doc_directory
 
 [55.gcc.icu_541]
@@ -69,7 +69,7 @@ target_install_dir:     /lib
 archives:               55.qtwebengine.gcc
 target_install_base:    /5.5/gcc
 [55.qtwebengine.gcc]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/linux_gcc_32_rhel66/qt5_qtwebengine.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/linux_gcc_32_rhel66/qt5_qtwebengine.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -79,7 +79,7 @@ package_finalize_items: delete_doc_directory
 archives:               55.qtquick1.gcc
 target_install_base:    /5.5/gcc
 [55.qtquick1.gcc]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/linux_gcc_32_rhel66/qt5_qtquick1.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/linux_gcc_32_rhel66/qt5_qtquick1.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -89,7 +89,7 @@ package_finalize_items: delete_doc_directory
 archives:               55.qtscript.gcc
 target_install_base:    /5.5/gcc
 [55.qtscript.gcc]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/linux_gcc_32_rhel66/qt5_qtscript.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/linux_gcc_32_rhel66/qt5_qtscript.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -100,7 +100,7 @@ package_finalize_items: delete_doc_directory
 archives:               55.qtquickcontrols.gcc
 target_install_base:    /5.5/gcc
 [55.qtquickcontrols.gcc]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/linux_gcc_32_rhel66/qt5_qtquickcontrols.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/linux_gcc_32_rhel66/qt5_qtquickcontrols.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -110,7 +110,7 @@ package_finalize_items: delete_doc_directory
 archives:               55.qtlocation.gcc
 target_install_base:    /5.5/gcc
 [55.qtlocation.gcc]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/linux_gcc_32_rhel66/qt5_qtlocation.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/linux_gcc_32_rhel66/qt5_qtlocation.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -120,7 +120,7 @@ package_finalize_items: delete_doc_directory
 archives:               55.qt3d.gcc
 target_install_base:    /5.5/gcc
 [55.qt3d.gcc]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/linux_gcc_32_rhel66/qt5_qt3d.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/linux_gcc_32_rhel66/qt5_qt3d.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -130,6 +130,6 @@ package_finalize_items: delete_doc_directory
 archives:               55.qtcanvas3d.gcc
 target_install_base:    /5.5/gcc
 [55.qtcanvas3d.gcc]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/linux_gcc_32_rhel66/qt5_qtcanvas3d.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/linux_gcc_32_rhel66/qt5_qtcanvas3d.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory

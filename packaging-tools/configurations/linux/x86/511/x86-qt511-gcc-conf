@@ -46,7 +46,7 @@ version_tag:            %QT_VERSION%
 
 [qt.511.gcc.essentials]
 archives:               511.gcc.essentials, 511.gcc.icu_51, 511.gcc.essentials.icu_path_patcher
-target_install_base:    /@QT_VERSION@/gcc
+target_install_base:    /%QT_VERSION%/gcc
 version:                5.1.1
 version_tag:            %QT_VERSION%
 package_default:        true
@@ -70,7 +70,7 @@ archive_name:           icu_path_patcher.sh.7z
 
 [qt.511.gcc.addons]
 archives:               511.gcc.addons, 511.gcc.addons.icu_path_patcher
-target_install_base:    /@QT_VERSION@/gcc
+target_install_base:    /%QT_VERSION%/gcc
 version:                5.1.1
 version_tag:            %QT_VERSION%
 package_default:        true

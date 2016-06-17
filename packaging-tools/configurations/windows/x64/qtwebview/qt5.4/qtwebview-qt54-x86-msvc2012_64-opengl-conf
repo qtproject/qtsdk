@@ -37,7 +37,7 @@ optional_for_offline:   true
 archives:               extras.qtwebview.qt54.win64_msvc2012_64_opengl
 target_install_base:    /5.4/msvc2012_64_opengl
 [extras.qtwebview.qt54.win64_msvc2012_64_opengl]
-archive_uri:            /qtwebview/@QTWEBVIEW_VERSION@/@QT_VERSION_MINOR@/latest_successful/windows_vs2012_64_opengl/qt5_qtwebview.7z
+archive_uri:            /qtwebview/%QTWEBVIEW_VERSION%/%QT_VERSION_MINOR%/latest_successful/windows_vs2012_64_opengl/qt5_qtwebview.7z
 package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:

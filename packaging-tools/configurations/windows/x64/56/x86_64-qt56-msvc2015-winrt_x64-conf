@@ -47,81 +47,81 @@ archives:               56.win64_msvc2015_winrt_x64.qtbase,
                         56.win64_msvc2015_winrt_x64.qtxmlpatterns,
                         56.win64_msvc2015_winrt_x64.qtsensors,
                         56.win64_msvc2015_winrt_x64.qtpositioning
-target_install_base:    /@QT_VERSION_MINOR@/winrt_x64_msvc2015
+target_install_base:    /%QT_VERSION_MINOR%/winrt_x64_msvc2015
 [56.win64_msvc2015_winrt_x64.qtbase]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtbase/qtbase-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtbase/qtbase-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
 [56.win64_msvc2015_winrt_x64.qtconnectivity]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtconnectivity/qtconnectivity-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtconnectivity/qtconnectivity-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
 [56.win64_msvc2015_winrt_x64.qtwebchannel]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebchannel/qtwebchannel-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebchannel/qtwebchannel-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
 [56.win64_msvc2015_winrt_x64.qtmultimedia]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtmultimedia/qtmultimedia-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtmultimedia/qtmultimedia-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
 [56.win64_msvc2015_winrt_x64.qttranslations]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qttranslations/qttranslations-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qttranslations/qttranslations-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
 [56.win64_msvc2015_winrt_x64.qtgraphicaleffects]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtgraphicaleffects/qtgraphicaleffects-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgraphicaleffects/qtgraphicaleffects-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
 [56.win64_msvc2015_winrt_x64.qtsvg]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtsvg/qtsvg-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtsvg/qtsvg-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
 [56.win64_msvc2015_winrt_x64.qtdeclarative]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtdeclarative/qtdeclarative-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtdeclarative/qtdeclarative-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
 [56.win64_msvc2015_winrt_x64.qtwebsockets]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebsockets/qtwebsockets-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebsockets/qtwebsockets-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
 [56.win64_msvc2015_winrt_x64.qtimageformats]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtimageformats/qtimageformats-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtimageformats/qtimageformats-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
 [56.win64_msvc2015_winrt_x64.qttools]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qttools/qttools-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qttools/qttools-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
 [56.win64_msvc2015_winrt_x64.qtxmlpatterns]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtxmlpatterns/qtxmlpatterns-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtxmlpatterns/qtxmlpatterns-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
 [56.win64_msvc2015_winrt_x64.qtsensors]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtsensors/qtsensors-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtsensors/qtsensors-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
 [56.win64_msvc2015_winrt_x64.qtpositioning]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtpositioning-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtlocation/qtpositioning-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
 
 
 # QtQuickControls provided as separate installable component in installer
 [qt.56.qtquickcontrols]
 [qt.56.qtquickcontrols.win64_msvc2015_winrt_x64]
 archives:               56.qtquickcontrols.win64_msvc2015_winrt_x64
-target_install_base:    /@QT_VERSION_MINOR@/winrt_x64_msvc2015
+target_install_base:    /%QT_VERSION_MINOR%/winrt_x64_msvc2015
 [56.qtquickcontrols.win64_msvc2015_winrt_x64]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols/qtquickcontrols-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtquickcontrols/qtquickcontrols-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
 
 # QtQuickControls2 provided as separate installable component in installer
 [qt.56.qtquickcontrols2]
 [qt.56.qtquickcontrols2.win64_msvc2015_winrt_x64]
 archives:               56.qtquickcontrols2.win64_msvc2015_winrt_x64
-target_install_base:    /@QT_VERSION_MINOR@/winrt_x64_msvc2015
+target_install_base:    /%QT_VERSION_MINOR%/winrt_x64_msvc2015
 [56.qtquickcontrols2.win64_msvc2015_winrt_x64]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtquickcontrols2/qtquickcontrols2-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtquickcontrols2/qtquickcontrols2-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
 
 # QtLocation provided as separate installable component in installer
 [qt.56.qtlocation]
 [qt.56.qtlocation.win64_msvc2015_winrt_x64]
 archives:               56.qtlocation.win64_msvc2015_winrt_x64
-target_install_base:    /@QT_VERSION_MINOR@/winrt_x64_msvc2015
+target_install_base:    /%QT_VERSION_MINOR%/winrt_x64_msvc2015
 [56.qtlocation.win64_msvc2015_winrt_x64]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtlocation/qtlocation-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtlocation/qtlocation-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
 
 # Qt3D provided as separate installable component in installer
 [qt.56.qt3d]
 [qt.56.qt3d.win64_msvc2015_winrt_x64]
 archives:               56.qt3d.win64_msvc2015_winrt_x64
-target_install_base:    /@QT_VERSION_MINOR@/winrt_x64_msvc2015
+target_install_base:    /%QT_VERSION_MINOR%/winrt_x64_msvc2015
 [56.qt3d.win64_msvc2015_winrt_x64]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qt3d/qt3d-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qt3d/qt3d-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
 
 # QtCanvas3D provided as separate installable component in installer
 [qt.56.qtcanvas3d]
 [qt.56.qtcanvas3d.win64_msvc2015_winrt_x64]
 archives:               56.qtcanvas3d.win64_msvc2015_winrt_x64
-target_install_base:    /@QT_VERSION_MINOR@/winrt_x64_msvc2015
+target_install_base:    /%QT_VERSION_MINOR%/winrt_x64_msvc2015
 [56.qtcanvas3d.win64_msvc2015_winrt_x64]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtcanvas3d/qtcanvas3d-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtcanvas3d/qtcanvas3d-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
 
 # QtWebView provided as separate installable component in installer
 [qt.56.qtwebview]
 [qt.56.qtwebview.win64_msvc2015_winrt_x64]
 archives:               56.qtwebview.win64_msvc2015_winrt_x64
-target_install_base:    /@QT_VERSION_MINOR@/winrt_x64_msvc2015
+target_install_base:    /%QT_VERSION_MINOR%/winrt_x64_msvc2015
 [56.qtwebview.win64_msvc2015_winrt_x64]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/qtwebview/qtwebview-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebview/qtwebview-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z

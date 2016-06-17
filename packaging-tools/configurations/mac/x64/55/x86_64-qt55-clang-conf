@@ -46,13 +46,13 @@ archives:               55.clang_64.essentials,
                         55.clang_64.qtpositioning
 target_install_base:    /5.5/clang_64
 [55.clang_64.essentials]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/mac_x64/qt5_essentials.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/mac_x64/qt5_essentials.7z
 package_finalize_items: delete_doc_directory
 [55.clang_64.addons]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/mac_x64/qt5_addons.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/mac_x64/qt5_addons.7z
 package_finalize_items: delete_doc_directory
 [55.clang_64.qtpositioning]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/mac_x64/qt5_qtpositioning.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/mac_x64/qt5_qtpositioning.7z
 package_finalize_items: delete_doc_directory
 
 # QtWebEngine provided as separate installable component in installer
@@ -61,7 +61,7 @@ package_finalize_items: delete_doc_directory
 archives:               55.qtwebengine.clang_64
 target_install_base:    /5.5/clang_64
 [55.qtwebengine.clang_64]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/mac_x64/qt5_qtwebengine.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/mac_x64/qt5_qtwebengine.7z
 package_finalize_items: delete_doc_directory
 
 # QtQuick1 provided as separate installable component in installer
@@ -70,7 +70,7 @@ package_finalize_items: delete_doc_directory
 archives:               55.qtquick1.clang_64
 target_install_base:    /5.5/clang_64
 [55.qtquick1.clang_64]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/mac_x64/qt5_qtquick1.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/mac_x64/qt5_qtquick1.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -80,7 +80,7 @@ package_finalize_items: delete_doc_directory
 archives:               55.qtscript.clang_64
 target_install_base:    /5.5/clang_64
 [55.qtscript.clang_64]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/mac_x64/qt5_qtscript.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/mac_x64/qt5_qtscript.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -91,7 +91,7 @@ package_finalize_items: delete_doc_directory
 archives:               55.qtquickcontrols.clang_64
 target_install_base:    /5.5/clang_64
 [55.qtquickcontrols.clang_64]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/mac_x64/qt5_qtquickcontrols.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/mac_x64/qt5_qtquickcontrols.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -101,7 +101,7 @@ package_finalize_items: delete_doc_directory
 archives:               55.qtlocation.clang_64
 target_install_base:    /5.5/clang_64
 [55.qtlocation.clang_64]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/mac_x64/qt5_qtlocation.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/mac_x64/qt5_qtlocation.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -111,7 +111,7 @@ package_finalize_items: delete_doc_directory
 archives:               55.qt3d.clang_64
 target_install_base:    /5.5/clang_64
 [55.qt3d.clang_64]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/mac_x64/qt5_qt3d.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/mac_x64/qt5_qt3d.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 
@@ -121,7 +121,7 @@ package_finalize_items: delete_doc_directory
 archives:               55.qtcanvas3d.clang_64
 target_install_base:    /5.5/clang_64
 [55.qtcanvas3d.clang_64]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/mac_x64/qt5_qtcanvas3d.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/mac_x64/qt5_qtcanvas3d.7z
 rpath_target:           /lib
 package_finalize_items: delete_doc_directory
 

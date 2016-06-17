@@ -46,7 +46,7 @@ version_tag:            %QT_VERSION%
 
 [qt.520.win32_msvc2010.essentials]
 archives:               520.msvc2010.essentials, 520.msvc2010.icu_51_release.win_32, win32_msvc2010.essentials.d3d_compiler_43.x86
-target_install_base:    /@QT_VERSION@/msvc2010
+target_install_base:    /%QT_VERSION%/msvc2010
 version:                5.2.0
 version_tag:            %QT_VERSION%
 package_default:        true
@@ -71,7 +71,7 @@ archive_name:           D3DCompiler_43-x86.7z
 
 [qt.520.win32_msvc2010.addons]
 archives:               520.msvc2010.addons
-target_install_base:    /@QT_VERSION@/msvc2010
+target_install_base:    /%QT_VERSION%/msvc2010
 version:                5.2.0
 version_tag:            %QT_VERSION%
 package_default:        true

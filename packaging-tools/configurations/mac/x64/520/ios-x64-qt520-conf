@@ -45,7 +45,7 @@ version_tag:            %QT_VERSION%
 
 [qt.520.ios.essentials]
 archives:               520.ios.essentials
-target_install_base:    /@QT_VERSION@/ios
+target_install_base:    /%QT_VERSION%/ios
 version:                5.2.0
 version_tag:            %QT_VERSION%
 package_default:        true
@@ -58,7 +58,7 @@ archive_name:           ios_qt5_essentials.7z
 
 [qt.520.ios.addons]
 archives:               520.ios.addons
-target_install_base:    /@QT_VERSION@/ios
+target_install_base:    /%QT_VERSION%/ios
 version:                5.2.0
 version_tag:            %QT_VERSION%
 package_default:        true

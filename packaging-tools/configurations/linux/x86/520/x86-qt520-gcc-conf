@@ -46,7 +46,7 @@ version_tag:            %QT_VERSION%
 
 [qt.520.gcc.essentials]
 archives:               520.gcc.essentials, 520.gcc.icu_51
-target_install_base:    /@QT_VERSION@/gcc
+target_install_base:    /%QT_VERSION%/gcc
 version:                5.2.0
 version_tag:            %QT_VERSION%
 package_default:        true
@@ -65,7 +65,7 @@ archive_name:           icu_51_1_ubuntu_11_10_32.7z
 
 [qt.520.gcc.addons]
 archives:               520.gcc.addons
-target_install_base:    /@QT_VERSION@/gcc
+target_install_base:    /%QT_VERSION%/gcc
 version:                5.2.0
 version_tag:            %QT_VERSION%
 package_default:        true

@@ -32,21 +32,21 @@
 
 [qt.57.src]
 archives:               57.src
-target_install_base:    /@QT_VERSION_MINOR@/Src/
+target_install_base:    /%QT_VERSION_MINOR%/Src/
 [57.src]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/src/single/qt-everywhere-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/src/single/qt-everywhere-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
 package_strip_dirs:     1
 
 [qt.57.src.qtquick2drenderer]
 archives:               57.src.qtquick2drenderer
-target_install_base:    /@QT_VERSION_MINOR@/Src/qtdeclarative-render2d
+target_install_base:    /%QT_VERSION_MINOR%/Src/qtdeclarative-render2d
 [57.src.qtquick2drenderer]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/src/submodules/qtdeclarative-render2d-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/src/submodules/qtdeclarative-render2d-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
 package_strip_dirs:     1
 
 [qt.57.src.qtscript]
 archives:               57.src.qtscript
-target_install_base:    /@QT_VERSION_MINOR@/Src/qtscript
+target_install_base:    /%QT_VERSION_MINOR%/Src/qtscript
 [57.src.qtscript]
-archive_uri:            /qt/@QT_VERSION_MINOR@/latest/src/submodules/qtscript-@LICENSE@-src-@QT_VERSION_AND_TAG@.@SRC_ARCHIVE_TYPE@
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/src/submodules/qtscript-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
 package_strip_dirs:     1

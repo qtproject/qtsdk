@@ -13,9 +13,9 @@ linux-x64:                  installer-framework-build-linux-x64.7z
 version:                    5.4.2
 version_tag:
 module_exclude_list:        qt3d, qtactiveqt, qtandroidextras, qtconnectivity, qtdocgallery, qtenginio, qtfeedback, qtjsondb, qtmacextras, qtpim, qtqa, qtquick1, qtrepotools, qtserialport, qtsystems, qtwayland, qtwebchannel, qtwebengine, qtwebkit, qtwebkit-examples, qtwebsockets, qtwinextras, qtx11extras
-arg_substitution_list:      @QT_VERSION@=%GLOBAL_VERSION%,
-                            @QT_VERSION_AND_TAG@=%GLOBAL_VERSION_AND_TAG%,
-                            @QT_INSTALL_DIR_NAME@=5.4
+arg_substitution_list:      %QT_VERSION%=%GLOBAL_VERSION%,
+                            %QT_VERSION_AND_TAG%=%GLOBAL_VERSION_AND_TAG%,
+                            %QT_INSTALL_DIR_NAME%=5.4
 
 [release.qt.configure_options.qnx6_armv7]
 build_node_labels:      linux-g++-Ubuntu11.10-x86_QNX-armv7, linux-g++-Ubuntu11.10-x64_QNX-armv7, win-MinGW4.8-Windows7-x86_QNX-armv7
@@ -30,13 +30,13 @@ configure_options:      -opensource -confirm-license -release -xplatform qnx-x86
 ################################################################################
 [release.54.offline.linux.x86.qnx6]
 arg_configurations_file:    offline_installer_jobs/5.4/linux_x86_qnx6
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
 installer_name:             qt-opensource-linux-x86-qnx6-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:
 
 [release.54.offline.linux.x64.qnx6]
 arg_configurations_file:    offline_installer_jobs/5.4/linux_x64_qnx6
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
 installer_name:             qt-opensource-linux-x64-qnx6-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:
 
@@ -45,6 +45,6 @@ rta_key_list:
 ################################################################################
 [release.54.offline.windows.x86.mingw491.qnx6]
 arg_configurations_file:    offline_installer_jobs/5.4/win_x86_mingw491_qnx6
-arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
 installer_name:             qt-opensource-windows-x86-qnx6-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:

@@ -420,7 +420,7 @@ def parse_cmd_line():
             if delimeter in item:
                 key, value = item.split(delimeter)
                 KEY_SUBSTITUTION_LIST.append([key, value])
-    KEY_SUBSTITUTION_LIST.append(['@LICENSE@', LICENSE_TYPE])
+    KEY_SUBSTITUTION_LIST.append(['%LICENSE%', LICENSE_TYPE])
 
     if INCREMENTAL_MODE:
         DEVELOPMENT_MODE = True

@@ -45,9 +45,9 @@ archives:               54.android_x86.essentials,
                         54.android_x86.addons
 target_install_base:    /5.4/android_x86
 [54.android_x86.essentials]
-archive_uri:            /qt/@QT_VERSION@/latest/android_x86/mac_x64/qt5_essentials.7z
+archive_uri:            /qt/%QT_VERSION%/latest/android_x86/mac_x64/qt5_essentials.7z
 package_finalize_items: delete_doc_directory
 [54.android_x86.addons]
-archive_uri:            /qt/@QT_VERSION@/latest/android_x86/mac_x64/qt5_addons.7z
+archive_uri:            /qt/%QT_VERSION%/latest/android_x86/mac_x64/qt5_addons.7z
 package_finalize_items: delete_doc_directory
 

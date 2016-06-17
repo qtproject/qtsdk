@@ -46,7 +46,7 @@ version_tag:            %QT_VERSION%
 
 [qt.511.win64_msvc2012_64.essentials]
 archives:               511.msvc2012_64.essentials, 511.msvc2012_64.icu_51_release.win_64, msvc2012_64.essentials.d3d_compiler_46.x64
-target_install_base:    /@QT_VERSION@/msvc2012_64
+target_install_base:    /%QT_VERSION%/msvc2012_64
 version:                5.1.1
 version_tag:            %QT_VERSION%
 package_default:        true
@@ -71,7 +71,7 @@ archive_name:           d3dcompiler_46_64.dll.7z
 
 [qt.511.win64_msvc2012_64.addons]
 archives:               511.msvc2012_64.addons
-target_install_base:    /@QT_VERSION@/msvc2012_64
+target_install_base:    /%QT_VERSION%/msvc2012_64
 version:                5.1.1
 version_tag:            %QT_VERSION%
 package_default:        true

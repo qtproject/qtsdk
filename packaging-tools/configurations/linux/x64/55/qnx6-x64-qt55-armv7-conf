@@ -45,5 +45,5 @@
 archives:               55.qnx6_armv7.essentials
 target_install_base:    /5.5/qnx6-armle-v7
 [55.qnx6_armv7.essentials]
-archive_uri:            /@LICENSE@/qt/@QT_VERSION@/latest/qnx6_armv7/linux_x64/qt5_essentials.7z
+archive_uri:            /%LICENSE%/qt/%QT_VERSION%/latest/qnx6_armv7/linux_x64/qt5_essentials.7z
 package_finalize_items: delete_doc_directory

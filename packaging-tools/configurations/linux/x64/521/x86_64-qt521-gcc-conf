@@ -46,7 +46,7 @@ version_tag:            %QT_VERSION%
 
 [qt.521.gcc_64.essentials]
 archives:               521.gcc_64.essentials, 521.gcc_64.icu_51
-target_install_base:    /@QT_VERSION@/gcc_64
+target_install_base:    /%QT_VERSION%/gcc_64
 version:                5.2.1
 version_tag:            %QT_VERSION%
 package_default:        true
@@ -66,7 +66,7 @@ archive_name:           icu_51_1_ubuntu_11_10_64.7z
 
 [qt.521.gcc_64.addons]
 archives:               521.gcc_64.addons
-target_install_base:    /@QT_VERSION@/gcc_64
+target_install_base:    /%QT_VERSION%/gcc_64
 version:                5.2.1
 version_tag:            %QT_VERSION%
 package_default:        true
