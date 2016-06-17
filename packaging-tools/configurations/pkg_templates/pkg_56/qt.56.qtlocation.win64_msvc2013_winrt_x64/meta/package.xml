@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt Location for Windows Runtime 8.1 x64 (MSVC2013)</DisplayName>
     <Description></Description>
-    <Version>5.6.1-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.6.1-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <AutoDependOn>qt.56.qtlocation, qt.56.win64_msvc2013_winrt_x64</AutoDependOn>
     <Dependencies>qt.56.win64_msvc2013_winrt_x64</Dependencies>
