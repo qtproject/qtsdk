@@ -169,8 +169,7 @@ def set_platform_specific_data():
         IS_UNIX_PLATFORM = True
         IS_MAC_PLATFORM = True
     else:
-        print '*** Unsupported platform, abort!'
-        sys.exit(-1)
+        raise EnvironmentError('*** Unsupported platform, abort!')
 
 
 ###############################
@@ -244,8 +243,7 @@ def make_files_list(directory, rgxp):
     """Populate and return 'fileslist[]' with all files inside 'directory' matching 'regx'"""
     # if 'directory' is not a directory, exit with error
     if not os.path.isdir(directory):
-        print '*** Error, Given path is not valid: ' + directory
-        sys.exit(-1)
+        raise IOError('*** Error, Given path is not valid: %s' % directory)
     regex = re.compile(rgxp)
     filelist = []
     for root, dirs, files in os.walk(directory):
@@ -292,19 +290,15 @@ def move_tree(srcdir, dstdir, pattern=None):
     for name in srcnames:
         srcfname = os.path.join(srcdir, name)
         if not srcfname:
-            print '*** Fatal error! Unable to create source file path, too long path name!'
-            sys.exit(-1)
+            raise IOError('*** Fatal error! Unable to create source file path, too long path name!')
         dstfname = os.path.join(dstdir, name)
         if not dstfname:
-            print '*** Fatal error! Unable to create destination file path, too long path name!'
-            sys.exit(-1)
+            raise IOError('*** Fatal error! Unable to create destination file path, too long path name!')
         if is_win_platform():
             if len(srcfname) > 255:
-                print 'given srcfname length (' + len(srcfname) + ') too long for Windows: ' + srcfname
-                sys.exit(-1)
+                raise IOError('given srcfname length [%s] too long for Windows: %s' % (len(srcfname), srcfname))
             if len(dstfname) > 255:
-                print 'given dstfname length (' + len(dstfname) + ') too long for Windows: ' + dstfname
-                sys.exit(-1)
+                raise IOError('given dstfname length [%s] too long for Windows: %s' % (len(dstfname), dstfname))
         if os.path.isdir(srcfname) and not os.path.islink(srcfname):
             os.mkdir(dstfname)
             move_tree(srcfname, dstfname)
@@ -324,12 +318,10 @@ def copy_tree(source_dir, dest_dir):
     for file_name in src_files:
         full_file_name = os.path.join(source_dir, file_name)
         if not full_file_name:
-            print '*** Fatal error! Unable to create source file path, too long path name!'
-            sys.exit(-1)
+            raise IOError('*** Fatal error! Unable to create source file path, too long path name!')
         if is_win_platform():
             if len(full_file_name) > 255:
-                print 'given full_file_name length (' + len(full_file_name) + ') too long for Windows: ' + full_file_name
-                sys.exit(-1)
+                raise IOError('given full_file_name length [%s] too long for Windows: %s' % (len(full_file_name), full_file_name))
         if os.path.isdir(full_file_name):
             create_dirs(dest_dir + os.sep + file_name)
             copy_tree(full_file_name, dest_dir + os.sep + file_name)
@@ -498,8 +490,7 @@ def create_dirs(path_to_be_created):
         try:
             os.makedirs(path_to_be_created)
         except:
-            print '*** Failed to create dir: ' + path_to_be_created
-            sys.exit(-1)
+            raise IOError('*** Failed to create dir: %s' % path_to_be_created)
 
 
 ###############################
@@ -564,8 +555,7 @@ def is_executable(path):
                                            stdout=subprocess.PIPE).stdout.read())
                 is not None)
     else:
-        print '*** Error, is_executable not implemented yet!'
-        sys.exit(-1)
+        raise RuntimeError('*** Error, is_executable not implemented yet!')
 
     return False
 
@@ -630,7 +620,7 @@ def sanity_check_rpath_max_length(file_path, new_rpath):
                 print '*** Warning - Not able to process RPath for file: ' + file_path
                 print '*** Required length for new RPath [' + new_rpath + '] is: ' + str(len(new_rpath))
                 print '*** Space available for new RPath inside the binary is: ' + str(space_for_new_rpath)
-                sys.exit(-1)
+                raise IOError()
     return True
 
 
@@ -669,8 +659,7 @@ def calculate_relpath(p1, p2):
 ##############################################################
 def calculate_rpath(file_full_path, destination_lib_path):
     if not os.path.isfile(file_full_path):
-        print '*** Not a valid file: ' + file_full_path
-        sys.exit(-1)
+        raise IOError('*** Not a valid file: %s' % file_full_path)
 
     bin_path    = os.path.dirname(file_full_path)
     path_to_lib = os.path.abspath(destination_lib_path)
@@ -759,7 +748,7 @@ def do_execute_sub_process(args, execution_path, abort_on_fail=True, get_output=
         sys.stderr.write('      Execution path: [' + execution_path + ']' + os.linesep)
         traceback.print_exc()
         if abort_on_fail:
-            sys.exit(-1)
+            raise
         else:
             pass
 
@@ -809,7 +798,7 @@ def extract_file(path, to_directory='.'):
 
     ret = runCommand(cmd_args, currentWorkingDirectory=to_directory, onlyErrorCaseOutput=True)
     if ret:
-        sys.exit('Failure running the last command: %i' % ret)
+        raise RuntimeError('Failure running the last command: %i' % ret)
     return True
 
 

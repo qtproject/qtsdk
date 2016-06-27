@@ -122,8 +122,7 @@ class ArchiveLocationResolver:
         for server in self.server_list:
             if server.server_name == server_name:
                 return server.server_url
-        print '*** Error! Unable to find server by name: ' + server_name
-        sys.exit(-1)
+        raise RuntimeError('*** Error! Unable to find server by name: %s' % server_name)
 
 
     ###############################

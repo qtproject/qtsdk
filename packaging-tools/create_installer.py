@@ -157,9 +157,8 @@ def main():
     """ Start """
     if parse_cmd_line():
         create_installer()
-        sys.exit(0)
     else:
-        sys.exit(-1)
+        raise ValueError("Insufficient command line arguments given")
 
 
 ##############################################################
@@ -177,9 +176,7 @@ def check_required_tools():
             break
 
     if not found:
-        sys.stderr.write('*** Error! Required tools are not present in the system (7z)')
-        sys.stderr.write('*** Abort!')
-        sys.exit(-1)
+        raise EnvironmentError("7z tool not found in the PATH")
 
 
 ##############################################################
@@ -192,7 +189,7 @@ def check_platform_identifier(platform_identifier):
         return
     sys.stderr.write('*** Unsupported platform identifier given: ' + platform_identifier)
     sys.stderr.write('*** Following directory can not be found:   ' + path_to_be_checked)
-    sys.exit(-1)
+    raise ValueError()
 
 
 ##############################################################
@@ -427,11 +424,11 @@ def parse_cmd_line():
     if CREATE_ONLINE_INSTALLER and CREATE_OFFLINE_INSTALLER:
         sys.stderr.write('*** Error! This script does not support (yet) creating offline and online installers at the same time!')
         sys.stderr.write('*** Choose either offline or online!')
-        sys.exit(-1)
+        raise ValueError()
     if CREATE_ONLINE_INSTALLER and CREATE_REPOSITORY:
         sys.stderr.write('*** Error! This script does not support (yet) creating online installer and repository at the same time!')
         sys.stderr.write('*** Choose either online installer or repository creation!')
-        sys.exit(-1)
+        raise ValueError()
 
     # check that given main configuration root dir exists
     if not os.path.isdir(CONFIGURATIONS_DIR):
@@ -582,7 +579,7 @@ def set_config_xml():
         sys.stderr.write('*** Error!')
         sys.stderr.write('*** Given config.xml template does not exist: ' + config_template_source)
         sys.stderr.write('*** Abort!')
-        sys.exit(-1)
+        raise ValueError()
 
     # name has to be config.xml for installer-framework
     config_template_dest_dir = CONFIG_DIR_DST
@@ -696,8 +693,7 @@ def parse_component_data(configuration_file, configurations_base_path):
         allos_conf_file_dir = os.path.normpath(CONFIGURATIONS_DIR + os.sep + COMMON_CONFIG_DIR_NAME)
         file_full_path = bldinstallercommon.locate_file(allos_conf_file_dir, configuration_file)
     if not file_full_path:
-        print '*** Aborting, unable to locate the specified file. Check the configuration files for possible error(s).'
-        sys.exit(-1)
+        raise ValueError('*** Aborting, unable to locate the specified file. Check the configuration files for possible error(s).')
     print ' -> Reading target configuration file: ' + file_full_path
     configuration = ConfigParser.ConfigParser()
     configuration.readfp(open(file_full_path))
@@ -725,7 +721,7 @@ def parse_component_data(configuration_file, configurations_base_path):
                         else:
                             if STRICT_MODE:
                                 print sdk_component.error_msg()
-                                sys.exit(-1)
+                                raise ValueError()
                             else:
                                 print '!!! Ignored component in non-strict mode (missing archive data or metadata?): ' + section
                                 SDK_COMPONENT_LIST_SKIPPED.append(sdk_component)
@@ -789,11 +785,11 @@ def move_directory_one_layer_up(directory):
         new_location = os.path.abspath(os.path.join(temp_path_name, '..'))
         bldinstallercommon.move_tree(temp_path_name, new_location)
         if not bldinstallercommon.remove_tree(temp_path_name):
-            sys.exit('Unable to remove directory: %s' % temp_path_name)
+            raise IOError('Unable to remove directory: ' + temp_path_name)
     else:
         sys.stderr.write('*** Error: unsupported folder structure encountered, abort!')
         sys.stderr.write('*** Found items: ' + str(items) + ' in directory: ' + directory)
-        sys.exit(-1)
+        raise IOError()
 
 
 
@@ -948,7 +944,7 @@ def create_target_components(target_config):
         if hasattr(sdk_component, 'temp_data_dir') and os.path.exists(sdk_component.temp_data_dir):
             # lastly remove temp dir after all data is prepared
             if not bldinstallercommon.remove_tree(sdk_component.temp_data_dir):
-                sys.exit('Unable to remove directory: %s' % sdk_component.temp_data_dir)
+                raise IOError('Unable to remove directory: %s' % sdk_component.temp_data_dir)
             # substitute downloadable archive names in installscript.qs
             substitute_component_tags(sdk_component.generate_downloadable_archive_list(), sdk_component.meta_dir_dest)
 
@@ -1070,11 +1066,11 @@ def install_ifw_tools():
                 if not(res):
                     sys.stderr.write('*** Package URL is invalid: [' + package_url + ']')
                     sys.stderr.write('*** Abort!')
-                    sys.exit(-1)
+                    raise ValueError()
                 bldinstallercommon.retrieve_url(package_url, package_save_as_temp)
             if not (os.path.isfile(package_save_as_temp)):
                 sys.stderr.write('*** Downloading failed! Aborting!')
-                sys.exit(-1)
+                raise RuntimeError()
             # extract IFW archive
             bldinstallercommon.extract_file(package_save_as_temp, IFW_TOOLS_DIR)
             os.remove(package_save_as_temp)
@@ -1089,7 +1085,7 @@ def install_ifw_tools():
             else:
                 sys.stderr.write('*** Unsupported dir structure for installer-framework-tools package?!')
                 sys.stderr.write('*** Abort!')
-                sys.exit(-1)
+                raise RuntimeError()
 
     executable_suffix = bldinstallercommon.get_executable_suffix()
     ARCHIVEGEN_TOOL = bldinstallercommon.locate_executable(tools_bin_path, 'archivegen' + executable_suffix)
@@ -1098,17 +1094,13 @@ def install_ifw_tools():
     REPOGEN_TOOL = bldinstallercommon.locate_executable(tools_bin_path, 'repogen' + executable_suffix)
     # check
     if not (os.path.isfile(ARCHIVEGEN_TOOL)):
-        sys.stderr.write('*** Archivegen tool not found: ' + ARCHIVEGEN_TOOL)
-        sys.exit(-1)
+        raise IOError('*** Archivegen tool not found: ' + ARCHIVEGEN_TOOL)
     if not (os.path.isfile(BINARYCREATOR_TOOL)):
-        sys.stderr.write('*** Binarycreator tool not found: ' + BINARYCREATOR_TOOL)
-        sys.exit(-1)
+        raise IOError('*** Binarycreator tool not found: ' + BINARYCREATOR_TOOL)
     if not (os.path.isfile(INSTALLERBASE_TOOL)):
-        sys.stderr.write('*** Installerbase tool not found: ' + INSTALLERBASE_TOOL)
-        sys.exit(-1)
+        raise IOError('*** Installerbase tool not found: ' + INSTALLERBASE_TOOL)
     if not (os.path.isfile(REPOGEN_TOOL)):
-        sys.stderr.write('*** Repogen tool not found: ' + REPOGEN_TOOL)
-        sys.exit(-1)
+        raise IOError('*** Repogen tool not found: ' + REPOGEN_TOOL)
 
     print ' ARCHIVEGEN_TOOL: ' + ARCHIVEGEN_TOOL
     print ' BINARYCREATOR_TOOL: ' + BINARYCREATOR_TOOL
@@ -1234,8 +1226,7 @@ def create_offline_repository():
         # create repository
         bldinstallercommon.do_execute_sub_process(repogen_args, SCRIPT_ROOT_DIR)
         if not os.path.exists(REPO_OUTPUT_DIR):
-            sys.stderr.write('*** Fatal error! Unable to create repository directory: ' + REPO_OUTPUT_DIR)
-            sys.exit(-1)
+            raise IOError('*** Fatal error! Unable to create repository directory: ' + REPO_OUTPUT_DIR)
 
 
 ##############################################################

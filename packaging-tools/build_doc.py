@@ -50,8 +50,7 @@ bldinstallercommon.init_common_module(os.path.dirname(os.path.realpath(__file__)
 
 def handle_module_doc_build():
     if not bldinstallercommon.is_linux_platform():
-        print('*** Only Linux platform supported currently to perform doc builds. Aborting')
-        sys.exit(-1)
+        raise RuntimeError('*** Only Linux platform supported currently to perform doc builds. Aborting')
     if not os.environ.get('MODULE_NAME'):
         print('*** MODULE_NAME environment variable not defined. Unable to generate doc for this package.')
         return
@@ -126,8 +125,7 @@ def handle_module_doc_build():
     # patch Qt package
     qt_bin_directory = bldinstallercommon.locate_directory(qt_package_path, 'bin')
     if not os.path.exists(qt_bin_directory):
-        print('*** Unable to locate bin directory from: {0}'.format(qt_bin_directory))
-        sys.exit(-1)
+        raise IOError('*** Unable to locate bin directory from: %s' % qt_bin_directory)
     qtConfFile = open(os.path.join(qt_bin_directory, 'qt.conf'), "w")
     qtConfFile.write("[Paths]" + os.linesep)
     qtConfFile.write("Prefix=.." + os.linesep)

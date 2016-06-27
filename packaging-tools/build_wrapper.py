@@ -150,8 +150,7 @@ class BldCommand:
         if not self.license:
             self.license = os.environ.get('LICENSE')
         if not any(self.license in s for s in ['opensource', 'enterprise']):
-            print('*** License unknown: {0}'.format(self.license))
-            sys.exit(-1)
+            raise RuntimeError('*** License unknown: %s' % self.license)
         # cfg
         self.target_env = options.target_env
         if not self.target_env:
@@ -324,7 +323,7 @@ class BldCommand:
         print('Validating build args for Qt5 Extra Module src init')
         print(self.options)
         if not os.environ.get('LICENSE'):
-            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('LICENSE'))
+            raise EnvironmentError('*** Error - Qt5 Extra Module build missing environment variable: LICENSE')
         return True
 
     #######################################################
@@ -334,7 +333,7 @@ class BldCommand:
         print('Validating build args for Qt5 Extra Module binary init')
         print(self.options)
         if not os.environ.get('LICENSE'):
-            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('LICENSE'))
+            raise EnvironmentError('*** Error - Qt5 Extra Module build missing environment variable: LICENSE')
         return True
 
     #######################################################
@@ -344,23 +343,23 @@ class BldCommand:
         print('Validating build args for Qt5 Extra Module Src build')
         print(self.options)
         if not os.environ.get('LICENSE'):
-            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('LICENSE'))
+            raise EnvironmentError('*** Error - Qt5 Extra Module build missing environment variable: LICENSE')
         if not os.environ.get('MODULE_NAME'):
-            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('MODULE_NAME'))
+            raise EnvironmentError('*** Error - Qt5 Extra Module build missing environment variable: MODULE_NAME')
         if not os.environ.get('MODULE_VERSION'):
-            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('MODULE_VERSION'))
+            raise EnvironmentError('*** Error - Qt5 Extra Module build missing environment variable: MODULE_VERSION')
         if not os.environ.get('GIT_MODULE_REPO'):
-            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('GIT_MODULE_REPO'))
+            raise EnvironmentError('*** Error - Qt5 Extra Module build missing environment variable: GIT_MODULE_REPO')
         if not os.environ.get('GIT_MODULE_REPO_BRANCH'):
-            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('GIT_MODULE_REPO_BRANCH'))
+            raise EnvironmentError('*** Error - Qt5 Extra Module build missing environment variable: GIT_MODULE_REPO_BRANCH')
         if not os.environ.get('BUILD_NUMBER'):
-            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('BUILD_NUMBER'))
+            raise EnvironmentError('*** Error - Qt5 Extra Module build missing environment variable: BUILD_NUMBER')
         if not os.environ.get('PACKAGE_STORAGE_SERVER'):
-            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('PACKAGE_STORAGE_SERVER'))
+            raise EnvironmentError('*** Error - Qt5 Extra Module build missing environment variable: PACKAGE_STORAGE_SERVER')
         if not os.environ.get('PACKAGE_STORAGE_SERVER_USER'):
-            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('PACKAGE_STORAGE_SERVER_USER'))
+            raise EnvironmentError('*** Error - Qt5 Extra Module build missing environment variable: PACKAGE_STORAGE_SERVER_USER')
         if not os.environ.get('PACKAGE_STORAGE_SERVER_BASE_DIR'):
-            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('PACKAGE_STORAGE_SERVER_BASE_DIR'))
+            raise EnvironmentError('*** Error - Qt5 Extra Module build missing environment variable: PACKAGE_STORAGE_SERVER_BASE_DIR')
         return True
 
     #######################################################
@@ -371,22 +370,22 @@ class BldCommand:
         print(self.options)
         # check env variables
         if not os.environ.get('LICENSE'):
-            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('LICENSE'))
+            raise RuntimeError('*** Error - Qt5 Extra Module build missing environment variable: LICENSE')
         if not os.environ.get('PACKAGE_STORAGE_SERVER_PATH_HTTP'):
-            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('PACKAGE_STORAGE_SERVER_PATH_HTTP'))
+            raise RuntimeError('*** Error - Qt5 Extra Module build missing environment variable: PACKAGE_STORAGE_SERVER_PATH_HTTP')
         if not os.environ.get('QT_VERSION_MINOR'):
-            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('QT_VERSION_MINOR'))
+            raise RuntimeError('*** Error - Qt5 Extra Module build missing environment variable: QT_VERSION_MINOR')
         if not os.environ.get('MODULE_NAME'):
-            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('MODULE_NAME'))
+            raise RuntimeError('*** Error - Qt5 Extra Module build missing environment variable: MODULE_NAME')
         if not os.environ.get('MODULE_VERSION'):
-            sys.exit('*** Error - Qt5 Extra Module build missing environment variable: {0}'.format('MODULE_VERSION'))
+            raise RuntimeError('*** Error - Qt5 Extra Module build missing environment variable: MODULE_VERSION')
         # check command line arguments
         if not self.options.server:
-            sys.exit('*** Qt5 Extra Module build missing command line argument: --server')
+            raise RuntimeError('*** Qt5 Extra Module build missing command line argument: --server')
         if not self.options.target_env:
-            sys.exit('*** Qt5 Extra Module build missing command line argument: --target_env')
+            raise RuntimeError('*** Qt5 Extra Module build missing command line argument: --target_env')
         if not self.options.path:
-            sys.exit('*** Qt5 Extra Module build missing command line argument: --path')
+            raise RuntimeError('*** Qt5 Extra Module build missing command line argument: --path')
         return True
 
     ###########################################
@@ -455,8 +454,7 @@ class MultipleOption(Option):
 ###############################
 def sanity_check_packaging_server(bld_command):
     if not bld_command.pkg_server_addr:
-        print('*** Error - Packaging server address not defined?')
-        sys.exit(-1)
+        raise RuntimeError('*** Error - Packaging server address not defined?')
 
 ###############################
 # sign windows executable
@@ -817,8 +815,7 @@ def handle_qt_src_package_build(bld_command):
                 print('Running {0} custom commands'.format(bld_command.custom_build))
                 module.handle_custom_commands(bld_command.custom_build, WORK_DIR)
             else:
-                print('*** No custom functions found')
-                sys.exit(-1)
+                raise RuntimeError('*** No custom functions found')
     if bld_command.license == 'enterprise':
         cmd_args = ['../patches/apply.sh']
         bldinstallercommon.do_execute_sub_process(cmd_args, exec_path)
@@ -933,8 +930,7 @@ def get_qt_configuration_options(bld_command):
     qt_configure_options_file = os.environ['RELEASE_BUILD_QT_CONFIGURE_OPTIONS_FILE']
     # parse qt configuration arguments from release description file
     if not os.path.isfile(qt_configure_options_file):
-        print('*** Not a valid release description file: {0}'.format(qt_configure_options_file))
-        sys.exit(-1)
+        raise IOError('*** Not a valid release description file: %s' % qt_configure_options_file)
     tmp_conf = os.path.dirname(qt_configure_options_file)
     parser = ConfigParser.ConfigParser()
     parser.readfp(open(qt_configure_options_file))
@@ -1073,8 +1069,7 @@ def generate_bin_target_dictionary():
     # parse module exclude list from release description file
     conf_file_base_path = os.path.join(SCRIPT_ROOT_DIR, BUILD_META_INFO_FILE)
     if not os.path.isfile(conf_file_base_path):
-        print('*** Not a valid release description file: {0}'.format(conf_file_base_path))
-        sys.exit(-1)
+        raise IOError('*** Not a valid release description file: %s' % conf_file_base_path)
     parser = ConfigParser.ConfigParser()
     parser.readfp(open(conf_file_base_path))
     # parse
@@ -1087,11 +1082,9 @@ def generate_bin_target_dictionary():
         build_node_labels = bldinstallercommon.safe_config_key_fetch(parser, s, 'build_node_labels').replace(' ', '')
         label_list = build_node_labels.split(',')
         if not build_target_dir:
-            print('*** No build target directory defined for: {0}'.format(s))
-            sys.exit(-1)
+            raise RuntimeError('*** No build target directory defined for: %s' % s)
         if not label_list:
-            print('*** No build slave label defined for: {0}'.format(s))
-            sys.exit(-1)
+            raise RuntimeError('*** No build slave label defined for: %s' % s)
         for label in label_list:
             BIN_TARGET_DIRS[label] = build_target_dir
             if ci_target_postfix:
@@ -1106,8 +1099,7 @@ def handle_qt_release_build(bld_command):
     # Qt configure options
     qt_configure_options_file = get_qt_configuration_options(bld_command)
     if not os.path.isfile(qt_configure_options_file):
-        print('*** No valid Qt configuration file found: {0}'.format(qt_configure_options_file))
-        sys.exit(-1)
+        raise IOError('*** No valid Qt configuration file found: %s' % qt_configure_options_file)
     # additional Qt configure options
     qt_configure_extra_options = os.getenv('EXTRA_QT_CONFIGURE_OPTIONS', '')
     if bld_command.license.lower() == 'enterprise':
@@ -1436,7 +1428,7 @@ def handle_qt_creator_build(bld_command):
         for dependency_name in plugin.dependencies:
             matches = [dep for dep in additional_plugins if dep.name == dependency_name]
             if not matches:
-                raise LookupError('did not find dependency "{0}" for plugin "{1}"'.format(dependency_name, plugin.name))
+                raise RuntimeError('did not find dependency "{0}" for plugin "{1}"'.format(dependency_name, plugin.name))
             dependency = matches[0]
             cmd_arguments.extend(['--plugin-search-path', os.path.join(WORK_DIR, dependency.path, 'plugins')])
             libs_base = os.path.join(WORK_DIR, dependency.name + '-target')
@@ -1755,8 +1747,7 @@ def delete_remote_directory_tree(bld_command, remote_dir):
 def trigger_rta(rta_description_files_dir):
     # check if rta cases define for this build job
     if not os.path.isdir(rta_description_files_dir):
-        print('*** Error - Given rta_description_files_dir does not exist: {0}'.format(rta_description_files_dir))
-        sys.exit(-1)
+        raise IOError('*** Error - Given rta_description_files_dir does not exist: %s' % rta_description_files_dir)
     dir_list = os.listdir(rta_description_files_dir)
     matching = [s for s in dir_list if pkg_constants.RTA_DESCRIPTION_FILE_NAME_BASE in s]
     if not matching:
@@ -1777,8 +1768,7 @@ def trigger_rta(rta_description_files_dir):
         for line in iter(f):
             line_split = line.split(' ')
             if len(line_split) != 2:
-                print('*** Error - Invalid format in rta description file {0}, line: {1}'.format(rta_file, line))
-                sys.exit(-1)
+                raise RuntimeError('*** Error - Invalid format in rta description file %s, line: %s' % (rta_file, line))
             rta_keys = line_split[1].split(',')
             for item in rta_keys:
                 item = item.rstrip().replace(' ', '')
@@ -1795,8 +1785,7 @@ def trigger_rta(rta_description_files_dir):
 def handle_online_repository_build(bld_command):
     conf_file = bld_command.release_description_file
     if not os.path.exists(conf_file):
-        print('*** The given file does not exist: {0}'.format(conf_file))
-        sys.exit(-1)
+        raise IOError('*** The given file does not exist: %s' % conf_file)
     if bld_command.target_env.find('64') != -1:
         arch = 'x64'
     else:
@@ -1895,11 +1884,11 @@ def initialize_icu_build(bld_command):
     # sanity check icu args in bld_command
     sanity_check_packaging_server(bld_command)
     if not bld_command.icu_version:
-        sys.exit('*** ICU build is missing: icu_version')
+        raise RuntimeError('*** ICU build is missing: icu_version')
     if not bld_command.path:
-        sys.exit('*** ICU build is missing: path')
+        raise RuntimeError('*** ICU build is missing: path')
     if not bld_command.build_number:
-        sys.exit('*** ICU build is missing: build_number')
+        raise RuntimeError('*** ICU build is missing: build_number')
     remote_snaphot_dir_base = bld_command.path + '/' + 'icu' + '/' + bld_command.icu_version
     remote_snaphot_dir = remote_snaphot_dir_base + '/' + bld_command.build_number
     remote_latest_dir = remote_snaphot_dir_base + '/' + 'latest'
@@ -1916,11 +1905,11 @@ def handle_icu_build(bld_command):
     # sanity check icu args in bld_command
     sanity_check_packaging_server(bld_command)
     if not bld_command.icu_version:
-        sys.exit('*** ICU build is missing: icu_version')
+        raise RuntimeError('*** ICU build is missing: icu_version')
     if not bld_command.path:
-        sys.exit('*** ICU build is missing: path')
+        raise RuntimeError('*** ICU build is missing: path')
     if not bld_command.icu_src_pkg_url:
-        sys.exit('*** ICU build is missing: icu_src_pkg_url')
+        raise RuntimeError('*** ICU build is missing: icu_src_pkg_url')
     bld_icu_tools.init_build_icu(bld_command.icu_src_pkg_url, bld_command.icu_version, True)
     # define remote dir where to upload
     remote_snaphot_dir = bld_command.path + '/' + 'icu' + '/' + bld_command.icu_version + '/' + 'latest'
@@ -1941,7 +1930,7 @@ def publish_icu_packages(bld_command):
     # sanity check icu args in bld_command
     sanity_check_packaging_server(bld_command)
     if not bld_command.icu_version:
-        sys.exit('*** ICU build is missing: icu_version')
+        raise RuntimeError('*** ICU build is missing: icu_version')
     # Opensource server address and path
     ext_server_base_url  = os.environ['EXT_SERVER_BASE_URL']
     ext_server_base_path = os.environ['EXT_SERVER_BASE_PATH']
@@ -1972,14 +1961,14 @@ def parse_cmd_line():
     arg_count = len(sys.argv)
     if arg_count < 2:
         OPTION_PARSER.print_help()
-        sys.exit(-1)
+        raise RuntimeError()
 
     (options, dummy) = OPTION_PARSER.parse_args()
     bld_cmd_validator = BldCommand(options)
 
     if not bld_cmd_validator.validate_bld_args():
         OPTION_PARSER.print_help()
-        sys.exit(-1)
+        raise RuntimeError()
 
     if bldinstallercommon.is_linux_platform():
         PLATFORM = 'linux'

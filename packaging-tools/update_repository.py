@@ -102,15 +102,11 @@ def fetch_repogen_tools(tools_uri):
         print('Trying to locate repogen tool: {0}'.format(REPOGEN_TOOL + executable_suffix))
         tool = bldinstallercommon.locate_executable(REPOGEN_TOOLS_DIR, REPOGEN_TOOL + executable_suffix)
         if not os.path.isfile(tool):
-            print('Unable to locate repogen tool [{0}] under directory: {1}'.format(REPOGEN_TOOL + executable_suffix, REPOGEN_TOOLS_DIR))
-            print('*** Abort!')
-            sys.exit(-1)
+            raise IOError('Unable to locate repogen tool [%s] under directory: %s' % (REPOGEN_TOOL + executable_suffix, REPOGEN_TOOLS_DIR))
         else:
             REPOGEN_TOOL = tool
     else:
-        print('Invalid url: {0}'.format(tools_uri))
-        print('*** Abort!')
-        sys.exit(-1)
+        raise IOError('Invalid url: %s' % tools_uri)
 
     # found the tool
     print('Using repogen tool: {0}'.format(REPOGEN_TOOL))
@@ -126,14 +122,11 @@ def update_repository(source_pkg, target_repo, components_to_update):
     print('  Components:        {0}'.format(components_to_update))
     print()
     if not len(components_to_update):
-        print('*** You asked me to update nothing?')
-        sys.exit(-1)
+        raise RuntimeError('*** You asked me to update nothing?')
     if not os.path.exists(source_pkg):
-        print('*** Source pkg does not exist: {0}'.format(source_pkg))
-        sys.exit(-1)
+        raise IOError('*** Source pkg does not exist: %s' % source_pkg)
     if not os.path.exists(target_repo):
-        print('*** Target repository does not exist: {0}'.format(target_repo))
-        sys.exit(-1)
+        raise IOError('*** Target repository does not exist: %s' % target_repo)
     # do we update new components only or all given components no matter
     # what the version numbers are
     repogen_update_cmd = '--update'
@@ -177,7 +170,7 @@ def sanity_check(component_list, source_pkg):
         if item not in source_packages:
             print('*** Sanity check fail!')
             print('*** Can not update component: [{0}] as it does not exist under: {1}'.format(orig_item, source_pkg))
-            sys.exit(-1)
+            raise RuntimeError()
 
 
 ###############################
@@ -244,7 +237,7 @@ def ask_for_components(source_pkg):
     var = raw_input("Is the above selection correct? y/n ")
     if var not in ['y', 'Y']:
         print('*** Aborting...')
-        sys.exit(-1)
+        raise RuntimeError()
 
     # return the components to be updated
     return component_list
@@ -309,7 +302,7 @@ if __name__ == "__main__":
         if not os.path.isdir(CALLER_ARGUMENTS.source_repo) or not os.path.isfile(os.path.join(CALLER_ARGUMENTS.source_repo, 'Updates.xml')):
             print('*** The given source directory does not seem to be proper repository? Abort!')
             print('Given source repository: {0}'.format(CALLER_ARGUMENTS.source_repo))
-            sys.exit(-1)
+            raise RuntimeError()
         if os.path.isfile(os.path.join(CALLER_ARGUMENTS.target_repo, 'Updates.xml')):
             print('The given destination directory already contains a repository.')
             print('We just update the existing repository:')

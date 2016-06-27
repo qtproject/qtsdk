@@ -148,13 +148,11 @@ def generate_match_list(source_match_list, dest_match_list, component_name, dest
 ###############################
 def swap_repository(parser_args):
     if not parser_args:
-        print('*** No options available to swap online reposities')
-        sys.exit(1)
+        raise RuntimeError('*** No options available to swap online reposities')
 
     source_match_list = get_directory_list(parser_args.source, parser_args.component)
     if not source_match_list:
-        print('*** Nothing to update? Did not find any component named: {0}'.format(parser_args.component))
-        sys.exit(1)
+        raise RuntimeError('*** Nothing to update? Did not find any component named: %s' % parser_args.component)
     dest_match_list = get_directory_list(parser_args.destination, parser_args.component)
 
     match_list = generate_match_list(source_match_list, dest_match_list, parser_args.component, parser_args.destination)

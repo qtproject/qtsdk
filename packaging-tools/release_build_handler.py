@@ -147,33 +147,24 @@ class BuildJob:
     # validate content
     def validate(self):
         if not self.node_name:
-            print('*** Fatal error! <node_name> not defined for build job?')
-            sys.exit(-1)
+            raise RuntimeError('*** Fatal error! <node_name> not defined for build job?')
         if not self.license:
-            print('*** Fatal error! <license> not defined for {0}'.format(self.node_name))
-            sys.exit(-1)
+            raise RuntimeError('*** Fatal error! <license> not defined for: %s' % self.node_name)
         if not self.configurations_dir:
-            print('*** Fatal error! <configurations_dir> not defined for {0}'.format(self.node_name))
-            sys.exit(-1)
+            raise IOError('*** Fatal error! <configurations_dir> not defined for: %s' % self.node_name)
         if not self.configurations_file:
-            print('*** Fatal error! <configurations_file> not defined for {0}'.format(self.node_name))
-            sys.exit(-1)
+            raise IOError('*** Fatal error! <configurations_file> not defined for: %s' % self.node_name)
         if not self.ifw_tools:
-            print('*** Fatal error! <ifw_tools> not defined for {0}'.format(self.node_name))
-            sys.exit(-1)
+            raise RuntimeError('*** Fatal error! <ifw_tools> not defined for: %s' % self.node_name)
         if self.is_repo_job:
             if not self.repo_content_type:
-                print('*** Fatal error! <repo_content_type> not defined for {0}'.format(self.node_name))
-                sys.exit(-1)
+                raise RuntimeError('*** Fatal error! <repo_content_type> not defined for: %s' % self.node_name)
             if not self.repo_content_type:
-                print('*** Fatal error! <repo_content_type> not defined for {0}'.format(self.node_name))
-                sys.exit(-1)
+                raise RuntimeError('*** Fatal error! <repo_content_type> not defined for: %s' % self.node_name)
             if not self.repo_components_to_update:
-                print('*** Fatal error! <repo_components_to_update> not defined for {0}'.format(self.node_name))
-                sys.exit(-1)
+                raise RuntimeError('*** Fatal error! <repo_components_to_update> not defined for: %s' % self.node_name)
             if not self.repo_url_specifier:
-                print('*** Fatal error! <repo_url_specifier> not defined for {0}'.format(self.node_name))
-                sys.exit(-1)
+                raise RuntimeError('*** Fatal error! <repo_url_specifier> not defined for: %s' % self.node_name)
         # all ok
         return True
 
@@ -206,8 +197,7 @@ def is_valid_job_type(job_type_specifier):
 def get_job_list(conf_file, job_type_specifier, license_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag):
     print('Get [{0}] build job list for: {1}'.format(job_type_specifier, platform + '-' + arch))
     if not os.path.isfile(conf_file):
-        print('*** Fatal error! Given file does not exist: {0}'.format(conf_file))
-        sys.exit(-1)
+        raise IOError('*** Fatal error! Given file does not exist: %s' % conf_file)
     # ensure the string ends with '/'
     if not ifw_base_url.endswith('/'):
         ifw_base_url += '/'
@@ -215,13 +205,11 @@ def get_job_list(conf_file, job_type_specifier, license_type, branch, platform, 
     parser.readfp(open(conf_file))
     # validate job type
     if not is_valid_job_type(job_type_specifier):
-        print('*** Fatal error! Unsupported job type specifier given {0}'.format(job_type_specifier))
-        sys.exit(-1)
+        raise RuntimeError('*** Fatal error! Unsupported job type specifier given: %s' % job_type_specifier)
     # determine which ifw tools to use (which platform)
     ifw_tools = bldinstallercommon.safe_config_key_fetch(parser, 'ifwtools', platform + '-' + arch)
     if not ifw_tools:
-        print('*** Fatal error! Unable to find ifw tools for {0}'.format(platform + '-' + arch))
-        sys.exit(-1)
+        raise RuntimeError('*** Fatal error! Unable to find ifw tools for_ %s' % (platform + '-' + arch))
     ifw_tools_url = urlparse.urljoin(ifw_base_url, ifw_tools)
     # check if repository build job
     is_repo_job = False
@@ -254,8 +242,7 @@ def get_job_list(conf_file, job_type_specifier, license_type, branch, platform, 
                 version_number_tag = global_version_tag
             arg_configurations_file = bldinstallercommon.safe_config_key_fetch(parser, s, 'arg_configurations_file')
             if not arg_configurations_file:
-                print('*** Fatal error! Configuration file not defined for {0}'.format(s))
-                sys.exit(-1)
+                raise RuntimeError('*** Fatal error! Configuration file not defined for: %s' % s)
             # for triggering rta later on if specified
             rta_key_list = bldinstallercommon.safe_config_key_fetch(parser, s, 'rta_key_list')
             # preferred installer name
@@ -271,16 +258,13 @@ def get_job_list(conf_file, job_type_specifier, license_type, branch, platform, 
             if job_type_specifier == 'repository':
                 repo_content_type = bldinstallercommon.safe_config_key_fetch(parser, s, 'repo_content_type')
                 if not repo_content_type:
-                    print('*** Fatal error! <repo_content_type> not defined for {0}'.format(s))
-                    sys.exit(-1)
+                    raise RuntimeError('*** Fatal error! <repo_content_type> not defined for: %s' % s)
                 repo_components_to_update = bldinstallercommon.safe_config_key_fetch(parser, s, 'repo_components_to_update')
                 if not repo_components_to_update:
-                    print('*** Fatal error! <repo_components_to_update> not defined for {0}'.format(s))
-                    sys.exit(-1)
+                    raise RuntimeError('*** Fatal error! <repo_components_to_update> not defined for: %s' % s)
                 repo_url_specifier = bldinstallercommon.safe_config_key_fetch(parser, s, 'repo_url_specifier')
                 if not repo_url_specifier:
-                    print('*** Fatal error! <repo_url_specifier> not defined for {0}'.format(s))
-                    sys.exit(-1)
+                    raise RuntimeError('*** Fatal error! <repo_url_specifier> not defined for: %s' % s)
             # determine full path for the conf file
             full_conf_file_path = os.path.join(conf_file_base_dir, arg_configurations_file)
             # create build job
@@ -300,8 +284,7 @@ def get_repo_job_list(conf_file, license_type, branch, platform, arch, conf_file
 # - online installer build(s)
 def handle_installer_build(conf_file, installer_type, license_type, branch, platform, arch, packages_base_url):
     if not os.path.isfile(conf_file):
-        print('*** Fatal error! Given file does not exist: {0}'.format(conf_file))
-        sys.exit(-1)
+        raise IOError('*** Fatal error! Given file does not exist: %s' % conf_file)
     init_env()
     conf_file_base_dir  = CONFIGURATIONS_FILE_BASE_DIR
     ifw_base_url        = IFW_TOOLS_BASE_URL
@@ -312,13 +295,11 @@ def handle_installer_build(conf_file, installer_type, license_type, branch, plat
     global_version      = bldinstallercommon.safe_config_key_fetch(parser, section_name, 'version')
     global_version_tag  = bldinstallercommon.safe_config_key_fetch(parser, section_name, 'version_tag')
     if not global_version:
-        print('*** Fatal error! Invalid values in {0} -> {1}'.format(conf_file, section_name))
-        sys.exit(-1)
+        raise RuntimeError('*** Fatal error! Invalid values in %s -> %s' % (conf_file, section_name))
     # parse build jobs
     job_list = get_job_list(conf_file, installer_type, license_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
     if (len(job_list) == 0):
-        print('*** Fatal error! No [{0}] installer build jobs found from: {1}. Probably an error?'.format(installer_type, conf_file))
-        sys.exit(-1)
+        raise RuntimeError('*** Fatal error! No [%s] installer build jobs found from: %s. Probably an error?' % (installer_type, conf_file))
     installer_output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.INSTALLER_OUTPUT_DIR_NAME)
     rta_descr_output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.RTA_DESCRIPTION_FILE_DIR_NAME)
     bldinstallercommon.create_dirs(rta_descr_output_dir)
@@ -338,8 +319,7 @@ def handle_installer_build(conf_file, installer_type, license_type, branch, plat
             rta_description_file.close()
     # if "/installer_output" directory is empty -> error
     if not os.listdir(installer_output_dir):
-        print('*** Fatal error! No installers generated into: {0}'.format(installer_output_dir))
-        sys.exit(-1)
+        raise RuntimeError('*** Fatal error! No installers generated into: %s' % installer_output_dir)
 
 
 # helper function/wrapper to create online installer
@@ -382,8 +362,7 @@ def create_installer(job, packages_base_url, installer_type):
 # - update existing repository at test server with new content
 def handle_repo_build(conf_file, license_type, branch, platform, arch, packages_base_url, update_staging_repo, update_production_repo):
     if not os.path.isfile(conf_file):
-        print('*** Fatal error! Given file does not exist: {0}'.format(conf_file))
-        sys.exit(-1)
+        raise IOError('*** Fatal error! Given file does not exist: %s' % conf_file)
     init_env()
     release_tools_dir   = SCRIPT_ROOT_DIR
     conf_file_base_dir  = CONFIGURATIONS_FILE_BASE_DIR
@@ -397,8 +376,7 @@ def handle_repo_build(conf_file, license_type, branch, platform, arch, packages_
     # parse build jobs
     repo_job_list = get_repo_job_list(conf_file, license_type, branch, platform, arch, conf_file_base_dir, ifw_base_url, global_version, global_version_tag)
     if (len(repo_job_list) == 0):
-        print('*** Fatal error! No repository build jobs found. Probably an error?'.format(conf_file, section_name))
-        sys.exit(-1)
+        raise RuntimeError('*** Fatal error! No repository build jobs found. Probably an error? %s' % conf_file)
     # init repo dirs
     init_repositories(repo_job_list)
     # is this snapshot build? Then enable component version number forced update
@@ -609,9 +587,7 @@ def update_online_repo(job, update_staging_repo, update_production_repo):
         cmd_args_log_to_prod = cmd_args_log_to_staging + ['ssh', '-t', '-t', PROD_USER + '@' + PROD_ADDR ]
         # delete old stuff from pending area, but do sanity check first!
         if (os.path.normpath(PROD_SRV_REPO_PENDING_AREA_DIR) in (os.path.normpath(PROD_SRV_REPO_BASE_PATH + '/' + REPOSITORY_BASE_NAME))):
-            print('*** Fatal error!!! You are trying to delete production repository: '.format(prod_server_pending_area_dir))
-            print('*** Aborting ...')
-            sys.exit(-1)
+            raise RuntimeError('*** Fatal error!!! You are trying to delete production repository: %s' % prod_server_pending_area_dir)
         cmd_args_rm_old = cmd_args_log_to_prod + ['rm', '-rf', prod_server_pending_area_dir]
         bldinstallercommon.do_execute_sub_process(cmd_args_rm_old, SCRIPT_ROOT_DIR)
         # create pending dirs into production server

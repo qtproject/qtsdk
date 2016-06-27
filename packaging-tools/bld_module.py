@@ -236,7 +236,7 @@ if not os.path.lexists(callerArguments.qt5path) and not callerArguments.qt5_modu
     parser.print_help()
     print(("error: Please add the missing qt5_module_url arguments if the {0} does not exist"
         + os.linesep + os.linesep).format(callerArguments.qt5path))
-    sys.exit(1)
+    raise RuntimeError()
 
 qmakeBinary = os.path.abspath(os.path.join(callerArguments.qt5path, 'bin', 'qmake'))
 
@@ -315,13 +315,13 @@ runCommand(generateCommand, currentWorkingDirectory = qtModuleBuildDirectory,
 
 ret = runBuildCommand(currentWorkingDirectory = qtModuleBuildDirectory, callerArguments = callerArguments)
 if ret:
-    sys.exit('Failure running the last command: %i' % ret)
+    raise RuntimeError('Failure running the last command: %i' % ret)
 
 ret = runInstallCommand(['install', 'INSTALL_ROOT=' + qtModuleInstallDirectory],
                  currentWorkingDirectory = qtModuleBuildDirectory,
                  callerArguments = callerArguments, init_environment = environment)
 if ret:
-    sys.exit('Failure running the last command: %i' % ret)
+    raise RuntimeError('Failure running the last command: %i' % ret)
 
 # patch .so filenames on Windows/Android
 if bldinstallercommon.is_win_platform() and os.environ.get('DO_PATCH_ANDROID_SONAME_FILES'):
@@ -342,13 +342,13 @@ if callerArguments.makeDocs:
                      currentWorkingDirectory = qtModuleBuildDirectory,
                      callerArguments = callerArguments, init_environment = environment)
     if ret:
-        sys.exit('Failure running the last command: %i' % ret)
+        raise RuntimeError('Failure running the last command: %i' % ret)
     # then make install those
     ret = runInstallCommand(['install_docs', 'INSTALL_ROOT=' + qtModuleInstallDirectory],
                      currentWorkingDirectory = qtModuleBuildDirectory,
                      callerArguments = callerArguments, init_environment = environment)
     if ret:
-        sys.exit('Failure running the last command: %i' % ret)
+        raise RuntimeError('Failure running the last command: %i' % ret)
     # make separate "doc.7z" for later use if needed
     doc_dir = bldinstallercommon.locate_directory(qtModuleInstallDirectory, 'doc')
     if doc_dir:
@@ -356,7 +356,7 @@ if callerArguments.makeDocs:
         ret = runCommand(['7z', 'a', os.path.join('doc_archives', archive_name), doc_dir],
                          currentWorkingDirectory = os.path.dirname(os.path.realpath(__file__)))
         if ret:
-            sys.exit('Failure running the last command: %i' % ret)
+            raise RuntimeError('Failure running the last command: %i' % ret)
 
 # try to figure out where the actual exported content is
 qt5_install_basename = os.path.basename(callerArguments.qt5path)
@@ -381,4 +381,4 @@ else:
     archive_cmd.append(dir_to_archive)
 ret = runCommand(archive_cmd, currentWorkingDirectory = os.path.dirname(os.path.realpath(__file__)))
 if ret:
-    sys.exit('Failure running the last command: %i' % ret)
+    raise RuntimeError('Failure running the last command: %i' % ret)

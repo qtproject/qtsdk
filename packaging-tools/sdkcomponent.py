@@ -213,9 +213,7 @@ class SdkComponent:
             for archive in archives_list:
                 # check that archive template exists
                 if not target_config.has_section(archive):
-                    print '*** Error! Given archive section does not exist in configuration file: ' + archive
-                    print '*** Abort!'
-                    sys.exit(-1)
+                    raise RuntimeError('*** Error! Given archive section does not exist in configuration file: %s' % archive)
                 archive_obj = SdkComponent.DownloadableArchive(archive, self.package_name, self.archive_server_name,
                                                                target_config, archive_location_resolver,
                                                                self.key_value_substitution_list)

@@ -128,9 +128,7 @@ def fetch_key(qmake_file_name, key):
 ##############################################################
 if __name__ == "__main__":
     if len(sys.argv) != 4:
-        print '*** Three parameters needed!'
-        print '*** Abort!'
-        sys.exit(-1)
+        raise RuntimeError('*** Three parameters needed!')
     print fetch_key(sys.argv[1], sys.argv[2])
     replace_key(sys.argv[1], sys.argv[2], sys.argv[3])
     sys.exit(0)
