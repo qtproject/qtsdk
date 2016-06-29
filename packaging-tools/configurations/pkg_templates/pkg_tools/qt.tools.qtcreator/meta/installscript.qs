@@ -48,6 +48,8 @@ function Component()
     installer.installationFinished.connect(this, Component.prototype.installationFinishedPageIsShown);
     installer.finishButtonClicked.connect(this, Component.prototype.installationFinished);
     installer.valueChanged.connect(this, Component.prototype.reactOnTargetDirChange);
+    if ("%QTC_IS_STANDALONE_INSTALLER%" == "true")
+        installer.setDefaultPageVisible(QInstaller.ComponentSelection, false);
 
     if (installer.value("os") == "win") {
         // Creator needs vcredist 32bit on windows

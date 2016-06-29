@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<Installer>
+    <Name>Qt Creator %QTC_DISPLAY_VERSION%</Name>
+    <Version>%QTC_VERSION%</Version>
+    <Title>Qt Creator %QTC_DISPLAY_VERSION%</Title>
+    <Publisher>The Qt Company Ltd</Publisher>
+    <InstallerWindowIcon>logo-small</InstallerWindowIcon>
+    <InstallerApplicationIcon>logo-small</InstallerApplicationIcon>
+    <Watermark>watermark.png</Watermark>
+    <StartMenuDir>Qt Creator %QTC_DISPLAY_VERSION%</StartMenuDir>
+    <ProductUrl>http://www.qt.io/</ProductUrl>
+    <MaintenanceToolName>QtCreatorUninst</MaintenanceToolName>
+    <DependsOnLocalInstallerBinary>true</DependsOnLocalInstallerBinary>
+    <!-- @homeDir@ and @rootDir@ are some of the supported vars -->
+    <TargetDir>@rootDir@/Qt/qtcreator-%QTC_DISPLAY_VERSION%</TargetDir>
+    <WizardDefaultHeight>560</WizardDefaultHeight>
+    <AllowSpaceInPath>true</AllowSpaceInPath>
+</Installer>

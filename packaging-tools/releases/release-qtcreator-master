@@ -1,0 +1,45 @@
+# Define release content
+
+
+################################################################################
+## Global defines
+################################################################################
+[ifwtools]
+windows-x86:                installer-framework-build-win-x86.7z
+linux-x64:                  installer-framework-build-linux-x64.7z
+mac-x64:                    installer-framework-build-mac-x64.7z
+
+[release.global]
+version:                    4.1.0
+version_tag:
+arg_substitution_list:      %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.1.0_57x/latest_successful,
+                            %QTC_VERSION%=4.1.0,
+                            %QTC_DISPLAY_VERSION%=%GLOBAL_VERSION_AND_TAG%,
+                            %QTC_IS_STANDALONE_INSTALLER%=true
+
+################################################################################
+## Linux offline
+################################################################################
+[release.56.offline.linux.x64]
+arg_configurations_file:    offline_installer_jobs/qtcreator/linux_x64
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
+installer_name:             qt-creator-opensource-linux-x86_64-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:
+
+################################################################################
+## macOS offline
+################################################################################
+[release.56.offline.mac.x64]
+arg_configurations_file:    offline_installer_jobs/qtcreator/mac_x64
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
+installer_name:             qt-creator-opensource-mac-x86_64-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:
+
+################################################################################
+## Windows offline
+################################################################################
+[release.56.offline.windows.x86.msvc2013]
+arg_configurations_file:    offline_installer_jobs/qtcreator/win_x86
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
+installer_name:             qt-creator-opensource-windows-x86-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:
