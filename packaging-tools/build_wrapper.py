@@ -1379,18 +1379,21 @@ def handle_qt_creator_build(bld_command):
                                    Plugin(name='autotest-qtcreator-plugin', path='autotest-qtcreator-plugin',
                                           dependencies=['licensechecker'])])
     if bldinstallercommon.is_linux_platform():
-        # download and extract graphviz
-        graphviz_download_filepath = os.path.join(WORK_DIR, 'qt-creator_temp', 'graphviz.7z')
-        graphviz_target_path = os.path.join(WORK_DIR, 'graphviz')
-        bld_utils.download(graphviz_url, graphviz_download_filepath)
-        bldinstallercommon.extract_file(graphviz_download_filepath, graphviz_target_path)
-
         additional_qmake_arguments.extend(['PERFPARSER_BUNDLED_ELFUTILS=true',
                                            'PERFPARSER_APP_DESTDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'libexec', 'qtcreator'),
                                            'PERFPARSER_ELFUTILS_DESTDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'lib', 'qtcreator'),
                                            'PERFPARSER_APP_INSTALLDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'libexec', 'qtcreator'),
                                            'PERFPARSER_ELFUTILS_INSTALLDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'lib', 'qtcreator')
                                            ])
+        additional_plugins.extend([Plugin(name='perfparser', path='perfparser')])
+
+    if not bldinstallercommon.is_mac_platform():
+        # download and extract graphviz
+        graphviz_download_filepath = os.path.join(WORK_DIR, 'qt-creator_temp', 'graphviz.7z')
+        graphviz_target_path = os.path.join(WORK_DIR, 'graphviz')
+        bld_utils.download(graphviz_url, graphviz_download_filepath)
+        bldinstallercommon.extract_file(graphviz_download_filepath, graphviz_target_path)
+
         additional_plugins.extend([Plugin(name='gammarayintegration', path='gammarayintegration',
                                           dependencies=['licensechecker'], modules=[kdsme_url, gammaray_url],
                                           additional_arguments=[
@@ -1398,10 +1401,8 @@ def handle_qt_creator_build(bld_command):
                                           '--deploy-command=-u',
                                           '--deploy-command', os.path.join(WORK_DIR, 'gammarayintegration', 'scripts', 'deploy.py'),
                                           '--deploy-command=--graphviz-libs',
-                                          '--deploy-command', os.path.join(graphviz_target_path, 'lib')],
-                                          include_in_package=False),
-                                   Plugin(name='perfparser', path='perfparser')])
-    if not bldinstallercommon.is_mac_platform():
+                                          '--deploy-command', graphviz_target_path],
+                                          include_in_package=False)])
         additional_plugins.extend([Plugin(name='perfprofiler', path='perfprofiler',
                                           dependencies=['licensechecker']),
                                    Plugin(name='b2qt-qtcreator-plugin', path='b2qt-qtcreator-plugin',
