@@ -1399,7 +1399,7 @@ def handle_qt_creator_build(bld_command):
                                    Plugin(name='b2qt-qtcreator-plugin', path='b2qt-qtcreator-plugin',
                                           dependencies=['licensechecker', 'perfprofiler']),
                                    Plugin(name='gammarayintegration', path='gammarayintegration',
-                                          dependencies=['licensechecker', 'b2qt-qtcreator-plugin'], modules=[kdsme_url, gammaray_url],
+                                          dependencies=['licensechecker', 'b2qt-qtcreator-plugin', 'perfprofiler'], modules=[kdsme_url, gammaray_url],
                                           additional_arguments=[
                                           '--deploy-command', 'python',
                                           '--deploy-command=-u',
