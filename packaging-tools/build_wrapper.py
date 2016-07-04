@@ -1394,19 +1394,19 @@ def handle_qt_creator_build(bld_command):
         bld_utils.download(graphviz_url, graphviz_download_filepath)
         bldinstallercommon.extract_file(graphviz_download_filepath, graphviz_target_path)
 
-        additional_plugins.extend([Plugin(name='gammarayintegration', path='gammarayintegration',
-                                          dependencies=['licensechecker'], modules=[kdsme_url, gammaray_url],
+        additional_plugins.extend([Plugin(name='perfprofiler', path='perfprofiler',
+                                          dependencies=['licensechecker']),
+                                   Plugin(name='b2qt-qtcreator-plugin', path='b2qt-qtcreator-plugin',
+                                          dependencies=['licensechecker', 'perfprofiler']),
+                                   Plugin(name='gammarayintegration', path='gammarayintegration',
+                                          dependencies=['licensechecker', 'b2qt-qtcreator-plugin'], modules=[kdsme_url, gammaray_url],
                                           additional_arguments=[
                                           '--deploy-command', 'python',
                                           '--deploy-command=-u',
                                           '--deploy-command', os.path.join(WORK_DIR, 'gammarayintegration', 'scripts', 'deploy.py'),
                                           '--deploy-command=--graphviz-libs',
                                           '--deploy-command', graphviz_target_path],
-                                          include_in_package=False)])
-        additional_plugins.extend([Plugin(name='perfprofiler', path='perfprofiler',
-                                          dependencies=['licensechecker']),
-                                   Plugin(name='b2qt-qtcreator-plugin', path='b2qt-qtcreator-plugin',
-                                          dependencies=['licensechecker', 'perfprofiler'])
+                                          include_in_package=False)
                                   ])
 
     for plugin in additional_plugins:
