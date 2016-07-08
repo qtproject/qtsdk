@@ -47,6 +47,7 @@
 from __future__ import print_function
 import ConfigParser
 import collections
+from glob import glob
 import os
 import shutil
 import sys
@@ -1449,6 +1450,10 @@ def handle_qt_creator_build(bld_command):
         cmd_arguments.append(os.path.join(WORK_DIR, plugin.name + '.7z'))
         bldinstallercommon.do_execute_sub_process(cmd_arguments, WORK_DIR)
 
+    # Create opensource source package
+    if bldinstallercommon.is_linux_platform():
+        bldinstallercommon.do_execute_sub_process([os.path.join(WORK_DIR, 'qt-creator', 'scripts', 'createSourcePackages.sh'), bld_command.qtcreator_version, 'opensource'], WORK_DIR)
+
     # Create installers. TODO: This is just a hack until it uses the setup from the Qt installers
     postfix = ''
     if bld_command.qtcreator_version:
@@ -1514,6 +1519,14 @@ def handle_qt_creator_build(bld_command):
             bldinstallercommon.do_execute_sub_process(common_signing_args + [installer_base_filepath + '.app'], WORK_DIR)
             bldinstallercommon.do_execute_sub_process(common_dmg_args + ['-srcfolder', installer_base_filepath + '.app', installer_base_filepath + '.dmg'], WORK_DIR)
         lock_keychain()
+    elif bldinstallercommon.is_win_platform():
+        sign_windows_executable('qt-creator-opensource-windows-' + postfix + '.exe', WORK_DIR, True)
+        sign_windows_executable('qt-creator-enterprise-windows-' + postfix + '.exe', WORK_DIR, True)
+
+    # Create enterprise source package
+    # THIS DEPENDS ON THE ENTERPRISE PATCHING ABOVE!!!! ('INSTALLER_PATCH' and the git am)
+    if bldinstallercommon.is_linux_platform():
+        bldinstallercommon.do_execute_sub_process([os.path.join(WORK_DIR, 'qt-creator', 'scripts', 'createSourcePackages.sh'), bld_command.qtcreator_version, 'enterprise'], WORK_DIR)
 
     # Qt Creator directory
     qtcreator_edition_name = os.environ.get('QT_CREATOR_EDITION_NAME')
@@ -1543,21 +1556,25 @@ def handle_qt_creator_build(bld_command):
     snapshot_upload_list = [] # pairs (source, dest), source relative to server + dir_path, dest relative to snapshot server + snapshot_path
 
     # installers
+    if bld_command.qtcreator_version.startswith("3.") or bld_command.qtcreator_version.startswith("4.0"):
+        if bldinstallercommon.is_linux_platform():
+            file_upload_list.append(('qt-creator-opensource-linux-' + postfix + '.run', ''))
+            file_upload_list.append(('qt-creator-enterprise-linux-' + postfix + '.run', ''))
+            snapshot_upload_list.append(('qt-creator-opensource-linux-' + postfix + '.run', ''))
+        elif bldinstallercommon.is_mac_platform():
+            # opensource gets simple disk image.
+            file_upload_list.append(('qt-creator_build/qt-creator.dmg', 'qt-creator-opensource-mac-' + postfix + '.dmg'))
+            file_upload_list.append(('qt-creator-enterprise-mac-' + postfix + '.dmg', ''))
+            snapshot_upload_list.append(('qt-creator-opensource-mac-' + postfix + '.dmg', ''))
+        else: # --> windows
+            file_upload_list.append(('qt-creator-opensource-windows-' + postfix + '.exe', ''))
+            file_upload_list.append(('qt-creator-enterprise-windows-' + postfix + '.exe', ''))
+            snapshot_upload_list.append(('qt-creator-opensource-windows-' + postfix + '.exe', ''))
+
+    # source packages
     if bldinstallercommon.is_linux_platform():
-        file_upload_list.append(('qt-creator-opensource-linux-' + postfix + '.run', ''))
-        file_upload_list.append(('qt-creator-enterprise-linux-' + postfix + '.run', ''))
-        snapshot_upload_list.append(('qt-creator-opensource-linux-' + postfix + '.run', ''))
-    elif bldinstallercommon.is_mac_platform():
-        # opensource gets simple disk image.
-        file_upload_list.append(('qt-creator_build/qt-creator.dmg', 'qt-creator-opensource-mac-' + postfix + '.dmg'))
-        file_upload_list.append(('qt-creator-enterprise-mac-' + postfix + '.dmg', ''))
-        snapshot_upload_list.append(('qt-creator-opensource-mac-' + postfix + '.dmg', ''))
-    else: # --> windows
-        sign_windows_executable('qt-creator-opensource-windows-' + postfix + '.exe', WORK_DIR, True)
-        sign_windows_executable('qt-creator-enterprise-windows-' + postfix + '.exe', WORK_DIR, True)
-        file_upload_list.append(('qt-creator-opensource-windows-' + postfix + '.exe', ''))
-        file_upload_list.append(('qt-creator-enterprise-windows-' + postfix + '.exe', ''))
-        snapshot_upload_list.append(('qt-creator-opensource-windows-' + postfix + '.exe', ''))
+        source_package_list = glob(os.path.join(WORK_DIR, 'qt-creator', 'qt-creator-*-src-' + bld_command.qtcreator_version + '.*'))
+        file_upload_list.extend([(fn, '') for fn in source_package_list])
 
     # installer 7z sources
     file_upload_list.append(('qt-creator_build/qtcreator.7z', target_env_dir + '/qtcreator.7z'))
