@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt WebEngine for msvc2015 64-bit</DisplayName>
     <Description></Description>
-    <Version>5.7.0-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.7.1-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <AutoDependOn>qt.57.qtwebengine, qt.57.win64_msvc2015_64</AutoDependOn>
     <Dependencies>qt.57.win64_msvc2015_64</Dependencies>

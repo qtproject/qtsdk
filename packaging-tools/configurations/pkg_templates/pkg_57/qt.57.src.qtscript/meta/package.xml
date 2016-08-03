@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <Package>
     <DisplayName>Qt Script (Deprecated)</DisplayName>
-    <Description>Qt Script (Deprecated) Source Package for Qt 5.7.0</Description>
-    <Version>5.7.0-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Description>Qt Script (Deprecated) Source Package for Qt 5.7.1</Description>
+    <Version>5.7.1-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Virtual>true</Virtual>
     <AutoDependOn>qt.57.src</AutoDependOn>
