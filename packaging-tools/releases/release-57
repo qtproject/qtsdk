@@ -30,13 +30,13 @@ arg_substitution_list:          @QT_VERSION@=%GLOBAL_VERSION%,
 arg_configurations_file:    offline_installer_jobs/5.7/linux_x64
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
 installer_name:             qt-opensource-linux-x64-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-57_tests_linux_64bit
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-571_tests_linux_64bit
 
 [release.57.offline.linux.x64.android]
 arg_configurations_file:    offline_installer_jobs/5.7/linux_x64_android
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
 installer_name:             qt-opensource-linux-x64-android-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-57_tests_linux_android_64bit
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-571_tests_linux_android_64bit
 
 
 ################################################################################
@@ -46,19 +46,19 @@ rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-57_tests_lin
 arg_configurations_file:    offline_installer_jobs/5.7/mac_x64
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
 installer_name:             qt-opensource-mac-x64-clang-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-57_tests_mac_64bit
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-571_tests_mac_64bit
 
 [release.57.offline.mac.x64.android]
 arg_configurations_file:    offline_installer_jobs/5.7/mac_x64_android
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
 installer_name:             qt-opensource-mac-x64-android-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-57_tests_mac_android
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-571_tests_mac_android
 
 [release.57.offline.mac.x64.android_and_ios]
 arg_configurations_file:    offline_installer_jobs/5.7/mac_x64_android_ios
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=tar.gz
 installer_name:             qt-opensource-mac-x64-android-ios-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-57_tests_mac_ios
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-571_tests_mac_ios
 
 
 ################################################################################
@@ -69,56 +69,56 @@ assign_to_machine_label:    win-MinGW4.9.2-Windows7-x86
 arg_configurations_file:    offline_installer_jobs/5.7/win_x86_mingw53
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-mingw530-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-57_tests_windows_mingw
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-571_tests_windows_mingw
 
 [release.57.offline.windows.x86.msvc2013]
 assign_to_machine_label:    win-msvc2013-Windows8.1-x86
 arg_configurations_file:    offline_installer_jobs/5.7/win_x86_msvc2013
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-msvc2013-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-57_tests_windows_msvc2013_32bit
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-571_tests_windows_msvc2013_32bit
 
 [release.57.offline.windows.x86.x64-msvc2013]
 assign_to_machine_label:    win-msvc2013-Windows8.1-x64
 arg_configurations_file:    offline_installer_jobs/5.7/win_x64_msvc2013
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-msvc2013_64-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-57_tests_windows_msvc2013_64bit
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-571_tests_windows_msvc2013_64bit
 
 [release.57.offline.windows.x86.x64-msvc2015]
 assign_to_machine_label:    win-msvc2015-Windows10-x64
 arg_configurations_file:    offline_installer_jobs/5.7/win_x64_msvc2015
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-msvc2015_64-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-57_tests_windows_msvc2015_64bit
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-571_tests_windows_msvc2015_64bit
 
 [release.57.offline.windows.x86.msvc2015]
 assign_to_machine_label:    win-msvc2015-Windows10-x86
 arg_configurations_file:    offline_installer_jobs/5.7/win_x86_msvc2015
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-msvc2015-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-57_tests_windows_msvc2015_32bit
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-571_tests_windows_msvc2015_32bit
 
 [release.57.offline.windows.x86.mingw53.android]
 assign_to_machine_label:    win-MinGW4.9.2-Windows7-x86_Android-x86
 arg_configurations_file:    offline_installer_jobs/5.7/win_x86_mingw53_android
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-android-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-57_tests_windows_android
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-571_tests_windows_android
 
 [release.57.offline.windows.x86.winrt_msvc2013]
 assign_to_machine_label:    win-msvc2013-Windows8.1-x64_WinRT
 arg_configurations_file:    offline_installer_jobs/5.7/win_x64_winrt_msvc2013
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-winrt-msvc2013-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-57_tests_windows_winrt_msvc2013_64bit
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-571_tests_windows_winrt_msvc2013_64bit
 
 [release.57.offline.windows.x86.winrt_msvc2015]
 assign_to_machine_label:    win-msvc2015-Windows10-x64_WinRT
 arg_configurations_file:    offline_installer_jobs/5.7/win_x64_winrt_msvc2015
 arg_substitution_list:      @SRC_ARCHIVE_TYPE@=zip
 installer_name:             qt-opensource-windows-x86-winrt-msvc2015-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-57_tests_windows_winrt_msvc2015_64bit
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-571_tests_windows_winrt_msvc2015_64bit
 
 ################################################################################
 ## Linux repository
