@@ -1296,14 +1296,14 @@ def handle_qt_creator_build(bld_command):
     target_env_dir = BIN_TARGET_DIRS[bld_command.target_env]
 
     # gammaray and graphviz
-    # kdsme_url = (bld_command.pkg_server_addr_http + '/'
-    #                + os.environ["GAMMARAY_BASE_DIR"] + '/'
-    #                + target_env_dir + '/qt5_kdsme.7z')
-    # gammaray_url = (bld_command.pkg_server_addr_http + '/'
-    #                + os.environ["GAMMARAY_BASE_DIR"] + '/'
-    #                + target_env_dir + '/qt5_gammaray.7z')
-    # graphviz_url = (bld_command.pkg_server_addr_http + '/'
-    #                + os.environ["GRAPHVIZ_BASE_DIR"] + '-' + bld_command.target_env + '.7z')
+    kdsme_url = (bld_command.pkg_server_addr_http + '/'
+                    + os.environ["GAMMARAY_BASE_DIR"] + '/'
+                    + target_env_dir + '/qt5_kdsme.7z')
+    gammaray_url = (bld_command.pkg_server_addr_http + '/'
+                    + os.environ["GAMMARAY_BASE_DIR"] + '/'
+                    + target_env_dir + '/qt5_gammaray.7z')
+    graphviz_url = (bld_command.pkg_server_addr_http + '/'
+                    + os.environ["GRAPHVIZ_BASE_DIR"] + '-' + bld_command.target_env + '.7z')
 
     qt_base_path = os.environ['QTC_QT_BASE_DIR']
     qt_module_urls = []
@@ -1390,24 +1390,24 @@ def handle_qt_creator_build(bld_command):
 
     if not bldinstallercommon.is_mac_platform():
         # download and extract graphviz
-        # graphviz_download_filepath = os.path.join(WORK_DIR, 'qt-creator_temp', 'graphviz.7z')
-        # graphviz_target_path = os.path.join(WORK_DIR, 'graphviz')
-        # bld_utils.download(graphviz_url, graphviz_download_filepath)
-        # bldinstallercommon.extract_file(graphviz_download_filepath, graphviz_target_path)
+        graphviz_download_filepath = os.path.join(WORK_DIR, 'qt-creator_temp', 'graphviz.7z')
+        graphviz_target_path = os.path.join(WORK_DIR, 'graphviz')
+        bld_utils.download(graphviz_url, graphviz_download_filepath)
+        bldinstallercommon.extract_file(graphviz_download_filepath, graphviz_target_path)
 
         additional_plugins.extend([Plugin(name='perfprofiler', path='perfprofiler',
                                           dependencies=['licensechecker']),
                                    Plugin(name='b2qt-qtcreator-plugin', path='b2qt-qtcreator-plugin',
-                                          dependencies=['licensechecker', 'perfprofiler'])#,
-                                   #Plugin(name='gammarayintegration', path='gammarayintegration',
-                                    #      dependencies=['licensechecker', 'b2qt-qtcreator-plugin', 'perfprofiler'], modules=[kdsme_url, gammaray_url],
-                                    #      additional_arguments=[
-                                    #      '--deploy-command', 'python',
-                                    #      '--deploy-command=-u',
-                                    #      '--deploy-command', os.path.join(WORK_DIR, 'gammarayintegration', 'scripts', 'deploy.py'),
-                                    #      '--deploy-command=--graphviz-libs',
-                                    #      '--deploy-command', graphviz_target_path],
-                                    #      include_in_package=False)
+                                          dependencies=['licensechecker', 'perfprofiler']),
+                                   Plugin(name='gammarayintegration', path='gammarayintegration',
+                                          dependencies=['licensechecker', 'b2qt-qtcreator-plugin', 'perfprofiler'], modules=[kdsme_url, gammaray_url],
+                                          additional_arguments=[
+                                          '--deploy-command', 'python',
+                                          '--deploy-command=-u',
+                                          '--deploy-command', os.path.join(WORK_DIR, 'gammarayintegration', 'scripts', 'deploy.py'),
+                                          '--deploy-command=--graphviz-libs',
+                                          '--deploy-command', graphviz_target_path],
+                                          include_in_package=False)
                                   ])
 
     for plugin in additional_plugins:
