@@ -1,0 +1,142 @@
+#############################################################################
+##
+## Copyright (C) 2016 The Qt Company Ltd.
+## Contact: https://www.qt.io/licensing/
+##
+## This file is part of the release tools of the Qt Toolkit.
+##
+## $QT_BEGIN_LICENSE:GPL-EXCEPT$
+## Commercial License Usage
+## Licensees holding valid commercial Qt licenses may use this file in
+## accordance with the commercial license agreement provided with the
+## Software or, alternatively, in accordance with the terms contained in
+## a written agreement between you and The Qt Company. For licensing terms
+## and conditions see https://www.qt.io/terms-conditions. For further
+## information use the contact form at https://www.qt.io/contact-us.
+##
+## GNU General Public License Usage
+## Alternatively, this file may be used under the terms of the GNU
+## General Public License version 3 as published by the Free Software
+## Foundation with exceptions as appearing in the file LICENSE.GPL3-EXCEPT
+## included in the packaging of this file. Please review the following
+## information to ensure the GNU General Public License requirements will
+## be met: https://www.gnu.org/licenses/gpl-3.0.html.
+##
+## $QT_END_LICENSE$
+##
+#############################################################################
+
+
+[qt.58.android_armv7]
+archives:               58.android_armv7.qtbase,
+                        58.android_armv7.qtconnectivity,
+                        58.android_armv7.qtandroidextras,
+                        58.android_armv7.qtwebchannel,
+                        58.android_armv7.qtmultimedia,
+                        58.android_armv7.qttranslations,
+                        58.android_armv7.qtgraphicaleffects,
+                        58.android_armv7.qtsvg,
+                        58.android_armv7.qtdeclarative,
+                        58.android_armv7.qtwebsockets,
+                        58.android_armv7.qtimageformats,
+                        58.android_armv7.qttools,
+                        58.android_armv7.qtxmlpatterns,
+                        58.android_armv7.qtsensors,
+                        58.android_armv7.qtlocation,
+                        58.android_armv7.qtserialport,
+                        58.android_armv7.qtquickcontrols,
+                        58.android_armv7.qtquickcontrols2,
+                        58.android_armv7.qt3d,
+                        58.android_armv7.qtcanvas3d,
+                        58.android_armv7.qtwebview,
+                        58.android_armv7.qtserialbus,
+                        58.android_armv7.qtscxml
+target_install_base:    /%QT_VERSION_MINOR%/android_armv7
+[58.android_armv7.qtbase]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtbase/qtbase-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+[58.android_armv7.qtconnectivity]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtconnectivity/qtconnectivity-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+[58.android_armv7.qtandroidextras]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtandroidextras/qtandroidextras-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+[58.android_armv7.qtwebchannel]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebchannel/qtwebchannel-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+[58.android_armv7.qtmultimedia]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtmultimedia/qtmultimedia-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+[58.android_armv7.qttranslations]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qttranslations/qttranslations-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+[58.android_armv7.qtgraphicaleffects]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgraphicaleffects/qtgraphicaleffects-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+[58.android_armv7.qtsvg]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtsvg/qtsvg-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+[58.android_armv7.qtdeclarative]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtdeclarative/qtdeclarative-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+[58.android_armv7.qtwebsockets]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebsockets/qtwebsockets-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+[58.android_armv7.qtimageformats]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtimageformats/qtimageformats-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+[58.android_armv7.qttools]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qttools/qttools-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+[58.android_armv7.qtxmlpatterns]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtxmlpatterns/qtxmlpatterns-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+[58.android_armv7.qtsensors]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtsensors/qtsensors-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+[58.android_armv7.qtlocation]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtlocation/qtlocation-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+[58.android_armv7.qtserialport]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtserialport/qtserialport-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+[58.android_armv7.qtquickcontrols]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtquickcontrols/qtquickcontrols-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+[58.android_armv7.qtquickcontrols2]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtquickcontrols2/qtquickcontrols2-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+[58.android_armv7.qt3d]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qt3d/qt3d-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+[58.android_armv7.qtcanvas3d]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtcanvas3d/qtcanvas3d-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+[58.android_armv7.qtwebview]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebview/qtwebview-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+[58.android_armv7.qtserialbus]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtserialbus/qtserialbus-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+[58.android_armv7.qtscxml]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscxml/qtscxml-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+
+
+# QtCharts provided as separate installable component in installer
+[qt.58.qtcharts]
+[qt.58.qtcharts.android_armv7]
+archives:               58.qtcharts.android_armv7
+target_install_base:    /%QT_VERSION_MINOR%/android_armv7
+[58.qtcharts.android_armv7]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtcharts/qtcharts-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+
+# QtDataVisualization provided as separate installable component in installer
+[qt.58.qtdatavis3d]
+[qt.58.qtdatavis3d.android_armv7]
+archives:               58.qtdatavis3d.android_armv7
+target_install_base:    /%QT_VERSION_MINOR%/android_armv7
+[58.qtdatavis3d.android_armv7]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtdatavis3d/qtdatavis3d-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+
+# QtPurchasing provided as separate installable component in installer
+[qt.58.qtpurchasing]
+[qt.58.qtpurchasing.android_armv7]
+archives:               58.qtpurchasing.android_armv7
+target_install_base:    /%QT_VERSION_MINOR%/android_armv7
+[58.qtpurchasing.android_armv7]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtpurchasing/qtpurchasing-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+
+# QtScript provided as separate installable component in installer
+[qt.58.qtscript]
+[qt.58.qtscript.android_armv7]
+archives:               58.qtscript.android_armv7
+target_install_base:    /%QT_VERSION_MINOR%/android_armv7
+[58.qtscript.android_armv7]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscript/qtscript-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+
+# QtGamePad provided as separate installable component in installer
+[qt.58.qtgamepad]
+[qt.58.qtgamepad.android_armv7]
+archives:               58.qtgamepad.android_armv7
+target_install_base:    /%QT_VERSION_MINOR%/android_armv7
+[58.qtgamepad.android_armv7]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgamepad/qtgamepad-Linux-RHEL_6_6-GCC-Android-Android_ANY-ARMv7.7z
+

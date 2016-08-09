@@ -1,0 +1,116 @@
+#############################################################################
+##
+## Copyright (C) 2016 The Qt Company Ltd.
+## Contact: https://www.qt.io/licensing/
+##
+## This file is part of the release tools of the Qt Toolkit.
+##
+## $QT_BEGIN_LICENSE:GPL-EXCEPT$
+## Commercial License Usage
+## Licensees holding valid commercial Qt licenses may use this file in
+## accordance with the commercial license agreement provided with the
+## Software or, alternatively, in accordance with the terms contained in
+## a written agreement between you and The Qt Company. For licensing terms
+## and conditions see https://www.qt.io/terms-conditions. For further
+## information use the contact form at https://www.qt.io/contact-us.
+##
+## GNU General Public License Usage
+## Alternatively, this file may be used under the terms of the GNU
+## General Public License version 3 as published by the Free Software
+## Foundation with exceptions as appearing in the file LICENSE.GPL3-EXCEPT
+## included in the packaging of this file. Please review the following
+## information to ensure the GNU General Public License requirements will
+## be met: https://www.gnu.org/licenses/gpl-3.0.html.
+##
+## $QT_END_LICENSE$
+##
+#############################################################################
+
+[qt.58.win64_msvc2013_winphone_x86]
+archives:               58.win64_msvc2013_winphone_x86.qtbase,
+                        58.win64_msvc2013_winphone_x86.qtconnectivity,
+                        58.win64_msvc2013_winphone_x86.qtwebchannel,
+                        58.win64_msvc2013_winphone_x86.qtmultimedia,
+                        58.win64_msvc2013_winphone_x86.qttranslations,
+                        58.win64_msvc2013_winphone_x86.qtgraphicaleffects,
+                        58.win64_msvc2013_winphone_x86.qtsvg,
+                        58.win64_msvc2013_winphone_x86.qtdeclarative,
+                        58.win64_msvc2013_winphone_x86.qtwebsockets,
+                        58.win64_msvc2013_winphone_x86.qtimageformats,
+                        58.win64_msvc2013_winphone_x86.qttools,
+                        58.win64_msvc2013_winphone_x86.qtxmlpatterns,
+                        58.win64_msvc2013_winphone_x86.qtsensors,
+                        58.win64_msvc2013_winphone_x86.qtlocation,
+                        58.win64_msvc2013_winphone_x86.qtquickcontrols,
+                        58.win64_msvc2013_winphone_x86.qtquickcontrols2,
+                        58.win64_msvc2013_winphone_x86.qt3d,
+                        58.win64_msvc2013_winphone_x86.qtcanvas3d,
+                        58.win64_msvc2013_winphone_x86.qtwebview,
+                        58.win64_msvc2013_winphone_x86.qtscxml
+target_install_base:    /%QT_VERSION_MINOR%/winphone_x86
+[58.win64_msvc2013_winphone_x86.qtbase]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtbase/qtbase-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
+[58.win64_msvc2013_winphone_x86.qtconnectivity]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtconnectivity/qtconnectivity-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
+[58.win64_msvc2013_winphone_x86.qtwebchannel]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebchannel/qtwebchannel-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
+[58.win64_msvc2013_winphone_x86.qtmultimedia]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtmultimedia/qtmultimedia-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
+[58.win64_msvc2013_winphone_x86.qttranslations]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qttranslations/qttranslations-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
+[58.win64_msvc2013_winphone_x86.qtgraphicaleffects]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgraphicaleffects/qtgraphicaleffects-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
+[58.win64_msvc2013_winphone_x86.qtsvg]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtsvg/qtsvg-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
+[58.win64_msvc2013_winphone_x86.qtdeclarative]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtdeclarative/qtdeclarative-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
+[58.win64_msvc2013_winphone_x86.qtwebsockets]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebsockets/qtwebsockets-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
+[58.win64_msvc2013_winphone_x86.qtimageformats]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtimageformats/qtimageformats-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
+[58.win64_msvc2013_winphone_x86.qttools]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qttools/qttools-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
+[58.win64_msvc2013_winphone_x86.qtxmlpatterns]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtxmlpatterns/qtxmlpatterns-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
+[58.win64_msvc2013_winphone_x86.qtsensors]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtsensors/qtsensors-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
+[58.win64_msvc2013_winphone_x86.qtlocation]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtlocation/qtlocation-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
+[58.win64_msvc2013_winphone_x86.qtquickcontrols]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtquickcontrols/qtquickcontrols-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
+[58.win64_msvc2013_winphone_x86.qtquickcontrols2]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtquickcontrols2/qtquickcontrols2-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
+[58.win64_msvc2013_winphone_x86.qt3d]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qt3d/qt3d-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
+[58.win64_msvc2013_winphone_x86.qtcanvas3d]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtcanvas3d/qtcanvas3d-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
+[58.win64_msvc2013_winphone_x86.qtwebview]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebview/qtwebview-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
+[58.win64_msvc2013_winphone_x86.qtscxml]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscxml/qtscxml-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
+
+
+# QtCharts provided as separate installable component in installer
+[qt.58.qtcharts]
+[qt.58.qtcharts.win64_msvc2013_winphone_x86]
+archives:               58.qtcharts.win64_msvc2013_winphone_x86
+target_install_base:    /%QT_VERSION_MINOR%/winphone_x86
+[58.qtcharts.win64_msvc2013_winphone_x86]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtcharts/qtcharts-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
+
+# QtDataVisualization provided as separate installable component in installer
+[qt.58.qtdatavis3d]
+[qt.58.qtdatavis3d.win64_msvc2013_winphone_x86]
+archives:               58.qtdatavis3d.win64_msvc2013_winphone_x86
+target_install_base:    /%QT_VERSION_MINOR%/winphone_x86
+[58.qtdatavis3d.win64_msvc2013_winphone_x86]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtdatavis3d/qtdatavis3d-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
+
+# QtPurchasing provided as separate installable component in installer
+[qt.58.qtpurchasing]
+[qt.58.qtpurchasing.win64_msvc2013_winphone_x86]
+archives:               58.qtpurchasing.win64_msvc2013_winphone_x86
+target_install_base:    /%QT_VERSION_MINOR%/winphone_x86
+[58.qtpurchasing.win64_msvc2013_winphone_x86]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtpurchasing/qtpurchasing-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
+

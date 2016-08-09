@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt Quick 2D Renderer for msvc2013 Windows phone ARM</DisplayName>
+    <Description></Description>
+    <Version>5.8.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <AutoDependOn>qt.58.qtquick2drenderer, qt.58.win64_msvc2013_winphone_arm</AutoDependOn>
+    <Dependencies>qt.58.win64_msvc2013_winphone_arm</Dependencies>
+    <Virtual>true</Virtual>
+    <Script>installscript.qs</Script>
+    <SortingPriority>650</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+

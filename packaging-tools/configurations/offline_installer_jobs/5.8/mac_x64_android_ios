@@ -1,0 +1,58 @@
+#############################################################################
+##
+## Copyright (C) 2016 The Qt Company Ltd.
+## Contact: https://www.qt.io/licensing/
+##
+## This file is part of the release tools of the Qt Toolkit.
+##
+## $QT_BEGIN_LICENSE:GPL-EXCEPT$
+## Commercial License Usage
+## Licensees holding valid commercial Qt licenses may use this file in
+## accordance with the commercial license agreement provided with the
+## Software or, alternatively, in accordance with the terms contained in
+## a written agreement between you and The Qt Company. For licensing terms
+## and conditions see https://www.qt.io/terms-conditions. For further
+## information use the contact form at https://www.qt.io/contact-us.
+##
+## GNU General Public License Usage
+## Alternatively, this file may be used under the terms of the GNU
+## General Public License version 3 as published by the Free Software
+## Foundation with exceptions as appearing in the file LICENSE.GPL3-EXCEPT
+## included in the packaging of this file. Please review the following
+## information to ensure the GNU General Public License requirements will
+## be met: https://www.gnu.org/licenses/gpl-3.0.html.
+##
+## $QT_END_LICENSE$
+##
+#############################################################################
+
+[PackageNamespace]
+name:                   qt
+
+[PlatformIdentifier]
+identifier:             mac
+
+[PackageConfigurationFiles]
+file_list:              qt-conf,
+                        qt-license-conf,
+                        qt-installer-changelog,
+                        qt58-src-conf,
+                        qt58-doc-examples-conf,
+                        x86_64-qt58-clang-conf,
+                        android-x64-qt58-armv7-conf,
+                        android-x64-qt58-x86-conf,
+                        ios-x64-qt58-conf,
+                        x86_64-tools-qtcreator-qt58x-conf
+
+[qtmenunib]
+package_url:            http://download.qt.io/development_releases/prebuilt/mac/qt_menu.nib.7z
+
+[ConfigDir]
+template_name:          config_qt5
+
+[ConfigXml]
+template_name:          config.xml.template.mac.qt5
+
+[PackageTemplates]
+template_dirs:          pkg_58, pkg_tools
+
