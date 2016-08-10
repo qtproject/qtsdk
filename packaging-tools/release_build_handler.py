@@ -688,7 +688,7 @@ def init_env():
     print('Configurations file base dir: {0}'.format(CONFIGURATIONS_FILE_BASE_DIR))
     bldinstallercommon.init_common_module(SCRIPT_ROOT_DIR)
     if bldinstallercommon.is_win_platform():
-        SSH_COMMAND = '%SSH%'
-        REMOTE_COPY_COMMAND = '%SCP%'
+        SSH_COMMAND = os.path.expandvars('%SSH%')
+        REMOTE_COPY_COMMAND = os.path.expandvars('%SCP%')
     INIT_DONE = True
 

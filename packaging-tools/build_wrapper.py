@@ -2048,10 +2048,10 @@ def init_env():
     # prefix build
     MAKE_INSTALL_PADDING = 'PADDING' if bldinstallercommon.is_win_platform() else '______________________________PADDING______________________________'
     # external commands
-    CURL_COMMAND         = '%CURL%'  if bldinstallercommon.is_win_platform() else 'curl'
-    RM_COMMAND           = '%RM%'    if bldinstallercommon.is_win_platform() else 'rm'
-    SSH_COMMAND          = '%SSH%'   if bldinstallercommon.is_win_platform() else 'ssh'
-    SCP_COMMAND          = '%SCP%'   if bldinstallercommon.is_win_platform() else 'scp'
+    CURL_COMMAND         = os.path.expandvars('%CURL%') if bldinstallercommon.is_win_platform() else 'curl'
+    RM_COMMAND           = os.path.expandvars('%RM%')   if bldinstallercommon.is_win_platform() else 'rm'
+    SSH_COMMAND          = os.path.expandvars('%SSH%')  if bldinstallercommon.is_win_platform() else 'ssh'
+    SCP_COMMAND          = os.path.expandvars('%SCP%')  if bldinstallercommon.is_win_platform() else 'scp'
 
     # generate build slave label/build result target dir dictionary
     generate_bin_target_dictionary()
