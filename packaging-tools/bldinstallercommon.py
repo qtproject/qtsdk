@@ -730,10 +730,10 @@ def do_execute_sub_process(args, execution_path, abort_on_fail=True, get_output=
     try:
         if IS_WIN_PLATFORM:
             if get_output:
-                theproc = subprocess.Popen(args, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=False, env=extra_env, cwd=execution_path )
+                theproc = subprocess.Popen(args, shell=False, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=False, env=extra_env, cwd=execution_path )
                 output = theproc.communicate()[0]
             else:
-                theproc = subprocess.Popen(args, shell=True, close_fds=False, env=extra_env, cwd=execution_path)
+                theproc = subprocess.Popen(args, shell=False, close_fds=False, env=extra_env, cwd=execution_path)
                 theproc.communicate()
 
         else:
