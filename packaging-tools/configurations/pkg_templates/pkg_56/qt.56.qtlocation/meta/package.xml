@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt Location</DisplayName>
     <Description>License options: LGPLv3, GPLv2.0 or later, Commercial&lt;br&gt;&lt;br&gt;NOTE: Not licensed under LGPLv2.1&lt;br&gt;&lt;br&gt;The Qt Location API helps you create viable mapping solutions using the data available from some of the popular location services.&lt;br&gt;&lt;br&gt;The release of this API with Qt 5.6 is a Technology Preview.</Description>
-    <Version>5.6.1-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.6.2-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.56.qtquickcontrols</Dependencies>
     <Default>true</Default>

@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>LGPLv3 Source Packages</DisplayName>
     <Description>License options: LGPLv3, GPLv2.0 or later, Commercial&lt;br&gt;&lt;br&gt;NOTE: Not licensed under LGPLv2.1&lt;br&gt;&lt;br&gt;Contains sources for:&lt;br&gt;&lt;br&gt;Qt3D&lt;br&gt;Qt Canvas 3D&lt;br&gt;Qt Labs Controls&lt;br&gt;Qt Location&lt;br&gt;Qt Quick Controls&lt;br&gt;Qt WebEngine&lt;br&gt;Qt WebView</Description>
-    <Version>5.6.1-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.6.2-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.56.src.lgplv3.qt3d, qt.56.src.lgplv3.qtcanvas3d, qt.56.src.lgplv3.qtcanvas3d, qt.56.src.lgplv3.qtquickcontrols2, qt.56.src.lgplv3.qtlocation, qt.56.src.lgplv3.qtquickcontrols, qt.56.src.lgplv3.qtwebengine, qt.56.src.lgplv3.qtwebview</Dependencies>
     <Dependencies>qt.tools</Dependencies>

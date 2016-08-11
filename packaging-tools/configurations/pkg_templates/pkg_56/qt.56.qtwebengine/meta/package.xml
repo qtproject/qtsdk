@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt WebEngine</DisplayName>
     <Description>License options: LGPLv3, GPLv2 or later, Commercial&lt;br&gt;&lt;br&gt;NOTE: Not licensed under LGPLv2.1&lt;br&gt;&lt;br&gt;The Qt WebEngine module integrates the fast moving Chromium web platform into Qt and provides a convenient API for both Qt Widgets and Qt Quick to utilize Chromium's web capabilities. Qt WebEngine takes full benefit of the whole Qt graphics stack integration allowing seamless mix and overlay of native Qt controls with web content and OpenGL shaders.</Description>
-    <Version>5.6.1-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.6.2-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Default>true</Default>
     <SortingPriority>13</SortingPriority>

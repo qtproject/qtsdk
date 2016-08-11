@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt WebEngine for macOS</DisplayName>
     <Description></Description>
-    <Version>5.6.1-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.6.2-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <AutoDependOn>qt.56.qtwebengine, qt.56.clang_64</AutoDependOn>
     <Dependencies>qt.56.clang_64</Dependencies>
