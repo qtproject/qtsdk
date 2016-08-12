@@ -120,6 +120,10 @@ class BuildJob:
         for item in item_list:
             temp = item.replace(' ', '')
             if temp:
+                if bldinstallercommon.is_win_platform():
+                    # On Windows we must escape the '%' so that the subprocess shell will
+                    # not attempt to replace the environment variables
+                    temp = temp.replace('%', '^%')
                 self.substitution_arg_list.append('--add-substitution=' + temp)
 
     # print some verbose
