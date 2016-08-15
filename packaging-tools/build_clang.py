@@ -40,7 +40,9 @@
 ##
 #############################################################################
 
+import glob
 import os
+import subprocess
 
 import bld_utils
 import bldinstallercommon
@@ -49,6 +51,15 @@ import environmentfrombatchfile
 def get_clang(base_path, branch):
     bld_utils.runCommand(['git', 'clone', '--branch', branch, 'http://llvm.org/git/llvm.git'], base_path)
     bld_utils.runCommand(['git', 'clone', '--branch', branch, 'http://llvm.org/git/clang.git'], os.path.join(base_path, 'llvm', 'tools'))
+
+def apply_patch(src_path, patch_filepath):
+    print('Applying patch: "' + patch_filepath + '" in "' + src_path + '"')
+    with open(patch_filepath, 'r') as f:
+        subprocess.check_call(['patch', '-p2'], stdin=f, cwd=src_path)
+
+def apply_patches(src_path, patch_filepaths):
+    for patch in patch_filepaths:
+        apply_patch(src_path, patch)
 
 def cmake_generator():
     return 'NMake Makefiles JOM' if bldinstallercommon.is_win_platform() else 'Unix Makefiles'
@@ -107,6 +118,8 @@ def main():
     base_path = os.path.join(os.environ['PKG_NODE_ROOT'], 'build')
     branch = os.environ['CLANG_BRANCH']
     src_path = os.path.join(base_path, 'llvm')
+    clang_src_path = os.path.join(base_path, 'llvm', 'tools', 'clang')
+    patch_src_path = os.path.join(base_path, 'tqtc-testconfig', 'projects', os.environ['PULSE_PROJECT'], 'stages', 'patches')
     build_path = os.path.join(base_path, 'build')
     install_path = os.path.join(base_path, 'libclang')
     bitness = 64 if '64' in os.environ['cfg'] else 32
@@ -115,6 +128,7 @@ def main():
     remote_path = (os.environ['PACKAGE_STORAGE_SERVER_USER'] + '@' + os.environ['PACKAGE_STORAGE_SERVER'] + ':'
                    + os.environ['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + os.environ['CLANG_UPLOAD_SERVER_PATH'])
     get_clang(base_path, branch)
+    apply_patches(clang_src_path, sorted(glob.glob(os.path.join(patch_src_path, '*'))))
     build_clang(src_path, build_path, install_path, bitness, environment, build_type='Release')
     package_clang(install_path, result_file_path)
     upload_clang(result_file_path, remote_path)
