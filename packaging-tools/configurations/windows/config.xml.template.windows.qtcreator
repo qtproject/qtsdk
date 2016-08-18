@@ -7,7 +7,7 @@
     <InstallerWindowIcon>logo-small</InstallerWindowIcon>
     <InstallerApplicationIcon>logo-small</InstallerApplicationIcon>
     <Watermark>watermark.png</Watermark>
-    <StartMenuDir>Qt Creator %QTC_DISPLAY_VERSION%</StartMenuDir>
+    <StartMenuDir>Qt Creator</StartMenuDir>
     <ProductUrl>http://www.qt.io/</ProductUrl>
     <MaintenanceToolName>QtCreatorUninst</MaintenanceToolName>
     <DependsOnLocalInstallerBinary>true</DependsOnLocalInstallerBinary>

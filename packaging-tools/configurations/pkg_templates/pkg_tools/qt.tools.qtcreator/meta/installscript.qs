@@ -197,7 +197,7 @@ Component.prototype.createOperations = function()
     if (installer.value("os") == "win") {
         component.addOperation("CreateShortcut",
                                component.qtCreatorBinaryPath,
-                               "@StartMenuDir@\\Qt Creator (Community).lnk",
+                               "@StartMenuDir@\\Qt Creator %QTC_DISPLAY_VERSION% (Community).lnk",
                                "workingDirectory=@homeDir@");
 
         registerWindowsFileTypeExtensions();
