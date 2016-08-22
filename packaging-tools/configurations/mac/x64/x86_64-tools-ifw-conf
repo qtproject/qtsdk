@@ -1,0 +1,10 @@
+[qt.tools.ifw.20]
+archives:               tools.ifw.20
+target_install_base:    /Tools/QtInstallerFramework/2.0
+[tools.ifw.20]
+archive_uri:            /opensource/ifw/installer-framework/installer-framework-build-mac-x64.7z
+package_strip_dirs:     1
+target_install_dir:     /
+rpath_target:
+archive_name:           ifw-mac-x64.7z
+
