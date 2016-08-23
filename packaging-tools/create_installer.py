@@ -936,7 +936,8 @@ def create_target_components(target_config):
                     getComponentDataWork.addTask("adding {0} to {1}".format(archive.archive_name, sdk_component.package_name),
                                                  get_component_data, sdk_component, archive, install_dir, data_dir_dest, compress_content_dir)
 
-    getComponentDataWork.run(1)
+    # start the work threaded, more then 8 parallel downloads are not so useful
+    getComponentDataWork.run(min([8, multiprocessing.cpu_count()]))
 
     for sdk_component in SDK_COMPONENT_LIST:
         # substitute tags
