@@ -1242,8 +1242,6 @@ def handle_gammaray_build(bld_command):
             cmd_args.extend(['--icu7z', bld_command.icu_libs])
         if bldinstallercommon.is_win_platform():
             cmd_args.extend(['--add-config-arg=-G', '--add-config-arg=NMake Makefiles',
-                             '--environment_batch', os.path.normpath('C:/Program Files/Microsoft Visual Studio 12.0/VC/vcvarsall.bat'),
-                             '--environment_batch_argument', 'x86',
                              '--buildcommand', 'nmake',
                              '--installcommand', 'nmake'])
         return cmd_args
@@ -1325,9 +1323,7 @@ def handle_qt_creator_build(bld_command):
         common_arguments.extend(['--buildcommand', os.path.normpath('C:/Utils/jom/jom.exe'),
                          '--installcommand', os.path.normpath('nmake.exe'),
                          '--sevenzippath', os.path.normpath('C:/Utils/sevenzip'),
-                         '--gitpath', os.path.normpath('C:/Program Files/Git/bin'),
-                         '--environment_batch', os.path.normpath('C:/Program Files/Microsoft Visual Studio 12.0/VC/vcvarsall.bat'),
-                         '--environment_batch_argument', 'x86'])
+                         '--gitpath', os.path.normpath('C:/Program Files/Git/bin')])
     cmd_args = ['python', '-u', os.path.normpath(SCRIPT_ROOT_DIR + '/bld_qtcreator.py'),
                 '--clean',
                 '--qt5path', os.path.normpath(WORK_DIR + '/qt5_install_dir'),

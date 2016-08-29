@@ -231,6 +231,16 @@ build_node_labels:          win-msvc2013-Windows8.1-x64
 build_target_dir:           windows_vs2013_64_opengl
 build_node_labels:          win-msvc2013-Windows8.1-x64_OpenGL
 
+[meta.windows.x86.msvc2015_32]
+ci_target_postfix:          Windows-Windows_10-MSVC2015-Windows-Windows_10-X86
+build_target_dir:           windows_vs2015_32
+build_node_labels:          win-msvc2015-Windows10-x86
+
+[meta.windows.x86.msvc2015_64]
+ci_target_postfix:          Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64
+build_target_dir:           windows_vs2015_64
+build_node_labels:          win-msvc2015-Windows10-x64
+
 [meta.windows.x86.mingw482]
 build_target_dir:           windows_mingw482_x86
 build_node_labels:          win-MinGW4.8.2-Windows7-x86_OpenGL
