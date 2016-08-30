@@ -107,7 +107,7 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscxml/qtscxml-Windows-Wi
 archive_uri:            http://download.qt.io/development_releases/prebuilt/d3dcompiler/msvc2013/d3dcompiler_47-x64.7z
 target_install_dir:     /bin
 [58.win64_msvc2013.opengl32sw.x64]
-archive_uri:            http://download.qt.io/development_releases/prebuilt/llvmpipe/windows/opengl32sw-64.7z
+archive_uri:            http://download.qt.io/development_releases/prebuilt/llvmpipe/windows/opengl32sw-64-mesa_12_0_rc2.7z
 target_install_dir:     /bin
 
 
