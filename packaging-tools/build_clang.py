@@ -48,9 +48,11 @@ import bld_utils
 import bldinstallercommon
 import environmentfrombatchfile
 
-def get_clang(base_path, branch):
-    bld_utils.runCommand(['git', 'clone', '--branch', branch, 'http://llvm.org/git/llvm.git'], base_path)
-    bld_utils.runCommand(['git', 'clone', '--branch', branch, 'http://llvm.org/git/clang.git'], os.path.join(base_path, 'llvm', 'tools'))
+def get_clang(base_path, llvm_revision, clang_revision):
+    bld_utils.runCommand(['git', 'clone', 'http://llvm.org/git/llvm.git'], base_path)
+    bld_utils.runCommand(['git', 'checkout', llvm_revision], os.path.join(base_path, 'llvm'))
+    bld_utils.runCommand(['git', 'clone', 'http://llvm.org/git/clang.git'], os.path.join(base_path, 'llvm', 'tools'))
+    bld_utils.runCommand(['git', 'checkout', clang_revision], os.path.join(base_path, 'llvm', 'tools', 'clang'))
 
 def apply_patch(src_path, patch_filepath):
     print('Applying patch: "' + patch_filepath + '" in "' + src_path + '"')
@@ -127,7 +129,7 @@ def main():
     result_file_path = os.path.join(base_path, 'libclang-' + branch + '-' + os.environ['CLANG_PLATFORM'] + '.7z')
     remote_path = (os.environ['PACKAGE_STORAGE_SERVER_USER'] + '@' + os.environ['PACKAGE_STORAGE_SERVER'] + ':'
                    + os.environ['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + os.environ['CLANG_UPLOAD_SERVER_PATH'])
-    get_clang(base_path, branch)
+    get_clang(base_path, os.environ['LLVM_REVISION'], os.environ['CLANG_REVISION'])
     apply_patches(clang_src_path, sorted(glob.glob(os.path.join(patch_src_path, '*'))))
     build_clang(src_path, build_path, install_path, bitness, environment, build_type='Release')
     package_clang(install_path, result_file_path)
