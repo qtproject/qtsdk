@@ -192,6 +192,7 @@ class IfwOptions:
         self.plat_suffix                                = bldinstallercommon.get_platform_suffix()
         self.installer_framework_archive_name           = 'installer-framework-build-' + self.plat_suffix + '-' + self.architecture + '.7z'
         self.installer_base_archive_name                = 'installerbase-' + self.plat_suffix + '-' + self.architecture + '.7z'
+        self.installer_framework_payload_arch           = 'installer-framework-build-stripped-' + self.plat_suffix + '-' + self.architecture + '.7z'
         self.qt_source_package_uri                      = qt_source_package_uri
         self.qt_source_package_uri_saveas               = os.path.join(ROOT_DIR, os.path.basename(self.qt_source_package_uri))
         # Set Qt build prefix
@@ -243,6 +244,7 @@ class IfwOptions:
         print('installer_base_archive_name:             {0}'.format(self.installer_base_archive_name))
         print('installer_framework_pkg_dir:             {0}'.format(self.installer_framework_pkg_dir))
         print('installer_framework_target_dir:          {0}'.format(self.installer_framework_target_dir))
+        print('installer_framework_payload_arch:        {0}'.format(self.installer_framework_payload_arch))
         print('product_key_checker:                     {0}'.format(self.product_key_checker_pri))
         print('-----------------------------------------')
 
@@ -452,6 +454,10 @@ def create_installer_package(options):
     shutil.copytree(os.path.join(options.installer_framework_build_dir, 'doc'), os.path.join(package_dir, 'doc'))
     shutil.copytree(os.path.join(options.installer_framework_source_dir, 'examples'), os.path.join(package_dir, 'examples'))
     shutil.copy(os.path.join(options.installer_framework_source_dir, 'README'), package_dir)
+    # pack payload into separate .7z archive for later usage
+    cmd_args = ['7z', 'a', options.installer_framework_payload_arch, package_dir]
+    bldinstallercommon.do_execute_sub_process(cmd_args, ROOT_DIR)
+    shutil.move(os.path.join(ROOT_DIR, options.installer_framework_payload_arch), options.build_artifacts_dir)
     # create 7z
     archive_file = os.path.join(options.installer_framework_source_dir, 'dist', 'packages', 'org.qtproject.ifw.binaries', 'data', 'data.7z')
     if not os.path.exists(os.path.dirname(archive_file)):
@@ -478,6 +484,8 @@ def create_installer_package(options):
 def clean_build_environment(options):
     if os.path.isfile(options.installer_framework_archive_name):
         os.remove(options.installer_framework_archive_name)
+    if os.path.isfile(options.installer_framework_payload_arch):
+        os.remove(options.installer_framework_payload_arch)
     if os.path.exists(options.build_artifacts_dir):
         bldinstallercommon.remove_tree(options.build_artifacts_dir)
     bldinstallercommon.create_dirs(options.build_artifacts_dir)
