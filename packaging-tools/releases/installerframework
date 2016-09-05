@@ -20,7 +20,7 @@ arg_configurations_file:    repository_configs/tools_desktop/linux_x64_repositor
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
 repo_content_type:          ifw_repo
 repo_components_to_update:  qt.tools.ifw.*
-repo_url_specifier:         linux_x64/desktop/tools_maintenance
+repo_url_specifier:         linux_x64/desktop/tools_ifw
 
 
 ################################################################################
@@ -31,7 +31,7 @@ arg_configurations_file:    repository_configs/tools_desktop/win_x86_repository_
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
 repo_content_type:          ifw_repo
 repo_components_to_update:  qt.tools.ifw.*
-repo_url_specifier:         windows_x86/desktop/tools_maintenance
+repo_url_specifier:         windows_x86/desktop/tools_ifw
 
 
 ################################################################################
