@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt 5.6 Documentation collection</DisplayName>
+    <Description>Qt 5.6 documentation collection.</Description>
+    <Version>5.6.2-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Dependencies>qt.56.doc, qt.56.doc.lgplv3.qt3d, qt.56.doc.lgplv3.qtcanvas3d, qt.56.doc.lgplv3.qtlocation, qt.56.doc.lgplv3.qtquickcontrols, qt.56.doc.lgplv3.qtquickcontrols2, qt.56.doc.lgplv3.qtwebengine, qt.56.doc.lgplv3.qtwebview, qt.56.doc.qtscript, qt.56.doc.qtserialbus</Dependencies>
+    <Virtual>true</Virtual>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+
