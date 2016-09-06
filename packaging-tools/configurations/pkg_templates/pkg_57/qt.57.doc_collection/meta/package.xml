@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt 5.7 Documentation collection</DisplayName>
+    <Description>Qt 5.7 documentation collection.</Description>
+    <Version>5.7.1-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Dependencies>qt.57.doc, qt.57.doc.qtwebengine, qt.57.doc.qtcharts, qt.57.doc.qtdatavis3d, qt.57.doc.qtscript, qt.57.doc.qtquick2drenderer, qt.57.doc.qtgamepad, qt.57.doc.qtvirtualkeyboard, qt.57.doc.qtscxml, qt.57.doc.qtserialbus, qt.57.doc.qtpurchasing</Dependencies>
+    <Virtual>true</Virtual>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+
