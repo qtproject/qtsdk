@@ -26,24 +26,14 @@
 ##
 #############################################################################
 
-[PackageNamespace]
-name:                   qt
 
-[PlatformIdentifier]
-identifier:             windows
-
-[PackageConfigurationFiles]
-file_list:              qt-conf,
-                        qtcreator-license-conf,
-                        x86-tools-qtcreator-standalone-conf,
-                        x86-tools-vcredist_msvc2013-conf
-
-[ConfigDir]
-template_name:          config_qtcreator
-
-[ConfigXml]
-template_name:          config.xml.template.windows.qtcreator
-
-[PackageTemplates]
-template_dirs:          pkg_qtcreator_standalone, pkg_tools
-
+[qt.tools.qtcreator]
+archives:               tools.qtcreator
+target_install_base:    /
+package_default:        true
+[tools.qtcreator]
+archive_uri:            %QT_CREATOR_BASE_PATH%/windows_vs2015_32/qtcreator.7z
+package_strip_dirs:     0
+target_install_dir:     /
+rpath_target:
+archive_name:           qtcreator.7z
