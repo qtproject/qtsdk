@@ -22,7 +22,8 @@ arg_substitution_list:          %QT_VERSION%=%GLOBAL_VERSION%,
                                 %QTQUICK2DRENDERER_VERSION%=5.8.0-beta,
                                 %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.1.0_58x/latest_successful,
                                 %QTC_VERSION%=4.1.0,
-                                %QTC_DISPLAY_VERSION%=4.1.0
+                                %QTC_DISPLAY_VERSION%=4.1.0,
+                                %QTC_MSVC%=2013
 
 ################################################################################
 ## Linux offline

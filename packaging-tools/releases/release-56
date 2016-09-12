@@ -23,7 +23,8 @@ arg_substitution_list:          %QT_VERSION%=%GLOBAL_VERSION%,
                                 %QTENGINIO_VERSION%=1.6.2,
                                 %QT_CREATOR_BASE_PATH%=archive/qtcreator/4.0.3_56x,
                                 %QTC_VERSION%=4.0.3,
-                                %QTC_DISPLAY_VERSION%=4.0.3
+                                %QTC_DISPLAY_VERSION%=4.0.3,
+                                %QTC_MSVC%=2013
 
 [release.qt.configure_options.android_armv7]
 build_node_labels:      linux-g++-Rhel6.6-x86_Android-armv7, linux-g++-Rhel6.6-x64_Android-armv7, mac-clang-10.10-x64_Android-armv7, win-MinGW4.9.2-Windows7-x86_Android-armv7

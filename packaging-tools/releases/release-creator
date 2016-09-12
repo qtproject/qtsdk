@@ -15,7 +15,8 @@ version:                    4.1.1
 version_tag:
 arg_substitution_list:      %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.1.1_57x/latest_successful,
                             %QTC_VERSION%=%GLOBAL_VERSION%,
-                            %QTC_DISPLAY_VERSION%=%GLOBAL_VERSION_AND_TAG%
+                            %QTC_DISPLAY_VERSION%=%GLOBAL_VERSION_AND_TAG%,
+                            %QTC_MSVC%=2013
 
 
 ################################################################################

@@ -22,7 +22,8 @@ arg_substitution_list:          %QT_VERSION%=%GLOBAL_VERSION%,
                                 %QTQUICK2DRENDERER_VERSION%=5.7.1,
                                 %QT_CREATOR_BASE_PATH%=archive/qtcreator/4.0.3,
                                 %QTC_VERSION%=4.0.3,
-                                %QTC_DISPLAY_VERSION%=4.0.3
+                                %QTC_DISPLAY_VERSION%=4.0.3,
+                                %QTC_MSVC%=2013
 
 
 ################################################################################
