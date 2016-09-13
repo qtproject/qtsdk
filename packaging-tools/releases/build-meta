@@ -106,6 +106,11 @@ build_node_labels:          linux-g++-Rhel6.6-x64_Android-armv7
 build_target_dir:           android_x86/linux_x64
 build_node_labels:          linux-g++-Rhel6.6-x64_Android-x86
 
+[meta.linux_rhel72.x64.gcc]
+ci_target_postfix:          Linux-RHEL_7_2-GCC-Linux-RHEL_7_2-X86_64
+build_target_dir:           linux_gcc_64_rhel72
+build_node_labels:          linux-g++-Rhel7.2-x64
+
 [meta.linux.x86.qnx6_armv7]
 build_target_dir:           qnx6_armv7/linux_x86
 build_node_labels:          linux-g++-Rhel6.6-x86_QNX-armv7
