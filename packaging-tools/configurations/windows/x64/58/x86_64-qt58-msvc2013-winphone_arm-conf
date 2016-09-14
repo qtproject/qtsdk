@@ -86,7 +86,7 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qt3d/qt3d-Windows-Windows_
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtcanvas3d/qtcanvas3d-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
 [58.win64_msvc2013_winphone_arm.qtwebview]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebview/qtwebview-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
-58.win64_msvc2013_winphone_arm.qtscxml]
+[58.win64_msvc2013_winphone_arm.qtscxml]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscxml/qtscxml-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-ARMv4.7z
 
 
