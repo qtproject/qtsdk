@@ -47,7 +47,6 @@ archives:               58.ios.qtbase,
                         58.ios.qt3d,
                         58.ios.qtcanvas3d,
                         58.ios.qtwebview,
-                        58.ios.qtserialbus,
                         58.ios.qtscxml
 target_install_base:    /%QT_VERSION_MINOR%/ios
 [58.ios.qtbase]
@@ -88,8 +87,6 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qt3d/qt3d-OSX-OSX_10_10-Cl
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtcanvas3d/qtcanvas3d-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 [58.ios.qtwebview]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebview/qtwebview-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
-[58.ios.qtserialbus]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtserialbus/qtserialbus-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 [58.ios.qtscxml]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscxml/qtscxml-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 
