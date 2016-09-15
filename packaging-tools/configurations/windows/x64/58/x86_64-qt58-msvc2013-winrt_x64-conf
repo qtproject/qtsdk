@@ -113,3 +113,11 @@ archives:               58.qtpurchasing.win64_msvc2013_winrt_x64
 target_install_base:    /%QT_VERSION_MINOR%/winrt_x64
 [58.qtpurchasing.win64_msvc2013_winrt_x64]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtpurchasing/qtpurchasing-Windows-Windows_8_1-MSVC2013-WinRT-WinRT_8_1-X86_64.7z
+
+# QtNetworkAuth provided as separate installable component in installer
+[qt.58.qtnetworkauth]
+[qt.58.qtnetworkauth.win64_msvc2013_winrt_x64]
+archives:               58.qtnetworkauth.win64_msvc2013_winrt_x64
+target_install_base:    /%QT_VERSION_MINOR%/winrt_x64
+[58.qtnetworkauth.win64_msvc2013_winrt_x64]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtnetworkauth/qtnetworkauth-Windows-Windows_8_1-MSVC2013-WinRT-WinRT_8_1-X86_64.7z

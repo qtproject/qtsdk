@@ -60,8 +60,10 @@ archives:               58.src.qtbase,
                         58.src.qtvirtualkeyboard,
                         58.src.qtwebengine,
                         58.src.qtgamepad,
-                        58.src.qtscript
-#                        58.src.qt5.super
+                        58.src.qtscript,
+                        58.src.qtspeech,
+                        58.src.qtnetworkauth,
+                        58.src.supermodule
 target_install_base:    /%QT_VERSION_MINOR%/Src/
 [58.src.qtbase]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/src/submodules/qtbase-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
@@ -187,6 +189,15 @@ target_install_dir:     /qtgamepad
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/src/submodules/qtscript-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
 package_strip_dirs:     1
 target_install_dir:     /qtscript
-#[58.src.qt5.super]
-#archive_uri:            /qt/%QT_VERSION_MINOR%/latest/src/submodules/tqtc-qt5-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
-#package_strip_dirs:     1
+[58.src.qtspeech]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/src/submodules/qtspeech-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtspeech
+[58.src.qtnetworkauth]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/src/submodules/qtnetworkauth-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtnetworkauth
+[58.src.supermodule]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/src/submodules/tqtc-qt5-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /

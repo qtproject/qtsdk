@@ -131,3 +131,18 @@ target_install_base:    /%QT_VERSION_MINOR%/ios
 [58.qtgamepad.ios]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgamepad/qtgamepad-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 
+# QtNetworkAuth provided as separate installable component in installer
+[qt.58.qtnetworkauth]
+[qt.58.qtnetworkauth.ios]
+archives:               58.qtnetworkauth.ios
+target_install_base:    /%QT_VERSION_MINOR%/ios
+[58.qtnetworkauth.ios]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtnetworkauth/qtnetworkauth-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+
+# QtSpeech provided as separate installable component in installer
+[qt.58.qtspeech]
+[qt.58.qtspeech.ios]
+archives:               58.qtspeech.ios
+target_install_base:    /%QT_VERSION_MINOR%/ios
+[58.qtspeech.ios]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtspeech/qtspeech-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z

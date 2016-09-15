@@ -97,6 +97,14 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qtwebengine-documentat
 target_install_dir:
 package_strip_dirs:     1
 
+[qt.58.doc.qtspeech]
+archives:               58.doc.qtspeech
+target_install_base:    /Docs/Qt-5.8/
+[58.doc.qtspeech]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qtspeech-documentation.%SRC_ARCHIVE_TYPE%
+target_install_dir:
+package_strip_dirs:     1
+
 [qt.58.examples.qtcharts]
 archives:               58.examples.qtcharts
 target_install_base:    /Examples/Qt-5.8/
@@ -141,11 +149,11 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/examples/qtserialbus-examp
 target_install_dir:
 package_strip_dirs:     1
 
-[qt.58.examples.qtscxml]
-archives:               58.examples.qtscxml
+[qt.58.examples.qtspeech]
+archives:               58.examples.qtspeech
 target_install_base:    /Examples/Qt-5.8/
-[58.examples.qtscxml]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/examples/qtscxml-examples-%QT_VERSION_AND_TAG%.7z
+[58.examples.qtspeech]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/examples/qtspeech-examples-%QT_VERSION_AND_TAG%.7z
 target_install_dir:
 package_strip_dirs:     1
 

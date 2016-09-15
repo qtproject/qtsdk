@@ -115,3 +115,10 @@ target_install_base:    /%QT_VERSION_MINOR%/winrt_x86_msvc2015
 [58.qtpurchasing.win64_msvc2015_winrt_x86]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtpurchasing/qtpurchasing-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86.7z
 
+# QtNetworkAuth provided as separate installable component in installer
+[qt.58.qtnetworkauth]
+[qt.58.qtnetworkauth.win64_msvc2015_winrt_x86]
+archives:               58.qtnetworkauth.win64_msvc2015_winrt_x86
+target_install_base:    /%QT_VERSION_MINOR%/winrt_x86_msvc2015
+[58.qtnetworkauth.win64_msvc2015_winrt_x86]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtnetworkauth/qtnetworkauth-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86.7z

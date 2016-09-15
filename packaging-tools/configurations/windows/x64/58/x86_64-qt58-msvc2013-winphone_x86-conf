@@ -114,3 +114,18 @@ target_install_base:    /%QT_VERSION_MINOR%/winphone_x86
 [58.qtpurchasing.win64_msvc2013_winphone_x86]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtpurchasing/qtpurchasing-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
 
+# QtNetworkAuth provided as separate installable component in installer
+[qt.58.qtnetworkauth]
+[qt.58.qtnetworkauth.win64_msvc2013_winphone_x86]
+archives:               58.qtnetworkauth.win64_msvc2013_winphone_x86
+target_install_base:    /%QT_VERSION_MINOR%/winphone_x86
+[58.qtnetworkauth.win64_msvc2013_winphone_x86]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtnetworkauth/qtnetworkauth-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z
+
+# QtSpeech provided as separate installable component in installer
+[qt.58.qtspeech]
+[qt.58.qtspeech.win64_msvc2013_winphone_x86]
+archives:               58.qtspeech.win64_msvc2013_winphone_x86
+target_install_base:    /%QT_VERSION_MINOR%/winphone_x86
+[58.qtspeech.win64_msvc2013_winphone_x86]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtspeech/qtspeech-Windows-Windows_8_1-MSVC2013-WinPhone-Windows_Phone_8_1-X86.7z

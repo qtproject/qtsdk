@@ -166,3 +166,18 @@ target_install_base:    /%QT_VERSION_MINOR%/msvc2015
 [58.qtwebengine.win32_msvc2015]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebengine/qtwebengine-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z
 
+# QtNetworkAuth provided as separate installable component in installer
+[qt.58.qtnetworkauth]
+[qt.58.qtnetworkauth.win32_msvc2015]
+archives:               58.qtnetworkauth.win32_msvc2015
+target_install_base:    /%QT_VERSION_MINOR%/msvc2015
+[58.qtnetworkauth.win32_msvc2015]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtnetworkauth/qtnetworkauth-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z
+
+# QtSpeech provided as separate installable component in installer
+[qt.58.qtspeech]
+[qt.58.qtspeech.win32_msvc2015]
+archives:               58.qtspeech.win32_msvc2015
+target_install_base:    /%QT_VERSION_MINOR%/msvc2015
+[58.qtspeech.win32_msvc2015]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtspeech/qtspeech-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z
