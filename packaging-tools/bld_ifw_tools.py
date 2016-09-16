@@ -58,10 +58,9 @@ def get_default_qt_configure_options(openssl_dir):
 def get_static_qt_configure_options(openssl_dir):
     options = get_common_qt_configure_options() + '-static '
     if bldinstallercommon.is_mac_platform():
-        options += '-openssl -no-securetransport '
-    else:
-        options += '-openssl-linked '
-    if bldinstallercommon.is_linux_platform() and openssl_dir:
+        options += '-no-securetransport '
+    options += '-openssl-linked '
+    if (bldinstallercommon.is_linux_platform() or bldinstallercommon.is_mac_platform()) and openssl_dir:
         options += '-I {0}/include -L {0}/lib '.format(openssl_dir)
     if platform.system().lower().startswith('win'):
         options += '-static-runtime '
