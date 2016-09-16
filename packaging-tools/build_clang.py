@@ -96,19 +96,24 @@ def install_command(toolchain):
     else:
         return ["make", "-j1", "install"]
 
+def cmake_command(toolchain, src_path, build_path, install_path, bitness, build_type):
+    command = ['cmake',
+               '-DCMAKE_INSTALL_PREFIX=' + install_path,
+               '-G',
+               cmake_generator(toolchain),
+               '-DCMAKE_BUILD_TYPE=' + build_type]
+    command.extend(bitness_flags(bitness))
+    command.append(src_path)
+
+    return command
+
 def build_clang(toolchain, src_path, build_path, install_path, bitness=64, environment=None, build_type='Release'):
     if build_path and not os.path.lexists(build_path):
         os.makedirs(build_path)
 
-    cmake_command = ['cmake',
-                     '-DCMAKE_INSTALL_PREFIX=' + install_path,
-                     '-G',
-                     cmake_generator(toolchain),
-                     '-DCMAKE_BUILD_TYPE=' + build_type]
-    cmake_command.extend(bitness_flags(bitness))
-    cmake_command.append(src_path)
+    cmake_cmd = cmake_command(toolchain, src_path, build_path, install_path, bitness, build_type)
 
-    bldinstallercommon.do_execute_sub_process(cmake_command, build_path, extra_env=environment)
+    bldinstallercommon.do_execute_sub_process(cmake_cmd, build_path, extra_env=environment)
     bldinstallercommon.do_execute_sub_process(make_command(toolchain), build_path, extra_env=environment)
     bldinstallercommon.do_execute_sub_process(install_command(toolchain), build_path, extra_env=environment)
 
