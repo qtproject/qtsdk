@@ -3,6 +3,7 @@ Makefile
 *.pyc
 *.7z
 *.gz
+.*.swp
 *.zip
 /packaging-tools/qt-bld
 /packaging-tools/qt-src
