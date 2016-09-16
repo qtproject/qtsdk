@@ -49,7 +49,6 @@ archives:               58.win64_msvc2013_64.qtbase,
                         58.win64_msvc2013_64.qtquickcontrols2,
                         58.win64_msvc2013_64.qt3d,
                         58.win64_msvc2013_64.qtcanvas3d,
-                        58.win64_msvc2013_64.qtwebview,
                         58.win64_msvc2013_64.qtserialbus,
                         58.win64_msvc2013_64.qtscxml,
                         58.win64_msvc2013_64.d3d_compiler_47.x64,
@@ -97,8 +96,6 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtquickcontrols2/qtquickco
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qt3d/qt3d-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z
 [58.win64_msvc2013_64.qtcanvas3d]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtcanvas3d/qtcanvas3d-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z
-[58.win64_msvc2013_64.qtwebview]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebview/qtwebview-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z
 [58.win64_msvc2013_64.qtserialbus]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtserialbus/qtserialbus-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z
 [58.win64_msvc2013_64.qtscxml]
@@ -158,14 +155,6 @@ archives:               58.qtgamepad.win64_msvc2013_64
 target_install_base:    /%QT_VERSION_MINOR%/msvc2013_64
 [58.qtgamepad.win64_msvc2013_64]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgamepad/qtgamepad-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z
-
-# QtWebEngine provided as separate installable component in installer
-[qt.58.qtwebengine]
-[qt.58.qtwebengine.win64_msvc2013_64]
-archives:               58.qtwebengine.win64_msvc2013_64
-target_install_base:    /%QT_VERSION_MINOR%/msvc2013_64
-[58.qtwebengine.win64_msvc2013_64]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebengine/qtwebengine-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z
 
 # QtNetworkAuth provided as separate installable component in installer
 [qt.58.qtnetworkauth]
