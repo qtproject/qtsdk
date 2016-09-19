@@ -105,6 +105,14 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qtspeech-documentation
 target_install_dir:
 package_strip_dirs:     1
 
+[qt.58.doc.qtnetworkauth]
+archives:               58.doc.qtnetworkauth
+target_install_base:    /Docs/Qt-5.8/
+[58.doc.qtnetworkauth]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qtnetworkauth-documentation.%SRC_ARCHIVE_TYPE%
+target_install_dir:
+package_strip_dirs:     1
+
 [qt.58.examples.qtcharts]
 archives:               58.examples.qtcharts
 target_install_base:    /Examples/Qt-5.8/
