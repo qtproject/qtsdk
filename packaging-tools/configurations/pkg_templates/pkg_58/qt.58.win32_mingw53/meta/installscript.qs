@@ -34,7 +34,7 @@ function Component()
 function createShortcuts()
 {
     var qtStringVersion = "5.8";
-    var minGwVersion = "4.9.2";
+    var minGwVersion = "5.3.0";
 
     // Create a batch file with the development environment
     var component_root_path = installer.value("TargetDir") + "%TARGET_INSTALL_DIR%";
@@ -43,7 +43,7 @@ function createShortcuts()
     var batchFileName = component_root_path + "\\" + "bin" + "\\" + "qtenv2.bat";
     var contentString = "echo off\r\n";
     contentString += "echo Setting up environment for Qt usage...\r\n";
-    contentString += "set PATH=" + component_root_path + "\\bin;@MINGW492_DIR@\\bin;%PATH%\r\n";
+    contentString += "set PATH=" + component_root_path + "\\bin;" + installer.value("MINGW530_DIR") + "\\bin;%PATH%\r\n";
     contentString += "cd /D " + component_root_path + "\r\n";
     //contentString += "echo Remember to call vcvarsall.bat to complete environment setup!\r\n";
     // Dump batch file
