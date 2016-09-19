@@ -31,7 +31,13 @@
 [qt.58]
 
 [qt.58.src]
-archives:               58.src.qtbase,
+archives:               58.src.qtactiveqt,
+                        58.src.qtandroidextras,
+                        58.src.qtdoc,
+                        58.src.qtmacextras,
+                        58.src.qtwayland,
+                        58.src.qtwinextras,
+                        58.src.qtbase,
                         58.src.qtconnectivity,
                         58.src.qtx11extras,
                         58.src.qtwebchannel,
@@ -65,6 +71,30 @@ archives:               58.src.qtbase,
                         58.src.qtnetworkauth,
                         58.src.supermodule
 target_install_base:    /%QT_VERSION_MINOR%/Src/
+[58.src.qtactiveqt]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/src/submodules/qtactiveqt-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtactiveqt
+[58.src.qtandroidextras]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/src/submodules/qtandroidextras-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtandroidextras
+[58.src.qtdoc]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/src/submodules/qtdoc-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtdoc
+[58.src.qtmacextras]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/src/submodules/qtmacextras-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtmacextras
+[58.src.qtwayland]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/src/submodules/qtwayland-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtwayland
+[58.src.qtwinextras]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/src/submodules/qtwinextras-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtwinextras
 [58.src.qtbase]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/src/submodules/qtbase-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
 package_strip_dirs:     1
