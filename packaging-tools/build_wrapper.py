@@ -416,7 +416,7 @@ def handle_ifw_build(bld_command):
                                  ifw_url, ifw_branch,
                                  ifw_qmake_args,
                                  product_key_checker_pri,
-                                 openssl_dir)
+                                 False)
     # build ifw tools
     bld_ifw_installer = True if os.environ.get('CREATE_IFW_INSTALLER') else False
     bld_ifw_tools.build_ifw(ifw_bld_options, bld_ifw_installer)
