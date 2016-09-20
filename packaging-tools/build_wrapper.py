@@ -415,6 +415,7 @@ def handle_ifw_build(bld_command):
                                  qt_configure_options,
                                  ifw_url, ifw_branch,
                                  ifw_qmake_args,
+                                 openssl_dir,
                                  product_key_checker_pri,
                                  False)
     # build ifw tools

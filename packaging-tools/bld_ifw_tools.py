@@ -129,6 +129,16 @@ def get_dynamic_qt_configure_options():
     return options
 
 
+##################################################################
+# Define OPENSSL_LIBS env if openssl_dir is defined
+##################################################################
+def get_build_env(openssl_dir):
+    tmp = dict(os.environ)
+    if bldinstallercommon.is_mac_platform() and os.path.isdir(openssl_dir):
+        tmp['OPENSSL_LIBS'] = "-L{0}/lib -lssl -lcrypto".format(openssl_dir)
+    return tmp
+
+
 ###############################
 # Option class for ifw build
 ###############################
@@ -145,6 +155,7 @@ class IfwOptions:
                  qt_installer_framework_url,
                  qt_installer_framework_branch,
                  qt_installer_framework_qmake_args,
+                 openssl_dir,
                  product_key_checker_pri,
                  incremental_build = False):
         self.incremental_mode                           = incremental_build
@@ -159,6 +170,7 @@ class IfwOptions:
         self.qt_installer_framework_url                 = qt_installer_framework_url
         self.qt_installer_framework_branch              = qt_installer_framework_branch
         self.qt_installer_framework_qmake_args          = qt_installer_framework_qmake_args
+        self.openssl_dir                                = openssl_dir
         if bldinstallercommon.is_win_platform():
             self.make_cmd                               = 'nmake'
             self.make_doc_cmd                           = 'nmake'
@@ -237,6 +249,7 @@ class IfwOptions:
         print('qt_installer_framework_url:              {0}'.format(self.qt_installer_framework_url))
         print('qt_installer_framework_branch:           {0}'.format(self.qt_installer_framework_branch))
         print('qt_installer_framework_qmake_args:       {0}'.format(self.qt_installer_framework_qmake_args))
+        print('openssl_dir:                             {0}'.format(self.openssl_dir))
         print('installer_framework_source_dir:          {0}'.format(self.installer_framework_source_dir))
         print('installer_framework_build_dir:           {0}'.format(self.installer_framework_build_dir))
         print('installer_framework_archive_name:        {0}'.format(self.installer_framework_archive_name))
@@ -328,11 +341,11 @@ def build_qt(options, qt_build_dir, qt_configure_options):
     cmd_args = options.qt_configure_bin + ' ' + configure_options
     # shlex does not like backslashes
     cmd_args = cmd_args.replace('\\', '/')
-    bldinstallercommon.do_execute_sub_process(shlex.split(cmd_args), qt_build_dir)
+    bldinstallercommon.do_execute_sub_process(shlex.split(cmd_args), qt_build_dir, True, False, get_build_env(self.openssl_dir))
     print('--------------------------------------------------------------------')
     print('Building Qt')
     cmd_args = options.make_cmd
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), qt_build_dir)
+    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), qt_build_dir, True, False, get_build_env(self.openssl_dir))
 
 
 ###############################
@@ -659,6 +672,7 @@ if __name__ == "__main__":
                          CARGS.ifw_url,
                          ifw_branch,
                          ifw_qmake_args,
+                         CARGS.openssl_dir,
                          CARGS.product_key_checker_pri,
                          CARGS.incremental
                         )
