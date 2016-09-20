@@ -824,7 +824,7 @@ def remote_path_exists(remote_addr, path_to_check, ssh_command = 'ssh'):
 ###############################
 # function
 ###############################
-def create_mac_disk_image(execution_path, file_directory, file_base_name, image_size = '3g'):
+def create_mac_disk_image(execution_path, file_directory, file_base_name, image_size = '4g'):
     # create disk image
     cmd_args = ['hdiutil', 'create', '-srcfolder', \
                 os.path.join(file_directory, file_base_name + '.app'), \
