@@ -42,7 +42,8 @@ file_list:              qt-conf,
                         x86_64-qt58-msvc2013-winphone_arm-conf,
                         x86_64-qt58-msvc2013-winphone_x86-conf,
                         x86-tools-qtcreator-qt58x-conf,
-                        x86-tools-vcredist_msvc2013-conf
+                        x86-tools-vcredist_msvc2013-conf,
+                        x86-tools-perl-conf
 
 [ConfigDir]
 template_name:          config_qt5

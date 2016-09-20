@@ -41,7 +41,8 @@ file_list:              qt-conf,
                         x86-qt58-mingw53_32-conf,
                         x86-tools-mingw530-conf,
                         x86-tools-qtcreator-qt58x-conf,
-                        x86-tools-vcredist_msvc2013-conf
+                        x86-tools-vcredist_msvc2013-conf,
+                        x86-tools-perl-conf
 
 [ConfigDir]
 template_name:          config_qt5

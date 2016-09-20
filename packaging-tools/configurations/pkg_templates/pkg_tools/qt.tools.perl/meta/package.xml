@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+    <DisplayName>Strawberry Perl</DisplayName>
+    <Description>Strawberry Perl for Windows</Description>
+    <Version>2014-30-12</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Script>installscript.qs</Script>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+    <Licenses>
+        <License name="Strawberry Perl license agreement" file="LICENSE" />
+    </Licenses>
+    <UserInterfaces>
+        <UserInterface>licensedialog.ui</UserInterface>
+    </UserInterfaces>
+</Package>

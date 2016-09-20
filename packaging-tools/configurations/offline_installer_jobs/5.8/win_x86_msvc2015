@@ -41,7 +41,8 @@ file_list:              qt-conf,
                         x86-qt58-msvc2015_32-conf,
                         x86-tools-qtcreator-qt58x-conf,
                         x86-tools-vcredist_msvc2013-conf,
-                        x86-tools-vcredist_msvc2015-conf
+                        x86-tools-vcredist_msvc2015-conf,
+                        x86-tools-perl-conf
 
 [ConfigDir]
 template_name:          config_qt5

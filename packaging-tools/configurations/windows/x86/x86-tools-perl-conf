@@ -26,30 +26,14 @@
 ##
 #############################################################################
 
-[PackageNamespace]
-name:                   qt
 
-[PlatformIdentifier]
-identifier:             windows
-
-[PackageConfigurationFiles]
-file_list:              qt-conf,
-                        qt-license-conf,
-                        qt-installer-changelog,
-                        qt58-src-conf,
-                        qt58-doc-examples-conf,
-                        x86_64-qt58-msvc2015_64-conf,
-                        x86-tools-qtcreator-qt58x-conf,
-                        x86-tools-vcredist_msvc2013-conf,
-                        x86-tools-vcredist_msvc2015-conf,
-                        x86-tools-perl-conf
-
-[ConfigDir]
-template_name:          config_qt5
-
-[ConfigXml]
-template_name:          config.xml.template.windows.qt5
-
-[PackageTemplates]
-template_dirs:          pkg_58, pkg_tools
-
+[qt.tools.perl]
+archives:               tools.perl
+target_install_base:    /Tools/Perl52213_32
+package_default:        false
+[tools.perl]
+archive_uri:            http://download.qt.io/development_releases/prebuilt/perl/strawberry-perl-5.22.1.3-32bit.msi
+package_strip_dirs:     0
+target_install_dir:     /
+rpath_target:
+archive_name:           strawberry-perl-5.22.1.3-32bit.msi
