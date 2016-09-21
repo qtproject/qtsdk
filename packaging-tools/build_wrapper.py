@@ -613,25 +613,15 @@ def handle_qt_creator_build(bld_command):
                     + os.environ["GRAPHVIZ_BASE_DIR"] + '-' + bld_command.target_env + '.7z')
 
     qt_base_path = os.environ['QTC_QT_BASE_DIR']
-    qt_module_urls = []
-    qt_module_filenames = []
-    if "/5.5" in qt_base_path: # Qt 5.5 compat mode
-        qt_modules = ['essentials', 'addons', 'qtscript', 'qtwebkit',
-                      'qtlocation', 'qtpositioning', 'qtquickcontrols']
-        qt_module_filenames = ['qt5_' + module + '.7z' for module in qt_modules]
-        qt_base_url = (bld_command.pkg_server_addr_http + '/' + qt_base_path
-                       + '/' + BIN_TARGET_DIRS[bld_command.target_env])
-        qt_module_urls = [qt_base_url + '/' + filename for filename in qt_module_filenames]
-    else:
-        qt_modules = ['qtbase', 'qtdeclarative', 'qtgraphicaleffects',
-                      'qtimageformats', 'qtlocation', 'qtmacextras',
-                      'qtquickcontrols', 'qtquickcontrols2', 'qtscript', 'qtsvg', 'qttools',
-                      'qttranslations', 'qtx11extras', 'qtxmlpatterns']
-        qt_postfix = CI_TARGET_POSTFIX[bld_command.target_env]
-        qt_module_filenames = [module + '-' + qt_postfix + '.7z' for module in qt_modules]
-        qt_base_url = bld_command.pkg_server_addr_http + '/' + qt_base_path
-        qt_module_urls = [qt_base_url + '/' + module + '/' + filename
-                          for (module, filename) in zip(qt_modules, qt_module_filenames)]
+    qt_modules = ['qtbase', 'qtdeclarative', 'qtgraphicaleffects',
+                  'qtimageformats', 'qtlocation', 'qtmacextras',
+                  'qtquickcontrols', 'qtquickcontrols2', 'qtscript', 'qtsvg', 'qttools',
+                  'qttranslations', 'qtx11extras', 'qtxmlpatterns']
+    qt_postfix = CI_TARGET_POSTFIX[bld_command.target_env]
+    qt_module_filenames = [module + '-' + qt_postfix + '.7z' for module in qt_modules]
+    qt_base_url = bld_command.pkg_server_addr_http + '/' + qt_base_path
+    qt_module_urls = [qt_base_url + '/' + module + '/' + filename
+                      for (module, filename) in zip(qt_modules, qt_module_filenames)]
 
     common_arguments = []
     if not bldinstallercommon.is_win_platform():
@@ -677,13 +667,6 @@ def handle_qt_creator_build(bld_command):
                           Plugin(name='isoiconbrowser', path='qtquickdesigner',
                                  dependencies=['licensechecker'])
                           ]
-    if bld_command.qtcreator_version.startswith("3.6"):
-        additional_plugins.extend([Plugin(name='clangstaticanalyzer', path='clangstaticanalyzer',
-                                          dependencies=['licensechecker']),
-                                   Plugin(name='qmlprofiler', path='qmlprofiler',
-                                          dependencies=['licensechecker']),
-                                   Plugin(name='autotest-qtcreator-plugin', path='autotest-qtcreator-plugin',
-                                          dependencies=['licensechecker'])])
     if bldinstallercommon.is_linux_platform():
         additional_qmake_arguments.extend(['PERFPARSER_BUNDLED_ELFUTILS=true',
                                            'PERFPARSER_APP_DESTDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'libexec', 'qtcreator'),
