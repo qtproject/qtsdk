@@ -341,11 +341,11 @@ def build_qt(options, qt_build_dir, qt_configure_options):
     cmd_args = options.qt_configure_bin + ' ' + configure_options
     # shlex does not like backslashes
     cmd_args = cmd_args.replace('\\', '/')
-    bldinstallercommon.do_execute_sub_process(shlex.split(cmd_args), qt_build_dir, True, False, get_build_env(self.openssl_dir))
+    bldinstallercommon.do_execute_sub_process(shlex.split(cmd_args), qt_build_dir, True, False, get_build_env(options.openssl_dir))
     print('--------------------------------------------------------------------')
     print('Building Qt')
     cmd_args = options.make_cmd
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), qt_build_dir, True, False, get_build_env(self.openssl_dir))
+    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), qt_build_dir, True, False, get_build_env(options.openssl_dir))
 
 
 ###############################
