@@ -109,6 +109,11 @@ def bitness_flags(bitness):
             flags.extend(['-DLIBXML2_LIBRARIES=/usr/lib/libxml2.so', '-DLLVM_BUILD_32_BITS=ON'])
     return flags
 
+def rtti_flags(toolchain):
+    if is_mingw_toolchain(toolchain):
+        return ['-DLLVM_ENABLE_RTTI:BOOL=OFF']
+    return ['-DLLVM_ENABLE_RTTI:BOOL=ON']
+
 def make_command(toolchain):
     if bldinstallercommon.is_win_platform():
         return ['mingw32-make'] if is_mingw_toolchain(toolchain) else ['jom']
@@ -128,6 +133,7 @@ def cmake_command(toolchain, src_path, build_path, install_path, profile_data_di
                cmake_generator(toolchain),
                '-DCMAKE_BUILD_TYPE=' + build_type]
     command.extend(bitness_flags(bitness))
+    command.extend(rtti_flags(toolchain))
     command.extend(profile_data_flags(toolchain, profile_data_dir))
     command.append(src_path)
 
