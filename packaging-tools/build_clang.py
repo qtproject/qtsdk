@@ -66,6 +66,10 @@ def get_profile_data(profile_data_dir, profile_data_url):
         bld_utils.download(profile_data_url, destination_path)
         bldinstallercommon.extract_file(destination_path, profile_data_dir)
 
+        return profile_data_dir
+
+    return None
+
 def apply_patch(src_path, patch_filepath):
     print('Applying patch: "' + patch_filepath + '" in "' + src_path + '"')
     with open(patch_filepath, 'r') as f:
@@ -205,7 +209,7 @@ def main():
                    + os.environ['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + os.environ['CLANG_UPLOAD_SERVER_PATH'])
 
     get_clang(base_path, os.environ['LLVM_REVISION'], os.environ['CLANG_REVISION'])
-    get_profile_data(profile_data_path, profile_data_url)
+    profile_data_path = get_profile_data(profile_data_path, profile_data_url)
     apply_patches(clang_src_path, sorted(glob.glob(os.path.join(patch_src_path, '*'))))
     build_clang(toolchain, src_path, build_path, install_path, profile_data_path, bitness, environment, build_type='Release')
     package_clang(install_path, result_file_path)
