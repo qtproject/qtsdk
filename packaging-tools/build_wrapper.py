@@ -385,7 +385,7 @@ def handle_ifw_build(bld_command):
     # Qt
     qt_src_pkg = os.environ['IFW_QT_SRC_PKG'] # mandatory env variable
     # OpenSSL
-    openssl_dir = os.environ.get('IFW_OPENSSL_DIR')
+    openssl_dir = os.getenv('IFW_OPENSSL_DIR', '')
     qt_configure_options = bld_ifw_tools.get_default_qt_configure_options(openssl_dir)
     # Installer-Framework
     ifw_url    = os.environ['IFW_GIT_URL'] # mandatory env variable
