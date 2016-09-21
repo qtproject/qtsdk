@@ -111,9 +111,9 @@ Component.prototype.createOperations = function()
                                    ["@SDKToolBinary@", "addKit",
                                     "--id", kitName,
                                     "--name", "Desktop Qt %{Qt:Version} MinGW 32bit",
-                                    "--toolchain", "@MINGW492_TCID@",
+                                    "--toolchain", "@MINGW530_TCID@",
                                     "--qt", component.name,
-                                    "--debuggerid", "@MINGW492_DBGID@",
+                                    "--debuggerid", "@MINGW530_DBGID@",
                                     "--devicetype", "Desktop",
                                     "UNDOEXECUTE",
                                     "@SDKToolBinary@", "rmKit", "--id", kitName]);
