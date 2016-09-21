@@ -150,17 +150,10 @@ if __name__ == "__main__":
         formatter_class=argparse.RawTextHelpFormatter)
     add_common_commandline_arguments(parser)
     parser.add_argument('--qt5path', help="here it expects a compiled Qt5", required=True)
-    parser.add_argument('--installerbase7z', help="a file or url where it get installerbase binary as 7z")
     parser.add_argument('--versiondescription', help="version description to be shown in the about dialog, e.g. 'pre-2.7.2")
-    parser.add_argument('--additional_plugin', help="path to additional Qt Creator plugin to build", action='append')
     if bldinstallercommon.is_mac_platform():
         parser.add_argument('--keychain_unlock_script', help="script for unlocking the keychain used for signing")
-        parser.epilog += " --installerbase7z http://it-dl241-hki.it.local/packages/opensource/ifw/1.4/installer-framework-build-mac-x64.7z"
         parser.epilog += " --keychain_unlock_script $HOME/unlock-keychain.sh"
-    elif bldinstallercommon.is_win_platform():
-        parser.epilog += " --installerbase7z http://it-dl241-hki.it.local/packages/opensource/ifw/1.4/installer-framework-build-win-x86.7z"
-    else:
-        parser.epilog += " --installerbase7z http://it-dl241-hki.it.local/packages/opensource/ifw/1.4/installer-framework-build-linux-x64.7z"
 
     parser.epilog += " --qt5path qtcreator_qt5"
     callerArguments = parser.parse_args()
@@ -210,12 +203,6 @@ if __name__ == "__main__":
         download_packages_work.addTaskObject(bldinstallercommon.create_qt_download_task(
             callerArguments.qt_modules, callerArguments.qt5path, tempPath, callerArguments))
 
-    # add get installer base task
-    if callerArguments.installerbase7z:
-        download_packages_work.addTaskObject(
-            bldinstallercommon.create_download_extract_task(callerArguments.installerbase7z, tempPath, tempPath, callerArguments))
-    installerPath = os.path.join(tempPath, 'ifw-bld')
-
     # run get Qt 5 tasks
     if download_packages_work.taskNumber != 0:
         download_packages_work.run()
@@ -227,11 +214,6 @@ if __name__ == "__main__":
     ### lets start building
 
     environment = get_common_environment(callerArguments.qt5path, callerArguments)
-    environment["INSTALL_BASENAME"] = "qt-creator"
-    environment["INSTALLER_ARCHIVE"] = "qtcreator.7z"
-    if callerArguments.installerbase7z:
-        environment["IFW_PATH"] = installerPath
-
     if callerArguments.debug:
         buildType = 'debug'
     else:
@@ -269,26 +251,6 @@ if __name__ == "__main__":
         runInstallCommand('install install_docs', currentWorkingDirectory = qtCreatorBuildDirectory,
             callerArguments = callerArguments, init_environment = environment)
 
-    # build & install additional plugins
-    if callerArguments.additional_plugin:
-        for plugin_dir in callerArguments.additional_plugin:
-            env = environment
-            env['QTC_SOURCE'] = qtCreatorSourceDirectory
-            env['QTC_BUILD'] = qtCreatorBuildDirectory
-            additionalQmakeArguments = "CONFIG+=licensechecker"
-            if bldinstallercommon.is_mac_platform():
-                additionalQmakeArguments += " QMAKE_MAC_SDK=macosx" # work around QTBUG-41238
-            runCommand('{0} QTC_PREFIX={1} {2}'.format(qmakeBinary, qtCreatorInstallDirectory,
-                additionalQmakeArguments), plugin_dir,
-                callerArguments = callerArguments, init_environment = env)
-            runBuildCommand(currentWorkingDirectory = plugin_dir, callerArguments = callerArguments,
-                init_environment = env)
-            runInstallCommand("docs", currentWorkingDirectory = plugin_dir, callerArguments = callerArguments,
-                init_environment = env)
-            if not bldinstallercommon.is_mac_platform():
-                runInstallCommand('install install_docs', currentWorkingDirectory = plugin_dir,
-                    callerArguments = callerArguments, init_environment = env)
-
     runInstallCommand('deployqt', currentWorkingDirectory = qtCreatorBuildDirectory, callerArguments = callerArguments,
         init_environment = environment)
 
@@ -306,14 +268,6 @@ if __name__ == "__main__":
 
     runInstallCommand('bindist_installer', qtCreatorBuildDirectory, callerArguments = callerArguments,
         init_environment = environment)
-
-    # Qt Creator standalone package
-    if callerArguments.installerbase7z:
-        runInstallCommand('installer', qtCreatorBuildDirectory, callerArguments = callerArguments,
-            init_environment = environment)
-        if bldinstallercommon.is_mac_platform():
-            runInstallCommand('codesign_installer dmg_installer', qtCreatorBuildDirectory,
-                callerArguments = callerArguments, init_environment = environment)
 
     if bldinstallercommon.is_mac_platform():
         runInstallCommand('dmg', qtCreatorBuildDirectory,
