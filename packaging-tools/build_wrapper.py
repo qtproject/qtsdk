@@ -601,6 +601,17 @@ def handle_qt_creator_build(bld_command):
     sanity_check_packaging_server(bld_command)
     installer_version_number = os.environ['QTC_INSTALLER_VERSION']
     target_env_dir = BIN_TARGET_DIRS[bld_command.target_env]
+    build_environment = dict(os.environ)
+
+    # clang
+    clang_url = (bld_command.pkg_server_addr_http + '/'
+                    + os.environ['CLANG_FILEBASE'] + '-'
+                    + os.environ['QTC_PLATFORM'] + '.7z')
+    clang_download_filepath = os.path.join(WORK_DIR, 'qt-creator_temp', 'libclang.7z')
+    clang_target_path = WORK_DIR
+    bld_utils.download(clang_url, clang_download_filepath)
+    bldinstallercommon.extract_file(clang_download_filepath, clang_target_path)
+    build_environment['LLVM_INSTALL_DIR'] = os.path.join(WORK_DIR, 'libclang')
 
     # gammaray and graphviz
     kdsme_url = (bld_command.pkg_server_addr_http + '/'
@@ -652,7 +663,7 @@ def handle_qt_creator_build(bld_command):
             cmd_args.extend(['--openssl7z', bld_command.openssl_libs])
     cmd_args.extend(common_arguments)
 
-    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR)
+    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, extra_env=build_environment)
 
     if bldinstallercommon.is_mac_platform():
         lock_keychain()
@@ -736,7 +747,7 @@ def handle_qt_creator_build(bld_command):
             cmd_arguments.extend(['--add-qmake-argument', 'LIBS*=' + ' '.join(['-L'+path for path in libs_paths])])
         cmd_arguments.extend(common_arguments)
         cmd_arguments.append(os.path.join(WORK_DIR, plugin.name + '.7z'))
-        bldinstallercommon.do_execute_sub_process(cmd_arguments, WORK_DIR)
+        bldinstallercommon.do_execute_sub_process(cmd_arguments, WORK_DIR, extra_env=build_environment)
 
     # Create opensource source package
     if bldinstallercommon.is_linux_platform():
