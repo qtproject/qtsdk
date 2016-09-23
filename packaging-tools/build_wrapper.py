@@ -599,7 +599,6 @@ def handle_gammaray_build(bld_command):
 ###############################
 def handle_qt_creator_build(bld_command):
     sanity_check_packaging_server(bld_command)
-    installer_version_number = os.environ['QTC_INSTALLER_VERSION']
     target_env_dir = BIN_TARGET_DIRS[bld_command.target_env]
     build_environment = dict(os.environ)
 
@@ -753,80 +752,15 @@ def handle_qt_creator_build(bld_command):
     if bldinstallercommon.is_linux_platform():
         bldinstallercommon.do_execute_sub_process([os.path.join(WORK_DIR, 'qt-creator', 'scripts', 'createSourcePackages.sh'), bld_command.qtcreator_version, 'opensource'], WORK_DIR)
 
-    # Create installers. TODO: This is just a hack until it uses the setup from the Qt installers
-    postfix = ''
-    if bld_command.qtcreator_version:
-        postfix = '-' + bld_command.qtcreator_version
-    if bld_command.target_env.find('64') != -1:
-        postfix = 'x86_64' + postfix
-    else:
-        postfix = 'x86' + postfix
-    # get ifw
-    ifw_base_url = 'http://ci-files02-hki.ci.local/packages/jenkins/enterprise/ifw/unifiedqt'
-    if bldinstallercommon.is_linux_platform():
-        if bld_command.target_env.find('64') != -1:
-            ifw_url = ifw_base_url + '/installer-framework-build-linux-x64.7z'
-        else:
-            ifw_url = ifw_base_url + '/installer-framework-build-linux-x86.7z'
-    elif bldinstallercommon.is_mac_platform():
-        ifw_url = ifw_base_url + '/installer-framework-build-mac-x64.7z'
-    else:
-        ifw_url = ifw_base_url + '/installer-framework-build-win-x86.7z'
-    ifw_download_filepath = os.path.join(WORK_DIR, os.path.basename(ifw_url))
-    ifw_path = os.path.join(WORK_DIR, 'ifw-bld')
-    bld_utils.download(ifw_url, ifw_download_filepath)
-    bldinstallercommon.do_execute_sub_process(['7z', 'x', '-y', ifw_download_filepath], WORK_DIR)
-    # installer name
-    if bldinstallercommon.is_linux_platform():
-        installer_basename_template = 'qt-creator-{0}-linux-' + postfix
-    elif bldinstallercommon.is_mac_platform():
-        installer_basename_template = 'qt-creator-{0}-mac-' + postfix
-    else: # -> windows
-        installer_basename_template = 'qt-creator-{0}-windows-' + postfix
-    common_args = ['python', '-u', os.path.join(WORK_DIR, 'qt-creator', 'scripts', 'packageIfw.py'),
-        '-v', installer_version_number]
-    if not bld_command.qtcreator_version.startswith("3.6"):
-        common_args.extend(['-d', bld_command.qtcreator_version])
-    common_args.extend([
-        '-i', ifw_path,
-        '-a', os.path.join(WORK_DIR, 'qt-creator_build/qtcreator.7z')])
-    # opensource installers
-    cmd_args = list(common_args) + [installer_basename_template.format('opensource')]
-    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR)
-    # enterprise installers
+    # Create enterprise source package
     patch_filepath = os.environ.get('INSTALLER_PATCH')
     if patch_filepath:
         bldinstallercommon.do_execute_sub_process(['git', 'am', '-3', patch_filepath],
                                                   os.path.join(WORK_DIR, 'qt-creator'))
-    cmd_args = list(common_args)
-    for plugin in additional_plugins:
-        if plugin.include_in_package:
-            cmd_args.extend(['-a', os.path.join(WORK_DIR, plugin.name + '.7z')])
-    cmd_args.append(installer_basename_template.format('enterprise'))
-    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR)
-    # mac signing and installer dmg
-    if bldinstallercommon.is_mac_platform():
-        unlock_keychain()
-        common_signing_args = ['codesign', '-s', os.environ['SIGNING_IDENTITY']]
-        signing_flags_env = os.environ.get('SIGNING_FLAGS')
-        if signing_flags_env:
-            common_signing_args.extend(signing_flags_env.split())
-        common_dmg_args = ['hdiutil', 'create', '-volname', 'Qt Creator',
-                           '-format', 'UDBZ', '-ov', '-scrub', '-size', '1g', '-verbose']
-        for license in ['opensource', 'enterprise']:
-            installer_base_filepath = os.path.join(WORK_DIR, installer_basename_template.format(license))
-            bldinstallercommon.do_execute_sub_process(common_signing_args + [installer_base_filepath + '.app'], WORK_DIR)
-            bldinstallercommon.do_execute_sub_process(common_dmg_args + ['-srcfolder', installer_base_filepath + '.app', installer_base_filepath + '.dmg'], WORK_DIR)
-        lock_keychain()
-    elif bldinstallercommon.is_win_platform():
-        sign_windows_executable('qt-creator-opensource-windows-' + postfix + '.exe', WORK_DIR, True)
-        sign_windows_executable('qt-creator-enterprise-windows-' + postfix + '.exe', WORK_DIR, True)
-
-    # Create enterprise source package
-    # THIS DEPENDS ON THE ENTERPRISE PATCHING ABOVE!!!! ('INSTALLER_PATCH' and the git am)
     if bldinstallercommon.is_linux_platform():
         bldinstallercommon.do_execute_sub_process([os.path.join(WORK_DIR, 'qt-creator', 'scripts', 'createSourcePackages.sh'), bld_command.qtcreator_version, 'enterprise'], WORK_DIR)
 
+    # Upload
     # Qt Creator directory
     qtcreator_edition_name = os.environ.get('QT_CREATOR_EDITION_NAME')
     build_id = bld_command.build_number
@@ -854,21 +788,9 @@ def handle_qt_creator_build(bld_command):
     file_upload_list = [] # pairs (source, dest), source relative to WORK_DIR, dest relative to server + dir_path
     snapshot_upload_list = [] # pairs (source, dest), source relative to server + dir_path, dest relative to snapshot server + snapshot_path
 
-    # installers
-    if bld_command.qtcreator_version.startswith("3.") or bld_command.qtcreator_version.startswith("4.0"):
-        if bldinstallercommon.is_linux_platform():
-            file_upload_list.append(('qt-creator-opensource-linux-' + postfix + '.run', ''))
-            file_upload_list.append(('qt-creator-enterprise-linux-' + postfix + '.run', ''))
-            snapshot_upload_list.append(('qt-creator-opensource-linux-' + postfix + '.run', ''))
-        elif bldinstallercommon.is_mac_platform():
-            # opensource gets simple disk image.
-            file_upload_list.append(('qt-creator_build/qt-creator.dmg', 'qt-creator-opensource-mac-' + postfix + '.dmg'))
-            file_upload_list.append(('qt-creator-enterprise-mac-' + postfix + '.dmg', ''))
-            snapshot_upload_list.append(('qt-creator-opensource-mac-' + postfix + '.dmg', ''))
-        else: # --> windows
-            file_upload_list.append(('qt-creator-opensource-windows-' + postfix + '.exe', ''))
-            file_upload_list.append(('qt-creator-enterprise-windows-' + postfix + '.exe', ''))
-            snapshot_upload_list.append(('qt-creator-opensource-windows-' + postfix + '.exe', ''))
+    # macOS opensource dmg
+    if bldinstallercommon.is_mac_platform():
+        file_upload_list.append(('qt-creator_build/qt-creator.dmg', 'qt-creator-opensource-mac-x86_64-' + bld_command.qtcreator_version + '.dmg'))
 
     # source packages
     if bldinstallercommon.is_linux_platform():

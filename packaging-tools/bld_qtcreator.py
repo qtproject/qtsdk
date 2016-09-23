@@ -214,6 +214,7 @@ if __name__ == "__main__":
     ### lets start building
 
     environment = get_common_environment(callerArguments.qt5path, callerArguments)
+    environment["INSTALL_BASENAME"] = "qt-creator"
     environment["INSTALLER_ARCHIVE"] = "qtcreator.7z"
     if callerArguments.debug:
         buildType = 'debug'
