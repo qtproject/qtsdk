@@ -51,7 +51,7 @@ archives:               58.gcc_64.qtbase,
                         58.gcc_64.qtwebview,
                         58.gcc_64.qtserialbus,
                         58.gcc_64.qtscxml,
-                        58.gcc_64.icu_561
+                        58.gcc_64.icu
 target_install_base:    /%QT_VERSION_MINOR%/gcc_64
 [58.gcc_64.qtbase]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtbase/qtbase-Linux-RHEL_7_2-GCC-Linux-RHEL_7_2-X86_64.7z
@@ -99,10 +99,10 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebview/qtwebview-Linux-
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtserialbus/qtserialbus-Linux-RHEL_7_2-GCC-Linux-RHEL_7_2-X86_64.7z
 [58.gcc_64.qtscxml]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscxml/qtscxml-Linux-RHEL_7_2-GCC-Linux-RHEL_7_2-X86_64.7z
-[58.gcc_64.icu_561]
-archive_uri:            http://download.qt.io/development_releases/prebuilt/icu/prebuilt/56.1/icu-linux-g++-Rhel6.6-x64.7z
+[58.gcc_64.icu]
+archive_uri:            http://download.qt.io/development_releases/prebuilt/icu/prebuilt/56.1/icu-linux-g++-Rhel7.2-x64.7z
 target_install_dir:     /lib
-archive_name:           icu-linux-Rhel6.6-x64.7z
+archive_name:           icu-linux-Rhel7.2-x64.7z
 
 
 # QtCharts provided as separate installable component in installer
