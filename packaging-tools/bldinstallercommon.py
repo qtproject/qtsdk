@@ -758,7 +758,7 @@ def do_execute_sub_process(args, execution_path, abort_on_fail=True, get_output=
 ###############################
 # function
 ###############################
-def clone_repository(repo_url, repo_branch_or_tag, destination_folder, full_clone = False):
+def clone_repository(repo_url, repo_branch_or_tag, destination_folder, full_clone = False, init_subrepos = False):
     print '--------------------------------------------------------------------'
     print 'Cloning repository: ' + repo_url
     print '        branch/tag: ' + repo_branch_or_tag
@@ -776,6 +776,9 @@ def clone_repository(repo_url, repo_branch_or_tag, destination_folder, full_clon
         do_execute_sub_process(cmd_args, destination_folder)
 
         cmd_args = ['git', 'checkout', 'FETCH_HEAD']
+        do_execute_sub_process(cmd_args, destination_folder)
+    if init_subrepos:
+        cmd_args = ['git', 'submodule', 'update', '--init']
         do_execute_sub_process(cmd_args, destination_folder)
 
 
