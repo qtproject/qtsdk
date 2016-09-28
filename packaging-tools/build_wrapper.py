@@ -331,7 +331,7 @@ def handle_gammaray_build(optionDict):
     # Check if the archives reside on network disk (http) or on local file system
     scheme = "" if urlparse.urlparse(pkg_base_path).scheme != "" else "file://"
     qt_base_url = scheme + pkg_base_path + '/' + qt_base_path
-    qt_postfix = CI_TARGET_POSTFIX[optionDict['TARGET_ENV']]
+    qt_postfix = os.environ['QT_POSTFIX']
     qt_module_urls = [qt_base_url + '/' + module + '/' + module + '-' + qt_postfix + '.7z'
                       for module in qt_modules]
 
@@ -512,7 +512,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     build_id = optionDict['BUILD_NUMBER']
     icu_libs = optionDict.get('ICU_LIBS') # optional
     openssl_libs = optionDict.get('OPENSSL_LIBS') # optional
-    qt_postfix = CI_TARGET_POSTFIX[optionDict['TARGET_ENV']]
+    qt_postfix = os.environ['QT_POSTFIX']
     qtcreator_temp = os.path.join(WORK_DIR, 'qt-creator_temp')
     download_temp = os.path.join(WORK_DIR, 'downloads')
 
