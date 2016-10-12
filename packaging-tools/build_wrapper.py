@@ -747,10 +747,17 @@ def handle_qt_creator_build(bld_command):
         cmd_arguments.extend(common_arguments)
         cmd_arguments.append(os.path.join(WORK_DIR, plugin.name + '.7z'))
         bldinstallercommon.do_execute_sub_process(cmd_arguments, WORK_DIR, extra_env=build_environment)
+        # source package
+        if bldinstallercommon.is_linux_platform():
+            bldinstallercommon.do_execute_sub_process(['python', '-u', os.path.join(WORK_DIR, 'qt-creator', 'scripts', 'createSourcePackages.py'),
+                                                       '-p', os.path.join(WORK_DIR, plugin.path),
+                                                       '-n', plugin.name,
+                                                       bld_command.qtcreator_version, 'enterprise'], WORK_DIR)
+
 
     # Create opensource source package
     if bldinstallercommon.is_linux_platform():
-        bldinstallercommon.do_execute_sub_process([os.path.join(WORK_DIR, 'qt-creator', 'scripts', 'createSourcePackages.sh'), bld_command.qtcreator_version, 'opensource'], WORK_DIR)
+        bldinstallercommon.do_execute_sub_process([os.path.join(WORK_DIR, 'qt-creator', 'scripts', 'createSourcePackages.py'), bld_command.qtcreator_version, 'opensource'], WORK_DIR)
 
     # Create enterprise source package
     patch_filepath = os.environ.get('INSTALLER_PATCH')
@@ -758,7 +765,7 @@ def handle_qt_creator_build(bld_command):
         bldinstallercommon.do_execute_sub_process(['git', 'am', '-3', patch_filepath],
                                                   os.path.join(WORK_DIR, 'qt-creator'))
     if bldinstallercommon.is_linux_platform():
-        bldinstallercommon.do_execute_sub_process([os.path.join(WORK_DIR, 'qt-creator', 'scripts', 'createSourcePackages.sh'), bld_command.qtcreator_version, 'enterprise'], WORK_DIR)
+        bldinstallercommon.do_execute_sub_process([os.path.join(WORK_DIR, 'qt-creator', 'scripts', 'createSourcePackages.py'), bld_command.qtcreator_version, 'enterprise'], WORK_DIR)
 
     # Upload
     # Qt Creator directory
@@ -794,7 +801,7 @@ def handle_qt_creator_build(bld_command):
 
     # source packages
     if bldinstallercommon.is_linux_platform():
-        source_package_list = glob(os.path.join(WORK_DIR, 'qt-creator', 'qt-creator-*-src-' + bld_command.qtcreator_version + '.*'))
+        source_package_list = glob(os.path.join(WORK_DIR, 'qt-creator-*-src-' + bld_command.qtcreator_version + '.*'))
         file_upload_list.extend([(fn, '') for fn in source_package_list])
 
     # installer 7z sources
