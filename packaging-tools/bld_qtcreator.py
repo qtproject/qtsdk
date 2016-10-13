@@ -62,7 +62,6 @@ def add_common_commandline_arguments(parser):
             "--qt-module http://it-dl241-hki.it.local/packages/qt/5.5.0-released/windows_vs2013_32/qt_all.7z " \
             "--sevenzippath \"C:\\Program Files\\7-Zip\" " \
             "--gitpath \"C:\\Program Files (x86)\\Git\\cmd\" "\
-            "--icu7z http://download.qt.io/development_releases/prebuilt/icu/prebuilt/msvc2010/icu_49_win_32_release.7z " \
             "--d3dcompiler7z http://download.qt.io/development_releases/prebuilt/d3dcompiler/msvc2010/D3DCompiler_43-x86.dll.7z " \
             "--opengl32sw7z http://download.qt.io/development_releases/prebuilt/llvmpipe/windows/opengl32sw-32.7z " \
             "--environment_batch \"C:\\Program Files (x86)\\Microsoft Visual Studio 10.0\\VC\\vcvarsall.bat\" " \
@@ -86,7 +85,7 @@ def add_common_commandline_arguments(parser):
     parser.add_argument('--qt-module', help="Qt module package url (.7z) needed for building",
         action='append', dest='qt_modules')
 
-    if not bldinstallercommon.is_mac_platform():
+    if bldinstallercommon.is_linux_platform():
         parser.add_argument('--icu7z', help="a file or url where it get icu libs as 7z", required=True)
 
     # if we are on windows, maybe we want some other arguments

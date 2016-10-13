@@ -555,7 +555,7 @@ def handle_gammaray_build(bld_command):
                     '--use-cmake']
         for module_url in qt_module_urls:
             cmd_args.extend(['--qt5_module_url', module_url])
-        if not bldinstallercommon.is_mac_platform():
+        if bldinstallercommon.is_linux_platform():
             cmd_args.extend(['--icu7z', bld_command.icu_libs])
         if bldinstallercommon.is_win_platform():
             cmd_args.extend(['--add-config-arg=-G', '--add-config-arg=NMake Makefiles',
@@ -656,8 +656,7 @@ def handle_qt_creator_build(bld_command):
         d3d_url = 'http://download.qt.io/development_releases/prebuilt/d3dcompiler/msvc2013/d3dcompiler_47-x86.7z'
         opengl_url = 'http://download.qt.io/development_releases/prebuilt/llvmpipe/windows/opengl32sw-32.7z'
         cmd_args.extend(['--d3dcompiler7z', d3d_url,
-                         '--opengl32sw7z', opengl_url,
-                         '--icu7z', bld_command.icu_libs])
+                         '--opengl32sw7z', opengl_url])
         if bld_command.openssl_libs:
             cmd_args.extend(['--openssl7z', bld_command.openssl_libs])
     cmd_args.extend(common_arguments)
@@ -723,7 +722,7 @@ def handle_qt_creator_build(bld_command):
         for qmake_arg in additional_qmake_arguments:
             cmd_arguments.extend(['--add-qmake-argument', qmake_arg])
 
-        if not bldinstallercommon.is_mac_platform():
+        if bldinstallercommon.is_linux_platform():
             cmd_arguments.extend(['--icu7z', bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_temp', os.path.basename(bld_command.icu_libs)))])
         if bldinstallercommon.is_win_platform():
             cmd_arguments.extend(['--d3dcompiler7z', bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_temp', os.path.basename(d3d_url))),
