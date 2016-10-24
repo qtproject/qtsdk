@@ -66,6 +66,13 @@ arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
 installer_name:             qt-opensource-mac-x64-android-ios-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-571_tests_mac_ios
 
+[release.57.offline.mac.x64.linguist_standalone]
+assign_to_machine_label:    mac-clang-10.11-x64-packaging-desktop
+arg_configurations_file:    offline_installer_jobs/5.7/mac_x64_qtlinguist
+arg_substitution_list:
+installer_name:             qt-opensource-mac-x64-linguist-standalone-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:
+
 
 ################################################################################
 ## Windows offline
@@ -125,6 +132,14 @@ arg_configurations_file:    offline_installer_jobs/5.7/win_x64_winrt_msvc2015
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
 installer_name:             qt-opensource-windows-x86-winrt-msvc2015-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-571_tests_windows_winrt_msvc2015_64bit
+
+[release.57.offline.windows.x86.linguist_standalone]
+assign_to_machine_label:    win-MinGW4.9.2-Windows7-x86
+arg_configurations_file:    offline_installer_jobs/5.7/win_x86_qtlinguist
+arg_substitution_list:
+installer_name:             qt-opensource-windows-x86-linguist-standalone-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:
+
 
 ################################################################################
 ## Linux repository
