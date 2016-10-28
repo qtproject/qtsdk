@@ -166,7 +166,9 @@ def main():
 ##############################################################
 def check_required_tools():
     """Check that valid tools are present in the build environment."""
+    print(sys.path)
     from distutils.spawn import find_executable
+    print(find_executable('7z'))
     if not find_executable('7z'):
         raise EnvironmentError("7z tool not found in the PATH")
 
