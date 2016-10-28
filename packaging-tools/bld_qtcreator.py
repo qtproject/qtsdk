@@ -273,3 +273,9 @@ if __name__ == "__main__":
     if bldinstallercommon.is_mac_platform():
         runInstallCommand('dmg', qtCreatorBuildDirectory,
             callerArguments = callerArguments, init_environment = environment)
+
+    runCommand(['python', '-u', os.path.join(qtCreatorSourceDirectory, 'scripts', 'createDevPackage.py'),
+                '--source', qtCreatorSourceDirectory, '--build', qtCreatorBuildDirectory,
+                '--verbose', '-o', os.path.join(qtCreatorBuildDirectory, 'qtcreator_dev.7z'),
+                os.path.abspath(os.path.join(qtCreatorSourceDirectory, '..', 'qt-creator_dev'))],
+                qtCreatorBuildDirectory, callerArguments = callerArguments, init_environment = environment)

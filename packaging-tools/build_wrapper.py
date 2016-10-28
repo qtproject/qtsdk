@@ -805,7 +805,9 @@ def handle_qt_creator_build(bld_command):
 
     # installer 7z sources
     file_upload_list.append(('qt-creator_build/qtcreator.7z', target_env_dir + '/qtcreator.7z'))
+    file_upload_list.append(('qt-creator_build/qtcreator_dev.7z', target_env_dir + '/qtcreator_dev.7z'))
     snapshot_upload_list.append((target_env_dir + '/qtcreator.7z', 'installer_source/' + target_env_dir + '/qtcreator.7z'))
+    snapshot_upload_list.append((target_env_dir + '/qtcreator_dev.7z', 'installer_source/' + target_env_dir + '/qtcreator_dev.7z'))
     for plugin in additional_plugins:
         file_upload_list.append((plugin.name + '.7z', target_env_dir + '/' + plugin.name + '.7z'))
 
