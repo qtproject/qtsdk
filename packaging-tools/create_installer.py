@@ -166,16 +166,8 @@ def main():
 ##############################################################
 def check_required_tools():
     """Check that valid tools are present in the build environment."""
-    found = False
-    tool_name = '7z'
-    if bldinstallercommon.is_win_platform():
-        tool_name = tool_name + '.exe'
-    for p in os.environ["PATH"].split(os.pathsep):
-        found = os.path.exists(os.path.join(p, tool_name))
-        if found:
-            break
-
-    if not found:
+    from distutils.spawn import find_executable
+    if not find_executable('7z'):
         raise EnvironmentError("7z tool not found in the PATH")
 
 
