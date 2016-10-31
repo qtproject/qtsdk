@@ -152,7 +152,7 @@ class IfwOptions:
     def __init__(self,
                  qt_source_package_uri,
                  qt_configure_options,
-                 qt_installer_framework_url,
+                 qt_installer_framework_uri,
                  qt_installer_framework_branch,
                  qt_installer_framework_qmake_args,
                  openssl_dir,
@@ -167,7 +167,8 @@ class IfwOptions:
         self.installer_framework_build_dir              = os.path.join(ROOT_DIR, 'ifw-bld')
         self.installer_framework_pkg_dir                = os.path.join(ROOT_DIR, 'ifw-pkg')
         self.installer_framework_target_dir             = os.path.join(ROOT_DIR, 'ifw-target')
-        self.qt_installer_framework_url                 = qt_installer_framework_url
+        self.qt_installer_framework_uri                 = qt_installer_framework_uri
+        self.qt_installer_framework_uri_saveas          = os.path.join(ROOT_DIR, os.path.basename(self.qt_installer_framework_uri))
         self.qt_installer_framework_branch              = qt_installer_framework_branch
         self.qt_installer_framework_qmake_args          = qt_installer_framework_qmake_args
         self.openssl_dir                                = openssl_dir
@@ -246,7 +247,7 @@ class IfwOptions:
         print('qt_configure_options:                    {0}'.format(self.qt_configure_options))
         print('qt_qmake_bin:                            {0}'.format(self.qt_qmake_bin))
         print('qt_configure_bin:                        {0}'.format(self.qt_configure_bin))
-        print('qt_installer_framework_url:              {0}'.format(self.qt_installer_framework_url))
+        print('qt_installer_framework_uri:              {0}'.format(self.qt_installer_framework_uri))
         print('qt_installer_framework_branch:           {0}'.format(self.qt_installer_framework_branch))
         print('qt_installer_framework_qmake_args:       {0}'.format(self.qt_installer_framework_qmake_args))
         print('openssl_dir:                             {0}'.format(self.openssl_dir))
@@ -298,30 +299,40 @@ def prepare_qt_sources(options):
     if options.incremental_mode and os.path.exists(options.qt_source_dir):
         return
     print('--------------------------------------------------------------------')
-    print('Fetching Qt src package from: {0}'.format(options.qt_source_package_uri))
-    if not os.path.isfile(options.qt_source_package_uri_saveas):
-        if not bldinstallercommon.is_content_url_valid(options.qt_source_package_uri):
-            print('*** Qt src package url is invalid! Abort!')
+    print('Prepare Qt src package: {0}'.format(options.qt_source_package_uri))
+    prepare_src_package(options.qt_source_package_uri, options.qt_source_package_uri_saveas, options.qt_source_dir)
+
+    if bldinstallercommon.is_win_platform():
+        patch_win32_mkspecs(os.path.join(options.qt_source_dir, "qtbase", "mkspecs"))
+
+
+###############################
+# function
+###############################
+def prepare_src_package(src_pkg_uri, src_pkg_saveas, destination_dir):
+    print('Fetching Src package from: {0}'.format(src_pkg_uri))
+    if not os.path.isfile(src_pkg_saveas):
+        if not bldinstallercommon.is_content_url_valid(src_pkg_uri):
+            print('*** Src package uri is invalid! Abort!')
             sys.exit(-1)
-        bldinstallercommon.retrieve_url(options.qt_source_package_uri, options.qt_source_package_uri_saveas)
+        bldinstallercommon.retrieve_url(src_pkg_uri, src_pkg_saveas)
     else:
-        print('Found old local package, using that: {0}'.format(options.qt_source_package_uri_saveas))
+        print('Found old local package, using that: {0}'.format(src_pkg_saveas))
     print('Done')
     print('--------------------------------------------------------------------')
-    bldinstallercommon.create_dirs(options.qt_source_dir)
-    bldinstallercommon.extract_file(options.qt_source_package_uri_saveas, options.qt_source_dir)
-    l = os.listdir(options.qt_source_dir)
+    bldinstallercommon.create_dirs(destination_dir)
+    bldinstallercommon.extract_file(src_pkg_saveas, destination_dir)
+    l = os.listdir(destination_dir)
     items = len(l)
     if items == 1:
         dir_name = l[0]
-        full_dir_name = options.qt_source_dir + os.sep + dir_name
-        bldinstallercommon.move_tree(full_dir_name, options.qt_source_dir)
+        full_dir_name = destination_dir + os.sep + dir_name
+        bldinstallercommon.move_tree(full_dir_name, destination_dir)
         bldinstallercommon.remove_tree(full_dir_name)
     else:
         print('*** Invalid dir structure encountered?!')
         sys.exit(-1)
-    if bldinstallercommon.is_win_platform():
-        patch_win32_mkspecs(os.path.join(options.qt_source_dir, "qtbase", "mkspecs"))
+
 
 ###############################
 # function
@@ -390,8 +401,12 @@ def prepare_installer_framework(options):
     print('Prepare Installer Framework source')
     #create dirs
     bldinstallercommon.create_dirs(options.installer_framework_build_dir)
-    # clone repos
-    bldinstallercommon.clone_repository(options.qt_installer_framework_url, options.qt_installer_framework_branch, options.installer_framework_source_dir)
+    if options.qt_installer_framework_uri.endswith('.git'):
+        # clone repos
+        bldinstallercommon.clone_repository(options.qt_installer_framework_uri, options.qt_installer_framework_branch, options.installer_framework_source_dir)
+    else:
+        # fetch src package
+        prepare_src_package(options.qt_installer_framework_uri, options.qt_installer_framework_uri_saveas, options.installer_framework_source_dir)
 
 
 ###############################
@@ -520,6 +535,8 @@ def clean_build_environment(options):
         bldinstallercommon.remove_tree(options.qt_build_dir)
     if os.path.isfile(options.qt_source_package_uri_saveas):
         os.remove(options.qt_source_package_uri_saveas)
+    if os.path.isfile(options.qt_installer_framework_uri_saveas):
+        os.remove(options.qt_installer_framework_uri_saveas)
 
 
 ###############################
@@ -637,7 +654,7 @@ def setup_argument_parser():
 
     parser.add_argument('--qt_archive_uri', help="Qt source package for Qt Installer-Framework", required=False)
     parser.add_argument('--qt_configure_options', help="Configure options for (static) Qt build", required=False)
-    parser.add_argument('--ifw_url', help="Git URL for Qt Installer-Framework", required=False, default=IfwOptions.default_qt_installer_framework_url)
+    parser.add_argument('--ifw_uri', help="URI for Qt Installer-Framework", required=False, default=IfwOptions.default_qt_installer_framework_url)
     parser.add_argument('--ifw_branch', help="Git branch for Qt Installer-Framework", required=False)
     parser.add_argument('--ifw_qmake_args', help="Qmake arguments for Installer-Framework build ", required=False, default=IfwOptions.default_qt_installer_framework_qmake_args)
     parser.add_argument('--product_key_checker_pri', help="Custom product key checker (.pri file)", required=False)
@@ -669,7 +686,7 @@ if __name__ == "__main__":
     # create options object
     OPTIONS = IfwOptions(qt_src,
                          qt_configure_options,
-                         CARGS.ifw_url,
+                         CARGS.ifw_uri,
                          ifw_branch,
                          ifw_qmake_args,
                          CARGS.openssl_dir,
