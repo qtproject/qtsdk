@@ -337,7 +337,7 @@ def lock_keychain():
 ###############################
 def sign_mac_executable(file_path, working_dir, abort_on_fail):
     s_arg = 'Developer ID Application: The Qt Company Oy'
-    cmd_args = ['codesign', '-r', '/Users/qt/csreq_qt_company.txt', '-s', s_arg, file_path]
+    cmd_args = ['codesign', '--verbose=3', '-r', '/Users/qt/csreq_qt_company.txt', '-s', s_arg, file_path]
     bldinstallercommon.do_execute_sub_process(cmd_args, working_dir, abort_on_fail)
 
 
