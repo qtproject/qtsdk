@@ -336,6 +336,7 @@ def lock_keychain():
 # sign windows executable
 ###############################
 def sign_mac_executable(file_path, working_dir, abort_on_fail):
+    unlock_keychain()
     s_arg = 'Developer ID Application: The Qt Company Oy'
     cmd_args = ['codesign', '--verbose=3', '-r', '/Users/qt/csreq_qt_company.txt', '-s', s_arg, file_path]
     bldinstallercommon.do_execute_sub_process(cmd_args, working_dir, abort_on_fail)
@@ -922,7 +923,6 @@ def replace_latest_successful_installer(bld_command, installer_name, installer_n
 ###############################
 def sign_installer(installer_output_dir, installer_name, installer_name_base):
     if installer_name.endswith(".dmg"):
-        unlock_keychain()
         sign_mac_executable(installer_name_base + '.app', installer_output_dir, True)
         disk_image_filepath = os.path.join(installer_output_dir, installer_name_base) + '.dmg'
         cmd_args = ['hdiutil', 'create', '-srcfolder', os.path.join(installer_output_dir, installer_name_base) + '.app', '-volname', installer_name_base, '-format', 'UDBZ', disk_image_filepath, '-ov', '-scrub', '-size', '4g']
