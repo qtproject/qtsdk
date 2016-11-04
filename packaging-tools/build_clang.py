@@ -56,7 +56,10 @@ def get_clang(base_path, llvm_revision, clang_revision):
     bld_utils.runCommand(['git', 'clone', 'http://llvm.org/git/clang.git'], os.path.join(base_path, 'llvm', 'tools'))
     bld_utils.runCommand(['git', 'checkout', clang_revision], os.path.join(base_path, 'llvm', 'tools', 'clang'))
 
-def get_profile_data(profile_data_dir, profile_data_url):
+def get_profile_data(profile_data_dir, profile_data_url, generate_instrumented):
+    if generate_instrumented:
+        return profile_data_dir
+
     if profile_data_url:
         if os.path.exists(profile_data_dir):
             shutil.rmtree(profile_data_dir)
@@ -91,9 +94,10 @@ def cmake_generator(toolchain):
     else:
         return 'Unix Makefiles'
 
-def profile_data_flags(toolchain, profile_data_dir):
+def profile_data_flags(toolchain, profile_data_dir, generate_instrumented):
     if profile_data_dir and is_mingw_toolchain(toolchain):
-        compiler_flags = '-fprofile-use=' + profile_data_dir
+        profile_flag = '-fprofile-generate' if generate_instrumented else '-fprofile-use'
+        compiler_flags = profile_flag + '=' + profile_data_dir
         linker_flags = compiler_flags + ' -static-libgcc -static-libstdc++ -static'
         return [
             '-DCMAKE_C_FLAGS=' + compiler_flags,
@@ -118,19 +122,38 @@ def rtti_flags(toolchain):
         return ['-DLLVM_ENABLE_RTTI:BOOL=OFF']
     return ['-DLLVM_ENABLE_RTTI:BOOL=ON']
 
-def make_command(toolchain):
-    if bldinstallercommon.is_win_platform():
-        return ['mingw32-make'] if is_mingw_toolchain(toolchain) else ['jom']
-    else:
-        return ['make']
+def make_targets(toolchain, generate_instrumented):
+    if is_mingw_toolchain(toolchain) and generate_instrumented:
+        # Instrumented binaries are quite big, so generate only the ones we need.
+        return ['libclang']
+    return []
 
-def install_command(toolchain):
+def make_command(toolchain, generate_instrumented):
     if bldinstallercommon.is_win_platform():
-        return ['mingw32-make', 'install'] if is_mingw_toolchain(toolchain) else ["nmake", "install"]
+        command = ['mingw32-make'] if is_mingw_toolchain(toolchain) else ['jom']
     else:
-        return ["make", "-j1", "install"]
+        command = ['make']
 
-def cmake_command(toolchain, src_path, build_path, install_path, profile_data_dir, bitness, build_type):
+    return command + make_targets(toolchain, generate_instrumented)
+
+def install_targets(toolchain, generate_instrumented):
+    if is_mingw_toolchain(toolchain) and generate_instrumented:
+        # Include the necessary headers for two reasons
+        #  1) The package can be used right way as LLVM_INSTALL_DIR.
+        #  2) Avoid training with manually provided and possible wrong versions
+        #     of the headers.
+        return ['install-libclang', 'install-libclang-headers', 'install-clang-headers']
+    return ['install']
+
+def install_command(toolchain, generate_instrumented):
+    if bldinstallercommon.is_win_platform():
+        command = ['mingw32-make'] if is_mingw_toolchain(toolchain) else ["nmake"]
+    else:
+        command = ["make", "-j1"]
+
+    return command + install_targets(toolchain, generate_instrumented)
+
+def cmake_command(toolchain, src_path, build_path, install_path, profile_data_dir, generate_instrumented, bitness, build_type):
     command = ['cmake',
                '-DCMAKE_INSTALL_PREFIX=' + install_path,
                '-G',
@@ -138,20 +161,20 @@ def cmake_command(toolchain, src_path, build_path, install_path, profile_data_di
                '-DCMAKE_BUILD_TYPE=' + build_type]
     command.extend(bitness_flags(bitness))
     command.extend(rtti_flags(toolchain))
-    command.extend(profile_data_flags(toolchain, profile_data_dir))
+    command.extend(profile_data_flags(toolchain, profile_data_dir, generate_instrumented))
     command.append(src_path)
 
     return command
 
-def build_clang(toolchain, src_path, build_path, install_path, profile_data_path, bitness=64, environment=None, build_type='Release'):
+def build_clang(toolchain, src_path, build_path, install_path, profile_data_path, generate_instrumented, bitness=64, environment=None, build_type='Release'):
     if build_path and not os.path.lexists(build_path):
         os.makedirs(build_path)
 
-    cmake_cmd = cmake_command(toolchain, src_path, build_path, install_path, profile_data_path, bitness, build_type)
+    cmake_cmd = cmake_command(toolchain, src_path, build_path, install_path, profile_data_path, generate_instrumented, bitness, build_type)
 
     bldinstallercommon.do_execute_sub_process(cmake_cmd, build_path, extra_env=environment)
-    bldinstallercommon.do_execute_sub_process(make_command(toolchain), build_path, extra_env=environment)
-    bldinstallercommon.do_execute_sub_process(install_command(toolchain), build_path, extra_env=environment)
+    bldinstallercommon.do_execute_sub_process(make_command(toolchain, generate_instrumented), build_path, extra_env=environment)
+    bldinstallercommon.do_execute_sub_process(install_command(toolchain, generate_instrumented), build_path, extra_env=environment)
 
 def package_clang(install_path, result_file_path):
     (basepath, dirname) = os.path.split(install_path)
@@ -204,14 +227,16 @@ def main():
     environment = build_environment(toolchain, bitness)
     profile_data_url = profile_data(toolchain)
     profile_data_path = os.path.join(build_path, 'profile_data')
-    result_file_path = os.path.join(base_path, 'libclang-' + branch + '-' + os.environ['CLANG_PLATFORM'] + '.7z')
+    generate_instrumented = os.environ.get('GENERATE_INSTRUMENTED_BINARIES') == '1'
+    instrumented_tag = '-instrumented' if generate_instrumented else ''
+    result_file_path = os.path.join(base_path, 'libclang-' + branch + '-' + os.environ['CLANG_PLATFORM'] + instrumented_tag + '.7z')
     remote_path = (os.environ['PACKAGE_STORAGE_SERVER_USER'] + '@' + os.environ['PACKAGE_STORAGE_SERVER'] + ':'
                    + os.environ['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + os.environ['CLANG_UPLOAD_SERVER_PATH'])
 
     get_clang(base_path, os.environ['LLVM_REVISION'], os.environ['CLANG_REVISION'])
     profile_data_path = get_profile_data(profile_data_path, profile_data_url)
     apply_patches(clang_src_path, sorted(glob.glob(os.path.join(patch_src_path, '*'))))
-    build_clang(toolchain, src_path, build_path, install_path, profile_data_path, bitness, environment, build_type='Release')
+    build_clang(toolchain, src_path, build_path, install_path, profile_data_path, generate_instrumented, bitness, environment, build_type='Release')
     package_clang(install_path, result_file_path)
     upload_clang(result_file_path, remote_path)
 
