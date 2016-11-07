@@ -234,7 +234,7 @@ def main():
                    + os.environ['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + os.environ['CLANG_UPLOAD_SERVER_PATH'])
 
     get_clang(base_path, os.environ['LLVM_REVISION'], os.environ['CLANG_REVISION'])
-    profile_data_path = get_profile_data(profile_data_path, profile_data_url)
+    profile_data_path = get_profile_data(profile_data_path, profile_data_url, generate_instrumented)
     apply_patches(clang_src_path, sorted(glob.glob(os.path.join(patch_src_path, '*'))))
     build_clang(toolchain, src_path, build_path, install_path, profile_data_path, generate_instrumented, bitness, environment, build_type='Release')
     package_clang(install_path, result_file_path)
