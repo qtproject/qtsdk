@@ -122,22 +122,23 @@ def rtti_flags(toolchain):
         return ['-DLLVM_ENABLE_RTTI:BOOL=OFF']
     return ['-DLLVM_ENABLE_RTTI:BOOL=ON']
 
-def make_targets(toolchain, generate_instrumented):
-    if is_mingw_toolchain(toolchain) and generate_instrumented:
-        # Instrumented binaries are quite big, so generate only the ones we need.
+def make_targets(toolchain):
+    if is_mingw_toolchain(toolchain):
+        # The mingw build is only used for generation of an optimized libclang.dll.
         return ['libclang']
     return []
 
-def make_command(toolchain, generate_instrumented):
+def make_command(toolchain):
     if bldinstallercommon.is_win_platform():
         command = ['mingw32-make'] if is_mingw_toolchain(toolchain) else ['jom']
     else:
         command = ['make']
 
-    return command + make_targets(toolchain, generate_instrumented)
+    return command + make_targets(toolchain)
 
-def install_targets(toolchain, generate_instrumented):
-    if is_mingw_toolchain(toolchain) and generate_instrumented:
+def install_targets(toolchain):
+    if is_mingw_toolchain(toolchain):
+        # The mingw build is only used for generation of an optimized libclang.dll.
         # Include the necessary headers for two reasons
         #  1) The package can be used right way as LLVM_INSTALL_DIR.
         #  2) Avoid training with manually provided and possible wrong versions
@@ -145,13 +146,13 @@ def install_targets(toolchain, generate_instrumented):
         return ['install-libclang', 'install-libclang-headers', 'install-clang-headers']
     return ['install']
 
-def install_command(toolchain, generate_instrumented):
+def install_command(toolchain):
     if bldinstallercommon.is_win_platform():
         command = ['mingw32-make'] if is_mingw_toolchain(toolchain) else ["nmake"]
     else:
         command = ["make", "-j1"]
 
-    return command + install_targets(toolchain, generate_instrumented)
+    return command + install_targets(toolchain)
 
 def cmake_command(toolchain, src_path, build_path, install_path, profile_data_dir, generate_instrumented, bitness, build_type):
     command = ['cmake',
@@ -173,8 +174,8 @@ def build_clang(toolchain, src_path, build_path, install_path, profile_data_path
     cmake_cmd = cmake_command(toolchain, src_path, build_path, install_path, profile_data_path, generate_instrumented, bitness, build_type)
 
     bldinstallercommon.do_execute_sub_process(cmake_cmd, build_path, extra_env=environment)
-    bldinstallercommon.do_execute_sub_process(make_command(toolchain, generate_instrumented), build_path, extra_env=environment)
-    bldinstallercommon.do_execute_sub_process(install_command(toolchain, generate_instrumented), build_path, extra_env=environment)
+    bldinstallercommon.do_execute_sub_process(make_command(toolchain), build_path, extra_env=environment)
+    bldinstallercommon.do_execute_sub_process(install_command(toolchain), build_path, extra_env=environment)
 
 def package_clang(install_path, result_file_path):
     (basepath, dirname) = os.path.split(install_path)
