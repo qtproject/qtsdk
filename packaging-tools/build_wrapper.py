@@ -428,6 +428,14 @@ def parseQtCreatorPlugins(pkgConfFile):
 # handle_qt_creator_build
 ###############################
 def handle_qt_creator_build(optionDict, qtCreatorPlugins):
+    def get_optimized_libclang_dll(optionDict, pkg_base_path):
+        url = (pkg_base_path + '/' + optionDict['CLANG_FILEBASE'] + '-windows-mingw.7z')
+        extraction_path = os.path.join(WORK_DIR, 'qt-creator_temp_optimizedlibclang')
+        download_filepath = os.path.join(extraction_path, 'libclang.7z')
+        bld_utils.download(url, download_filepath)
+        bldinstallercommon.extract_file(download_filepath, extraction_path)
+        return os.path.join(extraction_path, 'libclang', 'bin', 'libclang.dll')
+
     target_env_dir = BIN_TARGET_DIRS[optionDict['TARGET_ENV']]
     build_environment = dict(os.environ)
 
@@ -485,6 +493,10 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     bld_utils.download(clang_url, clang_download_filepath)
     bldinstallercommon.extract_file(clang_download_filepath, clang_target_path)
     build_environment['LLVM_INSTALL_DIR'] = os.path.join(WORK_DIR, 'libclang')
+    if bldinstallercommon.is_win_platform() and not '4.1' in qtcreator_version:
+        optimized_libclang_dll = get_optimized_libclang_dll(optionDict, pkg_base_path)
+        target_libclang_dll = os.path.join(build_environment['LLVM_INSTALL_DIR'], 'bin', 'libclang.dll')
+        shutil.copyfile(optimized_libclang_dll, target_libclang_dll)
 
     # Qt Creator build depends on pre-built Qt binary packages.
     # Define the exact archive locations for each required module.
