@@ -183,11 +183,12 @@ def handle_ifw_build(optionDict):
 
     ifw_qmake_args = IfwOptions.default_qt_installer_framework_qmake_args
     # check for debug build
-    if optionDict['IFW_DEBUG_BUILD']:
+    ifw_debug_build = optionDict.get('IFW_DEBUG_BUILD', '')
+    if ifw_debug_build in ['yes', 'true', '1']:
         qt_configure_options = qt_configure_options.replace('-release', '-debug')
         ifw_qmake_args = ' '.join(ifw_qmake_args).replace('-config release', '-config debug').split()
     # extra qt configure options for qt/ifw build
-    if optionDict['IFW_QT_EXTRA_CONFIGURE_OPTIONS']:
+    if 'IFW_QT_EXTRA_CONFIGURE_OPTIONS' in optionDict:
         qt_configure_options += ' ' + optionDict['IFW_QT_EXTRA_CONFIGURE_OPTIONS']
     # Product Key Checker
     product_key_checker_pri = ''
@@ -206,14 +207,15 @@ def handle_ifw_build(optionDict):
                                  product_key_checker_pri,
                                  False)
     # build ifw tools
-    bld_ifw_installer = True if optionDict['CREATE_IFW_INSTALLER'] else False
+    bld_ifw_installer = True if 'CREATE_IFW_INSTALLER' in optionDict else False
     bld_ifw_tools.build_ifw(ifw_bld_options, bld_ifw_installer)
 
     ## create destination dirs on network disk
     # internal
     create_remote_dirs(optionDict, optionDict['PACKAGE_STORAGE_SERVER_ADDR'], ifw_dest_dir)
     # public
-    if optionDict['LICENSE'] == 'opensource' and optionDict['IFW_EXPORT_SNAPSHOT'] == 'yes':
+    ifw_snapshot_export = optionDict.get('IFW_EXPORT_SNAPSHOT', '')
+    if optionDict['LICENSE'] == 'opensource' and ifw_snapshot_export in ['yes', 'true', '1']:
         # public server address and path
         ext_server_base_url  = optionDict['EXT_SERVER_BASE_URL']
         ext_server_base_path = optionDict['EXT_SERVER_BASE_PATH']
@@ -249,7 +251,7 @@ def handle_ifw_build(optionDict):
             cmd_args = ['rsync', '-r', './', optionDict['PACKAGE_STORAGE_SERVER_ADDR'] + ':' + optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + optionDict['LICENSE'] + '/ifw/' + ifw_dest_dir_name + '/']
         bldinstallercommon.do_execute_sub_process(cmd_args, artifacts_dir)
     # Copy ifw .7z files to public server
-    if optionDict['LICENSE'] == 'opensource' and optionDict['IFW_EXPORT_SNAPSHOT'] == 'yes':
+    if optionDict['LICENSE'] == 'opensource' and ifw_snapshot_export in ['yes', 'true', '1']:
         cmd_args_copy_ifw_pkg = [optionDict['SSH_COMMAND'], optionDict['PACKAGE_STORAGE_SERVER_ADDR']]
         cmd_args_copy_ifw_ext = cmd_args_copy_ifw_pkg + ['scp', ifw_dest_dir + '/' + 'installer-framework-build*.7z', ext_server_base_url + ':' + ext_dest_dir]
         bldinstallercommon.do_execute_sub_process(cmd_args_copy_ifw_ext, SCRIPT_ROOT_DIR)
