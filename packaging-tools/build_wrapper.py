@@ -555,13 +555,14 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         plugin_dependencies = ['licensechecker']
     additional_plugins.extend([Plugin(name='vxworks-qtcreator-plugin', path='vxworks-qtcreator-plugin', dependencies=plugin_dependencies)])
     additional_plugins.extend([Plugin(name='isoiconbrowser', path='qtquickdesigner', dependencies=plugin_dependencies)])
-    additional_plugins.extend([Plugin(name='perfparser', path='perfparser')])
-    additional_qmake_arguments.extend(['PERFPARSER_BUNDLED_ELFUTILS=true',
-                                       'PERFPARSER_APP_DESTDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'libexec', 'qtcreator'),
-                                       'PERFPARSER_ELFUTILS_DESTDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'lib', 'qtcreator'),
-                                       'PERFPARSER_APP_INSTALLDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'libexec', 'qtcreator'),
-                                       'PERFPARSER_ELFUTILS_INSTALLDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'lib', 'qtcreator')
-                                       ])
+    if bldinstallercommon.is_linux_platform():
+        additional_plugins.extend([Plugin(name='perfparser', path='perfparser')])
+        additional_qmake_arguments.extend(['PERFPARSER_BUNDLED_ELFUTILS=true',
+                                           'PERFPARSER_APP_DESTDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'libexec', 'qtcreator'),
+                                           'PERFPARSER_ELFUTILS_DESTDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'lib', 'qtcreator'),
+                                           'PERFPARSER_APP_INSTALLDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'libexec', 'qtcreator'),
+                                           'PERFPARSER_ELFUTILS_INSTALLDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'lib', 'qtcreator')
+                                           ])
     if not bldinstallercommon.is_mac_platform():
         # download and extract
         #for item in [gammaray_url, kdsme_url, graphviz_url]:
