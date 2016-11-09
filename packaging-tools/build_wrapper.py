@@ -406,6 +406,8 @@ PluginConf = collections.namedtuple('PluginConf', ['git_url', 'branch_or_tag', '
 def parseQtCreatorPlugins(pkgConfFile):
     """Parse available Qt Creator plugins from configuration file"""
     pluginList = []
+    if not pkgConfFile:
+        return pluginList
     pluginOptions = optionparser.getPkgOptions(pkgConfFile)
     sectionName = "QtCreator.Build.Plugin"
     keyName = "plugins"
