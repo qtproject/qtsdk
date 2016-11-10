@@ -643,16 +643,16 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                                        qtcreator_version, 'enterprise'], WORK_DIR)
 
 
-    # Create opensource source package
     if bldinstallercommon.is_linux_platform():
-        bldinstallercommon.do_execute_sub_process([os.path.join(WORK_DIR, 'qt-creator', 'scripts', 'createSourcePackages.py'), qtcreator_version, 'opensource'], WORK_DIR)
-
-    # Create enterprise source package
-    if installer_patch:
-        bldinstallercommon.do_execute_sub_process(['git', 'am', '-3', installer_patch],
-                                                  os.path.join(WORK_DIR, 'qt-creator'))
-    if bldinstallercommon.is_linux_platform():
-        bldinstallercommon.do_execute_sub_process([os.path.join(WORK_DIR, 'qt-creator', 'scripts', 'createSourcePackages.py'), qtcreator_version, 'enterprise'], WORK_DIR)
+        # Create opensource source package
+        bldinstallercommon.do_execute_sub_process([os.path.join(WORK_DIR, 'qt-creator', 'scripts', 'createSourcePackages.py'),
+                                                   qtcreator_version, 'opensource'], WORK_DIR)
+        # Create enterprise source package
+        if installer_patch:
+            bldinstallercommon.do_execute_sub_process(['git', 'am', '-3', installer_patch],
+                                                      os.path.join(WORK_DIR, 'qt-creator'))
+            bldinstallercommon.do_execute_sub_process([os.path.join(WORK_DIR, 'qt-creator', 'scripts', 'createSourcePackages.py'),
+                                                       qtcreator_version, 'enterprise'], WORK_DIR)
 
     # Upload
     # Qt Creator directory
