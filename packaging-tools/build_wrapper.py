@@ -697,7 +697,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     snapshot_upload_list.append((target_env_dir + '/qtcreator_dev.7z', 'installer_source/' + target_env_dir + '/qtcreator_dev.7z'))
     for plugin in additional_plugins:
         plugin_name = plugin.name + '.7z'
-        if os.path.isfile(plugin_name):
+        if os.path.isfile(os.path.join(WORK_DIR, plugin_name)):
             file_upload_list.append((plugin_name, target_env_dir + '/' + plugin_name))
 
     # upload files
