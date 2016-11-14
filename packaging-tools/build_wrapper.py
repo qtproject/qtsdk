@@ -549,7 +549,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     Plugin.__new__.__defaults__ = ([], [], [], True) # 'name' and 'path' are mandatory
     additional_plugins = []
 
-    if os.path.isdir("licensechecker"):
+    if os.path.isdir(os.path.join(WORK_DIR, "licensechecker")):
         additional_plugins.extend([Plugin(name='licensechecker', path='licensechecker')])
         additional_qmake_arguments = ['CONFIG+=licensechecker']
         plugin_dependencies = ['licensechecker']
