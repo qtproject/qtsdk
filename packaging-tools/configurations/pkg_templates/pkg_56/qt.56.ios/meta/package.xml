@@ -7,7 +7,7 @@
     <Dependencies>qt.tools.qtcreator, qt.56.doc, qt.56.examples</Dependencies>
     <Default>true</Default>
     <Script>installscript.qs</Script>   <!-- File name of a script being loaded - optional. -->
-    <SortingPriority>100</SortingPriority> <!-- Priority of this component when visible in the tree. Highest priority number is on top. -->
+    <SortingPriority>699</SortingPriority> <!-- Priority of this component when visible in the tree. Highest priority number is on top. -->
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
 
