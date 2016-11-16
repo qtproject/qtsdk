@@ -193,7 +193,7 @@ def handle_ifw_build(optionDict):
     # Product Key Checker
     product_key_checker_pri = ''
     if optionDict['LICENSE'] == 'enterprise':
-        product_key_checker_pri = optionDict['PRODUCT_KEY_CHECKER_PRI']
+        product_key_checker_pri = optionDict.get('PRODUCT_KEY_CHECKER_PRI', '')
         if product_key_checker_pri:
             temp = bldinstallercommon.locate_file(PKG_NODE_ROOT, product_key_checker_pri)
             product_key_checker_pri = temp if temp else product_key_checker_pri
