@@ -987,6 +987,90 @@ def handle_icu_build(optionDict):
             bldinstallercommon.do_execute_sub_process(cmd_args, local_archives_dir)
 
 
+###############################
+# initialize_extra_module_build
+###############################
+def initialize_extra_module_build_src(optionDict):
+    # initialize extra module src, doc and example directory hierarchy
+    module_name = optionDict['MODULE_NAME']
+    module_version = optionDict['MODULE_VERSION']
+    remote_dest_dir_base = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + optionDict['LICENSE'] + '/' + module_name + '/' + module_version
+    remote_dest_dir = remote_dest_dir_base + '/' + optionDict['BUILD_NUMBER']
+    remote_dest_dir_latest = remote_dest_dir_base + '/' + 'latest'
+    remote_directories = []
+    for dir_name in ['src', 'doc', 'examples']:
+        remote_directories.append(remote_dest_dir + '/' + dir_name)
+    initialize_extra_module_build(optionDict, remote_directories, remote_dest_dir, remote_dest_dir_latest)
+
+
+######################################
+# initialize_extra_module_build
+######################################
+def initialize_extra_module_build(optionDict, remote_directories, remote_snapshot_base_dir, remote_snapshot_latest_link):
+    for remote_dir in remote_directories:
+        create_remote_dirs(optionDict, optionDict['PACKAGE_STORAGE_SERVER_ADDR'], remote_dir)
+    # Update latest link
+    update_latest_link(optionDict, remote_snapshot_base_dir, remote_snapshot_latest_link)
+
+
+###############################
+# build_extra_module_src_pkg
+###############################
+def build_extra_module_src_pkg(optionDict):
+    import build_doc
+    module_name = optionDict['MODULE_NAME']
+    module_version = optionDict['MODULE_VERSION']
+    module_sha1 = optionDict.get('MODULE_SHA1', '')
+    module_git_repo = optionDict['GIT_MODULE_REPO']
+    module_git_repo_branch = optionDict['GIT_MODULE_REPO_BRANCH']
+    skip_syncqt = optionDict.get('SKIP_SYNCQT', '')
+    latest_extra_module_dir = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + optionDict['LICENSE'] + '/' + module_name + '/' + module_version + '/' + 'latest'
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    #create dir
+    module_dir = os.path.join(WORK_DIR, module_name)
+    bldinstallercommon.create_dirs(module_dir)
+    #clone repo
+    shutil.rmtree(module_dir, ignore_errors=True)
+    bldinstallercommon.clone_repository(module_git_repo, module_git_repo_branch, module_dir, True)
+    if module_sha1:
+        cmd_args = ['git', 'checkout', module_sha1]
+        bldinstallercommon.do_execute_sub_process(cmd_args, module_dir)
+    #make src package
+    cmd_args = [os.path.join(script_dir, 'mksrc.sh'), '-v', module_version, '-l', optionDict['LICENSE'], '--single-module']
+    if skip_syncqt:
+        cmd_args += ['--skip-syncqt']
+    bldinstallercommon.do_execute_sub_process(cmd_args, module_dir)
+    #extract examples
+    cmd_args = [os.path.join(script_dir, 'extract_examples.sh'), '-n', module_name, '-l', optionDict['LICENSE'], '-v', module_version, '-u', optionDict['PACKAGE_STORAGE_SERVER_USER'], '-s', optionDict['PACKAGE_STORAGE_SERVER'], '-d', optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'], '-b', optionDict['BUILD_NUMBER']]
+    bldinstallercommon.do_execute_sub_process(cmd_args, module_dir)
+    #Copy src package to the server
+    extra_module_src_dir = optionDict['PACKAGE_STORAGE_SERVER_USER'] + '@' + optionDict['PACKAGE_STORAGE_SERVER'] + ':' + optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + optionDict['LICENSE'] + '/' + module_name + '/' + module_version
+    src_pkg = False
+    file_list = os.listdir(module_dir)
+    for file_name in file_list:
+        if file_name.startswith(module_name + '-' + optionDict['LICENSE'] + '-src-' + module_version):
+            src_pkg = True
+            cmd_args = ['scp', file_name, extra_module_src_dir + '/latest/src']
+            bldinstallercommon.do_execute_sub_process(cmd_args, module_dir)
+    # handle doc package creation, this may fail as some extra modules are missing docs
+    try:
+        build_doc.handle_module_doc_build(optionDict)
+        # copy archived doc files to network drive if exists, we use Linux only to generate doc archives
+        local_docs_dir = os.path.join(SCRIPT_ROOT_DIR, 'doc_archives')
+        if os.path.exists(local_docs_dir):
+            # create remote doc dir
+            doc_target_dir = optionDict['PACKAGE_STORAGE_SERVER_ADDR'] + ':' + latest_extra_module_dir + '/' + 'doc'
+            remote_copy_archives(doc_target_dir, local_docs_dir)
+    except Exception:
+        print('Failed to build doc package for: {0}'.format(module_git_repo))
+        pass
+
+    # if we got here, we have at least the src packages, update symlink latest_successful -> latest
+    if src_pkg:
+        latest_successful_dir = latest_extra_module_dir + '_successful'
+        update_latest_link(optionDict, latest_extra_module_dir, latest_successful_dir)
+
+
 def initPkgOptions(args):
     def mergeTwoDicts(x, y):
         """Given two dicts, merge them into a new dict as a shallow copy."""
@@ -1066,17 +1150,20 @@ def initPkgOptions(args):
 if __name__ == '__main__':
     bldinstallercommon.init_common_module(SCRIPT_ROOT_DIR)
     # Define supported build steps
-    bld_ifw                  = 'ifw'
-    bld_qtcreator            = 'build_creator'
-    bld_gammaray             = 'build_gammaray'
-    create_online_repository = 'repo_build'
-    create_offline_installer = 'offline_installer'
-    create_online_installer  = 'online_installer'
-    bld_icu_init             = 'init_icu_bld'
-    bld_icu                  = 'icu_bld'
-    bld_licheck              = 'licheck_bld'
+    bld_ifw                                 = 'ifw'
+    bld_qtcreator                           = 'build_creator'
+    bld_gammaray                            = 'build_gammaray'
+    create_online_repository                = 'repo_build'
+    create_offline_installer                = 'offline_installer'
+    create_online_installer                 = 'online_installer'
+    bld_icu_init                            = 'init_icu_bld'
+    bld_icu                                 = 'icu_bld'
+    bld_licheck                             = 'licheck_bld'
+    init_extra_module_build_cycle_src       = 'init_app_src'
+    execute_extra_module_build_cycle_src    = 'build_qt5_app_src'
     CMD_LIST =  (bld_ifw, bld_qtcreator, bld_gammaray, bld_icu_init, bld_icu, bld_licheck)
     CMD_LIST += (create_online_installer, create_online_repository, create_offline_installer)
+    CMD_LIST += (init_extra_module_build_cycle_src, execute_extra_module_build_cycle_src)
 
     parser = argparse.ArgumentParser(prog="Build Wrapper", description="Manage all packaging related build steps.")
     parser.add_argument("-c", "--command", dest="command", required=True, choices=CMD_LIST, help=CMD_LIST)
@@ -1122,5 +1209,9 @@ if __name__ == '__main__':
         handle_icu_build(optionDict)
     elif args.command == bld_licheck:
         handle_qt_licheck_build(optionDict)
+    elif args.command == init_extra_module_build_cycle_src:
+        initialize_extra_module_build_src(optionDict)
+    elif args.command == execute_extra_module_build_cycle_src:
+        build_extra_module_src_pkg(optionDict)
     else:
         print('Unsupported command')
