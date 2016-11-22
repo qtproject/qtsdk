@@ -80,7 +80,7 @@ REPO_OUTPUT_DIR             = os.path.normpath(SCRIPT_ROOT_DIR + os.sep + 'repos
 PACKAGES_DIR_NAME_LIST      = []
 PACKAGES_FULL_PATH_DST      = 'pkg'
 ROOT_COMPONENT_NAME         = ''
-PACKAGE_NAMESPACE           = ''
+PACKAGE_NAMESPACE           = None
 IFW_TOOLS_DIR               = ''
 ARCHIVEGEN_TOOL             = ''
 BINARYCREATOR_TOOL          = ''
@@ -485,7 +485,7 @@ def init_data():
     if not LICENSE_TYPE:
         LICENSE_TYPE        = bldinstallercommon.config_section_map(CONFIG_PARSER_COMMON,'SdkCommon')['license']
     SDK_NAME_ROOT       = SDK_NAME
-    PACKAGE_NAMESPACE   = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'PackageNamespace')['name']
+    PACKAGE_NAMESPACE   = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'PackageNamespace')['name'].replace(" ", "").split(",")
 
     PACKAGES_FULL_PATH_DST = os.path.normpath(SCRIPT_ROOT_DIR + os.sep + PACKAGES_FULL_PATH_DST)
     packages_list_raw      = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'PackageTemplates')['template_dirs']
@@ -701,7 +701,8 @@ def parse_component_data(configuration_file, configurations_base_path):
             SDK_COMPONENT_IGNORE_LIST.append(item)
     # parse sdk components
     for section in configuration.sections():
-        if section.startswith(PACKAGE_NAMESPACE + '.') or section == PACKAGE_NAMESPACE:
+        sectionNameSpace = section.split(".")[0]
+        if sectionNameSpace in PACKAGE_NAMESPACE:
             if section not in SDK_COMPONENT_IGNORE_LIST:
                 sdk_component = SdkComponent(section, configuration, PACKAGES_DIR_NAME_LIST, ARCHIVE_LOCATION_RESOLVER, KEY_SUBSTITUTION_LIST, CREATE_OFFLINE_INSTALLER)
                 # validate component
