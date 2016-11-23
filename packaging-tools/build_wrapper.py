@@ -311,13 +311,11 @@ def handle_gammaray_build(optionDict):
         if os.path.exists(srcPath):
             shutil.rmtree(srcPath)
         os.makedirs(srcPath)
-        bldinstallercommon.clone_repository(gitUrl, gitBranchOrTag, srcPath)
+        bldinstallercommon.clone_repository(gitUrl, gitBranchOrTag, srcPath, init_subrepos=True)
 
     # Get gammaray sources if not present yet
-    if 'GAMMARAY_GIT_URL' in optionDict:
-        cloneGammarayRepo(optionDict['GAMMARAY_GIT_URL'], optionDict['GAMMARAY_GIT_BRANCH_OR_TAG'], optionDict['GAMMARAY_CHECKOUT_DIR_NAME'])
-    if 'KDSME_GIT_URL' in optionDict:
-        cloneGammarayRepo(optionDict['KDSME_GIT_URL'], optionDict['KDSME_GIT_BRANCH_OR_TAG'], optionDict['KDSME_CHECKOUT_DIR_NAME'])
+    if 'GAMMARAY_INTEGRATION_GIT_URL' in optionDict:
+        cloneGammarayRepo(optionDict['GAMMARAY_INTEGRATION_GIT_URL'], optionDict['GAMMARAY_INTEGRATION_GIT_BRANCH_OR_TAG'], 'src')
 
     gammaray_version = optionDict['GAMMARAY_VERSION']
     graphviz_filename = optionDict['GRAPHVIZ_BASE_FILENAME'] + '-' + optionDict['TARGET_ENV'] + '.7z'
@@ -370,7 +368,7 @@ def handle_gammaray_build(optionDict):
 
     # build kdstatemachineeditor
     cmd_args = common_gammaray_args()
-    cmd_args.extend(['--module_dir', os.path.join(WORK_DIR, 'kdsme'),
+    cmd_args.extend(['--module_dir', os.path.join(WORK_DIR, 'src', 'external', 'kdstatemachineeditor'),
                      '--module-name', 'kdsme',
                      '--qt5path', os.path.join(WORK_DIR, 'kdsme_qt5_install'),
                      '--add-config-arg=-DBUILD_EXAMPLES=OFF',
@@ -380,7 +378,7 @@ def handle_gammaray_build(optionDict):
 
     # build gammaray
     cmd_args = common_gammaray_args()
-    cmd_args.extend(['--module_dir', os.path.join(WORK_DIR, 'gammaray'),
+    cmd_args.extend(['--module_dir', os.path.join(WORK_DIR, 'src', 'external', 'gammaray'),
                      '--module-name', 'gammaray',
                      '--qt5path', os.path.join(WORK_DIR, 'gammaray_qt5_install'),
                      '--add-config-arg=-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=FALSE',
