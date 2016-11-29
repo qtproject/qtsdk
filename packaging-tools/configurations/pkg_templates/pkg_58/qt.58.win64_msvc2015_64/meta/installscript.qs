@@ -39,7 +39,7 @@ function createShortcuts()
     component_root_path = component_root_path.replace(/\//g, "\\");
 
     var batchFileName = component_root_path + "\\" + "bin" + "\\" + "qtenv2.bat";
-    var contentString = "echo off\r\n";
+    var contentString = "@echo off\r\n";
     contentString += "echo Setting up environment for Qt usage...\r\n";
     contentString += "set PATH="  + component_root_path + "\\bin;%PATH%\r\n";
     contentString += "cd /D " + component_root_path + "\r\n";
