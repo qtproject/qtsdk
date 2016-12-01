@@ -23,7 +23,7 @@ arg_substitution_list:          %QT_VERSION%=%GLOBAL_VERSION%,
                                 %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.2.0-rc1_57x/latest_successful,
                                 %QTC_VERSION%=4.2.0,
                                 %QTC_DISPLAY_VERSION%=4.2.0,
-                                %QTC_MSVC%=2013
+                                %QTC_MSVC%=2015
 
 
 ################################################################################
