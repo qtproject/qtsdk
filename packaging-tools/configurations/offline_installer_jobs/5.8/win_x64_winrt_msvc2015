@@ -42,7 +42,6 @@ file_list:              qt-conf,
                         x86_64-qt58-msvc2015-winrt_x86-conf,
                         x86_64-qt58-msvc2015-winrt_armv7-conf,
                         x86-tools-qtcreator-qt58x-conf,
-                        x86-tools-vcredist_msvc2013-conf,
                         x86-tools-vcredist_msvc2015-conf,
                         x86-tools-perl-conf
 

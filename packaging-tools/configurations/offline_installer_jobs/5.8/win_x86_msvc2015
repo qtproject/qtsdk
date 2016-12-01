@@ -40,7 +40,6 @@ file_list:              qt-conf,
                         qt58-doc-examples-conf,
                         x86-qt58-msvc2015_32-conf,
                         x86-tools-qtcreator-qt58x-conf,
-                        x86-tools-vcredist_msvc2013-conf,
                         x86-tools-vcredist_msvc2015-conf,
                         x86-tools-perl-conf
 

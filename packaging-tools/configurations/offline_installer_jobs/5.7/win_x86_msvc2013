@@ -40,7 +40,8 @@ file_list:              qt-conf,
                         qt57-doc-examples-conf,
                         x86-qt57-msvc2013_32-conf,
                         x86-tools-qtcreator-qt57x-conf,
-                        x86-tools-vcredist_msvc2013-conf
+                        x86-tools-vcredist_msvc2013-conf,
+                        x86-tools-vcredist_msvc2015-conf
 
 [ConfigDir]
 template_name:          config_qt5
