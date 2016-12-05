@@ -38,5 +38,24 @@ Component.prototype.createOperations = function()
     // so that the simulator finds its fonts and applications find the simulator
     component.createOperations();
 
-    component.addElevatedOperation("Execute", "{0,3010,1603,5100}", "msiexec", "/i", "@TargetDir@\\Tools\\Perl52213_32\\strawberry-perl-5.22.1.3-32bit.msi", "/quiet");
+    var perlRegKey;
+    // registry key is used for checking if Strawberry Perl is already installed
+    perlRegKey = installer.execute("REG", ["QUERY", "HKLM\\SOFTWARE\\Classes\\Perl_program_file\\shell\\Execute Perl Program\\command", "/s"])[0];
+
+    var splitRegKey = perlRegKey.split(" ");
+    var found = false;
+    // loop trough the split regristry key and check if perl.exe is found
+    for (i = 0; i < splitRegKey.length; i++) {
+        if (splitRegKey[i].indexOf("perl.exe") !== -1) {
+            print("Strawberry Perl registry key: " + perlRegKey);
+            print("Strawberry Perl is already installed, will not be installed by Qt.");
+            found = true;
+        }
+    }
+
+    // Strawberry Perl will be installed
+    if (!found) {
+        print("Install Strawberry Perl.");
+        var installStatus = component.addElevatedOperation("Execute", "{0,3010,1603, 5100}", "msiexec", "/i", "@TargetDir@\\Tools\\Perl52213_32\\strawberry-perl-5.22.1.3-32bit.msi", "/quiet", "UNDOEXECUTE", "msiexec", "/x", "@TargetDir@\\Tools\\Perl52213_32\\strawberry-perl-5.22.1.3-32bit.msi", "/q");
+    }
 }
