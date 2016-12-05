@@ -96,11 +96,11 @@ def get_common_qt_configure_options():
     # common
     options = get_common_allos_qt_configure_options()
     options += '-no-sql-sqlite -no-qml-debug '
-    options += '-skip qtenginio -skip qtlocation -skip qtmultimedia -skip qtserialport '
+    options += '-skip qtlocation -skip qtmultimedia -skip qtserialport '
     options += '-skip qtquickcontrols -skip qtscript -skip qtsensors '
     options += '-skip qtconnectivity -skip qtwayland '
     options += '-skip qtwebview -skip qtwebengine -skip qtwebsockets -skip qtwebchannel '
-    options += '-skip qtxmlpatterns -skip qtactiveqt -skip qt3d -skip qtcanvas3d '
+    options += '-skip qtxmlpatterns -skip qtactiveqt -skip qt3d -skip qtcanvas3d -skip qtvirtualkeyboard '
     # Windows
     if plat.startswith('win'):
         options += '-target xp -no-icu '
@@ -111,7 +111,7 @@ def get_common_qt_configure_options():
         # Linux
         if plat.startswith('linux'):
             options += '-qt-xcb -no-opengl -no-icu -no-libudev '
-            options += '-qt-pcre -qt-freetype -no-glib -no-egl -no-xinput '
+            options += '-qt-pcre -qt-freetype -no-glib -no-egl '
             options += '-no-xinput2 -no-sm '
         if bldinstallercommon.is_mac_platform():
             options += '-no-freetype '
@@ -144,7 +144,7 @@ def get_build_env(openssl_dir):
 ###############################
 class IfwOptions:
 
-    default_qt_src_pkg = 'http://download.qt.io/official_releases/qt/5.5/5.5.1/single/qt-everywhere-opensource-src-5.5.1' + ARCH_EXT
+    default_qt_src_pkg                          = 'http://download.qt.io/official_releases/qt/5.7/5.7.0/single/qt-everywhere-opensource-src-5.7.0' + ARCH_EXT
     default_qt_installer_framework_url          = 'git://code.qt.io/installer-framework/installer-framework.git'
     default_qt_installer_framework_branch_qt    = '2.0'
     default_qt_installer_framework_qmake_args   = ['-config', 'release', '-config', 'static']
