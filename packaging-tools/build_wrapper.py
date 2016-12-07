@@ -854,7 +854,7 @@ def generate_installer_final_name(optionDict, file_name):
 ###############################
 def update_latest_link(optionDict, remote_dest_dir, latest_dir):
     cmd_args = [optionDict['SSH_COMMAND'], optionDict['PACKAGE_STORAGE_SERVER_ADDR'], 'ln -sfn', remote_dest_dir, latest_dir]
-    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR)
+    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
 
 
 ###############################
@@ -1069,6 +1069,41 @@ def build_extra_module_src_pkg(optionDict):
         update_latest_link(optionDict, latest_extra_module_dir, latest_successful_dir)
 
 
+###############################
+# git archive given repository
+###############################
+def git_archive_repo(optionDict, repo_and_ref):
+    import tempfile
+    import subprocess
+    from subprocess import STDOUT
+    # define archive
+    (repository, ref) = repo_and_ref.split("#")
+    project_name = repository.split("/")[-1].split(".")[0]
+    archive_name = os.path.join(SCRIPT_ROOT_DIR, project_name + "-" + ref + ".tar.gz")
+    if os.path.isfile(archive_name):
+        os.remove(archive_name)
+    # create temp directory
+    checkout_dir = tempfile.mkdtemp()
+    # clone given repo to temp
+    bldinstallercommon.clone_repository(repository, ref, checkout_dir, full_clone=True, init_subrepos=True)
+    # git archive repo with given name
+    archive_file = open(archive_name, 'w')
+    subprocess.check_call("git --no-pager archive %s" % (ref), stdout=archive_file, stderr=STDOUT, shell=True, cwd=checkout_dir)
+    archive_file.close()
+    print('Created archive: {0}'.format(archive_name))
+    shutil.rmtree(checkout_dir, ignore_errors=True)
+    # Create remote dest directories
+    remote_dest_dir_base = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + project_name + '/' + ref
+    remote_dest_dir = remote_dest_dir_base + '/' + optionDict['BUILD_NUMBER']
+    remote_dest_dir_latest = remote_dest_dir_base + '/' + 'latest'
+    create_remote_dirs(optionDict, optionDict['PACKAGE_STORAGE_SERVER_ADDR'], remote_dest_dir)
+    update_latest_link(optionDict, remote_dest_dir, remote_dest_dir_latest)
+    # upload archive to network disk
+    dest_dir = optionDict['PACKAGE_STORAGE_SERVER_USER'] + '@' + optionDict['PACKAGE_STORAGE_SERVER'] + ':' + remote_dest_dir
+    cmd_args = ['scp', archive_name, remote_dest_dir]
+    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
+
+
 def initPkgOptions(args):
     def mergeTwoDicts(x, y):
         """Given two dicts, merge them into a new dict as a shallow copy."""
@@ -1159,9 +1194,10 @@ if __name__ == '__main__':
     bld_licheck                             = 'licheck_bld'
     init_extra_module_build_cycle_src       = 'init_app_src'
     execute_extra_module_build_cycle_src    = 'build_qt5_app_src'
+    archive_repository                      = 'archive_repo'
     CMD_LIST =  (bld_ifw, bld_qtcreator, bld_gammaray, bld_icu_init, bld_icu, bld_licheck)
     CMD_LIST += (create_online_installer, create_online_repository, create_offline_installer)
-    CMD_LIST += (init_extra_module_build_cycle_src, execute_extra_module_build_cycle_src)
+    CMD_LIST += (init_extra_module_build_cycle_src, execute_extra_module_build_cycle_src, archive_repository)
 
     parser = argparse.ArgumentParser(prog="Build Wrapper", description="Manage all packaging related build steps.")
     parser.add_argument("-c", "--command", dest="command", required=True, choices=CMD_LIST, help=CMD_LIST)
@@ -1172,6 +1208,7 @@ if __name__ == '__main__':
     parser.add_argument("-p", "--path", dest="path", default="", help="Path on server")
     parser.add_argument("-e", "--target_env", dest="target_env", default="", help="Target environment: Linux, Linux_64, mac, win")
     parser.add_argument("-o", "--openssl_libs", dest="openssl_libs", default="", help="Url for pre-compiled openssl libraries")
+    parser.add_argument("--archive-repo", dest="archive_repo", default="", help="Create Git archive from the given repository. Use syntax: \"git-url#ref\"")
     parser.add_argument("--qtcreator-version", dest="qtcreator_version", default="", help="Qt Creator version, e.g. '3.0.0-rc', used in file names")
     parser.add_argument("--qtcreator-version-description", dest="qtcreator_version_description", default="", help="Qt Creator's version description, e.g. '3.0.0-rc-enterprise', or 'opensource', shown in Qt Creator's about dialog in addition to the version")
     parser.add_argument("--snapshot-server", dest="snapshot_server", default="", help="Additional snapshot upload server <user>@<host> (is uploaded from upload server)")
@@ -1211,5 +1248,7 @@ if __name__ == '__main__':
         initialize_extra_module_build_src(optionDict)
     elif args.command == execute_extra_module_build_cycle_src:
         build_extra_module_src_pkg(optionDict)
+    elif args.command == archive_repository:
+        git_archive_repo(optionDict, args.archive_repo)
     else:
         print('Unsupported command')
