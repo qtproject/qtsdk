@@ -49,7 +49,7 @@ import bld_ifw_tools
 from bld_ifw_tools import IfwOptions
 import bld_utils
 import bldinstallercommon
-import release_build_handler
+import batch_process_installer_bld
 import bld_icu_tools
 import pkg_constants
 from pkg_constants import ICU_BUILD_OUTPUT_DIR
@@ -743,7 +743,7 @@ def handle_installer_build(optionDict, project_name, installer_type):
     installer_output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.INSTALLER_OUTPUT_DIR_NAME)
     # Create all installers for this host
     arch = 'x64' if (optionDict['TARGET_ENV'].find('64') != -1) else 'x86'
-    release_build_handler.handle_installer_build(optionDict, installer_type, 'release', arch)
+    batch_process_installer_bld.handle_installer_build(optionDict, installer_type, 'release', arch)
     # Generate installer file name list
     installer_list = []
     dir_list = [f for f in os.listdir(installer_output_dir) if not f.endswith(".app")]
@@ -927,7 +927,7 @@ def handle_online_repository_build(optionDict):
         update = optionDict['DO_UPDATE_PRODUCTION_REPOSITORY']
         if update.lower() in ['yes', 'true', '1']:
             update_production_repo = True
-    release_build_handler.handle_repo_build(optionDict, 'release', arch, update_staging_repo, update_production_repo)
+    batch_process_installer_bld.handle_repo_build(optionDict, 'release', arch, update_staging_repo, update_production_repo)
     # (3) trigger rta cases
     rta_descr_output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.RTA_DESCRIPTION_FILE_DIR_NAME)
     trigger_rta(optionDict, rta_descr_output_dir)
