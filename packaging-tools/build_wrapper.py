@@ -1142,7 +1142,7 @@ def initPkgOptions(args):
         optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] = args.path
         optionDict['OPENSSL_LIBS'] = args.openssl_libs
         optionDict['QT_CREATOR_VERSION'] = args.qtcreator_version
-        optionDict['QT_CREATOR_VERSION_DESCRIPTION'] = args.qtcreator_version
+        optionDict['QT_CREATOR_VERSION_DESCRIPTION'] = args.qtcreator_version_description
         optionDict['SNAPSHOT_SERVER'] = args.snapshot_server
         optionDict['SNAPSHOT_SERVER_PATH'] = args.snapshot_path
         optionDict['TARGET_ENV'] = args.target_env if args.target_env else os.environ.get('cfg')
