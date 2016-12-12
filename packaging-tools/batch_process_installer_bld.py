@@ -590,10 +590,7 @@ def init_env(optionDict):
     optionDict['REPO_STAGING_SERVER_TEST_REPO']           = optionDict['STAGING_SRV_ONLINE_REPO_BASE_PATH'] + '/' + optionDict['LICENSE'] + '/staging'
     optionDict['REPO_STAGING_SERVER_TEST_REPO_PENDING']   = optionDict['STAGING_SRV_ONLINE_REPO_BASE_PATH'] + '/' + optionDict['LICENSE'] + '/staging_pending'
     optionDict['REPO_STAGING_SERVER_HOME_TOOLS']          = optionDict['REPO_STAGING_SERVER_HOME'] + '/qtsdk/packaging-tools'
-    # Production specific
-    optionDict['PROD_SRV_REPO_BASE_PATH']                 = optionDict['STAGING_SRV_ONLINE_REPO_BASE_PATH'] + '/' + optionDict['LICENSE'] + '/production'
-    optionDict['PROD_SRV_REPO_PENDING_AREA_DIR']          = optionDict['STAGING_SRV_ONLINE_REPO_BASE_PATH'] + '/' + optionDict['LICENSE'] + '/production_pending'
-    optionDict['REPO_STAGING_SERVER_TEST_REPO_DIST_WORK'] = optionDict['STAGING_SRV_ONLINE_REPO_BASE_PATH'] + '/' + optionDict['LICENSE'] + '/production_dist_update_work'
+    # Production specific directories are set directly from environment
 
     onlineRepositoryBaseName = os.environ.get('ONLINE_REPOSITORY_BASE_NAME')
     optionDict['ONLINE_REPOSITORY_BASE_NAME'] = onlineRepositoryBaseName if onlineRepositoryBaseName else 'qtsdkrepository'
