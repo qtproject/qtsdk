@@ -72,8 +72,7 @@ def parse_arguments():
         dest='plugin_search_paths', action='append')
     parser.add_argument('--add-qmake-argument', help='Adds an argument to the qmake command line',
         dest='additional_qmake_arguments', action='append')
-    parser.add_argument('--plugin-path', help='Path to a plugin to build', required=True,
-        dest='plugin_paths', action='append')
+    parser.add_argument('--plugin-path', help='Path to the plugin sources to build', required=True, dest='plugin_path')
     parser.add_argument('--deploy-command', help='Command to execute for custom deployment before deploying and packaging the target directory.'
         + 'The command gets the Qt prefix and plugin target directory as command line parameters. Pass multiple times for commands that have arguments.',
         action='append', default=[])
@@ -83,14 +82,14 @@ def parse_arguments():
     parser.epilog += ' --qt-module http://myserver/path/qt_all.7z'
     parser.epilog += ' --qtc-build-url http://myserver/path/qtcreator_build.7z'
     parser.epilog += ' --qtc-dev-url http://myserver/path/qtcreator_dev.7z'
-    parser.epilog += ' --plugin-path /home/myplugin1 --plugin-path /home/myplugin2'
+    parser.epilog += ' --plugin-path /home/myplugin'
     parser.epilog += ' --deploy-command python --deploy-command "/path to/mydeployscript.py" --deploy-command=-v'
-    parser.epilog += ' /tmp/plugin_build/myplugins.7z'
+    parser.epilog += ' /tmp/plugin_build/myplugin.7z'
     caller_arguments = parser.parse_args()
     # normalize arguments
     stripVars(caller_arguments, "\"")
     caller_arguments.build_path = os.path.abspath(caller_arguments.build_path)
-    caller_arguments.plugin_paths = [os.path.abspath(path) for path in caller_arguments.plugin_paths]
+    caller_arguments.plugin_path = os.path.abspath(caller_arguments.plugin_path)
     caller_arguments.qtc_build = (os.path.abspath(caller_arguments.qtc_build) if caller_arguments.qtc_build
         else os.path.join(caller_arguments.build_path, 'qtc_build'))
     caller_arguments.qtc_dev = (os.path.abspath(caller_arguments.qtc_dev) if caller_arguments.qtc_dev
@@ -117,16 +116,15 @@ def get_common_qmake_arguments(paths, caller_arguments):
         common_qmake_arguments.append('QMAKE_SUBSYSTEM_SUFFIX=,5.01')
     return common_qmake_arguments
 
-def plugin_build_path(plugin_path, build_path):
-    return os.path.join(build_path, 'build-' + os.path.basename(plugin_path))
-
 def build_plugins(caller_arguments):
     (basename,_) = os.path.splitext(os.path.basename(caller_arguments.target_7zfile))
-    Paths = collections.namedtuple('Paths', ['qt5', 'temp', 'qtc_dev', 'qtc_build', 'target'])
+    Paths = collections.namedtuple('Paths', ['qt5', 'temp', 'qtc_dev', 'qtc_build', 'source', 'build', 'target'])
     paths = Paths(qt5 = os.path.join(caller_arguments.build_path, basename + '-qt5'),
                   temp = os.path.join(caller_arguments.build_path, basename + '-temp'),
                   qtc_dev = caller_arguments.qtc_dev,
                   qtc_build = caller_arguments.qtc_build,
+                  source = caller_arguments.plugin_path,
+                  build = os.path.join(caller_arguments.build_path, basename + '-build'),
                   target = os.path.join(caller_arguments.build_path, basename + '-target'))
 
     if caller_arguments.clean:
@@ -136,9 +134,8 @@ def build_plugins(caller_arguments):
             bldinstallercommon.remove_tree(paths.qtc_dev)
         if caller_arguments.qtc_build_url:
             bldinstallercommon.remove_tree(paths.qtc_build)
+        bldinstallercommon.remove_tree(paths.build)
         bldinstallercommon.remove_tree(paths.target)
-        for plugin_path in caller_arguments.plugin_paths:
-            bldinstallercommon.remove_tree(plugin_build_path(plugin_path, caller_arguments.build_path))
 
     download_packages_work = ThreadedWork('Get and extract all needed packages')
     need_to_install_qt = not os.path.exists(paths.qt5)
@@ -165,17 +162,15 @@ def build_plugins(caller_arguments):
     environment = get_common_environment(paths.qt5, caller_arguments)
 
     # build plugins
-    for plugin_path in caller_arguments.plugin_paths:
-        build_path = plugin_build_path(plugin_path, caller_arguments.build_path)
-        print('------------')
-        print('Building plugin "{0}" in "{1}" ...'.format(plugin_path, build_path))
-        qmake_command = [qmake_filepath]
-        qmake_command.append(plugin_path)
-        qmake_command.extend(common_qmake_arguments)
-        runCommand(qmake_command, build_path,
-            callerArguments = caller_arguments, init_environment = environment)
-        runBuildCommand(currentWorkingDirectory = build_path,
-            callerArguments = caller_arguments, init_environment = environment)
+    print('------------')
+    print('Building plugin "{0}" in "{1}" ...'.format(paths.source, paths.build))
+    qmake_command = [qmake_filepath]
+    qmake_command.append(paths.source)
+    qmake_command.extend(common_qmake_arguments)
+    runCommand(qmake_command, paths.build,
+        callerArguments = caller_arguments, init_environment = environment)
+    runBuildCommand(currentWorkingDirectory = paths.build,
+        callerArguments = caller_arguments, init_environment = environment)
 
     # run custom deploy script
     if caller_arguments.deploy_command:
