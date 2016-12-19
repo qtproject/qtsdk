@@ -76,6 +76,7 @@ def parse_arguments():
     parser.add_argument('--deploy-command', help='Command to execute for custom deployment before deploying and packaging the target directory.'
         + 'The command gets the Qt prefix and plugin target directory as command line parameters. Pass multiple times for commands that have arguments.',
         action='append', default=[])
+    parser.add_argument('--out-dev', help='Target 7z file name for plugin dev package', dest='target_dev7zfile')
     parser.add_argument('target_7zfile')
 
     parser.epilog += ' --build-path /tmp/plugin_build'
@@ -84,6 +85,7 @@ def parse_arguments():
     parser.epilog += ' --qtc-dev-url http://myserver/path/qtcreator_dev.7z'
     parser.epilog += ' --plugin-path /home/myplugin'
     parser.epilog += ' --deploy-command python --deploy-command "/path to/mydeployscript.py" --deploy-command=-v'
+    parser.epilog += ' --out-dev /tmp/plugin_build/myplugin_dev.7z'
     parser.epilog += ' /tmp/plugin_build/myplugin.7z'
     caller_arguments = parser.parse_args()
     # normalize arguments
@@ -118,14 +120,15 @@ def get_common_qmake_arguments(paths, caller_arguments):
 
 def build_plugins(caller_arguments):
     (basename,_) = os.path.splitext(os.path.basename(caller_arguments.target_7zfile))
-    Paths = collections.namedtuple('Paths', ['qt5', 'temp', 'qtc_dev', 'qtc_build', 'source', 'build', 'target'])
+    Paths = collections.namedtuple('Paths', ['qt5', 'temp', 'qtc_dev', 'qtc_build', 'source', 'build', 'target', 'dev_target'])
     paths = Paths(qt5 = os.path.join(caller_arguments.build_path, basename + '-qt5'),
                   temp = os.path.join(caller_arguments.build_path, basename + '-temp'),
                   qtc_dev = caller_arguments.qtc_dev,
                   qtc_build = caller_arguments.qtc_build,
                   source = caller_arguments.plugin_path,
                   build = os.path.join(caller_arguments.build_path, basename + '-build'),
-                  target = os.path.join(caller_arguments.build_path, basename + '-target'))
+                  target = os.path.join(caller_arguments.build_path, basename + '-target'),
+                  dev_target = os.path.join(caller_arguments.build_path, basename + '-tempdev'))
 
     if caller_arguments.clean:
         bldinstallercommon.remove_tree(paths.qt5)
@@ -136,6 +139,7 @@ def build_plugins(caller_arguments):
             bldinstallercommon.remove_tree(paths.qtc_build)
         bldinstallercommon.remove_tree(paths.build)
         bldinstallercommon.remove_tree(paths.target)
+        bldinstallercommon.remove_tree(paths.dev_target)
 
     download_packages_work = ThreadedWork('Get and extract all needed packages')
     need_to_install_qt = not os.path.exists(paths.qt5)
@@ -178,16 +182,25 @@ def build_plugins(caller_arguments):
             paths.target]
         runCommand(custom_deploy_command, currentWorkingDirectory = paths.target)
 
+    sevenzip_filepath = '7z.exe' if bldinstallercommon.is_win_platform() else '7z'
+    if hasattr(caller_arguments, 'sevenzippath') and caller_arguments.sevenzippath:
+        sevenzip_filepath = os.path.join(caller_arguments.sevenzippath, sevenzip_filepath)
     # deploy and zip up
     deploy_command = ['python', '-u', os.path.join(paths.qtc_dev, 'scripts', 'packagePlugins.py'),
-                      '--qmake_binary', os.path.join(paths.qt5, 'bin', 'qmake')]
-    if hasattr(caller_arguments, 'sevenzippath') and caller_arguments.sevenzippath:
-        sevenzip_filepath = os.path.join(caller_arguments.sevenzippath,
-            '7z.exe' if bldinstallercommon.is_win_platform() else '7z')
-        deploy_command.extend(['--7z', sevenzip_filepath])
+                      '--qmake_binary', os.path.join(paths.qt5, 'bin', 'qmake'),
+                      '--7z', sevenzip_filepath]
     deploy_command.extend([paths.target, caller_arguments.target_7zfile])
     runCommand(deploy_command, paths.temp,
         callerArguments = caller_arguments, init_environment = environment)
+
+    if caller_arguments.target_dev7zfile:
+        dev_command = ['python', '-u', os.path.join(paths.qtc_dev, 'scripts', 'createDevPackage.py'),
+                       '--source', paths.source, '--build', paths.build,
+                       '--7z', sevenzip_filepath,
+                       '--7z_out', caller_arguments.target_dev7zfile,
+                       paths.dev_target]
+        runCommand(dev_command, paths.temp,
+            callerArguments = caller_arguments, init_environment = environment)
 
 def main():
     bldinstallercommon.init_common_module(os.path.dirname(os.path.realpath(__file__)))

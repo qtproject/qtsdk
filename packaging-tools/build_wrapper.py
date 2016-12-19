@@ -633,6 +633,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         if libs_paths:
             cmd_arguments.extend(['--add-qmake-argument', 'LIBS*=' + ' '.join(['-L'+path for path in libs_paths])])
         cmd_arguments.extend(common_arguments)
+        cmd_arguments.extend(['--out-dev', os.path.join(WORK_DIR, plugin.name + '_dev.7z')])
         cmd_arguments.append(os.path.join(WORK_DIR, plugin.name + '.7z'))
         bldinstallercommon.do_execute_sub_process(cmd_arguments, WORK_DIR, extra_env=build_environment)
         # source package
@@ -695,8 +696,11 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     snapshot_upload_list.append((target_env_dir + '/qtcreator_dev.7z', 'installer_source/' + target_env_dir + '/qtcreator_dev.7z'))
     for plugin in additional_plugins:
         plugin_name = plugin.name + '.7z'
+        plugin_dev_name = plugin.name + '_dev.7z'
         if os.path.isfile(os.path.join(WORK_DIR, plugin_name)):
             file_upload_list.append((plugin_name, target_env_dir + '/' + plugin_name))
+        if os.path.isfile(os.path.join(WORK_DIR, plugin_dev_name)):
+            file_upload_list.append((plugin_dev_name, target_env_dir + '/' + plugin_dev_name))
 
     # upload files
     for source, destination in file_upload_list:
