@@ -6,6 +6,7 @@
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Default>true</Default>
     <SortingPriority>86</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
+    <Dependencies>qt.58.doc.qtquick2drenderer</Dependencies>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
 

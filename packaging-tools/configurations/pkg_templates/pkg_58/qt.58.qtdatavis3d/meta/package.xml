@@ -6,6 +6,7 @@
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Default>true</Default>
     <SortingPriority>88</SortingPriority>
+    <Dependencies>qt.58.doc.qtdatavis3d</Dependencies>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
 
