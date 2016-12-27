@@ -6,7 +6,7 @@
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Default>true</Default>
     <SortingPriority>10</SortingPriority>
-    <Dependencies>qt.58.doc.qtspeech</Dependencies>
+    <Dependencies>qt.58.doc.qtspeech, qt.58.examples.qtspeech</Dependencies>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
 

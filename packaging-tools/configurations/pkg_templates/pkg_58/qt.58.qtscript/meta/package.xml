@@ -6,7 +6,7 @@
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Default>true</Default>
     <SortingPriority>9</SortingPriority>
-    <Dependencies>qt.58.doc.qtscript</Dependencies>
+    <Dependencies>qt.58.doc.qtscript, qt.58.examples.qtscript</Dependencies>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
 

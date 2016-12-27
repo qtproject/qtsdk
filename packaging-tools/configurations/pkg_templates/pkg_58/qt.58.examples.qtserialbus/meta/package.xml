@@ -4,7 +4,6 @@
     <Description>Examples for Qt SerialBus (Technology Preview)</Description>
     <Version>5.8.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <AutoDependOn>qt.58.qtserialbus</AutoDependOn>
     <Virtual>true</Virtual>
     <SortingPriority>1</SortingPriority>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
