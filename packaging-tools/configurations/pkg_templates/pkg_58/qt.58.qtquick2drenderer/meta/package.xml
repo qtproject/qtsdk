@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt Quick 2D Renderer</DisplayName>
     <Description>Qt Quick 2D Renderer.</Description>
-    <Version>5.8.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.8.0-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Default>true</Default>
     <SortingPriority>86</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->

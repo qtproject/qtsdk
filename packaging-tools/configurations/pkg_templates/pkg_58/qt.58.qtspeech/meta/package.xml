@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt Speech (TP)</DisplayName>
     <Description>The Qt Speech module allows using text to speech engines.&lt;br&gt;&lt;br&gt;The release of Qt Speech with Qt 5.8 is a Technology Preview.</Description>
-    <Version>5.8.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.8.0-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Default>true</Default>
     <SortingPriority>10</SortingPriority>

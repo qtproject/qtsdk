@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Documentation for Qt Networkauth (Technology Preview)</DisplayName>
     <Description>Documentation for Qt Networkauth (Technology Preview)</Description>
-    <Version>5.8.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.8.0-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Script>installscript.qs</Script>
     <Virtual>true</Virtual>

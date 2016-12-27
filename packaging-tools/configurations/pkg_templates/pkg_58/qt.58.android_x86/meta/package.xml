@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Android x86</DisplayName>
     <Description>Qt 5.8.0 Prebuilt Components for Android x86</Description>
-    <Version>5.8.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.8.0-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.tools.qtcreator, qt.58.doc, qt.58.examples</Dependencies>
     <Default>false</Default>

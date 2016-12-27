@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt Speech for Windows Phone x86 (MSVC2013)</DisplayName>
     <Description></Description>
-    <Version>5.8.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.8.0-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <AutoDependOn>qt.58.qtspeech, qt.58.win64_msvc2013_winphone_x86</AutoDependOn>
     <Dependencies>qt.58.win64_msvc2013_winphone_x86</Dependencies>

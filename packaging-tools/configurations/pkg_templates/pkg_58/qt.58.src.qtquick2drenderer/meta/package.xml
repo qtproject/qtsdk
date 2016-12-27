@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Sources for Qt5.8 GPLv3 components (QtQuick2DRenderer)</DisplayName>
     <Description>Sources for Qt5.8 GPLv3 components (QtQuick2DRenderer)</Description>
-    <Version>5.8.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.8.0-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Virtual>true</Virtual>
     <AutoDependOn>qt.58.src</AutoDependOn>

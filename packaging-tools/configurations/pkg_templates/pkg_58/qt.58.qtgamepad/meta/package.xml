@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt Gamepad (TP)</DisplayName>
     <Description>Qt Gamepad is an add-on library that enables Qt applications to support the use of gamepad hardware.&lt;br&gt;&lt;br&gt;The release of Qt Gamepad with Qt 5.8 is a Technology Preview.</Description>
-    <Version>5.8.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>5.8.0-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Default>true</Default>
     <SortingPriority>10</SortingPriority>
