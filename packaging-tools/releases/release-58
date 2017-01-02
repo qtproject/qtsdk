@@ -59,7 +59,7 @@ installer_name:             qt-opensource-mac-x64-android-%GLOBAL_VERSION_AND_TA
 rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-58_tests_mac_android
 
 [release.58.offline.mac.x64.android_and_ios]
-assign_to_machine_label:    mac-physical-packaging-android-ios-x64
+assign_to_machine_label:    mac-pkg-10.12-x64-PM
 arg_configurations_file:    offline_installer_jobs/5.8/mac_x64_android_ios
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
 installer_name:             qt-opensource-mac-x64-android-ios-%GLOBAL_VERSION_AND_TAG%
