@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>MinGW 5.3.0</DisplayName>
     <Description>MinGW-builds 5.3.0 32 bit toolchain.</Description>
-    <Version>5.3.0-1</Version>
+    <Version>5.3.0-2</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.tools.qtcreator</Dependencies>
     <Default>false</Default>
