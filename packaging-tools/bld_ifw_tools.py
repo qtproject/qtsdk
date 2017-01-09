@@ -103,7 +103,7 @@ def get_common_qt_configure_options():
     options += '-skip qtxmlpatterns -skip qtactiveqt -skip qt3d -skip qtcanvas3d -skip qtvirtualkeyboard '
     # Windows
     if plat.startswith('win'):
-        options += '-target xp -no-icu '
+        options += '-target xp -no-icu -mp '
     # Unix
     else:
         # OSX and Linux
