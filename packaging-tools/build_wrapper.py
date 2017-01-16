@@ -543,18 +543,26 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     # Qt Creator plugins
     plugin_dependencies = []
     additional_qmake_arguments = []
-    Plugin = collections.namedtuple('Plugin', ['name', 'path', 'dependencies', 'modules', 'additional_arguments', 'include_in_package'])
-    Plugin.__new__.__defaults__ = ([], [], [], True) # 'name' and 'path' are mandatory
+    QtcPlugin = collections.namedtuple('QtcPlugin', ['name', 'path', 'dependencies', 'modules', 'additional_arguments'])
+    def make_QtcPlugin(name, path, dependencies=None, modules=None, additional_arguments=None):
+        if dependencies is None:
+            dependencies = []
+        if modules is None:
+            modules = []
+        if additional_arguments is None:
+            additional_arguments = []
+        return QtcPlugin(name=name, path=path, dependencies=dependencies, modules=modules, additional_arguments=additional_arguments)
+
     additional_plugins = []
 
     if os.path.isdir(os.path.join(WORK_DIR, "licensechecker")):
-        additional_plugins.extend([Plugin(name='licensechecker', path='licensechecker')])
+        additional_plugins.extend([make_QtcPlugin('licensechecker', 'licensechecker')])
         additional_qmake_arguments = ['CONFIG+=licensechecker']
         plugin_dependencies = ['licensechecker']
-    additional_plugins.extend([Plugin(name='vxworks-qtcreator-plugin', path='vxworks-qtcreator-plugin', dependencies=plugin_dependencies)])
-    additional_plugins.extend([Plugin(name='isoiconbrowser', path='qtquickdesigner', dependencies=plugin_dependencies)])
+    additional_plugins.extend([make_QtcPlugin('vxworks-qtcreator-plugin', 'vxworks-qtcreator-plugin', dependencies=plugin_dependencies)])
+    additional_plugins.extend([make_QtcPlugin('isoiconbrowser', 'qtquickdesigner', dependencies=plugin_dependencies)])
     if bldinstallercommon.is_linux_platform():
-        additional_plugins.extend([Plugin(name='perfparser', path='perfparser')])
+        additional_plugins.extend([make_QtcPlugin('perfparser', 'perfparser')])
         additional_qmake_arguments.extend(['PERFPARSER_BUNDLED_ELFUTILS=true',
                                            'PERFPARSER_APP_DESTDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'libexec', 'qtcreator'),
                                            'PERFPARSER_ELFUTILS_DESTDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'lib', 'qtcreator'),
@@ -577,20 +585,18 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
             os.remove(graphviz_download_filepath)
         bld_utils.download(graphviz_url, graphviz_download_filepath)
         bldinstallercommon.extract_file(graphviz_download_filepath, graphviz_target_path)
-        additional_plugins.extend([Plugin(name='perfprofiler', path='perfprofiler', dependencies=plugin_dependencies)])
-        additional_plugins.extend([Plugin(name='b2qt-qtcreator-plugin', path='b2qt-qtcreator-plugin',
-                                          dependencies=plugin_dependencies + ['perfprofiler'])])
-        additional_plugins.extend([Plugin(name='gammarayintegration', path='gammarayintegration',
-                                          dependencies=plugin_dependencies + ['b2qt-qtcreator-plugin', 'perfprofiler'],
-                                          modules=[kdsme_url, gammaray_url],
-                                          additional_arguments=[
-                                          '--deploy-command', 'python',
-                                          '--deploy-command=-u',
-                                          '--deploy-command', os.path.join(WORK_DIR, 'gammarayintegration', 'scripts', 'deploy.py'),
-                                          '--deploy-command=--graphviz-libs',
-                                          '--deploy-command', graphviz_target_path],
-                                          include_in_package=False)
-                                  ])
+        additional_plugins.extend([make_QtcPlugin('perfprofiler', 'perfprofiler', dependencies=plugin_dependencies)])
+        additional_plugins.extend([make_QtcPlugin('b2qt-qtcreator-plugin', 'b2qt-qtcreator-plugin',
+                                                  dependencies=plugin_dependencies + ['perfprofiler'])])
+        additional_plugins.extend([make_QtcPlugin('gammarayintegration', 'gammarayintegration',
+                                                  dependencies=plugin_dependencies + ['b2qt-qtcreator-plugin', 'perfprofiler'],
+                                                  modules=[kdsme_url, gammaray_url],
+                                                  additional_arguments=[
+                                                  '--deploy-command', 'python',
+                                                  '--deploy-command=-u',
+                                                  '--deploy-command', os.path.join(WORK_DIR, 'gammarayintegration', 'scripts', 'deploy.py'),
+                                                  '--deploy-command=--graphviz-libs',
+                                                  '--deploy-command', graphviz_target_path])])
 
     # Build Qt Creator plugins
     for plugin in additional_plugins:
