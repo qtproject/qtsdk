@@ -413,6 +413,67 @@ def parseQtCreatorPlugins(pkgConfFile):
         pluginList.extend([plugin])
     return pluginList
 
+QtcPlugin = collections.namedtuple('QtcPlugin', ['name', 'path', 'version', 'dependencies', 'modules',
+                                                 'additional_arguments', 'qmake_arguments'])
+def make_QtcPlugin(name, path, version, dependencies=None, modules=None,
+                   additional_arguments=None, qmake_arguments=None):
+    return QtcPlugin(name=name, path=path, version=version,
+                     dependencies=dependencies or [],
+                     modules=modules or [],
+                     additional_arguments=additional_arguments or [],
+                     qmake_arguments=qmake_arguments or [])
+
+def build_qtcreator_plugins(plugins, qtcreator_url, qtcreator_dev_url, icu_url=None, openssl_url=None):
+    for plugin in plugins:
+        if not os.path.isdir(os.path.join(WORK_DIR, plugin.path)):
+            continue
+
+        cmd_arguments = ['python', '-u', os.path.join(SCRIPT_ROOT_DIR, 'bld_qtcreator_plugins.py'),
+                         '--clean',
+                         '--qtc-build-url', qtcreator_url,
+                         '--qtc-dev-url', qtcreator_dev_url,
+                         '--plugin-path', os.path.join(WORK_DIR, plugin.path),
+                         '--build-path', WORK_DIR]
+        if bldinstallercommon.is_win_platform():
+            cmd_arguments.extend(['--buildcommand', os.path.normpath('C:/Utils/jom/jom.exe'),
+                                  '--installcommand', os.path.normpath('nmake.exe'),
+                                  '--sevenzippath', os.path.normpath('C:/Utils/sevenzip'),
+                                  '--gitpath', os.path.normpath('C:/Program Files/Git/bin')])
+        else:
+            cmd_arguments.extend(['--installcommand', 'make -j1'])
+        for module in plugin.modules:
+            cmd_arguments.extend(['--qt-module', module])
+        cmd_arguments.extend(plugin.additional_arguments)
+        for qmake_arg in plugin.qmake_arguments:
+            cmd_arguments.extend(['--add-qmake-argument', qmake_arg])
+
+        if icu_url:
+            cmd_arguments.extend(['--icu7z', icu_url])
+        if openssl_url:
+            cmd_arguments.extend(['--openssl7z', openssl_url])
+        libs_paths = []
+        for dependency_name in plugin.dependencies:
+            matches = [dep for dep in plugins if dep.name == dependency_name]
+            if not matches:
+                raise RuntimeError('did not find dependency "{0}" for plugin "{1}"'.format(dependency_name, plugin.name))
+            dependency = matches[0]
+            cmd_arguments.extend(['--plugin-search-path', os.path.join(WORK_DIR, dependency.path, 'plugins')])
+            libs_base = os.path.join(WORK_DIR, dependency.name + '-target')
+            if bldinstallercommon.is_mac_platform():
+                libs_paths.append(os.path.join(libs_base, 'PlugIns'))
+            else:
+                libs_paths.append(os.path.join(libs_base, 'lib', 'qtcreator', 'plugins'))
+        if libs_paths:
+            cmd_arguments.extend(['--add-qmake-argument', 'LIBS*=' + ' '.join(['-L'+path for path in libs_paths])])
+        cmd_arguments.extend(['--out-dev', os.path.join(WORK_DIR, plugin.name + '_dev.7z')])
+        cmd_arguments.append(os.path.join(WORK_DIR, plugin.name + '.7z'))
+        bldinstallercommon.do_execute_sub_process(cmd_arguments, WORK_DIR)
+        # source package
+        if bldinstallercommon.is_linux_platform():
+            bldinstallercommon.do_execute_sub_process(['python', '-u', os.path.join(WORK_DIR, 'qt-creator', 'scripts', 'createSourcePackages.py'),
+                                                       '-p', os.path.join(WORK_DIR, plugin.path),
+                                                       '-n', plugin.name,
+                                                       plugin.version, 'enterprise'], WORK_DIR)
 
 ###############################
 # handle_qt_creator_build
@@ -497,7 +558,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     qt_module_filenames = [module + '-' + qt_postfix + '.7z' for module in qt_modules]
     qt_module_urls = [pkg_base_path + '/' + qt_base_path + '/' + module + '/' + filename
                       for (module, filename) in zip(qt_modules, qt_module_filenames)]
-
+    qt_module_local_urls = [bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_temp', filename))
+                            for filename in qt_module_filenames]
     # Define Qt Creator build script arguments
     common_arguments = []
     if not bldinstallercommon.is_win_platform():
@@ -531,96 +593,51 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
 
     # Qt Creator plugins
     plugin_dependencies = []
-    additional_qmake_arguments = []
-    QtcPlugin = collections.namedtuple('QtcPlugin', ['name', 'path', 'dependencies', 'modules', 'additional_arguments'])
-    def make_QtcPlugin(name, path, dependencies=None, modules=None, additional_arguments=None):
-        if dependencies is None:
-            dependencies = []
-        if modules is None:
-            modules = []
-        if additional_arguments is None:
-            additional_arguments = []
-        return QtcPlugin(name=name, path=path, dependencies=dependencies, modules=modules, additional_arguments=additional_arguments)
-
+    qmake_arguments = []
     additional_plugins = []
 
     if os.path.isdir(os.path.join(WORK_DIR, "licensechecker")):
-        additional_plugins.extend([make_QtcPlugin('licensechecker', 'licensechecker')])
-        additional_qmake_arguments = ['CONFIG+=licensechecker']
+        additional_plugins.extend([make_QtcPlugin('licensechecker', 'licensechecker', qtcreator_version,
+                                                  modules=qt_module_local_urls)])
+        qmake_arguments = ['CONFIG+=licensechecker']
         plugin_dependencies = ['licensechecker']
-    additional_plugins.extend([make_QtcPlugin('vxworks-qtcreator-plugin', 'vxworks-qtcreator-plugin', dependencies=plugin_dependencies)])
-    additional_plugins.extend([make_QtcPlugin('isoiconbrowser', 'qtquickdesigner', dependencies=plugin_dependencies)])
+    additional_plugins.extend([make_QtcPlugin('vxworks-qtcreator-plugin', 'vxworks-qtcreator-plugin', qtcreator_version,
+                                              modules=qt_module_local_urls, dependencies=plugin_dependencies, qmake_arguments=qmake_arguments)])
+    additional_plugins.extend([make_QtcPlugin('isoiconbrowser', 'qtquickdesigner', qtcreator_version,
+                                              modules=qt_module_local_urls, dependencies=plugin_dependencies, qmake_arguments=qmake_arguments)])
     if bldinstallercommon.is_linux_platform():
-        additional_plugins.extend([make_QtcPlugin('perfparser', 'perfparser')])
-        additional_qmake_arguments.extend(['PERFPARSER_BUNDLED_ELFUTILS=true',
-                                           'PERFPARSER_APP_DESTDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'libexec', 'qtcreator'),
-                                           'PERFPARSER_ELFUTILS_DESTDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'lib', 'qtcreator'),
-                                           'PERFPARSER_APP_INSTALLDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'libexec', 'qtcreator'),
-                                           'PERFPARSER_ELFUTILS_INSTALLDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'lib', 'qtcreator')
-                                           ])
+        parfparser_qmake_arguments = ['PERFPARSER_BUNDLED_ELFUTILS=true',
+                                      'PERFPARSER_APP_DESTDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'libexec', 'qtcreator'),
+                                      'PERFPARSER_ELFUTILS_DESTDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'lib', 'qtcreator'),
+                                      'PERFPARSER_APP_INSTALLDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'libexec', 'qtcreator'),
+                                      'PERFPARSER_ELFUTILS_INSTALLDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'lib', 'qtcreator')
+                                     ]
+        additional_plugins.extend([make_QtcPlugin('perfparser', 'perfparser', qtcreator_version, modules=qt_module_local_urls,
+                                                  qmake_arguments=parfparser_qmake_arguments)])
     if not bldinstallercommon.is_mac_platform():
-        additional_plugins.extend([make_QtcPlugin('perfprofiler', 'perfprofiler', dependencies=plugin_dependencies)])
-        additional_plugins.extend([make_QtcPlugin('b2qt-qtcreator-plugin', 'b2qt-qtcreator-plugin',
-                                                  dependencies=plugin_dependencies + ['perfprofiler'])])
-        additional_plugins.extend([make_QtcPlugin('gammarayintegration', 'gammarayintegration',
+        additional_plugins.extend([make_QtcPlugin('perfprofiler', 'perfprofiler', qtcreator_version,
+                                                  modules=qt_module_local_urls, dependencies=plugin_dependencies, qmake_arguments=qmake_arguments)])
+        additional_plugins.extend([make_QtcPlugin('b2qt-qtcreator-plugin', 'b2qt-qtcreator-plugin', qtcreator_version, modules=qt_module_local_urls,
+                                                  dependencies=plugin_dependencies + ['perfprofiler'], qmake_arguments=qmake_arguments)])
+        additional_plugins.extend([make_QtcPlugin('gammarayintegration', 'gammarayintegration', qtcreator_version,
+                                                  modules=qt_module_local_urls + [kdsme_url, gammaray_url],
                                                   dependencies=plugin_dependencies + ['b2qt-qtcreator-plugin', 'perfprofiler'],
-                                                  modules=[kdsme_url, gammaray_url],
+                                                  qmake_arguments=qmake_arguments,
                                                   additional_arguments=[
                                                   '--deploy-command', 'python',
                                                   '--deploy-command=-u',
                                                   '--deploy-command', os.path.join(WORK_DIR, 'gammarayintegration', 'scripts', 'deploy.py')])])
-        additional_plugins.extend([make_QtcPlugin('appmanagerintegration', 'pcore-plugin-appman',
-                                                  dependencies=plugin_dependencies + ['b2qt-qtcreator-plugin'])])
+        additional_plugins.extend([make_QtcPlugin('appmanagerintegration', 'pcore-plugin-appman', qtcreator_version,
+                                                  modules=qt_module_local_urls,
+                                                  dependencies=plugin_dependencies + ['b2qt-qtcreator-plugin'],
+                                                  qmake_arguments=qmake_arguments)])
 
     # Build Qt Creator plugins
-    for plugin in additional_plugins:
-        if not os.path.isdir(os.path.join(WORK_DIR, plugin.path)):
-            continue
-
-        cmd_arguments = ['python', '-u', os.path.join(SCRIPT_ROOT_DIR, 'bld_qtcreator_plugins.py'),
-                         '--clean',
-                         '--qtc-build', os.path.join(WORK_DIR, 'qt-creator_build'),
-                         '--qtc-dev', os.path.join(WORK_DIR, 'qt-creator'),
-                         '--plugin-path', os.path.join(WORK_DIR, plugin.path),
-                         '--build-path', WORK_DIR]
-        for module_filename in qt_module_filenames:
-            cmd_arguments.extend(['--qt-module', bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_temp', module_filename))])
-        for module in plugin.modules:
-            cmd_arguments.extend(['--qt-module', module])
-        cmd_arguments.extend(plugin.additional_arguments)
-        for qmake_arg in additional_qmake_arguments:
-            cmd_arguments.extend(['--add-qmake-argument', qmake_arg])
-
-        if bldinstallercommon.is_linux_platform():
-            cmd_arguments.extend(['--icu7z', bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_temp', os.path.basename(icu_libs)))])
-        if bldinstallercommon.is_win_platform():
-            if openssl_libs:
-                cmd_args.extend(['--openssl7z', bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_temp', os.path.basename(openssl_libs)))])
-        libs_paths = []
-        for dependency_name in plugin.dependencies:
-            matches = [dep for dep in additional_plugins if dep.name == dependency_name]
-            if not matches:
-                raise RuntimeError('did not find dependency "{0}" for plugin "{1}"'.format(dependency_name, plugin.name))
-            dependency = matches[0]
-            cmd_arguments.extend(['--plugin-search-path', os.path.join(WORK_DIR, dependency.path, 'plugins')])
-            libs_base = os.path.join(WORK_DIR, dependency.name + '-target')
-            if bldinstallercommon.is_mac_platform():
-                libs_paths.append(os.path.join(libs_base, 'PlugIns'))
-            else:
-                libs_paths.append(os.path.join(libs_base, 'lib', 'qtcreator', 'plugins'))
-        if libs_paths:
-            cmd_arguments.extend(['--add-qmake-argument', 'LIBS*=' + ' '.join(['-L'+path for path in libs_paths])])
-        cmd_arguments.extend(common_arguments)
-        cmd_arguments.extend(['--out-dev', os.path.join(WORK_DIR, plugin.name + '_dev.7z')])
-        cmd_arguments.append(os.path.join(WORK_DIR, plugin.name + '.7z'))
-        bldinstallercommon.do_execute_sub_process(cmd_arguments, WORK_DIR, extra_env=build_environment)
-        # source package
-        if bldinstallercommon.is_linux_platform():
-            bldinstallercommon.do_execute_sub_process(['python', '-u', os.path.join(WORK_DIR, 'qt-creator', 'scripts', 'createSourcePackages.py'),
-                                                       '-p', os.path.join(WORK_DIR, plugin.path),
-                                                       '-n', plugin.name,
-                                                       qtcreator_version, 'enterprise'], WORK_DIR)
-
+    icu_local_url = bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_temp', os.path.basename(icu_libs))) if bldinstallercommon.is_linux_platform() else None
+    openssl_local_url = bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_temp', os.path.basename(openssl_libs))) if bldinstallercommon.is_win_platform() else None
+    qtcreator_url = bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_build', 'qtcreator.7z'))
+    qtcreator_dev_url = bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_build', 'qtcreator_dev.7z'))
+    build_qtcreator_plugins(additional_plugins, qtcreator_url, qtcreator_dev_url, icu_url=icu_local_url, openssl_url=openssl_local_url)
 
     if bldinstallercommon.is_linux_platform():
         # Create opensource source package
