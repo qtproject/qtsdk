@@ -589,8 +589,6 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         if bldinstallercommon.is_linux_platform():
             cmd_arguments.extend(['--icu7z', bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_temp', os.path.basename(icu_libs)))])
         if bldinstallercommon.is_win_platform():
-            cmd_arguments.extend(['--d3dcompiler7z', bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_temp', os.path.basename(d3d_url))),
-                                  '--opengl32sw7z', bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_temp', os.path.basename(opengl_url)))])
             if openssl_libs:
                 cmd_args.extend(['--openssl7z', bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_temp', os.path.basename(openssl_libs)))])
         libs_paths = []
