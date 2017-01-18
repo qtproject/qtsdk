@@ -318,12 +318,6 @@ def handle_gammaray_build(optionDict):
         cloneGammarayRepo(optionDict['GAMMARAY_INTEGRATION_GIT_URL'], optionDict['GAMMARAY_INTEGRATION_GIT_BRANCH_OR_TAG'], 'src')
 
     gammaray_version = optionDict['GAMMARAY_VERSION']
-    graphviz_filename = optionDict['GRAPHVIZ_BASE_FILENAME'] + '-' + optionDict['TARGET_ENV'] + '.7z'
-    graphviz_url = (optionDict['PACKAGE_STORAGE_SERVER_PATH_HTTP'] + '/' + optionDict['GRAPHVIZ_BASE_PATH']
-                    + '/' + graphviz_filename)
-    graphviz_download_filepath = os.path.join(WORK_DIR, graphviz_filename)
-    graphviz_target_path = os.path.join(WORK_DIR, 'graphviz')
-
     icu_libs = optionDict.get('ICU_LIBS') # optional
     qt_base_path = optionDict['QT_BASE_PATH']
     qt_module_urls = []
@@ -337,20 +331,11 @@ def handle_gammaray_build(optionDict):
     qt_module_urls = [qt_base_url + '/' + module + '/' + module + '-' + qt_postfix + '.7z'
                       for module in qt_modules]
 
-    # download and extract graphviz
-    if os.path.isdir(graphviz_target_path):
-        shutil.rmtree(graphviz_target_path)
-    if os.path.isfile(graphviz_download_filepath):
-        os.remove(graphviz_download_filepath)
-    bld_utils.download(graphviz_url, graphviz_download_filepath)
-    extract_graphviz_cmd = ['7z', 'x', '-y', graphviz_download_filepath,
-                   '-o' + graphviz_target_path]
-    bldinstallercommon.do_execute_sub_process(extract_graphviz_cmd, WORK_DIR)
-
     build_environment = dict(os.environ)
-    if bldinstallercommon.is_linux_platform():
-        build_environment['LD_LIBRARY_PATH'] = ':'.join(filter(None, [os.path.join(graphviz_target_path, 'lib'),
-                                                                      build_environment.get('LD_LIBRARY_PATH')]))
+    if bldinstallercommon.is_win_platform() and ('WINDOWS_UNIX_TOOLS_PATH' in optionDict):
+        # for awk/gawk, sed, bison, and flex, for internal graphviz build
+        path_key = 'Path' if 'Path' in build_environment else 'PATH'
+        build_environment[path_key] = ';'.join(['C:\\Windows\\System32', optionDict['WINDOWS_UNIX_TOOLS_PATH'], build_environment[path_key]])
 
     def common_gammaray_args():
         cmd_args = ['python', '-u', os.path.join(SCRIPT_ROOT_DIR, 'bld_module.py'),
@@ -373,7 +358,7 @@ def handle_gammaray_build(optionDict):
                      '--qt5path', os.path.join(WORK_DIR, 'kdsme_qt5_install'),
                      '--add-config-arg=-DBUILD_EXAMPLES=OFF',
                      '--add-config-arg=-DBUILD_TESTING=OFF',
-                     '--add-config-arg=-DGRAPHVIZ_ROOT={0}'.format(graphviz_target_path)])
+                     '--add-config-arg=-DWITH_INTERNAL_GRAPHVIZ=ON'])
     bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, extra_env=build_environment)
 
     # build gammaray
@@ -383,7 +368,7 @@ def handle_gammaray_build(optionDict):
                      '--qt5path', os.path.join(WORK_DIR, 'gammaray_qt5_install'),
                      '--add-config-arg=-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=FALSE',
                      '--qt5_module_url', bld_utils.file_url(os.path.join(SCRIPT_ROOT_DIR, 'module_archives', 'qt5_kdsme.7z'))])
-    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, extra_env=build_environment)
+    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR)
 
     # upload
     base_path = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/gammaray/' + gammaray_version
@@ -472,9 +457,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     icu_libs = optionDict.get('ICU_LIBS') # optional
     openssl_libs = optionDict.get('OPENSSL_LIBS') # optional
 
-    # Define paths for pre-built kdsme, graphviz and gammaray packages
+    # Define paths for pre-built kdsme and gammaray packages
     kdsme_url = (pkg_base_path + '/' + optionDict["GAMMARAY_BASE_DIR"] + '/' + target_env_dir + '/qt5_kdsme.7z')
-    graphviz_url = (pkg_base_path + '/' + optionDict["GRAPHVIZ_BASE_DIR"] + '-' + optionDict['TARGET_ENV'] + '.7z')
     gammaray_url = (pkg_base_path + '/' + optionDict["GAMMARAY_BASE_DIR"] + '/' + target_env_dir + '/qt5_gammaray.7z')
 
     # Install clang package
@@ -570,21 +554,6 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                            'PERFPARSER_ELFUTILS_INSTALLDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'lib', 'qtcreator')
                                            ])
     if not bldinstallercommon.is_mac_platform():
-        # download and extract
-        #for item in [gammaray_url, kdsme_url, graphviz_url]:
-        #    if not os.path.isdir(item):
-        #        raise RuntimeError("Package url is invalid: {0}".format(gammaray_url))
-        graphviz_download_filepath = os.path.join(WORK_DIR, 'qt-creator_temp', 'graphviz.7z')
-        graphviz_target_path = os.path.join(WORK_DIR, 'graphviz')
-        print("graphviz_download_filepath: {0}".format(graphviz_download_filepath))
-        print("graphviz_target_path: {0}".format(graphviz_target_path))
-        print("graphviz_url: {0}".format(graphviz_url))
-        if os.path.isdir(graphviz_target_path):
-            shutil.rmtree(graphviz_target_path)
-        if os.path.isfile(graphviz_download_filepath):
-            os.remove(graphviz_download_filepath)
-        bld_utils.download(graphviz_url, graphviz_download_filepath)
-        bldinstallercommon.extract_file(graphviz_download_filepath, graphviz_target_path)
         additional_plugins.extend([make_QtcPlugin('perfprofiler', 'perfprofiler', dependencies=plugin_dependencies)])
         additional_plugins.extend([make_QtcPlugin('b2qt-qtcreator-plugin', 'b2qt-qtcreator-plugin',
                                                   dependencies=plugin_dependencies + ['perfprofiler'])])
@@ -594,9 +563,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                                   additional_arguments=[
                                                   '--deploy-command', 'python',
                                                   '--deploy-command=-u',
-                                                  '--deploy-command', os.path.join(WORK_DIR, 'gammarayintegration', 'scripts', 'deploy.py'),
-                                                  '--deploy-command=--graphviz-libs',
-                                                  '--deploy-command', graphviz_target_path])])
+                                                  '--deploy-command', os.path.join(WORK_DIR, 'gammarayintegration', 'scripts', 'deploy.py')])])
         additional_plugins.extend([make_QtcPlugin('appmanagerintegration', 'pcore-plugin-appman',
                                                   dependencies=plugin_dependencies + ['b2qt-qtcreator-plugin'])])
 
