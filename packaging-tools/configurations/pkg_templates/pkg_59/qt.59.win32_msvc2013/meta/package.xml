@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>msvc2013 32-bit</DisplayName>
+    <Description>Qt 5.9.0 Prebuilt Components for msvc2013 32-bit</Description>
+    <Version>5.9.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Dependencies>qt.tools.qtcreator, qt.59.doc, qt.59.examples</Dependencies>
+    <Default>true</Default>
+    <Script>installscript.qs</Script>   <!-- File name of a script being loaded - optional. -->
+    <SortingPriority>590</SortingPriority> <!-- Priority of this component when visible in the tree. Highest priority number is on top. -->
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+

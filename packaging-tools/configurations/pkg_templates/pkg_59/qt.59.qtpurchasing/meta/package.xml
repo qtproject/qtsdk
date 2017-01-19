@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt Purchasing</DisplayName>
+    <Description>Qt Purchasing. Cross-platform APIs for handling in-app purchases on Android, iOS and macOS.</Description>
+    <Version>5.9.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Default>true</Default>
+    <SortingPriority>87</SortingPriority>
+    <Dependencies>qt.59.doc.qtpurchasing, qt.59.examples.qtpurchasing</Dependencies>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+

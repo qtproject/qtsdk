@@ -1,0 +1,161 @@
+#############################################################################
+##
+## Copyright (C) 2016 The Qt Company Ltd.
+## Contact: https://www.qt.io/licensing/
+##
+## This file is part of the release tools of the Qt Toolkit.
+##
+## $QT_BEGIN_LICENSE:GPL-EXCEPT$
+## Commercial License Usage
+## Licensees holding valid commercial Qt licenses may use this file in
+## accordance with the commercial license agreement provided with the
+## Software or, alternatively, in accordance with the terms contained in
+## a written agreement between you and The Qt Company. For licensing terms
+## and conditions see https://www.qt.io/terms-conditions. For further
+## information use the contact form at https://www.qt.io/contact-us.
+##
+## GNU General Public License Usage
+## Alternatively, this file may be used under the terms of the GNU
+## General Public License version 3 as published by the Free Software
+## Foundation with exceptions as appearing in the file LICENSE.GPL3-EXCEPT
+## included in the packaging of this file. Please review the following
+## information to ensure the GNU General Public License requirements will
+## be met: https://www.gnu.org/licenses/gpl-3.0.html.
+##
+## $QT_END_LICENSE$
+##
+#############################################################################
+
+
+[qt.59.android_x86]
+archives:               59.android_x86.qtbase,
+                        59.android_x86.qtconnectivity,
+                        59.android_x86.qtandroidextras,
+                        59.android_x86.qtwebchannel,
+                        59.android_x86.qtmultimedia,
+                        59.android_x86.qttranslations,
+                        59.android_x86.qtgraphicaleffects,
+                        59.android_x86.qtsvg,
+                        59.android_x86.qtdeclarative,
+                        59.android_x86.qtwebsockets,
+                        59.android_x86.qtimageformats,
+                        59.android_x86.qttools,
+                        59.android_x86.qtxmlpatterns,
+                        59.android_x86.qtsensors,
+                        59.android_x86.qtlocation,
+                        59.android_x86.qtserialport,
+                        59.android_x86.qtquickcontrols,
+                        59.android_x86.qtquickcontrols2,
+                        59.android_x86.qt3d,
+                        59.android_x86.qtcanvas3d,
+                        59.android_x86.qtwebview,
+                        59.android_x86.qtserialbus,
+                        59.android_x86.qtscxml,
+                        59.android_x86.mingw492.runtime
+target_install_base:    /%QT_VERSION_MINOR%/android_x86
+[59.android_x86.qtbase]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtbase/qtbase-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+[59.android_x86.qtconnectivity]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtconnectivity/qtconnectivity-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+[59.android_x86.qtandroidextras]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtandroidextras/qtandroidextras-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+[59.android_x86.qtwebchannel]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebchannel/qtwebchannel-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+[59.android_x86.qtmultimedia]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtmultimedia/qtmultimedia-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+[59.android_x86.qttranslations]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qttranslations/qttranslations-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+[59.android_x86.qtgraphicaleffects]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgraphicaleffects/qtgraphicaleffects-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+[59.android_x86.qtsvg]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtsvg/qtsvg-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+[59.android_x86.qtdeclarative]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtdeclarative/qtdeclarative-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+[59.android_x86.qtwebsockets]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebsockets/qtwebsockets-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+[59.android_x86.qtimageformats]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtimageformats/qtimageformats-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+[59.android_x86.qttools]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qttools/qttools-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+[59.android_x86.qtxmlpatterns]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtxmlpatterns/qtxmlpatterns-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+[59.android_x86.qtsensors]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtsensors/qtsensors-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+[59.android_x86.qtlocation]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtlocation/qtlocation-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+[59.android_x86.qtserialport]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtserialport/qtserialport-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+[59.android_x86.qtquickcontrols]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtquickcontrols/qtquickcontrols-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+[59.android_x86.qtquickcontrols2]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtquickcontrols2/qtquickcontrols2-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+[59.android_x86.qt3d]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qt3d/qt3d-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+[59.android_x86.qtcanvas3d]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtcanvas3d/qtcanvas3d-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+[59.android_x86.qtwebview]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebview/qtwebview-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+[59.android_x86.qtserialbus]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtserialbus/qtserialbus-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+[59.android_x86.qtscxml]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscxml/qtscxml-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+[59.android_x86.mingw492.runtime]
+archive_uri:            http://download.qt.io/development_releases/prebuilt/mingw_32/i686-4.9.2-release-posix-dwarf-rt_v3-rev1-runtime.7z
+target_install_dir:     /bin
+
+
+# QtCharts provided as separate installable component in installer
+[qt.59.qtcharts]
+[qt.59.qtcharts.android_x86]
+archives:               59.qtcharts.android_x86
+target_install_base:    /%QT_VERSION_MINOR%/android_x86
+[59.qtcharts.android_x86]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtcharts/qtcharts-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+
+# QtDataVisualization provided as separate installable component in installer
+[qt.59.qtdatavis3d]
+[qt.59.qtdatavis3d.android_x86]
+archives:               59.qtdatavis3d.android_x86
+target_install_base:    /%QT_VERSION_MINOR%/android_x86
+[59.qtdatavis3d.android_x86]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtdatavis3d/qtdatavis3d-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+
+# QtPurchasing provided as separate installable component in installer
+[qt.59.qtpurchasing]
+[qt.59.qtpurchasing.android_x86]
+archives:               59.qtpurchasing.android_x86
+target_install_base:    /%QT_VERSION_MINOR%/android_x86
+[59.qtpurchasing.android_x86]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtpurchasing/qtpurchasing-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+
+# QtScript provided as separate installable component in installer
+[qt.59.qtscript]
+[qt.59.qtscript.android_x86]
+archives:               59.qtscript.android_x86
+target_install_base:    /%QT_VERSION_MINOR%/android_x86
+[59.qtscript.android_x86]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscript/qtscript-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+
+# QtGamePad provided as separate installable component in installer
+[qt.59.qtgamepad]
+[qt.59.qtgamepad.android_x86]
+archives:               59.qtgamepad.android_x86
+target_install_base:    /%QT_VERSION_MINOR%/android_x86
+[59.qtgamepad.android_x86]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgamepad/qtgamepad-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+
+# QtNetworkAuth provided as separate installable component in installer
+[qt.59.qtnetworkauth]
+[qt.59.qtnetworkauth.android_x86]
+archives:               59.qtnetworkauth.android_x86
+target_install_base:    /%QT_VERSION_MINOR%/android_x86
+[59.qtnetworkauth.android_x86]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtnetworkauth/qtnetworkauth-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
+
+# QtSpeech provided as separate installable component in installer
+[qt.59.qtspeech]
+[qt.59.qtspeech.android_x86]
+archives:               59.qtspeech.android_x86
+target_install_base:    /%QT_VERSION_MINOR%/android_x86
+[59.qtspeech.android_x86]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtspeech/qtspeech-Windows-Windows_7-Mingw49-Android-Android_ANY-X86.7z
