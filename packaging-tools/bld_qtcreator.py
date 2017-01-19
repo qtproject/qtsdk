@@ -169,6 +169,8 @@ if __name__ == "__main__":
         '..', 'qt-creator_build'))
     qtCreatorInstallDirectory = os.path.abspath(os.path.join(qtCreatorSourceDirectory,
         '..', 'qt-creator_install'))
+    qtCreatorTempDevDirectory = os.path.abspath(os.path.join(qtCreatorSourceDirectory,
+        '..', 'qt-creator_dev'))
 
     tempPath = os.path.abspath(os.path.join(qtCreatorSourceDirectory,
         '..', 'qt-creator_temp'))
@@ -274,8 +276,9 @@ if __name__ == "__main__":
         runInstallCommand('dmg', qtCreatorBuildDirectory,
             callerArguments = callerArguments, init_environment = environment)
 
+    bldinstallercommon.remove_tree(qtCreatorTempDevDirectory)
     runCommand(['python', '-u', os.path.join(qtCreatorSourceDirectory, 'scripts', 'createDevPackage.py'),
                 '--source', qtCreatorSourceDirectory, '--build', qtCreatorBuildDirectory,
                 '--verbose', '-o', os.path.join(qtCreatorBuildDirectory, 'qtcreator_dev.7z'),
-                os.path.abspath(os.path.join(qtCreatorSourceDirectory, '..', 'qt-creator_dev'))],
+                qtCreatorTempDevDirectory],
                 qtCreatorBuildDirectory, callerArguments = callerArguments, init_environment = environment)
