@@ -222,7 +222,7 @@ if __name__ == "__main__":
     buildGitSHA = gitSHA(qtCreatorSourceDirectory, callerArguments)
     qtCreatorProFile = os.path.join(qtCreatorSourceDirectory, 'qtcreator.pro')
 
-    qmakeCommandArguments = "-r {0} QTC_PREFIX={1} DEFINES+=IDE_REVISION={2} CONFIG+={3}".format(
+    qmakeCommandArguments = "{0} QTC_PREFIX={1} DEFINES+=IDE_REVISION={2} CONFIG+={3}".format(
         qtCreatorProFile, qtCreatorInstallDirectory, buildGitSHA, buildType)
 
     # hack to ensure plugins depending on declarative are also compiled with 2.7.0/5.0.1
