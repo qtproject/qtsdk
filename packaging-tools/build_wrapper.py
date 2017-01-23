@@ -597,6 +597,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                                   '--deploy-command', os.path.join(WORK_DIR, 'gammarayintegration', 'scripts', 'deploy.py'),
                                                   '--deploy-command=--graphviz-libs',
                                                   '--deploy-command', graphviz_target_path])])
+        additional_plugins.extend([make_QtcPlugin('appmanagerintegration', 'pcore-plugin-appman',
+                                                  dependencies=plugin_dependencies + ['b2qt-qtcreator-plugin'])])
 
     # Build Qt Creator plugins
     for plugin in additional_plugins:
