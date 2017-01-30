@@ -512,8 +512,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     elif bldinstallercommon.is_mac_platform():
         cmd_args.extend(['--keychain_unlock_script', '/Users/qt/unlock-keychain.sh'])
     else:
-        d3d_url = 'http://download.qt.io/development_releases/prebuilt/d3dcompiler/msvc2013/d3dcompiler_47-x86.7z'
-        opengl_url = 'http://download.qt.io/development_releases/prebuilt/llvmpipe/windows/opengl32sw-32.7z'
+        d3d_url = optionDict['D3D_URL']
+        opengl_url = optionDict['OPENGLSW_URL']
         cmd_args.extend(['--d3dcompiler7z', d3d_url,
                          '--opengl32sw7z', opengl_url])
         if openssl_libs:
