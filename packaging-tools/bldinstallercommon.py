@@ -48,6 +48,7 @@ import re
 import shutil
 import subprocess
 from subprocess import PIPE, STDOUT
+import tempfile
 import sys
 import stat
 import traceback
@@ -780,6 +781,29 @@ def clone_repository(repo_url, repo_branch_or_tag, destination_folder, full_clon
     if init_subrepos:
         cmd_args = ['git', 'submodule', 'update', '--init']
         do_execute_sub_process(cmd_args, destination_folder)
+
+
+###############################
+# git archive given repository
+###############################
+def git_archive_repo(repo_and_ref):
+    # define archive
+    (repository, ref) = repo_and_ref.split("#")
+    project_name = repository.split("/")[-1].split(".")[0]
+    archive_name = os.path.join(SCRIPT_ROOT_DIR, project_name + "-" + ref + ".tar.gz")
+    if os.path.isfile(archive_name):
+        os.remove(archive_name)
+    # create temp directory
+    checkout_dir = tempfile.mkdtemp()
+    # clone given repo to temp
+    clone_repository(repository, ref, checkout_dir, full_clone=True, init_subrepos=True)
+    # git archive repo with given name
+    archive_file = open(archive_name, 'w')
+    subprocess.check_call("git --no-pager archive %s" % (ref), stdout=archive_file, stderr=STDOUT, shell=True, cwd=checkout_dir)
+    archive_file.close()
+    print('Created archive: {0}'.format(archive_name))
+    shutil.rmtree(checkout_dir, ignore_errors=True)
+    return archive_name
 
 
 ###############################

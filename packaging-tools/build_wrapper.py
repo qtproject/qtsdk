@@ -210,6 +210,13 @@ def handle_ifw_build(optionDict):
     bld_ifw_installer = True if 'CREATE_IFW_INSTALLER' in optionDict else False
     bld_ifw_tools.build_ifw(ifw_bld_options, bld_ifw_installer)
 
+    artifacts_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.IFW_BUILD_ARTIFACTS_DIR)
+
+    # create source archive
+    archive_name = bldinstallercommon.git_archive_repo(ifw_url + "#" + ifw_branch)
+    print("Moving {0} into {1}".format(archive_name, os.path.join(artifacts_dir, optionDict['LICENSE'] + "-", archive_name)))
+    shutil.move(archive_name, artifacts_dir)
+
     ## create destination dirs on network disk
     # internal
     create_remote_dirs(optionDict, optionDict['PACKAGE_STORAGE_SERVER_ADDR'], ifw_dest_dir)
@@ -225,7 +232,6 @@ def handle_ifw_build(optionDict):
         cmd_args_mkdir_ext = cmd_args_mkdir_pkg + ['ssh', ext_server_base_url, 'mkdir', '-p', ext_dest_dir]
         bldinstallercommon.do_execute_sub_process(cmd_args_mkdir_ext, SCRIPT_ROOT_DIR)
 
-    artifacts_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.IFW_BUILD_ARTIFACTS_DIR)
     # Create disk image(s) if any .app found
     if bldinstallercommon.is_mac_platform():
         artifact_list = [f for f in os.listdir(artifacts_dir) if f.endswith(".app")]
@@ -243,7 +249,7 @@ def handle_ifw_build(optionDict):
         installer_name, installer_name_base, installer_name_final = generate_installer_final_name(optionDict, file_name)
         sign_installer(artifacts_dir, installer_name, installer_name_base)
     # Upload
-    files_to_upload = [f for f in os.listdir(artifacts_dir) if f.endswith((".dmg", ".run", ".exe", ".7z"))]
+    files_to_upload = [f for f in os.listdir(artifacts_dir) if f.endswith((".dmg", ".run", ".exe", ".7z", ".tar.gz"))]
     for item in files_to_upload:
         if bldinstallercommon.is_win_platform():
             cmd_args = [optionDict['SCP_COMMAND'], item, optionDict['PACKAGE_STORAGE_SERVER_ADDR'] + ':' + optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + optionDict['LICENSE'] + '/ifw/' + ifw_dest_dir_name + '/']
@@ -1051,25 +1057,7 @@ def build_extra_module_src_pkg(optionDict):
 # git archive given repository
 ###############################
 def git_archive_repo(optionDict, repo_and_ref):
-    import tempfile
-    import subprocess
-    from subprocess import STDOUT
-    # define archive
-    (repository, ref) = repo_and_ref.split("#")
-    project_name = repository.split("/")[-1].split(".")[0]
-    archive_name = os.path.join(SCRIPT_ROOT_DIR, project_name + "-" + ref + ".tar.gz")
-    if os.path.isfile(archive_name):
-        os.remove(archive_name)
-    # create temp directory
-    checkout_dir = tempfile.mkdtemp()
-    # clone given repo to temp
-    bldinstallercommon.clone_repository(repository, ref, checkout_dir, full_clone=True, init_subrepos=True)
-    # git archive repo with given name
-    archive_file = open(archive_name, 'w')
-    subprocess.check_call("git --no-pager archive %s" % (ref), stdout=archive_file, stderr=STDOUT, shell=True, cwd=checkout_dir)
-    archive_file.close()
-    print('Created archive: {0}'.format(archive_name))
-    shutil.rmtree(checkout_dir, ignore_errors=True)
+    archive_name = bldinstallercommon.git_archive_repo(repo_and_ref)
     # Create remote dest directories
     remote_dest_dir_base = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + project_name + '/' + ref
     remote_dest_dir = remote_dest_dir_base + '/' + optionDict['BUILD_NUMBER']
