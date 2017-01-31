@@ -322,7 +322,7 @@ def handle_gammaray_build(optionDict):
     qt_base_path = optionDict['QT_BASE_PATH']
     qt_module_urls = []
 
-    qt_modules = ['qtbase', 'qtdeclarative', 'qtscript', 'qtxmlpatterns']
+    qt_modules = ['qtbase', 'qtdeclarative', 'qtscript', 'qttools', 'qtxmlpatterns']
     pkg_base_path = optionDict['PACKAGE_STORAGE_SERVER_PATH_HTTP']
     # Check if the archives reside on network disk (http) or on local file system
     scheme = "" if urlparse.urlparse(pkg_base_path).scheme != "" else "file://"
