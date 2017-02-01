@@ -168,6 +168,8 @@ def handle_ifw_build(optionDict):
     os.chdir(SCRIPT_ROOT_DIR)
     # Qt
     qt_src_pkg = optionDict['IFW_QT_SRC_PKG'] # mandatory env variable
+    if not qt_src_pkg.endswith(('.zip', '.7z', '.tar.gz'))
+        qt_src_pkg = qt_src_pkg + '.zip' if bldinstallercommon.is_win_platform() else qt_src_pkg + '.tar.gz'
     # OpenSSL
     openssl_dir = optionDict.get('IFW_OPENSSL_DIR', '')
     qt_configure_options = bld_ifw_tools.get_default_qt_configure_options(openssl_dir)
