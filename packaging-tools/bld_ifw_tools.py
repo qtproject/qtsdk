@@ -98,7 +98,7 @@ def get_common_qt_configure_options():
     options += '-no-sql-sqlite -no-qml-debug '
     # Windows
     if plat.startswith('win'):
-        options += '-target xp -no-icu -mp '
+        options += '-no-icu -mp '
     # Unix
     else:
         # OSX and Linux
