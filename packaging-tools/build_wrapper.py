@@ -504,9 +504,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         common_arguments.extend(['--installcommand', 'make -j1'])
     else:
         common_arguments.extend(['--buildcommand', os.path.normpath('C:/Utils/jom/jom.exe'),
-                         '--installcommand', os.path.normpath('nmake.exe'),
-                         '--sevenzippath', os.path.normpath('C:/Utils/sevenzip'),
-                         '--gitpath', os.path.normpath('C:/Program Files/Git/bin')])
+                         '--installcommand', os.path.normpath('nmake.exe')])
     cmd_args = ['python', '-u', os.path.normpath(SCRIPT_ROOT_DIR + '/bld_qtcreator.py'),
                 '--clean',
                 '--qt5path', os.path.normpath(WORK_DIR + '/qt5_install_dir'),
