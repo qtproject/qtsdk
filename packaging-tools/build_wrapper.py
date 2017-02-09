@@ -482,7 +482,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     bld_utils.download(clang_url, clang_download_filepath)
     bldinstallercommon.extract_file(clang_download_filepath, clang_target_path)
     build_environment['LLVM_INSTALL_DIR'] = os.path.join(WORK_DIR, 'libclang')
-    if bldinstallercommon.is_win_platform() and not '4.1' in qtcreator_version:
+    if bldinstallercommon.is_win_platform() and not '64' in optionDict['TARGET_ENV']:
         optimized_libclang_dll = get_optimized_libclang_dll(optionDict, pkg_base_path)
         target_libclang_dll = os.path.join(build_environment['LLVM_INSTALL_DIR'], 'bin', 'libclang.dll')
         shutil.copyfile(optimized_libclang_dll, target_libclang_dll)
