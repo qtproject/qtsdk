@@ -694,6 +694,9 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
             file_upload_list.append((plugin_name, target_env_dir + '/' + plugin_name))
         if os.path.isfile(os.path.join(WORK_DIR, plugin_dev_name)):
             file_upload_list.append((plugin_dev_name, target_env_dir + '/' + plugin_dev_name))
+    if bldinstallercommon.is_win_platform():
+        file_upload_list.append(('qt-creator_build/qtcreatorcdbext.7z', target_env_dir + '/qtcreatorcdbext.7z'))
+        snapshot_upload_list.append((target_env_dir + '/qtcreatorcdbext.7z', 'installer_source/' + target_env_dir + '/qtcreatorcdbext.7z'))
 
     # upload files
     for source, destination in file_upload_list:

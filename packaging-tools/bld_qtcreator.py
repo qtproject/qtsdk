@@ -171,6 +171,12 @@ if __name__ == "__main__":
         '..', 'qt-creator_install'))
     qtCreatorTempDevDirectory = os.path.abspath(os.path.join(qtCreatorSourceDirectory,
         '..', 'qt-creator_dev'))
+    if bldinstallercommon.is_win_platform():
+        cdbextSourceDirectory = os.path.join(qtCreatorSourceDirectory, 'src', 'libs', 'qtcreatorcdbext')
+        cdbextBuildDirectory = os.path.abspath(os.path.join(qtCreatorSourceDirectory,
+            '..', 'cdbextension_build'))
+        cdbextInstallDirectory = os.path.abspath(os.path.join(qtCreatorSourceDirectory,
+            '..', 'cdbextension_install'))
 
     tempPath = os.path.abspath(os.path.join(qtCreatorSourceDirectory,
         '..', 'qt-creator_temp'))
@@ -188,6 +194,9 @@ if __name__ == "__main__":
         bldinstallercommon.remove_tree(callerArguments.qt5path)
         bldinstallercommon.remove_tree(qtCreatorBuildDirectory)
         bldinstallercommon.remove_tree(qtCreatorInstallDirectory)
+        if bldinstallercommon.is_win_platform():
+            bldinstallercommon.remove_tree(cdbextBuildDirectory)
+            bldinstallercommon.remove_tree(cdbextInstallDirectory)
         bldinstallercommon.remove_tree(tempPath)
 
     if not os.path.lexists(callerArguments.qt5path) and not callerArguments.qt_modules:
@@ -276,6 +285,20 @@ if __name__ == "__main__":
         runInstallCommand('dmg', qtCreatorBuildDirectory,
             callerArguments = callerArguments, init_environment = environment)
 
+    # cdbextension
+    if bldinstallercommon.is_win_platform():
+        runCommand([qmakeBinary, 'QTC_PREFIX=' + cdbextInstallDirectory, 'CONFIG+=' + buildType, cdbextSourceDirectory],
+                   cdbextBuildDirectory, callerArguments = callerArguments, init_environment = environment)
+        runBuildCommand(currentWorkingDirectory = cdbextBuildDirectory,
+                        callerArguments = callerArguments, init_environment = environment)
+        runInstallCommand('install', currentWorkingDirectory = cdbextBuildDirectory,
+                          callerArguments = callerArguments, init_environment = environment)
+        runCommand(['7z.exe', 'a', '-mx9', os.path.join(qtCreatorBuildDirectory, 'qtcreatorcdbext.7z'),
+                    os.path.join(cdbextInstallDirectory, '*')],
+                    currentWorkingDirectory = qtCreatorBuildDirectory, callerArguments = callerArguments,
+                    init_environment = environment)
+
+    # dev package
     bldinstallercommon.remove_tree(qtCreatorTempDevDirectory)
     runCommand(['python', '-u', os.path.join(qtCreatorSourceDirectory, 'scripts', 'createDevPackage.py'),
                 '--source', qtCreatorSourceDirectory, '--build', qtCreatorBuildDirectory,
