@@ -436,9 +436,7 @@ def build_qtcreator_plugins(plugins, qtcreator_url, qtcreator_dev_url, icu_url=N
                          '--build-path', WORK_DIR]
         if bldinstallercommon.is_win_platform():
             cmd_arguments.extend(['--buildcommand', os.path.normpath('C:/Utils/jom/jom.exe'),
-                                  '--installcommand', os.path.normpath('nmake.exe'),
-                                  '--sevenzippath', os.path.normpath('C:/Utils/sevenzip'),
-                                  '--gitpath', os.path.normpath('C:/Program Files/Git/bin')])
+                                  '--installcommand', os.path.normpath('nmake.exe')])
         else:
             cmd_arguments.extend(['--installcommand', 'make -j1'])
         for module in plugin.modules:
