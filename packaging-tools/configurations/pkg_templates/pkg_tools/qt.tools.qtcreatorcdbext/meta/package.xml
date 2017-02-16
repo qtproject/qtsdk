@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt Creator %QTC_DISPLAY_VERSION% CDB Debugger Support</DisplayName>
+    <Description>CDB Debugger support for Qt Creator</Description>
+    <Version>%QTC_VERSION%-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Dependencies>qt.tools.qtcreator</Dependencies>
+    <Default>true</Default>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+

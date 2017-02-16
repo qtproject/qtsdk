@@ -44,3 +44,9 @@ arg_configurations_file:    offline_installer_jobs/qtcreator/win_x86_msvc2015
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
 installer_name:             qt-creator-opensource-windows-x86-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:
+
+[release.qtcreator.offline.windows.x64]
+arg_configurations_file:    offline_installer_jobs/qtcreator/win_x64_msvc2015
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
+installer_name:             qt-creator-opensource-windows-x86_64-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:
