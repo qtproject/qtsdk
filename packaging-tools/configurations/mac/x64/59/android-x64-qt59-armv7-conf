@@ -50,7 +50,8 @@ archives:               59.android_armv7.qtbase,
                         59.android_armv7.qtcanvas3d,
                         59.android_armv7.qtwebview,
                         59.android_armv7.qtserialbus,
-                        59.android_armv7.qtscxml
+                        59.android_armv7.qtscxml,
+                        59.android_armv7.qtgamepad
 target_install_base:    /%QT_VERSION_MINOR%/android_armv7
 [59.android_armv7.qtbase]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtbase/qtbase-OSX-OSX_10_10-GCC-Android-Android_ANY-ARMv7.7z
@@ -98,6 +99,8 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebview/qtwebview-OSX-OS
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtserialbus/qtserialbus-OSX-OSX_10_10-GCC-Android-Android_ANY-ARMv7.7z
 [59.android_armv7.qtscxml]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscxml/qtscxml-OSX-OSX_10_10-GCC-Android-Android_ANY-ARMv7.7z
+[59.android_armv7.qtgamepad]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgamepad/qtgamepad-OSX-OSX_10_10-GCC-Android-Android_ANY-ARMv7.7z
 
 # QtCharts provided as separate installable component in installer
 [qt.59.qtcharts]
@@ -130,14 +133,6 @@ archives:               59.qtscript.android_armv7
 target_install_base:    /%QT_VERSION_MINOR%/android_armv7
 [59.qtscript.android_armv7]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscript/qtscript-OSX-OSX_10_10-GCC-Android-Android_ANY-ARMv7.7z
-
-# QtGamePad provided as separate installable component in installer
-[qt.59.qtgamepad]
-[qt.59.qtgamepad.android_armv7]
-archives:               59.qtgamepad.android_armv7
-target_install_base:    /%QT_VERSION_MINOR%/android_armv7
-[59.qtgamepad.android_armv7]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgamepad/qtgamepad-OSX-OSX_10_10-GCC-Android-Android_ANY-ARMv7.7z
 
 # QtNetworkAuth provided as separate installable component in installer
 [qt.59.qtnetworkauth]

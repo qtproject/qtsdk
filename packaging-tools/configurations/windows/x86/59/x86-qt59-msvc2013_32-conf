@@ -50,6 +50,7 @@ archives:               59.win32_msvc2013.qtbase,
                         59.win32_msvc2013.qtcanvas3d,
                         59.win32_msvc2013.qtserialbus,
                         59.win32_msvc2013.qtscxml,
+                        59.win32_msvc2013.qtgamepad,
                         59.win32_msvc2013.d3d_compiler_47.x86,
                         59.win32_msvc2013.opengl32sw.x86
 target_install_base:    /%QT_VERSION_MINOR%/msvc2013
@@ -99,6 +100,8 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtcanvas3d/qtcanvas3d-Wind
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtserialbus/qtserialbus-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86.7z
 [59.win32_msvc2013.qtscxml]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscxml/qtscxml-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86.7z
+[59.win32_msvc2013.qtgamepad]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgamepad/qtgamepad-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86.7z
 [59.win32_msvc2013.d3d_compiler_47.x86]
 archive_uri:            http://download.qt.io/development_releases/prebuilt/d3dcompiler/msvc2013/d3dcompiler_47-x86.7z
 target_install_dir:     /bin
@@ -146,14 +149,6 @@ archives:               59.qtscript.win32_msvc2013
 target_install_base:    /%QT_VERSION_MINOR%/msvc2013
 [59.qtscript.win32_msvc2013]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscript/qtscript-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86.7z
-
-# QtGamePad provided as separate installable component in installer
-[qt.59.qtgamepad]
-[qt.59.qtgamepad.win32_msvc2013]
-archives:               59.qtgamepad.win32_msvc2013
-target_install_base:    /%QT_VERSION_MINOR%/msvc2013
-[59.qtgamepad.win32_msvc2013]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgamepad/qtgamepad-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86.7z
 
 # QtNetworkAuth provided as separate installable component in installer
 [qt.59.qtnetworkauth]

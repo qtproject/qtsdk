@@ -49,7 +49,8 @@ archives:               59.clang_64.qtbase,
                         59.clang_64.qtcanvas3d,
                         59.clang_64.qtwebview,
                         59.clang_64.qtserialbus,
-                        59.clang_64.qtscxml
+                        59.clang_64.qtscxml,
+                        59.clang_64.qtgamepad
 target_install_base:    /%QT_VERSION_MINOR%/clang_64
 [59.clang_64.qtbase]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtbase/qtbase-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
@@ -97,6 +98,8 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebview/qtwebview-OSX-OS
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtserialbus/qtserialbus-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
 [59.clang_64.qtscxml]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscxml/qtscxml-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
+[59.clang_64.qtgamepad]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgamepad/qtgamepad-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
 
 
 # QtCharts provided as separate installable component in installer
@@ -146,14 +149,6 @@ archives:               59.qtscript.clang_64
 target_install_base:    /%QT_VERSION_MINOR%/clang_64
 [59.qtscript.clang_64]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscript/qtscript-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
-
-# QtGamePad provided as separate installable component in installer
-[qt.59.qtgamepad]
-[qt.59.qtgamepad.clang_64]
-archives:               59.qtgamepad.clang_64
-target_install_base:    /%QT_VERSION_MINOR%/clang_64
-[59.qtgamepad.clang_64]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgamepad/qtgamepad-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.7z
 
 # QtNetworkAuth provided as separate installable component in installer
 [qt.59.qtnetworkauth]

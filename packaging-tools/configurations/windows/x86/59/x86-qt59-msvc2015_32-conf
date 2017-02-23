@@ -51,6 +51,7 @@ archives:               59.win32_msvc2015.qtbase,
                         59.win32_msvc2015.qtwebview,
                         59.win32_msvc2015.qtserialbus,
                         59.win32_msvc2015.qtscxml,
+                        59.win32_msvc2015.qtgamepad,
                         59.win32_msvc2015.d3d_compiler_47.x86,
                         59.win32_msvc2015.opengl32sw.x86
 target_install_base:    /%QT_VERSION_MINOR%/msvc2015
@@ -102,6 +103,8 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebview/qtwebview-Window
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtserialbus/qtserialbus-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z
 [59.win32_msvc2015.qtscxml]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscxml/qtscxml-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z
+[59.win32_msvc2015.qtgamepad]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgamepad/qtgamepad-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z
 [59.win32_msvc2015.d3d_compiler_47.x86]
 archive_uri:            http://download.qt.io/development_releases/prebuilt/d3dcompiler/msvc2013/d3dcompiler_47-x86.7z
 target_install_dir:     /bin
@@ -149,14 +152,6 @@ archives:               59.qtscript.win32_msvc2015
 target_install_base:    /%QT_VERSION_MINOR%/msvc2015
 [59.qtscript.win32_msvc2015]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscript/qtscript-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z
-
-# QtGamePad provided as separate installable component in installer
-[qt.59.qtgamepad]
-[qt.59.qtgamepad.win32_msvc2015]
-archives:               59.qtgamepad.win32_msvc2015
-target_install_base:    /%QT_VERSION_MINOR%/msvc2015
-[59.qtgamepad.win32_msvc2015]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgamepad/qtgamepad-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z
 
 # QtWebEngine provided as separate installable component in installer
 [qt.59.qtwebengine]

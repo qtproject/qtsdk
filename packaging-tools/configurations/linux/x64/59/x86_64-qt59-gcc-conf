@@ -51,6 +51,7 @@ archives:               59.gcc_64.qtbase,
                         59.gcc_64.qtwebview,
                         59.gcc_64.qtserialbus,
                         59.gcc_64.qtscxml,
+                        59.gcc_64.qtgamepad,
                         59.gcc_64.icu
 target_install_base:    /%QT_VERSION_MINOR%/gcc_64
 [59.gcc_64.qtbase]
@@ -99,6 +100,8 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebview/qtwebview-Linux-
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtserialbus/qtserialbus-Linux-RHEL_7_2-GCC-Linux-RHEL_7_2-X86_64.7z
 [59.gcc_64.qtscxml]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscxml/qtscxml-Linux-RHEL_7_2-GCC-Linux-RHEL_7_2-X86_64.7z
+[59.gcc_64.qtgamepad]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgamepad/qtgamepad-Linux-RHEL_7_2-GCC-Linux-RHEL_7_2-X86_64.7z
 [59.gcc_64.icu]
 archive_uri:            http://download.qt.io/development_releases/prebuilt/icu/prebuilt/56.1/icu-linux-g++-Rhel7.2-x64.7z
 target_install_dir:     /lib
@@ -152,14 +155,6 @@ archives:               59.qtscript.gcc_64
 target_install_base:    /%QT_VERSION_MINOR%/gcc_64
 [59.qtscript.gcc_64]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscript/qtscript-Linux-RHEL_7_2-GCC-Linux-RHEL_7_2-X86_64.7z
-
-# QtGamePad provided as separate installable component in installer
-[qt.59.qtgamepad]
-[qt.59.qtgamepad.gcc_64]
-archives:               59.qtgamepad.gcc_64
-target_install_base:    /%QT_VERSION_MINOR%/gcc_64
-[59.qtgamepad.gcc_64]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgamepad/qtgamepad-Linux-RHEL_7_2-GCC-Linux-RHEL_7_2-X86_64.7z
 
 # QtNetworkAuth provided as separate installable component in installer
 [qt.59.qtnetworkauth]

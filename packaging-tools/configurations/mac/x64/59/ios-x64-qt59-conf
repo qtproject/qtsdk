@@ -47,7 +47,8 @@ archives:               59.ios.qtbase,
                         59.ios.qt3d,
                         59.ios.qtcanvas3d,
                         59.ios.qtwebview,
-                        59.ios.qtscxml
+                        59.ios.qtscxml,
+                        59.ios.qtgamepad
 target_install_base:    /%QT_VERSION_MINOR%/ios
 [59.ios.qtbase]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtbase/qtbase-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
@@ -89,7 +90,8 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtcanvas3d/qtcanvas3d-OSX-
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebview/qtwebview-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 [59.ios.qtscxml]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscxml/qtscxml-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
-
+[59.ios.qtgamepad]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgamepad/qtgamepad-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 
 # QtCharts provided as separate installable component in installer
 [qt.59.qtcharts]
@@ -122,14 +124,6 @@ archives:               59.qtscript.ios
 target_install_base:    /%QT_VERSION_MINOR%/ios
 [59.qtscript.ios]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscript/qtscript-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
-
-# QtGamePad provided as separate installable component in installer
-[qt.59.qtgamepad]
-[qt.59.qtgamepad.ios]
-archives:               59.qtgamepad.ios
-target_install_base:    /%QT_VERSION_MINOR%/ios
-[59.qtgamepad.ios]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgamepad/qtgamepad-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 
 # QtNetworkAuth provided as separate installable component in installer
 [qt.59.qtnetworkauth]
