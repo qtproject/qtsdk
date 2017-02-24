@@ -759,7 +759,7 @@ def handle_installer_build(optionDict, project_name, installer_type):
     # Trigger rta cases
     trigger_rta(optionDict, os.path.join(SCRIPT_ROOT_DIR, pkg_constants.RTA_DESCRIPTION_FILE_DIR_NAME))
     # Do we upload the installers to opensource/public network drive?
-    if 'EXPORT_OPENSOURCE_INSTALLER' in optionDict:
+    if optionDict.get('EXPORT_OPENSOURCE_INSTALLER', '').lower() in ["yes", "true", "1"]:
         # opensource distribution server address and path
         ext_server_base_url  = optionDict['EXT_SERVER_BASE_URL']
         ext_server_base_path = optionDict['EXT_SERVER_BASE_PATH']
