@@ -137,19 +137,13 @@ def handle_qt_licheck_build(optionDict):
         elif optionDict['TARGET_ENV'].lower().startswith("linux"):
             cmd_args = ['make', '-j6', '-f', 'Makefile_unix']
             bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
-            cmd_args = ['strip', 'licheck']
-            bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
-            if optionDict['TARGET_ENV'].find("x64") >= 1:
-                cmd_args = ['rsync', '-r', 'licheck', upload_path +'licheck64']
-            else:
-                cmd_args = ['rsync', '-r', 'licheck', upload_path +'licheck32']
+            licheck = 'licheck64' if optionDict['TARGET_ENV'].find("x64") >= 1 else 'licheck32'
+            cmd_args = ['rsync', '-r', licheck, upload_path + licheck]
             bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
         else:
             cmd_args = ['make', '-j6', '-f', 'Makefile_osx']
             bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
-            cmd_args = ['strip', 'licheck']
-            bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
-            cmd_args = ['rsync', '-r', 'licheck', upload_path +'licheck_mac']
+            cmd_args = ['rsync', '-r', 'licheck_mac', upload_path +'licheck_mac']
             bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
     else:
         #opensource, do nothing
