@@ -815,6 +815,8 @@ def extract_file(path, to_directory='.'):
         cmd_args = ['tar', '-xf', path]
     elif path.endswith('.tar.gz') or path.endswith('.tgz'):
         cmd_args = ['tar', '-xzf', path]
+    elif path.endswith('.tar.xz'):
+        cmd_args = ['tar', '-xf', path]
     elif path.endswith('.tar.bz2') or path.endswith('.tbz'):
         cmd_args = ['tar', '-xjf', path]
     elif path.endswith('.7z') or path.endswith('.zip'):
