@@ -220,7 +220,6 @@ def main():
     branch = os.environ['CLANG_BRANCH']
     src_path = os.path.join(base_path, 'llvm')
     clang_src_path = os.path.join(base_path, 'llvm', 'tools', 'clang')
-    patch_src_path = os.path.join(base_path, 'tqtc-testconfig', 'projects', os.environ['PULSE_PROJECT'], 'stages', 'patches')
     build_path = os.path.join(base_path, 'build')
     install_path = os.path.join(base_path, 'libclang')
     bitness = 64 if '64' in os.environ['cfg'] else 32
@@ -236,7 +235,11 @@ def main():
 
     get_clang(base_path, os.environ['LLVM_REVISION'], os.environ['CLANG_REVISION'])
     profile_data_path = get_profile_data(profile_data_path, profile_data_url, generate_instrumented)
-    apply_patches(clang_src_path, sorted(glob.glob(os.path.join(patch_src_path, '*'))))
+    patch_src_path = os.environ.get('CLANG_PATCHES')
+    if patch_src_path:
+        if not os.path.isabs(patch_src_path):
+            patch_src_path = os.path.join(base_path, patch_src_path)
+        apply_patches(clang_src_path, sorted(glob.glob(os.path.join(patch_src_path, '*'))))
     build_clang(toolchain, src_path, build_path, install_path, profile_data_path, generate_instrumented, bitness, environment, build_type='Release')
     package_clang(install_path, result_file_path)
     upload_clang(result_file_path, remote_path)
