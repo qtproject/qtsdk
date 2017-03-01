@@ -177,6 +177,11 @@ if __name__ == "__main__":
             '..', 'cdbextension_build'))
         cdbextInstallDirectory = os.path.abspath(os.path.join(qtCreatorSourceDirectory,
             '..', 'cdbextension_install'))
+        wininterruptSourceDirectory = os.path.join(qtCreatorSourceDirectory, 'src', 'tools', 'wininterrupt')
+        wininterruptBuildDirectory = os.path.abspath(os.path.join(qtCreatorSourceDirectory,
+            '..', 'wininterrupt_build'))
+        wininterruptInstallDirectory = os.path.abspath(os.path.join(qtCreatorSourceDirectory,
+            '..', 'wininterrupt_install'))
 
     tempPath = os.path.abspath(os.path.join(qtCreatorSourceDirectory,
         '..', 'qt-creator_temp'))
@@ -197,6 +202,8 @@ if __name__ == "__main__":
         if bldinstallercommon.is_win_platform():
             bldinstallercommon.remove_tree(cdbextBuildDirectory)
             bldinstallercommon.remove_tree(cdbextInstallDirectory)
+            bldinstallercommon.remove_tree(wininterruptBuildDirectory)
+            bldinstallercommon.remove_tree(wininterruptInstallDirectory)
         bldinstallercommon.remove_tree(tempPath)
 
     if not os.path.lexists(callerArguments.qt5path) and not callerArguments.qt_modules:
@@ -285,8 +292,8 @@ if __name__ == "__main__":
         runInstallCommand('dmg', qtCreatorBuildDirectory,
             callerArguments = callerArguments, init_environment = environment)
 
-    # cdbextension
     if bldinstallercommon.is_win_platform():
+        # cdbextension
         runCommand([qmakeBinary, 'QTC_PREFIX=' + cdbextInstallDirectory, 'CONFIG+=' + buildType, cdbextSourceDirectory],
                    cdbextBuildDirectory, callerArguments = callerArguments, init_environment = environment)
         runBuildCommand(currentWorkingDirectory = cdbextBuildDirectory,
@@ -295,6 +302,18 @@ if __name__ == "__main__":
                           callerArguments = callerArguments, init_environment = environment)
         runCommand(['7z.exe', 'a', '-mx9', os.path.join(qtCreatorBuildDirectory, 'qtcreatorcdbext.7z'),
                     os.path.join(cdbextInstallDirectory, '*')],
+                    currentWorkingDirectory = qtCreatorBuildDirectory, callerArguments = callerArguments,
+                    init_environment = environment)
+
+        # wininterrupt
+        runCommand([qmakeBinary, 'QTC_PREFIX=' + wininterruptInstallDirectory, 'CONFIG+=' + buildType, wininterruptSourceDirectory],
+                   wininterruptBuildDirectory, callerArguments = callerArguments, init_environment = environment)
+        runBuildCommand(currentWorkingDirectory = wininterruptBuildDirectory,
+                        callerArguments = callerArguments, init_environment = environment)
+        runInstallCommand('install', currentWorkingDirectory = wininterruptBuildDirectory,
+                          callerArguments = callerArguments, init_environment = environment)
+        runCommand(['7z.exe', 'a', '-mx9', os.path.join(qtCreatorBuildDirectory, 'wininterrupt.7z'),
+                    os.path.join(wininterruptInstallDirectory, '*')],
                     currentWorkingDirectory = qtCreatorBuildDirectory, callerArguments = callerArguments,
                     init_environment = environment)
 

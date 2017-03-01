@@ -691,6 +691,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     if bldinstallercommon.is_win_platform():
         file_upload_list.append(('qt-creator_build/qtcreatorcdbext.7z', target_env_dir + '/qtcreatorcdbext.7z'))
         snapshot_upload_list.append((target_env_dir + '/qtcreatorcdbext.7z', 'installer_source/' + target_env_dir + '/qtcreatorcdbext.7z'))
+        file_upload_list.append(('qt-creator_build/wininterrupt.7z', target_env_dir + '/wininterrupt.7z'))
+        snapshot_upload_list.append((target_env_dir + '/wininterrupt.7z', 'installer_source/' + target_env_dir + '/wininterrupt.7z'))
 
     # upload files
     for source, destination in file_upload_list:
