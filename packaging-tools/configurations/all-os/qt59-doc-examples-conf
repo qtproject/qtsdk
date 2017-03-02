@@ -31,7 +31,7 @@
 archives:               59.doc
 target_install_base:    /Docs/Qt-5.9/
 [59.doc]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qt-everywhere-documentation-%QT_VERSION_AND_TAG%.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qt-everywhere-documentation-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
 package_strip_dirs:     1
 
 [qt.59.examples]
