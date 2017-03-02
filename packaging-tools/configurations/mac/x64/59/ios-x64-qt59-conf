@@ -51,47 +51,47 @@ archives:               59.ios.qtbase,
                         59.ios.qtgamepad
 target_install_base:    /%QT_VERSION_MINOR%/ios
 [59.ios.qtbase]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtbase/qtbase-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtbase/qtbase-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 [59.ios.qtsensors]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtsensors/qtsensors-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtsensors/qtsensors-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 [59.ios.qtxmlpatterns]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtxmlpatterns/qtxmlpatterns-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtxmlpatterns/qtxmlpatterns-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 [59.ios.qttools]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qttools/qttools-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qttools/qttools-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 [59.ios.qtimageformats]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtimageformats/qtimageformats-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtimageformats/qtimageformats-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 [59.ios.qtdeclarative]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtdeclarative/qtdeclarative-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtdeclarative/qtdeclarative-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 [59.ios.qtsvg]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtsvg/qtsvg-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtsvg/qtsvg-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 [59.ios.qtgraphicaleffects]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgraphicaleffects/qtgraphicaleffects-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgraphicaleffects/qtgraphicaleffects-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 [59.ios.qttranslations]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qttranslations/qttranslations-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qttranslations/qttranslations-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 [59.ios.qtmultimedia]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtmultimedia/qtmultimedia-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtmultimedia/qtmultimedia-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 [59.ios.qtwebchannel]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebchannel/qtwebchannel-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebchannel/qtwebchannel-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 [59.ios.qtwebsockets]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebsockets/qtwebsockets-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebsockets/qtwebsockets-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 [59.ios.qtconnectivity]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtconnectivity/qtconnectivity-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtconnectivity/qtconnectivity-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 [59.ios.qtlocation]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtlocation/qtlocation-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtlocation/qtlocation-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 [59.ios.qtquickcontrols]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtquickcontrols/qtquickcontrols-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtquickcontrols/qtquickcontrols-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 [59.ios.qtquickcontrols2]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtquickcontrols2/qtquickcontrols2-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtquickcontrols2/qtquickcontrols2-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 [59.ios.qt3d]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qt3d/qt3d-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qt3d/qt3d-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 [59.ios.qtcanvas3d]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtcanvas3d/qtcanvas3d-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtcanvas3d/qtcanvas3d-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 [59.ios.qtwebview]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebview/qtwebview-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebview/qtwebview-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 [59.ios.qtscxml]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscxml/qtscxml-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscxml/qtscxml-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 [59.ios.qtgamepad]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgamepad/qtgamepad-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgamepad/qtgamepad-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 
 # QtCharts provided as separate installable component in installer
 [qt.59.qtcharts]
@@ -99,7 +99,7 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgamepad/qtgamepad-OSX-OS
 archives:               59.qtcharts.ios
 target_install_base:    /%QT_VERSION_MINOR%/ios
 [59.qtcharts.ios]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtcharts/qtcharts-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtcharts/qtcharts-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 
 # QtDataVisualization provided as separate installable component in installer
 [qt.59.qtdatavis3d]
@@ -107,7 +107,7 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtcharts/qtcharts-OSX-OSX_
 archives:               59.qtdatavis3d.ios
 target_install_base:    /%QT_VERSION_MINOR%/ios
 [59.qtdatavis3d.ios]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtdatavis3d/qtdatavis3d-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtdatavis3d/qtdatavis3d-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 
 # QtPurchasing provided as separate installable component in installer
 [qt.59.qtpurchasing]
@@ -115,7 +115,7 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtdatavis3d/qtdatavis3d-OS
 archives:               59.qtpurchasing.ios
 target_install_base:    /%QT_VERSION_MINOR%/ios
 [59.qtpurchasing.ios]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtpurchasing/qtpurchasing-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtpurchasing/qtpurchasing-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 
 # QtScript provided as separate installable component in installer
 [qt.59.qtscript]
@@ -123,7 +123,7 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtpurchasing/qtpurchasing-
 archives:               59.qtscript.ios
 target_install_base:    /%QT_VERSION_MINOR%/ios
 [59.qtscript.ios]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscript/qtscript-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscript/qtscript-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 
 # QtNetworkAuth provided as separate installable component in installer
 [qt.59.qtnetworkauth]
@@ -131,7 +131,7 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscript/qtscript-OSX-OSX_
 archives:               59.qtnetworkauth.ios
 target_install_base:    /%QT_VERSION_MINOR%/ios
 [59.qtnetworkauth.ios]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtnetworkauth/qtnetworkauth-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtnetworkauth/qtnetworkauth-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 
 # QtSpeech provided as separate installable component in installer
 [qt.59.qtspeech]
@@ -139,4 +139,4 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtnetworkauth/qtnetworkaut
 archives:               59.qtspeech.ios
 target_install_base:    /%QT_VERSION_MINOR%/ios
 [59.qtspeech.ios]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtspeech/qtspeech-OSX-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtspeech/qtspeech-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z

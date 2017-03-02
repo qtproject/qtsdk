@@ -150,7 +150,7 @@ Example configure options used for Qt 5.8 are included. For more information,
 see:
 
 * `buildlog-qt58-Linux-RHEL_7_2-GCC-Linux-RHEL_7_2-X86_64.txt`
-* `buildlog-qt58-OSX-OSX_10_10-Clang-OSX-OSX_10_10-X86_64.txt`
+* `buildlog-qt58-MacOS-OSX_10_10-Clang-MacOS-OSX_10_10-X86_64.txt`
 * `buildlog-qt58-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.txt`
 * `buildlog-qt58-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86.txt`
 
