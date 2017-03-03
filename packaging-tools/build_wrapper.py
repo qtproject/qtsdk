@@ -322,7 +322,8 @@ def handle_gammaray_build(optionDict):
     qt_base_path = optionDict['QT_BASE_PATH']
     qt_module_urls = []
 
-    qt_modules = ['qtbase', 'qtdeclarative', 'qtscript', 'qttools', 'qtxmlpatterns']
+    # qtgamepad is currently needed by Qt3DInput which is currently needed for 3D support in GammaRay
+    qt_modules = ['qtbase', 'qtdeclarative', 'qtscript', 'qttools', 'qtxmlpatterns', 'qt3d', 'qtgamepad']
     pkg_base_path = optionDict['PACKAGE_STORAGE_SERVER_PATH_HTTP']
     # Check if the archives reside on network disk (http) or on local file system
     scheme = "" if urlparse.urlparse(pkg_base_path).scheme != "" else "file://"
@@ -516,6 +517,13 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     build_id = optionDict['BUILD_NUMBER']
     icu_libs = optionDict.get('ICU_LIBS') # optional
     openssl_libs = optionDict.get('OPENSSL_LIBS') # optional
+    qt_postfix = CI_TARGET_POSTFIX[optionDict['TARGET_ENV']]
+
+    def module_filename(module):
+        return module + '-' + qt_postfix + '.7z'
+    def module_urls(modules):
+        return [pkg_base_path + '/' + qt_base_path + '/' + module + '/' + module_filename(module)
+                for module in modules]
 
     # Define paths for pre-built kdsme and gammaray packages
     kdsme_url = (pkg_base_path + '/' + optionDict["GAMMARAY_BASE_DIR"] + '/' + target_env_dir + '/qt5_kdsme.7z')
@@ -546,12 +554,9 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                   'qtimageformats', 'qtlocation', 'qtmacextras',
                   'qtquickcontrols', 'qtquickcontrols2', 'qtscript', 'qtsvg', 'qttools',
                   'qttranslations', 'qtx11extras', 'qtxmlpatterns']
-    qt_postfix = CI_TARGET_POSTFIX[optionDict['TARGET_ENV']]
-    qt_module_filenames = [module + '-' + qt_postfix + '.7z' for module in qt_modules]
-    qt_module_urls = [pkg_base_path + '/' + qt_base_path + '/' + module + '/' + filename
-                      for (module, filename) in zip(qt_modules, qt_module_filenames)]
-    qt_module_local_urls = [bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_temp', filename))
-                            for filename in qt_module_filenames]
+    qt_module_urls = module_urls(qt_modules)
+    qt_module_local_urls = [bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_temp', module_filename(module)))
+                            for module in qt_modules]
     # Define Qt Creator build script arguments
     common_arguments = []
     if not bldinstallercommon.is_win_platform():
@@ -612,7 +617,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         additional_plugins.extend([make_QtcPlugin('b2qt-qtcreator-plugin', 'b2qt-qtcreator-plugin', qtcreator_version, modules=qt_module_local_urls,
                                                   dependencies=plugin_dependencies + ['perfprofiler'], qmake_arguments=qmake_arguments)])
         additional_plugins.extend([make_QtcPlugin('gammarayintegration', 'gammarayintegration', qtcreator_version,
-                                                  modules=qt_module_local_urls + [kdsme_url, gammaray_url],
+                                                  modules=qt_module_local_urls + [kdsme_url, gammaray_url] + module_urls(['qt3d', 'qtgamepad']),
                                                   dependencies=plugin_dependencies + ['b2qt-qtcreator-plugin', 'perfprofiler'],
                                                   qmake_arguments=qmake_arguments,
                                                   additional_arguments=[
