@@ -76,7 +76,7 @@ def get_profile_data(profile_data_dir, profile_data_url, generate_instrumented):
 def apply_patch(src_path, patch_filepath):
     print('Applying patch: "' + patch_filepath + '" in "' + src_path + '"')
     with open(patch_filepath, 'r') as f:
-        subprocess.check_call(['patch', '-p2'], stdin=f, cwd=src_path)
+        subprocess.check_call(['patch', '-p1'], stdin=f, cwd=src_path)
 
 def apply_patches(src_path, patch_filepaths):
     for patch in patch_filepaths:
@@ -219,7 +219,6 @@ def main():
     base_path = os.path.join(os.environ['PKG_NODE_ROOT'], 'build')
     branch = os.environ['CLANG_BRANCH']
     src_path = os.path.join(base_path, 'llvm')
-    clang_src_path = os.path.join(base_path, 'llvm', 'tools', 'clang')
     build_path = os.path.join(base_path, 'build')
     install_path = os.path.join(base_path, 'libclang')
     bitness = 64 if '64' in os.environ['cfg'] else 32
@@ -239,7 +238,7 @@ def main():
     if patch_src_path:
         if not os.path.isabs(patch_src_path):
             patch_src_path = os.path.join(base_path, patch_src_path)
-        apply_patches(clang_src_path, sorted(glob.glob(os.path.join(patch_src_path, '*'))))
+        apply_patches(src_path, sorted(glob.glob(os.path.join(patch_src_path, '*'))))
     build_clang(toolchain, src_path, build_path, install_path, profile_data_path, generate_instrumented, bitness, environment, build_type='Release')
     package_clang(install_path, result_file_path)
     upload_clang(result_file_path, remote_path)
