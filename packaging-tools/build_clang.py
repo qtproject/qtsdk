@@ -143,7 +143,12 @@ def install_targets(toolchain):
         #  1) The package can be used right way as LLVM_INSTALL_DIR.
         #  2) Avoid training with manually provided and possible wrong versions
         #     of the headers.
-        return ['install-libclang', 'install-libclang-headers', 'install-clang-headers']
+        return [
+            'install-libclang',
+            'install-libclang-headers',
+            'install-clang-headers',
+            'install-llvm-config',
+        ]
     return ['install']
 
 def install_command(toolchain):
