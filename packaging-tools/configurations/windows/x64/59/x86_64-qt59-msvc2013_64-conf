@@ -143,6 +143,14 @@ target_install_base:    /%QT_VERSION_MINOR%/msvc2013_64
 [59.qtvirtualkeyboard.win64_msvc2013_64]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtvirtualkeyboard/qtvirtualkeyboard-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z
 
+# Qt Remote Objects provided as separate installable component in installer
+[qt.59.qtremoteobjects]
+[qt.59.qtremoteobjects.win64_msvc2013_64]
+archives:               59.qtremoteobjects.win64_msvc2013_64
+target_install_base:    /%QT_VERSION_MINOR%/msvc2013_64
+[59.qtremoteobjects.win64_msvc2013_64]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtremoteobjects/qtremoteobjects-Windows-Windows_8_1-MSVC2013-Windows-Windows_8_1-X86_64.7z
+
 # QtScript provided as separate installable component in installer
 [qt.59.qtscript]
 [qt.59.qtscript.win64_msvc2013_64]

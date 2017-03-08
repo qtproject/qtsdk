@@ -55,6 +55,7 @@ archives:               59.src.qtactiveqt,
                         59.src.qtlocation,
                         59.src.qtquickcontrols,
                         59.src.qtquickcontrols2,
+                        59.src.qtremoteobjects,
                         59.src.qt3d,
                         59.src.qtcanvas3d,
                         59.src.qtwebview,
@@ -167,6 +168,10 @@ target_install_dir:     /qtquickcontrols
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/src/submodules/qtquickcontrols2-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
 package_strip_dirs:     1
 target_install_dir:     /qtquickcontrols2
+[59.src.qtremoteobjects]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/src/submodules/qtremoteobjects-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtremoteobjects
 [59.src.qt3d]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/src/submodules/qt3d-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
 package_strip_dirs:     1

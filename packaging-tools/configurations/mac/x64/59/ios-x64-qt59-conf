@@ -125,6 +125,14 @@ target_install_base:    /%QT_VERSION_MINOR%/ios
 [59.qtscript.ios]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscript/qtscript-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
 
+# Qt Remote Objects provided as separate installable component in installer
+[qt.59.qtremoteobjects]
+[qt.59.qtremoteobjects.ios]
+archives:               59.qtremoteobjects.ios
+target_install_base:    /%QT_VERSION_MINOR%/ios
+[59.qtremoteobjects.ios]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtremoteobjects/qtremoteobjects-MacOS-OSX_10_10-Clang-IOS-IOS_ANY-Multi.7z
+
 # QtNetworkAuth provided as separate installable component in installer
 [qt.59.qtnetworkauth]
 [qt.59.qtnetworkauth.ios]

@@ -115,6 +115,14 @@ target_install_base:    /%QT_VERSION_MINOR%/winrt_x64_msvc2015
 [59.qtpurchasing.win64_msvc2015_winrt_x64]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtpurchasing/qtpurchasing-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
 
+# Qt Remote Objects provided as separate installable component in installer
+[qt.59.qtremoteobjects]
+[qt.59.qtremoteobjects.win64_msvc2015_winrt_x64]
+archives:               59.qtremoteobjects.win64_msvc2015_winrt_x64
+target_install_base:    /%QT_VERSION_MINOR%/winrt_x64_msvc2015
+[59.qtremoteobjects.win64_msvc2015_winrt_x64]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtremoteobjects/qtremoteobjects-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
+
 # QtNetworkAuth provided as separate installable component in installer
 [qt.59.qtnetworkauth]
 [qt.59.qtnetworkauth.win64_msvc2015_winrt_x64]

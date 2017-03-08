@@ -134,6 +134,14 @@ target_install_base:    /%QT_VERSION_MINOR%/android_x86
 [59.qtscript.android_x86]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscript/qtscript-MacOS-OSX_10_10-GCC-Android-Android_ANY-X86.7z
 
+# Qt Remote Objects provided as separate installable component in installer
+[qt.59.qtremoteobjects]
+[qt.59.qtremoteobjects.android_x86]
+archives:               59.qtremoteobjects.android_x86
+target_install_base:    /%QT_VERSION_MINOR%/android_x86
+[59.qtremoteobjects.android_x86]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtremoteobjects/qtremoteobjects-MacOS-OSX_10_10-GCC-Android-Android_ANY-X86.7z
+
 # QtNetworkAuth provided as separate installable component in installer
 [qt.59.qtnetworkauth]
 [qt.59.qtnetworkauth.android_x86]

@@ -139,6 +139,14 @@ target_install_base:    /%QT_VERSION_MINOR%/android_armv7
 [59.qtscript.android_armv7]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscript/qtscript-Windows-Windows_7-Mingw53-Android-Android_ANY-ARMv7.7z
 
+# Qt Remote Objects provided as separate installable component in installer
+[qt.59.qtremoteobjects]
+[qt.59.qtremoteobjects.android_armv7]
+archives:               59.qtremoteobjects.android_armv7
+target_install_base:    /%QT_VERSION_MINOR%/android_armv7
+[59.qtremoteobjects.android_armv7]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtremoteobjects/qtremoteobjects-Windows-Windows_7-Mingw53-Android-Android_ANY-ARMv7.7z
+
 # QtNetworkAuth provided as separate installable component in installer
 [qt.59.qtnetworkauth]
 [qt.59.qtnetworkauth.android_armv7]

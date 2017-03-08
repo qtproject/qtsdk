@@ -161,6 +161,14 @@ target_install_base:    /%QT_VERSION_MINOR%/msvc2015
 [59.qtwebengine.win32_msvc2015]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebengine/qtwebengine-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z
 
+# Qt Remote Objects provided as separate installable component in installer
+[qt.59.qtremoteobjects]
+[qt.59.qtremoteobjects.win32_msvc2015]
+archives:               59.qtremoteobjects.win32_msvc2015
+target_install_base:    /%QT_VERSION_MINOR%/msvc2015
+[59.qtremoteobjects.win32_msvc2015]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtremoteobjects/qtremoteobjects-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z
+
 # QtNetworkAuth provided as separate installable component in installer
 [qt.59.qtnetworkauth]
 [qt.59.qtnetworkauth.win32_msvc2015]

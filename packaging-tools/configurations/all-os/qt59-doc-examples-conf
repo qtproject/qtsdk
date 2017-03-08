@@ -81,6 +81,14 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qtscripttools-document
 target_install_dir:
 package_strip_dirs:     1
 
+[qt.59.doc.qtremoteobjects]
+archives:               59.doc.qtremoteobjects
+target_install_base:    /Docs/Qt-5.9/
+[59.doc.qtremoteobjects]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qtremoteobjects-documentation.%SRC_ARCHIVE_TYPE%
+target_install_dir:
+package_strip_dirs:     1
+
 [qt.59.doc.qtwebengine]
 archives:               59.doc.qtwebengine
 target_install_base:    /Docs/Qt-5.9/
@@ -154,6 +162,14 @@ archives:               59.examples.qtspeech
 target_install_base:    /Examples/Qt-5.9/
 [59.examples.qtspeech]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/examples/qtspeech-examples-%QT_VERSION_AND_TAG%.7z
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.59.examples.qtremoteobjects]
+archives:               59.examples.qtremoteobjects
+target_install_base:    /Examples/Qt-5.9/
+[59.examples.qtremoteobjects]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/examples/qtremoteobjects-examples-%QT_VERSION_AND_TAG%.7z
 target_install_dir:
 package_strip_dirs:     1
 

@@ -126,6 +126,14 @@ target_install_base:    /%QT_VERSION_MINOR%/android_x86
 [59.qtpurchasing.android_x86]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtpurchasing/qtpurchasing-Linux-RHEL_7_2-GCC-Android-Android_ANY-X86.7z
 
+# QtRemoteObjects provided as separate installable component in installer
+[qt.59.qtremoteobjects]
+[qt.59.qtremoteobjects.android_x86]
+archives:               59.qtremoteobjects.android_x86
+target_install_base:    /%QT_VERSION_MINOR%/android_x86
+[59.qtremoteobjects.android_x86]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtremoteobjects/qtremoteobjects-Linux-RHEL_7_2-GCC-Android-Android_ANY-X86.7z
+
 # QtScript provided as separate installable component in installer
 [qt.59.qtscript]
 [qt.59.qtscript.android_x86]
