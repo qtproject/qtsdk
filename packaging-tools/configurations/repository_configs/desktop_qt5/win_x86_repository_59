@@ -35,7 +35,6 @@ identifier:             windows
 [PackageConfigurationFiles]
 file_list:              x86-qt59-mingw53_32-conf,
                         x86-qt59-msvc2015_32-conf,
-                        x86-qt59-msvc2013_32-conf,
                         x86_64-qt59-msvc2013_64-conf,
                         x86_64-qt59-msvc2015_64-conf
 
