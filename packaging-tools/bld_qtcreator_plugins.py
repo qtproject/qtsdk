@@ -175,6 +175,8 @@ def build_plugins(caller_arguments):
         callerArguments = caller_arguments, init_environment = environment)
     runBuildCommand(currentWorkingDirectory = paths.build,
         callerArguments = caller_arguments, init_environment = environment)
+    runBuildCommand("docs", currentWorkingDirectory = paths.build,
+        callerArguments = caller_arguments, init_environment = environment)
 
     # run custom deploy script
     if caller_arguments.deploy_command:
