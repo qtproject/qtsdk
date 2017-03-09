@@ -33,10 +33,7 @@ name:                   qt
 identifier:             windows
 
 [PackageConfigurationFiles]
-file_list:              x86_64-qt59-msvc2013-winphone_arm-conf,
-                        x86_64-qt59-msvc2013-winphone_x86-conf,
-                        x86_64-qt59-msvc2013-winrt_x64-conf,
-                        x86_64-qt59-msvc2015-winrt_armv7-conf,
+file_list:              x86_64-qt59-msvc2015-winrt_armv7-conf,
                         x86_64-qt59-msvc2015-winrt_x64-conf,
                         x86_64-qt59-msvc2015-winrt_x86-conf
 
