@@ -53,6 +53,7 @@ import batch_process_installer_bld
 import bld_icu_tools
 import pkg_constants
 from pkg_constants import ICU_BUILD_OUTPUT_DIR
+from threadedwork import ThreadedWork
 
 
 # ----------------------------------------------------------------------
@@ -472,14 +473,6 @@ def build_qtcreator_plugins(plugins, qtcreator_url, qtcreator_dev_url, icu_url=N
 # handle_qt_creator_build
 ###############################
 def handle_qt_creator_build(optionDict, qtCreatorPlugins):
-    def get_optimized_libclang_dll(optionDict, pkg_base_path):
-        url = (pkg_base_path + '/' + optionDict['CLANG_FILEBASE'] + '-windows-mingw.7z')
-        extraction_path = os.path.join(WORK_DIR, 'qt-creator_temp_optimizedlibclang')
-        download_filepath = os.path.join(extraction_path, 'libclang.7z')
-        bld_utils.download(url, download_filepath)
-        bldinstallercommon.extract_file(download_filepath, extraction_path)
-        return os.path.join(extraction_path, 'libclang', 'bin', 'libclang.dll')
-
     target_env_dir = BIN_TARGET_DIRS[optionDict['TARGET_ENV']]
     build_environment = dict(os.environ)
 
@@ -518,6 +511,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     icu_libs = optionDict.get('ICU_LIBS') # optional
     openssl_libs = optionDict.get('OPENSSL_LIBS') # optional
     qt_postfix = CI_TARGET_POSTFIX[optionDict['TARGET_ENV']]
+    qtcreator_temp = os.path.join(WORK_DIR, 'qt-creator_temp')
+    download_temp = os.path.join(WORK_DIR, 'downloads')
 
     def module_filename(module):
         return module + '-' + qt_postfix + '.7z'
@@ -529,24 +524,28 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     kdsme_url = (pkg_base_path + '/' + optionDict["GAMMARAY_BASE_DIR"] + '/' + target_env_dir + '/qt5_kdsme.7z')
     gammaray_url = (pkg_base_path + '/' + optionDict["GAMMARAY_BASE_DIR"] + '/' + target_env_dir + '/qt5_gammaray.7z')
 
-    # Install clang package
-    clang_url = (pkg_base_path + '/'
-                    + optionDict['CLANG_FILEBASE'] + '-'
-                    + optionDict['QTC_PLATFORM'] + '.7z')
-    clang_download_filepath = os.path.join(WORK_DIR, 'qt-creator_temp')
-    for item in [clang_download_filepath, os.path.join(WORK_DIR, 'libclang')]:
-        if os.path.exists(item):
-            shutil.rmtree(item)
-    os.makedirs(clang_download_filepath)
-    clang_download_filepath = os.path.join(clang_download_filepath, 'libclang.7z')
-    clang_target_path = WORK_DIR
-    bld_utils.download(clang_url, clang_download_filepath)
-    bldinstallercommon.extract_file(clang_download_filepath, clang_target_path)
-    build_environment['LLVM_INSTALL_DIR'] = os.path.join(WORK_DIR, 'libclang')
-    if bldinstallercommon.is_win_platform() and not '64' in optionDict['TARGET_ENV']:
-        optimized_libclang_dll = get_optimized_libclang_dll(optionDict, pkg_base_path)
+    download_packages_work = ThreadedWork('Get and extract all needed packages')
+
+    # clang package
+    clang_extract_path = os.path.join(download_temp, 'libclang')
+    build_environment['LLVM_INSTALL_DIR'] = os.path.join(clang_extract_path, 'libclang') # package contains libclang subdir
+    clang_url = (pkg_base_path + '/' + optionDict['CLANG_FILEBASE'] + '-' + optionDict['QTC_PLATFORM'] + '.7z')
+    download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
+        clang_url, clang_extract_path, download_temp, None))
+    use_optimized_libclang = bldinstallercommon.is_win_platform() and not '64' in optionDict['TARGET_ENV']
+    if use_optimized_libclang:
+        opt_clang_url = (pkg_base_path + '/' + optionDict['CLANG_FILEBASE'] + '-windows-mingw.7z')
+        opt_clang_path = os.path.join(download_temp, 'opt_libclang')
+        opt_clang_lib = os.path.join(opt_clang_path, 'libclang', 'bin', 'libclang.dll')
+        download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
+            opt_clang_url, opt_clang_path, download_temp, None))
+
+    download_packages_work.run()
+
+    # copy optimized clang package
+    if use_optimized_libclang:
         target_libclang_dll = os.path.join(build_environment['LLVM_INSTALL_DIR'], 'bin', 'libclang.dll')
-        shutil.copyfile(optimized_libclang_dll, target_libclang_dll)
+        shutil.copyfile(opt_clang_lib, target_libclang_dll)
 
     # Qt Creator build depends on pre-built Qt binary packages.
     # Define the exact archive locations for each required module.
@@ -555,7 +554,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                   'qtquickcontrols', 'qtquickcontrols2', 'qtscript', 'qtsvg', 'qttools',
                   'qttranslations', 'qtx11extras', 'qtxmlpatterns']
     qt_module_urls = module_urls(qt_modules)
-    qt_module_local_urls = [bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_temp', module_filename(module)))
+    qt_module_local_urls = [bld_utils.file_url(os.path.join(qtcreator_temp, module_filename(module)))
                             for module in qt_modules]
     # Define Qt Creator build script arguments
     common_arguments = []
@@ -630,8 +629,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                                   qmake_arguments=qmake_arguments)])
 
     # Build Qt Creator plugins
-    icu_local_url = bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_temp', os.path.basename(icu_libs))) if bldinstallercommon.is_linux_platform() else None
-    openssl_local_url = bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_temp', os.path.basename(openssl_libs))) if bldinstallercommon.is_win_platform() else None
+    icu_local_url = bld_utils.file_url(os.path.join(qtcreator_temp, os.path.basename(icu_libs))) if bldinstallercommon.is_linux_platform() else None
+    openssl_local_url = bld_utils.file_url(os.path.join(qtcreator_temp, os.path.basename(openssl_libs))) if bldinstallercommon.is_win_platform() else None
     qtcreator_url = bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_build', 'qtcreator.7z'))
     qtcreator_dev_url = bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_build', 'qtcreator_dev.7z'))
     build_qtcreator_plugins(additional_plugins, qtcreator_url, qtcreator_dev_url, icu_url=icu_local_url, openssl_url=openssl_local_url)
