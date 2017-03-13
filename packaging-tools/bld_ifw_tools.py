@@ -165,7 +165,7 @@ class IfwOptions:
         self.qt_installer_framework_branch              = qt_installer_framework_branch
         self.qt_installer_framework_qmake_args          = qt_installer_framework_qmake_args
         self.openssl_dir                                = openssl_dir
-        self.qt_build_modules                           = " module-qtbase module-qtdeclarative module-qttools"
+        self.qt_build_modules                           = " module-qtbase module-qtdeclarative module-qttools module-qttranslations"
         self.qt_build_modules_docs                      = " module-qttools"
         if bldinstallercommon.is_win_platform():
             self.qt_build_modules                       += " module-qtwinextras"
