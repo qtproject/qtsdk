@@ -540,6 +540,13 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
             opt_clang_url, opt_clang_path, download_temp, None))
 
+    python_path = None
+    python_url = optionDict.get('PYTHON_URL')
+    if bldinstallercommon.is_win_platform() and python_url:
+        python_path = os.path.join(download_temp, 'python')
+        download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
+            python_url, python_path, download_temp, None))
+
     download_packages_work.run()
 
     # copy optimized clang package
@@ -581,6 +588,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                          '--opengl32sw7z', opengl_url])
         if openssl_libs:
             cmd_args.extend(['--openssl7z', openssl_libs])
+    if python_path:
+        cmd_args.extend(['--pythonpath', python_path])
     cmd_args.extend(common_arguments)
     bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, extra_env=build_environment)
 
