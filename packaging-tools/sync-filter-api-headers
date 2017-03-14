@@ -82,9 +82,10 @@ sub cannot ($) {
 
 # Apt to be set by the module's sync.profile:
 our (%modules, %moduleheaders, @allmoduleheadersprivate);
-our @qpa_headers = (); # regexes matching QPA headers
+our @qpa_headers = (); # regexes matching Qt Platform Abstraction headers
 our @ignore_headers = ();
 our %inject_headers = ();
+# TODO: add a variable by which modules can tell us where to find QML API
 
 # Load the module's sync.profile:
 if (-f 'sync.profile') {
@@ -113,7 +114,6 @@ my @allheaders = ();
 while (<STDIN>) {
     chomp;
     normalizePath(\$_);
-    # TODO: might we want QPA headers ?
     continue if $ignore_headers{$_} || $qpa_headers{$_};
     push @allheaders, $_ if $_;
 }
