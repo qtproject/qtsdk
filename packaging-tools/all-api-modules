@@ -91,7 +91,7 @@ it; you do need to have a suitable full work tree.
 
 By way of example, here's the work-flow for producing an API review
 between $LAST and $NEXT (you can set LAST and NEXT in the environment
-to configure this output), assuming qtsdk/packaging-tools is in your
+to configure the examples), assuming qtsdk/packaging-tools is in your
 PATH:
 
  Get qt5 up to date, but with the old .gitmodules:
