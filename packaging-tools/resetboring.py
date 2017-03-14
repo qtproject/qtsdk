@@ -61,7 +61,7 @@ except ImportError:
 # diff --cached should contain nothing boring and git diff should be
 # entirely boring.  Only git's staging area is changed.
 
-class Selector (object): # Select interesting changes, discard boring.
+class Selector(object): # Select interesting changes, discard boring.
     """Handles removing boring changes from one file.
 
     The aim is to remove noise from header diffs, so that reviewers
@@ -666,7 +666,7 @@ class Selector (object): # Select interesting changes, discard boring.
         # Freeze recipe sequence:
         recipe = tuple(recipe)
 
-    # Support for .disclaimed() - could be in a separate tool class:
+class Scanner(object): # Support for its .disclaimed()
     __litmus = (
         'This header file may change from version to version without notice, or even be removed',
         'Usage of this API may make your code source and binary incompatible with future versions of Qt',
@@ -754,7 +754,7 @@ def main(args, hear, talk, complain):
             # shouldn't get the last.  If new.path is None, file was
             # removed, not renamed; otherwise, if new has a
             # disclaimer, it's private despite its name and path.
-            if new.path and not Selector.disclaimed(new.path, complain.write):
+            if new.path and not Scanner.disclaimed(new.path, complain.write):
                 assert kind not in ('unchanged', 'delete'), kind
                 if kind != 'add':
                     # Filter out boring changes
