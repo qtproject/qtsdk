@@ -745,6 +745,11 @@ def main(args, hear, talk, complain):
     store, index = repo.object_store, repo.open_index()
     renamer = RenameDetector(store)
     try:
+        # TODO: demand stronger similarity for a copy than for rename;
+        # our huge copyright headers (and common boilerplate) make
+        # small header files look very similar despite their real
+        # content all being quite different.  Probably need to hack
+        # dulwich (find_copies_harder is off by default anyway).
         for kind, old, new in \
             renamer.changes_with_renames(store[repo.refs['HEAD']].tree,
                                          index.commit(store)):
