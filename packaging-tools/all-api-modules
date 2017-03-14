@@ -98,6 +98,10 @@ PATH:
  $ git checkout $NEXT && git pull --ff-only
  $ git checkout $LAST -- .gitmodules
 
+ Check status of all relevant modules:
+ $ $ME git status
+ You'll need all your working trees clean before you proceed.
+
  Get each potentially relevant module's origin up to date:
  $ $ME git fetch origin
 
