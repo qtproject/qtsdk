@@ -766,10 +766,10 @@ def main(args, hear, talk, complain):
                     index[new.path] = Selector(store, new.sha, old.sha,
                                                old.mode or new.mode).refine()
             elif old.path: # disclaimed or removed: ignore by restoring
-                assert new.path or kind == 'delete', kind
+                assert new.path or kind == 'delete', (kind, new.path)
                 index[old.path] = Selector.restore(store[old.sha], old.mode)
             else: # new but disclaimed: ignore by discarding
-                assert kind == 'add' and new.path, kind
+                assert kind == 'add' and new.path, (kind, new.path)
                 del index[new.path]
 
         index.write()
