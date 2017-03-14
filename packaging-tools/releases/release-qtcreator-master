@@ -16,8 +16,7 @@ version_tag:                beta1
 arg_substitution_list:      %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.3.0-beta1_58x/latest_successful,
                             %QTC_VERSION%=4.2.82,
                             %QTC_DISPLAY_VERSION%=%GLOBAL_VERSION_AND_TAG%,
-                            %QTC_MSVC%=2015,
-                            %QTC_IS_STANDALONE_INSTALLER%=true
+                            %QTC_MSVC%=2015
 
 ################################################################################
 ## Linux offline

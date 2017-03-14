@@ -4,7 +4,7 @@
     <Description>CDB Debugger support for Qt Creator</Description>
     <Version>%QTC_VERSION%-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Dependencies>qt.tools.qtcreator</Dependencies>
+    <Dependencies>qt.tools.qtcreator,qt.license.python</Dependencies>
     <Default>true</Default>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>

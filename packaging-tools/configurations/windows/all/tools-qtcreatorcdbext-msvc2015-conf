@@ -26,6 +26,7 @@
 ##
 #############################################################################
 
+[qt.license.python]
 
 [qt.tools.qtcreatorcdbext]
 archives:               tools.qtcreatorcdbext32,
