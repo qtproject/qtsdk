@@ -298,7 +298,7 @@ if __name__ == "__main__":
         # cdbextension
         cdbextQmakeArgs = [qmakeBinary, 'QTC_PREFIX=' + cdbextInstallDirectory, 'CONFIG+=' + buildType]
         if callerArguments.pythonpath:
-            qmakeCommandArguments.append('PYTHON_INSTALL_DIR=' + callerArguments.pythonpath)
+            cdbextQmakeArgs.append('PYTHON_INSTALL_DIR=' + callerArguments.pythonpath)
         runCommand(cdbextQmakeArgs + [cdbextSourceDirectory],
                    cdbextBuildDirectory, callerArguments = callerArguments, init_environment = environment)
         runBuildCommand(currentWorkingDirectory = cdbextBuildDirectory,
