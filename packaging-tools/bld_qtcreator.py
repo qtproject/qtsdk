@@ -251,8 +251,9 @@ if __name__ == "__main__":
     if bldinstallercommon.is_mac_platform():
         qmakeCommandArguments += " QMAKE_MAC_SDK=macosx" # work around QTBUG-41238
 
-    if sys.platform == "win32":  # allow app to run on Windows XP
+    if bldinstallercommon.is_win_platform():  # allow app to run on Windows XP
         qmakeCommandArguments += " QMAKE_LFLAGS_WINDOWS=/SUBSYSTEM:WINDOWS,5.01"
+        qmakeCommandArguments += " QTC_SKIP_CDBEXT=1" # skip compilation of cdbextension, it is built separately below
 
     if callerArguments.versiondescription:
         qmakeCommandArguments += " DEFINES+=IDE_VERSION_DESCRIPTION={0}".format(callerArguments.versiondescription)
