@@ -109,13 +109,9 @@ def profile_data_flags(toolchain, profile_data_dir, generate_instrumented):
     return []
 
 def bitness_flags(bitness):
-    if bitness == 64:
-        flags = ['-DLLVM_TARGETS_TO_BUILD=AArch64']
-    else:
-        flags = ['-DLLVM_TARGETS_TO_BUILD=X86']
-        if bldinstallercommon.is_linux_platform():
-            flags.extend(['-DLIBXML2_LIBRARIES=/usr/lib/libxml2.so', '-DLLVM_BUILD_32_BITS=ON'])
-    return flags
+    if bitness == 32 and bldinstallercommon.is_linux_platform():
+        return ['-DLIBXML2_LIBRARIES=/usr/lib/libxml2.so', '-DLLVM_BUILD_32_BITS=ON']
+    return []
 
 def rtti_flags(toolchain):
     if is_mingw_toolchain(toolchain):
