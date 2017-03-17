@@ -154,7 +154,7 @@ if __name__ == "__main__":
         parser.add_argument('--keychain_unlock_script', help="script for unlocking the keychain used for signing")
         parser.epilog += " --keychain_unlock_script $HOME/unlock-keychain.sh"
     if bldinstallercommon.is_win_platform():
-        parser.add_argument('--pythonpath', help="path to python libraries for use by cdbextension")
+        parser.add_argument('--python_path', help="path to python libraries for use by cdbextension")
 
     parser.epilog += " --qt5path qtcreator_qt5"
     callerArguments = parser.parse_args()
@@ -297,15 +297,15 @@ if __name__ == "__main__":
     if bldinstallercommon.is_win_platform():
         # cdbextension
         cdbextQmakeArgs = [qmakeBinary, 'QTC_PREFIX=' + cdbextInstallDirectory, 'CONFIG+=' + buildType]
-        if callerArguments.pythonpath:
-            cdbextQmakeArgs.append('PYTHON_INSTALL_DIR=' + callerArguments.pythonpath)
+        if callerArguments.python_path:
+            cdbextQmakeArgs.append('PYTHON_INSTALL_DIR=' + callerArguments.python_path)
         runCommand(cdbextQmakeArgs + [cdbextSourceDirectory],
                    cdbextBuildDirectory, callerArguments = callerArguments, init_environment = environment)
         runBuildCommand(currentWorkingDirectory = cdbextBuildDirectory,
                         callerArguments = callerArguments, init_environment = environment)
         runInstallCommand('install', currentWorkingDirectory = cdbextBuildDirectory,
                           callerArguments = callerArguments, init_environment = environment)
-        if callerArguments.pythonpath:
+        if callerArguments.python_path:
             runInstallCommand('deploy_python', cdbextBuildDirectory,
                               callerArguments = callerArguments, init_environment = environment)
         runCommand(['7z.exe', 'a', '-mx9', os.path.join(qtCreatorBuildDirectory, 'qtcreatorcdbext.7z'),

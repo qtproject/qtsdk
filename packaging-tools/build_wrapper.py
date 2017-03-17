@@ -589,7 +589,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         if openssl_libs:
             cmd_args.extend(['--openssl7z', openssl_libs])
     if python_path:
-        cmd_args.extend(['--pythonpath', python_path])
+        cmd_args.extend(['--python_path', python_path])
     cmd_args.extend(common_arguments)
     bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, extra_env=build_environment)
 
