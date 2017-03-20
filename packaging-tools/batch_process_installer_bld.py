@@ -226,6 +226,7 @@ def get_job_list(optionDict, job_type_specifier, branch, arch, global_version, g
             installer_name = bldinstallercommon.safe_config_key_fetch(parser, s, 'installer_name')
             arg_substitution_list = bldinstallercommon.safe_config_key_fetch(parser, s, 'arg_substitution_list')
             arg_substitution_list += ',' + global_arg_substitution_list
+            arg_substitution_list += ',' + "%BUILD_NUMBER%=" + optionDict['BUILD_NUMBER']
             arg_substitution_list = arg_substitution_list.replace('\n', '')
             arg_substitution_list = preformat_global_version_and_tag(arg_substitution_list, global_version, global_version_tag)
             repo_content_type           = ''
