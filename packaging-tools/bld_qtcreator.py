@@ -253,7 +253,9 @@ if __name__ == "__main__":
 
     if bldinstallercommon.is_win_platform():  # allow app to run on Windows XP
         qmakeCommandArguments += " QMAKE_LFLAGS_WINDOWS=/SUBSYSTEM:WINDOWS,5.01"
-        qmakeCommandArguments += " QTC_SKIP_CDBEXT=1" # skip compilation of cdbextension, it is built separately below
+        # skip compilation of cdbextension and wininterrupt, they are built separately below
+        qmakeCommandArguments += " QTC_SKIP_CDBEXT=1"
+        qmakeCommandArguments += " QTC_SKIP_WININTERRUPT=1"
 
     if callerArguments.versiondescription:
         qmakeCommandArguments += " DEFINES+=IDE_VERSION_DESCRIPTION={0}".format(callerArguments.versiondescription)
