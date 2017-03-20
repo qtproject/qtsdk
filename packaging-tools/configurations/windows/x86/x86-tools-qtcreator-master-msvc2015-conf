@@ -26,25 +26,31 @@
 ##
 #############################################################################
 
-[PackageNamespace]
-name:                   qt
 
-[PlatformIdentifier]
-identifier:             windows
+[qt.tools.qtcreator]
+archives:               tools.qtcreator,
+                        tools.qtcreator.wininterrupt32,
+                        tools.qtcreator.wininterrupt64
+target_install_base:    /
+package_default:        true
 
-[PackageConfigurationFiles]
-file_list:              qt-conf,
-                        qtcreator-license-conf,
-                        x86-tools-qtcreator-master-msvc2015-conf,
-                        tools-qtcreatorcdbext-msvc2015-conf,
-                        x86-tools-vcredist_msvc2015-conf
+[tools.qtcreator]
+archive_uri:            %QT_CREATOR_BASE_PATH%/windows_vs2015_32/qtcreator.7z
+package_strip_dirs:     0
+target_install_dir:     /
+rpath_target:
+archive_name:           qtcreator.7z
 
-[ConfigDir]
-template_name:          config_qtcreator
+[tools.qtcreator.wininterrupt32]
+archive_uri:            %QT_CREATOR_BASE_PATH%/windows_vs2015_32/wininterrupt.7z
+package_strip_dirs:     0
+target_install_dir:     /
+rpath_target:
+archive_name:           wininterrupt32.7z
 
-[ConfigXml]
-template_name:          config.xml.template.windows.qtcreator
-
-[PackageTemplates]
-template_dirs:          pkg_qtcreator_standalone, pkg_tools
-
+[tools.qtcreator.wininterrupt64]
+archive_uri:            %QT_CREATOR_BASE_PATH%/windows_vs2015_64/wininterrupt.7z
+package_strip_dirs:     0
+target_install_dir:     /
+rpath_target:
+archive_name:           wininterrupt64.7z
