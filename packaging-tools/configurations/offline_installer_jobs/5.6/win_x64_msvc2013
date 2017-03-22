@@ -45,7 +45,8 @@ file_list:              qt-conf,
                         qt56-doc-examples-conf,
                         x86_64-qt56-msvc2013_64-conf,
                         x86-tools-qtcreator-qt56x-conf,
-                        x86-tools-vcredist_msvc2013-conf
+                        x86-tools-vcredist_msvc2013-conf,
+                        x64-tools-vcredist_msvc2013-conf
 
 
 [ConfigDir]

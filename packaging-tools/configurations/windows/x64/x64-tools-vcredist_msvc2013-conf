@@ -1,6 +1,6 @@
 #############################################################################
 ##
-## Copyright (C) 2016 The Qt Company Ltd.
+## Copyright (C) 2017 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -26,30 +26,13 @@
 ##
 #############################################################################
 
-[PackageNamespace]
-name:                   qt
-
-[PlatformIdentifier]
-identifier:             windows
-
-[PackageConfigurationFiles]
-file_list:              qt-conf,
-                        qt-license-conf,
-                        qt-installer-changelog,
-                        qt59-src-conf,
-                        qt59-doc-examples-conf,
-                        x86_64-qt59-msvc2015_64-conf,
-                        x86-tools-qtcreator-qt59x-conf,
-                        x86-tools-vcredist_msvc2015-conf,
-                        x64-tools-vcredist_msvc2015-conf,
-                        x86-tools-perl-conf
-
-[ConfigDir]
-template_name:          config_qt5
-
-[ConfigXml]
-template_name:          config.xml.template.windows.qt5
-
-[PackageTemplates]
-template_dirs:          pkg_59, pkg_tools
-
+[qt.tools.vcredist_msvc2013_x64]
+archives:               tools.vcredist_msvc2013_x64
+target_install_base:    /vcredist
+package_default:        false
+[tools.vcredist_msvc2013_x64]
+archive_uri:            http://download.qt.io/development_releases/prebuilt/vcredist/vcredist_msvc2013_x64.7z
+package_strip_dirs:     0
+target_install_dir:     /
+rpath_target:
+archive_name:           vcredist_msvc2013_x64.7z

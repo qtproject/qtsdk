@@ -42,6 +42,7 @@ file_list:              qt-conf,
                         x86-tools-mingw530-conf,
                         x86-tools-qtcreator-qt59x-conf,
                         x86-tools-vcredist_msvc2015-conf,
+                        x64-tools-vcredist_msvc2015-conf,
                         x86-tools-perl-conf
 
 [ConfigDir]
