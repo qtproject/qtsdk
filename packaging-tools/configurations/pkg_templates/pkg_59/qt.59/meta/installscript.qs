@@ -32,6 +32,20 @@ function Component()
     if ((installer.value("os") == "win")
                 && !installer.isOfflineOnly()) {
 
+        // Determine if this is a online snapshot build
+        var snapshotBuild = false;
+        var isSnapshotStr = "%ONLINE_SNAPSHOT_BUILD%";
+        if (['true', 'yes', '1'].indexOf(isSnapshotStr) >= 0)
+            snapshotBuild = true;
+
+        if (snapshotBuild) {
+            // Indicate in DisplayName and Description that this is a snapshot build
+            var displayName = component.value("DisplayName");
+            var description = component.value("Description");
+            component.setValue("DisplayName", displayName + " Beta snapshot (#%BUILD_NUMBER%)")
+            component.setValue("Description", description + " Beta snapshot (#%BUILD_NUMBER%)")
+        }
+
         // Enable the right toolchains
         var msvc2013 = !!installer.environmentVariable("VS120COMNTOOLS");
         var msvc2015 = !!installer.environmentVariable("VS140COMNTOOLS");
@@ -73,31 +87,33 @@ function Component()
         if (msvc2015_winrt_x86)
             msvc2015_winrt_x86.setValue("Default", "false");
 
-        // if 32bit windows hide the 64bit packages
-        if (installer.environmentVariable("ProgramFiles(x86)") == "" ) {
-            installer.componentByName("qt.59.win64_msvc2013_64").setValue("Virtual", "true");
-            installer.componentByName("qt.59.win64_msvc2015_64").setValue("Virtual", "true");
-        }
-
-        // now try to determine which tool chains to select by default
-        if (msvc2013) {
-            // if 64bit machine
-            if (!(installer.environmentVariable("ProgramFiles(x86)") == "")) {
-                installer.componentByName("qt.59.win64_msvc2013_64").setValue("Default", "true");
+        if (!snapshotBuild) {
+            // if 32bit windows hide the 64bit packages
+            if (installer.environmentVariable("ProgramFiles(x86)") == "" ) {
+                installer.componentByName("qt.59.win64_msvc2013_64").setValue("Virtual", "true");
+                installer.componentByName("qt.59.win64_msvc2015_64").setValue("Virtual", "true");
             }
-        }
-        if (msvc2015) {
-            // if 64bit machine
-            if (!(installer.environmentVariable("ProgramFiles(x86)") == "")) {
-                installer.componentByName("qt.59.win64_msvc2015_64").setValue("Default", "true");
-            } else {
-                installer.componentByName("qt.59.win32_msvc2015").setValue("Default", "true");
-            }
-        }
 
-        // if no msvc toolkits detected, choose mingw by default
-        if (!msvc2013 && !msvc2015) {
-            installer.componentByName("qt.59.win32_mingw53").setValue("Default", "true");
+            // now try to determine which tool chains to select by default
+            if (msvc2013) {
+                // if 64bit machine
+                if (!(installer.environmentVariable("ProgramFiles(x86)") == "")) {
+                    installer.componentByName("qt.59.win64_msvc2013_64").setValue("Default", "true");
+                }
+            }
+            if (msvc2015) {
+                // if 64bit machine
+                if (!(installer.environmentVariable("ProgramFiles(x86)") == "")) {
+                    installer.componentByName("qt.59.win64_msvc2015_64").setValue("Default", "true");
+                } else {
+                    installer.componentByName("qt.59.win32_msvc2015").setValue("Default", "true");
+                }
+            }
+
+            // if no msvc toolkits detected, choose mingw by default
+            if (!msvc2013 && !msvc2015) {
+                installer.componentByName("qt.59.win32_mingw53").setValue("Default", "true");
+            }
         }
     }
 }
