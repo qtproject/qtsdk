@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2016 The Qt Company Ltd.
+** Copyright (C) 2017 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the release tools of the Qt Toolkit.
@@ -49,7 +49,6 @@ function Component()
         // first reset the latest Qt5.x.x package default values to false
         installer.componentByName("qt.59.win32_mingw53").setValue("Default", "false");
 
-        installer.componentByName("qt.59.win32_msvc2013").setValue("Default", "false");
         installer.componentByName("qt.59.win64_msvc2013_64").setValue("Default", "false");
 
         installer.componentByName("qt.59.win32_msvc2015").setValue("Default", "false");
@@ -85,8 +84,6 @@ function Component()
             // if 64bit machine
             if (!(installer.environmentVariable("ProgramFiles(x86)") == "")) {
                 installer.componentByName("qt.59.win64_msvc2013_64").setValue("Default", "true");
-            } else {
-                installer.componentByName("qt.59.win32_msvc2013").setValue("Default", "true");
             }
         }
         if (msvc2015) {
