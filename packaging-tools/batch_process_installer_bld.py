@@ -359,7 +359,7 @@ def handle_repo_build(optionDict, branch, arch, update_staging_repo, update_prod
     forced_version_number_bump = False
     if update_staging_repo and not update_production_repo:
         forced_version_number_bump = True
-    if optionDict.get('FORCE_VERSION_NUMBER_INCREASE').lower() in ['yes', 'true', '1']:
+    if optionDict.get('FORCE_VERSION_NUMBER_INCREASE') in ['yes', 'true', '1']:
         forced_version_number_bump = True
 
     # create rta description file
