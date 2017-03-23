@@ -33,7 +33,12 @@ name:                   qt
 identifier:             windows
 
 [PackageConfigurationFiles]
-file_list:              x86-tools-vcredist_32-conf, x86_64-tools-vcredist_64-conf, x86-tools-vcredist_msvc2013-conf, x86-tools-vcredist_msvc2015-conf
+file_list:              x86-tools-vcredist_32-conf,
+                        x86_64-tools-vcredist_64-conf,
+                        x86-tools-vcredist_msvc2013-conf,
+                        x64-tools-vcredist_msvc2013-conf,
+                        x86-tools-vcredist_msvc2015-conf,
+                        x64-tools-vcredist_msvc2015-conf
 
 [PackageTemplates]
 template_dirs:          pkg_tools
