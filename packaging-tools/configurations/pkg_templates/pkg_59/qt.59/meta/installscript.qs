@@ -29,23 +29,22 @@
 // constructor
 function Component()
 {
+    // Determine if this is a online snapshot build
+    var snapshotBuild = false;
+    var isSnapshotStr = "%ONLINE_SNAPSHOT_BUILD%";
+    if (['true', 'yes', '1'].indexOf(isSnapshotStr) >= 0)
+        snapshotBuild = true;
+
+    if (snapshotBuild) {
+        // Indicate in DisplayName and Description that this is a snapshot build
+        var displayName = component.value("DisplayName");
+        var description = component.value("Description");
+        component.setValue("DisplayName", displayName + " Beta snapshot (#%BUILD_NUMBER%)")
+        component.setValue("Description", description + " Beta snapshot (#%BUILD_NUMBER%)")
+    }
+
     if ((installer.value("os") == "win")
-                && !installer.isOfflineOnly()) {
-
-        // Determine if this is a online snapshot build
-        var snapshotBuild = false;
-        var isSnapshotStr = "%ONLINE_SNAPSHOT_BUILD%";
-        if (['true', 'yes', '1'].indexOf(isSnapshotStr) >= 0)
-            snapshotBuild = true;
-
-        if (snapshotBuild) {
-            // Indicate in DisplayName and Description that this is a snapshot build
-            var displayName = component.value("DisplayName");
-            var description = component.value("Description");
-            component.setValue("DisplayName", displayName + " Beta snapshot (#%BUILD_NUMBER%)")
-            component.setValue("Description", description + " Beta snapshot (#%BUILD_NUMBER%)")
-        }
-
+            && !installer.isOfflineOnly()) {
         // Enable the right toolchains
         var msvc2013 = !!installer.environmentVariable("VS120COMNTOOLS");
         var msvc2015 = !!installer.environmentVariable("VS140COMNTOOLS");
