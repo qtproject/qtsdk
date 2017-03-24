@@ -50,33 +50,18 @@ function Component()
         var msvc2015 = !!installer.environmentVariable("VS140COMNTOOLS");
 
         var android_armv7 = installer.componentByName("qt.59.android_armv7");
-        var winphone_arm = installer.componentByName("qt.59.win64_msvc2013_winphone_arm");
-        var winphone_x86 = installer.componentByName("qt.59.win64_msvc2013_winphone_x86");
-        var msvc2013_winphone_arm = installer.componentByName("qt.59.win64_msvc2013_winphone_arm");
-        var msvc2013_winphone_x86 = installer.componentByName("qt.59.win64_msvc2013_winphone_x86");
-        var msvc2013_winrt_x64 = installer.componentByName("qt.59.win64_msvc2013_winrt_x64");
         var msvc2015_winrt_armv7 = installer.componentByName("qt.59.win64_msvc2015_winrt_armv7");
         var msvc2015_winrt_x64 = installer.componentByName("qt.59.win64_msvc2015_winrt_x64");
         var msvc2015_winrt_x86 = installer.componentByName("qt.59.win64_msvc2015_winrt_x86");
 
         // first reset the latest Qt5.x.x package default values to false
         installer.componentByName("qt.59.win32_mingw53").setValue("Default", "false");
-
         installer.componentByName("qt.59.win64_msvc2013_64").setValue("Default", "false");
-
         installer.componentByName("qt.59.win32_msvc2015").setValue("Default", "false");
         installer.componentByName("qt.59.win64_msvc2015_64").setValue("Default", "false");
 
         if (android_armv7)
             android_armv7.setValue("Default", "false");
-        if (winphone_arm)
-            winphone_arm.setValue("Default", "false");
-        if (winphone_x86)
-            winphone_x86.setValue("Default", "false");
-        if (msvc2013_winphone_arm)
-            msvc2013_winphone_arm.setValue("Default", "false");
-        if (msvc2013_winphone_x86)
-            msvc2013_winphone_x86.setValue("Default", "false");
         if (msvc2013_winrt_x64)
             msvc2013_winrt_x64.setValue("Default", "false");
         if (msvc2015_winrt_armv7)
