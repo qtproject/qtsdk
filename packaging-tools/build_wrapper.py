@@ -534,9 +534,10 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     clang_url = (pkg_base_path + '/' + optionDict['CLANG_FILEBASE'] + '-' + optionDict['QTC_PLATFORM'] + '.7z')
     download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
         clang_url, clang_extract_path, download_temp, None))
-    use_optimized_libclang = bldinstallercommon.is_win_platform() and not '64' in optionDict['TARGET_ENV']
+    use_optimized_libclang = bldinstallercommon.is_win_platform()
     if use_optimized_libclang:
-        opt_clang_url = (pkg_base_path + '/' + optionDict['CLANG_FILEBASE'] + '-windows-mingw.7z')
+        postfix = '64' if '64' in optionDict['TARGET_ENV'] else '32'
+        opt_clang_url = (pkg_base_path + '/' + optionDict['CLANG_FILEBASE'] + '-windows-mingw_' + postfix + '.7z')
         opt_clang_path = os.path.join(download_temp, 'opt_libclang')
         opt_clang_lib = os.path.join(opt_clang_path, 'libclang', 'bin', 'libclang.dll')
         download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
