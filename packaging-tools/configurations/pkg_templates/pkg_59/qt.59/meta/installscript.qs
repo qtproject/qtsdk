@@ -62,8 +62,6 @@ function Component()
 
         if (android_armv7)
             android_armv7.setValue("Default", "false");
-        if (msvc2013_winrt_x64)
-            msvc2013_winrt_x64.setValue("Default", "false");
         if (msvc2015_winrt_armv7)
             msvc2015_winrt_armv7.setValue("Default", "false");
         if (msvc2015_winrt_x64)
