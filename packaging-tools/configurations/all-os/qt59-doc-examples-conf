@@ -165,6 +165,14 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/examples/qtspeech-examples
 target_install_dir:
 package_strip_dirs:     1
 
+[qt.59.examples.qtnetworkauth]
+archives:               59.examples.qtnetworkauth
+target_install_base:    /Examples/Qt-5.9/
+[59.examples.qtnetworkauth]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/examples/qtnetworkauth-examples-%QT_VERSION_AND_TAG%.7z
+target_install_dir:
+package_strip_dirs:     1
+
 [qt.59.examples.qtremoteobjects]
 archives:               59.examples.qtremoteobjects
 target_install_base:    /Examples/Qt-5.9/
