@@ -67,8 +67,12 @@ BIN_TARGET_DIRS             = {} # dictionary populated based on the /packaging-
 CI_TARGET_POSTFIX           = {} # dictionary populated based on the /packaging-tools/releases/build-meta
 EXTRA_ENV                   = dict(os.environ)
 BUILD_META_INFO_FILE        = 'releases/build-meta'
+LOCAL_MODE                  = os.getenv('LOCAL_MODE') # if set, installers will be copied to a local directory
+LOCAL_INSTALLER_DIR         = os.getenv('LOCAL_INSTALLER_DIR', os.path.join(WORK_DIR, 'installers'))
 
-
+if LOCAL_MODE:
+    assert os.path.exists(LOCAL_INSTALLER_DIR), "Local installer destination directory does not exist: %s" % LOCAL_INSTALLER_DIR
+    print("Installer files will be copied to local directory: %s" % LOCAL_INSTALLER_DIR)
 
 
 ###########################################
@@ -1132,7 +1136,6 @@ def initPkgOptions(args):
         optionDict['LICENSE'] = args.license
         optionDict['PACKAGE_STORAGE_SERVER_ADDR'] = args.server
         optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] = args.path
-        optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] = args.path
         optionDict['OPENSSL_LIBS'] = args.openssl_libs
         optionDict['QT_CREATOR_VERSION'] = args.qtcreator_version
         optionDict['QT_CREATOR_VERSION_DESCRIPTION'] = args.qtcreator_version_description
@@ -1140,6 +1143,15 @@ def initPkgOptions(args):
         optionDict['SNAPSHOT_SERVER_PATH'] = args.snapshot_path
         optionDict['TARGET_ENV'] = args.target_env if args.target_env else os.environ.get('cfg')
         optionDict['BUILD_NUMBER'] = args.build_number if args.build_number else os.environ.get('BUILD_NUMBER')
+
+        if LOCAL_MODE:
+            from getpass import getuser
+            optionDict['PACKAGE_STORAGE_SERVER_USER'] = getuser() # current user
+            optionDict['PACKAGE_STORAGE_SERVER'] = "127.0.0.1"
+            optionDict['PACKAGE_STORAGE_SERVER_ADDR'] = optionDict['PACKAGE_STORAGE_SERVER_USER'] + "@" + optionDict['PACKAGE_STORAGE_SERVER']
+            optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] = LOCAL_INSTALLER_DIR
+            optionDict['SNAPSHOT_SERVER'] = optionDict['PACKAGE_STORAGE_SERVER_ADDR']
+            optionDict['SNAPSHOT_SERVER_PATH'] = LOCAL_INSTALLER_DIR
 
     if bldinstallercommon.is_linux_platform():
         optionDict['HOST_PLATFORM'] = 'linux'
