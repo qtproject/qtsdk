@@ -78,7 +78,6 @@ class SdkComponent:
         def nomalize_archive_uri(self, package_name, archive_server_name, archive_location_resolver):
             self.archive_uri = archive_location_resolver.resolve_full_uri(package_name, archive_server_name, self.archive_uri)
 
-
         def check_archive_data(self):
             if self.archive_uri.startswith('http'):
                 res = bldinstallercommon.is_content_url_valid(self.archive_uri)
@@ -109,6 +108,7 @@ class SdkComponent:
         self.sorting_priority            = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'sorting_priority')
         self.optional_for_offline        = False
         self.key_value_substitution_list = key_value_substitution_list
+        self.archive_skip           = False
         if is_offline_build:
             tmp = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'optional_for_offline')
             for item in self.key_value_substitution_list:
@@ -129,6 +129,9 @@ class SdkComponent:
         if self.root_component == 'yes' or self.root_component == 'true':
             return True
         return False
+
+    def setArchiveSkip(self, doSkip):
+        self.archive_skip = doSkip
 
     def validate(self):
         # look up correct package template directory from list
@@ -175,17 +178,18 @@ class SdkComponent:
         if not os.path.exists(self.pkg_template_dir):
             self.sanity_check_fail(self.package_name, 'Package template dir does not exist: ' + self.pkg_template_dir)
             return
-        # next check that archive locations exist
-        for archive in self.downloadable_archive_list:
-            error_msg = archive.check_archive_data()
-            if error_msg:
-                if self.optional_for_offline:
-                    print('!!! Package: [{0}] Given data archive not found: [{1}] But this component was marked optional -> keep going'.format(self.package_name, archive.archive_uri))
-                    self.sanity_check_fail(self.package_name, 'Given data archive not found: [{0}] But this component was marked optional'.format(archive.archive_uri))
-                    return
-                else:
-                    self.sanity_check_fail(self.package_name, error_msg)
-                    return
+        if not self.archive_skip:
+            # next check that archive locations exist
+            for archive in self.downloadable_archive_list:
+                error_msg = archive.check_archive_data()
+                if error_msg:
+                    if self.optional_for_offline:
+                        print('!!! Package: [{0}] Given data archive not found: [{1}] But this component was marked optional -> keep going'.format(self.package_name, archive.archive_uri))
+                        self.sanity_check_fail(self.package_name, 'Given data archive not found: [{0}] But this component was marked optional'.format(archive.archive_uri))
+                        return
+                    else:
+                        self.sanity_check_fail(self.package_name, error_msg)
+                        return
 
 
     def sanity_check_fail(self, component_name, message):

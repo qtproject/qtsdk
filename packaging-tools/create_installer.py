@@ -705,21 +705,22 @@ def parse_component_data(configuration_file, configurations_base_path):
         if sectionNameSpace in PACKAGE_NAMESPACE:
             if section not in SDK_COMPONENT_IGNORE_LIST:
                 sdk_component = SdkComponent(section, configuration, PACKAGES_DIR_NAME_LIST, ARCHIVE_LOCATION_RESOLVER, KEY_SUBSTITUTION_LIST, CREATE_OFFLINE_INSTALLER)
+                if ARCHIVE_DOWNLOAD_SKIP:
+                    sdk_component.setArchiveSkip(True)
                 # validate component
-                if not ARCHIVE_DOWNLOAD_SKIP:
-                    sdk_component.validate()
-                    if sdk_component.is_valid():
-                        SDK_COMPONENT_LIST.append(sdk_component)
+                sdk_component.validate()
+                if sdk_component.is_valid():
+                    SDK_COMPONENT_LIST.append(sdk_component)
+                else:
+                    if CREATE_OFFLINE_INSTALLER and sdk_component.optional_for_offline_installer():
+                        print('*** Warning! The [{0}] was not valid but it was marked optional for offline installers so skipping it.'.format(sdk_component.package_name))
                     else:
-                        if CREATE_OFFLINE_INSTALLER and sdk_component.optional_for_offline_installer():
-                            print('*** Warning! The [{0}] was not valid but it was marked optional for offline installers so skipping it.'.format(sdk_component.package_name))
+                        if STRICT_MODE:
+                            print sdk_component.error_msg()
+                            raise ValueError()
                         else:
-                            if STRICT_MODE:
-                                print sdk_component.error_msg()
-                                raise ValueError()
-                            else:
-                                print '!!! Ignored component in non-strict mode (missing archive data or metadata?): ' + section
-                                SDK_COMPONENT_LIST_SKIPPED.append(sdk_component)
+                            print '!!! Ignored component in non-strict mode (missing archive data or metadata?): ' + section
+                            SDK_COMPONENT_LIST_SKIPPED.append(sdk_component)
     # check for extra configuration files if defined
     extra_conf_list = bldinstallercommon.safe_config_key_fetch(configuration, 'PackageConfigurationFiles', 'file_list')
     if extra_conf_list:
@@ -911,8 +912,7 @@ def create_target_components(target_config):
             # Copy archives into temporary build directory if exists
             for archive in sdk_component.downloadable_archive_list:
                 # fetch packages only if offline installer or repo creation, for online installer just handle the metadata
-                # if ARCHIVE_DOWNLOAD_SKIP is used for testing purposes, skip downloading archives as well
-                if CREATE_OFFLINE_INSTALLER or CREATE_REPOSITORY and not ARCHIVE_DOWNLOAD_SKIP:
+                if CREATE_OFFLINE_INSTALLER or CREATE_REPOSITORY:
                     # Create needed data dirs
                     compress_content_dir = os.path.normpath(temp_data_dir + os.sep + archive.archive_name)
                     install_dir = os.path.normpath(compress_content_dir + sdk_component.target_install_base + os.sep + archive.target_install_dir)
@@ -931,8 +931,9 @@ def create_target_components(target_config):
                     getComponentDataWork.addTask("adding {0} to {1}".format(archive.archive_name, sdk_component.package_name),
                                                  get_component_data, sdk_component, archive, install_dir, data_dir_dest, compress_content_dir)
 
-    # start the work threaded, more then 8 parallel downloads are not so useful
-    getComponentDataWork.run(min([8, multiprocessing.cpu_count()]))
+    if not ARCHIVE_DOWNLOAD_SKIP:
+        # start the work threaded, more then 8 parallel downloads are not so useful
+        getComponentDataWork.run(min([8, multiprocessing.cpu_count()]))
 
     for sdk_component in SDK_COMPONENT_LIST:
         # substitute tags
