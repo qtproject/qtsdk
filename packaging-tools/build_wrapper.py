@@ -62,7 +62,6 @@ REPO_OUTPUT_DIR             = os.path.normpath(os.path.join(SCRIPT_ROOT_DIR, 're
 WORK_DIR                    = os.getenv('PKG_NODE_ROOT') if os.getenv("PKG_NODE_ROOT") else os.path.abspath(os.path.join(__file__, '../../../'))
 OPTION_PARSER               = 0
 QTCREATOR_VERSION           = ''
-QTCREATOR_VERSION_DESCRIPTION = ''
 BIN_TARGET_DIRS             = {} # dictionary populated based on the /packaging-tools/releases/build-meta
 CI_TARGET_POSTFIX           = {} # dictionary populated based on the /packaging-tools/releases/build-meta
 EXTRA_ENV                   = dict(os.environ)
@@ -510,7 +509,6 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     qt_base_path = optionDict['QTC_QT_BASE_DIR']
     qtcreator_version = optionDict['QT_CREATOR_VERSION']
     qtcreator_edition_name = optionDict['QT_CREATOR_EDITION_NAME']
-    qtcreator_version_description = optionDict['QT_CREATOR_VERSION_DESCRIPTION']
     installer_patch = optionDict.get('INSTALLER_PATCH') # optional
     build_id = optionDict['BUILD_NUMBER']
     icu_libs = optionDict.get('ICU_LIBS') # optional
@@ -578,8 +576,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                          '--installcommand', os.path.normpath('nmake.exe')])
     cmd_args = ['python', '-u', os.path.normpath(SCRIPT_ROOT_DIR + '/bld_qtcreator.py'),
                 '--clean',
-                '--qt5path', os.path.normpath(optionDict['WORK_DIR'] + '/qt5_install_dir'),
-                '--versiondescription', '"' + qtcreator_version_description + '"']
+                '--qt5path', os.path.normpath(optionDict['WORK_DIR'] + '/qt5_install_dir')]
     for module_url in qt_module_urls:
         cmd_args.extend(['--qt-module', module_url])
 
@@ -1138,7 +1135,6 @@ def initPkgOptions(args):
         optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] = args.path
         optionDict['OPENSSL_LIBS'] = args.openssl_libs
         optionDict['QT_CREATOR_VERSION'] = args.qtcreator_version
-        optionDict['QT_CREATOR_VERSION_DESCRIPTION'] = args.qtcreator_version_description
         optionDict['SNAPSHOT_SERVER'] = args.snapshot_server
         optionDict['SNAPSHOT_SERVER_PATH'] = args.snapshot_path
         optionDict['TARGET_ENV'] = args.target_env if args.target_env else os.environ.get('cfg')
@@ -1221,7 +1217,6 @@ if __name__ == '__main__':
     parser.add_argument("-o", "--openssl_libs", dest="openssl_libs", default="", help="Url for pre-compiled openssl libraries")
     parser.add_argument("--archive-repo", dest="archive_repo", default="", help="Create Git archive from the given repository. Use syntax: \"git-url#ref\"")
     parser.add_argument("--qtcreator-version", dest="qtcreator_version", default="", help="Qt Creator version, e.g. '3.0.0-rc', used in file names")
-    parser.add_argument("--qtcreator-version-description", dest="qtcreator_version_description", default="", help="Qt Creator's version description, e.g. '3.0.0-rc-enterprise', or 'opensource', shown in Qt Creator's about dialog in addition to the version")
     parser.add_argument("--snapshot-server", dest="snapshot_server", default="", help="Additional snapshot upload server <user>@<host> (is uploaded from upload server)")
     parser.add_argument("-snapshot-path", dest="snapshot_path", default="", help="Path on additional snapshot upload server")
     if len(sys.argv) < 2:

@@ -149,7 +149,6 @@ if __name__ == "__main__":
         formatter_class=argparse.RawTextHelpFormatter)
     add_common_commandline_arguments(parser)
     parser.add_argument('--qt5path', help="here it expects a compiled Qt5", required=True)
-    parser.add_argument('--versiondescription', help="version description to be shown in the about dialog, e.g. 'pre-2.7.2")
     if bldinstallercommon.is_mac_platform():
         parser.add_argument('--keychain_unlock_script', help="script for unlocking the keychain used for signing")
         parser.epilog += " --keychain_unlock_script $HOME/unlock-keychain.sh"
@@ -256,9 +255,6 @@ if __name__ == "__main__":
         # skip compilation of cdbextension and wininterrupt, they are built separately below
         qmakeCommandArguments += " QTC_SKIP_CDBEXT=1"
         qmakeCommandArguments += " QTC_SKIP_WININTERRUPT=1"
-
-    if callerArguments.versiondescription:
-        qmakeCommandArguments += " DEFINES+=IDE_VERSION_DESCRIPTION={0}".format(callerArguments.versiondescription)
 
     runCommand("{0} {1}".format(qmakeBinary, qmakeCommandArguments), qtCreatorBuildDirectory,
         callerArguments = callerArguments, init_environment = environment)
