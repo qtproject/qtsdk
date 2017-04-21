@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <Installer>
-    <Name>Qt Creator %QTC_DISPLAY_VERSION% (32 bit)</Name>
+    <Name>Qt Creator %QTC_DISPLAY_VERSION% (64 bit)</Name>
     <Version>%QTC_VERSION%</Version>
-    <Title>Qt Creator %QTC_DISPLAY_VERSION% (32 bit)</Title>
+    <Title>Qt Creator %QTC_DISPLAY_VERSION% (64 bit)</Title>
     <Publisher>The Qt Company Ltd</Publisher>
     <InstallerWindowIcon>logo-small</InstallerWindowIcon>
     <InstallerApplicationIcon>logo-small</InstallerApplicationIcon>

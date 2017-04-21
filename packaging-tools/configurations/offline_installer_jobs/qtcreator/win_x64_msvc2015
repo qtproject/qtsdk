@@ -44,7 +44,7 @@ file_list:              qt-conf,
 template_name:          config_qtcreator
 
 [ConfigXml]
-template_name:          config.xml.template.windows.qtcreator
+template_name:          config.xml.template.windows.qtcreator.x64
 
 [PackageTemplates]
 template_dirs:          pkg_qtcreator_standalone, pkg_tools
