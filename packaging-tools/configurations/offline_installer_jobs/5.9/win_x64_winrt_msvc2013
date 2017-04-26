@@ -42,6 +42,7 @@ file_list:              qt-conf,
                         x86_64-qt59-msvc2013-winphone_arm-conf,
                         x86_64-qt59-msvc2013-winphone_x86-conf,
                         x86-tools-qtcreator-qt59x-conf,
+                        tools-qtcreatorcdbext-msvc2015-conf,
                         x86-tools-vcredist_msvc2015-conf,
                         x64-tools-vcredist_msvc2015-conf,
                         x86-tools-perl-conf
@@ -54,4 +55,3 @@ template_name:          config.xml.template.windows.qt5
 
 [PackageTemplates]
 template_dirs:          pkg_59, pkg_tools
-

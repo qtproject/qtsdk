@@ -49,6 +49,7 @@ file_list:              qt-conf,
                         android-qt59-x86-conf,
                         x86-tools-mingw530-conf,
                         x86-tools-qtcreator-qt59x-conf,
+                        tools-qtcreatorcdbext-msvc2015-conf,
                         x86-tools-vcredist_msvc2015-conf,
                         x64-tools-vcredist_msvc2015-conf,
                         x86-tools-perl-conf

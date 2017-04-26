@@ -28,12 +28,29 @@
 
 
 [qt.tools.qtcreator]
-archives:               tools.qtcreator
+archives:               tools.qtcreator,
+                        tools.qtcreator.wininterrupt32,
+                        tools.qtcreator.wininterrupt64
 target_install_base:    /Tools/QtCreator
 package_default:        true
+
 [tools.qtcreator]
-archive_uri:            %QT_CREATOR_BASE_PATH%/windows_vs%QTC_MSVC%_32/qtcreator.7z
+archive_uri:            %QT_CREATOR_BASE_PATH%/windows_vs2015_32/qtcreator.7z
 package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:
 archive_name:           qtcreator.7z
+
+[tools.qtcreator.wininterrupt32]
+archive_uri:            %QT_CREATOR_BASE_PATH%/windows_vs2015_32/wininterrupt.7z
+package_strip_dirs:     0
+target_install_dir:     /
+rpath_target:
+archive_name:           wininterrupt32.7z
+
+[tools.qtcreator.wininterrupt64]
+archive_uri:            %QT_CREATOR_BASE_PATH%/windows_vs2015_64/wininterrupt.7z
+package_strip_dirs:     0
+target_install_dir:     /
+rpath_target:
+archive_name:           wininterrupt64.7z
