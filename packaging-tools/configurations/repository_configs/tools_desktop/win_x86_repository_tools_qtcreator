@@ -46,8 +46,8 @@ name:                   qt
 identifier:             windows
 
 [PackageConfigurationFiles]
-file_list:              x86-tools-qtcreator-online-conf
+file_list:              x86-tools-qtcreator-online-conf,
+                        tools-qtcreatorcdbext-msvc2015-conf
 
 [PackageTemplates]
 template_dirs:          pkg_tools
-

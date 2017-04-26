@@ -11,10 +11,10 @@ linux-x64:                  installer-framework-build-linux-x64.7z
 mac-x64:                    installer-framework-build-mac-x64.7z
 
 [release.global]
-version:                    4.2.2
-version_tag:
-arg_substitution_list:      %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.2.2_58x/latest_successful,
-                            %QTC_VERSION%=%GLOBAL_VERSION%,
+version:                    4.3.0
+version_tag:                rc1
+arg_substitution_list:      %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.3.0-rc1_58x/latest_successful,
+                            %QTC_VERSION%=4.2.83,
                             %QTC_DISPLAY_VERSION%=%GLOBAL_VERSION_AND_TAG%,
                             %QTC_MSVC%=2015
 
@@ -44,7 +44,7 @@ repo_url_specifier:         linux_x64/desktop/tools_qtcreator
 arg_configurations_file:    repository_configs/tools_desktop/win_x86_repository_tools_qtcreator
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
 repo_content_type:          qtcreator
-repo_components_to_update:  qt.tools.qtcreator.*
+repo_components_to_update:  qt.tools.qtcreator.*,qt.tools.qtcreatorcdbext*
 repo_url_specifier:         windows_x86/desktop/tools_qtcreator
 
 
@@ -57,7 +57,3 @@ arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
 repo_content_type:          qtcreator
 repo_components_to_update:  qt.tools.qtcreator.*
 repo_url_specifier:         mac_x64/desktop/tools_qtcreator
-
-
-
-
