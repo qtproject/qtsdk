@@ -42,6 +42,8 @@
 
 [qt.license.lgpl]
 
+[qt.license.python]
+
 [qt.license.thirdparty]
 archives:               fdl_license
 target_install_base:    /Licenses
