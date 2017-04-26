@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #############################################################################
 ##
-## Copyright (C) 2016 The Qt Company Ltd.
+## Copyright (C) 2017 The Qt Company Ltd.
 ## Copyright (C) 2014 BlackBerry Limited. All rights reserved.
 ## Contact: https://www.qt.io/licensing/
 ##
@@ -59,8 +59,7 @@ from threadedwork import ThreadedWork
 # ----------------------------------------------------------------------
 SCRIPT_ROOT_DIR             = os.path.dirname(os.path.realpath(__file__))
 REPO_OUTPUT_DIR             = os.path.normpath(os.path.join(SCRIPT_ROOT_DIR, 'repository'))
-PKG_NODE_ROOT               = os.getenv('PKG_NODE_ROOT', os.path.abspath(os.path.join(__file__, '../../../')))
-WORK_DIR                    = os.path.join(PKG_NODE_ROOT, 'build')
+WORK_DIR                    = os.getenv('PKG_NODE_ROOT') if os.getenv("PKG_NODE_ROOT") else os.path.abspath(os.path.join(__file__, '../../../'))
 OPTION_PARSER               = 0
 QTCREATOR_VERSION           = ''
 QTCREATOR_VERSION_DESCRIPTION = ''
@@ -128,7 +127,7 @@ def sign_mac_executable(file_path, working_dir, abort_on_fail):
 def handle_qt_licheck_build(optionDict):
     if optionDict['LICENSE'] == 'enterprise':
         # Build license checker
-        exe_dir = WORK_DIR + '/license-managing/licheck'
+        exe_dir = optionDict['WORK_DIR'] + '/license-managing/licheck'
         upload_path = optionDict['PACKAGE_STORAGE_SERVER_ADDR'] + ':' + optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + optionDict['LICENSE'] + '/licheck/'
         if optionDict['TARGET_ENV'].lower().startswith("win"):
             cmd_args = [r'c:\Utils\jom\jom.exe', '-f', 'Makefile_win']
@@ -192,7 +191,7 @@ def handle_ifw_build(optionDict):
     if optionDict['LICENSE'] == 'enterprise':
         product_key_checker_pri = optionDict.get('PRODUCT_KEY_CHECKER_PRI', '')
         if product_key_checker_pri:
-            temp = bldinstallercommon.locate_file(PKG_NODE_ROOT, product_key_checker_pri)
+            temp = bldinstallercommon.locate_file(optionDict['WORK_DIR'], product_key_checker_pri)
             product_key_checker_pri = temp if temp else product_key_checker_pri
 
     # options object for ifw build
@@ -310,7 +309,7 @@ def generate_bin_target_dictionary():
 ###############################
 def handle_gammaray_build(optionDict):
     def cloneGammarayRepo(gitUrl, gitBranchOrTag, checkoutDir):
-        srcPath = os.path.join(WORK_DIR, checkoutDir)
+        srcPath = os.path.join(optionDict['WORK_DIR'], checkoutDir)
         if os.path.exists(srcPath):
             shutil.rmtree(srcPath)
         os.makedirs(srcPath)
@@ -357,23 +356,23 @@ def handle_gammaray_build(optionDict):
 
     # build kdstatemachineeditor
     cmd_args = common_gammaray_args()
-    cmd_args.extend(['--module_dir', os.path.join(WORK_DIR, 'src', 'external', 'kdstatemachineeditor'),
+    cmd_args.extend(['--module_dir', os.path.join(optionDict['WORK_DIR'], 'src', 'external', 'kdstatemachineeditor'),
                      '--module-name', 'kdsme',
-                     '--qt5path', os.path.join(WORK_DIR, 'kdsme_qt5_install'),
+                     '--qt5path', os.path.join(optionDict['WORK_DIR'], 'kdsme_qt5_install'),
                      '--add-config-arg=-DBUILD_EXAMPLES=OFF',
                      '--add-config-arg=-DBUILD_TESTING=OFF',
                      '--add-config-arg=-DWITH_INTERNAL_GRAPHVIZ=ON'])
-    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, extra_env=build_environment)
+    bldinstallercommon.do_execute_sub_process(cmd_args, optionDict['WORK_DIR'], extra_env=build_environment)
 
     # build gammaray
     cmd_args = common_gammaray_args()
-    cmd_args.extend(['--module_dir', os.path.join(WORK_DIR, 'src', 'external', 'gammaray'),
+    cmd_args.extend(['--module_dir', os.path.join(optionDict['WORK_DIR'], 'src', 'external', 'gammaray'),
                      '--module-name', 'gammaray',
-                     '--qt5path', os.path.join(WORK_DIR, 'gammaray_qt5_install'),
+                     '--qt5path', os.path.join(optionDict['WORK_DIR'], 'gammaray_qt5_install'),
                      '--add-config-arg=-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=FALSE',
                      '--add-config-arg=-DGAMMARAY_MULTI_BUILD=OFF',
                      '--qt5_module_url', bld_utils.file_url(os.path.join(SCRIPT_ROOT_DIR, 'module_archives', 'qt5_kdsme.7z'))])
-    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR)
+    bldinstallercommon.do_execute_sub_process(cmd_args, optionDict['WORK_DIR'])
 
     # upload
     base_path = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/gammaray/' + gammaray_version
@@ -423,15 +422,15 @@ def make_QtcPlugin(name, path, version, dependencies=None, modules=None,
 
 def build_qtcreator_plugins(plugins, qtcreator_url, qtcreator_dev_url, icu_url=None, openssl_url=None):
     for plugin in plugins:
-        if not os.path.isdir(os.path.join(WORK_DIR, plugin.path)):
+        if not os.path.isdir(os.path.join(optionDict['WORK_DIR'], plugin.path)):
             continue
 
         cmd_arguments = ['python', '-u', os.path.join(SCRIPT_ROOT_DIR, 'bld_qtcreator_plugins.py'),
                          '--clean',
                          '--qtc-build-url', qtcreator_url,
                          '--qtc-dev-url', qtcreator_dev_url,
-                         '--plugin-path', os.path.join(WORK_DIR, plugin.path),
-                         '--build-path', WORK_DIR]
+                         '--plugin-path', os.path.join(optionDict['WORK_DIR'], plugin.path),
+                         '--build-path', optionDict['WORK_DIR']]
         if bldinstallercommon.is_win_platform():
             cmd_arguments.extend(['--buildcommand', os.path.normpath('C:/Utils/jom/jom.exe'),
                                   '--installcommand', os.path.normpath('nmake.exe')])
@@ -453,23 +452,23 @@ def build_qtcreator_plugins(plugins, qtcreator_url, qtcreator_dev_url, icu_url=N
             if not matches:
                 raise RuntimeError('did not find dependency "{0}" for plugin "{1}"'.format(dependency_name, plugin.name))
             dependency = matches[0]
-            cmd_arguments.extend(['--plugin-search-path', os.path.join(WORK_DIR, dependency.path, 'plugins')])
-            libs_base = os.path.join(WORK_DIR, dependency.name + '-target')
+            cmd_arguments.extend(['--plugin-search-path', os.path.join(optionDict['WORK_DIR'], dependency.path, 'plugins')])
+            libs_base = os.path.join(optionDict['WORK_DIR'], dependency.name + '-target')
             if bldinstallercommon.is_mac_platform():
                 libs_paths.append(os.path.join(libs_base, 'PlugIns'))
             else:
                 libs_paths.append(os.path.join(libs_base, 'lib', 'qtcreator', 'plugins'))
         if libs_paths:
             cmd_arguments.extend(['--add-qmake-argument', 'LIBS*=' + ' '.join(['-L'+path for path in libs_paths])])
-        cmd_arguments.extend(['--out-dev', os.path.join(WORK_DIR, plugin.name + '_dev.7z')])
-        cmd_arguments.append(os.path.join(WORK_DIR, plugin.name + '.7z'))
-        bldinstallercommon.do_execute_sub_process(cmd_arguments, WORK_DIR)
+        cmd_arguments.extend(['--out-dev', os.path.join(optionDict['WORK_DIR'], plugin.name + '_dev.7z')])
+        cmd_arguments.append(os.path.join(optionDict['WORK_DIR'], plugin.name + '.7z'))
+        bldinstallercommon.do_execute_sub_process(cmd_arguments, optionDict['WORK_DIR'])
         # source package
         if bldinstallercommon.is_linux_platform():
-            bldinstallercommon.do_execute_sub_process(['python', '-u', os.path.join(WORK_DIR, 'qt-creator', 'scripts', 'createSourcePackages.py'),
-                                                       '-p', os.path.join(WORK_DIR, plugin.path),
+            bldinstallercommon.do_execute_sub_process(['python', '-u', os.path.join(optionDict['WORK_DIR'], 'qt-creator', 'scripts', 'createSourcePackages.py'),
+                                                       '-p', os.path.join(optionDict['WORK_DIR'], plugin.path),
                                                        '-n', plugin.name,
-                                                       plugin.version, 'enterprise'], WORK_DIR)
+                                                       plugin.version, 'enterprise'], optionDict['WORK_DIR'])
 
 ###############################
 # handle_qt_creator_build
@@ -480,7 +479,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
 
     # Get Qt Creator sources if not present yet
     if 'QT_CREATOR_GIT_URL' in optionDict:
-        qtCreatorSourceDirectory = os.path.join(WORK_DIR, 'qt-creator')
+        qtCreatorSourceDirectory = os.path.join(optionDict['WORK_DIR'], 'qt-creator')
         if os.path.exists(qtCreatorSourceDirectory):
             shutil.rmtree(qtCreatorSourceDirectory)
         os.makedirs(qtCreatorSourceDirectory)
@@ -488,7 +487,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                             qtCreatorSourceDirectory, full_clone=True, init_subrepos=True)
     # Get Qt Creator plugin sources if not present yet
     for pluginConf in qtCreatorPlugins:
-        checkoutDir = os.path.join(WORK_DIR, pluginConf.checkout_dir)
+        checkoutDir = os.path.join(optionDict['WORK_DIR'], pluginConf.checkout_dir)
         if pluginConf.git_url:
             if os.path.exists(checkoutDir):
                 shutil.rmtree(checkoutDir)
@@ -513,8 +512,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     icu_libs = optionDict.get('ICU_LIBS') # optional
     openssl_libs = optionDict.get('OPENSSL_LIBS') # optional
     qt_postfix = os.environ['QT_POSTFIX']
-    qtcreator_temp = os.path.join(WORK_DIR, 'qt-creator_temp')
-    download_temp = os.path.join(WORK_DIR, 'downloads')
+    qtcreator_temp = os.path.join(optionDict['WORK_DIR'], 'qt-creator_temp')
+    download_temp = os.path.join(optionDict['WORK_DIR'], 'downloads')
 
     def module_filename(module):
         return module + '-' + qt_postfix + '.7z'
@@ -575,7 +574,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                          '--installcommand', os.path.normpath('nmake.exe')])
     cmd_args = ['python', '-u', os.path.normpath(SCRIPT_ROOT_DIR + '/bld_qtcreator.py'),
                 '--clean',
-                '--qt5path', os.path.normpath(WORK_DIR + '/qt5_install_dir'),
+                '--qt5path', os.path.normpath(optionDict['WORK_DIR'] + '/qt5_install_dir'),
                 '--versiondescription', '"' + qtcreator_version_description + '"']
     for module_url in qt_module_urls:
         cmd_args.extend(['--qt-module', module_url])
@@ -594,7 +593,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     if python_path:
         cmd_args.extend(['--python_path', python_path])
     cmd_args.extend(common_arguments)
-    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, extra_env=build_environment)
+    bldinstallercommon.do_execute_sub_process(cmd_args, optionDict['WORK_DIR'], extra_env=build_environment)
 
     if bldinstallercommon.is_mac_platform():
         lock_keychain()
@@ -604,7 +603,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     qmake_arguments = []
     additional_plugins = []
 
-    if os.path.isdir(os.path.join(WORK_DIR, "licensechecker")):
+    if os.path.isdir(os.path.join(optionDict['WORK_DIR'], "licensechecker")):
         additional_plugins.extend([make_QtcPlugin('licensechecker', 'licensechecker', qtcreator_version,
                                                   modules=qt_module_local_urls)])
         qmake_arguments = ['CONFIG+=licensechecker']
@@ -615,10 +614,10 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                               modules=qt_module_local_urls, dependencies=plugin_dependencies, qmake_arguments=qmake_arguments)])
     if bldinstallercommon.is_linux_platform():
         parfparser_qmake_arguments = ['PERFPARSER_BUNDLED_ELFUTILS=true',
-                                      'PERFPARSER_APP_DESTDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'libexec', 'qtcreator'),
-                                      'PERFPARSER_ELFUTILS_DESTDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'lib', 'qtcreator'),
-                                      'PERFPARSER_APP_INSTALLDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'libexec', 'qtcreator'),
-                                      'PERFPARSER_ELFUTILS_INSTALLDIR=' + os.path.join(WORK_DIR, 'perfparser-target', 'lib', 'qtcreator')
+                                      'PERFPARSER_APP_DESTDIR=' + os.path.join(optionDict['WORK_DIR'], 'perfparser-target', 'libexec', 'qtcreator'),
+                                      'PERFPARSER_ELFUTILS_DESTDIR=' + os.path.join(optionDict['WORK_DIR'], 'perfparser-target', 'lib', 'qtcreator'),
+                                      'PERFPARSER_APP_INSTALLDIR=' + os.path.join(optionDict['WORK_DIR'], 'perfparser-target', 'libexec', 'qtcreator'),
+                                      'PERFPARSER_ELFUTILS_INSTALLDIR=' + os.path.join(optionDict['WORK_DIR'], 'perfparser-target', 'lib', 'qtcreator')
                                      ]
         additional_plugins.extend([make_QtcPlugin('perfparser', 'perfparser', qtcreator_version, modules=qt_module_local_urls,
                                                   qmake_arguments=parfparser_qmake_arguments)])
@@ -634,7 +633,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                                   additional_arguments=[
                                                   '--deploy-command', 'python',
                                                   '--deploy-command=-u',
-                                                  '--deploy-command', os.path.join(WORK_DIR, 'gammarayintegration', 'scripts', 'deploy.py')])])
+                                                  '--deploy-command', os.path.join(optionDict['WORK_DIR'], 'gammarayintegration', 'scripts', 'deploy.py')])])
         additional_plugins.extend([make_QtcPlugin('appmanagerintegration', 'pcore-plugin-appman', qtcreator_version,
                                                   modules=qt_module_local_urls,
                                                   dependencies=plugin_dependencies + ['b2qt-qtcreator-plugin'],
@@ -643,20 +642,20 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     # Build Qt Creator plugins
     icu_local_url = bld_utils.file_url(os.path.join(qtcreator_temp, os.path.basename(icu_libs))) if bldinstallercommon.is_linux_platform() else None
     openssl_local_url = bld_utils.file_url(os.path.join(qtcreator_temp, os.path.basename(openssl_libs))) if bldinstallercommon.is_win_platform() else None
-    qtcreator_url = bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_build', 'qtcreator.7z'))
-    qtcreator_dev_url = bld_utils.file_url(os.path.join(WORK_DIR, 'qt-creator_build', 'qtcreator_dev.7z'))
+    qtcreator_url = bld_utils.file_url(os.path.join(optionDict['WORK_DIR'], 'qt-creator_build', 'qtcreator.7z'))
+    qtcreator_dev_url = bld_utils.file_url(os.path.join(optionDict['WORK_DIR'], 'qt-creator_build', 'qtcreator_dev.7z'))
     build_qtcreator_plugins(additional_plugins, qtcreator_url, qtcreator_dev_url, icu_url=icu_local_url, openssl_url=openssl_local_url)
 
     if bldinstallercommon.is_linux_platform():
         # Create opensource source package
-        bldinstallercommon.do_execute_sub_process([os.path.join(WORK_DIR, 'qt-creator', 'scripts', 'createSourcePackages.py'),
-                                                   qtcreator_version, 'opensource'], WORK_DIR)
+        bldinstallercommon.do_execute_sub_process([os.path.join(optionDict['WORK_DIR'], 'qt-creator', 'scripts', 'createSourcePackages.py'),
+                                                   qtcreator_version, 'opensource'], optionDict['WORK_DIR'])
         # Create enterprise source package
         if installer_patch:
             bldinstallercommon.do_execute_sub_process(['git', 'am', '-3', installer_patch],
-                                                      os.path.join(WORK_DIR, 'qt-creator'))
-            bldinstallercommon.do_execute_sub_process([os.path.join(WORK_DIR, 'qt-creator', 'scripts', 'createSourcePackages.py'),
-                                                       qtcreator_version, 'enterprise'], WORK_DIR)
+                                                      os.path.join(optionDict['WORK_DIR'], 'qt-creator'))
+            bldinstallercommon.do_execute_sub_process([os.path.join(optionDict['WORK_DIR'], 'qt-creator', 'scripts', 'createSourcePackages.py'),
+                                                       qtcreator_version, 'enterprise'], optionDict['WORK_DIR'])
 
     # Upload
     # Qt Creator directory
@@ -674,10 +673,10 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
             snapshot_path += '/' + qtcreator_version
         cmd_args = [optionDict['SSH_COMMAND'], pkg_storage_server, "ssh", snapshot_server,
             'mkdir', '-p', snapshot_path + '/' + build_id + '/installer_source/' + target_env_dir]
-        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
+        bldinstallercommon.do_execute_sub_process(cmd_args, optionDict['WORK_DIR'], True)
         cmd_args = [optionDict['SSH_COMMAND'], pkg_storage_server, "ssh", snapshot_server,
             'ln', '-sfn', snapshot_path + '/' + build_id, snapshot_path + '/latest']
-        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR, True)
+        bldinstallercommon.do_execute_sub_process(cmd_args, optionDict['WORK_DIR'], True)
         snapshot_path += '/' + build_id
 
     file_upload_list = [] # pairs (source, dest), source relative to WORK_DIR, dest relative to server + dir_path
@@ -689,7 +688,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
 
     # source packages
     if bldinstallercommon.is_linux_platform():
-        source_package_list = glob(os.path.join(WORK_DIR, 'qt-creator-*-src-' + qtcreator_version + '.*'))
+        source_package_list = glob(os.path.join(optionDict['WORK_DIR'], 'qt-creator-*-src-' + qtcreator_version + '.*'))
         file_upload_list.extend([(fn, '') for fn in source_package_list])
 
     # installer 7z sources
@@ -700,9 +699,9 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     for plugin in additional_plugins:
         plugin_name = plugin.name + '.7z'
         plugin_dev_name = plugin.name + '_dev.7z'
-        if os.path.isfile(os.path.join(WORK_DIR, plugin_name)):
+        if os.path.isfile(os.path.join(optionDict['WORK_DIR'], plugin_name)):
             file_upload_list.append((plugin_name, target_env_dir + '/' + plugin_name))
-        if os.path.isfile(os.path.join(WORK_DIR, plugin_dev_name)):
+        if os.path.isfile(os.path.join(optionDict['WORK_DIR'], plugin_dev_name)):
             file_upload_list.append((plugin_dev_name, target_env_dir + '/' + plugin_dev_name))
     if bldinstallercommon.is_win_platform():
         file_upload_list.append(('qt-creator_build/qtcreatorcdbext.7z', target_env_dir + '/qtcreatorcdbext.7z'))
@@ -713,13 +712,13 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     # upload files
     for source, destination in file_upload_list:
         cmd_args = [optionDict['SCP_COMMAND'], source, pkg_storage_server + ':' + dir_path + '/' + destination]
-        bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR)
+        bldinstallercommon.do_execute_sub_process(cmd_args, optionDict['WORK_DIR'])
     if snapshot_server and snapshot_path:
         for source, destination in snapshot_upload_list:
             cmd_args = [optionDict['SSH_COMMAND'], pkg_storage_server, "scp",
                 dir_path + '/' + source,
                 snapshot_server + ':' + snapshot_path + '/' + destination]
-            bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR)
+            bldinstallercommon.do_execute_sub_process(cmd_args, optionDict['WORK_DIR'])
 
 
 ###############################
@@ -874,7 +873,7 @@ def update_latest_link(optionDict, remote_dest_dir, latest_dir):
 ###############################
 def delete_remote_directory_tree(optionDict, remote_dir):
     cmd_args = [optionDict['SSH_COMMAND'], optionDict['PACKAGE_STORAGE_SERVER_ADDR'], 'rm -rf', remote_dir]
-    bldinstallercommon.do_execute_sub_process(cmd_args, WORK_DIR)
+    bldinstallercommon.do_execute_sub_process(cmd_args, optionDict['WORK_DIR'])
 
 
 ###############################
@@ -1037,7 +1036,7 @@ def build_extra_module_src_pkg(optionDict):
     latest_extra_module_dir = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + optionDict['LICENSE'] + '/' + module_name + '/' + module_version + '/' + 'latest'
     script_dir = os.path.dirname(os.path.realpath(__file__))
     #create dir
-    module_dir = os.path.join(WORK_DIR, module_name)
+    module_dir = os.path.join(optionDict['WORK_DIR'], module_name)
     bldinstallercommon.create_dirs(module_dir)
     #clone repo
     shutil.rmtree(module_dir, ignore_errors=True)
@@ -1153,13 +1152,19 @@ def initPkgOptions(args):
     optionDict['RM_COMMAND'] = '%RM%' if bldinstallercommon.is_win_platform() else 'rm'
     optionDict['SSH_COMMAND'] = '%SSH%' if bldinstallercommon.is_win_platform() else 'ssh'
     optionDict['SCP_COMMAND'] = '%SCP%' if bldinstallercommon.is_win_platform() else 'scp'
+    optionDict['WORK_DIR'] = WORK_DIR
 
     # Parse version number info if this build utilizes release description file
     if 'RELEASE_DESCRIPTION_FILE' in optionDict:
         # Path relative to script or absolute file path
         path = optionDict['RELEASE_DESCRIPTION_FILE']
-        path = path if (os.path.isabs(path) and os.path.isfile(path)) else os.path.join(SCRIPT_ROOT_DIR, path)
+        path = path if (os.path.isabs(path) and os.path.isfile(path)) else os.path.join(optionDict['WORK_DIR'], path)
         optionDict['RELEASE_DESCRIPTION_FILE'] = path
+        # resolve configuration files base dir
+        confBaseDir = optionDict['CONFIGURATIONS_FILE_BASE_DIR']
+        confBaseDir = confBaseDir if (os.path.isabs(confBaseDir) and os.path.isdir(confBaseDir)) else os.path.join(optionDict['WORK_DIR'], confBaseDir)
+        optionDict['CONFIGURATIONS_FILE_BASE_DIR'] = confBaseDir
+
         parser = ConfigParser.ConfigParser()
         parser.read(path)
         for s in parser.sections():
