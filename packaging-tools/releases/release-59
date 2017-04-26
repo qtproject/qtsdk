@@ -21,8 +21,8 @@ arg_substitution_list:          %QT_VERSION%=%GLOBAL_VERSION%,
                                 %QT_INSTALL_DIR_NAME%=5.9,
                                 %QTQUICK2DRENDERER_VERSION%=5.9.0,
                                 %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.3.0-rc1_59x/latest_successful,
-                                %QTC_VERSION%=4.3.0,
-                                %QTC_DISPLAY_VERSION%=4.3.0,
+                                %QTC_VERSION%=4.2.83,
+                                %QTC_DISPLAY_VERSION%=4.3.0-rc1,
                                 %QTC_MSVC%=2015
 
 ################################################################################
