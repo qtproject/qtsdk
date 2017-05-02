@@ -51,7 +51,7 @@ import sys
 
 # own imports
 from threadedwork import ThreadedWork
-from bld_utils import runBuildCommand, runCommand, stripVars
+from bld_utils import runBuildCommand, runInstallCommand, runCommand, stripVars
 import bldinstallercommon
 
 from bld_qtcreator import add_common_commandline_arguments, patch_qt_pri_files, qmake_binary, get_common_environment
@@ -76,6 +76,7 @@ def parse_arguments():
     parser.add_argument('--deploy-command', help='Command to execute for custom deployment before deploying and packaging the target directory.'
         + 'The command gets the Qt prefix and plugin target directory as command line parameters. Pass multiple times for commands that have arguments.',
         action='append', default=[])
+    parser.add_argument('--deploy', help='Run "make deploy" for additional deployment to IDE_OUTPUT_PATH.', action='store_true')
     parser.add_argument('--out-dev', help='Target 7z file name for plugin dev package', dest='target_dev7zfile')
     parser.add_argument('target_7zfile')
 
@@ -183,6 +184,9 @@ def build_plugins(caller_arguments):
         custom_deploy_command = caller_arguments.deploy_command + [paths.qt5,
             paths.target]
         runCommand(custom_deploy_command, currentWorkingDirectory = paths.target)
+    if caller_arguments.deploy:
+        runInstallCommand(["deploy"], currentWorkingDirectory = paths.build,
+            callerArguments = caller_arguments, init_environment = environment)
 
     sevenzip_filepath = '7z.exe' if bldinstallercommon.is_win_platform() else '7z'
     if hasattr(caller_arguments, 'sevenzippath') and caller_arguments.sevenzippath:
