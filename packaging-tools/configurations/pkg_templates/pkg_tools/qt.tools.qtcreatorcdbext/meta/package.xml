@@ -5,6 +5,7 @@
     <Version>%QTC_VERSION%-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.tools.qtcreator,qt.license.python</Dependencies>
+    <SortingPriority>999</SortingPriority> <!-- Highest priority number is on top. 999 is directly below Qt Creator -->
     <Default>true</Default>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
