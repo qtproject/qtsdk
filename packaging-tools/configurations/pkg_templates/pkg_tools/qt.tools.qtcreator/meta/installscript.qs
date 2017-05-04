@@ -227,6 +227,9 @@ Component.prototype.createOperations = function()
         component.addOperation("Settings", "path="+settingsFile, "method=set",
                                "key=Updater/MaintenanceTool",
                                "value="+maintenanceToolPath);
+        component.addOperation("Settings", "path="+settingsFile,
+                               "method=add_array_value",
+                               "key=Plugins/ForceEnabled", "value=UpdateInfo");
     }
 }
 
