@@ -606,7 +606,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
 
     if os.path.isdir(os.path.join(optionDict['WORK_DIR'], "licensechecker")):
         additional_plugins.extend([make_QtcPlugin('licensechecker', 'licensechecker', qtcreator_version,
-                                                  modules=qt_module_local_urls)])
+                                                  modules=qt_module_local_urls,
+                                                  additional_arguments=['--deploy'])])
         qmake_arguments = ['CONFIG+=licensechecker']
         plugin_dependencies = ['licensechecker']
     additional_plugins.extend([make_QtcPlugin('vxworks-qtcreator-plugin', 'vxworks-qtcreator-plugin', qtcreator_version,
