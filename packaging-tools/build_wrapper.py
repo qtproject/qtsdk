@@ -516,6 +516,9 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     qt_postfix = os.environ['QT_POSTFIX']
     qtcreator_temp = os.path.join(optionDict['WORK_DIR'], 'qt-creator_temp')
     download_temp = os.path.join(optionDict['WORK_DIR'], 'downloads')
+    # from 4.4 on we use external elfutil builds and also build on Windows
+    elfutils_url = optionDict.get('ELFUTILS_URL')
+    use_separate_elfutils = bool(elfutils_url)
 
     def module_filename(module):
         return module + '-' + qt_postfix + '.7z'
@@ -543,6 +546,11 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         opt_clang_lib = os.path.join(opt_clang_path, 'libclang', 'bin', 'libclang.dll')
         download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
             opt_clang_url, opt_clang_path, download_temp, None))
+
+    if elfutils_url:
+        elfutils_path = os.path.join(download_temp, 'elfutils')
+        download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
+            elfutils_url, elfutils_path, download_temp, None))
 
     python_path = None
     python_url = optionDict.get('PYTHON_URL')
@@ -614,16 +622,36 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                               modules=qt_module_local_urls, dependencies=plugin_dependencies, qmake_arguments=qmake_arguments)])
     additional_plugins.extend([make_QtcPlugin('isoiconbrowser', 'qtquickdesigner', qtcreator_version,
                                               modules=qt_module_local_urls, dependencies=plugin_dependencies, qmake_arguments=qmake_arguments)])
-    if bldinstallercommon.is_linux_platform():
-        parfparser_qmake_arguments = ['PERFPARSER_BUNDLED_ELFUTILS=true',
-                                      'PERFPARSER_APP_DESTDIR=' + os.path.join(optionDict['WORK_DIR'], 'perfparser-target', 'libexec', 'qtcreator'),
-                                      'PERFPARSER_ELFUTILS_DESTDIR=' + os.path.join(optionDict['WORK_DIR'], 'perfparser-target', 'lib', 'qtcreator'),
-                                      'PERFPARSER_APP_INSTALLDIR=' + os.path.join(optionDict['WORK_DIR'], 'perfparser-target', 'libexec', 'qtcreator'),
-                                      'PERFPARSER_ELFUTILS_INSTALLDIR=' + os.path.join(optionDict['WORK_DIR'], 'perfparser-target', 'lib', 'qtcreator')
-                                     ]
-        additional_plugins.extend([make_QtcPlugin('perfparser', 'perfparser', qtcreator_version, modules=qt_module_local_urls,
-                                                  qmake_arguments=parfparser_qmake_arguments)])
     if not bldinstallercommon.is_mac_platform():
+        if use_separate_elfutils:
+            build_perfparser = True
+            perfparser_additional_arguments = ['--deploy']
+            perfparser_qmake_arguments = ['ELFUTILS_INSTALL_DIR=' + elfutils_path]
+            if bldinstallercommon.is_linux_platform():
+                perfparser_qmake_arguments.extend([
+                    'PERFPARSER_APP_DESTDIR=' + os.path.join(optionDict['WORK_DIR'], 'perfparser-target', 'libexec', 'qtcreator'),
+                    'PERFPARSER_APP_INSTALLDIR=' + os.path.join(optionDict['WORK_DIR'], 'perfparser-target', 'libexec', 'qtcreator'),
+                    'PERFPARSER_ELFUTILS_INSTALLDIR=' + os.path.join(optionDict['WORK_DIR'], 'perfparser-target', 'lib', 'elfutils'),
+                    'PERFPARSER_ELFUTILS_BACKENDS_INSTALLDIR=' + os.path.join(optionDict['WORK_DIR'], 'perfparser-target', 'lib', 'elfutils')])
+            elif bldinstallercommon.is_win_platform():
+                perfparser_qmake_arguments.extend([
+                    'PERFPARSER_APP_DESTDIR=' + os.path.join(optionDict['WORK_DIR'], 'perfparser-target', 'bin'),
+                    'PERFPARSER_APP_INSTALLDIR=' + os.path.join(optionDict['WORK_DIR'], 'perfparser-target', 'bin'),
+                    'PERFPARSER_ELFUTILS_INSTALLDIR=' + os.path.join(optionDict['WORK_DIR'], 'perfparser-target', 'bin'),
+                    'PERFPARSER_ELFUTILS_BACKENDS_INSTALLDIR=' + os.path.join(optionDict['WORK_DIR'], 'perfparser-target', 'lib', 'elfutils')])
+        elif bldinstallercommon.is_linux_platform():
+            build_perfparser = True
+            perfparser_additional_arguments = []
+            perfparser_qmake_arguments = [
+                'PERFPARSER_BUNDLED_ELFUTILS=true',
+                'PERFPARSER_APP_DESTDIR=' + os.path.join(optionDict['WORK_DIR'], 'perfparser-target', 'libexec', 'qtcreator'),
+                'PERFPARSER_ELFUTILS_DESTDIR=' + os.path.join(optionDict['WORK_DIR'], 'perfparser-target', 'lib', 'qtcreator'),
+                'PERFPARSER_APP_INSTALLDIR=' + os.path.join(optionDict['WORK_DIR'], 'perfparser-target', 'libexec', 'qtcreator'),
+                'PERFPARSER_ELFUTILS_INSTALLDIR=' + os.path.join(optionDict['WORK_DIR'], 'perfparser-target', 'lib', 'qtcreator')]
+        if build_perfparser:
+            additional_plugins.extend([make_QtcPlugin('perfparser', 'perfparser', qtcreator_version, modules=qt_module_local_urls,
+                                                      qmake_arguments=perfparser_qmake_arguments,
+                                                      additional_arguments=perfparser_additional_arguments)])
         additional_plugins.extend([make_QtcPlugin('perfprofiler', 'perfprofiler', qtcreator_version,
                                                   modules=qt_module_local_urls, dependencies=plugin_dependencies, qmake_arguments=qmake_arguments)])
         additional_plugins.extend([make_QtcPlugin('b2qt-qtcreator-plugin', 'b2qt-qtcreator-plugin', qtcreator_version, modules=qt_module_local_urls,
