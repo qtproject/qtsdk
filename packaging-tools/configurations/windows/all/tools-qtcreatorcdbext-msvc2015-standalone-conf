@@ -29,7 +29,7 @@
 [qt.tools.qtcreatorcdbext]
 archives:               tools.qtcreatorcdbext32,
                         tools.qtcreatorcdbext64
-target_install_base:    /Tools/QtCreator
+target_install_base:    /
 package_default:        true
 
 [tools.qtcreatorcdbext32]

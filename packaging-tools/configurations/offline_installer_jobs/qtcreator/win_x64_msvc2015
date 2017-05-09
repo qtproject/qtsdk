@@ -36,7 +36,7 @@ identifier:             windows
 file_list:              qt-conf,
                         qtcreator-license-conf,
                         x64-tools-qtcreator-msvc2015-conf,
-                        tools-qtcreatorcdbext-msvc2015-conf,
+                        tools-qtcreatorcdbext-msvc2015-standalone-conf,
                         x86-tools-vcredist_msvc2015-conf,
                         x64-tools-vcredist_msvc2015-conf
 
