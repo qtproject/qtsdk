@@ -48,6 +48,7 @@ function Component()
         // Enable the right toolchains
         var msvc2013 = !!installer.environmentVariable("VS120COMNTOOLS");
         var msvc2015 = !!installer.environmentVariable("VS140COMNTOOLS");
+        var msvc2017 = !!installer.environmentVariable("VS150COMNTOOLS");
 
         var android_armv7 = installer.componentByName("qt.59.android_armv7");
         var msvc2015_winrt_armv7 = installer.componentByName("qt.59.win64_msvc2015_winrt_armv7");
@@ -58,7 +59,9 @@ function Component()
         installer.componentByName("qt.59.win32_mingw53").setValue("Default", "false");
         installer.componentByName("qt.59.win64_msvc2013_64").setValue("Default", "false");
         installer.componentByName("qt.59.win32_msvc2015").setValue("Default", "false");
+        installer.componentByName("qt.59.win32_msvc2017").setValue("Default", "false");
         installer.componentByName("qt.59.win64_msvc2015_64").setValue("Default", "false");
+        installer.componentByName("qt.59.win64_msvc2017_64").setValue("Default", "false");
 
         if (android_armv7)
             android_armv7.setValue("Default", "false");
@@ -74,6 +77,7 @@ function Component()
             if (installer.environmentVariable("ProgramFiles(x86)") == "" ) {
                 installer.componentByName("qt.59.win64_msvc2013_64").setValue("Virtual", "true");
                 installer.componentByName("qt.59.win64_msvc2015_64").setValue("Virtual", "true");
+                installer.componentByName("qt.59.win64_msvc2017_64").setValue("Virtual", "true");
             }
 
             // now try to determine which tool chains to select by default
@@ -91,7 +95,14 @@ function Component()
                     installer.componentByName("qt.59.win32_msvc2015").setValue("Default", "true");
                 }
             }
-
+            if (msvc2017) {
+                // if 64bit machine
+                if (!(installer.environmentVariable("ProgramFiles(x86)") == "")) {
+                    installer.componentByName("qt.59.win64_msvc2017_64").setValue("Default", "true");
+                } else {
+                    installer.componentByName("qt.59.win32_msvc2017").setValue("Default", "true");
+                }
+            }
             // if no msvc toolkits detected, choose mingw by default
             if (!msvc2013 && !msvc2015) {
                 installer.componentByName("qt.59.win32_mingw53").setValue("Default", "true");
