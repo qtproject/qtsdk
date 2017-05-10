@@ -35,7 +35,10 @@ identifier:             windows
 [PackageConfigurationFiles]
 file_list:              x86_64-qt59-msvc2015-winrt_armv7-conf,
                         x86_64-qt59-msvc2015-winrt_x64-conf,
-                        x86_64-qt59-msvc2015-winrt_x86-conf
+                        x86_64-qt59-msvc2015-winrt_x86-conf,
+                        x86_64-qt59-msvc2017-winrt_armv7-conf,
+                        x86_64-qt59-msvc2017-winrt_x64-conf,
+                        x86_64-qt59-msvc2017-winrt_x86-conf
 
 [PackageTemplates]
 template_dirs:          pkg_59
