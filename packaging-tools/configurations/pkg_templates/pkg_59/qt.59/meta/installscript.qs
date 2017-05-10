@@ -59,7 +59,6 @@ function Component()
         installer.componentByName("qt.59.win32_mingw53").setValue("Default", "false");
         installer.componentByName("qt.59.win64_msvc2013_64").setValue("Default", "false");
         installer.componentByName("qt.59.win32_msvc2015").setValue("Default", "false");
-        installer.componentByName("qt.59.win32_msvc2017").setValue("Default", "false");
         installer.componentByName("qt.59.win64_msvc2015_64").setValue("Default", "false");
         installer.componentByName("qt.59.win64_msvc2017_64").setValue("Default", "false");
 
@@ -99,8 +98,6 @@ function Component()
                 // if 64bit machine
                 if (!(installer.environmentVariable("ProgramFiles(x86)") == "")) {
                     installer.componentByName("qt.59.win64_msvc2017_64").setValue("Default", "true");
-                } else {
-                    installer.componentByName("qt.59.win32_msvc2017").setValue("Default", "true");
                 }
             }
             // if no msvc toolkits detected, choose mingw by default
