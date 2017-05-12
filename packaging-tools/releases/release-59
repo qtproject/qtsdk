@@ -50,7 +50,7 @@ rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-59_tests_mac
 [release.59.offline.windows.x64]
 assign_to_machine_label:    win-msvc2015-Windows10-x64
 arg_configurations_file:    offline_installer_jobs/5.9/win_x86_offline
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %REMOVE_PDB_FILES%=true
 installer_name:             qt-opensource-windows-x86-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-59_tests_windows_all
 

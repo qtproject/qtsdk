@@ -289,6 +289,10 @@ def setup_option_parser():
     OPTION_PARSER.add_option("--force-version-number-increase",
                              action="store_true", dest="force_version_number_increase", default=False,
                              help="If you wish to enable forced version number bump for components that have %VERSION_NUMBER_AUTO_INCREASE% tag in package.xml file(s)")
+    # enable pdb files removal
+    OPTION_PARSER.add_option("--remove-pdb-files",
+                             action="store_true", dest="remove_pdb_files", default=False,
+                             help="Windows only: Removes Windows pdb files from offline installer")
 
 
 ##############################################################
@@ -315,6 +319,7 @@ def print_options():
     print "Archive skip:                %r" % (ARCHIVE_DOWNLOAD_SKIP)
     print "Legacy IFW:                  %r" % (USE_LEGACY_IFW)
     print "Strict mode:                 %r" % (STRICT_MODE)
+    print "Remove pdb files:            %r" % (REMOVE_PDB_FILES)
     print
     print "Installer naming scheme options:\n"
     print "License type:                " + LICENSE_TYPE
@@ -368,6 +373,7 @@ def parse_cmd_line():
     global KEY_SUBSTITUTION_LIST
     global PREFERRED_INSTALLER_NAME
     global VERSION_NUMBER_AUTO_INCREASE_VALUE
+    global REMOVE_PDB_FILES
 
     CONFIGURATIONS_DIR                  = options.configurations_dir
     MAIN_CONFIG_NAME                    = options.configuration_file
@@ -386,6 +392,7 @@ def parse_cmd_line():
     INSTALLER_NAMING_SCHEME_VERSION_TAG = options.installer_version_tag
     ARCHIVE_SERVER_BASE_URL             = options.archive_base_url
     INSTALLER_FRAMEWORK_TOOLS           = options.ifw_tools_uri
+    REMOVE_PDB_FILES                    = options.remove_pdb_files
 
     if os.environ.get('CREATE_MAINTENANCE_TOOL_RESOURCE_FILE') in ['yes', 'true', '1']:
         CREATE_MAINTENANCE_TOOL_RESOURCE_FILE = True
@@ -410,6 +417,8 @@ def parse_cmd_line():
         for item in options.global_key_value_substitution_list:
             if delimeter in item:
                 key, value = item.split(delimeter)
+                if key == 'REMOVE_PDB_FILES':
+                    REMOVE_PDB_FILES = True
                 KEY_SUBSTITUTION_LIST.append([key, value])
     KEY_SUBSTITUTION_LIST.append(['%LICENSE%', LICENSE_TYPE])
 
@@ -849,6 +858,32 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
         if 'qml_examples_only' in archive.package_finalize_items:
             examples_dir = bldinstallercommon.locate_directory(install_dir, 'examples')
             qml_examples_only(examples_dir)
+
+        # remove Windows pdb files from offline installer
+        if bldinstallercommon.is_win_platform():
+            if CREATE_OFFLINE_INSTALLER and REMOVE_PDB_FILES:
+                pdb_bin_dir = bldinstallercommon.locate_directory(install_dir, 'bin')
+                if os.path.exists(pdb_bin_dir):
+                    print 'Erasing pdb files from: ' + pdb_bin_dir
+                    # This will only take the text connected to the .pdb by grabbing all non-space characters (\S).
+                    bldinstallercommon.delete_files_by_type_recursive(pdb_bin_dir, '\S*\.pdb')
+
+                pdb_lib_dir = bldinstallercommon.locate_directory(install_dir, 'lib')
+                if os.path.exists(pdb_lib_dir):
+                    print 'Erasing pdb files from: ' + pdb_lib_dir
+                    bldinstallercommon.delete_files_by_type_recursive(pdb_lib_dir, '\S*\.pdb')
+
+                pdb_qml_dir = bldinstallercommon.locate_directory(install_dir, 'qml')
+                if os.path.exists(pdb_qml_dir):
+                    print 'Erasing pdb files from: ' + pdb_qml_dir
+                    bldinstallercommon.delete_files_by_type_recursive(pdb_qml_dir, '\S*\.pdb')
+
+                pdb_plugins_dir = bldinstallercommon.locate_directory(install_dir, 'plugins')
+                if os.path.exists(pdb_plugins_dir):
+                    print 'Erasing pdb files from: ' + pdb_plugins_dir
+                    bldinstallercommon.delete_files_by_type_recursive(pdb_plugins_dir, '\S*\.pdb')
+            else:
+                print 'Removal of pdb files is allowed only when creating offline installer!'
 
     if archive.rpath_target:
         if not archive.rpath_target.startswith(os.sep):
