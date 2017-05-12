@@ -623,6 +623,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     additional_plugins.extend([make_QtcPlugin('isoiconbrowser', 'qtquickdesigner', qtcreator_version,
                                               modules=qt_module_local_urls, dependencies=plugin_dependencies, qmake_arguments=qmake_arguments)])
     if not bldinstallercommon.is_mac_platform():
+        build_perfparser = False
         if use_separate_elfutils:
             build_perfparser = True
             perfparser_additional_arguments = ['--deploy']
