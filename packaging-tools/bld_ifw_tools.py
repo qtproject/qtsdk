@@ -334,7 +334,7 @@ def prepare_src_package(src_pkg_uri, src_pkg_saveas, destination_dir):
 ###############################
 def build_qt(options, qt_build_dir, qt_configure_options, qt_modules):
     if options.incremental_mode:
-        qmake_bin = bldinstallercommon.locate_file(qt_build_dir, options.qt_qmake_bin)
+        qmake_bin = os.path.join(options.qt_build_dir, 'qtbase', 'bin', options.qt_qmake_bin)
         qt_lib_dir = bldinstallercommon.locate_directory(qt_build_dir, 'lib')
         if os.path.isfile(qmake_bin) and os.path.isdir(qt_lib_dir):
             return
@@ -398,7 +398,7 @@ def build_installer_framework(options):
 
     print('--------------------------------------------------------------------')
     print('Building Installer Framework')
-    qmake_bin = bldinstallercommon.locate_file(options.qt_build_dir, options.qt_qmake_bin)
+    qmake_bin = os.path.join(options.qt_build_dir, 'qtbase', 'bin', options.qt_qmake_bin)
     if not os.path.isfile(qmake_bin):
         print('*** Unable to find qmake, aborting!')
         print('qmake: {0}'.format(qmake_bin))
@@ -419,7 +419,7 @@ def build_installer_framework(options):
 def build_ifw_docs(options):
     print('--------------------------------------------------------------------')
     print('Building Qt Installer Framework Documentation')
-    qmake_bin = bldinstallercommon.locate_file(options.qt_build_dir_dynamic, options.qt_qmake_bin)
+    qmake_bin = os.path.join(options.qt_build_dir, 'qtbase', 'bin', options.qt_qmake_bin)
     if not os.path.isfile(qmake_bin):
         print('*** Aborting doc build, unable to find qmake from: {0}'.format(options.qt_build_dir_dynamic))
         sys.exit(-1)
