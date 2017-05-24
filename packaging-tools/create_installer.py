@@ -122,6 +122,7 @@ INSTALL_PRIORITY_TAG                = '%INSTALL_PRIORITY%'
 SORTING_PRIORITY_TAG                = '%SORTING_PRIORITY%'
 VERSION_NUMBER_AUTO_INCREASE_TAG    = '%VERSION_NUMBER_AUTO_INCREASE%'
 VERSION_NUMBER_AUTO_INCREASE_VALUE  = ''
+REMOVE_PDB_FILES                    = 'False'
 
 KEY_SUBSTITUTION_LIST               = []
 PREFERRED_INSTALLER_NAME            = ''
@@ -291,7 +292,7 @@ def setup_option_parser():
                              help="If you wish to enable forced version number bump for components that have %VERSION_NUMBER_AUTO_INCREASE% tag in package.xml file(s)")
     # enable pdb files removal
     OPTION_PARSER.add_option("--remove-pdb-files",
-                             action="store_true", dest="remove_pdb_files", default=False,
+                             action="store_true", dest="remove_pdb_files", default="False",
                              help="Windows only: Removes Windows pdb files from offline installer")
 
 
@@ -417,8 +418,8 @@ def parse_cmd_line():
         for item in options.global_key_value_substitution_list:
             if delimeter in item:
                 key, value = item.split(delimeter)
-                if key == 'REMOVE_PDB_FILES':
-                    REMOVE_PDB_FILES = True
+                if key == "%REMOVE_PDB_FILES%":
+                    REMOVE_PDB_FILES = value
                 KEY_SUBSTITUTION_LIST.append([key, value])
     KEY_SUBSTITUTION_LIST.append(['%LICENSE%', LICENSE_TYPE])
 
@@ -861,7 +862,7 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
 
         # remove Windows pdb files from offline installer
         if bldinstallercommon.is_win_platform():
-            if CREATE_OFFLINE_INSTALLER and REMOVE_PDB_FILES:
+            if CREATE_OFFLINE_INSTALLER and "true" == REMOVE_PDB_FILES.lower():
                 pdb_bin_dir = bldinstallercommon.locate_directory(install_dir, 'bin')
                 if os.path.exists(pdb_bin_dir):
                     print 'Erasing pdb files from: ' + pdb_bin_dir
