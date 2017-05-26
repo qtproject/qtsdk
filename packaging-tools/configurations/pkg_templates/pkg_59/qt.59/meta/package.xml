@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>Qt 5.9</DisplayName>
-    <Description>Qt 5.9.0</Description>
+    <DisplayName>Qt 5.9 RC 2</DisplayName>
+    <Description>Qt 5.9.0 Release Candidate 2</Description>
     <Version>5.9.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Script>installscript.qs</Script>
