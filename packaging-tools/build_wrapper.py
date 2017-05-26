@@ -473,6 +473,15 @@ def build_qtcreator_plugins(plugins, qtcreator_url, qtcreator_dev_url, icu_url=N
                                                        '-n', plugin.name,
                                                        plugin.version, 'enterprise'], optionDict['WORK_DIR'])
 
+def get_qtcreator_version(path_to_qtcreator_src):
+    expr = re.compile(r'\s*QTCREATOR_DISPLAY_VERSION\s*=\s*([^\s]+)')
+    with open(os.path.join(path_to_qtcreator_src, 'qtcreator.pri'), 'r') as f:
+        for line in f:
+            match = expr.match(line)
+            if match:
+                return match.group(1)
+    return None
+
 ###############################
 # handle_qt_creator_build
 ###############################
@@ -498,16 +507,16 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
             bldinstallercommon.clone_repository(pluginConf.git_url, pluginConf.branch_or_tag, checkoutDir, full_clone=True)
 
     # Build time variables
+    qtcreator_version = get_qtcreator_version(os.path.join(optionDict['WORK_DIR'], 'qt-creator'))
     pkg_base_path = optionDict['PACKAGE_STORAGE_SERVER_PATH_HTTP']
     # Check if the archives reside on network disk (http) or on local file system
     scheme = "" if urlparse.urlparse(pkg_base_path).scheme != "" else "file://"
     pkg_base_path = scheme + pkg_base_path
     pkg_storage_server = optionDict['PACKAGE_STORAGE_SERVER_ADDR']
-    base_path = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/qtcreator/snapshots/' + optionDict['QT_CREATOR_VERSION']
+    base_path = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/qtcreator/snapshots/' + qtcreator_version
     snapshot_server = optionDict.get('SNAPSHOT_SERVER') # optional
     snapshot_path = optionDict['SNAPSHOT_SERVER_PATH'] # optional
     qt_base_path = optionDict['QTC_QT_BASE_DIR']
-    qtcreator_version = optionDict['QT_CREATOR_VERSION']
     qtcreator_edition_name = optionDict['QT_CREATOR_EDITION_NAME']
     installer_patch = optionDict.get('INSTALLER_PATCH') # optional
     build_id = optionDict['BUILD_NUMBER']
