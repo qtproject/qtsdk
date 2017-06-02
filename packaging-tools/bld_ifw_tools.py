@@ -41,7 +41,7 @@ import shutil
 import shlex
 
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
-ARCH_EXT = '.zip' if platform.system().lower().startswith('win') else '.tar.gz'
+ARCH_EXT = '.zip' if platform.system().lower().startswith('win') else '.tar.xz'
 
 
 
@@ -138,9 +138,9 @@ def get_build_env(openssl_dir):
 ###############################
 class IfwOptions:
 
-    default_qt_src_pkg                          = 'http://download.qt.io/official_releases/qt/5.7/5.7.0/single/qt-everywhere-opensource-src-5.7.0' + ARCH_EXT
+    default_qt_src_pkg                          = 'http://download.qt.io/official_releases/qt/5.9/5.9.0/single/qt-everywhere-opensource-src-5.9.0' + ARCH_EXT
     default_qt_installer_framework_url          = 'git://code.qt.io/installer-framework/installer-framework.git'
-    default_qt_installer_framework_branch_qt    = '2.0'
+    default_qt_installer_framework_branch_qt    = '3.0'
     default_qt_installer_framework_qmake_args   = ['-config', 'release', '-config', 'static']
 
     def __init__(self,
