@@ -61,7 +61,6 @@ SCRIPT_ROOT_DIR             = os.path.dirname(os.path.realpath(__file__))
 REPO_OUTPUT_DIR             = os.path.normpath(os.path.join(SCRIPT_ROOT_DIR, 'repository'))
 WORK_DIR                    = os.getenv('PKG_NODE_ROOT') if os.getenv("PKG_NODE_ROOT") else os.path.abspath(os.path.join(__file__, '../../../'))
 OPTION_PARSER               = 0
-QTCREATOR_VERSION           = ''
 BIN_TARGET_DIRS             = {} # dictionary populated based on the /packaging-tools/releases/build-meta
 CI_TARGET_POSTFIX           = {} # dictionary populated based on the /packaging-tools/releases/build-meta
 EXTRA_ENV                   = dict(os.environ)
@@ -1173,7 +1172,6 @@ def initPkgOptions(args):
         optionDict['PACKAGE_STORAGE_SERVER_ADDR'] = args.server
         optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] = args.path
         optionDict['OPENSSL_LIBS'] = args.openssl_libs
-        optionDict['QT_CREATOR_VERSION'] = args.qtcreator_version
         optionDict['SNAPSHOT_SERVER'] = args.snapshot_server
         optionDict['SNAPSHOT_SERVER_PATH'] = args.snapshot_path
         optionDict['TARGET_ENV'] = args.target_env if args.target_env else os.environ.get('cfg')
@@ -1255,7 +1253,6 @@ if __name__ == '__main__':
     parser.add_argument("-e", "--target_env", dest="target_env", default="", help="Target environment: Linux, Linux_64, mac, win")
     parser.add_argument("-o", "--openssl_libs", dest="openssl_libs", default="", help="Url for pre-compiled openssl libraries")
     parser.add_argument("--archive-repo", dest="archive_repo", default="", help="Create Git archive from the given repository. Use syntax: \"git-url#ref\"")
-    parser.add_argument("--qtcreator-version", dest="qtcreator_version", default="", help="Qt Creator version, e.g. '3.0.0-rc', used in file names")
     parser.add_argument("--snapshot-server", dest="snapshot_server", default="", help="Additional snapshot upload server <user>@<host> (is uploaded from upload server)")
     parser.add_argument("-snapshot-path", dest="snapshot_path", default="", help="Path on additional snapshot upload server")
     if len(sys.argv) < 2:
