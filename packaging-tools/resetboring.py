@@ -582,7 +582,7 @@ class Selector(object): # Select interesting changes, discard boring.
         # Words to ignore:
         for key in ( 'explicit', # ? 'inline',
                      'Q_ALWAYS_INLINE', 'Q_DECL_NOTHROW', # ? 'Q_REQUIRED_RESULT'
-                     'Q_CONSTEXPR' ):
+                     'Q_DECL_CONSTEXPR', 'Q_CONSTEXPR' ):
             def test(words, k=key):
                 return any(w == k for w in words)
             def purge(words, k=key):
