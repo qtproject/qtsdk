@@ -108,13 +108,23 @@ die () { warn "$@"; exit 1; }
 run () { mutter "Running: $@"; eval "$@" || die "Failed ($?): $@"; }
 
 # Check basic expectations of context:
-[ -d src -a -f sync.profile ] || \
+if [ -d src -a -f sync.profile ]
+then
+    SYNC='sync.profile'
+    SRCDIR=src
+elif [ -f Source/sync.profile ] # qtwebkit/'s eccentric layout ...
+then
+    SYNC='Source/sync.profile'
+    SRCDIR=Source
+else
     die "I expect to be run in the top level directory of a module (see --help)."
+fi
 THERE=`dirname $0`
 [ -n "$THERE" -a -x "$THERE/resetboring.py" ] || \
     die "I don't know where resetboring.py is: please run me via an explicit path."
-python -c 'from dulwich.repo import Repo' || \
+python -c 'from dulwich.repo import Repo; from dulwich.index import IndexEntry' || \
     die "I need dulwich installed (for resetboring.py; see --help)."
+# dulwich 0.16.3 has been known to work; 0.9.4 is too old.
 
 # Parse command-line:
 CHATTY=
@@ -193,7 +203,7 @@ fi
 # Echoes one header name per line
 apiheaders () {
     git ls-tree -r --name-only "$1" \
-        | grep '^src/[-a-zA-Z0-9_/]*\.h$' \
+        | grep "^$SRCDIR"'/[-a-zA-Z0-9_/]*\.h$' \
         | grep -vi '^src/tools/' \
         | grep -v _p/ \
         | grep -v '_\(p\|pch\)\.h$' \
@@ -201,13 +211,13 @@ apiheaders () {
         | grep -v '/\.' \
         | grep -vi '/\(private\|doc\|tests\|examples\|build\)/' \
         | grep -v '/ui_[^/]*\.h$' \
-  | if git checkout "$1" -- sync.profile >&2
+  | if git checkout "$1" -- $SYNC >&2
     then
-        mutter "Using sync.profile's list of API headers"
+        mutter "Using $SYNC's list of API headers"
         "$THERE"/sync-filter-api-headers \
             || warn "Failed ($?) to filter header list for $1"
     else
-        mutter "No sync.profile in $1: falling back on filtered git ls-tree"
+        mutter "No $SYNC in $1: falling back on filtered git ls-tree"
         while read f # Add some further kludgy filtering:
         do case "$f" in
                 # qtbase just has to be different:

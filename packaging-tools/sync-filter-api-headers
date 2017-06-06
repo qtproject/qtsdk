@@ -88,15 +88,20 @@ our %inject_headers = ();
 # TODO: add a variable by which modules can tell us where to find QML API
 
 # Load the module's sync.profile:
-if (-f 'sync.profile') {
+my ($base, $sync) = ('.', 'sync.profile');
+if (! -f $sync && -f "Source/$sync" ) {
+    $base = 'Source';
+    $sync = "$base/$sync";
+}
+if (-f $sync) {
     our (%classnames, %deprecatedheaders);
-    our $basedir = '.'; # Used by sync.profile
-    unless (my $result = do './sync.profile') {
-        &cannot("parse sync.profile: $@") if $@;
-        &cannot("execute sync.profile: $!") unless defined $result;
+    our $basedir = $base; # Used by sync.profile
+    unless (my $result = do "./$sync") {
+        &cannot("parse $sync: $@") if $@;
+        &cannot("execute $sync: $!") unless defined $result;
     }
 } else {
-    &cannot("find sync.profile");
+    &cannot("find $sync");
 }
 
 # Short-cut for testing if entry is in list (our only use of these lists):
