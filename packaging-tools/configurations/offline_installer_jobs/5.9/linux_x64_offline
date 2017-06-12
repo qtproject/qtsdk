@@ -36,11 +36,11 @@ identifier:             linux
 file_list:              qt-conf,
                         qt-license-conf,
                         qt-installer-changelog,
-                        qt59-src-conf,
-                        qt59-doc-examples-conf,
-                        x86_64-qt59-gcc-conf,
-                        android-x64-qt59-armv7-conf,
-                        android-x64-qt59-x86-conf,
+                        qt591-src-conf,
+                        qt591-doc-examples-conf,
+                        x86_64-qt591-gcc-conf,
+                        android-x64-qt591-armv7-conf,
+                        android-x64-qt591-x86-conf,
                         x86_64-tools-qtcreator-qt59x-conf
 
 [ConfigDir]
@@ -50,5 +50,4 @@ template_name:          config_qt5
 template_name:          config.xml.template.linux.qt5
 
 [PackageTemplates]
-template_dirs:          pkg_59, pkg_tools
-
+template_dirs:          pkg_591, pkg_tools

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Documentation for Qt5.9.1 GPLv3 components (QtQuick2DRenderer)</DisplayName>
+    <Description>Documentation for Qt5.9.1 GPLv3 components (QtQuick2DRenderer).</Description>
+    <Version>5.9.1-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Virtual>true</Virtual>
+    <Script>installscript.qs</Script>
+    <SortingPriority>10</SortingPriority> <!-- Priority of this component when visible in the tree. Lowest priority number is on top. -->
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
