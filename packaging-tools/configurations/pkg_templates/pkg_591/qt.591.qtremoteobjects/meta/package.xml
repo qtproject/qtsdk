@@ -4,7 +4,7 @@
     <Description>Qt Remote Objects is an add-on library that provides an easy way to share Qt APIs between processes/devices.&lt;br&gt;&lt;br&gt;The release of Qt Remote Objects with Qt 5.9 is a Technology Preview.</Description>
     <Version>5.9.1-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Default>false</Default>
+    <Default>true</Default>
     <SortingPriority>10</SortingPriority>
     <Dependencies>qt.591.doc.qtremoteobjects, qt.591.examples.qtremoteobjects</Dependencies>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>

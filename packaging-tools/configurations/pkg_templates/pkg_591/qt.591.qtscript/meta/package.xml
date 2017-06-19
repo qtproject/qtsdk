@@ -4,7 +4,7 @@
     <Description>Qt Script (Deprecated) Prebuilt Components for Qt 5.9.1</Description>
     <Version>5.9.1-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Default>false</Default>
+    <Default>true</Default>
     <SortingPriority>9</SortingPriority>
     <Dependencies>qt.591.doc.qtscript, qt.591.examples.qtscript</Dependencies>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
