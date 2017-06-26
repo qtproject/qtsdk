@@ -163,6 +163,7 @@ class IfwOptions:
         self.qt_installer_framework_uri                 = qt_installer_framework_uri
         self.qt_installer_framework_uri_saveas          = os.path.join(ROOT_DIR, os.path.basename(self.qt_installer_framework_uri))
         self.qt_installer_framework_branch              = qt_installer_framework_branch
+        self.qt_installer_framework_branch_pretty       = qt_installer_framework_branch.replace("/", "_")
         self.qt_installer_framework_qmake_args          = qt_installer_framework_qmake_args
         self.openssl_dir                                = openssl_dir
         self.qt_build_modules                           = " module-qtbase module-qtdeclarative module-qttools module-qttranslations"
@@ -198,9 +199,9 @@ class IfwOptions:
         if not self.architecture:
             self.architecture = bldinstallercommon.get_architecture()
         self.plat_suffix                                = bldinstallercommon.get_platform_suffix()
-        self.installer_framework_archive_name           = 'installer-framework-build-' + self.plat_suffix + '-' + self.architecture + '.7z'
-        self.installer_base_archive_name                = 'installerbase-' + self.plat_suffix + '-' + self.architecture + '.7z'
-        self.installer_framework_payload_arch           = 'installer-framework-build-stripped-' + self.plat_suffix + '-' + self.architecture + '.7z'
+        self.installer_framework_archive_name           = 'installer-framework-build-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
+        self.installer_base_archive_name                = 'installerbase-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
+        self.installer_framework_payload_arch           = 'installer-framework-build-stripped-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
         self.qt_source_package_uri                      = qt_source_package_uri
         self.qt_source_package_uri_saveas               = os.path.join(ROOT_DIR, os.path.basename(self.qt_source_package_uri))
         # Set Qt build prefix
