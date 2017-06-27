@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt SerialBus (TP)</DisplayName>
+    <Description>The Qt Serial Bus module is a technology preview of the API which provides classes and functions to access CAN and ModBus.&lt;br&gt;&lt;br&gt;The release of Qt Serial Bus with Qt 5.6.3 is a Technology Preview.</Description>
+    <Version>5.6.3-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Default>true</Default>
+    <SortingPriority>10</SortingPriority>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+

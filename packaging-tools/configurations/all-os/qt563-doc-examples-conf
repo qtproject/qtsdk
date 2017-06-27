@@ -1,0 +1,212 @@
+#############################################################################
+##
+## Copyright (C) 2017 The Qt Company Ltd.
+## Contact: https://www.qt.io/licensing/
+##
+## This file is part of the release tools of the Qt Toolkit.
+##
+## $QT_BEGIN_LICENSE:GPL-EXCEPT$
+## Commercial License Usage
+## Licensees holding valid commercial Qt licenses may use this file in
+## accordance with the commercial license agreement provided with the
+## Software or, alternatively, in accordance with the terms contained in
+## a written agreement between you and The Qt Company. For licensing terms
+## and conditions see https://www.qt.io/terms-conditions. For further
+## information use the contact form at https://www.qt.io/contact-us.
+##
+## GNU General Public License Usage
+## Alternatively, this file may be used under the terms of the GNU
+## General Public License version 3 as published by the Free Software
+## Foundation with exceptions as appearing in the file LICENSE.GPL3-EXCEPT
+## included in the packaging of this file. Please review the following
+## information to ensure the GNU General Public License requirements will
+## be met: https://www.gnu.org/licenses/gpl-3.0.html.
+##
+## $QT_END_LICENSE$
+##
+#############################################################################
+
+[qt.563.doc_collection]
+
+[qt.563.doc]
+archives:               563.doc, 563.doc.qtpositioning
+target_install_base:    /Docs/Qt-5.6.3/
+[563.doc]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qt-everywhere-documentation-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+[563.doc.qtpositioning]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qtpositioning-documentation.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+
+[qt.563.examples]
+archives:               563.examples, 563.examples.qtenginio, 563.examples.qtwayland
+target_install_base:    /Examples/Qt-5.6.3/
+[563.examples]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/examples/qt-everywhere-examples-%QT_VERSION_AND_TAG%.7z
+package_strip_dirs:     1
+[563.examples.qtenginio]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/examples/qtenginio-examples-%QTENGINIO_VERSION%.7z
+package_strip_dirs:     1
+[563.examples.qtwayland]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/examples/qtwayland-examples-%QT_VERSION_AND_TAG%.7z
+package_strip_dirs:     1
+
+[qt.563.doc.lgplv3.qt3d]
+archives:               563.doc.lgplv3.qt3d
+target_install_base:    /Docs/Qt-5.6.3/
+[563.doc.lgplv3.qt3d]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qt3d-documentation.%SRC_ARCHIVE_TYPE%
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.563.doc.lgplv3.qtcanvas3d]
+archives:               563.doc.lgplv3.qtcanvas3d
+target_install_base:    /Docs/Qt-5.6.3/
+[563.doc.lgplv3.qtcanvas3d]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qtcanvas3d-documentation.%SRC_ARCHIVE_TYPE%
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.563.doc.lgplv3.qtlocation]
+archives:               563.doc.lgplv3.qtlocation
+target_install_base:    /Docs/Qt-5.6.3/
+[563.doc.lgplv3.qtlocation]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qtlocation-documentation.%SRC_ARCHIVE_TYPE%
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.563.doc.lgplv3.qtquickcontrols]
+archives:               563.doc.lgplv3.qtquickcontrols, 563.doc.lgplv3.qtquickextras, 563.doc.lgplv3.qtquickdialogs, 563.doc.lgplv3.qtquicklayouts
+target_install_base:    /Docs/Qt-5.6.3/
+[563.doc.lgplv3.qtquickcontrols]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qtquickcontrols-documentation.%SRC_ARCHIVE_TYPE%
+target_install_dir:
+package_strip_dirs:     1
+[563.doc.lgplv3.qtquickextras]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qtquickextras-documentation.%SRC_ARCHIVE_TYPE%
+target_install_dir:
+package_strip_dirs:     1
+[563.doc.lgplv3.qtquickdialogs]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qtquickdialogs-documentation.%SRC_ARCHIVE_TYPE%
+target_install_dir:
+package_strip_dirs:     1
+[563.doc.lgplv3.qtquicklayouts]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qtquicklayouts-documentation.%SRC_ARCHIVE_TYPE%
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.563.doc.lgplv3.qtquickcontrols2]
+archives:               563.doc.lgplv3.qtquickcontrols2
+target_install_base:    /Docs/Qt-5.6.3/
+[563.doc.lgplv3.qtquickcontrols2]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qtlabscontrols-documentation.%SRC_ARCHIVE_TYPE%
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.563.doc.lgplv3.qtwebengine]
+archives:               563.doc.lgplv3.qtwebengine
+target_install_base:    /Docs/Qt-5.6.3/
+[563.doc.lgplv3.qtwebengine]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qtwebengine-documentation.%SRC_ARCHIVE_TYPE%
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.563.doc.lgplv3.qtwebview]
+archives:               563.doc.lgplv3.qtwebview
+target_install_base:    /Docs/Qt-5.6.3/
+[563.doc.lgplv3.qtwebview]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qtwebview-documentation.%SRC_ARCHIVE_TYPE%
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.563.doc.qtscript]
+archives:               563.doc.qtscript, 563.doc.qtscripttools
+target_install_base:    /Docs/Qt-5.6.3/
+[563.doc.qtscript]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qtscript-documentation.%SRC_ARCHIVE_TYPE%
+target_install_dir:
+package_strip_dirs:     1
+[563.doc.qtscripttools]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qtscripttools-documentation.%SRC_ARCHIVE_TYPE%
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.563.doc.qtserialbus]
+archives:               563.doc.qtserialbus
+target_install_base:    /Docs/Qt-5.6.3/
+[563.doc.qtserialbus]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qtserialbus-documentation.%SRC_ARCHIVE_TYPE%
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.563.examples.lgplv3.qt3d]
+archives:               563.examples.lgplv3.qt3d
+target_install_base:    /Examples/Qt-5.6.3/
+[563.examples.lgplv3.qt3d]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/examples/qt3d-examples-%QT_VERSION_AND_TAG%.7z
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.563.examples.lgplv3.qtcanvas3d]
+archives:               563.examples.lgplv3.qtcanvas3d
+target_install_base:    /Examples/Qt-5.6.3/
+[563.examples.lgplv3.qtcanvas3d]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/examples/qtcanvas3d-examples-%QT_VERSION_AND_TAG%.7z
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.563.examples.lgplv3.qtlocation]
+archives:               563.examples.lgplv3.qtlocation
+target_install_base:    /Examples/Qt-5.6.3/
+[563.examples.lgplv3.qtlocation]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/examples/qtlocation-examples-%QT_VERSION_AND_TAG%.7z
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.563.examples.lgplv3.qtquickcontrols]
+archives:               563.examples.lgplv3.qtquickcontrols
+target_install_base:    /Examples/Qt-5.6.3/
+[563.examples.lgplv3.qtquickcontrols]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/examples/qtquickcontrols-examples-%QT_VERSION_AND_TAG%.7z
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.563.examples.lgplv3.qtquickcontrols2]
+archives:               563.examples.lgplv3.qtquickcontrols2
+target_install_base:    /Examples/Qt-5.6.3/
+[563.examples.lgplv3.qtquickcontrols2]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/examples/qtquickcontrols2-examples-%QT_VERSION_AND_TAG%.7z
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.563.examples.lgplv3.qtwebengine]
+archives:               563.examples.lgplv3.qtwebengine
+target_install_base:    /Examples/Qt-5.6.3/
+[563.examples.lgplv3.qtwebengine]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/examples/qtwebengine-examples-%QT_VERSION_AND_TAG%.7z
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.563.examples.lgplv3.qtwebview]
+archives:               563.examples.lgplv3.qtwebview
+target_install_base:    /Examples/Qt-5.6.3/
+[563.examples.lgplv3.qtwebview]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/examples/qtwebview-examples-%QT_VERSION_AND_TAG%.7z
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.563.examples.qtscript]
+archives:               563.examples.qtscript
+target_install_base:    /Examples/Qt-5.6.3/
+[563.examples.qtscript]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/examples/qtscript-examples-%QT_VERSION_AND_TAG%.7z
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.563.examples.qtserialbus]
+archives:               563.examples.qtserialbus
+target_install_base:    /Examples/Qt-5.6.3/
+[563.examples.qtserialbus]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/examples/qtserialbus-examples-%QT_VERSION_AND_TAG%.7z
+target_install_dir:
+package_strip_dirs:     1

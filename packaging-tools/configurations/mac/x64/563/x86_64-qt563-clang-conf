@@ -1,0 +1,152 @@
+#############################################################################
+##
+## Copyright (C) 2017 The Qt Company Ltd.
+## Contact: https://www.qt.io/licensing/
+##
+## This file is part of the release tools of the Qt Toolkit.
+##
+## $QT_BEGIN_LICENSE:GPL-EXCEPT$
+## Commercial License Usage
+## Licensees holding valid commercial Qt licenses may use this file in
+## accordance with the commercial license agreement provided with the
+## Software or, alternatively, in accordance with the terms contained in
+## a written agreement between you and The Qt Company. For licensing terms
+## and conditions see https://www.qt.io/terms-conditions. For further
+## information use the contact form at https://www.qt.io/contact-us.
+##
+## GNU General Public License Usage
+## Alternatively, this file may be used under the terms of the GNU
+## General Public License version 3 as published by the Free Software
+## Foundation with exceptions as appearing in the file LICENSE.GPL3-EXCEPT
+## included in the packaging of this file. Please review the following
+## information to ensure the GNU General Public License requirements will
+## be met: https://www.gnu.org/licenses/gpl-3.0.html.
+##
+## $QT_END_LICENSE$
+##
+#############################################################################
+
+[qt.563.clang_64]
+archives:               56.clang_64.qtbase,
+                        56.clang_64.qtconnectivity,
+                        56.clang_64.qtdeclarative,
+                        56.clang_64.qtgraphicaleffects,
+                        56.clang_64.qtimageformats,
+                        56.clang_64.qtmacextras,
+                        56.clang_64.qtmultimedia,
+                        56.clang_64.qtsensors,
+                        56.clang_64.qtsvg,
+                        56.clang_64.qttranslations,
+                        56.clang_64.qtwebchannel,
+                        56.clang_64.qtwebsockets,
+                        56.clang_64.qtxmlpatterns,
+                        56.clang_64.qtpositioning,
+                        56.clang_64.qtserialport,
+                        56.clang_64.qttools
+target_install_base:    /%QT_VERSION%/clang_64
+
+[56.clang_64.qtbase]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtbase/qtbase-MacOS-OSX_10_11-Clang-MacOS-OSX_10_11-X86_64.7z
+[56.clang_64.qtconnectivity]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtconnectivity/qtconnectivity-MacOS-OSX_10_11-Clang-MacOS-OSX_10_11-X86_64.7z
+[56.clang_64.qtdeclarative]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtdeclarative/qtdeclarative-MacOS-OSX_10_11-Clang-MacOS-OSX_10_11-X86_64.7z
+[56.clang_64.qtgraphicaleffects]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgraphicaleffects/qtgraphicaleffects-MacOS-OSX_10_11-Clang-MacOS-OSX_10_11-X86_64.7z
+[56.clang_64.qtimageformats]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtimageformats/qtimageformats-MacOS-OSX_10_11-Clang-MacOS-OSX_10_11-X86_64.7z
+[56.clang_64.qtmacextras]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtmacextras/qtmacextras-MacOS-OSX_10_11-Clang-MacOS-OSX_10_11-X86_64.7z
+[56.clang_64.qtmultimedia]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtmultimedia/qtmultimedia-MacOS-OSX_10_11-Clang-MacOS-OSX_10_11-X86_64.7z
+[56.clang_64.qtsensors]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtsensors/qtsensors-MacOS-OSX_10_11-Clang-MacOS-OSX_10_11-X86_64.7z
+[56.clang_64.qtsvg]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtsvg/qtsvg-MacOS-OSX_10_11-Clang-MacOS-OSX_10_11-X86_64.7z
+[56.clang_64.qttools]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qttools/qttools-MacOS-OSX_10_11-Clang-MacOS-OSX_10_11-X86_64.7z
+[56.clang_64.qttranslations]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qttranslations/qttranslations-MacOS-OSX_10_11-Clang-MacOS-OSX_10_11-X86_64.7z
+[56.clang_64.qtwebchannel]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebchannel/qtwebchannel-MacOS-OSX_10_11-Clang-MacOS-OSX_10_11-X86_64.7z
+[56.clang_64.qtwebsockets]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebsockets/qtwebsockets-MacOS-OSX_10_11-Clang-MacOS-OSX_10_11-X86_64.7z
+[56.clang_64.qtxmlpatterns]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtxmlpatterns/qtxmlpatterns-MacOS-OSX_10_11-Clang-MacOS-OSX_10_11-X86_64.7z
+[56.clang_64.qtpositioning]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtlocation/qtpositioning-MacOS-OSX_10_11-Clang-MacOS-OSX_10_11-X86_64.7z
+[56.clang_64.qtserialport]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtserialport/qtserialport-MacOS-OSX_10_11-Clang-MacOS-OSX_10_11-X86_64.7z
+
+
+# QtWebEngine provided as separate installable component in installer
+[qt.563.qtwebengine]
+[qt.563.qtwebengine.clang_64]
+archives:               56.qtwebengine.clang_64
+target_install_base:    /%QT_VERSION%/clang_64
+[56.qtwebengine.clang_64]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebengine/qtwebengine-MacOS-OSX_10_11-Clang-MacOS-OSX_10_11-X86_64.7z
+
+# QtScript provided as separate installable component in installer
+[qt.563.qtscript]
+[qt.563.qtscript.clang_64]
+archives:               56.qtscript.clang_64
+target_install_base:    /%QT_VERSION%/clang_64
+[56.qtscript.clang_64]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscript/qtscript-MacOS-OSX_10_11-Clang-MacOS-OSX_10_11-X86_64.7z
+
+# QtSerialbus provided as separate installable component in installer
+[qt.563.qtserialbus]
+[qt.563.qtserialbus.clang_64]
+archives:               56.qtserialbus.clang_64
+target_install_base:    /%QT_VERSION%/clang_64
+[56.qtserialbus.clang_64]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtserialbus/qtserialbus-MacOS-OSX_10_11-Clang-MacOS-OSX_10_11-X86_64.7z
+
+# QtQuickControls provided as separate installable component in installer
+[qt.563.qtquickcontrols]
+[qt.563.qtquickcontrols.clang_64]
+archives:               56.qtquickcontrols.clang_64
+target_install_base:    /%QT_VERSION%/clang_64
+[56.qtquickcontrols.clang_64]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtquickcontrols/qtquickcontrols-MacOS-OSX_10_11-Clang-MacOS-OSX_10_11-X86_64.7z
+
+# QtQuickControls2 provided as separate installable component in installer
+[qt.563.qtquickcontrols2]
+[qt.563.qtquickcontrols2.clang_64]
+archives:               56.qtquickcontrols2.clang_64
+target_install_base:    /%QT_VERSION%/clang_64
+[56.qtquickcontrols2.clang_64]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtquickcontrols2/qtquickcontrols2-MacOS-OSX_10_11-Clang-MacOS-OSX_10_11-X86_64.7z
+
+# QtLocation provided as separate installable component in installer
+[qt.563.qtlocation]
+[qt.563.qtlocation.clang_64]
+archives:               56.qtlocation.clang_64
+target_install_base:    /%QT_VERSION%/clang_64
+[56.qtlocation.clang_64]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtlocation/qtlocation-MacOS-OSX_10_11-Clang-MacOS-OSX_10_11-X86_64.7z
+
+# Qt3D provided as separate installable component in installer
+[qt.563.qt3d]
+[qt.563.qt3d.clang_64]
+archives:               56.qt3d.clang_64
+target_install_base:    /%QT_VERSION%/clang_64
+[56.qt3d.clang_64]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qt3d/qt3d-MacOS-OSX_10_11-Clang-MacOS-OSX_10_11-X86_64.7z
+
+# QtCanvas3D provided as separate installable component in installer
+[qt.563.qtcanvas3d]
+[qt.563.qtcanvas3d.clang_64]
+archives:               56.qtcanvas3d.clang_64
+target_install_base:    /%QT_VERSION%/clang_64
+[56.qtcanvas3d.clang_64]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtcanvas3d/qtcanvas3d-MacOS-OSX_10_11-Clang-MacOS-OSX_10_11-X86_64.7z
+
+# QtWebView provided as separate installable component in installer
+[qt.563.qtwebview]
+[qt.563.qtwebview.clang_64]
+archives:               56.qtwebview.clang_64
+target_install_base:    /%QT_VERSION%/clang_64
+[56.qtwebview.clang_64]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebview/qtwebview-MacOS-OSX_10_11-Clang-MacOS-OSX_10_11-X86_64.7z
