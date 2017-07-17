@@ -217,7 +217,7 @@ def build_environment(toolchain, bitness):
 
 def main():
     bldinstallercommon.init_common_module(os.path.dirname(os.path.realpath(__file__)))
-    base_path = os.path.join(os.environ['PKG_NODE_ROOT'], 'build')
+    base_path = os.path.join(os.environ['PKG_NODE_ROOT'])
     branch = os.environ['CLANG_BRANCH']
     src_path = os.path.join(base_path, 'llvm')
     build_path = os.path.join(base_path, 'build')
