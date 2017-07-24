@@ -239,7 +239,12 @@ def main():
     if patch_src_path:
         if not os.path.isabs(patch_src_path):
             patch_src_path = os.path.join(base_path, patch_src_path)
+        if not os.path.exists(patch_src_path):
+            raise IOError, 'CLANG_PATCHES is set, but directory ' + patch_src_path + ' does not exist, aborting.'
+        print 'CLANG_PATCHES: Applying patches from ' + patch_src_path
         apply_patches(src_path, sorted(glob.glob(os.path.join(patch_src_path, '*'))))
+    else
+        print 'CLANG_PATCHES: Not set, skipping.'
     build_clang(toolchain, src_path, build_path, install_path, profile_data_path, generate_instrumented, bitness, environment, build_type='Release')
     package_clang(install_path, result_file_path)
     upload_clang(result_file_path, remote_path)
