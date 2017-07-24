@@ -936,6 +936,16 @@ def create_download_and_extract_tasks(url, target_path, temp_path, caller_argume
 ###############################
 # function
 ###############################
+def create_download_task(url, target_path):
+    filename = os.path.basename(urlparse(url).path)
+    target_file = os.path.join(target_path, filename)
+    download_task = Task("download {0} to {1}".format(url, target_file))
+    download_task.addFunction(download, url, target_file)
+    return download_task
+
+###############################
+# function
+###############################
 def create_download_extract_task(url, target_path, temp_path, caller_arguments):
     filename = os.path.basename(urlparse(url).path)
     sevenzip_file = os.path.join(temp_path, filename)
