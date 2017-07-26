@@ -467,7 +467,7 @@ def build_qtcreator_plugins(plugins, qtcreator_url, qtcreator_dev_url, icu_url=N
         bldinstallercommon.do_execute_sub_process(cmd_arguments, optionDict['WORK_DIR'])
         # source package
         if bldinstallercommon.is_linux_platform():
-            bldinstallercommon.do_execute_sub_process(['python', '-u', os.path.join(optionDict['WORK_DIR'], 'qt-creator', 'scripts', 'createSourcePackages.py'),
+            bldinstallercommon.do_execute_sub_process(['python', '-u', os.path.join(qtcreator_dev_path, 'scripts', 'createSourcePackages.py'),
                                                        '-p', os.path.join(optionDict['WORK_DIR'], plugin.path),
                                                        '-n', plugin.name,
                                                        plugin.version, 'enterprise'], optionDict['WORK_DIR'])
