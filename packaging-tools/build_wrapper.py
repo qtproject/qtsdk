@@ -1165,7 +1165,7 @@ def initPkgOptions(args):
     if args.pkg_conf_file:
         options = optionparser.getPkgOptions(args.pkg_conf_file)
         optionDict = mergeTwoDicts(optionDict, options.configMap())
-        optionDict['TARGET_ENV'] = getDefaultTargetEnv()
+        optionDict['TARGET_ENV'] = args.target_env if args.target_env else getDefaultTargetEnv()
         optionDict['BUILD_NUMBER'] = str(strftime('%Y%m%d%H%M%S', gmtime()))
         optionDict['PACKAGE_STORAGE_SERVER_ADDR'] = optionDict['PACKAGE_STORAGE_SERVER_USER'] + '@' + optionDict['PACKAGE_STORAGE_SERVER']
         (ifw_dest_dir_name, ifw_dest_dir) = get_ifw_remote_destination_dir(optionDict)
