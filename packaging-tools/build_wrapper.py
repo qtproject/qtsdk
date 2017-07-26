@@ -422,15 +422,15 @@ def make_QtcPlugin(name, path, version, dependencies=None, modules=None,
                      additional_arguments=additional_arguments or [],
                      qmake_arguments=qmake_arguments or [])
 
-def build_qtcreator_plugins(plugins, qtcreator_url, qtcreator_dev_url, icu_url=None, openssl_url=None):
+def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url=None, openssl_url=None):
     for plugin in plugins:
         if not os.path.isdir(os.path.join(optionDict['WORK_DIR'], plugin.path)):
             continue
 
         cmd_arguments = ['python', '-u', os.path.join(SCRIPT_ROOT_DIR, 'bld_qtcreator_plugins.py'),
                          '--clean',
-                         '--qtc-build-url', qtcreator_url,
-                         '--qtc-dev-url', qtcreator_dev_url,
+                         '--qtc-build', qtcreator_path,
+                         '--qtc-dev', qtcreator_dev_path,
                          '--plugin-path', os.path.join(optionDict['WORK_DIR'], plugin.path),
                          '--build-path', optionDict['WORK_DIR']]
         if bldinstallercommon.is_win_platform():
@@ -681,9 +681,14 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     # Build Qt Creator plugins
     icu_local_url = bld_utils.file_url(os.path.join(qtcreator_temp, os.path.basename(icu_libs))) if bldinstallercommon.is_linux_platform() else None
     openssl_local_url = bld_utils.file_url(os.path.join(qtcreator_temp, os.path.basename(openssl_libs))) if bldinstallercommon.is_win_platform() else None
-    qtcreator_url = bld_utils.file_url(os.path.join(optionDict['WORK_DIR'], 'qt-creator_build', 'qtcreator.7z'))
-    qtcreator_dev_url = bld_utils.file_url(os.path.join(optionDict['WORK_DIR'], 'qt-creator_build', 'qtcreator_dev.7z'))
-    build_qtcreator_plugins(additional_plugins, qtcreator_url, qtcreator_dev_url, icu_url=icu_local_url, openssl_url=openssl_local_url)
+    ## extract qtcreator bin and dev packages
+    qtcreator_path = os.path.join(optionDict['WORK_DIR'], 'qtc_build')
+    qtcreator_dev_path = os.path.join(optionDict['WORK_DIR'], 'qtc_dev')
+    bldinstallercommon.do_execute_sub_process(['7z', 'x', '-y', os.path.join(optionDict['WORK_DIR'], 'qt-creator_build', 'qtcreator.7z'),
+                                               '-o' + qtcreator_path], optionDict['WORK_DIR'])
+    bldinstallercommon.do_execute_sub_process(['7z', 'x', '-y', os.path.join(optionDict['WORK_DIR'], 'qt-creator_build', 'qtcreator_dev.7z'),
+                                               '-o' + qtcreator_dev_path], optionDict['WORK_DIR'])
+    build_qtcreator_plugins(additional_plugins, qtcreator_path, qtcreator_dev_path, icu_url=icu_local_url, openssl_url=openssl_local_url)
 
     if bldinstallercommon.is_linux_platform():
         # Create opensource source package
