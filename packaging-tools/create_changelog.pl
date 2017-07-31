@@ -43,6 +43,7 @@ use FileHandle;
 use Getopt::Long;
 use Text::Wrap;
 my %log;
+my %revertedCommits;
 my $optVerbose = 0;
 
 sub help {
@@ -70,14 +71,20 @@ sub isMasterRepo
     return 0;
 }
 
-sub collect_entries {
-    # Run git submodule foreach
-    chdir(shift @ARGV) if (scalar @ARGV);
-    my $cmd = "git rev-list --reverse --grep '^\\[ChangeLog\\]' " . $ARGV[0];
+sub revListGrepCommand
+{
+    my ($pattern, $range) = @_;
+    my $cmd = "git rev-list --reverse --grep '" . $pattern . "' " . $range;
     $cmd .= ' 2> /dev/null' unless $optVerbose;
     $cmd .= ' | git cat-file --batch || true';
-    my @revListCommand = ($cmd);
-    unshift(@revListCommand, 'git', 'submodule', 'foreach', '--quiet') if isMasterRepo();
+    my @result = ($cmd);
+    unshift(@result, 'git', 'submodule', 'foreach', '--quiet') if isMasterRepo();
+    return @result;
+}
+
+sub collect_entries {
+    # Run git submodule foreach
+    my @revListCommand = revListGrepCommand('^\\[ChangeLog\\]', $ARGV[0]);
     print STDERR "Running: ", join(' ', @revListCommand), "\n";
     open FOREACH, '-|', @revListCommand;
 
@@ -133,13 +140,28 @@ sub collect_entries {
     close FOREACH or die("git submodule foreach died: $!");
 }
 
+sub collect_reverts
+{
+    my @revListCommand = revListGrepCommand('^This reverts commit', $ARGV[0]);
+    print STDERR "Running: ", join(' ', @revListCommand), "\n";
+    open FOREACH, '-|', @revListCommand;
+
+    # Collect all entries
+    while (<FOREACH>) {
+        $revertedCommits{$1} = 1 if /^This reverts commit ([a-f0-9]+)/;
+    }
+    close FOREACH or die($revListCommand[0] . ' died: ' . $!);
+}
+
 sub print_entry($%) {
     my $level = $_[0];
     my %entry = %{$_[1]};
     die if $level > 1;
 
     my $line;
-    #$line = $entry{commit};
+    my $sha1 = $entry{commit};
+    #$line = $sha1;
+    $line .= ' [REVERTED] ' if defined($revertedCommits{$sha1});
     $line .= join('', map { "[$_]" } @{$entry{tasks}});
     $line .= ' ' if scalar @{$entry{tasks}};
     $line .= $entry{text};
@@ -154,7 +176,10 @@ sub print_entry($%) {
 help() unless GetOptions("verbose" => \$optVerbose) && scalar(@ARGV) == 2;
 
 # Now print the output
+chdir(shift @ARGV) if (scalar @ARGV);
+
 collect_entries();
+collect_reverts();
 for my $toplevel (sort keys %log) {
     print "\n$toplevel\n";
     print '-' x (length $toplevel) . "\n";
