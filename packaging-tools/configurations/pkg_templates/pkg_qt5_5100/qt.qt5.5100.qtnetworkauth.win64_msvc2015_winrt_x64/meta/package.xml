@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt Network Authorization for UWP x64 (MSVC 2015)</DisplayName>
+    <Description></Description>
+    <Version>5.10.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <AutoDependOn>qt.qt5.5100.qtnetworkauth, qt.qt5.5100.win64_msvc2015_winrt_x64</AutoDependOn>
+    <Dependencies>qt.qt5.5100.win64_msvc2015_winrt_x64</Dependencies>
+    <Virtual>true</Virtual>
+    <Script>installscript.qs</Script>
+    <SortingPriority></SortingPriority>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+

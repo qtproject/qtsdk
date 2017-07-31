@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>UWP ARMv7 ((MSVC 2015))</DisplayName>
+    <Description>Qt 5.10.0 Prebuilt Components for Universal Windows Platform</Description>
+    <Version>5.10.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Dependencies>qt.tools.qtcreator, qt.qt5.5100.doc, qt.qt5.5100.examples</Dependencies>
+    <Default>false</Default>
+    <Script>installscript.qs</Script>
+    <SortingPriority>590</SortingPriority>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+

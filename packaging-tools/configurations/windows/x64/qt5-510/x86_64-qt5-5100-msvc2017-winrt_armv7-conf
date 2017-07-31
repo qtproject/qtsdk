@@ -1,0 +1,135 @@
+#############################################################################
+##
+## Copyright (C) 2017 The Qt Company Ltd.
+## Contact: https://www.qt.io/licensing/
+##
+## This file is part of the release tools of the Qt Toolkit.
+##
+## $QT_BEGIN_LICENSE:GPL-EXCEPT$
+## Commercial License Usage
+## Licensees holding valid commercial Qt licenses may use this file in
+## accordance with the commercial license agreement provided with the
+## Software or, alternatively, in accordance with the terms contained in
+## a written agreement between you and The Qt Company. For licensing terms
+## and conditions see https://www.qt.io/terms-conditions. For further
+## information use the contact form at https://www.qt.io/contact-us.
+##
+## GNU General Public License Usage
+## Alternatively, this file may be used under the terms of the GNU
+## General Public License version 3 as published by the Free Software
+## Foundation with exceptions as appearing in the file LICENSE.GPL3-EXCEPT
+## included in the packaging of this file. Please review the following
+## information to ensure the GNU General Public License requirements will
+## be met: https://www.gnu.org/licenses/gpl-3.0.html.
+##
+## $QT_END_LICENSE$
+##
+#############################################################################
+
+
+[qt.qt5.5100.win64_msvc2017_winrt_armv7]
+archives:               qt5.5100.win64_msvc2017_winrt_armv7.qtbase,
+                        qt5.5100.win64_msvc2017_winrt_armv7.qtconnectivity,
+                        qt5.5100.win64_msvc2017_winrt_armv7.qtwebchannel,
+                        qt5.5100.win64_msvc2017_winrt_armv7.qtmultimedia,
+                        qt5.5100.win64_msvc2017_winrt_armv7.qttranslations,
+                        qt5.5100.win64_msvc2017_winrt_armv7.qtgraphicaleffects,
+                        qt5.5100.win64_msvc2017_winrt_armv7.qtsvg,
+                        qt5.5100.win64_msvc2017_winrt_armv7.qtdeclarative,
+                        qt5.5100.win64_msvc2017_winrt_armv7.qtwebsockets,
+                        qt5.5100.win64_msvc2017_winrt_armv7.qtimageformats,
+                        qt5.5100.win64_msvc2017_winrt_armv7.qttools,
+                        qt5.5100.win64_msvc2017_winrt_armv7.qtxmlpatterns,
+                        qt5.5100.win64_msvc2017_winrt_armv7.qtsensors,
+                        qt5.5100.win64_msvc2017_winrt_armv7.qtlocation,
+                        qt5.5100.win64_msvc2017_winrt_armv7.qtquickcontrols,
+                        qt5.5100.win64_msvc2017_winrt_armv7.qtquickcontrols2,
+                        qt5.5100.win64_msvc2017_winrt_armv7.qt3d,
+                        qt5.5100.win64_msvc2017_winrt_armv7.qtcanvas3d,
+                        qt5.5100.win64_msvc2017_winrt_armv7.qtwebview,
+                        qt5.5100.win64_msvc2017_winrt_armv7.qtscxml,
+                        qt5.5100.win64_msvc2017_winrt_armv7.qtgamepad
+target_install_base:    /%QT_VERSION%/winrt_armv7_msvc2017
+[qt5.5100.win64_msvc2017_winrt_armv7.qtbase]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtbase/qtbase-Windows-Windows_10-MSVC2017-WinRT-WinRT_10-ARMv7.7z
+[qt5.5100.win64_msvc2017_winrt_armv7.qtconnectivity]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtconnectivity/qtconnectivity-Windows-Windows_10-MSVC2017-WinRT-WinRT_10-ARMv7.7z
+[qt5.5100.win64_msvc2017_winrt_armv7.qtwebchannel]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebchannel/qtwebchannel-Windows-Windows_10-MSVC2017-WinRT-WinRT_10-ARMv7.7z
+[qt5.5100.win64_msvc2017_winrt_armv7.qtmultimedia]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtmultimedia/qtmultimedia-Windows-Windows_10-MSVC2017-WinRT-WinRT_10-ARMv7.7z
+[qt5.5100.win64_msvc2017_winrt_armv7.qttranslations]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qttranslations/qttranslations-Windows-Windows_10-MSVC2017-WinRT-WinRT_10-ARMv7.7z
+[qt5.5100.win64_msvc2017_winrt_armv7.qtgraphicaleffects]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgraphicaleffects/qtgraphicaleffects-Windows-Windows_10-MSVC2017-WinRT-WinRT_10-ARMv7.7z
+[qt5.5100.win64_msvc2017_winrt_armv7.qtsvg]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtsvg/qtsvg-Windows-Windows_10-MSVC2017-WinRT-WinRT_10-ARMv7.7z
+[qt5.5100.win64_msvc2017_winrt_armv7.qtdeclarative]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtdeclarative/qtdeclarative-Windows-Windows_10-MSVC2017-WinRT-WinRT_10-ARMv7.7z
+[qt5.5100.win64_msvc2017_winrt_armv7.qtwebsockets]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebsockets/qtwebsockets-Windows-Windows_10-MSVC2017-WinRT-WinRT_10-ARMv7.7z
+[qt5.5100.win64_msvc2017_winrt_armv7.qtimageformats]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtimageformats/qtimageformats-Windows-Windows_10-MSVC2017-WinRT-WinRT_10-ARMv7.7z
+[qt5.5100.win64_msvc2017_winrt_armv7.qttools]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qttools/qttools-Windows-Windows_10-MSVC2017-WinRT-WinRT_10-ARMv7.7z
+[qt5.5100.win64_msvc2017_winrt_armv7.qtxmlpatterns]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtxmlpatterns/qtxmlpatterns-Windows-Windows_10-MSVC2017-WinRT-WinRT_10-ARMv7.7z
+[qt5.5100.win64_msvc2017_winrt_armv7.qtsensors]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtsensors/qtsensors-Windows-Windows_10-MSVC2017-WinRT-WinRT_10-ARMv7.7z
+[qt5.5100.win64_msvc2017_winrt_armv7.qtlocation]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtlocation/qtlocation-Windows-Windows_10-MSVC2017-WinRT-WinRT_10-ARMv7.7z
+[qt5.5100.win64_msvc2017_winrt_armv7.qtquickcontrols]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtquickcontrols/qtquickcontrols-Windows-Windows_10-MSVC2017-WinRT-WinRT_10-ARMv7.7z
+[qt5.5100.win64_msvc2017_winrt_armv7.qtquickcontrols2]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtquickcontrols2/qtquickcontrols2-Windows-Windows_10-MSVC2017-WinRT-WinRT_10-ARMv7.7z
+[qt5.5100.win64_msvc2017_winrt_armv7.qt3d]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qt3d/qt3d-Windows-Windows_10-MSVC2017-WinRT-WinRT_10-ARMv7.7z
+[qt5.5100.win64_msvc2017_winrt_armv7.qtcanvas3d]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtcanvas3d/qtcanvas3d-Windows-Windows_10-MSVC2017-WinRT-WinRT_10-ARMv7.7z
+[qt5.5100.win64_msvc2017_winrt_armv7.qtwebview]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebview/qtwebview-Windows-Windows_10-MSVC2017-WinRT-WinRT_10-ARMv7.7z
+[qt5.5100.win64_msvc2017_winrt_armv7.qtscxml]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscxml/qtscxml-Windows-Windows_10-MSVC2017-WinRT-WinRT_10-ARMv7.7z
+[qt5.5100.win64_msvc2017_winrt_armv7.qtgamepad]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgamepad/qtgamepad-Windows-Windows_10-MSVC2017-WinRT-WinRT_10-ARMv7.7z
+
+# QtCharts provided as separate installable component in installer
+[qt.qt5.5100.qtcharts]
+[qt.qt5.5100.qtcharts.win64_msvc2017_winrt_armv7]
+archives:               qt5.5100.qtcharts.win64_msvc2017_winrt_armv7
+target_install_base:    /%QT_VERSION%/winrt_armv7_msvc2017
+[qt5.5100.qtcharts.win64_msvc2017_winrt_armv7]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtcharts/qtcharts-Windows-Windows_10-MSVC2017-WinRT-WinRT_10-ARMv7.7z
+
+# QtDataVisualization provided as separate installable component in installer
+[qt.qt5.5100.qtdatavis3d]
+[qt.qt5.5100.qtdatavis3d.win64_msvc2017_winrt_armv7]
+archives:               qt5.5100.qtdatavis3d.win64_msvc2017_winrt_armv7
+target_install_base:    /%QT_VERSION%/winrt_armv7_msvc2017
+[qt5.5100.qtdatavis3d.win64_msvc2017_winrt_armv7]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtdatavis3d/qtdatavis3d-Windows-Windows_10-MSVC2017-WinRT-WinRT_10-ARMv7.7z
+
+# QtPurchasing provided as separate installable component in installer
+[qt.qt5.5100.qtpurchasing]
+[qt.qt5.5100.qtpurchasing.win64_msvc2017_winrt_armv7]
+archives:               qt5.5100.qtpurchasing.win64_msvc2017_winrt_armv7
+target_install_base:    /%QT_VERSION%/winrt_armv7_msvc2017
+[qt5.5100.qtpurchasing.win64_msvc2017_winrt_armv7]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtpurchasing/qtpurchasing-Windows-Windows_10-MSVC2017-WinRT-WinRT_10-ARMv7.7z
+
+# Qt Remote Objects provided as separate installable component in installer
+[qt.qt5.5100.qtremoteobjects]
+[qt.qt5.5100.qtremoteobjects.win64_msvc2017_winrt_armv7]
+archives:               qt5.5100.qtremoteobjects.win64_msvc2017_winrt_armv7
+target_install_base:    /%QT_VERSION%/winrt_armv7_msvc2017
+[qt5.5100.qtremoteobjects.win64_msvc2017_winrt_armv7]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtremoteobjects/qtremoteobjects-Windows-Windows_10-MSVC2017-WinRT-WinRT_10-ARMv7.7z
+
+# QtNetworkAuth provided as separate installable component in installer
+[qt.qt5.5100.qtnetworkauth]
+[qt.qt5.5100.qtnetworkauth.win64_msvc2017_winrt_armv7]
+archives:               qt5.5100.qtnetworkauth.win64_msvc2017_winrt_armv7
+target_install_base:    /%QT_VERSION%/winrt_armv7_msvc2017
+[qt5.5100.qtnetworkauth.win64_msvc2017_winrt_armv7]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtnetworkauth/qtnetworkauth-Windows-Windows_10-MSVC2017-WinRT-WinRT_10-ARMv7.7z
+

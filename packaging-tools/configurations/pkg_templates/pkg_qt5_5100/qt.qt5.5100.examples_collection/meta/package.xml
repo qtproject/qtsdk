@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt 5.10 Examples collection</DisplayName>
+    <Description>Qt 5.10 Examples collection.</Description>
+    <Version>5.10.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Dependencies>qt.qt5.5100.examples, qt.qt5.5100.examples.qtpurchasing, qt.qt5.5100.examples.qtserialbus, qt.qt5.5100.examples.qtvirtualkeyboard, qt.qt5.5100.examples.qtcharts, qt.qt5.5100.examples.qtnetworkauth, qt.qt5.5100.examples.qtwebengine, qt.qt5.5100.examples.qtdatavis3d, qt.qt5.5100.examples.qtscript</Dependencies>
+    <Virtual>true</Virtual>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
