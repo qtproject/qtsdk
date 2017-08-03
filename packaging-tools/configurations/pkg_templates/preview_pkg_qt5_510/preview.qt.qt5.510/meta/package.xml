@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt %QT_VERSION_MINOR%</DisplayName>
+    <Description>Qt %QT_VERSION_MINOR%</Description>
+    <Version>%QT_VERSION%%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Dependencies>qt.qt5.510</Dependencies>
+    <SortingPriority>599</SortingPriority>
+</Package>
+
+

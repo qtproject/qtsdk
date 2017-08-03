@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Android x86</DisplayName>
+    <Description>Qt %QT_VERSION% Prebuilt Components for Android x86</Description>
+    <Version>%QT_VERSION%%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Dependencies>qt.qt5.5100.android_x86</Dependencies>
+    <Default>false</Default>
+    <SortingPriority>270</SortingPriority>
+</Package>
+
+
