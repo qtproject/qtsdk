@@ -496,13 +496,6 @@ def ensure_unix_paths(path):
     return temp_path
 
 
-# helper function to generate correct path structure for pending area
-def generate_repo_pending_base_path(optionDict, build_job):
-    base_path_pending = optionDict['REPO_STAGING_SERVER_TEST_REPO_PENDING'] + '/'
-    base_path_pending += build_job.repo_content_type + '/' + optionDict['ONLINE_REPOSITORY_BASE_NAME'] + '/' + build_job.repo_url_specifier
-    return base_path_pending
-
-
 # execute online repository update
 def update_online_repo(optionDict, job, update_staging_repo, update_production_repo):
     staging_server_addr = optionDict['PKG_STAGING_SERVER_UNAME'] + '@' + optionDict['PKG_STAGING_SERVER']
