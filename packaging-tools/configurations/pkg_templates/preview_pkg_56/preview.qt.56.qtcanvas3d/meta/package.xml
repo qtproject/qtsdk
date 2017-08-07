@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt Canvas 3D</DisplayName>
+    <Description>Qt Canvas 3D module provides a way to make WebGL-like 3D drawing calls from Qt Quick JavaScript.</Description>
+    <Version>%QT_VERSION%-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Dependencies>qt.563.qtcanvas3d</Dependencies>
+    <Default>false</Default>
+    <SortingPriority>17</SortingPriority>
+</Package>
+

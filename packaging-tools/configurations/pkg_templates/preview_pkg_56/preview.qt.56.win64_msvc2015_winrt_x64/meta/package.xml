@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>WinRT x64 (MSVC2015)</DisplayName>
+    <Description>Qt %QT_VERSION% Prebuilt Components for Windows Runtime</Description>
+    <Version>%QT_VERSION%-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Dependencies>qt.563.win64_msvc2015_winrt_x64</Dependencies>
+    <Default>false</Default>
+    <SortingPriority>563</SortingPriority>
+</Package>
+
+

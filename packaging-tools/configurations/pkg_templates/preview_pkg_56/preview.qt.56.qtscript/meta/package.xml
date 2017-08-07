@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt Script (Deprecated)</DisplayName>
+    <Description>Qt Script (Deprecated) Prebuilt Components for Qt %QT_VERSION%</Description>
+    <Version>%QT_VERSION%-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Dependencies>qt.563.qtscript</Dependencies>
+    <Default>true</Default>
+    <SortingPriority>9</SortingPriority>
+</Package>
