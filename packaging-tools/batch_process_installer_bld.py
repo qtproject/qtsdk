@@ -124,8 +124,6 @@ class BuildJob:
         if self.is_repo_job:
             if not self.repo_content_type:
                 raise RuntimeError('*** Fatal error! <repo_content_type> not defined for: %s' % self.node_name)
-            if not self.repo_content_type:
-                raise RuntimeError('*** Fatal error! <repo_content_type> not defined for: %s' % self.node_name)
             if not self.repo_components_to_update:
                 raise RuntimeError('*** Fatal error! <repo_components_to_update> not defined for: %s' % self.node_name)
             if not self.repo_url_specifier:
@@ -236,7 +234,7 @@ def get_job_list(optionDict, job_type_specifier, branch, arch, global_version, g
             if job_type_specifier == 'repository':
                 repo_content_type = bldinstallercommon.safe_config_key_fetch(parser, s, 'repo_content_type')
                 if not repo_content_type:
-                    raise RuntimeError('*** Fatal error! <repo_content_type> not defined for: %s' % s)
+                    repo_content_type = arg_configurations_file.split("/")[-1]  # if the 'repo_content_type' (for temp dir name) is not defined then parse it from the conf file
                 repo_components_to_update = bldinstallercommon.safe_config_key_fetch(parser, s, 'repo_components_to_update')
                 if not repo_components_to_update:
                     raise RuntimeError('*** Fatal error! <repo_components_to_update> not defined for: %s' % s)
