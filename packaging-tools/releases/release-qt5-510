@@ -107,7 +107,7 @@ repo_url_specifier:         windows_x86/android/qt5_5100
 rta_key_list:
 
 [release.510.repository.windows.x86.winrt]
-arg_configurations_file:    repository_configs/winrt_qt5/win_x64_winrt_repository_qt5_510
+arg_configurations_file:    repository_configs/winrt_qt5/win_x64_winrt_repository_qt5_5100
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
 repo_content_type:          5100
 repo_components_to_update:  qt.qt5.5100.*
