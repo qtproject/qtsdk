@@ -39,8 +39,8 @@ function Component()
         // Indicate in DisplayName and Description that this is a snapshot build
         var displayName = component.value("DisplayName");
         var description = component.value("Description");
-        component.setValue("DisplayName", displayName + " Beta snapshot (#%BUILD_NUMBER%)")
-        component.setValue("Description", description + " Beta snapshot (#%BUILD_NUMBER%)")
+        component.setValue("DisplayName", displayName + " %QT_RELEASE_TAG% snapshot (#%BUILD_NUMBER%)")
+        component.setValue("Description", description + " %QT_RELEASE_TAG% snapshot (#%BUILD_NUMBER%)")
     }
 
     if ((installer.value("os") == "win")
