@@ -23,19 +23,19 @@ arg_substitution_list:          %QT_VERSION%=%GLOBAL_VERSION%,
 ################################################################################
 ## Linux repository
 ################################################################################
-[release.510.preview.repository.linux.x64]
+[release.510.repository.linux.x64.preview]
 arg_configurations_file:    repository_configs/desktop_qt5/preview_linux_x64_repository_qt5_510
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
 repo_components_to_update:  preview.qt.qt5.510.*
 repo_url_specifier:         linux_x64/desktop/qt5_510_preview
 
-[release.510.preview.repository.linux.x64.src_doc_examples]
+[release.510.repository.linux.x64.src_doc_examples.preview]
 arg_configurations_file:    repository_configs/desktop_qt5/preview-repository_qt5_510_src_doc_examples
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
 repo_components_to_update:  preview,preview.qt,preview.qt.qt5.510.*
 repo_url_specifier:         linux_x64/desktop/qt5_510_preview
 
-[release.510.repository.linux.x64.android]
+[release.510.repository.linux.x64.android.preview]
 arg_configurations_file:    repository_configs/android_qt5/preview_linux_x64_android_repository_qt5_510
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
 repo_components_to_update:  preview.qt.qt5.510.*
@@ -44,25 +44,25 @@ repo_url_specifier:         linux_x64/android/qt5_510_preview
 ################################################################################
 ## Windows repository
 ################################################################################
-[release.510.repository.windows.x86]
+[release.510.repository.windows.x86.preview]
 arg_configurations_file:    repository_configs/desktop_qt5/preview_win_x86_repository_qt5_510
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
 repo_components_to_update:  preview.qt.qt5.510.*
 repo_url_specifier:         windows_x86/desktop/qt5_510_preview
 
-[release.510.repository.windows.x86.src_doc_examples]
+[release.510.repository.windows.x86.src_doc_examples.preview]
 arg_configurations_file:    repository_configs/desktop_qt5/preview-repository_qt5_510_src_doc_examples
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
 repo_components_to_update:  preview,preview.qt,preview.qt.qt5.510.*
 repo_url_specifier:         windows_x86/desktop/qt5_510_preview
 
-[release.510.preview.repository.windows.x86.android]
+[release.510.repository.windows.x86.android.preview]
 arg_configurations_file:    repository_configs/android_qt5/preview_win_x86_android_repository_qt5_510
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
 repo_components_to_update:  preview.qt.qt5.510.*
 repo_url_specifier:         windows_x86/android/qt5_510_preview
 
-[release.510.preview.repository.windows.x86.winrt]
+[release.510.repository.windows.x86.winrt.preview]
 arg_configurations_file:    repository_configs/winrt_qt5/preview_win_x64_winrt_repository_qt5_510
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
 repo_components_to_update:  preview.qt.qt5.510.*
@@ -71,25 +71,25 @@ repo_url_specifier:         windows_x86/winrt/qt5_510_preview
 ################################################################################
 ## macOS repository
 ################################################################################
-[release.510.preview.repository.mac.x64]
+[release.510.repository.mac.x64.preview]
 arg_configurations_file:    repository_configs/desktop_qt5/preview_mac_x64_repository_qt5_510
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
 repo_components_to_update:  preview.qt.qt5.510.*
 repo_url_specifier:         mac_x64/desktop/qt5_510_preview
 
-[release.510.preview.repository.mac.x64.src_doc_examples]
+[release.510.repository.mac.x64.src_doc_examples.preview]
 arg_configurations_file:    repository_configs/desktop_qt5/preview-repository_qt5_510_src_doc_examples
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
 repo_components_to_update:  preview,preview.qt,preview.qt.qt5.510.*
 repo_url_specifier:         mac_x64/desktop/qt5_510_preview
 
-[release.510.preview.repository.mac.x64.android]
+[release.510.repository.mac.x64.android.preview]
 arg_configurations_file:    repository_configs/android_qt5/preview_mac_x64_android_repository_qt5_510
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
 repo_components_to_update:  preview.qt.qt5.510.*
 repo_url_specifier:         mac_x64/android/qt5_510_preview
 
-[release.510.preview.repository.mac.x64.ios]
+[release.510.repository.mac.x64.ios.preview]
 arg_configurations_file:    repository_configs/ios_qt5/preview_mac_x64_ios_repository_qt5_510
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
 repo_components_to_update:  preview.qt.qt5.510.*
