@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>Qt Network Auth (TP)</DisplayName>
-    <Description>Qt Network Auth is an add-on library that enables Qt applications to use different web authentication systems.&lt;br&gt;&lt;br&gt;The release of Qt Network Auth with Qt %QT_VERSION_MINOR% is a Technology Preview.</Description>
+    <DisplayName>Qt Network Authorization</DisplayName>
+    <Description>Qt Network Authorization is an add-on library that enables Qt applications to use different web authentication systems.</Description>
     <Version>%QT_VERSION%%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Default>false</Default>

@@ -35,6 +35,18 @@ identifier:             windows
 [PackageTemplates]
 template_dirs:          preview_pkg_qt5_510
 
+[preview]
+[preview.qt.qt5.510]
+[preview.qt.qt5.510.src]
+[preview.qt.qt5.510.qtcharts]
+[preview.qt.qt5.510.qtdatavis3d]
+[preview.qt.qt5.510.qtpurchasing]
+[preview.qt.qt5.510.qtvirtualkeyboard]
+[preview.qt.qt5.510.qtwebengine]
+[preview.qt.qt5.510.qtremoteobjects]
+[preview.qt.qt5.510.qtscript]
+[preview.qt.qt5.510.qtnetworkauth]
+
 [preview.qt.qt5.510.win32_mingw53]
 [preview.qt.qt5.510.win64_msvc2013_64]
 [preview.qt.qt5.510.win32_msvc2015]

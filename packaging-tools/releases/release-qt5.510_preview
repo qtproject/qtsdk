@@ -32,7 +32,7 @@ repo_url_specifier:         linux_x64/desktop/qt5_510_preview
 [release.510.repository.linux.x64.src_doc_examples.preview]
 arg_configurations_file:    repository_configs/desktop_qt5/preview-repository_qt5_510_src_doc_examples
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
-repo_components_to_update:  preview,preview.qt,preview.qt.qt5.510.*
+repo_components_to_update:  preview,preview.qt.qt5.510.*
 repo_url_specifier:         linux_x64/desktop/qt5_510_preview
 
 [release.510.repository.linux.x64.android.preview]
@@ -53,7 +53,7 @@ repo_url_specifier:         windows_x86/desktop/qt5_510_preview
 [release.510.repository.windows.x86.src_doc_examples.preview]
 arg_configurations_file:    repository_configs/desktop_qt5/preview-repository_qt5_510_src_doc_examples
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
-repo_components_to_update:  preview,preview.qt,preview.qt.qt5.510.*
+repo_components_to_update:  preview,preview.qt.qt5.510.*
 repo_url_specifier:         windows_x86/desktop/qt5_510_preview
 
 [release.510.repository.windows.x86.android.preview]
@@ -80,7 +80,7 @@ repo_url_specifier:         mac_x64/desktop/qt5_510_preview
 [release.510.repository.mac.x64.src_doc_examples.preview]
 arg_configurations_file:    repository_configs/desktop_qt5/preview-repository_qt5_510_src_doc_examples
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
-repo_components_to_update:  preview,preview.qt,preview.qt.qt5.510.*
+repo_components_to_update:  preview,preview.qt.qt5.510.*
 repo_url_specifier:         mac_x64/desktop/qt5_510_preview
 
 [release.510.repository.mac.x64.android.preview]
