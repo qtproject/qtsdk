@@ -55,55 +55,55 @@ archives:               qt5.5100.android_armv7.qtbase,
                         qt5.5100.android_armv7.qtspeech
 target_install_base:    /%QT_VERSION%/android_armv7
 [qt5.5100.android_armv7.qtbase]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtbase/qtbase-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtbase/qtbase-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 [qt5.5100.android_armv7.qtxmlpatterns]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtxmlpatterns/qtxmlpatterns-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtxmlpatterns/qtxmlpatterns-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 [qt5.5100.android_armv7.qttools]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qttools/qttools-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qttools/qttools-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 [qt5.5100.android_armv7.qtimageformats]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtimageformats/qtimageformats-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtimageformats/qtimageformats-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 [qt5.5100.android_armv7.qtwebsockets]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebsockets/qtwebsockets-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebsockets/qtwebsockets-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 [qt5.5100.android_armv7.qtdeclarative]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtdeclarative/qtdeclarative-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtdeclarative/qtdeclarative-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 [qt5.5100.android_armv7.qtsvg]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtsvg/qtsvg-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtsvg/qtsvg-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 [qt5.5100.android_armv7.qttranslations]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qttranslations/qttranslations-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qttranslations/qttranslations-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 [qt5.5100.android_armv7.qtmultimedia]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtmultimedia/qtmultimedia-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtmultimedia/qtmultimedia-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 [qt5.5100.android_armv7.qtwebchannel]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebchannel/qtwebchannel-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebchannel/qtwebchannel-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 [qt5.5100.android_armv7.qtandroidextras]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtandroidextras/qtandroidextras-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtandroidextras/qtandroidextras-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 [qt5.5100.android_armv7.qtconnectivity]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtconnectivity/qtconnectivity-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtconnectivity/qtconnectivity-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 [qt5.5100.android_armv7.qtsensors]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtsensors/qtsensors-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtsensors/qtsensors-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 [qt5.5100.android_armv7.qtlocation]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtlocation/qtlocation-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtlocation/qtlocation-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 [qt5.5100.android_armv7.qtserialport]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtserialport/qtserialport-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtserialport/qtserialport-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 [qt5.5100.android_armv7.qtgraphicaleffects]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgraphicaleffects/qtgraphicaleffects-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgraphicaleffects/qtgraphicaleffects-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 [qt5.5100.android_armv7.qtquickcontrols]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtquickcontrols/qtquickcontrols-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtquickcontrols/qtquickcontrols-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 [qt5.5100.android_armv7.qtquickcontrols2]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtquickcontrols2/qtquickcontrols2-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtquickcontrols2/qtquickcontrols2-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 [qt5.5100.android_armv7.qt3d]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qt3d/qt3d-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qt3d/qt3d-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 [qt5.5100.android_armv7.qtcanvas3d]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtcanvas3d/qtcanvas3d-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtcanvas3d/qtcanvas3d-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 [qt5.5100.android_armv7.qtwebview]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebview/qtwebview-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebview/qtwebview-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 [qt5.5100.android_armv7.qtserialbus]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtserialbus/qtserialbus-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtserialbus/qtserialbus-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 [qt5.5100.android_armv7.qtscxml]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscxml/qtscxml-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscxml/qtscxml-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 [qt5.5100.android_armv7.qtgamepad]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgamepad/qtgamepad-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgamepad/qtgamepad-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 [qt5.5100.android_armv7.qtspeech]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtspeech/qtspeech-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtspeech/qtspeech-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 
 # QtCharts provided as separate installable component in installer
 [qt.qt5.5100.qtcharts]
@@ -111,7 +111,7 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtspeech/qtspeech-MacOS-OS
 archives:               qt5.5100.qtcharts.android_armv7
 target_install_base:    /%QT_VERSION%/android_armv7
 [qt5.5100.qtcharts.android_armv7]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtcharts/qtcharts-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtcharts/qtcharts-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 
 # QtDataVisualization provided as separate installable component in installer
 [qt.qt5.5100.qtdatavis3d]
@@ -119,7 +119,7 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtcharts/qtcharts-MacOS-OS
 archives:               qt5.5100.qtdatavis3d.android_armv7
 target_install_base:    /%QT_VERSION%/android_armv7
 [qt5.5100.qtdatavis3d.android_armv7]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtdatavis3d/qtdatavis3d-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtdatavis3d/qtdatavis3d-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 
 # QtPurchasing provided as separate installable component in installer
 [qt.qt5.5100.qtpurchasing]
@@ -127,7 +127,7 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtdatavis3d/qtdatavis3d-Ma
 archives:               qt5.5100.qtpurchasing.android_armv7
 target_install_base:    /%QT_VERSION%/android_armv7
 [qt5.5100.qtpurchasing.android_armv7]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtpurchasing/qtpurchasing-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtpurchasing/qtpurchasing-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 
 # QtScript provided as separate installable component in installer
 [qt.qt5.5100.qtscript]
@@ -135,7 +135,7 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtpurchasing/qtpurchasing-
 archives:               qt5.5100.qtscript.android_armv7
 target_install_base:    /%QT_VERSION%/android_armv7
 [qt5.5100.qtscript.android_armv7]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscript/qtscript-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscript/qtscript-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 
 # Qt Remote Objects provided as separate installable component in installer
 [qt.qt5.5100.qtremoteobjects]
@@ -143,7 +143,7 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscript/qtscript-MacOS-OS
 archives:               qt5.5100.qtremoteobjects.android_armv7
 target_install_base:    /%QT_VERSION%/android_armv7
 [qt5.5100.qtremoteobjects.android_armv7]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtremoteobjects/qtremoteobjects-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtremoteobjects/qtremoteobjects-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 
 # QtNetworkAuth provided as separate installable component in installer
 [qt.qt5.5100.qtnetworkauth]
@@ -151,5 +151,5 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtremoteobjects/qtremoteob
 archives:               qt5.5100.qtnetworkauth.android_armv7
 target_install_base:    /%QT_VERSION%/android_armv7
 [qt5.5100.qtnetworkauth.android_armv7]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtnetworkauth/qtnetworkauth-MacOS-OSX_10_11-GCC-Android-Android_ANY-ARMv7.7z
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtnetworkauth/qtnetworkauth-MacOS-MacOS_10_12-GCC-Android-Android_ANY-ARMv7.7z
 
