@@ -35,6 +35,17 @@ identifier:             windows
 [PackageTemplates]
 template_dirs:          preview_pkg_56
 
+[preview]
+[preview.qt.56.src]
+[preview.qt.56.qtcanvas3d]
+[preview.qt.56.qtlocation]
+[preview.qt.56.qtquickcontrols]
+[preview.qt.56.qtquickcontrols2]
+[preview.qt.56.qtscript]
+[preview.qt.56.qtserialbus]
+[preview.qt.56.qtwebengine]
+[preview.qt.56.qtwebview]
+
 [preview.qt.56.win32_mingw49]
 [preview.qt.56.win32_msvc2013]
 [preview.qt.56.win32_msvc2015]
