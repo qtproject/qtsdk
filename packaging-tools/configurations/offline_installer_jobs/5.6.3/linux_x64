@@ -39,7 +39,7 @@ file_list:              qt-conf,
                         qt563-src-conf,
                         qt563-doc-examples-conf,
                         x86_64-qt563-gcc-conf,
-                        x86_64-tools-qtcreator-qt563x-conf
+                        x86_64-tools-qtcreator-qt56x-conf
 
 
 [ConfigDir]

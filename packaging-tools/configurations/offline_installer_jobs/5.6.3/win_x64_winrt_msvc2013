@@ -41,7 +41,7 @@ file_list:              qt-conf,
                         x86_64-qt563-msvc2013-winrt_x64-conf,
                         x86_64-qt563-msvc2013-winphone_arm-conf,
                         x86_64-qt563-msvc2013-winphone_x86-conf,
-                        x86-tools-qtcreator-qt563x-conf,
+                        x86-tools-qtcreator-qt56x-conf,
                         x86-tools-vcredist_msvc2013-conf,
                         x64-tools-vcredist_msvc2013-conf
 

@@ -42,7 +42,7 @@ file_list:              qt-conf,
                         android-qt563-armv7-conf,
                         android-qt563-x86-conf,
                         x86-tools-mingw492-conf,
-                        x86-tools-qtcreator-qt563x-conf,
+                        x86-tools-qtcreator-qt56x-conf,
                         x86-tools-vcredist_msvc2013-conf,
                         x64-tools-vcredist_msvc2013-conf
 [ConfigDir]
