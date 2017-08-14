@@ -4,7 +4,7 @@
     <Description>Qt %QT_VERSION%-0</Description>
     <Version>%QT_VERSION%-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Dependencies>qt.%QT_DEPENDENCY_VERSION%./Dependencies>
+    <Dependencies>qt.%QT_DEPENDENCY_VERSION%</Dependencies>
     <SortingPriority>563</SortingPriority>
 </Package>
 

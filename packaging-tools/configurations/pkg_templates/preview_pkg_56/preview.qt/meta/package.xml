@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<Package>
-    <DisplayName>Preview Qt</DisplayName>
-    <Description>Preview future Qt releases</Description>
-    <Version>%QT_VERSION%</Version>
-    <Checkable>false</Checkable>
-    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <SortingPriority>0</SortingPriority>
-</Package>
