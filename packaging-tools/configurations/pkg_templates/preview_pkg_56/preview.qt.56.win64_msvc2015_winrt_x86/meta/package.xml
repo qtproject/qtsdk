@@ -4,7 +4,7 @@
     <Description>Qt %QT_VERSION% Prebuilt Components for WinRT</Description>
     <Version>%QT_VERSION%-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Dependencies>qt.563.win64_msvc2015_winrt_x86</Dependencies>
+    <Dependencies>qt.%QT_DEPENDENCY_VERSION%.win64_msvc2015_winrt_x86</Dependencies>
     <Default>false</Default>
     <SortingPriority>563</SortingPriority>
 </Package>

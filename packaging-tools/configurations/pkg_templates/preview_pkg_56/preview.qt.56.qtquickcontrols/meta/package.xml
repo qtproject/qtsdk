@@ -5,7 +5,7 @@
     <Version>%QT_VERSION%-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Default>false</Default>
-    <Dependencies>qt.563.qtquickcontrols</Dependencies>
+    <Dependencies>qt.%QT_DEPENDENCY_VERSION%.qtquickcontrols</Dependencies>
     <SortingPriority>15</SortingPriority>
 </Package>
 

@@ -4,7 +4,7 @@
     <Description>The Qt Serial Bus module is a technology preview of the API which provides classes and functions to access CAN and ModBus.&lt;br&gt;&lt;br&gt;The release of Qt Serial Bus with Qt %QT_VERSION% is a Technology Preview.</Description>
     <Version>%QT_VERSION%-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Dependencies>qt.563.qtserialbus</Dependencies>
+    <Dependencies>qt.%QT_DEPENDENCY_VERSION%.qtserialbus</Dependencies>
     <Default>false</Default>
     <SortingPriority>10</SortingPriority>
 </Package>

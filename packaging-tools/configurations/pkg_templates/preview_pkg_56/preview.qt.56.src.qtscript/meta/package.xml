@@ -4,7 +4,7 @@
     <Description>Qt Script (Deprecated) Source Package for Qt %QT_VERSION%</Description>
     <Version>%QT_VERSION%-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Dependencies>qt.563.src.qtscript</Dependencies>
+    <Dependencies>qt.%QT_DEPENDENCY_VERSION%.src.qtscript</Dependencies>
     <Default>false</Default>
     <SortingPriority>8</SortingPriority>
 </Package>
