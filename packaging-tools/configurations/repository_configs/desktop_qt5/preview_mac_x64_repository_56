@@ -38,6 +38,7 @@ template_dirs:          preview_pkg_56
 [preview]
 [preview.qt.56]
 [preview.qt.56.src]
+[preview.qt.56.qt3d]
 [preview.qt.56.qtcanvas3d]
 [preview.qt.56.qtlocation]
 [preview.qt.56.qtquickcontrols]
