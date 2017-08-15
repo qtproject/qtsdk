@@ -25,7 +25,7 @@ arg_substitution_list:          %QT_VERSION%=%GLOBAL_VERSION%,
 [release.56.repository.linux.x64.preview]
 arg_configurations_file:    repository_configs/desktop_qt5/preview_linux_x64_repository_56
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=false
-repo_components_to_update:  preview,preview.qt.56.*
+repo_components_to_update:  preview,preview.qt.56,preview.qt.56.*
 repo_url_specifier:         linux_x64/desktop/qt5_56_preview
 
 [release.56.repository.linux.x64.android.preview]
@@ -40,7 +40,7 @@ repo_url_specifier:         linux_x64/android/qt5_56_preview
 [release.56.repository.windows.x86.preview]
 arg_configurations_file:    repository_configs/desktop_qt5/preview_win_x86_repository_56
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=false
-repo_components_to_update:  preview,preview.qt.56.*
+repo_components_to_update:  preview,preview.qt.56,preview.qt.56.*
 repo_url_specifier:         windows_x86/desktop/qt5_56_preview
 
 [release.56.repository.windows.x86.android.preview]
@@ -61,7 +61,7 @@ repo_url_specifier:         windows_x86/winrt/qt5_56_preview
 [release.56.repository.mac.x64.preview]
 arg_configurations_file:    repository_configs/desktop_qt5/preview_mac_x64_repository_56
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=false
-repo_components_to_update:  preview,preview.qt.56.*
+repo_components_to_update:  preview,preview.qt.56,preview.qt.56.*
 repo_url_specifier:         mac_x64/desktop/qt5_56_preview
 
 [release.56.repository.mac.x64.android.preview]
