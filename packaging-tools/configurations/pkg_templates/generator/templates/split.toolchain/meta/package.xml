@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>%SPLIT_COMPONENT_DISPLAY_NAME% (%TOOLCHAIN_PKG_NAME%)</DisplayName>
+    <Description></Description>
+    <Version>%QT_VERSION%-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <AutoDependOn>qt.%BASE_DEPENDENCY_PKG_NAME%.%SPLIT_COMPONENT_PROJECT_NAME%, qt.%BASE_DEPENDENCY_PKG_NAME%.%TOOLCHAIN_PKG_NAME%</AutoDependOn>
+    <Dependencies>qt.%BASE_DEPENDENCY_PKG_NAME%.%TOOLCHAIN_PKG_NAME%</Dependencies>
+    <Virtual>true</Virtual>
+    <Script>installscript.qs</Script>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+

@@ -17,3 +17,4 @@ Makefile
 /packaging-tools/qt-bld-dynamic
 /packaging-tools/qt-install-dynamic
 /packaging-tools/ifw-pkg
+/packaging-tools/pkg_generator_output

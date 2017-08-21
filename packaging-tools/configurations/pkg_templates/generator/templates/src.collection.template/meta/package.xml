@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt %QT_VERSION% Collection for %COLLECTION_COMPONENT_NAME%</DisplayName>
+    <Description>Qt %QT_VERSION% Collection for %COLLECTION_COMPONENT_NAME%.</Description>
+    <Version>%QT_VERSION%-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Dependencies>%COLLECTION_COMPONENT_DEPENDENCY_LIST%</Dependencies>
+    <Virtual>true</Virtual>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
