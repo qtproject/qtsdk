@@ -20,9 +20,9 @@ arg_substitution_list:          %QT_VERSION%=%GLOBAL_VERSION%,
                                 %QT_RELEASE_TAG%=Alpha,
                                 %QT_VERSION_AND_TAG%=%GLOBAL_VERSION_AND_TAG%,
                                 %QT_INSTALL_DIR_NAME%=5.10.0,
-                                %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.3.1_59x/latest_successful,
-                                %QTC_VERSION%=4.3.1,
-                                %QTC_DISPLAY_VERSION%=4.3.1,
+                                %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.4.0_510x/latest_successful,
+                                %QTC_VERSION%=4.4.0,
+                                %QTC_DISPLAY_VERSION%=4.4.0,
                                 %QTC_MSVC%=2015
 
 
