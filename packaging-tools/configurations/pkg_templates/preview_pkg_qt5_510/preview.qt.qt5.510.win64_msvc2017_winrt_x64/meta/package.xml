@@ -4,7 +4,7 @@
     <Description>Qt %QT_VERSION% Prebuilt Components for Universal Windows Platform</Description>
     <Version>%QT_VERSION%%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Dependencies>qt.qt5.5100.win64_msvc2017_winrt_x64</Dependencies>
+    <Dependencies>qt.qt5.%QT_DEPENDENCY_VERSION%.win64_msvc2017_winrt_x64</Dependencies>
     <Default>false</Default>
     <SortingPriority>590</SortingPriority>
 </Package>
