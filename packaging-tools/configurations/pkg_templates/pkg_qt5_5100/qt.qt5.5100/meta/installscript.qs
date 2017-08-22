@@ -41,62 +41,7 @@ function Component()
         var description = component.value("Description");
         component.setValue("DisplayName", displayName + " %QT_RELEASE_TAG% snapshot (#%BUILD_NUMBER%)")
         component.setValue("Description", description + " %QT_RELEASE_TAG% snapshot (#%BUILD_NUMBER%)")
-    }
-
-    if ((installer.value("os") == "win")
-            && !installer.isOfflineOnly()) {
-        // Enable the right toolchains
-        var msvc2013 = !!installer.environmentVariable("VS120COMNTOOLS");
-        var msvc2015 = !!installer.environmentVariable("VS140COMNTOOLS");
-
-        var android_armv7 = installer.componentByName("qt.qt5.5100.android_armv7");
-        var msvc2015_winrt_armv7 = installer.componentByName("qt.qt5.5100.win64_msvc2015_winrt_armv7");
-        var msvc2015_winrt_x64 = installer.componentByName("qt.qt5.5100.win64_msvc2015_winrt_x64");
-        var msvc2015_winrt_x86 = installer.componentByName("qt.qt5.5100.win64_msvc2015_winrt_x86");
-
-        // first reset the latest Qt5.x.x package default values to false
-        installer.componentByName("qt.qt5.5100.win32_mingw53").setValue("Default", "false");
-        installer.componentByName("qt.qt5.5100.win64_msvc2013_64").setValue("Default", "false");
-        installer.componentByName("qt.qt5.5100.win32_msvc2015").setValue("Default", "false");
-        installer.componentByName("qt.qt5.5100.win64_msvc2015_64").setValue("Default", "false");
-
-        if (android_armv7)
-            android_armv7.setValue("Default", "false");
-        if (msvc2015_winrt_armv7)
-            msvc2015_winrt_armv7.setValue("Default", "false");
-        if (msvc2015_winrt_x64)
-            msvc2015_winrt_x64.setValue("Default", "false");
-        if (msvc2015_winrt_x86)
-            msvc2015_winrt_x86.setValue("Default", "false");
-
-        if (!snapshotBuild) {
-            // if 32bit windows hide the 64bit packages
-            if (installer.environmentVariable("ProgramFiles(x86)") == "" ) {
-                installer.componentByName("qt.qt5.5100.win64_msvc2013_64").setValue("Virtual", "true");
-                installer.componentByName("qt.qt5.5100.win64_msvc2015_64").setValue("Virtual", "true");
-            }
-
-            // now try to determine which tool chains to select by default
-            if (msvc2013) {
-                // if 64bit machine
-                if (!(installer.environmentVariable("ProgramFiles(x86)") == "")) {
-                    installer.componentByName("qt.qt5.5100.win64_msvc2013_64").setValue("Default", "true");
-                }
-            }
-            if (msvc2015) {
-                // if 64bit machine
-                if (!(installer.environmentVariable("ProgramFiles(x86)") == "")) {
-                    installer.componentByName("qt.qt5.5100.win64_msvc2015_64").setValue("Default", "true");
-                } else {
-                    installer.componentByName("qt.qt5.5100.win32_msvc2015").setValue("Default", "true");
-                }
-            }
-
-            // if no msvc toolkits detected, choose mingw by default
-            if (!msvc2013 && !msvc2015) {
-                installer.componentByName("qt.qt5.5100.win32_mingw53").setValue("Default", "true");
-            }
-        }
+        component.setValue("Virtual", "true")
     }
 }
 
