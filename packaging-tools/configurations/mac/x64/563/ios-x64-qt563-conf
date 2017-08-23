@@ -32,6 +32,7 @@ archives:               56.ios.qtbase,
                         56.ios.qtxmlpatterns,
                         56.ios.qttools,
                         56.ios.qtimageformats,
+                        56.ios.qtmacextras,
                         56.ios.qtdeclarative,
                         56.ios.qtsvg,
                         56.ios.qtgraphicaleffects,
@@ -52,6 +53,8 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtxmlpatterns/qtxmlpattern
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qttools/qttools-MacOS-OSX_10_11-Clang-IOS-IOS_ANY-Multi.7z
 [56.ios.qtimageformats]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtimageformats/qtimageformats-MacOS-OSX_10_11-Clang-IOS-IOS_ANY-Multi.7z
+[56.ios.qtmacextras]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtmacextras/qtmacextras-MacOS-OSX_10_11-Clang-IOS-IOS_ANY-Multi.7z
 [56.ios.qtdeclarative]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtdeclarative/qtdeclarative-MacOS-OSX_10_11-Clang-IOS-IOS_ANY-Multi.7z
 [56.ios.qtsvg]
