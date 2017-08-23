@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt Purchasing for iOS</DisplayName>
+    <Description></Description>
+    <Version>5.9.2-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <AutoDependOn>qt.592.qtpurchasing, qt.592.ios</AutoDependOn>
+    <Dependencies>qt.592.ios</Dependencies>
+    <Virtual>true</Virtual>
+    <Script>installscript.qs</Script>
+    <SortingPriority></SortingPriority>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+

@@ -36,12 +36,12 @@ identifier:             mac
 file_list:              qt-conf,
                         qt-license-conf,
                         qt-installer-changelog,
-                        qt591-src-conf,
-                        qt591-doc-examples-conf,
-                        x86_64-qt591-clang-conf,
-                        android-x64-qt591-armv7-conf,
-                        android-x64-qt591-x86-conf,
-                        ios-x64-qt591-conf,
+                        qt592-src-conf,
+                        qt592-doc-examples-conf,
+                        x86_64-qt592-clang-conf,
+                        android-x64-qt592-armv7-conf,
+                        android-x64-qt592-x86-conf,
+                        ios-x64-qt592-conf,
                         x86_64-tools-qtcreator-qt59x-conf
 
 [qtmenunib]
@@ -54,4 +54,4 @@ template_name:          config_qt5
 template_name:          config.xml.template.mac.qt5
 
 [PackageTemplates]
-template_dirs:          pkg_591, pkg_tools
+template_dirs:          pkg_592, pkg_tools

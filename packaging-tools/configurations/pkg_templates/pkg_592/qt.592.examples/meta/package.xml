@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt 5.9.2 Examples</DisplayName>
+    <Description>Qt 5.9.2 Examples</Description>
+    <Version>5.9.2-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Script>installscript.qs</Script>
+    <Dependencies>qt.tools</Dependencies>
+    <Virtual>true</Virtual>
+    <SortingPriority>1</SortingPriority>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+

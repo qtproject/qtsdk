@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>UWP x64 (MSVC 2015)</DisplayName>
+    <Description>Qt %QT_VERSION_MINOR% Prebuilt Components for Universal Windows Platform</Description>
+    <Version>%QT_VERSION%%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Dependencies>qt.%QT_DEPENDENCY_VERSION%.win64_msvc2015_winrt_x64</Dependencies>
+    <Default>false</Default>
+    <SortingPriority>590</SortingPriority>
+</Package>
+
+
