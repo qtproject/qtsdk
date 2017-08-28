@@ -118,7 +118,7 @@ def get_common_qt_configure_options():
 ##################################################################
 def get_dynamic_qt_configure_options():
     options = get_common_qt_configure_options()
-    options += '-qt-sql-sqlite '
+    options += '-qt-sqlite '
     options += '-no-dbus '
     return options
 
