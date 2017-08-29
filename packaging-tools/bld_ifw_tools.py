@@ -56,7 +56,7 @@ def get_default_qt_configure_options(openssl_dir):
 # Get static Qt configure arguments. Platform is detected.
 ##################################################################
 def get_static_qt_configure_options(openssl_dir):
-    options = get_common_qt_configure_options() + '-static '
+    options = get_common_qt_configure_options() + '-static -no-sql-sqlite '
     if bldinstallercommon.is_mac_platform():
         options += '-no-securetransport '
     options += '-openssl-linked '
@@ -95,7 +95,7 @@ def get_common_qt_configure_options():
     plat = platform.system().lower()
     # common
     options = get_common_allos_qt_configure_options()
-    options += '-no-sql-sqlite -no-qml-debug '
+    options += '-no-qml-debug '
     # Windows
     if plat.startswith('win'):
         options += '-no-icu -mp '
