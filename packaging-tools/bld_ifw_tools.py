@@ -278,8 +278,12 @@ def build_ifw(options, create_installer=False):
     # steps when creating ifw installer
     if create_installer:
         configure_options = get_dynamic_qt_configure_options() + '-prefix ' + options.qt_build_dir_dynamic + os.sep + 'qtbase'
+        # Although we have a shadow build qt sources are still taminated. Unpack sources again.
+        if os.path.isfile(options.qt_source_package_uri_saveas):
+            os.remove(options.qt_source_package_uri_saveas)
+        # copy qt sources
+        prepare_qt_sources(options)
         build_qt(options, options.qt_build_dir_dynamic, configure_options, options.qt_build_modules_docs)
-        install_docs(options, options.qt_build_dir_dynamic)
         build_ifw_docs(options)
         create_installer_package(options)
     #archive
@@ -355,19 +359,6 @@ def build_qt(options, qt_build_dir, qt_configure_options, qt_modules):
     cmd_args += qt_modules
     bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), qt_build_dir, True, False, get_build_env(options.openssl_dir))
 
-
-###############################
-# function
-###############################
-def install_docs(options, qt_build_dir):
-    print('--------------------------------------------------------------------')
-    print('Installing Qt documentation')
-    cmd_args = options.make_install_cmd
-    cmd_args += " docs"
-    qt_build_dir += os.sep + 'qtbase'
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), qt_build_dir)
-
-
 ###############################
 # function
 ###############################
@@ -420,7 +411,7 @@ def build_installer_framework(options):
 def build_ifw_docs(options):
     print('--------------------------------------------------------------------')
     print('Building Qt Installer Framework Documentation')
-    qmake_bin = os.path.join(options.qt_build_dir, 'qtbase', 'bin', options.qt_qmake_bin)
+    qmake_bin = os.path.join(options.qt_build_dir_dynamic, 'qtbase', 'bin', options.qt_qmake_bin)
     if not os.path.isfile(qmake_bin):
         print('*** Aborting doc build, unable to find qmake from: {0}'.format(options.qt_build_dir_dynamic))
         sys.exit(-1)
