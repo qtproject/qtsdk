@@ -31,7 +31,7 @@
 archives:               qt5.5100.doc
 target_install_base:    /Docs/Qt-5.10.0/
 [qt5.5100.doc]
-archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qt-everywhere-documentation-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qt-everywhere-documentation.%SRC_ARCHIVE_TYPE%
 package_strip_dirs:     1
 
 [qt.qt5.5100.examples]
