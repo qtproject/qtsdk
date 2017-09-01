@@ -97,13 +97,13 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qtwebengine-documentat
 target_install_dir:
 package_strip_dirs:     1
 
-# [qt.qt5.5100.doc.qtnetworkauth]
-# archives:               qt5.5100.doc.qtnetworkauth
-# target_install_base:    /Docs/Qt-5.10.0/
-# [qt5.5100.doc.qtnetworkauth]
-# archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qtnetworkauth-documentation.%SRC_ARCHIVE_TYPE%
-# target_install_dir:
-# package_strip_dirs:     1
+[qt.qt5.5100.doc.qtnetworkauth]
+archives:               qt5.5100.doc.qtnetworkauth
+target_install_base:    /Docs/Qt-5.10.0/
+[qt5.5100.doc.qtnetworkauth]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qtnetworkauth-documentation.%SRC_ARCHIVE_TYPE%
+target_install_dir:
+package_strip_dirs:     1
 
 [qt.qt5.5100.examples.qtcharts]
 archives:               qt5.5100.examples.qtcharts
@@ -149,13 +149,13 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/examples/qtserialbus-examp
 target_install_dir:
 package_strip_dirs:     1
 
-# [qt.qt5.5100.examples.qtnetworkauth]
-# archives:               qt5.5100.examples.qtnetworkauth
-# target_install_base:    /Examples/Qt-5.10.0/
-# [qt5.5100.examples.qtnetworkauth]
-# archive_uri:            /qt/%QT_VERSION_MINOR%/latest/examples/qtnetworkauth-examples-%QT_VERSION_AND_TAG%.7z
-# target_install_dir:
-# package_strip_dirs:     1
+[qt.qt5.5100.examples.qtnetworkauth]
+archives:               qt5.5100.examples.qtnetworkauth
+target_install_base:    /Examples/Qt-5.10.0/
+[qt5.5100.examples.qtnetworkauth]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/examples/qtnetworkauth-examples-%QT_VERSION_AND_TAG%.7z
+target_install_dir:
+package_strip_dirs:     1
 
 [qt.qt5.5100.examples.qtremoteobjects]
 archives:               qt5.5100.examples.qtremoteobjects
