@@ -175,3 +175,11 @@ target_install_base:    /%QT_VERSION%/gcc_64
 [qt5.5100.qtnetworkauth.gcc_64]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtnetworkauth/qtnetworkauth-Linux-RHEL_7_2-GCC-Linux-RHEL_7_2-X86_64.7z
 
+# QtWebGLPlugin provided as separate installable component in installer
+[qt.qt5.5100.qtwebglplugin]
+[qt.qt5.5100.qtwebglplugin.gcc_64]
+archives:               qt5.5100.qtwebglplugin.gcc_64
+target_install_base:    /%QT_VERSION%/gcc_64
+[qt5.5100.qtwebglplugin.gcc_64]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebglplugin/qtwebglplugin-Linux-RHEL_7_2-GCC-Linux-RHEL_7_2-X86_64.7z
+

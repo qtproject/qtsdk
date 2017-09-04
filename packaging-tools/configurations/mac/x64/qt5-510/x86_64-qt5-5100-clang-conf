@@ -168,3 +168,11 @@ target_install_base:    /%QT_VERSION%/clang_64
 [qt5.5100.qtnetworkauth.clang_64]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtnetworkauth/qtnetworkauth-MacOS-OSX_10_10-Clang-MacOS-OSX_10_10-X86_64.7z
 
+# QtWebGLPlugin provided as separate installable component in installer
+[qt.qt5.5100.qtwebglplugin]
+[qt.qt5.5100.qtwebglplugin.clang_64]
+archives:               qt5.5100.qtwebglplugin.clang_64
+target_install_base:    /%QT_VERSION%/clang_64
+[qt5.5100.qtwebglplugin.clang_64]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebglplugin/qtwebglplugin-MacOS-OSX_10_10-Clang-MacOS-OSX_10_10-X86_64.7z
+

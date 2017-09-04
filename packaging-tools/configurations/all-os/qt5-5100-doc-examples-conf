@@ -105,6 +105,14 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qtnetworkauth-document
 target_install_dir:
 package_strip_dirs:     1
 
+# [qt.qt5.5100.doc.qtwebglplugin]
+# archives:               qt5.5100.doc.qtwebglplugin
+# target_install_base:    /Docs/Qt-5.10.0/
+# [qt5.5100.doc.qtwebglplugin]
+# archive_uri:            /qt/%QT_VERSION_MINOR%/latest/doc/qtwebglplugin-documentation.%SRC_ARCHIVE_TYPE%
+# target_install_dir:
+# package_strip_dirs:     1
+
 [qt.qt5.5100.examples.qtcharts]
 archives:               qt5.5100.examples.qtcharts
 target_install_base:    /Examples/Qt-5.10.0/
@@ -172,3 +180,11 @@ target_install_base:    /Examples/Qt-5.10.0/
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/examples/qtwebengine-examples-%QT_VERSION_AND_TAG%.7z
 target_install_dir:
 package_strip_dirs:     1
+
+# [qt.qt5.5100.examples.qtwebglplugin]
+# archives:               qt5.5100.examples.qtwebglplugin
+# target_install_base:    /Examples/Qt-5.10.0/
+# [qt5.5100.examples.qtwebglplugin]
+# archive_uri:            /qt/%QT_VERSION_MINOR%/latest/examples/qtwebglplugin-examples-%QT_VERSION_AND_TAG%.7z
+# target_install_dir:
+# package_strip_dirs:     1

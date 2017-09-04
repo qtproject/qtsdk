@@ -70,6 +70,7 @@ archives:               qt5.5100.src.qtactiveqt,
                         qt5.5100.src.qtscript,
                         qt5.5100.src.qtspeech,
                         qt5.5100.src.qtnetworkauth,
+                        qt5.5100.src.qtwebglplugin,
                         qt5.5100.src.supermodule
 target_install_base:    /%QT_VERSION%/Src/
 [qt5.5100.src.qtactiveqt]
@@ -232,6 +233,10 @@ target_install_dir:     /qtspeech
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/src/submodules/qtnetworkauth-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
 package_strip_dirs:     1
 target_install_dir:     /qtnetworkauth
+[qt5.5100.src.qtwebglplugin]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/src/submodules/qtwebglplugin-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtwebglplugin
 [qt5.5100.src.supermodule]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/src/submodules/tqtc-qt5-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
 package_strip_dirs:     1

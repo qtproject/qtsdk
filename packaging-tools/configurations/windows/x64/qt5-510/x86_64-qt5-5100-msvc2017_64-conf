@@ -179,3 +179,11 @@ archives:               qt5.5100.qtnetworkauth.win64_msvc2017_64
 target_install_base:    /%QT_VERSION%/msvc2017_64
 [qt5.5100.qtnetworkauth.win64_msvc2017_64]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtnetworkauth/qtnetworkauth-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z
+
+# QtWebGLPlugin provided as separate installable component in installer
+[qt.qt5.5100.qtwebglplugin]
+[qt.qt5.5100.qtwebglplugin.win64_msvc2017_64]
+archives:               qt5.5100.qtwebglplugin.win64_msvc2017_64
+target_install_base:    /%QT_VERSION%/msvc2017_64
+[qt5.5100.qtwebglplugin.win64_msvc2017_64]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebglplugin/qtwebglplugin-Windows-Windows_10-MSVC2017-Windows-Windows_10-X86_64.7z

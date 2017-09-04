@@ -180,3 +180,10 @@ target_install_base:    /%QT_VERSION%/msvc2015
 [qt5.5100.qtnetworkauth.win32_msvc2015]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtnetworkauth/qtnetworkauth-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z
 
+# QtWebGLPlugin provided as separate installable component in installer
+[qt.qt5.5100.qtwebglplugin]
+[qt.qt5.5100.qtwebglplugin.win32_msvc2015]
+archives:               qt5.5100.qtwebglplugin.win32_msvc2015
+target_install_base:    /%QT_VERSION%/msvc2015
+[qt5.5100.qtwebglplugin.win32_msvc2015]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebglplugin/qtwebglplugin-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z
