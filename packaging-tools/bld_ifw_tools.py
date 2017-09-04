@@ -279,8 +279,8 @@ def build_ifw(options, create_installer=False):
     if create_installer:
         configure_options = get_dynamic_qt_configure_options() + '-prefix ' + options.qt_build_dir_dynamic + os.sep + 'qtbase'
         # Although we have a shadow build qt sources are still taminated. Unpack sources again.
-        if os.path.isfile(options.qt_source_package_uri_saveas):
-            os.remove(options.qt_source_package_uri_saveas)
+        if os.path.exists(options.qt_source_dir):
+            bldinstallercommon.remove_tree(options.qt_source_dir)
         # copy qt sources
         prepare_qt_sources(options)
         build_qt(options, options.qt_build_dir_dynamic, configure_options, options.qt_build_modules_docs)
