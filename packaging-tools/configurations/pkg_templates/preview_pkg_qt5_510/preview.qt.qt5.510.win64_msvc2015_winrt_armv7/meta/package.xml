@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>UWP ARMv7 ((MSVC 2015))</DisplayName>
+    <DisplayName>UWP ARMv7 (MSVC 2015)</DisplayName>
     <Description>Qt %QT_VERSION% Prebuilt Components for Universal Windows Platform</Description>
     <Version>%QT_VERSION%%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
