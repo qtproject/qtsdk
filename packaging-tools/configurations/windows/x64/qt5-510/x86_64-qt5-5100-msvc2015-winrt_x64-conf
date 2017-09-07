@@ -48,7 +48,8 @@ archives:               qt5.5100.win64_msvc2015_winrt_x64.qtbase,
                         qt5.5100.win64_msvc2015_winrt_x64.qtcanvas3d,
                         qt5.5100.win64_msvc2015_winrt_x64.qtwebview,
                         qt5.5100.win64_msvc2015_winrt_x64.qtscxml,
-                        qt5.5100.win64_msvc2015_winrt_x64.qtgamepad
+                        qt5.5100.win64_msvc2015_winrt_x64.qtgamepad,
+                        qt5.5100.win64_msvc2015_winrt_x64.qtspeech
 target_install_base:    /%QT_VERSION%/winrt_x64_msvc2015
 [qt5.5100.win64_msvc2015_winrt_x64.qtbase]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtbase/qtbase-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
@@ -92,6 +93,8 @@ archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtwebview/qtwebview-Window
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtscxml/qtscxml-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
 [qt5.5100.win64_msvc2015_winrt_x64.qtgamepad]
 archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtgamepad/qtgamepad-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
+[qt5.5100.win64_msvc2015_winrt_x64.qtspeech]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/qtspeech/qtspeech-Windows-Windows_10-MSVC2015-WinRT-WinRT_10-X86_64.7z
 
 # QtCharts provided as separate installable component in installer
 [qt.qt5.5100.qtcharts]
