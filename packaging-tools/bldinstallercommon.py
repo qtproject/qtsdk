@@ -347,13 +347,13 @@ def remove_tree(path):
             path = win32api.GetShortPathName(path)
             #a funny thing is that rmdir does not set an exitcode it is just using the last set one
             try:
-                runCommand("rmdir {0} /S /Q".format(path), SCRIPT_ROOT_DIR, onlyErrorCaseOutput=True)
+                runCommand(['rmdir', path, '/S', '/Q'], SCRIPT_ROOT_DIR, onlyErrorCaseOutput=True)
             except:
                 traceback.print_exc()
                 pass
         else:
             #shutil.rmtree(path)
-            runCommand("rm -rf {0}".format(path), SCRIPT_ROOT_DIR, onlyErrorCaseOutput=True)
+            runCommand(['rm', '-rf', path], SCRIPT_ROOT_DIR, onlyErrorCaseOutput=True)
     return not os.path.exists(path)
 
 
