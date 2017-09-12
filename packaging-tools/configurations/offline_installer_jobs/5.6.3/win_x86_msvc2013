@@ -39,7 +39,7 @@ file_list:              qt-conf,
                         qt563-src-conf,
                         qt563-doc-examples-conf,
                         x86-qt563-msvc2013_32-conf,
-                        x86-tools-qtcreator-qt563x-conf,
+                        x86-tools-qtcreator-qt56x-conf,
                         x86-tools-vcredist_msvc2013-conf,
                         x64-tools-vcredist_msvc2013-conf
 
