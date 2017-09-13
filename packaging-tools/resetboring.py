@@ -478,7 +478,7 @@ class Selector(object): # Select interesting changes, discard boring.
             text = '' # Our synthesized replacement for orig, made of tokens.
             copy = True # Do text and our last chomp off orig end the same way ?
             for j, word in enumerate(tokens):
-                assert word, "__split() never makes empty tokens"
+                assert word, ("__split() never makes empty tokens", tokens, j)
                 # How much space does orig start with ?
                 indent = len(orig) - len(orig.lstrip())
                 tail = orig[indent:]
@@ -643,6 +643,157 @@ class Selector(object): # Select interesting changes, discard boring.
         # alternate forms) should go after all others, to avoid
         # needlessly exercising them:
 
+        # 5.10: common switch from while (0) to while (false)
+        swap = (('while', '(', '0', ')'), ('while', '(', 'false', ')'))
+        def find(words, after=swap[1]):
+            try:
+                ind = 0
+                while True:
+                    ind = words.index(after[0], ind)
+                    if all(words[i + ind] == tok for i, tok in enumerate(after)):
+                        yield ind
+                    ind += 1
+            except ValueError: # when .index() doesn't find after[0]
+                pass
+        def test(words, get=find):
+            for it in get(words):
+                return True
+            return False
+        def purge(words, pair=swap, get=find):
+            for ind in get(words):
+                words[ind : ind + len(pair[1])] = pair[0]
+            return words
+        recipe.append((test, purge))
+
+        # Used by next two #if-ery mungers:
+        def find(words, key):
+            assert None in key # so result *does* get set if we succeed
+            if len(words) < len(key):
+                return None
+
+            for pair in zip(words, key):
+                if pair[1] == None:
+                    if all(x.isalnum() for x in pair[0].split('_')):
+                        result = pair[0]
+                    else:
+                        return None
+                elif pair[0] != pair[1]:
+                    return None
+
+            # Didn't return early: so matched (and result *did* get set).
+            return result, len(key)
+
+        # 5.10: #ifndef QT_NO_XXX -> #if QT_CONFIG(xxx)
+        swap = (('#', 'ifndef', None), ('#', 'if', 'QT_CONFIG', '(', None, ')'))
+        def test(words, get=find, key=swap[1]):
+            if get(words, key) is None:
+                return False
+            words = words[len(key):] # OK if, after QT_CONFIG(), nothing but comment:
+            if not words or words[0] == '//':
+                return True
+            return words[0] == '/*' and '*/' not in words[:-1]
+        def purge(words, get=find, pair=swap):
+            name, length = get(words, pair[1])
+            words[:length] = [x or 'QT_NO_' + name.upper() for x in pair[0]]
+            return words
+        recipe.append((test, purge))
+
+        # Canonicalise so that (among other things) QT_CONFIG matches either way:
+        # #if !defined(...) -> #ifndef ...
+        for swap in ( (('#', 'if', '!', 'defined', '(', None, ')'),
+                       ('#', 'ifndef', None)),
+                      # ... and the same for #if defined(...) -> #ifdef ...
+                      (('#', 'if', 'defined', '(', None, ')'),
+                       ('#', 'ifdef', None)) ):
+            def test(words, get=find, key=swap[1]):
+                return get(words, key) is not None
+            def purge(words, get=find, pair=swap):
+                name, length = get(words, pair[1])
+                words[:length] = [x or name for x in pair[0]]
+                return words
+            recipe.append((test, purge))
+
+        # Used both by #if/#elif and by #endif processing:
+        def find(words, keys):
+            if (len(words) < len(keys)
+                or any(a != b for a, b in zip(words, keys[:-2]))
+                or words[len(keys) - 2] not in keys[-2]):
+                raise StopIteration
+            ind, key = 0, keys[-1]
+            while True:
+                try:
+                    ind = words.index(key, ind)
+                except ValueError:
+                    break
+                if ind < 0 or len(words) <= ind + 3:
+                    break
+                ind += 1
+                if words[ind] != '(' or words[ind + 2] != ')':
+                    continue
+                ind += 1
+                if words[ind].isalnum():
+                    yield ind, 'QT_NO_' + words[ind].upper()
+                ind += 1
+
+        # Also match QT_CONFIG() when part-way through a #if of #elif condition:
+        sought = ('#', ('if', 'elif'), 'QT_CONFIG')
+        def test(words, get=find, keys=sought):
+            for it in get(words, keys):
+                return True
+            return False
+        def purge(words, get=find, keys=sought):
+            for ind, name in get(words, keys):
+                assert words[ind - 2] == 'QT_CONFIG'
+                assert words[ind + 1] == ')'
+                words[ind - 2 : ind + 1] = ('!', 'defined', '(', name)
+            return words
+        recipe.append((test, purge))
+
+        # Catch similar in #endif-comments:
+        sought=('#', 'endif', ('//', '/*'), 'QT_CONFIG')
+        def test(words, get=find, keys=sought):
+            for it in get(words, keys):
+                return True
+            return False
+        def purge(words, get=find, keys=sought):
+            for ind, name in get(words, keys):
+                assert words[ind - 2] == 'QT_CONFIG'
+                words[ind - 2 : ind + 2] = [ ('!', None), name ]
+            return words
+        recipe.append((test, purge))
+
+        # Ignore parentheses on #if ... defined(blah) ...:
+        sought = (('#', 'if'), 'defined')
+        def find(words, start=sought[0], key=sought[1]):
+            """Iterate indices in words of each blah in 'defined(blah)'"""
+            if any(a != b for a, b in zip(words, start)):
+                raise StopIteration
+            ind, ans = 0, []
+            while True:
+                try:
+                    ind = words.index(key, ind)
+                except ValueError:
+                    break
+                if ind < 0 or len(words) <= ind + 3:
+                    break
+                ind += 1
+                if words[ind] != '(' or words[ind + 2] != ')':
+                    continue
+                ind += 1
+                if words[ind].isalnum():
+                    yield ind
+        def test(words, get=find):
+            for it in get(words):
+                return True
+            return False
+        def purge(words, get=find):
+            # Remove later tokens before earlier, so indices are still valid until used:
+            for keep in reversed(tuple(get(words))):
+                del words[keep + 1]
+                del words[keep - 1]
+            return words
+        recipe.append((test, purge))
+
         # "virtual blah(args)" -> "blah(args) Q_DECL_OVERRIDE" -> "blah(args) override"
         # but allow that that virtual might never have been present
         # (hence the support for optional tokens, above)
@@ -661,7 +812,7 @@ class Selector(object): # Select interesting changes, discard boring.
                 words.insert(0, (s[0], None))
             return words
         recipe.append((test, purge))
-        del swap, test, purge
+        del swap, sought, test, purge, find
 
         # Freeze recipe sequence:
         recipe = tuple(recipe)
