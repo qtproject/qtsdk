@@ -72,25 +72,13 @@ Component.prototype.createOperations = function()
 
             component.addOperation("Execute",
                                    ["{0,2}", "@SDKToolBinary@", "addTC",
-                                    "--id", tcId + ".gcc",
-                                    "--name", "MinGW 4.9.2 32bit for C",
-                                    "--path", "@MINGW492_DIR@/bin/gcc.exe",
-                                    "--abi", "x86-windows-msys-pe-32bit",
-                                    "--language", "1",
-                                    "--supportedAbis", "x86-windows-msys-pe-32bit",
-                                    "UNDOEXECUTE",
-                                    "@SDKToolBinary@", "rmTC", "--id", tcId + ".gcc"]);
-
-            component.addOperation("Execute",
-                                   ["{0,2}", "@SDKToolBinary@", "addTC",
-                                    "--id", tcId + ".g++",
-                                    "--name", "MinGW 4.9.2 32bit for C++",
+                                    "--id", tcId,
+                                    "--name", "MinGW 4.9.2 32bit",
                                     "--path", "@MINGW492_DIR@/bin/g++.exe",
                                     "--abi", "x86-windows-msys-pe-32bit",
-                                    "--language", "2",
                                     "--supportedAbis", "x86-windows-msys-pe-32bit",
                                     "UNDOEXECUTE",
-                                    "@SDKToolBinary@", "rmTC", "--id", tcId + ".g++"]);
+                                    "@SDKToolBinary@", "rmTC", "--id", tcId]);
 
             component.addOperation("Execute",
                                    ["{0,2}", "@SDKToolBinary@", "addDebugger",

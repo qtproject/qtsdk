@@ -78,8 +78,7 @@ Component.prototype.createOperations = function()
                                ["@SDKToolBinary@", "addKit",
                                 "--id", kitName,
                                 "--name", "Desktop Qt %{Qt:Version} clang 64bit",
-                                "--Ctoolchain", "x86-macos-generic-mach_o-64bit",
-                                "--Cxxtoolchain", "x86-macos-generic-mach_o-64bit",
+                                "--toolchain", "x86-macos-generic-mach_o-64bit",
                                 "--qt", component.name,
                                 "--debuggerengine", "256", // DebuggerEngineType::LldbEngineType
                                 "--devicetype", "Desktop",
