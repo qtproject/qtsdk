@@ -5,7 +5,7 @@
     <Version>5.6.3-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.563.qtquickcontrols</Dependencies>
-    <Default>true</Default>
+    <Default>false</Default>
     <SortingPriority>12</SortingPriority>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
