@@ -598,10 +598,11 @@ class Selector(object): # Select interesting changes, discard boring.
             report how many hits we saw of each recipe.
             """
 
+            # Don't ignore constexpr or nothrow; can't retract once added to an API.
             # Words to ignore:
-            for key in ( 'explicit', # ? 'inline',
-                         'Q_ALWAYS_INLINE', 'Q_DECL_NOTHROW', # ? 'Q_REQUIRED_RESULT'
-                         'Q_DECL_CONSTEXPR', 'Q_CONSTEXPR' ):
+            for key in ('explicit', # ? 'inline',
+                        'Q_REQUIRED_RESULT', 'Q_NORETURN',
+                        'Q_DECL_CONST_FUNCTION', 'Q_ALWAYS_INLINE'):
                 def test(words, k=key):
                     return any(w == k for w in words)
                 def purge(words, k=key):
