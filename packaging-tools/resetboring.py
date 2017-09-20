@@ -627,20 +627,6 @@ class Selector(object): # Select interesting changes, discard boring.
             # but the brace-matching is a bit much for this parser; and it
             # tends to get split across lines anyway ...
 
-            # Common s/->/->f./ in 5.6 to 5.7 diff (more than half the changed lines):
-            def test(tokens):
-                return any(tokens[i - 1] == 'f' and tokens[i - 2] == '->'
-                           for i, w in enumerate(tokens)
-                           if i > 1 and w == '.')
-            def purge(tokens):
-                i = 0
-                while i + 2 < len(tokens):
-                    if tokens[i] == '->' and tokens[i + 1] == 'f' and tokens[i + 2] == '.':
-                        del tokens[i + 1 : i + 3]
-                    i += 1
-                return tokens
-            yield test, purge
-
             # Synonyms for 0:
             for key in ('Q_NULLPTR', 'nullptr'):
                 def test(words, z=key):
