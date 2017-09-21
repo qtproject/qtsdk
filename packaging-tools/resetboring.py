@@ -891,8 +891,9 @@ class Scanner(object): # Support for its .disclaimed()
         return False
 
 def main(args, hear, talk, complain):
-    # Future: we may want to parse some args, query the user or wrap
+    # Future: we may want to parse more args, query the user or wrap
     # talk, complain for verbosity control.
+    ignore = Scanner.disclaimed if '--disclaim' in args else (lambda p, w: False)
 
     # We're in the root directory of the module:
     repo = Repo('.')
@@ -913,7 +914,7 @@ def main(args, hear, talk, complain):
             # shouldn't get the last.  If new.path is None, file was
             # removed, not renamed; otherwise, if new has a
             # disclaimer, it's private despite its name and path.
-            if new.path and not Scanner.disclaimed(new.path, complain.write):
+            if new.path and not ignore(new.path, complain.write):
                 assert kind not in ('unchanged', 'delete'), kind
                 if kind != 'add':
                     # Filter out boring changes

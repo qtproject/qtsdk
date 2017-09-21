@@ -302,7 +302,7 @@ then
 fi
 
 mutter "Reverting the boring bits"
-run "$THERE/resetboring.py"
+run "$THERE/resetboring.py" --disclaim
 
 if git diff --quiet --cached "$PRIOR"
 then retire "All the change here looks boring: check with git diff -D"
