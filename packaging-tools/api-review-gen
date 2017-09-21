@@ -318,6 +318,32 @@ fi
 ( echo "WIP: API comparison from $PRIOR to $RELEASE"
   echo
   git status | grep 'deleted:' | tr '\t' ' '
+  cat <<EOF
+
+Note to reviewers: if you know of other changes to API, not covered by
+this review, fetch this from Gerrit - see its checkout instructions;
+you might want to add -b $BRANCH to those - and you
+can add files to the result.  This can be relevant for behavior
+changes in the .cpp or, for changes to documented behavior, in .qdoc
+files.
+
+Just git checkout $RELEASE each relevant file; you can then git reset
+HEAD each and git add -p to select the relevant changes or use git
+reset -p HEAD to unstage what git checkout has staged.  Try not to
+include extraneous (non-API) changes.  Once you've added what matters,
+git commit --amend and push back to gerrit's refs/for/$RELEASE in the
+usual way.
+
+Between staging changes from $RELEASE and committing, you can filter
+some boring changes by running qtsdk/packaging-tools/resetboring.py
+in the top-level directory of your module; this selectively de-stages
+things commonly deemed boring in review.  (You'll need the python
+dulwich package installed, for this.)  You can git add -p after that,
+of course, to restore any changes you think aren't boring.
+
+Remember that the parent of this commit is $PRIOR, not $RELEASE, despite
+the review being sent to the latter in Gerrit.
+EOF
   if [ -n "$CHANGEID" ]
   then
       echo
