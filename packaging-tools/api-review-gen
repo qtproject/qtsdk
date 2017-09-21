@@ -66,6 +66,12 @@ Options:
  -a
  --amend   Amend existing commit rather than extending review branch.
 
+ -r
+ --replace Replace existing branch, if present, re-using its last
+           Change-Id, rather than updating it.  (Conflicts with
+           --amend, which should be preferred unless these scripts
+           have changed.  If both are used, the last wins.)
+
  -v
  --verbose Say what's happening as it happens.
 
@@ -135,6 +141,7 @@ do  case $1 in
         -u|--usage) usage; exit 0 ;;
         -h|--help) help; exit 0 ;;
         -a|--amend) AMEND=--amend; shift ;;
+        -r|--replace) AMEND=--replace; shift ;;
         -v|--verbose) CHATTY=more; shift ;;
         -q|--quiet) CHATTY=less; shift ;;
         --) shift; break ;;
@@ -164,31 +171,76 @@ case "$CHATTY" in
     *) ;;
 esac
 retire () { mention "$@"; exit; }
+checkout () { run git checkout $QUIET "$@"; }
 
 # Get API headers of $RELEASE checked out on a branch off $PRIOR:
 BRANCH="api-review-$PRIOR-$RELEASE"
 mutter "Checking for branch $BRANCH to check out"
 case `git branch | grep -wF " $BRANCH" | grep "^[* ] $BRANCH"'$'` in
     '')
-        run git checkout $QUIET -b "$BRANCH" "$PRIOR"
+        checkout -b "$BRANCH" "$PRIOR"
         NEWBRANCH=yes
         if [ -n "$AMEND" ]
         then
-            mention "Suppressing requested --amend: no prior $BRANCH"
+            mention "Ignoring requested $AMEND: no prior $BRANCH"
             AMEND=
         fi
         ;;
-    '* '*) mutter "Already on branch $BRANCH; preparing to amend or extend it" ;;
+    '* '*)
+        case "$AMEND" in
+            '--replace')
+                mutter "On prior branch $BRANCH; shall be removed and recreated"
+                checkout "$RELEASE"
+                ;;
+            '--amend')
+                mutter "Already on branch $BRANCH; preparing to amend it"
+                ;;
+            *)
+                mutter "Already on branch $BRANCH; preparing to extend it"
+                ;;
+        esac
+        ;;
     '  '*)
-        mutter "Reusing existing branch $BRANCH; preparing to amend or extend it"
-        run git checkout $QUIET "$BRANCH"
+        case "$AMEND" in
+            '--replace')
+                mutter "Replacing existing branch $BRANCH (reusing its Change-Id)"
+                ;;
+            '--amend')
+                mutter "Reusing existing branch $BRANCH; preparing to amend it"
+                checkout "$BRANCH"
+                ;;
+            *)
+                mutter "Reusing existing branch $BRANCH; preparing to extend it"
+                checkout "$BRANCH"
+                ;;
+        esac
         ;;
 esac
-# Suppress --amend unless we have a prior commit on $BRANCH:
-if [ -n "$AMEND" ] && git diff --quiet "$BRANCH" "$PRIOR"
+
+# Implement --replace and --amend:
+CHANGEID=
+if [ -n "$AMEND" ]
 then
-    mention "Suppressing requested --amend: no prior commit on $BRANCH"
+    # Suppress --amend or --replace unless we have a prior commit on $BRANCH:
+    if git diff --quiet "$BRANCH" "$PRIOR"
+    then
+        if [ -n "$AMEND" ]
+        then
+            mention "Suppressing requested $AMEND: no prior commit on $BRANCH"
+            AMEND=
+        fi
+    else # Read (and validate) last commit's Change-Id:
+        CHANGEID=`git show --summary $BRANCH | sed -ne '/Change-Id:/ s/.*: *//p'`
+        [ -n "$CHANGEID" ] || die "No prior Change-Id from $BRANCH"
+        expr "$CHANGEID" : "^I[0-9a-f]\{40\}$" >/dev/null || \
+            die "Bad prior Change-Id ($CHANGEID) from $BRANCH"
+    fi
+fi
+if [ "$AMEND" = '--replace' ]
+then
     AMEND=
+    run git branch -D "$BRANCH"
+    checkout -b "$BRANCH" "$PRIOR"
 fi
 # Even when we do have a prior commit, the headers it reports as
 # deleted are not actually deleted as part of that commit; so their
@@ -266,14 +318,15 @@ fi
 ( echo "WIP: API comparison from $PRIOR to $RELEASE"
   echo
   git status | grep 'deleted:' | tr '\t' ' '
-  if [ -n "$AMEND" ]
+  if [ -n "$CHANGEID" ]
   then
       echo
-      git show HEAD | sed -n -e '/^ *Change-Id:/ s/^ *// p'
+      echo "Change-Id: $CHANGEID"
   fi ) > "$GITDIR/COMMIT_EDITMSG"
 # The git status in that holds a lock that precludes the git commit;
 # so we can't just pipe the message and use -F - to deliver it.
 run git commit $QUIET $AMEND -F "$GITDIR/COMMIT_EDITMSG"
 
 mention "I recommend you review that what git diff -D reports (now) *is* boring."
+mention "(If any of it isn't, you can git add -p it and git commit --amend.)"
 mention "Then you can: git push gerrit $BRANCH:refs/for/$RELEASE"
