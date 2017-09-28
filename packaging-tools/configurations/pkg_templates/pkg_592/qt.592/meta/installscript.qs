@@ -36,11 +36,7 @@ function Component()
         snapshotBuild = true;
 
     if (snapshotBuild) {
-        // Indicate in DisplayName and Description that this is a snapshot build
-        var displayName = component.value("DisplayName");
-        var description = component.value("Description");
-        component.setValue("DisplayName", displayName + " snapshot (#%BUILD_NUMBER%)")
-        component.setValue("Description", description + " snapshot (#%BUILD_NUMBER%)")
+        // hide main node when in snapshot mode
         component.setValue("Virtual", "true")
     }
 }
