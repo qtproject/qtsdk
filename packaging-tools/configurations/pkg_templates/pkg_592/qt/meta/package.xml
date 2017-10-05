@@ -3,6 +3,7 @@
     <DisplayName>Qt 5.9.2</DisplayName>
     <Description>Qt 5.9.2</Description>
     <Version>5.9.2-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Dependencies>qt.license.thirdparty, qt.license.lgpl</Dependencies>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Script>installscript.qs</Script>
     <SortingPriority>0</SortingPriority> <!-- Priority of this component when visible in the tree. Highest priority number is on top. -->
