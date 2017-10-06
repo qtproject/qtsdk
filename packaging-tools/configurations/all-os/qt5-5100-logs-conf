@@ -26,30 +26,20 @@
 ##
 #############################################################################
 
-[PackageNamespace]
-name:                   preview
 
-[PlatformIdentifier]
-identifier:             windows
 
-[PackageTemplates]
-template_dirs:          preview_pkg_qt5_510
+[qt.qt5.5100]
 
-[preview]
-[preview.qt.qt5.510]
-[preview.qt.qt5.510.src]
-[preview.qt.qt5.510.logs]
-[preview.qt.qt5.510.qtcharts]
-[preview.qt.qt5.510.qtdatavis3d]
-[preview.qt.qt5.510.qtpurchasing]
-[preview.qt.qt5.510.qtvirtualkeyboard]
-[preview.qt.qt5.510.qtwebengine]
-[preview.qt.qt5.510.qtremoteobjects]
-[preview.qt.qt5.510.qtscript]
-[preview.qt.qt5.510.qtnetworkauth]
+[qt.qt5.5100.logs]
+archives:               qt5.5100.logs.buildlogs,
+                        qt5.5100.logs.testlogs
 
-[preview.qt.qt5.510.win32_mingw53]
-[preview.qt.qt5.510.win64_msvc2013_64]
-[preview.qt.qt5.510.win32_msvc2015]
-[preview.qt.qt5.510.win64_msvc2015_64]
-[preview.qt.qt5.510.win64_msvc2017_64]
+target_install_base:    /%QT_VERSION%/Logs/
+[qt5.5100.logs.buildlogs]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/All_buildlogs.7z
+package_strip_dirs:     0
+target_install_dir:     /buildlogs
+[qt5.5100.logs.testlogs]
+archive_uri:            /qt/%QT_VERSION_MINOR%/latest/All_testlogs.7z
+package_strip_dirs:     0
+target_install_dir:     /testlogs
