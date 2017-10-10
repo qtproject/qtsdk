@@ -6,4 +6,5 @@
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <SortingPriority>0</SortingPriority> <!-- Priority of this component when visible in the tree. Highest priority number is on top. -->
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+    <AutoDependOn>preview.qt.qt5.510.logs</AutoDependOn>
 </Package>
