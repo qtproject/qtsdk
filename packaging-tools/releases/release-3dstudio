@@ -1,0 +1,49 @@
+# Define release content
+
+
+################################################################################
+## Global defines
+################################################################################
+[ifwtools]
+windows-x86:                installer-framework-build-win-x86.7z
+linux-x86:                  installer-framework-build-linux-x86.7z
+linux-x64:                  installer-framework-build-linux-x64.7z
+mac-x64:                    installer-framework-build-mac-x64.7z
+
+[release.global]
+version:                    1.0
+version_tag:
+arg_substitution_list:      %QT3DSTUDIO_VERSION%=0.2.1,
+                            %QT3DSTUDIO_DISPLAY_VERSION%=0.2.1
+
+
+################################################################################
+## Linux repository
+################################################################################
+#[release.qtcreator.repository.linux.x64]
+#arg_configurations_file:    repository_configs/tools_desktop/linux_x64_repository_tools_qt3dstudio
+#arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
+#repo_components_to_update:  qt.tools.qt3dstudio
+#repo_url_specifier:         linux_x64/desktop/tools_qt3dstudio
+
+################################################################################
+## Windows repository
+################################################################################
+[release.qt3dstudio.repository.windows.x86]
+arg_configurations_file:    repository_configs/tools_desktop/win_x86_repository_tools_qt3dstudio
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
+repo_components_to_update:  qt.tools.qt3dstudio
+repo_url_specifier:         windows_x86/desktop/tools_qt3dstudio
+
+################################################################################
+## macOS repository
+################################################################################
+#[release.qtcreator.repository.mac.x64]
+#arg_configurations_file:    repository_configs/tools_desktop/mac_x64_repository_tools_qt3dstudio
+#arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
+#repo_components_to_update:  qt.tools.qt3dstudio
+#repo_url_specifier:         mac_x64/desktop/tools_qt3dstudio
+
+
+
+

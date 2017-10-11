@@ -1,0 +1,26 @@
+# Define release content
+
+
+################################################################################
+## Global defines
+################################################################################
+[ifwtools]
+windows-x86:                installer-framework-build-win-x86.7z
+windows-x64:                installer-framework-build-win-x86.7z
+linux-x64:                  installer-framework-build-linux-x64.7z
+mac-x64:                    installer-framework-build-mac-x64.7z
+
+[release.global]
+version:                        1.0
+version_tag:
+arg_substitution_list:          %QT3DSTUDIO_VERSION%=0.2.1,
+                                %QT3DSTUDIO_DISPLAY_VERSION%=0.2.1
+
+################################################################################
+## Windows repository
+################################################################################
+[release.qt3dstudio.repository.windows.x86.preview]
+arg_configurations_file:    repository_configs/tools_desktop/win_x86_repository_tools_qt3dstudio_preview
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
+repo_components_to_update:  preview.qt.tools.qt3dstudio
+repo_url_specifier:         windows_x86/desktop/tools_qt3dstudio_preview
