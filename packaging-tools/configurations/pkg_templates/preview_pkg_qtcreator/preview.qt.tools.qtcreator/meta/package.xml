@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt Creator %QTC_DISPLAY_VERSION%</DisplayName>
     <Description>IDE for Qt application development</Description>
-    <Version>%QTC_VERSION%-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>%QTC_VERSION%-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Script>installscript.qs</Script>
     <SortingPriority>10</SortingPriority> <!-- near the bottom -->
