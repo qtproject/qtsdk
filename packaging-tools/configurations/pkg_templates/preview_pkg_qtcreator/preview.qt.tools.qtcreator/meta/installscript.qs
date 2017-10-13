@@ -88,7 +88,7 @@ Component.prototype.createOperations = function()
         component.addOperation("InstallIcons", installer.value("TargetDir") + "%TARGET_INSTALL_DIR%/share/icons" );
         component.addOperation("CreateDesktopEntry",
                                "TheQtCompany-qtcreator-%QTC_DISPLAY_VERSION%-community.desktop",
-                               "Type=Application\nExec=" + component.qtCreatorBinaryPath + "\nName=Qt Creator %QTC_DISPLAY_VERSION% (Community)\nGenericName=The IDE of choice for Qt development.\nIcon=QtProject-qtcreator\nStartupWMClass=qtcreator\nTerminal=false\nCategories=Development;IDE;Qt;\nMimeType=text/x-c++src;text/x-c++hdr;text/x-xsrc;application/x-designer;application/vnd.qt.qmakeprofile;application/vnd.qt.xml.resource;text/x-qml;text/x-qt.qml;text/x-qt.qbs;");
+                               "Type=Application\nExec=\"" + component.qtCreatorBinaryPath + "\"\nName=Qt Creator %QTC_DISPLAY_VERSION% (Community)\nGenericName=The IDE of choice for Qt development.\nIcon=QtProject-qtcreator\nStartupWMClass=qtcreator\nTerminal=false\nCategories=Development;IDE;Qt;\nMimeType=text/x-c++src;text/x-c++hdr;text/x-xsrc;application/x-designer;application/vnd.qt.qmakeprofile;application/vnd.qt.xml.resource;text/x-qml;text/x-qt.qml;text/x-qt.qbs;");
     }
 
     // use shared install settings
