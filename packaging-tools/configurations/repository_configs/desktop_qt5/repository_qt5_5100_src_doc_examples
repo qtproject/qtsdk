@@ -34,7 +34,6 @@ identifier:             all-os
 
 [PackageConfigurationFiles]
 file_list:              qt5-5100-src-conf,
-                        qt5-5100-logs-conf,
                         qt5-5100-doc-examples-conf
 
 [PackageTemplates]
