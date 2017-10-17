@@ -329,6 +329,16 @@ def copy_tree(source_dir, dest_dir):
         if os.path.isfile(full_file_name):
             shutil.copy(full_file_name, dest_dir)
 
+def remove_one_tree_level(directory):
+    l = os.listdir(directory)
+    items = len(l)
+    if items == 1:
+        dir_name = l[0]
+        full_dir_name = os.path.join(directory, dir_name)
+        move_tree(full_dir_name, directory)
+        remove_tree(full_dir_name)
+    else:
+        raise IOError('Cannot remove one level of directory structure of "%s", it has %s subdirectories' % (dir, items))
 
 ###############################
 # function
