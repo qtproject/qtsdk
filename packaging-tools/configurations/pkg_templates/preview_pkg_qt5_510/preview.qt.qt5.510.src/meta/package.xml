@@ -4,6 +4,5 @@
     <Description>Qt %QT_VERSION% Source Components</Description>
     <Version>%QT_VERSION%%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Dependencies>qt.qt5.%QT_DEPENDENCY_VERSION%.src</Dependencies>
     <SortingPriority>100</SortingPriority>
 </Package>

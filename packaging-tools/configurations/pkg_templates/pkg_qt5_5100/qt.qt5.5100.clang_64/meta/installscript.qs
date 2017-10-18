@@ -45,6 +45,23 @@ function Component()
                 qsTr("You need to install Xcode version 5.0.0. Download Xcode from https://developer.apple.com/xcode\n"));
         }
     }
+    // Determine if this is a online snapshot build
+    var snapshotBuild = false;
+    var isSnapshotStr = "%ONLINE_SNAPSHOT_BUILD%";
+    if (['true', 'yes', '1'].indexOf(isSnapshotStr) >= 0)
+        snapshotBuild = true;
+
+    if (snapshotBuild) {
+        // Add automatic dependency for preview component
+        var autoDependency = component.value("AutoDependOn");
+        var dependencyStr = "preview.qt.qt5.510.clang_64";
+        if (autoDependency) {
+            component.setValue("AutoDependOn", autoDependency+","+dependencyStr)
+        }
+        else {
+            component.setValue("AutoDependOn", dependencyStr)
+        }
+    }
 }
 
 Component.prototype.beginInstallation = function()

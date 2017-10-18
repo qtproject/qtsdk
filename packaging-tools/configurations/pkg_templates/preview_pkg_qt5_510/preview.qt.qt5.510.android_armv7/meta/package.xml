@@ -4,7 +4,6 @@
     <Description>Qt %QT_VERSION% Prebuilt Components for Android ARMv7</Description>
     <Version>%QT_VERSION%%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Dependencies>qt.qt5.%QT_DEPENDENCY_VERSION%.android_armv7</Dependencies>
     <Default>false</Default>
     <SortingPriority>250</SortingPriority>
 </Package>

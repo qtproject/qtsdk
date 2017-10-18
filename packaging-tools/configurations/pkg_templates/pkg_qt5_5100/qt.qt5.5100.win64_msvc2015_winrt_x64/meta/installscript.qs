@@ -29,6 +29,23 @@
 // constructor
 function Component()
 {
+    // Determine if this is a online snapshot build
+    var snapshotBuild = false;
+    var isSnapshotStr = "%ONLINE_SNAPSHOT_BUILD%";
+    if (['true', 'yes', '1'].indexOf(isSnapshotStr) >= 0)
+        snapshotBuild = true;
+
+    if (snapshotBuild) {
+        // Add automatic dependency for preview component
+        var autoDependency = component.value("AutoDependOn");
+        var dependencyStr = "preview.qt.qt5.510.win64_msvc2015_winrt_x64";
+        if (autoDependency) {
+            component.setValue("AutoDependOn", autoDependency+","+dependencyStr)
+        }
+        else {
+            component.setValue("AutoDependOn", dependencyStr)
+        }
+    }
 }
 
 function createShortcuts()

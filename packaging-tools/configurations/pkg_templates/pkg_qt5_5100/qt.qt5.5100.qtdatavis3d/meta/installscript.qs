@@ -38,7 +38,7 @@ function Component()
     if (snapshotBuild) {
         // Add automatic dependency for preview component
         var autoDependency = component.value("AutoDependOn");
-        var dependencyStr = "preview.qt.qt5.510.ios";
+        var dependencyStr = "preview.qt.qt5.510.qtdatavis3d";
         if (autoDependency) {
             component.setValue("AutoDependOn", autoDependency+","+dependencyStr)
         }
@@ -48,45 +48,8 @@ function Component()
     }
 }
 
-Component.prototype.beginInstallation = function()
-{
-    installer.setValue(component.name + "_qtpath", "@TargetDir@" + "%TARGET_INSTALL_DIR%");
-}
 
 Component.prototype.createOperations = function()
 {
     component.createOperations();
-
-    var qmakeBinary = "";
-    var platform = "";
-    if (installer.value("os") == "mac") {
-        qmakeBinary = "@TargetDir@" + "%TARGET_INSTALL_DIR%/bin/qmake";
-        platform = "mac";
-    }
-
-    var qtPath = "@TargetDir@" + "%TARGET_INSTALL_DIR%";
-    addInitQtPatchOperation(component, platform, qtPath, qmakeBinary, "emb-arm-qt5");
-
-    if (installer.value("SDKToolBinary") == "")
-        return;
-
-    // add Qt into QtCreator
-    component.addOperation("Execute",
-                           ["@SDKToolBinary@", "addQt",
-                            "--id", component.name,
-                            "--name", "Qt %{Qt:Version} for iOS",
-                            "--type", "Qt4ProjectManager.QtVersion.Ios",
-                            "--qmake", qmakeBinary,
-                            "UNDOEXECUTE",
-                            "@SDKToolBinary@", "rmQt", "--id", component.name]);
-
-    // patch/register docs and examples
-    var installationPath = installer.value("TargetDir") + "%TARGET_INSTALL_DIR%";
-    print("Register documentation and examples for: " + installationPath);
-    patchQtExamplesAndDoc(component, installationPath, "Qt-5.10.0");
-
-    // patch qt edition
-    var qconfigFile = qtPath + "/mkspecs/qconfig.pri";
-    component.addOperation("LineReplace", qconfigFile, "QT_EDITION =", "QT_EDITION = OpenSource");
 }
-

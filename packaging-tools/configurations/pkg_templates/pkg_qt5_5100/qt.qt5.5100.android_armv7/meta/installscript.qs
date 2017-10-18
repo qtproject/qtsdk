@@ -34,6 +34,24 @@ function Component()
         var mingw_tc_component = "qt.tools.win32_mingw530";
         component.addDependency(mingw_tc_component);
     }
+
+    // Determine if this is a online snapshot build
+    var snapshotBuild = false;
+    var isSnapshotStr = "%ONLINE_SNAPSHOT_BUILD%";
+    if (['true', 'yes', '1'].indexOf(isSnapshotStr) >= 0)
+        snapshotBuild = true;
+
+    if (snapshotBuild) {
+        // Add automatic dependency for preview component
+        var autoDependency = component.value("AutoDependOn");
+        var dependencyStr = "preview.qt.qt5.510.android_armv7";
+        if (autoDependency) {
+            component.setValue("AutoDependOn", autoDependency+","+dependencyStr)
+        }
+        else {
+            component.setValue("AutoDependOn", dependencyStr)
+        }
+    }
 }
 
 Component.prototype.beginInstallation = function()

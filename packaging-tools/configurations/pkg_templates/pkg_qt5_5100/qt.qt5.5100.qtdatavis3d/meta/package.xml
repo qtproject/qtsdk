@@ -7,6 +7,8 @@
     <Default>false</Default>
     <SortingPriority>88</SortingPriority>
     <Dependencies>qt.qt5.5100.doc.qtdatavis3d, qt.qt5.5100.examples.qtdatavis3d</Dependencies>
+    <AutoDependOn></AutoDependOn>
+    <Script>installscript.qs</Script>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
 

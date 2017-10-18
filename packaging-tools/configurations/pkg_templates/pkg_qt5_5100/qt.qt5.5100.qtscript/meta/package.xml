@@ -7,6 +7,8 @@
     <Default>false</Default>
     <SortingPriority>9</SortingPriority>
     <Dependencies>qt.qt5.5100.doc.qtscript, qt.qt5.5100.examples.qtscript</Dependencies>
+    <AutoDependOn></AutoDependOn>
+    <Script>installscript.qs</Script>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
 
