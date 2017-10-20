@@ -216,6 +216,44 @@ def build_environment(toolchain, bitness):
         return None # == process environment
 
 def main():
+    # Used Environment variables:
+    #
+    # PKG_NODE_ROOT
+    # Absolute path of a working directory for this script.
+    # It checks out LLVM and Clang in "$PKG_NODE_ROOT/llvm",
+    # builds it in "$PKG_NODE_ROOT/build", and installs it to
+    # "$PKG_NODE_ROOT/libclang"
+    #
+    # CLANG_BRANCH
+    # "Branch" identifier for the resulting package name
+    #
+    # cfg
+    # Configuration containing of platform and bitness information
+    # like "linux-g++-Rhel7.2-x64", "mac-clang-10.11-x64",
+    # "win-MinGW5.3.0-Windows10-x64", "win-MinGW5.3.0-Windows10-x86",
+    # "win-msvc2015-Windows10-x64", "win-msvc2015-Windows10-x86"
+    #
+    # GENERATE_INSTRUMENTED_BINARIES
+    # Set this to 1 if you want to build MinGW libraries with information
+    # suitable for creating profile optimized builds
+    #
+    # PACKAGE_STORAGE_SERVER_USER
+    # PACKAGE_STORAGE_SERVER
+    # PACKAGE_STORAGE_SERVER_BASE_DIR
+    # CLANG_UPLOAD_SERVER_PATH
+    # Define a remote path where to upload the resulting package
+    # "PACKAGE_STORAGE_SERVER_USER@PACKAGE_STORAGE_SERVER:PACKAGE_STORAGE_SERVER_BASE_DIR/CLANG_UPLOAD_SERVER_PATH"
+    #
+    # LLVM_REVISION
+    # Git revision, branch or tag for LLVM check out
+    #
+    # CLANG_REVISION
+    # Git revision, branch or tag for Clang check out
+    #
+    # CLANG_PATCHES
+    # Absolute path (or relative to PKG_NODE_ROOT) where patches are that
+    # should be applied to Clang
+
     bldinstallercommon.init_common_module(os.path.dirname(os.path.realpath(__file__)))
     base_path = os.path.join(os.environ['PKG_NODE_ROOT'])
     branch = os.environ['CLANG_BRANCH']
