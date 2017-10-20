@@ -75,8 +75,7 @@ def get_profile_data(profile_data_dir, profile_data_url, generate_instrumented):
 
 def apply_patch(src_path, patch_filepath):
     print('Applying patch: "' + patch_filepath + '" in "' + src_path + '"')
-    with open(patch_filepath, 'r') as f:
-        subprocess.check_call(['patch', '-p1'], stdin=f, cwd=src_path)
+    bld_utils.runCommand(['git', 'apply', '--whitespace=fix', patch_filepath], src_path)
 
 def apply_patches(src_path, patch_filepaths):
     for patch in patch_filepaths:
