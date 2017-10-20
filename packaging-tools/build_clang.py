@@ -252,7 +252,7 @@ def main():
     #
     # CLANG_PATCHES
     # Absolute path (or relative to PKG_NODE_ROOT) where patches are that
-    # should be applied to Clang
+    # should be applied to Clang. Files matching *.patch will be applied.
 
     bldinstallercommon.init_common_module(os.path.dirname(os.path.realpath(__file__)))
     base_path = os.path.join(os.environ['PKG_NODE_ROOT'])
@@ -280,7 +280,7 @@ def main():
         if not os.path.exists(patch_src_path):
             raise IOError, 'CLANG_PATCHES is set, but directory ' + patch_src_path + ' does not exist, aborting.'
         print 'CLANG_PATCHES: Applying patches from ' + patch_src_path
-        apply_patches(src_path, sorted(glob.glob(os.path.join(patch_src_path, '*'))))
+        apply_patches(src_path, sorted(glob.glob(os.path.join(patch_src_path, '*.patch'))))
     else:
         print 'CLANG_PATCHES: Not set, skipping.'
     build_clang(toolchain, src_path, build_path, install_path, profile_data_path, generate_instrumented, bitness, environment, build_type='Release')
