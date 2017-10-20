@@ -50,14 +50,20 @@ import bld_utils
 import bldinstallercommon
 import environmentfrombatchfile
 
-def get_clang(base_path, llvm_revision, clang_revision):
+def get_clang(base_path, llvm_revision, clang_revision, tools_revision):
     bld_utils.runCommand(['git', 'clone', '--no-checkout', 'git@github.com:llvm-mirror/llvm.git'], base_path)
     bld_utils.runCommand(['git', 'checkout', llvm_revision], os.path.join(base_path, 'llvm'))
     bld_utils.runCommand(['git', 'clone', '--no-checkout', 'git@github.com:llvm-mirror/clang.git'], os.path.join(base_path, 'llvm', 'tools'))
     bld_utils.runCommand(['git', 'checkout', clang_revision], os.path.join(base_path, 'llvm', 'tools', 'clang'))
+    bld_utils.runCommand(['git', 'clone', '--no-checkout', 'git@github.com:llvm-mirror/clang-tools-extra.git', os.path.join(base_path, 'llvm', 'tools', 'clang', 'tools', 'extra')], '.')
+    bld_utils.runCommand(['git', 'checkout', tools_revision], os.path.join(base_path, 'llvm', 'tools', 'clang', 'tools', 'extra'))
+
+def get_clazy(base_path, clazy_revision):
+    bld_utils.runCommand(['git', 'clone', '--no-checkout', 'git@github.com:KDE/clazy.git'], base_path)
+    bld_utils.runCommand(['git', 'checkout', clazy_revision], os.path.join(base_path, 'clazy'))
 
 def get_profile_data(profile_data_dir, profile_data_url, generate_instrumented):
-    if generate_instrumented:
+    if generate_instrumented or not profile_data_url:
         return profile_data_dir
 
     if profile_data_url:
@@ -93,9 +99,11 @@ def cmake_generator(toolchain):
     else:
         return 'Unix Makefiles'
 
+# We need '-fprofile-correction -Wno-error=coverage-mismatch' to deal with possible conflicts
+# in the initial build while using profiler data from the build with plugins
 def profile_data_flags(toolchain, profile_data_dir, generate_instrumented):
     if profile_data_dir and is_mingw_toolchain(toolchain):
-        profile_flag = '-fprofile-generate' if generate_instrumented else '-fprofile-use'
+        profile_flag = '-fprofile-generate' if generate_instrumented else '-fprofile-correction -Wno-error=coverage-mismatch -fprofile-use'
         compiler_flags = profile_flag + '=' + profile_data_dir
         linker_flags = compiler_flags + ' -static-libgcc -static-libstdc++ -static'
         return [
@@ -104,7 +112,11 @@ def profile_data_flags(toolchain, profile_data_dir, generate_instrumented):
             '-DCMAKE_SHARED_LINKER_FLAGS=' + linker_flags,
             '-DCMAKE_EXE_LINKER_FLAGS=' + linker_flags,
         ]
-
+    if is_mingw_toolchain(toolchain):
+        linker_flags = '-static-libgcc -static-libstdc++ -static'
+        return ['-DCMAKE_SHARED_LINKER_FLAGS=' + linker_flags,
+                '-DCMAKE_EXE_LINKER_FLAGS=' + linker_flags,
+        ]
     return []
 
 def bitness_flags(bitness):
@@ -117,52 +129,61 @@ def rtti_flags(toolchain):
         return ['-DLLVM_ENABLE_RTTI:BOOL=OFF']
     return ['-DLLVM_ENABLE_RTTI:BOOL=ON']
 
-def make_targets(toolchain):
-    if is_mingw_toolchain(toolchain):
-        # The mingw build is only used for generation of an optimized libclang.dll.
-        return ['libclang']
-    return []
-
-def make_command(toolchain):
+def build_command(toolchain):
     if bldinstallercommon.is_win_platform():
         command = ['mingw32-make'] if is_mingw_toolchain(toolchain) else ['jom']
     else:
         command = ['make']
-
-    return command + make_targets(toolchain)
-
-def install_targets(toolchain):
-    if is_mingw_toolchain(toolchain):
-        # The mingw build is only used for generation of an optimized libclang.dll.
-        # Include the necessary headers for two reasons
-        #  1) The package can be used right way as LLVM_INSTALL_DIR.
-        #  2) Avoid training with manually provided and possible wrong versions
-        #     of the headers.
-        return [
-            'install-libclang',
-            'install-libclang-headers',
-            'install-clang-headers',
-            'install-llvm-config',
-        ]
-    return ['install']
+    return command
 
 def install_command(toolchain):
     if bldinstallercommon.is_win_platform():
-        command = ['mingw32-make'] if is_mingw_toolchain(toolchain) else ["nmake"]
+        command = ['mingw32-make'] if is_mingw_toolchain(toolchain) else ['nmake']
     else:
-        command = ["make", "-j1"]
+        command = ['make', '-j1']
+    return command
 
-    return command + install_targets(toolchain)
+# For instrumented build we now use the same targets because clazy
+# requires the llvm installation to properly build
+def build_and_install(toolchain, build_path, environment, build_targets, install_targets):
+    build_cmd = build_command(toolchain)
+    install_cmd = install_command(toolchain)
+    bldinstallercommon.do_execute_sub_process(build_cmd + build_targets, build_path, extra_env=environment)
+    bldinstallercommon.do_execute_sub_process(install_cmd + install_targets, build_path, extra_env=environment)
 
-def cmake_command(toolchain, src_path, build_path, install_path, profile_data_dir, generate_instrumented, bitness, build_type):
+def cmake_command(toolchain, src_path, build_path, install_path, profile_data_dir, generate_instrumented, bitness, build_type, enable_clazy):
+    command = ['cmake',
+               '-DCMAKE_INSTALL_PREFIX=' + install_path,
+               '-G',
+               cmake_generator(toolchain),
+               '-DCMAKE_BUILD_TYPE=' + build_type,
+               '-DLLVM_EXPORT_SYMBOLS_FOR_PLUGINS=1']
+    if enable_clazy:
+        command.append('-DCLANG_ENABLE_CLAZY=1')
+    else:
+        command.append('-DCLANG_ENABLE_CLAZY=0')
+    command.extend(bitness_flags(bitness))
+    command.extend(rtti_flags(toolchain))
+    command.extend(profile_data_flags(toolchain, profile_data_dir, generate_instrumented))
+    command.append(src_path)
+
+    return command
+
+def clazy_extra_flags(toolchain):
+    flags = ['-DCLAZY_STATIC_PLUGIN_LIB=1']
+    if is_msvc_toolchain(toolchain):
+        flags.append('-DCLANG_LIBRARY_IMPORT=dummy')
+    return flags
+
+def cmake_clazy_command(toolchain, src_path, build_path, install_path, profile_data_dir, generate_instrumented, bitness, build_type):
     command = ['cmake',
                '-DCMAKE_INSTALL_PREFIX=' + install_path,
                '-G',
                cmake_generator(toolchain),
                '-DCMAKE_BUILD_TYPE=' + build_type]
     command.extend(bitness_flags(bitness))
-    command.extend(rtti_flags(toolchain))
     command.extend(profile_data_flags(toolchain, profile_data_dir, generate_instrumented))
+    command.extend(clazy_extra_flags(toolchain))
     command.append(src_path)
 
     return command
@@ -171,11 +192,28 @@ def build_clang(toolchain, src_path, build_path, install_path, profile_data_path
     if build_path and not os.path.lexists(build_path):
         os.makedirs(build_path)
 
-    cmake_cmd = cmake_command(toolchain, src_path, build_path, install_path, profile_data_path, generate_instrumented, bitness, build_type)
+    cmake_cmd = cmake_command(toolchain, src_path, build_path, install_path, profile_data_path, generate_instrumented, bitness, build_type, False)
 
     bldinstallercommon.do_execute_sub_process(cmake_cmd, build_path, extra_env=environment)
-    bldinstallercommon.do_execute_sub_process(make_command(toolchain), build_path, extra_env=environment)
-    bldinstallercommon.do_execute_sub_process(install_command(toolchain), build_path, extra_env=environment)
+    build_and_install(toolchain, build_path, environment, ['libclang', 'clang', 'llvm-config'], ['install'])
+
+def build_clazy(toolchain, src_path, build_path, install_path, profile_data_path, generate_instrumented, bitness=64, environment=None, build_type='Release'):
+    if build_path and not os.path.lexists(build_path):
+        os.makedirs(build_path)
+
+    cmake_cmd = cmake_clazy_command(toolchain, src_path, build_path, install_path, profile_data_path, generate_instrumented, bitness, build_type)
+
+    bldinstallercommon.do_execute_sub_process(cmake_cmd, build_path, extra_env=environment)
+    build_and_install(toolchain, build_path, environment, ['clazy-standalone'], ['install'])
+
+def rebuild_libclang(toolchain, src_path, build_path, install_path, profile_data_dir, generate_instrumented, bitness=64, environment=None, build_type='Release'):
+    if build_path and not os.path.lexists(build_path):
+        os.makedirs(build_path)
+
+    cmake_cmd = cmake_command(toolchain, src_path, build_path, install_path, profile_data_dir, generate_instrumented, bitness, build_type, True)
+
+    bldinstallercommon.do_execute_sub_process(cmake_cmd, build_path, extra_env=environment)
+    build_and_install(toolchain, build_path, environment, ['libclang'], ['install-libclang'])
 
 def package_clang(install_path, result_file_path):
     (basepath, dirname) = os.path.split(install_path)
@@ -214,6 +252,13 @@ def build_environment(toolchain, bitness):
     else:
         return None # == process environment
 
+def rename_clazy_lib(toolchain, install_path):
+    if not is_msvc_toolchain(toolchain):
+        libraryPath = os.path.join(install_path, 'lib', 'libClangLazy.a')
+        if os.path.exists(libraryPath):
+            os.remove(libraryPath)
+        os.rename(os.path.join(install_path, 'lib', 'ClangLazy.a'), libraryPath)
+
 def main():
     # Used Environment variables:
     #
@@ -249,6 +294,12 @@ def main():
     # CLANG_REVISION
     # Git revision, branch or tag for Clang check out
     #
+    # CLANG_TOOLS_EXTRA_REVISION
+    # Git revision, branch or tag for clang-tools-extra check out
+    #
+    # CLAZY_REVISION
+    # Git revision, branch or tag for Clazy check out
+    #
     # CLANG_PATCHES
     # Absolute path (or relative to PKG_NODE_ROOT) where patches are that
     # should be applied to Clang. Files matching *.patch will be applied.
@@ -256,8 +307,11 @@ def main():
     bldinstallercommon.init_common_module(os.path.dirname(os.path.realpath(__file__)))
     base_path = os.path.join(os.environ['PKG_NODE_ROOT'])
     branch = os.environ['CLANG_BRANCH']
+    clazy_revision = os.environ.get('CLAZY_REVISION')
     src_path = os.path.join(base_path, 'llvm')
     build_path = os.path.join(base_path, 'build')
+    src_clazy_path = os.path.join(base_path, 'clazy')
+    build_clazy_path = os.path.join(base_path, 'clazy_build')
     install_path = os.path.join(base_path, 'libclang')
     bitness = 64 if '64' in os.environ['cfg'] else 32
     toolchain = os.environ['cfg'].split('-')[1].lower()
@@ -266,11 +320,14 @@ def main():
     profile_data_path = os.path.join(build_path, 'profile_data')
     generate_instrumented = os.environ.get('GENERATE_INSTRUMENTED_BINARIES') == '1'
     instrumented_tag = '-instrumented' if generate_instrumented else ''
-    result_file_path = os.path.join(base_path, 'libclang-' + branch + '-' + os.environ['CLANG_PLATFORM'] + instrumented_tag + '.7z')
+    clazy_tag = '-clazy' if clazy_revision else ''
+    result_file_path = os.path.join(base_path, 'libclang-' + branch + '-' + os.environ['CLANG_PLATFORM'] + instrumented_tag + clazy_tag + '.7z')
     remote_path = (os.environ['PACKAGE_STORAGE_SERVER_USER'] + '@' + os.environ['PACKAGE_STORAGE_SERVER'] + ':'
                    + os.environ['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + os.environ['CLANG_UPLOAD_SERVER_PATH'])
 
-    get_clang(base_path, os.environ['LLVM_REVISION'], os.environ['CLANG_REVISION'])
+    get_clang(base_path, os.environ['LLVM_REVISION'], os.environ['CLANG_REVISION'], os.environ['CLANG_TOOLS_EXTRA_REVISION'])
+    if clazy_revision:
+        get_clazy(base_path, clazy_revision)
     profile_data_path = get_profile_data(profile_data_path, profile_data_url, generate_instrumented)
     patch_src_path = os.environ.get('CLANG_PATCHES')
     if patch_src_path:
@@ -282,7 +339,15 @@ def main():
         apply_patches(src_path, sorted(glob.glob(os.path.join(patch_src_path, '*.patch'))))
     else:
         print 'CLANG_PATCHES: Not set, skipping.'
+
     build_clang(toolchain, src_path, build_path, install_path, profile_data_path, generate_instrumented, bitness, environment, build_type='Release')
+    if clazy_revision:
+        build_clazy(toolchain, src_clazy_path, build_clazy_path, install_path, profile_data_path, generate_instrumented, bitness, environment, build_type='Release')
+        rename_clazy_lib(toolchain, install_path)
+        rebuild_libclang(toolchain, src_path, build_path, install_path, profile_data_path, generate_instrumented, bitness, environment, build_type='Release')
+    else:
+        print 'CLAZY_REVISION: Not set, libclang is built without clazy plugin.'
+
     package_clang(install_path, result_file_path)
     upload_clang(result_file_path, remote_path)
 
