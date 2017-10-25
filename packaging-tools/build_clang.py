@@ -51,9 +51,9 @@ import bldinstallercommon
 import environmentfrombatchfile
 
 def get_clang(base_path, llvm_revision, clang_revision):
-    bld_utils.runCommand(['git', '-c', 'http.postBuffer=524288000', 'clone', 'https://github.com/llvm-mirror/llvm'], base_path)
+    bld_utils.runCommand(['git', 'clone', '--no-checkout', 'git@github.com:llvm-mirror/llvm.git'], base_path)
     bld_utils.runCommand(['git', 'checkout', llvm_revision], os.path.join(base_path, 'llvm'))
-    bld_utils.runCommand(['git', '-c', 'http.postBuffer=524288000', 'clone', 'https://github.com/llvm-mirror/clang'], os.path.join(base_path, 'llvm', 'tools'))
+    bld_utils.runCommand(['git', 'clone', '--no-checkout', 'git@github.com:llvm-mirror/clang.git'], os.path.join(base_path, 'llvm', 'tools'))
     bld_utils.runCommand(['git', 'checkout', clang_revision], os.path.join(base_path, 'llvm', 'tools', 'clang'))
 
 def get_profile_data(profile_data_dir, profile_data_url, generate_instrumented):
