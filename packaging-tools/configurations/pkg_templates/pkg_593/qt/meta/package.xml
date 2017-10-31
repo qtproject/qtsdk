@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt 5.9.3</DisplayName>
+    <Description>Qt 5.9.3</Description>
+    <Version>5.9.3-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Script>installscript.qs</Script>
+    <SortingPriority>0</SortingPriority> <!-- Priority of this component when visible in the tree. Highest priority number is on top. -->
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+

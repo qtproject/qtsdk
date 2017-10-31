@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt Script (Deprecated)</DisplayName>
+    <Description>Qt Script (Deprecated) Source Package for Qt 5.9.3</Description>
+    <Version>5.9.3-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Virtual>true</Virtual>
+    <AutoDependOn>qt.593.src</AutoDependOn>
+    <SortingPriority>8</SortingPriority>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+

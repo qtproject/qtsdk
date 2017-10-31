@@ -4,7 +4,6 @@
     <Description>Qt %QT_VERSION_MINOR% Prebuilt Components for iOS</Description>
     <Version>%QT_VERSION%%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Dependencies>qt.%QT_DEPENDENCY_VERSION%.ios</Dependencies>
     <Default>false</Default>
     <SortingPriority>100</SortingPriority>
 </Package>
