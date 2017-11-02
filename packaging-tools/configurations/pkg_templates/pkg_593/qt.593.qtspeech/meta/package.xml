@@ -8,6 +8,7 @@
     <SortingPriority>10</SortingPriority>
     <Script>installscript.qs</Script>
     <Dependencies>qt.593.doc.qtspeech, qt.593.examples.qtspeech</Dependencies>
+    <AutoDependOn></AutoDependOn>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
 

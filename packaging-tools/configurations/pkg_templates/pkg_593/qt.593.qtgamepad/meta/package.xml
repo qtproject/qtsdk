@@ -8,6 +8,7 @@
     <SortingPriority>10</SortingPriority>
     <Script>installscript.qs</Script>
     <Dependencies>qt.593.doc.qtgamepad, qt.593.examples.qtgamepad</Dependencies>
+    <AutoDependOn></AutoDependOn>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
 

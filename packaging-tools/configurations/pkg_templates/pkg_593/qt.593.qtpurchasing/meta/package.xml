@@ -7,6 +7,7 @@
     <Default>false</Default>
     <SortingPriority>87</SortingPriority>
     <Dependencies>qt.593.doc.qtpurchasing, qt.593.examples.qtpurchasing</Dependencies>
+    <AutoDependOn></AutoDependOn>
     <Script>installscript.qs</Script>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>

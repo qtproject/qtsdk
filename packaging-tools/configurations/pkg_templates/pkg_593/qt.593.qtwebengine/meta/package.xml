@@ -7,6 +7,7 @@
     <Default>false</Default>
     <SortingPriority>13</SortingPriority>
     <Dependencies>qt.593.doc.qtwebengine, qt.593.examples.qtwebengine</Dependencies>
+    <AutoDependOn></AutoDependOn>
     <Script>installscript.qs</Script>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>

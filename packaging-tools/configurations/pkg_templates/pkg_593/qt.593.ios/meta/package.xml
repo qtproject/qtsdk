@@ -5,6 +5,7 @@
     <Version>5.9.3-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.tools.qtcreator, qt.593.doc, qt.593.examples</Dependencies>
+    <AutoDependOn></AutoDependOn>
     <Default>false</Default>
     <Script>installscript.qs</Script>   <!-- File name of a script being loaded - optional. -->
     <SortingPriority>699</SortingPriority> <!-- Priority of this component when visible in the tree. Highest priority number is on top. -->
