@@ -33,7 +33,7 @@ arg_configurations_file:    repository_configs/android_qt5/preview_linux_x64_and
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
 repo_components_to_update:  preview.qt.59.*
 repo_url_specifier:         linux_x64/android/qt5_59_preview
-rta_key_list:               Qt_RTA_enterprise_onlineInstallerSmoke-593_tests_linux_all
+rta_key_list:               Qt_RTA_opensource_onlineInstallerSmoke-593_tests_linux_all
 
 ################################################################################
 ## Windows repository
@@ -57,7 +57,7 @@ arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
 repo_content_type:          59_preview
 repo_components_to_update:  preview.qt.59.*
 repo_url_specifier:         windows_x86/winrt/qt5_59_preview
-rta_key_list:               Qt_RTA_enterprise_onlineInstallerSmoke-593_tests_windows_all
+rta_key_list:               Qt_RTA_opensource_onlineInstallerSmoke-593_tests_windows_all
 
 ################################################################################
 ## macOS repository
@@ -81,5 +81,5 @@ arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=t
 repo_content_type:          59_preview
 repo_components_to_update:  preview.qt.59.*
 repo_url_specifier:         mac_x64/ios/qt5_59_preview
-rta_key_list:               Qt_RTA_enterprise_onlineInstallerSmoke-593_tests_mac_all
+rta_key_list:               Qt_RTA_opensource_onlineInstallerSmoke-593_tests_mac_all
 
