@@ -519,13 +519,26 @@ def parse_qt_creator_plugin_conf(plugin_conf_file_path, optionDict):
         return plugin
     return [fixup_plugin(make_QtcPlugin_from_json(plugin)) for plugin in plugins_json if valid_for_platform(plugin)]
 
+# file_upload_list: list of 2-tuples,
+# (source_file_relative_to_WORK_DIR, target_file_or_path_relative_to_remote_path)
+def upload_files(remote_path, file_upload_list, optionDict):
+    # prepare remote paths
+    pkg_storage_server = optionDict['PACKAGE_STORAGE_SERVER_ADDR']
+    target_env_dir = BIN_TARGET_DIRS[optionDict['TARGET_ENV']]
+    latest_path = remote_path + '/latest'
+    dir_path = remote_path + '/' + optionDict['BUILD_NUMBER']
+    create_remote_dirs(optionDict, pkg_storage_server, dir_path + '/' + target_env_dir)
+    update_latest_link(optionDict, dir_path, latest_path)
+    # upload files
+    for source, destination in file_upload_list:
+        cmd_args = [optionDict['SCP_COMMAND'], source, pkg_storage_server + ':' + dir_path + '/' + destination]
+        bldinstallercommon.do_execute_sub_process(cmd_args, optionDict['WORK_DIR'])
+
 def handle_qt_creator_plugins_build(optionDict, plugin_conf_file_path):
     target_env_dir = BIN_TARGET_DIRS[optionDict['TARGET_ENV']]
     optionDict['TARGET_ENV_DIR'] = target_env_dir # inject for plugin configs
     download_temp = os.path.join(optionDict['WORK_DIR'], 'downloads')
-    pkg_storage_server = optionDict['PACKAGE_STORAGE_SERVER_ADDR']
     upload_base_path = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + optionDict['UPLOAD_BASE_DIR']
-    build_id = optionDict['BUILD_NUMBER']
 
     plugins = parse_qt_creator_plugin_conf(plugin_conf_file_path, optionDict)
     print('Building plugins:')
@@ -596,10 +609,7 @@ def handle_qt_creator_plugins_build(optionDict, plugin_conf_file_path):
 
     # upload lists
     upload_base_path += '/' + qtcreator_version
-    latest_path = upload_base_path + '/latest'
-    dir_path = upload_base_path + '/' + build_id
-    create_remote_dirs(optionDict, pkg_storage_server, dir_path + '/' + target_env_dir)
-    update_latest_link(optionDict, dir_path, latest_path)
+
     file_upload_list = []
     for plugin in [plugin for plugin in plugins if plugin.build]:
         plugin_name = plugin.name + '.7z'
@@ -613,11 +623,7 @@ def handle_qt_creator_plugins_build(optionDict, plugin_conf_file_path):
         source_package_list = glob(os.path.join(optionDict['WORK_DIR'], 'qt-creator-*-src-' + qtcreator_version + '.*'))
         file_upload_list.extend([(fn, '') for fn in source_package_list])
 
-
-    # upload files
-    for source, destination in file_upload_list:
-        cmd_args = [optionDict['SCP_COMMAND'], source, pkg_storage_server + ':' + dir_path + '/' + destination]
-        bldinstallercommon.do_execute_sub_process(cmd_args, optionDict['WORK_DIR'])
+    upload_files(upload_base_path, file_upload_list, optionDict)
 
 ###############################
 # handle_qt_creator_build
@@ -843,13 +849,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     # Qt Creator directory
     if qtcreator_edition_name:
         base_path += '_' + qtcreator_edition_name
-    dir_path = base_path + '/' + build_id
-    latest_path = base_path + '/latest'
-    create_remote_dirs(optionDict, pkg_storage_server, dir_path + '/' + target_env_dir)
-    update_latest_link(optionDict, dir_path, latest_path)
 
     # snapshot directory
-
     if snapshot_server and snapshot_path:
         if qtcreator_version:
             snapshot_path += '/' + qtcreator_version
@@ -892,13 +893,12 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         snapshot_upload_list.append((target_env_dir + '/wininterrupt.7z', 'installer_source/' + target_env_dir + '/wininterrupt.7z'))
 
     # upload files
-    for source, destination in file_upload_list:
-        cmd_args = [optionDict['SCP_COMMAND'], source, pkg_storage_server + ':' + dir_path + '/' + destination]
-        bldinstallercommon.do_execute_sub_process(cmd_args, optionDict['WORK_DIR'])
+    upload_files(base_path, file_upload_list, optionDict)
+    remote_path = base_path + '/latest'
     if snapshot_server and snapshot_path:
         for source, destination in snapshot_upload_list:
             cmd_args = [optionDict['SSH_COMMAND'], pkg_storage_server, "scp",
-                dir_path + '/' + source,
+                remote_path + '/' + source,
                 snapshot_server + ':' + snapshot_path + '/' + destination]
             bldinstallercommon.do_execute_sub_process(cmd_args, optionDict['WORK_DIR'])
 
