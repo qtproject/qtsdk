@@ -156,8 +156,9 @@ def cmake_command(toolchain, src_path, build_path, install_path, profile_data_di
                '-DCMAKE_INSTALL_PREFIX=' + install_path,
                '-G',
                cmake_generator(toolchain),
-               '-DCMAKE_BUILD_TYPE=' + build_type,
-               '-DLLVM_EXPORT_SYMBOLS_FOR_PLUGINS=1']
+               '-DCMAKE_BUILD_TYPE=' + build_type]
+    if is_msvc_toolchain(toolchain):
+        command.append('-DLLVM_EXPORT_SYMBOLS_FOR_PLUGINS=1')
     if enable_clazy:
         command.append('-DCLANG_ENABLE_CLAZY=1')
     else:
@@ -254,10 +255,13 @@ def build_environment(toolchain, bitness):
 
 def rename_clazy_lib(toolchain, install_path):
     if not is_msvc_toolchain(toolchain):
-        libraryPath = os.path.join(install_path, 'lib', 'libClangLazy.a')
-        if os.path.exists(libraryPath):
-            os.remove(libraryPath)
-        os.rename(os.path.join(install_path, 'lib', 'ClangLazy.a'), libraryPath)
+        librariesPath = os.path.join(install_path, 'lib')
+        if not os.path.exists(os.path.join(librariesPath, 'ClangLazy.a')):
+            librariesPath = os.path.join(install_path, 'lib64')
+        clazyLibPath = os.path.join(librariesPath, 'libClangLazy.a')
+        if os.path.exists(clazyLibPath):
+            os.remove(clazyLibPath)
+        os.rename(os.path.join(librariesPath, 'ClangLazy.a'), clazyLibPath)
 
 def main():
     # Used Environment variables:
