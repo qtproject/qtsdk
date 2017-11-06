@@ -775,30 +775,6 @@ def create_metadata_map(sdk_component):
 
     return component_metadata_tag_pair_list
 
-
-def move_directory_one_layer_up(directory):
-    """strip out unnecessary folder structure"""
-    # TODO, windows hack, on windows path+filename > 255 causes error, so truncate temp path as much as possible
-    directory_relative_to_cwd = os.path.normpath(directory)
-    directory_relative_to_cwd = directory_relative_to_cwd.replace(os.getcwd() + os.sep, '', 1) + os.sep
-    l = os.listdir(directory)
-    items = len(l)
-    if items == 1:
-        dir_name = l[0]
-        # TODO, windows hack, on windows path+filename > 255 causes error, so truncate temp path as much as possible
-        temp_path_name = directory_relative_to_cwd + 'a'
-        os.rename(directory_relative_to_cwd + dir_name, temp_path_name)
-        new_location = os.path.abspath(os.path.join(temp_path_name, '..'))
-        bldinstallercommon.move_tree(temp_path_name, new_location)
-        if not bldinstallercommon.remove_tree(temp_path_name):
-            raise IOError('Unable to remove directory: ' + temp_path_name)
-    else:
-        sys.stderr.write('*** Error: unsupported folder structure encountered, abort!')
-        sys.stderr.write('*** Found items: ' + str(items) + ' in directory: ' + directory)
-        raise IOError()
-
-
-
 def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compress_content_dir):
     """download and create data for a component"""
     package_raw_name = os.path.basename(archive.archive_uri)
@@ -847,7 +823,7 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
         iterations = int(archive.package_strip_dirs)
         while(count < iterations):
             count = count + 1
-            move_directory_one_layer_up(install_dir)
+            bldinstallercommon.remove_one_tree_level(install_dir)
         # perform package finalization tasks for the given archive
         if 'delete_doc_directory' in archive.package_finalize_items:
             doc_dir = bldinstallercommon.locate_directory(install_dir, 'doc')
