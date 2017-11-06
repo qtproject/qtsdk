@@ -51,6 +51,7 @@ from subprocess import PIPE, STDOUT
 import tempfile
 import sys
 import stat
+import tempfile
 import traceback
 import urllib
 import urllib2
@@ -335,8 +336,12 @@ def remove_one_tree_level(directory):
     if items == 1:
         dir_name = l[0]
         full_dir_name = os.path.join(directory, dir_name)
-        move_tree(full_dir_name, directory)
-        remove_tree(full_dir_name)
+        # avoid directory name collision by first moving to temporary dir
+        tempdir_base = tempfile.mkdtemp()
+        tempdir = os.path.join(tempdir_base, 'a') # dummy name
+        os.rename(full_dir_name, tempdir)
+        move_tree(tempdir, directory)
+        remove_tree(tempdir_base)
     else:
         raise IOError('Cannot remove one level of directory structure of "%s", it has %s subdirectories' % (dir, items))
 
