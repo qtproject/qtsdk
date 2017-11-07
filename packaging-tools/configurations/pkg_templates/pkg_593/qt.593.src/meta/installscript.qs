@@ -38,7 +38,7 @@ function Component()
     if (snapshotBuild) {
         // Add automatic dependency for preview component
         var autoDependency = component.value("AutoDependOn");
-        var dependencyStr = "qt.593.src";
+        var dependencyStr = "preview.qt.59.src";
         if (autoDependency) {
             component.setValue("AutoDependOn", autoDependency+","+dependencyStr)
         }
