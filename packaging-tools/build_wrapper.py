@@ -918,6 +918,28 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                 snapshot_server + ':' + snapshot_path + '/' + destination]
             bldinstallercommon.do_execute_sub_process(cmd_args, work_dir)
 
+def handle_sdktool_build(optionDict):
+    # environment
+    target_env_dir = BIN_TARGET_DIRS[optionDict['TARGET_ENV']]
+    work_dir = optionDict['WORK_DIR']
+    qtcreator_version = get_qtcreator_version(os.path.join(work_dir, 'qt-creator'))
+    qtcreator_edition_name = optionDict['QT_CREATOR_EDITION_NAME']
+    base_path = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/qtcreator/snapshots/' + qtcreator_version
+    sdktool_qtbase_src = optionDict['SDKTOOL_QTBASESRC_BASE'] + optionDict['SDKTOOL_QTBASESRC_EXT']
+    # build
+    sdktool_build_path = os.path.join(work_dir, 'sdktool_build')
+    sdktool_target_path = os.path.join(sdktool_build_path, 'target')
+    bld_sdktool.build_sdktool(sdktool_qtbase_src, os.path.join(sdktool_build_path, 'qt'),
+        os.path.join(work_dir, 'qt-creator', 'src', 'tools', 'sdktool'),
+        os.path.join(sdktool_build_path, 'src', 'tools', 'sdktool'),
+        sdktool_target_path,
+        'nmake' if bldinstallercommon.is_win_platform() else 'make')
+    bld_sdktool.zip_sdktool(sdktool_target_path, os.path.join(work_dir, 'sdktool.7z'))
+    # upload
+    file_upload_list = [('sdktool.7z', target_env_dir + '/sdktool.7z')]
+    if qtcreator_edition_name:
+        base_path += '_' + qtcreator_edition_name
+    upload_files(base_path, file_upload_list, optionDict)
 
 ###############################
 # handle_offline_installer_build
@@ -1389,6 +1411,7 @@ if __name__ == '__main__':
     bld_ifw                                 = 'ifw'
     bld_qtcreator                           = 'build_creator'
     bld_qtcreator_plugins                   = 'build_qtcreator_plugins'
+    bld_qtc_sdktool                         = 'build_sdktool'
     bld_gammaray                            = 'build_gammaray'
     create_online_repository                = 'repo_build'
     create_offline_installer                = 'offline_installer'
@@ -1399,7 +1422,7 @@ if __name__ == '__main__':
     init_extra_module_build_cycle_src       = 'init_app_src'
     execute_extra_module_build_cycle_src    = 'build_qt5_app_src'
     archive_repository                      = 'archive_repo'
-    CMD_LIST =  (bld_ifw, bld_qtcreator, bld_qtcreator_plugins, bld_gammaray, bld_icu_init, bld_icu, bld_licheck)
+    CMD_LIST =  (bld_ifw, bld_qtcreator, bld_qtcreator_plugins, bld_qtc_sdktool, bld_gammaray, bld_icu_init, bld_icu, bld_licheck)
     CMD_LIST += (create_online_installer, create_online_repository, create_offline_installer)
     CMD_LIST += (init_extra_module_build_cycle_src, execute_extra_module_build_cycle_src, archive_repository)
 
@@ -1431,6 +1454,9 @@ if __name__ == '__main__':
     # Qt Creator 3rdparty plugins
     elif args.command == bld_qtcreator_plugins:
         handle_qt_creator_plugins_build(optionDict, args.qtcreator_plugin_config)
+    # sdktool
+    elif args.command == bld_qtc_sdktool:
+        handle_sdktool_build(optionDict)
     # GammaRay Qt module
     elif args.command == bld_gammaray:
         handle_gammaray_build(optionDict)
