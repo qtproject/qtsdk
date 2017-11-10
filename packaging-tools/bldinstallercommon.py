@@ -134,7 +134,7 @@ def retrieve_url(url, savefile):
         savefile_tmp = savefile + '.tmp'
         urllib.urlcleanup()
         urllib.urlretrieve(url, savefile_tmp, reporthook=dlProgress)
-        os.rename(savefile_tmp, savefile)
+        shutil.move(savefile_tmp, savefile)
     except:
         exc = sys.exc_info()[0]
         print exc
@@ -305,7 +305,7 @@ def move_tree(srcdir, dstdir, pattern=None):
             os.mkdir(dstfname)
             move_tree(srcfname, dstfname)
         elif pattern is None or fnmatch.fnmatch(name, pattern):
-            os.rename(srcfname, dstfname)
+            shutil.move(srcfname, dstfname)
 
 
 ###############################
@@ -905,7 +905,7 @@ def rename_android_soname_files(qt5_base_path):
             if filename.startswith('lib') and so == 'so' and p.match(version) != None:
                 old_filepath = os.path.join(lib_dir, name)
                 new_filepath = os.path.join(lib_dir, filename + '.so')
-                os.rename(old_filepath, new_filepath)
+                shutil.move(old_filepath, new_filepath)
                 print '---> Old file name : ' + old_filepath
                 print '---> New file name : ' + new_filepath
             else:
