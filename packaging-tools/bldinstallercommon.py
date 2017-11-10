@@ -339,7 +339,7 @@ def remove_one_tree_level(directory):
         # avoid directory name collision by first moving to temporary dir
         tempdir_base = tempfile.mkdtemp()
         tempdir = os.path.join(tempdir_base, 'a') # dummy name
-        os.rename(full_dir_name, tempdir)
+        move_tree(full_dir_name, tempdir)
         move_tree(tempdir, directory)
         remove_tree(tempdir_base)
     else:
