@@ -376,6 +376,7 @@ def handle_gammaray_build(optionDict):
                      '--qt5path', os.path.join(work_dir, 'gammaray_qt5_install'),
                      '--add-config-arg=-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=FALSE',
                      '--add-config-arg=-DGAMMARAY_MULTI_BUILD=OFF',
+                     '--add-config-arg=-DBUILD_TESTING=OFF',
                      '--qt5_module_url', bld_utils.file_url(os.path.join(SCRIPT_ROOT_DIR, 'module_archives', 'qt5_kdsme.7z'))])
     bldinstallercommon.do_execute_sub_process(cmd_args, work_dir)
 
