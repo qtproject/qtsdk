@@ -76,7 +76,7 @@ rta_key_list:               Qt_RTA_enterprise_offlineInstallerSmoke-593_tests_wi
 ################################################################################
 [release.593.repository.linux.x64]
 arg_configurations_file:    repository_configs/desktop_qt5/linux_x64_repository_593
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=false
 repo_content_type:          593
 repo_components_to_update:  qt.593.*
 repo_url_specifier:         linux_x64/desktop/qt5_593
@@ -84,14 +84,14 @@ rta_key_list:
 
 [release.593.repository.linux.x64.src_doc_examples]
 arg_configurations_file:    repository_configs/desktop_qt5/repository_593_src_doc_examples
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=false
 repo_content_type:          src_doc_examples
 repo_components_to_update:  qt.593.*
 repo_url_specifier:         linux_x64/desktop/qt5_593_src_doc_examples
 
 [release.593.repository.linux.x64.android]
 arg_configurations_file:    repository_configs/android_qt5/linux_x64_android_repository_593
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=false
 repo_content_type:          593
 repo_components_to_update:  qt.593.*
 repo_url_specifier:         linux_x64/android/qt5_593
@@ -102,7 +102,7 @@ rta_key_list:
 ################################################################################
 [release.593.repository.windows.x86]
 arg_configurations_file:    repository_configs/desktop_qt5/win_x86_repository_593
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=false
 repo_content_type:          593
 repo_components_to_update:  qt.593.*
 repo_url_specifier:         windows_x86/desktop/qt5_593
@@ -110,14 +110,14 @@ rta_key_list:
 
 [release.593.repository.windows.x86.src_doc_examples]
 arg_configurations_file:    repository_configs/desktop_qt5/repository_593_src_doc_examples
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=false
 repo_content_type:          src_doc_examples
 repo_components_to_update:  qt.593.*
 repo_url_specifier:         windows_x86/desktop/qt5_593_src_doc_examples
 
 [release.593.repository.windows.x86.android]
 arg_configurations_file:    repository_configs/android_qt5/win_x86_android_repository_593
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=false
 repo_content_type:          593
 repo_components_to_update:  qt.593.*
 repo_url_specifier:         windows_x86/android/qt5_593
@@ -125,7 +125,7 @@ rta_key_list:
 
 [release.593.repository.windows.x86.winrt]
 arg_configurations_file:    repository_configs/winrt_qt5/win_x64_winrt_repository_593
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=false
 repo_content_type:          593
 repo_components_to_update:  qt.593.*
 repo_url_specifier:         windows_x86/winrt/qt5_593
@@ -136,7 +136,7 @@ rta_key_list:
 ################################################################################
 [release.593.repository.mac.x64]
 arg_configurations_file:    repository_configs/desktop_qt5/mac_x64_repository_593
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=false
 repo_content_type:          593
 repo_components_to_update:  qt.593.*
 repo_url_specifier:         mac_x64/desktop/qt5_593
@@ -144,14 +144,14 @@ rta_key_list:
 
 [release.593.repository.mac.x64.src_doc_examples]
 arg_configurations_file:    repository_configs/desktop_qt5/repository_593_src_doc_examples
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=false
 repo_content_type:          src_doc_examples
 repo_components_to_update:  qt.593.*
 repo_url_specifier:         mac_x64/desktop/qt5_593_src_doc_examples
 
 [release.593.repository.mac.x64.android]
 arg_configurations_file:    repository_configs/android_qt5/mac_x64_android_repository_593
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=false
 repo_content_type:          593
 repo_components_to_update:  qt.593.*
 repo_url_specifier:         mac_x64/android/qt5_593
@@ -159,7 +159,7 @@ rta_key_list:
 
 [release.593.repository.mac.x64.ios]
 arg_configurations_file:    repository_configs/ios_qt5/mac_x64_ios_repository_593
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=false
 repo_content_type:          593
 repo_components_to_update:  qt.593.*
 repo_url_specifier:         mac_x64/ios/qt5_593
