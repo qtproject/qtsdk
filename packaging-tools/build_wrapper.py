@@ -672,7 +672,9 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     icu_libs = optionDict.get('ICU_LIBS') # optional
     openssl_libs = optionDict.get('OPENSSL_LIBS') # optional
     qt_postfix = os.environ['QT_POSTFIX']
-    sdktool_qtbase_src = optionDict['SDKTOOL_QTBASESRC_BASE'] + optionDict['SDKTOOL_QTBASESRC_EXT']
+    sdktool_base = optionDict.get('SDKTOOL_QTBASESRC_BASE') # optional
+    sdktool_ext = optionDict.get('SDKTOOL_QTBASESRC_EXT') # optional
+    sdktool_qtbase_src = sdktool_base + sdktool_ext if sdktool_base and sdktool_ext else None # optional
     qtcreator_temp = os.path.join(work_dir, 'qt-creator_temp')
     download_temp = os.path.join(work_dir, 'downloads')
     # from 4.4 on we use external elfutil builds and also build on Windows
@@ -853,14 +855,15 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                                        qtcreator_version, 'enterprise'], work_dir)
 
     # Build sdktool
-    sdktool_build_path = os.path.join(work_dir, 'sdktool_build')
-    sdktool_target_path = os.path.join(sdktool_build_path, 'target')
-    bld_sdktool.build_sdktool(sdktool_qtbase_src, os.path.join(sdktool_build_path, 'qt'),
-        os.path.join(work_dir, 'qt-creator', 'src', 'tools', 'sdktool'),
-        os.path.join(sdktool_build_path, 'src', 'tools', 'sdktool'),
-        sdktool_target_path,
-        'nmake' if bldinstallercommon.is_win_platform() else 'make')
-    bld_sdktool.zip_sdktool(sdktool_target_path, os.path.join(work_dir, 'sdktool.7z'))
+    if sdktool_qtbase_src:
+        sdktool_build_path = os.path.join(work_dir, 'sdktool_build')
+        sdktool_target_path = os.path.join(sdktool_build_path, 'target')
+        bld_sdktool.build_sdktool(sdktool_qtbase_src, os.path.join(sdktool_build_path, 'qt'),
+            os.path.join(work_dir, 'qt-creator', 'src', 'tools', 'sdktool'),
+            os.path.join(sdktool_build_path, 'src', 'tools', 'sdktool'),
+            sdktool_target_path,
+            'nmake' if bldinstallercommon.is_win_platform() else 'make')
+        bld_sdktool.zip_sdktool(sdktool_target_path, os.path.join(work_dir, 'sdktool.7z'))
 
     # Upload
     # Qt Creator directory
@@ -908,7 +911,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         snapshot_upload_list.append((target_env_dir + '/qtcreatorcdbext.7z', 'installer_source/' + target_env_dir + '/qtcreatorcdbext.7z'))
         file_upload_list.append(('qt-creator_build/wininterrupt.7z', target_env_dir + '/wininterrupt.7z'))
         snapshot_upload_list.append((target_env_dir + '/wininterrupt.7z', 'installer_source/' + target_env_dir + '/wininterrupt.7z'))
-    file_upload_list.append(('sdktool.7z', target_env_dir + '/sdktool.7z'))
+    if sdktool_qtbase_src:
+        file_upload_list.append(('sdktool.7z', target_env_dir + '/sdktool.7z'))
     # upload files
     upload_files(base_path, file_upload_list, optionDict)
     remote_path = base_path + '/latest'
