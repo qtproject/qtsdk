@@ -1248,7 +1248,7 @@ def create_maintenance_tool_resource_file():
     print '=================================================='
     set_config_directory()
     config_xml = set_config_xml()
-    cmd_args = [BINARYCREATOR_TOOL, '-p', PACKAGES_FULL_PATH_DST, '-c', config_xml, '-rcc']
+    cmd_args = [BINARYCREATOR_TOOL, '--online-only', '-p', PACKAGES_FULL_PATH_DST, '-c', config_xml, '-rcc']
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
     # archive
     resource_file = os.path.join(SCRIPT_ROOT_DIR, 'update.rcc')
