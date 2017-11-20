@@ -20,10 +20,6 @@ arg_substitution_list:          %QT_VERSION%=%GLOBAL_VERSION%,
                                 %QT_VERSION_AND_TAG%=%GLOBAL_VERSION_AND_TAG%,
                                 %QT_INSTALL_DIR_NAME%=5.9.3,
                                 %QT_LICENSE_TYPE%=%LICENSE%,
-                                %README_EDITION%=enterprise,
-                                %QTQUICKCOMPILER_VERSION%=5.9.3,
-                                %QTQUICK2DRENDERER_VERSION%=5.9.3,
-                                %QTENTERPRISE_ADDON_OPTIONAL_FOR_OFFLINE%=no,
                                 %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.4.1_59x/latest_successful,
                                 %QTC_VERSION%=4.4.1,
                                 %QTC_DISPLAY_VERSION%=4.4.1,
@@ -35,14 +31,14 @@ arg_substitution_list:          %QT_VERSION%=%GLOBAL_VERSION%,
 [release.593.offline.linux.x64]
 arg_configurations_file:    offline_installer_jobs/5.9.3/linux_x64_offline
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz
-installer_name:             qt-enterprise-linux-x64-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_enterprise_offlineInstallerSmoke-593_tests_linux_all
+installer_name:             qt-opensource-linux-x64-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-593_tests_linux_all
 
 [release.593.offline.linux.x64.qnx6]
 arg_configurations_file:    offline_installer_jobs/5.9.3/linux_x64_qnx6
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %DEFAULT_FOR_OFFLINE%=true
-installer_name:             qt-enterprise-linux-x64-qnx-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_enterprise_offlineInstallerSmoke-593_tests_linux_qnx_64bit
+installer_name:             qt-opensource-linux-x64-qnx-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-593_tests_linux_qnx_64bit
 
 ################################################################################
 ## macOS offline
@@ -51,8 +47,8 @@ rta_key_list:               Qt_RTA_enterprise_offlineInstallerSmoke-593_tests_li
 assign_to_machine_label:    mac-physical-10.11-x64-pm
 arg_configurations_file:    offline_installer_jobs/5.9.3/mac_x64_offline
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz
-installer_name:             qt-enterprise-mac-x64-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_enterprise_offlineInstallerSmoke-593_tests_mac_all
+installer_name:             qt-opensource-mac-x64-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-593_tests_mac_all
 
 ################################################################################
 ## Windows offline
@@ -61,15 +57,9 @@ rta_key_list:               Qt_RTA_enterprise_offlineInstallerSmoke-593_tests_ma
 assign_to_machine_label:    win-msvc2015-Windows10-x64
 arg_configurations_file:    offline_installer_jobs/5.9.3/win_x86_offline
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %REMOVE_PDB_FILES%=true
-installer_name:             qt-enterprise-windows-x86-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_enterprise_offlineInstallerSmoke-593_tests_windows_all
+installer_name:             qt-opensource-windows-x86-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-593_tests_windows_all
 
-[release.593.offline.windows.x86.qnx6]
-assign_to_machine_label:    win-MinGW4.9.2-Windows7-x86_QNX-x86
-arg_configurations_file:    offline_installer_jobs/5.9.3/win_x86_mingw53_qnx6
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
-installer_name:             qt-enterprise-windows-x86-qnx-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_enterprise_offlineInstallerSmoke-593_tests_windows_qnx
 
 ################################################################################
 ## Linux repository
