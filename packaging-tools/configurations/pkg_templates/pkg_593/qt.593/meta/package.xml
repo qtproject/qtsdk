@@ -5,7 +5,6 @@
     <Version>5.9.3-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Script>installscript.qs</Script>
-    <Dependencies>qt.license.collection</Dependencies>
     <Virtual>false</Virtual>
     <SortingPriority>593</SortingPriority>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
