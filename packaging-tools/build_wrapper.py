@@ -696,13 +696,15 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     # clang package
     clang_extract_path = os.path.join(download_temp, 'libclang')
     build_environment['LLVM_INSTALL_DIR'] = os.path.join(clang_extract_path, 'libclang') # package contains libclang subdir
-    clang_url = (pkg_base_path + '/' + optionDict['CLANG_FILEBASE'] + '-' + optionDict['QTC_PLATFORM'] + '.7z')
+    clang_suffix = optionDict.get('CLANG_FILESUFFIX')
+    clang_suffix = clang_suffix if clang_suffix != None else ''
+    clang_url = (pkg_base_path + '/' + optionDict['CLANG_FILEBASE'] + '-' + optionDict['QTC_PLATFORM'] + clang_suffix + '.7z')
     download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
         clang_url, clang_extract_path, download_temp, None))
     use_optimized_libclang = bldinstallercommon.is_win_platform()
     if use_optimized_libclang:
         postfix = '64' if '64' in optionDict['TARGET_ENV'] else '32'
-        opt_clang_url = (pkg_base_path + '/' + optionDict['CLANG_FILEBASE'] + '-windows-mingw_' + postfix + '.7z')
+        opt_clang_url = (pkg_base_path + '/' + optionDict['CLANG_FILEBASE'] + '-windows-mingw_' + postfix + clang_suffix + '.7z')
         opt_clang_path = os.path.join(download_temp, 'opt_libclang')
         opt_clang_lib = os.path.join(opt_clang_path, 'libclang', 'bin', 'libclang.dll')
         download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
