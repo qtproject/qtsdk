@@ -23,7 +23,8 @@ arg_substitution_list:          %QT_VERSION%=%GLOBAL_VERSION%,
                                 %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.5.0-rc1_510x/latest_successful,
                                 %QTC_VERSION%=4.4.83,
                                 %QTC_DISPLAY_VERSION%=4.5.0-rc1,
-                                %QTC_MSVC%=2015
+                                %QTC_MSVC%=2015,
+                                %ONLINE_SNAPSHOT_BUILD%=false
 
 
 ################################################################################
@@ -60,7 +61,7 @@ rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-510_tests_wi
 ################################################################################
 [release.510.repository.linux.x64]
 arg_configurations_file:    repository_configs/desktop_qt5/linux_x64_repository_qt5_5100
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz
 repo_content_type:          5100
 repo_components_to_update:  qt.qt5.5100.*
 repo_url_specifier:         linux_x64/desktop/qt5_5100
@@ -68,14 +69,14 @@ rta_key_list:
 
 [release.510.repository.linux.x64.src_doc_examples]
 arg_configurations_file:    repository_configs/desktop_qt5/repository_qt5_5100_src_doc_examples
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz
 repo_content_type:          src_doc_examples
 repo_components_to_update:  qt.qt5.5100.*
 repo_url_specifier:         linux_x64/desktop/qt5_5100_src_doc_examples
 
 [release.510.repository.linux.x64.android]
 arg_configurations_file:    repository_configs/android_qt5/linux_x64_android_repository_qt5_5100
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz
 repo_content_type:          5100
 repo_components_to_update:  qt.qt5.5100.*
 repo_url_specifier:         linux_x64/android/qt5_5100
@@ -86,7 +87,7 @@ rta_key_list:
 ################################################################################
 [release.510.repository.windows.x86]
 arg_configurations_file:    repository_configs/desktop_qt5/win_x86_repository_qt5_5100
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
 repo_content_type:          5100
 repo_components_to_update:  qt.qt5.5100.*
 repo_url_specifier:         windows_x86/desktop/qt5_5100
@@ -94,14 +95,14 @@ rta_key_list:
 
 [release.510.repository.windows.x86.src_doc_examples]
 arg_configurations_file:    repository_configs/desktop_qt5/repository_qt5_5100_src_doc_examples
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
 repo_content_type:          src_doc_examples
 repo_components_to_update:  qt.qt5.5100.*
 repo_url_specifier:         windows_x86/desktop/qt5_5100_src_doc_examples
 
 [release.510.repository.windows.x86.android]
 arg_configurations_file:    repository_configs/android_qt5/win_x86_android_repository_qt5_5100
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
 repo_content_type:          5100
 repo_components_to_update:  qt.qt5.5100.*
 repo_url_specifier:         windows_x86/android/qt5_5100
@@ -109,7 +110,7 @@ rta_key_list:
 
 [release.510.repository.windows.x86.winrt]
 arg_configurations_file:    repository_configs/winrt_qt5/win_x64_winrt_repository_qt5_5100
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
 repo_content_type:          5100
 repo_components_to_update:  qt.qt5.5100.*
 repo_url_specifier:         windows_x86/winrt/qt5_5100
@@ -120,7 +121,7 @@ rta_key_list:
 ################################################################################
 [release.510.repository.mac.x64]
 arg_configurations_file:    repository_configs/desktop_qt5/mac_x64_repository_qt5_5100
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz
 repo_content_type:          5100
 repo_components_to_update:  qt.qt5.5100.*
 repo_url_specifier:         mac_x64/desktop/qt5_5100
@@ -128,14 +129,14 @@ rta_key_list:
 
 [release.510.repository.mac.x64.src_doc_examples]
 arg_configurations_file:    repository_configs/desktop_qt5/repository_qt5_5100_src_doc_examples
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz
 repo_content_type:          src_doc_examples
 repo_components_to_update:  qt.qt5.5100.*
 repo_url_specifier:         mac_x64/desktop/qt5_5100_src_doc_examples
 
 [release.510.repository.mac.x64.android]
 arg_configurations_file:    repository_configs/android_qt5/mac_x64_android_repository_qt5_5100
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz
 repo_content_type:          5100
 repo_components_to_update:  qt.qt5.5100.*
 repo_url_specifier:         mac_x64/android/qt5_5100
@@ -143,7 +144,7 @@ rta_key_list:
 
 [release.510.repository.mac.x64.ios]
 arg_configurations_file:    repository_configs/ios_qt5/mac_x64_ios_repository_qt5_5100
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz
 repo_content_type:          5100
 repo_components_to_update:  qt.qt5.5100.*
 repo_url_specifier:         mac_x64/ios/qt5_5100
