@@ -13,7 +13,7 @@ mac-x64:                    installer-framework-build-mac-x64.7z
 [release.global]
 version:                    4.5.0
 version_tag:
-arg_substitution_list:      %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.50_510x/latest_successful,
+arg_substitution_list:      %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.5.0_510x/latest_successful,
                             %QTC_VERSION%=%GLOBAL_VERSION%,
                             %QTC_DISPLAY_VERSION%=%GLOBAL_VERSION_AND_TAG%,
                             %QTC_MSVC%=2015
