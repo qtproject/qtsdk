@@ -925,6 +925,9 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                 snapshot_server + ':' + snapshot_path + '/' + destination]
             bldinstallercommon.do_execute_sub_process(cmd_args, work_dir)
 
+###############################
+# handle_sdktool_build
+###############################
 def handle_sdktool_build(optionDict):
     # environment
     target_env_dir = BIN_TARGET_DIRS[optionDict['TARGET_ENV']]
