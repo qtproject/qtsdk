@@ -7,6 +7,8 @@
     <Default>false</Default>
     <SortingPriority>10</SortingPriority>
     <!-- Dependencies>qt.qt5.5100.doc.qtwebglplugin, qt.qt5.5100.examples.qtwebglplugin</Dependencies -->
+    <AutoDependOn></AutoDependOn>
+    <Script>installscript.qs</Script>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
 
