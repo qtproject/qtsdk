@@ -36,5 +36,5 @@ identifier:             mac
 file_list:              tools-qt3dstudio-macOS-conf,qt-gplv3-license-conf
 
 [PackageTemplates]
-template_dirs:          pkg_tools
+template_dirs:          pkg_qt3dstudio, pkg_tools
 

@@ -46,4 +46,4 @@ template_name:          config_qt5
 template_name:          config.xml.template.windows.qt3dstudio
 
 [PackageTemplates]
-template_dirs:          pkg_tools
+template_dirs:          pkg_qt3dstudio, pkg_tools
