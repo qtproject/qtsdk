@@ -6,8 +6,7 @@
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Script>installscript.qs</Script>
     <Virtual>true</Virtual>
-    <Dependencies></Dependencies>
-    <AutoDependOn>preview.qt.tools.qt3dstudio</AutoDependOn>
+    <Dependencies>qt.tools.qt3dstudio.doc</Dependencies>
     <UserInterfaces>
         <UserInterface>associatecommonfiletypesform.ui</UserInterface>
         <UserInterface>launchqt3dstudiocheckboxform.ui</UserInterface>
@@ -15,5 +14,3 @@
     <SortingPriority>900</SortingPriority>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
-
-

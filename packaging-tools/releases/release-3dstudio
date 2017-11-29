@@ -6,16 +6,36 @@
 ################################################################################
 [ifwtools]
 windows-x86:                installer-framework-build-win-x86.7z
-linux-x86:                  installer-framework-build-linux-x86.7z
+windows-x64:                installer-framework-build-win-x86.7z
 linux-x64:                  installer-framework-build-linux-x64.7z
 mac-x64:                    installer-framework-build-mac-x64.7z
 
 [release.global]
-version:                    1.0
+version:                    1.0.0
 version_tag:
-arg_substitution_list:      %QT3DSTUDIO_VERSION%=0.2.1,
-                            %QT3DSTUDIO_DISPLAY_VERSION%=0.2.1
+arg_substitution_list:      %QT3DSTUDIO_VERSION%=1.0.0,
+                            %QT3DSTUDIO_DISPLAY_VERSION%=1.0.0,
+                            %QT_VERSION%=5.9.0,
+                            %QT_VERSION_MINOR%=5.9
 
+
+################################################################################
+## Windows offline
+################################################################################
+[release.qt3dstudio.offline.windows.x86]
+arg_configurations_file:    offline_installer_jobs/qt3dstudio/win_x86_64_msvc2015
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
+installer_name:             qt-3dstudio-opensource-windows-x86-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:
+
+################################################################################
+## Mac offline
+################################################################################
+[release.qt3dstudio.offline.mac.x64]
+arg_configurations_file:    offline_installer_jobs/qt3dstudio/mac_x64
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
+installer_name:             qt-3dstudio-opensource-mac-x64-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:
 
 ################################################################################
 ## Linux repository
@@ -32,18 +52,14 @@ arg_substitution_list:      %QT3DSTUDIO_VERSION%=0.2.1,
 [release.qt3dstudio.repository.windows.x86]
 arg_configurations_file:    repository_configs/tools_desktop/win_x86_repository_tools_qt3dstudio
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
-repo_components_to_update:  qt.tools.qt3dstudio
+repo_components_to_update:  qt.tools.qt3dstudio*
 repo_url_specifier:         windows_x86/desktop/tools_qt3dstudio
 
 ################################################################################
 ## macOS repository
 ################################################################################
-#[release.qtcreator.repository.mac.x64]
-#arg_configurations_file:    repository_configs/tools_desktop/mac_x64_repository_tools_qt3dstudio
-#arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
-#repo_components_to_update:  qt.tools.qt3dstudio
-#repo_url_specifier:         mac_x64/desktop/tools_qt3dstudio
-
-
-
-
+[release.qtcreator.repository.mac.x64]
+arg_configurations_file:    repository_configs/tools_desktop/mac_x64_repository_tools_qt3dstudio
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
+repo_components_to_update:  qt.tools.qt3dstudio*
+repo_url_specifier:         mac_x64/desktop/tools_qt3dstudio

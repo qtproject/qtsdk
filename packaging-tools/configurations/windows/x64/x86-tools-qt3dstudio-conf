@@ -33,23 +33,35 @@ archives:               tools.qt3dstudio,
                         qtdeclarative,
                         qtquickcontrols2,
                         qtgraphicaleffects,
-                        qtquickcontrols
+                        qtquickcontrols,
+                        examples
 
 target_install_base:    /Tools/Qt3DStudio
 [tools.qt3dstudio]
-archive_uri:            qt3dstudio/5.10/latest/qt3dstudio/qt3dstudio-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
+archive_uri:            qt3dstudio/%QT_VERSION%/latest/qt3dstudio/qt3dstudio-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
 package_strip_dirs:     0
 target_install_dir:     /
 archive_name:           qt3dstudio.7z
 [qtbase]
-archive_uri:            qt/5.10/latest/qtbase/qtbase-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
+archive_uri:            archive/qt/5.9/5.9.3-final-released/latest/qtbase/qtbase-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
 [qtmultimedia]
-archive_uri:            qt/5.10/latest/qtmultimedia/qtmultimedia-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
+archive_uri:            archive/qt/5.9/5.9.3-final-released/latest/qtmultimedia/qtmultimedia-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
 [qtdeclarative]
-archive_uri:            qt/5.10/latest/qtdeclarative/qtdeclarative-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
+archive_uri:            archive/qt/5.9/5.9.3-final-released/latest/qtdeclarative/qtdeclarative-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
 [qtquickcontrols2]
-archive_uri:            qt/5.10/latest/qtquickcontrols2/qtquickcontrols2-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
+archive_uri:            archive/qt/5.9/5.9.3-final-released/latest/qtquickcontrols2/qtquickcontrols2-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
 [qtgraphicaleffects]
-archive_uri:            qt/5.10/latest/qtgraphicaleffects/qtgraphicaleffects-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
+archive_uri:            archive/qt/5.9/5.9.3-final-released/latest/qtgraphicaleffects/qtgraphicaleffects-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
 [qtquickcontrols]
-archive_uri:            qt/5.10/latest/qtquickcontrols/qtquickcontrols-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
+archive_uri:            archive/qt/5.9/5.9.3-final-released/latest/qtquickcontrols/qtquickcontrols-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
+[examples]
+archive_uri:            qt3dstudio/%QT_VERSION%/latest/examples/qt3dstudio-examples-5.9.0.7z
+package_strip_dirs:     1
+target_install_dir:     /examples
+
+[qt.tools.qt3dstudio.doc]
+archives:               tools.qt3dstudio.doc
+target_install_base:    /Tools/Qt3DStudio/doc
+[tools.qt3dstudio.doc]
+archive_uri:            qt3dstudio/doc_temp/qt3dstudio_doc.7z
+package_strip_dirs:     0

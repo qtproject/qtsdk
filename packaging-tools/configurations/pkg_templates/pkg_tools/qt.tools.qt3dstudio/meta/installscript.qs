@@ -29,6 +29,11 @@
 // constructor
 function Component()
 {
+    if (installer.isOfflineOnly()) {
+        component.setValue("Virtual", "false")
+        component.setValue("Default", "true")
+    }
+
     component.loaded.connect(this, Component.prototype.loaded);
     installer.installationFinished.connect(this, Component.prototype.installationFinishedPageIsShown);
     installer.finishButtonClicked.connect(this, Component.prototype.installationFinished);
@@ -74,8 +79,11 @@ Component.prototype.reactOnTargetDirChange = function(key, value)
             component.qt3DStudioBinaryPath = component.qt3DStudioBinaryPath.replace(/\//g, "\\");
             component.qt3DViewerBinaryPath = value + "\\%TARGET_INSTALL_DIR%\\bin\\Qt3DViewer.exe";
             component.qt3DViewerBinaryPath = component.qt3DViewerBinaryPath.replace(/\//g, "\\");
+            component.qt3DStudioUninstallPath = value + "\\%TARGET_INSTALL_DIR%\\Qt3DStudioUninst.exe";
+            component.qt3DStudioUninstallPath = component.qt3DStudioUninstallPath.replace(/\//g, "\\");
+
         } else if (installer.value("os") == "mac") {
-            component.qt3DStudioBinaryPath = value + "/%TARGET_INSTALL_DIR%/TODO.app/Contents/MacOS/TODO";
+            component.qt3DStudioBinaryPath = value + "/%TARGET_INSTALL_DIR%/bin/Qt3DStudio.app/Contents/MacOS/Qt3DStudio";
             // fix duplicate forward slashes in path
             component.qt3DStudioBinaryPath = component.qt3DStudioBinaryPath.replace(/\/+/g, "/");
         } else {
@@ -88,18 +96,22 @@ Component.prototype.reactOnTargetDirChange = function(key, value)
 
 function registerWindowsFileTypeExtensions()
 {
-    component.addOperation("RegisterFileType",
-                            "uip",
-                            "\"" + qt3DStudioBinaryPath + "\" \"%1\"",
-                            "Studio uip File",
-                            "application/uip",
-                            studioPath + ",0");
-    component.addOperation("RegisterFileType",
-                            "uia",
-                            "\"" + qt3DViewerBinaryPath + "\" \"%1\"",
-                            "Studio uia File",
-                            "application/uia",
-                            viewerPath + ",0");
+    try {
+        component.addOperation("RegisterFileType",
+                                "uip",
+                                "\"" + component.qt3DStudioBinaryPath + "\" \"%1\"",
+                                "Studio uip File",
+                                "application/uip",
+                                component.qt3DStudioBinaryPath + ",0");
+        component.addOperation("RegisterFileType",
+                                "uia",
+                                "\"" + component.qt3DViewerBinaryPath + "\" \"%1\"",
+                                "Studio uia File",
+                                "application/uia",
+                                component.qt3DViewerBinaryPath + ",0");
+    } catch (e) {
+        console.log(e);
+    }
 }
 
 function patchWindowsInstallation()
@@ -153,14 +165,14 @@ Component.prototype.createOperations = function()
         if (installer.value("os") === "win") {
             // patch the installation
             patchWindowsInstallation()
-
             if (component.userInterface("AssociateCommonFiletypesForm").AssociateCommonFiletypesCheckBox.checked)
                 registerWindowsFileTypeExtensions();
-
             component.addOperation("CreateShortcut", component.qt3DStudioBinaryPath, "@StartMenuDir@\\Qt 3D Studio.lnk",
                 "workingDirectory=@TargetDir@\\bin", "iconPath=" + component.qt3DStudioBinaryPath, "iconId=0");
-            component.addOperation("CreateShortcut", qt3DViewerBinaryPath, "@StartMenuDir@\\Qt 3D Viewer.lnk",
-                "workingDirectory=@TargetDir@\\bin", "iconPath=" + qt3DViewerBinaryPath, "iconId=0");
+            component.addOperation("CreateShortcut", component.qt3DViewerBinaryPath, "@StartMenuDir@\\Qt 3D Viewer.lnk",
+                "workingDirectory=@TargetDir@\\bin", "iconPath=" + component.qt3DViewerBinaryPath, "iconId=0");
+            component.addOperation("CreateShortcut", component.qt3DStudioUninstallPath, "@StartMenuDir@\\Uninstall Qt 3D Studio.lnk",
+                "workingDirectory=@TargetDir@", "iconPath=" + component.qt3DStudioUninstallPath, "iconId=0");
         }
     } catch (e) {
         console.log(e);
