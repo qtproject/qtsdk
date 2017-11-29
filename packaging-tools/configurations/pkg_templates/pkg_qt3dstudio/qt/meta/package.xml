@@ -4,7 +4,7 @@
     <Description>Qt</Description>
     <Version>1.0.9</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Dependencies>qt.license.gpl3except</Dependencies>
+    <Dependencies>qt.license.gplv3</Dependencies>
     <SortingPriority>0</SortingPriority> <!-- Priority of this component when visible in the tree. Highest priority number is on top. -->
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>

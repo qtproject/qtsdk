@@ -34,7 +34,7 @@ identifier:             mac
 
 [PackageConfigurationFiles]
 file_list:              qt-conf,
-                        qt-gpl3-except-license-conf,
+                        qt-gplv3-license-conf,
                         tools-qt3dstudio-macOS-conf
 
 [ConfigDir]

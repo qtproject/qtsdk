@@ -33,7 +33,7 @@ name:                   qt
 identifier:             mac
 
 [PackageConfigurationFiles]
-file_list:              tools-qt3dstudio-macOS-conf,qt-gpl3-except-license-conf
+file_list:              tools-qt3dstudio-macOS-conf,qt-gplv3-license-conf
 
 [PackageTemplates]
 template_dirs:          pkg_qt3dstudio, pkg_tools
