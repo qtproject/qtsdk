@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>Qt GPLv3 Licenses</DisplayName>
+    <DisplayName>Qt GPL3-EXCEPT License</DisplayName>
     <Description></Description>
-    <Version>3.0</Version>
+    <Version>1.0</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Licenses>
-        <License name="Qt Installer GPLv3 License Agreement" file="QT-GPLV3-LICENSE"/>
+        <License name="Qt Installer GPL3 Except License Agreement" file="QT-GPL3-EXCEPT-LICENSE"/>
     </Licenses>
     <UserInterfaces>
         <UserInterface>licensedialog.ui</UserInterface>

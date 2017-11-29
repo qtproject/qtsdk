@@ -34,7 +34,7 @@ identifier:             windows
 
 [PackageConfigurationFiles]
 file_list:              qt-conf,
-                        qt-gplv3-license-conf,
+                        qt-gpl3-except-license-conf,
                         x86-tools-qt3dstudio-conf,
                         x86-tools-vcredist_msvc2015-conf,
                         x64-tools-vcredist_msvc2015-conf
