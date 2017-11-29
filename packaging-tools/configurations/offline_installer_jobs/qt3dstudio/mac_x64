@@ -34,7 +34,7 @@ identifier:             mac
 
 [PackageConfigurationFiles]
 file_list:              qt-conf,
-                        qt-license-conf,
+                        qt-gplv3-license-conf,
                         tools-qt3dstudio-macOS-conf
 
 [ConfigDir]
@@ -44,4 +44,4 @@ template_name:          config_qt5
 template_name:          config.xml.template.mac.qt3dstudio
 
 [PackageTemplates]
-template_dirs:          pkg_tools
+template_dirs:          pkg_qt3dstudio, pkg_tools

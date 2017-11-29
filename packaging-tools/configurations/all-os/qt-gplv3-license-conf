@@ -26,15 +26,5 @@
 ##
 #############################################################################
 
-[PackageNamespace]
-name:                   qt
 
-[PlatformIdentifier]
-identifier:             mac
-
-[PackageConfigurationFiles]
-file_list:              tools-qt3dstudio-macOS-conf,qt-gplv3-license-conf
-
-[PackageTemplates]
-template_dirs:          pkg_tools
-
+[qt.license.gplv3]

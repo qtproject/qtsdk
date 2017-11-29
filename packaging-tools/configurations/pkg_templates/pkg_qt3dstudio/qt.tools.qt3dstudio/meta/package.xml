@@ -6,7 +6,7 @@
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Script>installscript.qs</Script>
     <Virtual>true</Virtual>
-    <Dependencies>qt.tools.qt3dstudio.doc</Dependencies>
+    <Dependencies>qt.tools.qt3dstudio.doc,qt.license.gplv3</Dependencies>
     <UserInterfaces>
         <UserInterface>associatecommonfiletypesform.ui</UserInterface>
         <UserInterface>launchqt3dstudiocheckboxform.ui</UserInterface>
