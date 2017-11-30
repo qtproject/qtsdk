@@ -52,7 +52,7 @@ rta_key_list:
 [release.qt3dstudio.repository.windows.x86]
 arg_configurations_file:    repository_configs/tools_desktop/win_x86_repository_tools_qt3dstudio
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
-repo_components_to_update:  qt.tools.qt3dstudio*
+repo_components_to_update:  qt.tools.qt3dstudio*,qt.license.gplv3
 repo_url_specifier:         windows_x86/desktop/tools_qt3dstudio
 
 ################################################################################
