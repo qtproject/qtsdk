@@ -98,6 +98,18 @@ def add_common_commandline_arguments(parser):
         parser.add_argument('--sevenzippath', help="path where the 7zip binary is located")
         parser.add_argument('--gitpath', help="path where the git binary is located")
 
+def check_arguments(callerArguments):
+    if bldinstallercommon.is_mac_platform():
+        if callerArguments.keychain_unlock_script:
+            if not os.environ['SIGNING_IDENTITY']:
+                print('error: Environment variable SIGNING_IDENTITY not set')
+                sys.exit(1)
+    if not os.path.lexists(callerArguments.qt5path) and not callerArguments.qt_modules:
+        parser.print_help()
+        print(("error: You have to pass the --qt-module argument if the {0} does not exist"
+            + os.linesep + os.linesep).format(callerArguments.qt5path))
+        sys.exit(1)
+
 def qmake_binary(qt5_path):
     return os.path.abspath(os.path.join(qt5_path, 'bin', 'qmake'))
 
@@ -187,12 +199,7 @@ if __name__ == "__main__":
     tempPath = os.path.abspath(os.path.join(qtCreatorSourceDirectory,
         '..', 'qt-creator_temp'))
 
-    # check mac setup
-    if bldinstallercommon.is_mac_platform():
-        if callerArguments.keychain_unlock_script:
-            if not os.environ['SIGNING_IDENTITY']:
-                print('error: Environment variable SIGNING_IDENTITY not set')
-                sys.exit(1)
+    check_arguments(callerArguments)
 
     # clean step
     if callerArguments.clean:
@@ -207,11 +214,6 @@ if __name__ == "__main__":
             bldinstallercommon.remove_tree(wininterruptInstallDirectory)
         bldinstallercommon.remove_tree(tempPath)
 
-    if not os.path.lexists(callerArguments.qt5path) and not callerArguments.qt_modules:
-        parser.print_help()
-        print(("error: You have to pass the --qt-module argument if the {0} does not exist"
-            + os.linesep + os.linesep).format(callerArguments.qt5path))
-        sys.exit(1)
 
     qmakeBinary = qmake_binary(callerArguments.qt5path)
 
