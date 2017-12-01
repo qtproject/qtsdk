@@ -55,6 +55,15 @@ from threadedwork import ThreadedWork
 from bld_utils import gitSHA, runBuildCommand, runCommand, runInstallCommand, stripVars
 import bldinstallercommon
 
+def add_commandline_arguments(parser):
+    parser.add_argument('--qt5path', help="here it expects a compiled Qt5", required=True)
+    parser.epilog += " --qt5path qtcreator_qt5"
+    if bldinstallercommon.is_mac_platform():
+        parser.add_argument('--keychain_unlock_script', help="script for unlocking the keychain used for signing")
+        parser.epilog += " --keychain_unlock_script $HOME/unlock-keychain.sh"
+    if bldinstallercommon.is_win_platform():
+        parser.add_argument('--python_path', help="path to python libraries for use by cdbextension")
+
 def add_common_commandline_arguments(parser):
     if bldinstallercommon.is_win_platform():
         parser.epilog = "example: " + os.linesep + "\tpython {0} --clean " \
@@ -160,14 +169,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="build Qt 5 based Qt Creator",
         formatter_class=argparse.RawTextHelpFormatter)
     add_common_commandline_arguments(parser)
-    parser.add_argument('--qt5path', help="here it expects a compiled Qt5", required=True)
-    if bldinstallercommon.is_mac_platform():
-        parser.add_argument('--keychain_unlock_script', help="script for unlocking the keychain used for signing")
-        parser.epilog += " --keychain_unlock_script $HOME/unlock-keychain.sh"
-    if bldinstallercommon.is_win_platform():
-        parser.add_argument('--python_path', help="path to python libraries for use by cdbextension")
 
-    parser.epilog += " --qt5path qtcreator_qt5"
+    add_commandline_arguments(parser)
+
     callerArguments = parser.parse_args()
 
     # cleanup some values inside the callerArguments object
