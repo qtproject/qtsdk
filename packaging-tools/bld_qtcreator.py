@@ -246,9 +246,6 @@ if __name__ == "__main__":
     qmakeCommandArguments = "{0} QTC_PREFIX={1} DEFINES+=IDE_REVISION={2} CONFIG+={3}".format(
         qtCreatorProFile, qtCreatorInstallDirectory, buildGitSHA, buildType)
 
-    # hack to ensure plugins depending on declarative are also compiled with 2.7.0/5.0.1
-    qmakeCommandArguments += " QT_CONFIG+=declarative"
-
     if bldinstallercommon.is_mac_platform():
         qmakeCommandArguments += " QMAKE_MAC_SDK=macosx" # work around QTBUG-41238
 
