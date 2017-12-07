@@ -120,7 +120,7 @@ def check_arguments(callerArguments):
         sys.exit(1)
 
 def qmake_binary(qt5_path):
-    return os.path.abspath(os.path.join(qt5_path, 'bin', 'qmake'))
+    return os.path.abspath(os.path.join(qt5_path, 'bin', 'qmake' + bldinstallercommon.get_executable_suffix()))
 
 def patch_qt_pri_files(qt5_path):
     # fix paths in module .pri files
