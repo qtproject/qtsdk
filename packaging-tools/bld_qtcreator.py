@@ -107,6 +107,14 @@ def add_common_commandline_arguments(parser):
         parser.add_argument('--sevenzippath', help="path where the 7zip binary is located")
         parser.add_argument('--gitpath', help="path where the git binary is located")
 
+def fix_arguments(callerArguments):
+    stripVars(callerArguments, "\"")
+    if callerArguments.qt5path != os.path.abspath(callerArguments.qt5path):
+        print("changing the value of --qt5path from {0} to {1}".format(callerArguments.qt5path,
+            os.path.abspath(callerArguments.qt5path)))
+        callerArguments.qt5path = os.path.abspath(callerArguments.qt5path)
+    return callerArguments
+
 def check_arguments(callerArguments):
     if bldinstallercommon.is_mac_platform():
         if callerArguments.keychain_unlock_script:
@@ -169,17 +177,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="build Qt 5 based Qt Creator",
         formatter_class=argparse.RawTextHelpFormatter)
     add_common_commandline_arguments(parser)
-
     add_commandline_arguments(parser)
 
     callerArguments = parser.parse_args()
 
-    # cleanup some values inside the callerArguments object
-    stripVars(callerArguments, "\"")
-    if callerArguments.qt5path != os.path.abspath(callerArguments.qt5path):
-        print("changing the value of --qt5path from {0} to {1}".format(callerArguments.qt5path,
-            os.path.abspath(callerArguments.qt5path)))
-        callerArguments.qt5path = os.path.abspath(callerArguments.qt5path)
+    callerArguments = fix_arguments(callerArguments)
 
     qtCreatorSourceDirectory = os.path.abspath('qt-creator')
     qtCreatorBuildDirectory = os.path.abspath(os.path.join(qtCreatorSourceDirectory,
