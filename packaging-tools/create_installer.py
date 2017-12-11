@@ -293,7 +293,7 @@ def setup_option_parser():
     # enable pdb files removal
     OPTION_PARSER.add_option("--remove-pdb-files",
                              action="store_true", dest="remove_pdb_files", default="False",
-                             help="Windows only: Removes Windows pdb files from offline installer")
+                             help="Windows only: Removes Windows pdb files (offline installer or emulator packaging)")
 
 
 ##############################################################
@@ -836,9 +836,10 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
             examples_dir = bldinstallercommon.locate_directory(install_dir, 'examples')
             qml_examples_only(examples_dir)
 
-        # remove Windows pdb files from offline installer
+        # remove Windows pdb files when explicitly defined so. Used in offline installer
+        # and emulator packaging
         if bldinstallercommon.is_win_platform():
-            if CREATE_OFFLINE_INSTALLER and "true" == REMOVE_PDB_FILES.lower():
+            if REMOVE_PDB_FILES.lower() == "true":
                 pdb_bin_dir = bldinstallercommon.locate_directory(install_dir, 'bin')
                 if os.path.exists(pdb_bin_dir):
                     print 'Erasing pdb files from: ' + pdb_bin_dir
