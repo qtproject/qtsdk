@@ -74,22 +74,6 @@ if LOCAL_MODE:
     assert os.path.exists(LOCAL_INSTALLER_DIR), "Local installer destination directory does not exist: %s" % LOCAL_INSTALLER_DIR
     print("Installer files will be copied to local directory: %s" % LOCAL_INSTALLER_DIR)
 
-
-###########################################
-# Environment variable combining
-###########################################
-def combine_env_variable(a, b):
-    if platform.system().lower().startswith('win'):
-        return a + ';' + b
-    else:
-        return a + ':' + b
-
-def combine_environment_dicts(a, b):
-    return dict(a.items() + b.items() +
-                [(k, combine_env_variable(a[k], b[k])) for k in set(b) & set(a)])
-
-
-
 ###############################
 # sign windows executable
 ###############################
