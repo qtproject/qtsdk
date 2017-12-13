@@ -838,30 +838,29 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
 
         # remove Windows pdb files when explicitly defined so. Used in offline installer
         # and emulator packaging
-        if bldinstallercommon.is_win_platform():
-            if REMOVE_PDB_FILES.lower() == "true":
-                pdb_bin_dir = bldinstallercommon.locate_directory(install_dir, 'bin')
-                if os.path.exists(pdb_bin_dir):
-                    print 'Erasing pdb files from: ' + pdb_bin_dir
-                    # This will only take the text connected to the .pdb by grabbing all non-space characters (\S).
-                    bldinstallercommon.delete_files_by_type_recursive(pdb_bin_dir, '\S*\.pdb')
+        if REMOVE_PDB_FILES.lower() == "true":
+            pdb_bin_dir = bldinstallercommon.locate_directory(install_dir, 'bin')
+            if os.path.exists(pdb_bin_dir):
+                print 'Erasing pdb files from: ' + pdb_bin_dir
+                # This will only take the text connected to the .pdb by grabbing all non-space characters (\S).
+                bldinstallercommon.delete_files_by_type_recursive(pdb_bin_dir, '\S*\.pdb')
 
-                pdb_lib_dir = bldinstallercommon.locate_directory(install_dir, 'lib')
-                if os.path.exists(pdb_lib_dir):
-                    print 'Erasing pdb files from: ' + pdb_lib_dir
-                    bldinstallercommon.delete_files_by_type_recursive(pdb_lib_dir, '\S*\.pdb')
+            pdb_lib_dir = bldinstallercommon.locate_directory(install_dir, 'lib')
+            if os.path.exists(pdb_lib_dir):
+                print 'Erasing pdb files from: ' + pdb_lib_dir
+                bldinstallercommon.delete_files_by_type_recursive(pdb_lib_dir, '\S*\.pdb')
 
-                pdb_qml_dir = bldinstallercommon.locate_directory(install_dir, 'qml')
-                if os.path.exists(pdb_qml_dir):
-                    print 'Erasing pdb files from: ' + pdb_qml_dir
-                    bldinstallercommon.delete_files_by_type_recursive(pdb_qml_dir, '\S*\.pdb')
+            pdb_qml_dir = bldinstallercommon.locate_directory(install_dir, 'qml')
+            if os.path.exists(pdb_qml_dir):
+                print 'Erasing pdb files from: ' + pdb_qml_dir
+                bldinstallercommon.delete_files_by_type_recursive(pdb_qml_dir, '\S*\.pdb')
 
-                pdb_plugins_dir = bldinstallercommon.locate_directory(install_dir, 'plugins')
-                if os.path.exists(pdb_plugins_dir):
-                    print 'Erasing pdb files from: ' + pdb_plugins_dir
-                    bldinstallercommon.delete_files_by_type_recursive(pdb_plugins_dir, '\S*\.pdb')
-            else:
-                print 'Removal of pdb files is allowed only when creating offline installer!'
+            pdb_plugins_dir = bldinstallercommon.locate_directory(install_dir, 'plugins')
+            if os.path.exists(pdb_plugins_dir):
+                print 'Erasing pdb files from: ' + pdb_plugins_dir
+                bldinstallercommon.delete_files_by_type_recursive(pdb_plugins_dir, '\S*\.pdb')
+        else:
+            print 'Removal of pdb files is allowed only when creating offline installer!'
 
     if archive.rpath_target:
         if not archive.rpath_target.startswith(os.sep):
