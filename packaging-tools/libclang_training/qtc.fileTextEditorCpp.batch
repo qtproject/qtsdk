@@ -1,0 +1,40 @@
+openProject "c:/work/build/qt-creator/qtcreator.pro"
+
+# Train initial parsing
+openDocument "c:/work/build/qt-creator/src/plugins/texteditor/texteditor.cpp"
+closeAllDocuments
+openDocument "c:/work/build/qt-creator/src/plugins/texteditor/texteditor.cpp"
+closeAllDocuments
+openDocument "c:/work/build/qt-creator/src/plugins/texteditor/texteditor.cpp"
+closeAllDocuments
+
+openDocument "c:/work/build/qt-creator/src/plugins/texteditor/texteditor.cpp"
+
+setCursor 8342 1
+
+# Train reparse
+insertText " "
+insertText " "
+insertText " "
+insertText " "
+insertText " "
+insertText " "
+insertText " "
+insertText " "
+insertText " "
+insertText " "
+
+# Train complete
+complete
+complete
+complete
+
+# Train member-complete
+insertText "d->"
+complete
+complete
+complete
+
+# Wait in order to inspect the result
+processEvents 3000
+
