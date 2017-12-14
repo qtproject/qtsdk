@@ -1,0 +1,238 @@
+#############################################################################
+##
+## Copyright (C) 2017 The Qt Company Ltd.
+## Contact: https://www.qt.io/licensing/
+##
+## This file is part of the release tools of the Qt Toolkit.
+##
+## $QT_BEGIN_LICENSE:GPL-EXCEPT$
+## Commercial License Usage
+## Licensees holding valid commercial Qt licenses may use this file in
+## accordance with the commercial license agreement provided with the
+## Software or, alternatively, in accordance with the terms contained in
+## a written agreement between you and The Qt Company. For licensing terms
+## and conditions see https://www.qt.io/terms-conditions. For further
+## information use the contact form at https://www.qt.io/contact-us.
+##
+## GNU General Public License Usage
+## Alternatively, this file may be used under the terms of the GNU
+## General Public License version 3 as published by the Free Software
+## Foundation with exceptions as appearing in the file LICENSE.GPL3-EXCEPT
+## included in the packaging of this file. Please review the following
+## information to ensure the GNU General Public License requirements will
+## be met: https://www.gnu.org/licenses/gpl-3.0.html.
+##
+## $QT_END_LICENSE$
+##
+#############################################################################
+
+
+
+[qt.594]
+
+[qt.594.src]
+archives:               594.src.qtactiveqt,
+                        594.src.qtandroidextras,
+                        594.src.qtdoc,
+                        594.src.qtmacextras,
+                        594.src.qtwayland,
+                        594.src.qtwinextras,
+                        594.src.qtbase,
+                        594.src.qtconnectivity,
+                        594.src.qtx11extras,
+                        594.src.qtwebchannel,
+                        594.src.qtmultimedia,
+                        594.src.qttranslations,
+                        594.src.qtgraphicaleffects,
+                        594.src.qtsvg,
+                        594.src.qtdeclarative,
+                        594.src.qtwebsockets,
+                        594.src.qtimageformats,
+                        594.src.qttools,
+                        594.src.qtxmlpatterns,
+                        594.src.qtsensors,
+                        594.src.qtserialport,
+                        594.src.qtlocation,
+                        594.src.qtquickcontrols,
+                        594.src.qtquickcontrols2,
+                        594.src.qtremoteobjects,
+                        594.src.qt3d,
+                        594.src.qtcanvas3d,
+                        594.src.qtwebview,
+                        594.src.qtserialbus,
+                        594.src.qtscxml,
+                        594.src.qtcharts,
+                        594.src.qtdatavis3d,
+                        594.src.qtpurchasing,
+                        594.src.qtvirtualkeyboard,
+                        594.src.qtwebengine,
+                        594.src.qtgamepad,
+                        594.src.qtscript,
+                        594.src.qtspeech,
+                        594.src.qtnetworkauth,
+                        594.src.supermodule
+target_install_base:    /%QT_VERSION%/Src/
+[594.src.qtactiveqt]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtactiveqt-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtactiveqt
+[594.src.qtandroidextras]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtandroidextras-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtandroidextras
+[594.src.qtdoc]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtdoc-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtdoc
+[594.src.qtmacextras]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtmacextras-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtmacextras
+[594.src.qtwayland]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtwayland-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtwayland
+[594.src.qtwinextras]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtwinextras-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtwinextras
+[594.src.qtbase]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtbase-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtbase
+[594.src.qtconnectivity]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtconnectivity-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtconnectivity
+[594.src.qtx11extras]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtx11extras-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtx11extras
+[594.src.qtwebchannel]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtwebchannel-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtwebchannel
+[594.src.qtmultimedia]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtmultimedia-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtmultimedia
+[594.src.qttranslations]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qttranslations-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qttranslations
+[594.src.qtgraphicaleffects]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtgraphicaleffects-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtgraphicaleffects
+[594.src.qtsvg]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtsvg-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtsvg
+[594.src.qtdeclarative]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtdeclarative-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtdeclarative
+[594.src.qtwebsockets]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtwebsockets-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtwebsockets
+[594.src.qtimageformats]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtimageformats-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtimageformats
+[594.src.qttools]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qttools-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qttools
+[594.src.qtxmlpatterns]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtxmlpatterns-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtxmlpatterns
+[594.src.qtsensors]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtsensors-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtsensors
+[594.src.qtserialport]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtserialport-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtserialport
+[594.src.qtlocation]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtlocation-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtlocation
+[594.src.qtquickcontrols]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtquickcontrols-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtquickcontrols
+[594.src.qtquickcontrols2]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtquickcontrols2-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtquickcontrols2
+[594.src.qtremoteobjects]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtremoteobjects-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtremoteobjects
+[594.src.qt3d]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qt3d-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qt3d
+[594.src.qtcanvas3d]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtcanvas3d-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtcanvas3d
+[594.src.qtwebview]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtwebview-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtwebview
+[594.src.qtserialbus]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtserialbus-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtserialbus
+[594.src.qtscxml]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtscxml-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtscxml
+[594.src.qtcharts]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtcharts-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtcharts
+[594.src.qtdatavis3d]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtdatavis3d-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtdatavis3d
+[594.src.qtpurchasing]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtpurchasing-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtpurchasing
+[594.src.qtvirtualkeyboard]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtvirtualkeyboard-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtvirtualkeyboard
+[594.src.qtwebengine]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtwebengine-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtwebengine
+[594.src.qt]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtwebengine-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtwebengine
+[594.src.qtgamepad]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtgamepad-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtgamepad
+[594.src.qtscript]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtscript-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtscript
+[594.src.qtspeech]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtspeech-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtspeech
+[594.src.qtnetworkauth]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/qtnetworkauth-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /qtnetworkauth
+[594.src.supermodule]
+archive_uri:            /qt/%QT_VERSION%/latest/src/submodules/tqtc-qt5-%LICENSE%-src-%QT_VERSION_AND_TAG%.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+target_install_dir:     /
