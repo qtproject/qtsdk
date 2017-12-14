@@ -14,9 +14,7 @@ mac-x64:                    installer-framework-build-mac-x64.7z
 version:                    1.0.0
 version_tag:
 arg_substitution_list:      %QT3DSTUDIO_VERSION%=1.0.0,
-                            %QT3DSTUDIO_DISPLAY_VERSION%=1.0.0,
-                            %QT_VERSION%=5.9.0,
-                            %QT_VERSION_MINOR%=5.9
+                            %QT3DSTUDIO_DISPLAY_VERSION%=1.0.0
 
 
 ################################################################################

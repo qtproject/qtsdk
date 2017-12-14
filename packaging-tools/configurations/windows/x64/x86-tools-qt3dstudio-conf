@@ -38,7 +38,7 @@ archives:               tools.qt3dstudio,
 
 target_install_base:    /Tools/Qt3DStudio
 [tools.qt3dstudio]
-archive_uri:            qt3dstudio/%QT_VERSION%/latest/qt3dstudio/qt3dstudio-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
+archive_uri:            qt3dstudio/%QT3DSTUDIO_VERSION%/latest/qt3dstudio/qt3dstudio-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
 package_strip_dirs:     0
 target_install_dir:     /
 archive_name:           qt3dstudio.7z
@@ -55,7 +55,7 @@ archive_uri:            archive/qt/5.9/5.9.3-final-released/latest/qtgraphicalef
 [qtquickcontrols]
 archive_uri:            archive/qt/5.9/5.9.3-final-released/latest/qtquickcontrols/qtquickcontrols-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
 [examples]
-archive_uri:            qt3dstudio/%QT_VERSION%/latest/examples/qt3dstudio-examples-5.9.0.7z
+archive_uri:            qt3dstudio/%QT3DSTUDIO_VERSION%/latest/examples/qt3dstudio-examples-%QT3DSTUDIO_VERSION%.7z
 package_strip_dirs:     1
 target_install_dir:     /examples
 

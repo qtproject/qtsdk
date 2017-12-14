@@ -32,12 +32,12 @@ archives:               tools.qt3dstudio,
 
 target_install_base:    /Qt3DStudio
 [tools.qt3dstudio]
-archive_uri:            qt3dstudio/%QT_VERSION%/latest/qt3dstudio/qt3dstudio-MacOS-MacOS_10_12-Clang-MacOS-MacOS_10_12-X86_64.7z
+archive_uri:            qt3dstudio/%QT3DSTUDIO_VERSION%/latest/qt3dstudio/qt3dstudio-MacOS-MacOS_10_12-Clang-MacOS-MacOS_10_12-X86_64.7z
 package_strip_dirs:     0
 target_install_dir:     /
 archive_name:           qt3dstudio.7z
 [examples]
-archive_uri:            qt3dstudio/%QT_VERSION%/latest/examples/qt3dstudio-examples-5.9.0.7z
+archive_uri:            qt3dstudio/%QT3DSTUDIO_VERSION%/latest/examples/qt3dstudio-examples-%QT3DSTUDIO_VERSION%.7z
 package_strip_dirs:     1
 target_install_dir:     /examples
 
