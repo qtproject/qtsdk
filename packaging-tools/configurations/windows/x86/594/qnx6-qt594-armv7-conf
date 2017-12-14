@@ -1,0 +1,158 @@
+#############################################################################
+##
+## Copyright (C) 2017 The Qt Company Ltd.
+## Contact: https://www.qt.io/licensing/
+##
+## This file is part of the release tools of the Qt Toolkit.
+##
+## $QT_BEGIN_LICENSE:GPL-EXCEPT$
+## Commercial License Usage
+## Licensees holding valid commercial Qt licenses may use this file in
+## accordance with the commercial license agreement provided with the
+## Software or, alternatively, in accordance with the terms contained in
+## a written agreement between you and The Qt Company. For licensing terms
+## and conditions see https://www.qt.io/terms-conditions. For further
+## information use the contact form at https://www.qt.io/contact-us.
+##
+## GNU General Public License Usage
+## Alternatively, this file may be used under the terms of the GNU
+## General Public License version 3 as published by the Free Software
+## Foundation with exceptions as appearing in the file LICENSE.GPL3-EXCEPT
+## included in the packaging of this file. Please review the following
+## information to ensure the GNU General Public License requirements will
+## be met: https://www.gnu.org/licenses/gpl-3.0.html.
+##
+## $QT_END_LICENSE$
+##
+#############################################################################
+
+
+[qt.594.qnx6_armv7]
+archives:               59.qnx6_armv7.qtbase,
+                        59.qnx6_armv7.qtconnectivity,
+                        59.qnx6_armv7.qtwebchannel,
+                        59.qnx6_armv7.qtmultimedia,
+                        59.qnx6_armv7.qttranslations,
+                        59.qnx6_armv7.qtgraphicaleffects,
+                        59.qnx6_armv7.qtsvg,
+                        59.qnx6_armv7.qtdeclarative,
+                        59.qnx6_armv7.qtwebsockets,
+                        59.qnx6_armv7.qtimageformats,
+                        59.qnx6_armv7.qttools,
+                        59.qnx6_armv7.qtxmlpatterns,
+                        59.qnx6_armv7.qtsensors,
+                        59.qnx6_armv7.qtlocation,
+                        59.qnx6_armv7.qtserialport,
+                        59.qnx6_armv7.qtquickcontrols,
+                        59.qnx6_armv7.qtquickcontrols2,
+                        59.qnx6_armv7.qt3d,
+                        59.qnx6_armv7.qtcanvas3d,
+                        59.qnx6_armv7.qtserialbus,
+                        59.qnx6_armv7.qtscxml,
+                        59.qnx6_armv7.qtgamepad,
+                        59.qnx6_armv7.Mingw530.runtime
+target_install_base:    /%QT_VERSION%/qnx6_armv7
+[59.qnx6_armv7.qtbase]
+archive_uri:            /qt/%QT_VERSION%/latest/qtbase/qtbase-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+[59.qnx6_armv7.qtconnectivity]
+archive_uri:            /qt/%QT_VERSION%/latest/qtconnectivity/qtconnectivity-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+[59.qnx6_armv7.qtwebchannel]
+archive_uri:            /qt/%QT_VERSION%/latest/qtwebchannel/qtwebchannel-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+[59.qnx6_armv7.qtmultimedia]
+archive_uri:            /qt/%QT_VERSION%/latest/qtmultimedia/qtmultimedia-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+[59.qnx6_armv7.qttranslations]
+archive_uri:            /qt/%QT_VERSION%/latest/qttranslations/qttranslations-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+[59.qnx6_armv7.qtgraphicaleffects]
+archive_uri:            /qt/%QT_VERSION%/latest/qtgraphicaleffects/qtgraphicaleffects-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+[59.qnx6_armv7.qtsvg]
+archive_uri:            /qt/%QT_VERSION%/latest/qtsvg/qtsvg-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+[59.qnx6_armv7.qtdeclarative]
+archive_uri:            /qt/%QT_VERSION%/latest/qtdeclarative/qtdeclarative-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+[59.qnx6_armv7.qtwebsockets]
+archive_uri:            /qt/%QT_VERSION%/latest/qtwebsockets/qtwebsockets-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+[59.qnx6_armv7.qtimageformats]
+archive_uri:            /qt/%QT_VERSION%/latest/qtimageformats/qtimageformats-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+[59.qnx6_armv7.qttools]
+archive_uri:            /qt/%QT_VERSION%/latest/qttools/qttools-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+[59.qnx6_armv7.qtxmlpatterns]
+archive_uri:            /qt/%QT_VERSION%/latest/qtxmlpatterns/qtxmlpatterns-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+[59.qnx6_armv7.qtsensors]
+archive_uri:            /qt/%QT_VERSION%/latest/qtsensors/qtsensors-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+[59.qnx6_armv7.qtlocation]
+archive_uri:            /qt/%QT_VERSION%/latest/qtlocation/qtlocation-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+[59.qnx6_armv7.qtserialport]
+archive_uri:            /qt/%QT_VERSION%/latest/qtserialport/qtserialport-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+[59.qnx6_armv7.qtquickcontrols]
+archive_uri:            /qt/%QT_VERSION%/latest/qtquickcontrols/qtquickcontrols-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+[59.qnx6_armv7.qtquickcontrols2]
+archive_uri:            /qt/%QT_VERSION%/latest/qtquickcontrols2/qtquickcontrols2-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+[59.qnx6_armv7.qt3d]
+archive_uri:            /qt/%QT_VERSION%/latest/qt3d/qt3d-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+[59.qnx6_armv7.qtcanvas3d]
+archive_uri:            /qt/%QT_VERSION%/latest/qtcanvas3d/qtcanvas3d-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+[59.qnx6_armv7.qtserialbus]
+archive_uri:            /qt/%QT_VERSION%/latest/qtserialbus/qtserialbus-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+[59.qnx6_armv7.qtscxml]
+archive_uri:            /qt/%QT_VERSION%/latest/qtscxml/qtscxml-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+[59.qnx6_armv7.qtgamepad]
+archive_uri:            /qt/%QT_VERSION%/latest/qtgamepad/qtgamepad-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+[59.qnx6_armv7.Mingw530.runtime]
+archive_uri:            http://download.qt.io/development_releases/prebuilt/mingw_32/i686-5.3.0-release-posix-dwarf-rt_v4-rev0-runtime.7z
+target_install_dir:     /bin
+
+# QtCharts provided as separate installable component in installer
+[qt.594.qtcharts]
+[qt.594.qtcharts.qnx6_armv7]
+archives:               59.qtcharts.qnx6_armv7
+target_install_base:    /%QT_VERSION%/qnx6_armv7
+[59.qtcharts.qnx6_armv7]
+archive_uri:            /qt/%QT_VERSION%/latest/qtcharts/qtcharts-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+
+# QtDataVisualization provided as separate installable component in installer
+[qt.594.qtdatavis3d]
+[qt.594.qtdatavis3d.qnx6_armv7]
+archives:               59.qtdatavis3d.qnx6_armv7
+target_install_base:    /%QT_VERSION%/qnx6_armv7
+[59.qtdatavis3d.qnx6_armv7]
+archive_uri:            /qt/%QT_VERSION%/latest/qtdatavis3d/qtdatavis3d-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+
+# QtPurchasing provided as separate installable component in installer
+[qt.594.qtpurchasing]
+[qt.594.qtpurchasing.qnx6_armv7]
+archives:               59.qtpurchasing.qnx6_armv7
+target_install_base:    /%QT_VERSION%/qnx6_armv7
+[59.qtpurchasing.qnx6_armv7]
+archive_uri:            /qt/%QT_VERSION%/latest/qtpurchasing/qtpurchasing-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+
+# QtScript provided as separate installable component in installer
+[qt.594.qtscript]
+[qt.594.qtscript.qnx6_armv7]
+archives:               59.qtscript.qnx6_armv7
+target_install_base:    /%QT_VERSION%/qnx6_armv7
+[59.qtscript.qnx6_armv7]
+archive_uri:            /qt/%QT_VERSION%/latest/qtscript/qtscript-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+
+# Qt Remote Objects provided as separate installable component in installer
+[qt.594.qtremoteobjects]
+[qt.594.qtremoteobjects.qnx6_armv7]
+archives:               59.qtremoteobjects.qnx6_armv7
+target_install_base:    /%QT_VERSION%/qnx6_armv7
+[59.qtremoteobjects.qnx6_armv7]
+archive_uri:            /qt/%QT_VERSION%/latest/qtremoteobjects/qtremoteobjects-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+
+# QtNetworkAuth provided as separate installable component in installer
+[qt.594.qtnetworkauth]
+[qt.594.qtnetworkauth.qnx6_armv7]
+archives:               59.qtnetworkauth.qnx6_armv7
+target_install_base:    /%QT_VERSION%/qnx6_armv7
+[59.qtnetworkauth.qnx6_armv7]
+archive_uri:            /qt/%QT_VERSION%/latest/qtnetworkauth/qtnetworkauth-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
+
+# Enterprise addons
+[qt.594.qtquickcompiler]
+[qt.594.qtquickcompiler.qnx6_armv7]
+optional_for_offline:   %QTENTERPRISE_ADDON_OPTIONAL_FOR_OFFLINE%
+archives:               qtquickcompiler.qnx6_armv7
+target_install_base:    /%QT_VERSION%/qnx6_armv7
+[qtquickcompiler.qnx6_armv7]
+archive_uri:            /qt/%QT_VERSION%/latest/tqtc-qmlcompiler/tqtc-qmlcompiler-Windows-Windows_10-Mingw53-QNX-QNX_660-ARMv7.7z
