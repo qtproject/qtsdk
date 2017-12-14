@@ -1,0 +1,157 @@
+# Define release content
+
+
+################################################################################
+## Global defines
+################################################################################
+[ifwtools]
+windows-x86:                installer-framework-build-win-x86.7z
+windows-x64:                installer-framework-build-win-x86.7z
+linux-x64:                  installer-framework-build-linux-x64.7z
+mac-x64:                    installer-framework-build-mac-x64.7z
+
+[release.global]
+version:                        5.9.4
+version_tag:
+module_exclude_list:            qtdocgallery, qtfeedback, qtjsondb, qtpim, qtqa, qtrepotools, qtsystems
+module_separate_install_list:   qtremoteobjects, qtscxml, qtscript, qtserialbus, qtwebengine
+arg_substitution_list:          %QT_VERSION%=%GLOBAL_VERSION%,
+                                %QT_VERSION_MINOR%=5.9,
+                                %QT_VERSION_AND_TAG%=%GLOBAL_VERSION_AND_TAG%,
+                                %QT_INSTALL_DIR_NAME%=5.9.4,
+                                %QT_LICENSE_TYPE%=%LICENSE%,
+                                %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.5.0_59x/latest_successful,
+                                %QTC_VERSION%=4.5.0,
+                                %QTC_DISPLAY_VERSION%=4.5.0,
+                                %QTC_MSVC%=2015,
+                                %ONLINE_SNAPSHOT_BUILD%=true
+
+################################################################################
+## Linux offline
+################################################################################
+[release.594.offline.linux.x64]
+arg_configurations_file:    offline_installer_jobs/5.9.4/linux_x64_offline
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz
+installer_name:             qt-opensource-linux-x64-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-594_tests_linux_all
+
+[release.594.offline.linux.x64.qnx6]
+arg_configurations_file:    offline_installer_jobs/5.9.4/linux_x64_qnx6
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %DEFAULT_FOR_OFFLINE%=true
+installer_name:             qt-opensource-linux-x64-qnx-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-594_tests_linux_qnx_64bit
+
+################################################################################
+## macOS offline
+################################################################################
+[release.594.offline.mac.x64]
+assign_to_machine_label:    mac-physical-10.11-x64-pm
+arg_configurations_file:    offline_installer_jobs/5.9.4/mac_x64_offline
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz
+installer_name:             qt-opensource-mac-x64-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-594_tests_mac_all
+
+################################################################################
+## Windows offline
+################################################################################
+[release.594.offline.windows.x64]
+assign_to_machine_label:    win-msvc2015-Windows10-x64
+arg_configurations_file:    offline_installer_jobs/5.9.4/win_x86_offline
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %REMOVE_PDB_FILES%=true
+installer_name:             qt-opensource-windows-x86-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-594_tests_windows_all
+
+################################################################################
+## Linux repository
+################################################################################
+[release.594.repository.linux.x64]
+arg_configurations_file:    repository_configs/desktop_qt5/linux_x64_repository_594
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz
+repo_content_type:          594
+repo_components_to_update:  qt.594.*
+repo_url_specifier:         linux_x64/desktop/qt5_594
+rta_key_list:
+
+[release.594.repository.linux.x64.src_doc_examples]
+arg_configurations_file:    repository_configs/desktop_qt5/repository_594_src_doc_examples
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz
+repo_content_type:          src_doc_examples
+repo_components_to_update:  qt.594.*
+repo_url_specifier:         linux_x64/desktop/qt5_594_src_doc_examples
+
+[release.594.repository.linux.x64.android]
+arg_configurations_file:    repository_configs/android_qt5/linux_x64_android_repository_594
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz
+repo_content_type:          594
+repo_components_to_update:  qt.594.*
+repo_url_specifier:         linux_x64/android/qt5_594
+rta_key_list:
+
+################################################################################
+## Windows repository
+################################################################################
+[release.594.repository.windows.x86]
+arg_configurations_file:    repository_configs/desktop_qt5/win_x86_repository_594
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
+repo_content_type:          594
+repo_components_to_update:  qt.594.*
+repo_url_specifier:         windows_x86/desktop/qt5_594
+rta_key_list:
+
+[release.594.repository.windows.x86.src_doc_examples]
+arg_configurations_file:    repository_configs/desktop_qt5/repository_594_src_doc_examples
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
+repo_content_type:          src_doc_examples
+repo_components_to_update:  qt.594.*
+repo_url_specifier:         windows_x86/desktop/qt5_594_src_doc_examples
+
+[release.594.repository.windows.x86.android]
+arg_configurations_file:    repository_configs/android_qt5/win_x86_android_repository_594
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
+repo_content_type:          594
+repo_components_to_update:  qt.594.*
+repo_url_specifier:         windows_x86/android/qt5_594
+rta_key_list:
+
+[release.594.repository.windows.x86.winrt]
+arg_configurations_file:    repository_configs/winrt_qt5/win_x64_winrt_repository_594
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
+repo_content_type:          594
+repo_components_to_update:  qt.594.*
+repo_url_specifier:         windows_x86/winrt/qt5_594
+rta_key_list:
+
+################################################################################
+## macOS repository
+################################################################################
+[release.594.repository.mac.x64]
+arg_configurations_file:    repository_configs/desktop_qt5/mac_x64_repository_594
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz
+repo_content_type:          594
+repo_components_to_update:  qt.594.*
+repo_url_specifier:         mac_x64/desktop/qt5_594
+rta_key_list:
+
+[release.594.repository.mac.x64.src_doc_examples]
+arg_configurations_file:    repository_configs/desktop_qt5/repository_594_src_doc_examples
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz
+repo_content_type:          src_doc_examples
+repo_components_to_update:  qt.594.*
+repo_url_specifier:         mac_x64/desktop/qt5_594_src_doc_examples
+
+[release.594.repository.mac.x64.android]
+arg_configurations_file:    repository_configs/android_qt5/mac_x64_android_repository_594
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz
+repo_content_type:          594
+repo_components_to_update:  qt.594.*
+repo_url_specifier:         mac_x64/android/qt5_594
+rta_key_list:
+
+[release.594.repository.mac.x64.ios]
+arg_configurations_file:    repository_configs/ios_qt5/mac_x64_ios_repository_594
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz
+repo_content_type:          594
+repo_components_to_update:  qt.594.*
+repo_url_specifier:         mac_x64/ios/qt5_594
+rta_key_list:
+
