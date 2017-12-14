@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>msvc2017 64-bit</DisplayName>
+    <Description>Qt 5.9.4 Prebuilt Components for msvc2017 64-bit</Description>
+    <Version>5.9.4-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Dependencies>qt.tools.qtcreator, qt.594.doc, qt.594.examples</Dependencies>
+    <AutoDependOn></AutoDependOn>
+    <Default>false</Default>
+    <Script>installscript.qs</Script>
+    <SortingPriority>588</SortingPriority>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+

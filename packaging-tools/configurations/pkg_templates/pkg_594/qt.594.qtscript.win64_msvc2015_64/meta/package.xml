@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt Script for msvc2015 64-bit</DisplayName>
+    <Description></Description>
+    <Version>5.9.4-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <AutoDependOn>qt.594.qtscript, qt.594.win64_msvc2015_64</AutoDependOn>
+    <Dependencies>qt.594.win64_msvc2015_64</Dependencies>
+    <Virtual>true</Virtual>
+    <Script>installscript.qs</Script>
+    <SortingPriority></SortingPriority>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+
