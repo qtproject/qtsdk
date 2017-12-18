@@ -11,13 +11,13 @@ linux-x64:                  installer-framework-build-linux-x64.7z
 mac-x64:                    installer-framework-build-mac-x64.7z
 
 [release.global]
-version:                        5.10.0
+version:                        5.10.1
 version_tag:
 arg_substitution_list:          %QT_VERSION%=%GLOBAL_VERSION%,
                                 %QT_VERSION_MINOR%=5.10,
                                 %QT_VERSION_AND_TAG%=%GLOBAL_VERSION_AND_TAG%,
-                                %QT_INSTALL_DIR_NAME%=5.10.0,
-                                %QT_DEPENDENCY_VERSION%=5100
+                                %QT_INSTALL_DIR_NAME%=5.10.1,
+                                %QT_DEPENDENCY_VERSION%=5101
 
 ################################################################################
 ## Linux repository
@@ -33,7 +33,7 @@ arg_configurations_file:    repository_configs/android_qt5/preview_linux_x64_and
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
 repo_components_to_update:  preview.qt.qt5.510.*
 repo_url_specifier:         linux_x64/android/qt5_510_preview
-rta_key_list:               Qt_RTA_opensource_onlineInstallerSmoke-5.10.0_tests_linux_all
+rta_key_list:               Qt_RTA_opensource_onlineInstallerSmoke-5.10.1_tests_linux_all
 
 ################################################################################
 ## Windows repository
@@ -55,7 +55,7 @@ arg_configurations_file:    repository_configs/winrt_qt5/preview_win_x64_winrt_r
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
 repo_components_to_update:  preview.qt.qt5.510.*
 repo_url_specifier:         windows_x86/winrt/qt5_510_preview
-rta_key_list:               Qt_RTA_opensource_onlineInstallerSmoke-5.10.0_tests_windows_all
+rta_key_list:               Qt_RTA_opensource_onlineInstallerSmoke-5.10.1_tests_windows_all
 
 ################################################################################
 ## macOS repository
@@ -77,5 +77,5 @@ arg_configurations_file:    repository_configs/ios_qt5/preview_mac_x64_ios_repos
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
 repo_components_to_update:  preview.qt.qt5.510.*
 repo_url_specifier:         mac_x64/ios/qt5_510_preview
-rta_key_list:               Qt_RTA_opensource_onlineInstallerSmoke-5.10.0_tests_mac_all
+rta_key_list:               Qt_RTA_opensource_onlineInstallerSmoke-5.10.1_tests_mac_all
 
