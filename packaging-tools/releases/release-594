@@ -21,6 +21,8 @@ arg_substitution_list:          %QT_VERSION%=%GLOBAL_VERSION%,
                                 %QT_INSTALL_DIR_NAME%=5.9.4,
                                 %QT_LICENSE_TYPE%=%LICENSE%,
                                 %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.5.0_59x/latest_successful,
+                                %SDKTOOL_ARCHIVE_QTCREATOR_VERSION%=qtcreator/snapshots/4.5.0_59x/latest_successful,
+                                %SDKTOOL_INSTALL_PATH%=Tools/Settings,
                                 %QTC_VERSION%=4.5.0,
                                 %QTC_DISPLAY_VERSION%=4.5.0,
                                 %QTC_MSVC%=2015,
@@ -31,15 +33,11 @@ arg_substitution_list:          %QT_VERSION%=%GLOBAL_VERSION%,
 ################################################################################
 [release.594.offline.linux.x64]
 arg_configurations_file:    offline_installer_jobs/5.9.4/linux_x64_offline
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz,
+                            %SDKTOOL_ARCHIVE_PLATFORM%=linux_gcc_64_rhel66
 installer_name:             qt-opensource-linux-x64-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-594_tests_linux_all
 
-[release.594.offline.linux.x64.qnx6]
-arg_configurations_file:    offline_installer_jobs/5.9.4/linux_x64_qnx6
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %DEFAULT_FOR_OFFLINE%=true
-installer_name:             qt-opensource-linux-x64-qnx-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-594_tests_linux_qnx_64bit
 
 ################################################################################
 ## macOS offline
@@ -47,7 +45,8 @@ rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-594_tests_li
 [release.594.offline.mac.x64]
 assign_to_machine_label:    mac-physical-10.11-x64-pm
 arg_configurations_file:    offline_installer_jobs/5.9.4/mac_x64_offline
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz,
+                            %SDKTOOL_ARCHIVE_PLATFORM%=mac_x64
 installer_name:             qt-opensource-mac-x64-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-594_tests_mac_all
 
@@ -57,7 +56,9 @@ rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-594_tests_ma
 [release.594.offline.windows.x64]
 assign_to_machine_label:    win-msvc2015-Windows10-x64
 arg_configurations_file:    offline_installer_jobs/5.9.4/win_x86_offline
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %REMOVE_PDB_FILES%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip,
+                            %REMOVE_PDB_FILES%=true,
+                            %SDKTOOL_ARCHIVE_PLATFORM%=windows_vs2015_32
 installer_name:             qt-opensource-windows-x86-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-594_tests_windows_all
 
