@@ -5,10 +5,10 @@
 ## Global defines
 ################################################################################
 [ifwtools]
-windows-x86:                installer-framework-build-win-x86.7z
-windows-x64:                installer-framework-build-win-x86.7z
-linux-x64:                  installer-framework-build-linux-x64.7z
-mac-x64:                    installer-framework-build-mac-x64.7z
+windows-x86:                installer-framework-build-tqtc_3.0-win-x86.7z
+windows-x64:                installer-framework-build-tqtc_3.0-win-x86.7z
+linux-x64:                  installer-framework-build-tqtc_3.0-linux-x64.7z
+mac-x64:                    installer-framework-build-tqtc_3.0-mac-x64.7z
 
 [release.global]
 version:                        5.10.1
