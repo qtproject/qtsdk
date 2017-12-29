@@ -1,0 +1,139 @@
+# Define release content
+
+
+################################################################################
+## Global defines
+################################################################################
+[ifwtools]
+windows-x86:                installer-framework-build-tqtc_3.0-win-x86.7z
+windows-x64:                installer-framework-build-tqtc_3.0-win-x86.7z
+linux-x64:                  installer-framework-build-tqtc_3.0-linux-x64.7z
+mac-x64:                    installer-framework-build-tqtc_3.0-mac-x64.7z
+
+[release.global]
+version:                        5.11.0
+version_tag:
+module_exclude_list:            qtdocgallery, qtfeedback, qtjsondb, qtpim, qtqa, qtrepotools, qtsystems
+module_separate_install_list:   qtremoteobjects, qtscxml, qtscript, qtserialbus, qtwebengine
+arg_substitution_list:          %QT_VERSION%=%GLOBAL_VERSION%,
+                                %QT_VERSION_MINOR%=5.11,
+                                %QT_VERSION_AND_TAG%=%GLOBAL_VERSION_AND_TAG%,
+                                %QT_INSTALL_DIR_NAME%=5.11.0,
+                                %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.5.0_511x/latest_successful,
+                                %QTC_VERSION%=4.5.0,
+                                %QTC_DISPLAY_VERSION%=4.5.0,
+                                %QTC_MSVC%=2015
+
+################################################################################
+## Linux offline
+################################################################################
+[release.511.offline.linux.x64]
+arg_configurations_file:    offline_installer_jobs/5.11.0/linux_x64_offline
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz
+installer_name:             qt-opensource-linux-x64-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-5.11.0_tests_linux_all
+
+################################################################################
+## macOS offline
+################################################################################
+[release.511.offline.mac.x64]
+assign_to_machine_label:    mac-physical-10.11-x64-pm
+arg_configurations_file:    offline_installer_jobs/5.11.0/mac_x64_offline
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz
+installer_name:             qt-opensource-mac-x64-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-5.11.0_tests_mac_all
+
+################################################################################
+## Windows offline
+################################################################################
+[release.511.offline.windows.x64]
+assign_to_machine_label:    win-msvc2015-Windows10-x64
+arg_configurations_file:    offline_installer_jobs/5.11.0/win_x86_offline
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip,
+                            %REMOVE_PDB_FILES%=true
+installer_name:             qt-opensource-windows-x86-%GLOBAL_VERSION_AND_TAG%
+rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-5.11.0_tests_windows_all
+
+################################################################################
+## Linux repository
+################################################################################
+[release.511.repository.linux.x64]
+arg_configurations_file:    repository_configs/desktop_qt5/linux_x64_repository_qt5_5110
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+repo_components_to_update:  qt.qt5.5110.*
+repo_url_specifier:         linux_x64/desktop/qt5_5110
+rta_key_list:
+
+[release.511.repository.linux.x64.src_doc_examples]
+arg_configurations_file:    repository_configs/desktop_qt5/repository_qt5_5110_src_doc_examples
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+repo_components_to_update:  qt.qt5.5110.*
+repo_url_specifier:         linux_x64/desktop/qt5_5110_src_doc_examples
+
+[release.511.repository.linux.x64.android]
+arg_configurations_file:    repository_configs/android_qt5/linux_x64_android_repository_qt5_5110
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+repo_components_to_update:  qt.qt5.5110.*
+repo_url_specifier:         linux_x64/android/qt5_5110
+rta_key_list:
+
+################################################################################
+## Windows repository
+################################################################################
+[release.511.repository.windows.x86]
+arg_configurations_file:    repository_configs/desktop_qt5/win_x86_repository_qt5_5110
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
+repo_components_to_update:  qt.qt5.5110.*
+repo_url_specifier:         windows_x86/desktop/qt5_5110
+rta_key_list:
+
+[release.511.repository.windows.x86.src_doc_examples]
+arg_configurations_file:    repository_configs/desktop_qt5/repository_qt5_5110_src_doc_examples
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
+repo_components_to_update:  qt.qt5.5110.*
+repo_url_specifier:         windows_x86/desktop/qt5_5110_src_doc_examples
+
+[release.511.repository.windows.x86.android]
+arg_configurations_file:    repository_configs/android_qt5/win_x86_android_repository_qt5_5110
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
+repo_components_to_update:  qt.qt5.5110.*
+repo_url_specifier:         windows_x86/android/qt5_5110
+rta_key_list:
+
+[release.511.repository.windows.x86.winrt]
+arg_configurations_file:    repository_configs/winrt_qt5/win_x64_winrt_repository_qt5_5110
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
+repo_components_to_update:  qt.qt5.5110.*
+repo_url_specifier:         windows_x86/winrt/qt5_5110
+rta_key_list:
+
+################################################################################
+## macOS repository
+################################################################################
+[release.511.repository.mac.x64]
+arg_configurations_file:    repository_configs/desktop_qt5/mac_x64_repository_qt5_5110
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+repo_components_to_update:  qt.qt5.5110.*
+repo_url_specifier:         mac_x64/desktop/qt5_5110
+rta_key_list:
+
+[release.511.repository.mac.x64.src_doc_examples]
+arg_configurations_file:    repository_configs/desktop_qt5/repository_qt5_5110_src_doc_examples
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+repo_components_to_update:  qt.qt5.5110.*
+repo_url_specifier:         mac_x64/desktop/qt5_5110_src_doc_examples
+
+[release.511.repository.mac.x64.android]
+arg_configurations_file:    repository_configs/android_qt5/mac_x64_android_repository_qt5_5110
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+repo_components_to_update:  qt.qt5.5110.*
+repo_url_specifier:         mac_x64/android/qt5_5110
+rta_key_list:
+
+[release.511.repository.mac.x64.ios]
+arg_configurations_file:    repository_configs/ios_qt5/mac_x64_ios_repository_qt5_5110
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+repo_components_to_update:  qt.qt5.5110.*
+repo_url_specifier:         mac_x64/ios/qt5_5110
+rta_key_list:
+

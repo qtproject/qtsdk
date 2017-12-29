@@ -1,0 +1,81 @@
+# Define release content
+
+
+################################################################################
+## Global defines
+################################################################################
+[ifwtools]
+windows-x86:                installer-framework-build-win-x86.7z
+windows-x64:                installer-framework-build-win-x86.7z
+linux-x64:                  installer-framework-build-linux-x64.7z
+mac-x64:                    installer-framework-build-mac-x64.7z
+
+[release.global]
+version:                        5.11.0
+version_tag:
+arg_substitution_list:          %QT_VERSION%=%GLOBAL_VERSION%,
+                                %QT_VERSION_MINOR%=5.11,
+                                %QT_VERSION_AND_TAG%=%GLOBAL_VERSION_AND_TAG%,
+                                %QT_INSTALL_DIR_NAME%=5.11.0,
+                                %QT_DEPENDENCY_VERSION%=5110
+
+################################################################################
+## Linux repository
+################################################################################
+[release.511.repository.linux.x64.preview]
+arg_configurations_file:    repository_configs/desktop_qt5/preview_linux_x64_repository_qt5_511
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+repo_components_to_update:  preview,preview.qt.qt5.511.*
+repo_url_specifier:         linux_x64/desktop/qt5_511_preview
+
+[release.511.repository.linux.x64.android.preview]
+arg_configurations_file:    repository_configs/android_qt5/preview_linux_x64_android_repository_qt5_511
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+repo_components_to_update:  preview.qt.qt5.511.*
+repo_url_specifier:         linux_x64/android/qt5_511_preview
+rta_key_list:               Qt_RTA_opensource_onlineInstallerSmoke-5.11.0_tests_linux_all
+
+################################################################################
+## Windows repository
+################################################################################
+[release.511.repository.windows.x86.preview]
+arg_configurations_file:    repository_configs/desktop_qt5/preview_win_x86_repository_qt5_511
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
+repo_components_to_update:  preview,preview.qt.qt5.511.*
+repo_url_specifier:         windows_x86/desktop/qt5_511_preview
+
+[release.511.repository.windows.x86.android.preview]
+arg_configurations_file:    repository_configs/android_qt5/preview_win_x86_android_repository_qt5_511
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
+repo_components_to_update:  preview.qt.qt5.511.*
+repo_url_specifier:         windows_x86/android/qt5_511_preview
+
+[release.511.repository.windows.x86.winrt.preview]
+arg_configurations_file:    repository_configs/winrt_qt5/preview_win_x64_winrt_repository_qt5_511
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
+repo_components_to_update:  preview.qt.qt5.511.*
+repo_url_specifier:         windows_x86/winrt/qt5_511_preview
+rta_key_list:               Qt_RTA_opensource_onlineInstallerSmoke-5.11.0_tests_windows_all
+
+################################################################################
+## macOS repository
+################################################################################
+[release.511.repository.mac.x64.preview]
+arg_configurations_file:    repository_configs/desktop_qt5/preview_mac_x64_repository_qt5_511
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+repo_components_to_update:  preview,preview.qt.qt5.511.*
+repo_url_specifier:         mac_x64/desktop/qt5_511_preview
+
+[release.511.repository.mac.x64.android.preview]
+arg_configurations_file:    repository_configs/android_qt5/preview_mac_x64_android_repository_qt5_511
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+repo_components_to_update:  preview.qt.qt5.511.*
+repo_url_specifier:         mac_x64/android/qt5_511_preview
+
+[release.511.repository.mac.x64.ios.preview]
+arg_configurations_file:    repository_configs/ios_qt5/preview_mac_x64_ios_repository_qt5_511
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+repo_components_to_update:  preview.qt.qt5.511.*
+repo_url_specifier:         mac_x64/ios/qt5_511_preview
+rta_key_list:               Qt_RTA_opensource_onlineInstallerSmoke-5.11.0_tests_mac_all
+
