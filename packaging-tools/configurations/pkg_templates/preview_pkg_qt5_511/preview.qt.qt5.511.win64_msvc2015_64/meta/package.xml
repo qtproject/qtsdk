@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>MSVC 2015 64-bit</DisplayName>
+    <Description>Qt %QT_VERSION% Prebuilt Components for MSVC 2015 64-bit</Description>
+    <Version>%QT_VERSION%%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Default>false</Default>
+    <SortingPriority>590</SortingPriority>
+</Package>
+
+

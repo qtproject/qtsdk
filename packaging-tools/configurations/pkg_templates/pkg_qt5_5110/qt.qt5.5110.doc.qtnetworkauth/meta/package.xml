@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Documentation for Qt Networkauth (Technology Preview)</DisplayName>
+    <Description>Documentation for Qt Networkauth (Technology Preview)</Description>
+    <Version>5.11.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Script>installscript.qs</Script>
+    <Virtual>true</Virtual>
+    <SortingPriority>1</SortingPriority>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>

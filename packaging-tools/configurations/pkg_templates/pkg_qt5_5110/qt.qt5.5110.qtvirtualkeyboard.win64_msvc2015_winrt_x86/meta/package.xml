@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt Virtual Keyboard for UWP x86 (MSVC 2015)</DisplayName>
+    <Description></Description>
+    <Version>5.11.0-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <AutoDependOn>qt.qt5.5110.qtvirtualkeyboard, qt.qt5.5110.win64_msvc2015_winrt_x86</AutoDependOn>
+    <Dependencies>qt.qt5.5110.win64_msvc2015_winrt_x86</Dependencies>
+    <Virtual>true</Virtual>
+    <Script>installscript.qs</Script>
+    <SortingPriority></SortingPriority>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+
