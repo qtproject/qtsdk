@@ -125,7 +125,6 @@ rta_key_list:
 [release.510.repository.mac.x64.src_doc_examples]
 arg_configurations_file:    repository_configs/desktop_qt5/repository_qt5_5101_src_doc_examples
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
-repo_content_type:          src_doc_examples
 repo_components_to_update:  qt.qt5.5101.*
 repo_url_specifier:         mac_x64/desktop/qt5_5101_src_doc_examples
 
