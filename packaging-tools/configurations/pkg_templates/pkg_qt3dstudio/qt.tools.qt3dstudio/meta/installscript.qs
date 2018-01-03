@@ -154,7 +154,7 @@ function patchWindowsInstallation()
     targetDir = targetDir.replace(/\//g, "\\");
     print("Qt3DStudio patching: Copying: [" + sourceDir + "] into [" + targetDir + "]")
 
-    component.addElevatedOperation("Execute", "{0,2,3,4,5}", "c:\\Windows\\System32\\xcopy.exe", "/S", "/Y", "/Q", "/I", sourceDir, targetDir);
+    component.addOperation("Execute", "{0,2,3,4,5}", "c:\\Windows\\System32\\xcopy.exe", "/S", "/Y", "/Q", "/I", sourceDir, targetDir);
 }
 
 Component.prototype.createOperations = function()
