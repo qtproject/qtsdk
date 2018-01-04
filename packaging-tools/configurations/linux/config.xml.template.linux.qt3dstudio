@@ -6,13 +6,13 @@
     <Publisher>The Qt Company Ltd</Publisher>
     <InstallerWindowIcon>logo-small</InstallerWindowIcon>
     <InstallerApplicationIcon>logo-small</InstallerApplicationIcon>
-    <Watermark>watermark.png</Watermark>
+    <Watermark>watermark_linux.png</Watermark>
     <StartMenuDir>Qt 3D Studio</StartMenuDir>
     <ProductUrl>https://www.qt.io/3d-studio/</ProductUrl>
     <MaintenanceToolName>Qt3DStudioUninst</MaintenanceToolName>
     <DependsOnLocalInstallerBinary>true</DependsOnLocalInstallerBinary>
     <!-- @homeDir@ and @rootDir@ are some of the supported vars -->
-    <TargetDir>@rootDir@/Qt/qt3dstudio-%QT3DSTUDIO_DISPLAY_VERSION%</TargetDir>
+    <TargetDir>@homeDir@/qt3dstudio-%QT3DSTUDIO_DISPLAY_VERSION%</TargetDir>
     <WizardDefaultHeight>560</WizardDefaultHeight>
     <AllowSpaceInPath>true</AllowSpaceInPath>
 </Installer>
