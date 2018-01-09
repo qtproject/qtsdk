@@ -802,6 +802,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                                       additional_arguments=perfparser_additional_arguments)])
         additional_plugins.extend([make_QtcPlugin('perfprofiler', 'perfprofiler', qtcreator_version,
                                                   modules=qt_module_local_urls, dependencies=plugin_dependencies, qmake_arguments=qmake_arguments)])
+        additional_plugins.extend([make_QtcPlugin('qmlpreview', 'qmlpreview', qtcreator_version,
+                                                  modules=qt_module_local_urls, dependencies=plugin_dependencies, qmake_arguments=qmake_arguments)])
         additional_plugins.extend([make_QtcPlugin('b2qt-qtcreator-plugin', 'b2qt-qtcreator-plugin', qtcreator_version, modules=qt_module_local_urls,
                                                   dependencies=plugin_dependencies + ['perfprofiler'], qmake_arguments=qmake_arguments)])
         additional_plugins.extend([make_QtcPlugin('gammarayintegration', 'gammarayintegration', qtcreator_version,
