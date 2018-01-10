@@ -269,6 +269,8 @@ if __name__ == "__main__":
         qmakeCommand.append('QTC_SKIP_CDBEXT=1')
         qmakeCommand.append('QTC_SKIP_WININTERRUPT=1')
 
+    qmakeCommand.append('QTC_SKIP_SDKTOOL=1')
+
     if callerArguments.additional_qmake_arguments:
         qmakeCommand.extend(callerArguments.additional_qmake_arguments)
 

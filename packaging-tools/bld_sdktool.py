@@ -85,7 +85,7 @@ def build_qt(build, make_command):
 
 def build_sdktool_impl(src, build, target, qmake_command, make_command):
     bldinstallercommon.create_dirs(build)
-    bld_utils.runCommand([qmake_command, 'SDKTOOL_DATA_PATH=.', '-after', 'DESTDIR=' + target, src], build)
+    bld_utils.runCommand([qmake_command, '-after', 'DESTDIR=' + target, src], build)
     bld_utils.runCommand(make_command, build)
 
 def build_sdktool(qt_src_url, qt_build_base, sdktool_src_path, sdktool_build_path, sdktool_target_path, make_command):
