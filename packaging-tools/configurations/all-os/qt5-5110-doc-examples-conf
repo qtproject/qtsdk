@@ -115,16 +115,6 @@ package_strip_dirs:     1
 # target_install_dir:
 # package_strip_dirs:     1
 
-[qt.qt5.5110.qtquickcompiler]
-[qt.qt5.5110.qtquickcompiler.doc]
-optional_for_offline:   %QTENTERPRISE_ADDON_OPTIONAL_FOR_OFFLINE%
-archives:               qtquickcompiler.doc
-target_install_base:    /Docs/Qt-5.11.0-QtQuickCompiler/
-[qtquickcompiler.doc]
-archive_uri:            /qt/%QT_VERSION%/latest/doc/qtquickcompiler-documentation.%SRC_ARCHIVE_TYPE%
-target_install_dir:
-package_strip_dirs:     1
-
 [qt.qt5.5110.examples.qtcharts]
 archives:               qt5.5110.examples.qtcharts
 target_install_base:    /Examples/Qt-5.11.0/
