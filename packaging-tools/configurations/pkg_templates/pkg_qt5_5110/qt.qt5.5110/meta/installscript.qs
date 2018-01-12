@@ -41,7 +41,9 @@ function Component()
         var description = component.value("Description");
         component.setValue("DisplayName", displayName + " %QT_RELEASE_TAG% snapshot (#%BUILD_NUMBER%)")
         component.setValue("Description", description + " %QT_RELEASE_TAG% snapshot (#%BUILD_NUMBER%)")
-        component.setValue("Virtual", "true")
+
+        if (!installer.isOfflineOnly())
+            component.setValue("Virtual", "true")
     }
 }
 

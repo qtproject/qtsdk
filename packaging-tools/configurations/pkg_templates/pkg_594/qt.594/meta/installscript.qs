@@ -37,7 +37,8 @@ function Component()
 
     if (snapshotBuild) {
         // hide main node when in snapshot mode
-        component.setValue("Virtual", "true")
+        if (!installer.isOfflineOnly())
+            component.setValue("Virtual", "true")
     }
 }
 
