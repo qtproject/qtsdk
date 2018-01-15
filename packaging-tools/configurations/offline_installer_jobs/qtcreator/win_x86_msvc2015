@@ -1,6 +1,6 @@
 #############################################################################
 ##
-## Copyright (C) 2016 The Qt Company Ltd.
+## Copyright (C) 2018 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -35,7 +35,8 @@ identifier:             windows
 [PackageConfigurationFiles]
 file_list:              qt-conf,
                         qtcreator-license-conf,
-                        x86-tools-qtcreator-msvc2015-conf,
+                        x86-tools-qtcreator-master-msvc2015-conf,
+                        tools-qtcreatorcdbext-msvc2015-standalone-conf,
                         x86-tools-vcredist_msvc2015-conf,
                         x64-tools-vcredist_msvc2015-conf
 
