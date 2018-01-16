@@ -26,9 +26,6 @@
 ##
 #############################################################################
 
-[qt.qt5.5110.doc_collection]
-[qt.qt5.5110.examples_collection]
-
 [qt.qt5.5110.doc]
 archives:               qt5.5110.doc
 target_install_base:    /Docs/Qt-5.11.0/
