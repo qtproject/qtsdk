@@ -78,6 +78,8 @@ def parse_arguments():
         action='append', default=[])
     parser.add_argument('--deploy', help='Run "make deploy" for additional deployment to IDE_OUTPUT_PATH.', action='store_true')
     parser.add_argument('--out-dev', help='Target 7z file name for plugin dev package', dest='target_dev7zfile')
+    parser.add_argument('--cleanup', help='Clean temporary directories (download path, Qt path, build path) at the end',
+        dest='cleanup', action='store_true')
     parser.add_argument('target_7zfile')
 
     parser.epilog += ' --build-path /tmp/plugin_build'
@@ -207,6 +209,17 @@ def build_plugins(caller_arguments):
                        paths.dev_target]
         runCommand(dev_command, paths.temp,
             callerArguments = caller_arguments, init_environment = environment)
+
+    # clean up
+    if caller_arguments.cleanup:
+        bldinstallercommon.remove_tree(paths.qt5)
+        bldinstallercommon.remove_tree(paths.temp)
+        bldinstallercommon.remove_tree(paths.build)
+        bldinstallercommon.remove_tree(paths.dev_target)
+        if caller_arguments.qtc_dev_url:
+            bldinstallercommon.remove_tree(paths.qtc_dev)
+        if caller_arguments.qtc_build_url:
+            bldinstallercommon.remove_tree(paths.qtc_build)
 
 def main():
     bldinstallercommon.init_common_module(os.path.dirname(os.path.realpath(__file__)))

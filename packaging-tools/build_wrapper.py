@@ -457,6 +457,7 @@ def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url
         for module in modules:
             cmd_arguments.extend(['--qt-module', module])
         cmd_arguments.extend(['--out-dev', os.path.join(work_dir, plugin.name + '_dev.7z')])
+        cmd_arguments.append('--cleanup')
         cmd_arguments.append(os.path.join(work_dir, plugin.name + '.7z'))
         bldinstallercommon.do_execute_sub_process(cmd_arguments, work_dir)
         # source package
