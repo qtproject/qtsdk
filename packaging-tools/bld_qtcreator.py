@@ -93,6 +93,8 @@ def add_common_commandline_arguments(parser):
     parser.add_argument('--debug', help="use debug builds", action='store_true', default=False)
     parser.add_argument('--qt-module', help="Qt module package url (.7z) needed for building",
         action='append', dest='qt_modules')
+    parser.add_argument('--add-qmake-argument', help='Adds an argument to the qmake command line',
+        dest='additional_qmake_arguments', action='append')
 
     if bldinstallercommon.is_linux_platform():
         parser.add_argument('--icu7z', help="a file or url where it get icu libs as 7z", required=True)
@@ -262,6 +264,9 @@ if __name__ == "__main__":
         # skip compilation of cdbextension and wininterrupt, they are built separately below
         qmakeCommand.append('QTC_SKIP_CDBEXT=1')
         qmakeCommand.append('QTC_SKIP_WININTERRUPT=1')
+
+    if callerArguments.additional_qmake_arguments:
+        qmakeCommand.extend(callerArguments.additional_qmake_arguments)
 
     runCommand(qmakeCommand, qtCreatorBuildDirectory,
         callerArguments = callerArguments, init_environment = environment)

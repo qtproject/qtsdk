@@ -652,6 +652,9 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     snapshot_path = optionDict['SNAPSHOT_SERVER_PATH'] # optional
     qt_base_path = optionDict['QTC_QT_BASE_DIR']
     qtcreator_edition_name = optionDict['QT_CREATOR_EDITION_NAME']
+    ide_display_name = optionDict.get('IDE_DISPLAY_NAME') # optional
+    ide_id = optionDict.get('IDE_ID') # optional
+    ide_cased_id = optionDict.get('IDE_CASED_ID') # optional
     installer_patch = optionDict.get('INSTALLER_PATCH') # optional
     build_id = optionDict['BUILD_NUMBER']
     icu_libs = optionDict.get('ICU_LIBS') # optional
@@ -748,6 +751,12 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     else:
         cmd_args.extend(['--buildcommand', os.path.normpath('C:/Utils/jom/jom.exe'),
                          '--installcommand', os.path.normpath('nmake.exe')])
+    if ide_display_name:
+        cmd_args.extend(['--add-qmake-argument', 'IDE_DISPLAY_NAME=' + ide_display_name])
+    if ide_id:
+        cmd_args.extend(['--add-qmake-argument', 'IDE_ID=' + ide_id])
+    if ide_cased_id:
+        cmd_args.extend(['--add-qmake-argument', 'IDE_CASED_ID=' + ide_cased_id])
     bldinstallercommon.do_execute_sub_process(cmd_args, work_dir, extra_env=build_environment)
 
     if bldinstallercommon.is_mac_platform():

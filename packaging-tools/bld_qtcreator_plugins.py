@@ -70,8 +70,6 @@ def parse_arguments():
     dev_group.add_argument('--qtc-dev', help='Path to the Qt Creator dev source to use')
     parser.add_argument('--plugin-search-path', help='Adds search path for plugin dependencies (QTC_PLUGIN_DIRS)',
         dest='plugin_search_paths', action='append')
-    parser.add_argument('--add-qmake-argument', help='Adds an argument to the qmake command line',
-        dest='additional_qmake_arguments', action='append')
     parser.add_argument('--plugin-path', help='Path to the plugin sources to build', required=True, dest='plugin_path')
     parser.add_argument('--deploy-command', help='Command to execute for custom deployment before deploying and packaging the target directory.'
         + 'The command gets the Qt prefix and plugin target directory as command line parameters. Pass multiple times for commands that have arguments.',
