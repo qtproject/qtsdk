@@ -724,12 +724,6 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     qt_module_local_urls = [bld_utils.file_url(os.path.join(qtcreator_temp, module_filename(module)))
                             for module in qt_modules]
     # Define Qt Creator build script arguments
-    common_arguments = []
-    if not bldinstallercommon.is_win_platform():
-        common_arguments.extend(['--installcommand', 'make -j1'])
-    else:
-        common_arguments.extend(['--buildcommand', os.path.normpath('C:/Utils/jom/jom.exe'),
-                         '--installcommand', os.path.normpath('nmake.exe')])
     cmd_args = ['python', '-u', os.path.normpath(SCRIPT_ROOT_DIR + '/bld_qtcreator.py'),
                 '--clean',
                 '--qt5path', os.path.normpath(work_dir + '/qt5_install_dir')]
@@ -749,7 +743,11 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
             cmd_args.extend(['--openssl7z', openssl_libs])
     if python_path:
         cmd_args.extend(['--python_path', python_path])
-    cmd_args.extend(common_arguments)
+    if not bldinstallercommon.is_win_platform():
+        cmd_args.extend(['--installcommand', 'make -j1'])
+    else:
+        cmd_args.extend(['--buildcommand', os.path.normpath('C:/Utils/jom/jom.exe'),
+                         '--installcommand', os.path.normpath('nmake.exe')])
     bldinstallercommon.do_execute_sub_process(cmd_args, work_dir, extra_env=build_environment)
 
     if bldinstallercommon.is_mac_platform():
