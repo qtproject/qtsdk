@@ -249,19 +249,21 @@ if __name__ == "__main__":
     buildGitSHA = gitSHA(qtCreatorSourceDirectory, callerArguments)
     qtCreatorProFile = os.path.join(qtCreatorSourceDirectory, 'qtcreator.pro')
 
-    qmakeCommandArguments = "{0} QTC_PREFIX={1} DEFINES+=IDE_REVISION={2} CONFIG+={3}".format(
-        qtCreatorProFile, qtCreatorInstallDirectory, buildGitSHA, buildType)
+    qmakeCommand = [qmakeBinary, qtCreatorProFile,
+        'QTC_PREFIX=' + qtCreatorInstallDirectory,
+        'DEFINES+=IDE_REVISION=' + buildGitSHA,
+        'CONFIG+=' + buildType]
 
     if bldinstallercommon.is_mac_platform():
-        qmakeCommandArguments += " QMAKE_MAC_SDK=macosx" # work around QTBUG-41238
+        qmakeCommand.append('QMAKE_MAC_SDK=macosx') # work around QTBUG-41238
 
     if bldinstallercommon.is_win_platform():  # allow app to run on Windows XP
-        qmakeCommandArguments += " QMAKE_LFLAGS_WINDOWS=/SUBSYSTEM:WINDOWS,5.01"
+        qmakeCommand.append('QMAKE_LFLAGS_WINDOWS=/SUBSYSTEM:WINDOWS,5.01')
         # skip compilation of cdbextension and wininterrupt, they are built separately below
-        qmakeCommandArguments += " QTC_SKIP_CDBEXT=1"
-        qmakeCommandArguments += " QTC_SKIP_WININTERRUPT=1"
+        qmakeCommand.append('QTC_SKIP_CDBEXT=1')
+        qmakeCommand.append('QTC_SKIP_WININTERRUPT=1')
 
-    runCommand("{0} {1}".format(qmakeBinary, qmakeCommandArguments), qtCreatorBuildDirectory,
+    runCommand(qmakeCommand, qtCreatorBuildDirectory,
         callerArguments = callerArguments, init_environment = environment)
 
     runBuildCommand(currentWorkingDirectory = qtCreatorBuildDirectory, callerArguments = callerArguments,
@@ -273,7 +275,7 @@ if __name__ == "__main__":
         init_environment = environment)
 
     if not bldinstallercommon.is_mac_platform():
-        runInstallCommand('install install_docs', currentWorkingDirectory = qtCreatorBuildDirectory,
+        runInstallCommand(['install', 'install_docs'], currentWorkingDirectory = qtCreatorBuildDirectory,
             callerArguments = callerArguments, init_environment = environment)
 
     runInstallCommand('deployqt', currentWorkingDirectory = qtCreatorBuildDirectory, callerArguments = callerArguments,
