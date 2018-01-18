@@ -911,8 +911,10 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     # installer 7z sources
     file_upload_list.append(('qt-creator_build/qtcreator.7z', target_env_dir + '/qtcreator.7z'))
     file_upload_list.append(('qt-creator_build/qtcreator_dev.7z', target_env_dir + '/qtcreator_dev.7z'))
+    file_upload_list.append(('qt-creator_build/qtcreator-debug.7z', target_env_dir + '/qtcreator-debug.7z'))
     snapshot_upload_list.append((target_env_dir + '/qtcreator.7z', 'installer_source/' + target_env_dir + '/qtcreator.7z'))
     snapshot_upload_list.append((target_env_dir + '/qtcreator_dev.7z', 'installer_source/' + target_env_dir + '/qtcreator_dev.7z'))
+    snapshot_upload_list.append((target_env_dir + '/qtcreator-debug.7z', 'installer_source/' + target_env_dir + '/qtcreator-debug.7z'))
     for plugin in additional_plugins:
         plugin_name = plugin.name + '.7z'
         plugin_dev_name = plugin.name + '_dev.7z'

@@ -256,7 +256,9 @@ if __name__ == "__main__":
     qmakeCommand = [qmakeBinary, qtCreatorProFile,
         'QTC_PREFIX=' + qtCreatorInstallDirectory,
         'DEFINES+=IDE_REVISION=' + buildGitSHA,
-        'CONFIG+=' + buildType]
+        'CONFIG+=' + buildType,
+        'CONFIG+=force_debug_info',
+        'CONFIG+=separate_debug_info']
 
     if bldinstallercommon.is_mac_platform():
         qmakeCommand.append('QMAKE_MAC_SDK=macosx') # work around QTBUG-41238
@@ -301,6 +303,9 @@ if __name__ == "__main__":
             callerArguments = callerArguments, init_environment = environment)
 
     runInstallCommand('bindist_installer', qtCreatorBuildDirectory, callerArguments = callerArguments,
+        init_environment = environment)
+
+    runInstallCommand('bindist_debug', qtCreatorBuildDirectory, callerArguments = callerArguments,
         init_environment = environment)
 
     if bldinstallercommon.is_mac_platform():
