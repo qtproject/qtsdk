@@ -63,6 +63,8 @@ def add_commandline_arguments(parser):
         parser.epilog += " --keychain_unlock_script $HOME/unlock-keychain.sh"
     if bldinstallercommon.is_win_platform():
         parser.add_argument('--python_path', help="path to python libraries for use by cdbextension")
+        parser.add_argument('--skip_cdb', help="skip cdbextension and the python dependency packaging step",
+            action='store_true', default=False)
 
 def add_common_commandline_arguments(parser):
     if bldinstallercommon.is_win_platform():
@@ -305,7 +307,8 @@ if __name__ == "__main__":
         runInstallCommand('dmg', qtCreatorBuildDirectory,
             callerArguments = callerArguments, init_environment = environment)
 
-    if bldinstallercommon.is_win_platform():
+    # debugging related extras
+    if bldinstallercommon.is_win_platform() and not callerArguments.skip_cdb:
         # cdbextension
         cdbextQmakeArgs = [qmakeBinary, 'QTC_PREFIX=' + cdbextInstallDirectory, 'CONFIG+=' + buildType]
         if callerArguments.python_path:

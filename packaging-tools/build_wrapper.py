@@ -83,11 +83,14 @@ def sign_windows_executable(file_path, working_dir, abort_on_fail):
     bldinstallercommon.do_execute_sub_process(cmd_args, working_dir, abort_on_fail)
 
 
+def unlock_keychain_script():
+    return '/Users/qt/unlock-keychain.sh'
+
 ###############################
 # Unlock keychain
 ###############################
 def unlock_keychain():
-    cmd_args = ['/Users/qt/unlock-keychain.sh']
+    cmd_args = [unlock_keychain_script()]
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
 
 
@@ -651,11 +654,12 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     snapshot_server = optionDict.get('SNAPSHOT_SERVER') # optional
     snapshot_path = optionDict['SNAPSHOT_SERVER_PATH'] # optional
     qt_base_path = optionDict['QTC_QT_BASE_DIR']
-    qtcreator_edition_name = optionDict['QT_CREATOR_EDITION_NAME']
+    qtcreator_edition_name = optionDict.get('QT_CREATOR_EDITION_NAME') # optional
     ide_display_name = optionDict.get('IDE_DISPLAY_NAME') # optional
     ide_id = optionDict.get('IDE_ID') # optional
     ide_cased_id = optionDict.get('IDE_CASED_ID') # optional
     installer_patch = optionDict.get('INSTALLER_PATCH') # optional
+    skip_cdb = optionDict.get('SKIP_CDB') # optional
     build_id = optionDict['BUILD_NUMBER']
     icu_libs = optionDict.get('ICU_LIBS') # optional
     openssl_libs = optionDict.get('OPENSSL_LIBS') # optional
@@ -665,6 +669,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     sdktool_qtbase_src = sdktool_base + sdktool_ext if sdktool_base and sdktool_ext else None # optional
     qtcreator_temp = os.path.join(work_dir, 'qt-creator_temp')
     download_temp = os.path.join(work_dir, 'downloads')
+    has_unlock_keychain_script = os.path.exists(unlock_keychain_script())
     # from 4.4 on we use external elfutil builds and also build on Windows
     elfutils_url = optionDict.get('ELFUTILS_URL')
     use_separate_elfutils = bool(elfutils_url)
@@ -676,27 +681,34 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                 for module in modules]
 
     # Define paths for pre-built kdsme and gammaray packages
-    kdsme_url = (pkg_base_path + '/' + optionDict["GAMMARAY_BASE_DIR"] + '/' + target_env_dir + '/qt5_kdsme.7z')
-    gammaray_url = (pkg_base_path + '/' + optionDict["GAMMARAY_BASE_DIR"] + '/' + target_env_dir + '/qt5_gammaray.7z')
+    kdsme_url = optionDict.get("GAMMARAY_BASE_DIR")
+    if kdsme_url:
+        kdsme_url = (pkg_base_path + '/' + kdsme_url + '/' + target_env_dir + '/qt5_kdsme.7z')
+    gammaray_url = optionDict.get("GAMMARAY_BASE_DIR")
+    if gammaray_url:
+        gammaray_url = (pkg_base_path + '/' + gammaray_url + '/' + target_env_dir + '/qt5_gammaray.7z')
 
     download_packages_work = ThreadedWork('Get and extract all needed packages')
 
     # clang package
-    clang_extract_path = os.path.join(download_temp, 'libclang')
-    build_environment['LLVM_INSTALL_DIR'] = os.path.join(clang_extract_path, 'libclang') # package contains libclang subdir
-    clang_suffix = optionDict.get('CLANG_FILESUFFIX')
-    clang_suffix = clang_suffix if clang_suffix != None else ''
-    clang_url = (pkg_base_path + '/' + optionDict['CLANG_FILEBASE'] + '-' + optionDict['QTC_PLATFORM'] + clang_suffix + '.7z')
-    download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
-        clang_url, clang_extract_path, download_temp, None))
-    use_optimized_libclang = bldinstallercommon.is_win_platform()
-    if use_optimized_libclang:
-        postfix = '64' if '64' in optionDict['TARGET_ENV'] else '32'
-        opt_clang_url = (pkg_base_path + '/' + optionDict['CLANG_FILEBASE'] + '-windows-mingw_' + postfix + clang_suffix + '.7z')
-        opt_clang_path = os.path.join(download_temp, 'opt_libclang')
-        opt_clang_lib = os.path.join(opt_clang_path, 'libclang', 'bin', 'libclang.dll')
+    use_optimized_libclang = False
+    clang_filebase = optionDict.get('CLANG_FILEBASE')
+    if clang_filebase:
+        clang_extract_path = os.path.join(download_temp, 'libclang')
+        build_environment['LLVM_INSTALL_DIR'] = os.path.join(clang_extract_path, 'libclang') # package contains libclang subdir
+        clang_suffix = optionDict.get('CLANG_FILESUFFIX')
+        clang_suffix = clang_suffix if clang_suffix != None else ''
+        clang_url = (pkg_base_path + '/' + optionDict['CLANG_FILEBASE'] + '-' + optionDict['QTC_PLATFORM'] + clang_suffix + '.7z')
         download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
-            opt_clang_url, opt_clang_path, download_temp, None))
+            clang_url, clang_extract_path, download_temp, None))
+        use_optimized_libclang = bldinstallercommon.is_win_platform()
+        if use_optimized_libclang:
+            postfix = '64' if '64' in optionDict['TARGET_ENV'] else '32'
+            opt_clang_url = (pkg_base_path + '/' + optionDict['CLANG_FILEBASE'] + '-windows-mingw_' + postfix + clang_suffix + '.7z')
+            opt_clang_path = os.path.join(download_temp, 'opt_libclang')
+            opt_clang_lib = os.path.join(opt_clang_path, 'libclang', 'bin', 'libclang.dll')
+            download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
+                opt_clang_url, opt_clang_path, download_temp, None))
 
     if elfutils_url:
         elfutils_path = os.path.join(download_temp, 'elfutils')
@@ -736,7 +748,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     if bldinstallercommon.is_linux_platform() and icu_libs:
         cmd_args.extend(['--icu7z', icu_libs])
     elif bldinstallercommon.is_mac_platform():
-        cmd_args.extend(['--keychain_unlock_script', '/Users/qt/unlock-keychain.sh'])
+        if has_unlock_keychain_script:
+            cmd_args.extend(['--keychain_unlock_script', unlock_keychain_script()])
     else:
         d3d_url = optionDict['D3D_URL']
         opengl_url = optionDict['OPENGLSW_URL']
@@ -746,6 +759,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
             cmd_args.extend(['--openssl7z', openssl_libs])
     if python_path:
         cmd_args.extend(['--python_path', python_path])
+    if skip_cdb:
+        cmd_args.append('--skip_cdb')
     if not bldinstallercommon.is_win_platform():
         cmd_args.extend(['--installcommand', 'make -j1'])
     else:
@@ -759,7 +774,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         cmd_args.extend(['--add-qmake-argument', 'IDE_CASED_ID=' + ide_cased_id])
     bldinstallercommon.do_execute_sub_process(cmd_args, work_dir, extra_env=build_environment)
 
-    if bldinstallercommon.is_mac_platform():
+    if bldinstallercommon.is_mac_platform() and has_unlock_keychain_script:
         lock_keychain()
 
     # Qt Creator plugins
@@ -927,7 +942,7 @@ def handle_sdktool_build(optionDict):
     target_env_dir = BIN_TARGET_DIRS[optionDict['TARGET_ENV']]
     work_dir = optionDict['WORK_DIR']
     qtcreator_version = get_qtcreator_version(os.path.join(work_dir, 'qt-creator'))
-    qtcreator_edition_name = optionDict['QT_CREATOR_EDITION_NAME']
+    qtcreator_edition_name = optionDict.get('QT_CREATOR_EDITION_NAME') # optional
     base_path = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/qtcreator/snapshots/' + qtcreator_version
     sdktool_qtbase_src = optionDict['SDKTOOL_QTBASESRC_BASE'] + optionDict['SDKTOOL_QTBASESRC_EXT']
     # build
