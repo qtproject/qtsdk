@@ -650,7 +650,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     scheme = "" if urlparse.urlparse(pkg_base_path).scheme != "" else "file://"
     pkg_base_path = scheme + pkg_base_path
     pkg_storage_server = optionDict['PACKAGE_STORAGE_SERVER_ADDR']
-    base_path = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/qtcreator/snapshots/' + qtcreator_version
+    base_path = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + optionDict['QTC_BASE_DIR'] + '/' + qtcreator_version
     snapshot_server = optionDict.get('SNAPSHOT_SERVER') # optional
     snapshot_path = optionDict['SNAPSHOT_SERVER_PATH'] # optional
     qt_base_path = optionDict['QTC_QT_BASE_DIR']
@@ -766,12 +766,14 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     else:
         cmd_args.extend(['--buildcommand', os.path.normpath('C:/Utils/jom/jom.exe'),
                          '--installcommand', os.path.normpath('nmake.exe')])
+    renaming_qmake_arguments = []
     if ide_display_name:
-        cmd_args.extend(['--add-qmake-argument', 'IDE_DISPLAY_NAME=' + ide_display_name])
+        renaming_qmake_arguments.append('IDE_DISPLAY_NAME=' + ide_display_name)
     if ide_id:
-        cmd_args.extend(['--add-qmake-argument', 'IDE_ID=' + ide_id])
+        renaming_qmake_arguments.append('IDE_ID=' + ide_id)
     if ide_cased_id:
-        cmd_args.extend(['--add-qmake-argument', 'IDE_CASED_ID=' + ide_cased_id])
+        renaming_qmake_arguments.append('IDE_CASED_ID=' + ide_cased_id)
+    cmd_args.extend([arg for value in renaming_qmake_arguments for arg in ['--add-qmake-argument', value]])
     bldinstallercommon.do_execute_sub_process(cmd_args, work_dir, extra_env=build_environment)
 
     if bldinstallercommon.is_mac_platform() and has_unlock_keychain_script:
@@ -779,14 +781,15 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
 
     # Qt Creator plugins
     plugin_dependencies = []
-    qmake_arguments = []
+    qmake_arguments = list(renaming_qmake_arguments)
     additional_plugins = []
 
     if os.path.isdir(os.path.join(work_dir, "licensechecker")):
         additional_plugins.extend([make_QtcPlugin('licensechecker', 'licensechecker', qtcreator_version,
                                                   modules=qt_module_local_urls,
+                                                  qmake_arguments=renaming_qmake_arguments,
                                                   additional_arguments=['--deploy'])])
-        qmake_arguments = ['CONFIG+=licensechecker']
+        qmake_arguments.append('CONFIG+=licensechecker')
         plugin_dependencies = ['licensechecker']
     additional_plugins.extend([make_QtcPlugin('vxworks-qtcreator-plugin', 'vxworks-qtcreator-plugin', qtcreator_version,
                                               modules=qt_module_local_urls, dependencies=plugin_dependencies, qmake_arguments=qmake_arguments)])

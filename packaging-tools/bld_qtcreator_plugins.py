@@ -46,6 +46,7 @@ from __future__ import print_function
 # built in imports
 import argparse # commandline argument parser
 import collections
+import glob
 import os
 import sys
 
@@ -101,9 +102,11 @@ def parse_arguments():
 
 def get_common_qmake_arguments(paths, caller_arguments):
     qtc_build_tree = paths.qtc_build
-    qtc_build_app_bundle = os.path.join(qtc_build_tree, 'Qt Creator.app')
-    if bldinstallercommon.is_mac_platform() and os.path.isdir(qtc_build_app_bundle):
-        qtc_build_tree = qtc_build_app_bundle
+    if bldinstallercommon.is_mac_platform():
+        # add app bundle to path if this points to a binary installation
+        app_bundles = glob.glob(os.path.join(qtc_build_tree, "*.app"))
+        if len(app_bundles) == 1:
+            qtc_build_tree = app_bundles[0]
     build_type = 'debug' if caller_arguments.debug else 'release'
     common_qmake_arguments = ['-r', 'CONFIG+={0}'.format(build_type),
                               'IDE_SOURCE_TREE="{0}"'.format(paths.qtc_dev),
