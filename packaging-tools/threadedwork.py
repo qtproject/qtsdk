@@ -187,7 +187,9 @@ class ThreadedWork():
         self.queue.put(task)
         self.taskNumber = self.taskNumber + 1
 
-    def run(self, maxThreads = multiprocessing.cpu_count()):
+    def run(self, maxThreads=None):
+        if not maxThreads:
+            maxThreads = min(multiprocessing.cpu_count(), self.taskNumber)
         print(self.description)
         print(os.linesep.join(self.legend))
 
