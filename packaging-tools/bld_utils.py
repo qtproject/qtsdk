@@ -123,19 +123,21 @@ def urllib2_response_read(response, file_path, block_size, total_size):
     filename.close()
     return bytes_count
 
-def download(url, savefile, read_block_size = 1048576):
+def download(url, target, read_block_size = 1048576):
     try:
-        if os.path.lexists(savefile):
-            raise Exception("Can not download '{0}' to '{1}' as target. The file already exists.".format(url, savefile))
-
+        if os.path.isdir(os.path.abspath(target)):
+            filename = os.path.basename(urlparse.urlparse(url).path)
+            target = os.path.join(os.path.abspath(target), filename)
+        if os.path.lexists(target):
+            raise Exception("Can not download '{0}' to '{1}' as target. The file already exists.".format(url, target))
         # now a download can be a local path
         if os.path.lexists(url) and os.path.isfile(url):
-            print("copying file from '{0}' to {1}".format(url, savefile))
-            shutil.copy2(url, savefile)
+            print("copying file from '{0}' to {1}".format(url, target))
+            shutil.copy2(url, target)
             print("Done" + os.linesep)
             return
 
-        savefile_tmp = os.extsep.join((savefile, 'tmp'))
+        savefile_tmp = os.extsep.join((target, 'tmp'))
         try:
             os.makedirs(os.path.dirname(savefile_tmp))
         except:
@@ -145,13 +147,13 @@ def download(url, savefile, read_block_size = 1048576):
             # use urlopen which raise an error if that file is not existing
             response = urllib2.urlopen(url)
             total_size = response.info().getheader('Content-Length').strip()
-            print("Downloading file from '{0}' with size {1} bytes to {2}".format(url, total_size, savefile))
+            print("Downloading file from '{0}' with size {1} bytes to {2}".format(url, total_size, target))
             # run the download
             received_size = urllib2_response_read(response, savefile_tmp, read_block_size, total_size)
             if received_size != int(total_size):
                 raise Exception("Broken download, got a wrong size after download from '{0}'(total size: {1}, but {2} received).".format(url, total_size, received_size))
         except urllib2.HTTPError, error:
-            raise Exception("Can not download '{0}' to '{1}' as target(error code: '{2}').".format(url, savefile, error.code))
+            raise Exception("Can not download '{0}' to '{1}' as target(error code: '{2}').".format(url, target, error.code))
 
         renamed = False
         tryRenameCounter = 0
@@ -160,9 +162,9 @@ def download(url, savefile, read_block_size = 1048576):
             try:
                 if tryRenameCounter > 5 :
                     sys.stdout.write("r{0}".format(tryRenameCounter))
-                if os.path.lexists(savefile):
-                    raise Exception("Please remove savefile first: {0}".format(savefile))
-                os.rename(savefile_tmp, savefile)
+                if os.path.lexists(target):
+                    raise Exception("Please remove savefile first: {0}".format(target))
+                os.rename(savefile_tmp, target)
                 if not os.path.lexists(savefile_tmp):
                     renamed = True
                     # make sure that another output starts in a new line
@@ -173,8 +175,8 @@ def download(url, savefile, read_block_size = 1048576):
                     time.sleep(2)
                     continue
                 else:
-                    if not os.path.lexists(savefile):
-                        raise Exception("Could not rename {0} to {1}{2}Error: {3}".format(savefile_tmp, savefile, os.linesep, e.message))
+                    if not os.path.lexists(target):
+                        raise Exception("Could not rename {0} to {1}{2}Error: {3}".format(savefile_tmp, target, os.linesep, e.message))
     finally: # this is done before the except code is called
         try:
             os.remove(savefile_tmp)
