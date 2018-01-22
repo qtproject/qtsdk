@@ -48,6 +48,7 @@ import itertools
 import multiprocessing
 import os
 import threading
+import traceback
 import time
 import Queue as queue # The Queue module has been renamed to queue in Python 3.
 import sys
@@ -127,6 +128,8 @@ class TaskFunction():
     def __init__(self, function, *arguments):
         self.function = function
         self.arguments = arguments
+    def __str__(self):
+        return str(self.__dict__)
 
 class Task():
     def __init__(self, description, function = None, *arguments):
@@ -153,8 +156,10 @@ class Task():
             with outputLock:
                 # there is no clean exit so we adding linesep here
                 sys.__stdout__.write(os.linesep)
-                sys.__stderr__.write(e.message)
                 sys.__stdout__.flush()
+                sys.__stderr__.write(format(taskFunction))
+                sys.__stderr__.write(os.linesep)
+                sys.__stderr__.write(traceback.format_exc())
                 sys.__stderr__.flush()
                 self.exitFunction(*(self.exitFunctionArguments))
         print("Done")
