@@ -54,10 +54,16 @@ import threadedwork
 
 def get_clang(base_path, llvm_revision, clang_revision, tools_revision):
     bld_utils.runCommand(['git', 'clone', '--no-checkout', 'git@github.com:llvm-mirror/llvm.git'], base_path)
+    bld_utils.runCommand(['git', 'config', 'core.eol', 'lf'], os.path.join(base_path, 'llvm'))
+    bld_utils.runCommand(['git', 'config', 'core.autocrlf', 'input'], os.path.join(base_path, 'llvm'))
     bld_utils.runCommand(['git', 'checkout', llvm_revision], os.path.join(base_path, 'llvm'))
     bld_utils.runCommand(['git', 'clone', '--no-checkout', 'git@github.com:llvm-mirror/clang.git'], os.path.join(base_path, 'llvm', 'tools'))
+    bld_utils.runCommand(['git', 'config', 'core.eol', 'lf'], os.path.join(base_path, 'llvm', 'tools', 'clang'))
+    bld_utils.runCommand(['git', 'config', 'core.autocrlf', 'input'], os.path.join(base_path, 'llvm', 'tools', 'clang'))
     bld_utils.runCommand(['git', 'checkout', clang_revision], os.path.join(base_path, 'llvm', 'tools', 'clang'))
     bld_utils.runCommand(['git', 'clone', '--no-checkout', 'git@github.com:llvm-mirror/clang-tools-extra.git', os.path.join(base_path, 'llvm', 'tools', 'clang', 'tools', 'extra')], '.')
+    bld_utils.runCommand(['git', 'config', 'core.eol', 'lf'], os.path.join(base_path, 'llvm', 'tools', 'clang', 'tools', 'extra'))
+    bld_utils.runCommand(['git', 'config', 'core.autocrlf', 'input'], os.path.join(base_path, 'llvm', 'tools', 'clang', 'tools', 'extra'))
     bld_utils.runCommand(['git', 'checkout', tools_revision], os.path.join(base_path, 'llvm', 'tools', 'clang', 'tools', 'extra'))
 
 def get_clazy(base_path, clazy_revision):
@@ -272,8 +278,8 @@ def install_command(toolchain):
 # requires the llvm installation to properly build
 def build_and_install(toolchain, build_path, environment, build_targets, install_targets):
     build_cmd = build_command(toolchain)
-    install_cmd = install_command(toolchain)
     bldinstallercommon.do_execute_sub_process(build_cmd + build_targets, build_path, extra_env=environment)
+    install_cmd = install_command(toolchain)
     bldinstallercommon.do_execute_sub_process(install_cmd + install_targets, build_path, extra_env=environment)
 
 def cmake_command(toolchain, src_path, build_path, install_path, profile_data_path, first_run, bitness, build_type):
@@ -299,6 +305,16 @@ def build_clang(toolchain, src_path, build_path, install_path, profile_data_path
 
     bldinstallercommon.do_execute_sub_process(cmake_cmd, build_path, extra_env=environment)
     build_and_install(toolchain, build_path, environment, ['libclang', 'clang', 'llvm-config'], ['install'])
+
+def check_clang(toolchain, build_path, environment):
+    if is_msvc_toolchain(toolchain) or is_mingw_toolchain(toolchain):
+        tools_path = os.environ.get('WINDOWS_UNIX_TOOLS_PATH')
+        if tools_path:
+            path_key = 'Path' if 'Path' in environment else 'PATH'
+            environment[path_key] += ';' + tools_path
+
+    build_cmd = build_command(toolchain)
+    bldinstallercommon.do_execute_sub_process(build_cmd + ['check-clang'], build_path, extra_env=environment)
 
 def package_clang(install_path, result_file_path):
     (basepath, dirname) = os.path.split(install_path)
@@ -410,6 +426,8 @@ def main():
         os.makedirs(profile_data_path)
         mingw_training(base_path, qtcreator_path, bitness)
         build_clang(toolchain, src_path, build_path, install_path, profile_data_path, False, bitness, environment, build_type='Release')
+
+    check_clang(toolchain, build_path, environment)
 
     package_clang(install_path, result_file_path)
     upload_clang(result_file_path, remote_path)
