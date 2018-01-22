@@ -11,10 +11,19 @@ linux-x64:                  installer-framework-build-linux-x64.7z
 mac-x64:                    installer-framework-build-mac-x64.7z
 
 [release.global]
-version:                        1.0.0
+version:                        1.1.0
 version_tag:
-arg_substitution_list:          %QT3DSTUDIO_VERSION%=1.0.0,
-                                %QT3DSTUDIO_DISPLAY_VERSION%=1.0.0_RC3
+arg_substitution_list:          %QT3DSTUDIO_VERSION%=1.1.0,
+                                %QT3DSTUDIO_DISPLAY_VERSION%=1.1.0-alpha
+
+################################################################################
+## Linux repository
+################################################################################
+[release.qt3dstudio.repository.linux.x64.preview]
+arg_configurations_file:    repository_configs/tools_desktop/linux_x64_repository_tools_qt3dstudio_preview
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
+repo_components_to_update:  preview.qt.tools.qt3dstudio*
+repo_url_specifier:         linux_x64/desktop/tools_qt3dstudio_preview
 
 ################################################################################
 ## Windows repository
@@ -22,7 +31,7 @@ arg_substitution_list:          %QT3DSTUDIO_VERSION%=1.0.0,
 [release.qt3dstudio.repository.windows.x86.preview]
 arg_configurations_file:    repository_configs/tools_desktop/win_x86_repository_tools_qt3dstudio_preview
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
-repo_components_to_update:  preview.qt.tools.qt3dstudio
+repo_components_to_update:  preview.qt.tools.qt3dstudio*
 repo_url_specifier:         windows_x86/desktop/tools_qt3dstudio_preview
 
 ################################################################################
@@ -31,5 +40,5 @@ repo_url_specifier:         windows_x86/desktop/tools_qt3dstudio_preview
 [release.qt3dstudio.repository.mac.x64.preview]
 arg_configurations_file:    repository_configs/tools_desktop/mac_x64_repository_tools_qt3dstudio_preview
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
-repo_components_to_update:  preview.qt.tools.qt3dstudio
+repo_components_to_update:  preview.qt.tools.qt3dstudio*
 repo_url_specifier:         mac_x64/desktop/tools_qt3dstudio_preview

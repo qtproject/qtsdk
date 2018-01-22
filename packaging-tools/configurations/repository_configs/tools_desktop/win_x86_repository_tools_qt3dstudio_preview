@@ -32,7 +32,9 @@ name:                   preview
 [PlatformIdentifier]
 identifier:             windows
 
-[PackageTemplates]
-template_dirs:          preview_tools
+[PackageConfigurationFiles]
+file_list:              x86-tools-qt3dstudio-windows-online-preview-conf
 
-[preview.qt.tools.qt3dstudio]
+
+[PackageTemplates]
+template_dirs:          preview_pkg_qt3dstudio

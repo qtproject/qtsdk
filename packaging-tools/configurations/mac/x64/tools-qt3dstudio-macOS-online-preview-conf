@@ -1,9 +1,9 @@
 #############################################################################
 ##
-## Copyright (C) 2017 The Qt Company Ltd.
+## Copyright (C) 2018 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
-## This file is part of the release tools of the Qt Toolkit.
+## This file is part of Qt 3D Studio.
 ##
 ## $QT_BEGIN_LICENSE:GPL-EXCEPT$
 ## Commercial License Usage
@@ -26,14 +26,24 @@
 ##
 #############################################################################
 
-[PackageNamespace]
-name:                   preview
+[preview.qt.tools.qt3dstudio]
+archives:               qt.tools.qt3dstudio,
+                        examples
+target_install_base:    /Qt3DStudio-%QT3DSTUDIO_VERSION%
+[qt.tools.qt3dstudio]
+archive_uri:            qt3dstudio/%QT3DSTUDIO_VERSION%/latest/qt3dstudio/qt3dstudio-MacOS-MacOS_10_12-Clang-MacOS-MacOS_10_12-X86_64.7z
+package_strip_dirs:     0
+target_install_dir:     /
+archive_name:           qt3dstudio.7z
+[examples]
+archive_uri:            qt3dstudio/%QT3DSTUDIO_VERSION%/latest/examples/qt3dstudio-examples-%QT3DSTUDIO_VERSION%.7z
+package_strip_dirs:     1
+target_install_dir:     /examples
 
-[PlatformIdentifier]
-identifier:             mac
+[preview.qt.tools.qt3dstudio.doc]
+archives:               qt.tools.qt3dstudio.doc
+target_install_base:    /Qt3DStudio-%QT3DSTUDIO_VERSION%/bin/Qt3DStudio.app/Contents/doc/
+[qt.tools.qt3dstudio.doc]
+archive_uri:            qt3dstudio/doc_temp/qt3dstudio_doc.7z
+target_install_dir:
 
-[PackageConfigurationFiles]
-file_list:              tools-qt3dstudio-macOS-online-preview-conf
-
-[PackageTemplates]
-template_dirs:          preview_pkg_qt3dstudio
