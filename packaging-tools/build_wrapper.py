@@ -663,6 +663,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     build_id = optionDict['BUILD_NUMBER']
     icu_libs = optionDict.get('ICU_LIBS') # optional
     openssl_libs = optionDict.get('OPENSSL_LIBS') # optional
+    qt_extra_module_url = optionDict.get('QT_EXTRA_MODULE_URL') # optional
     qt_postfix = os.environ['QT_POSTFIX']
     sdktool_base = optionDict.get('SDKTOOL_QTBASESRC_BASE') # optional
     sdktool_ext = optionDict.get('SDKTOOL_QTBASESRC_EXT') # optional
@@ -736,8 +737,12 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                   'qtquickcontrols', 'qtquickcontrols2', 'qtscript', 'qtsvg', 'qttools',
                   'qttranslations', 'qtx11extras', 'qtxmlpatterns']
     qt_module_urls = module_urls(qt_modules)
-    qt_module_local_urls = [bld_utils.file_url(os.path.join(qtcreator_temp, module_filename(module)))
-                            for module in qt_modules]
+    if qt_extra_module_url:
+        qt_module_urls.append(qt_extra_module_url)
+    qt_module_local_urls = [bld_utils.file_url(os.path.join(qtcreator_temp, os.path.basename(url)))
+                            for url in qt_module_urls]
+
+
     # Define Qt Creator build script arguments
     cmd_args = ['python', '-u', os.path.normpath(SCRIPT_ROOT_DIR + '/bld_qtcreator.py'),
                 '--clean',
