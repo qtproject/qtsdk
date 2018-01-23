@@ -79,17 +79,15 @@ Component.prototype.reactOnTargetDirChange = function(key, value)
             component.qt3DStudioBinaryPath = component.qt3DStudioBinaryPath.replace(/\//g, "\\");
             component.qt3DViewerBinaryPath = value + "\\%TARGET_INSTALL_DIR%\\bin\\Qt3DViewer.exe";
             component.qt3DViewerBinaryPath = component.qt3DViewerBinaryPath.replace(/\//g, "\\");
-            component.qt3DStudioUninstallPath = value + "\\%TARGET_INSTALL_DIR%\\Qt3DStudioUninst.exe";
-            component.qt3DStudioUninstallPath = component.qt3DStudioUninstallPath.replace(/\//g, "\\");
-
         } else if (installer.value("os") == "mac") {
             component.qt3DStudioBinaryPath = value + "/%TARGET_INSTALL_DIR%/bin/Qt3DStudio.app/Contents/MacOS/Qt3DStudio";
             // fix duplicate forward slashes in path
             component.qt3DStudioBinaryPath = component.qt3DStudioBinaryPath.replace(/\/+/g, "/");
         } else {
-            component.qt3DStudioBinaryPath = value + "/%TARGET_INSTALL_DIR%/bin/TODO";
-            // fix duplicate forward slashes in path
-            component.qt3DStudioBinaryPath = component.qt3DStudioBinaryPath.replace(/\/+/g, "/");
+            component.qt3DStudioBinPath = value + "/%TARGET_INSTALL_DIR%/bin";
+            component.qt3DStudioBinPath = component.qt3DStudioBinPath.replace(/\/+/g, "/");
+            component.platformPluginsPath = value + "/%TARGET_INSTALL_DIR%/plugins/platforms";
+            component.platformPluginsPath = component.platformPluginsPath.replace(/\/+/g, "/");
         }
     }
 }
@@ -112,6 +110,23 @@ function registerWindowsFileTypeExtensions()
     } catch (e) {
         console.log(e);
     }
+}
+
+function patchLinuxInstallation()
+{
+    // platforms plugin
+    var platformPluginsTargetDir = component.qt3DStudioBinPath + "/platforms";
+    platformPluginsTargetDir = platformPluginsTargetDir.replace(/\/+/g, "/");
+
+    component.addOperation("Mkdir", platformPluginsTargetDir);
+
+    var platformPluginsSourceFile = component.platformPluginsPath + "/libqxcb.so";
+    platformPluginsSourceFile = platformPluginsSourceFile.replace(/\/+/g, "/");
+
+    var platformPluginsTargetFile = platformPluginsTargetDir + "/libqxcb.so";
+    platformPluginsTargetFile = platformPluginsTargetFile.replace(/\/+/g, "/");
+
+    component.addOperation("Move", platformPluginsSourceFile, platformPluginsTargetFile);
 }
 
 function patchWindowsInstallation()
@@ -171,8 +186,11 @@ Component.prototype.createOperations = function()
                 "workingDirectory=@TargetDir@\\bin", "iconPath=" + component.qt3DStudioBinaryPath, "iconId=0");
             component.addOperation("CreateShortcut", component.qt3DViewerBinaryPath, "@StartMenuDir@\\Qt 3D Viewer.lnk",
                 "workingDirectory=@TargetDir@\\bin", "iconPath=" + component.qt3DViewerBinaryPath, "iconId=0");
-            component.addOperation("CreateShortcut", component.qt3DStudioUninstallPath, "@StartMenuDir@\\Uninstall Qt 3D Studio.lnk",
-                "workingDirectory=@TargetDir@", "iconPath=" + component.qt3DStudioUninstallPath, "iconId=0");
+            component.addOperation("CreateShortcut", "@TargetDir@/Qt3DStudioUninst.exe", "@StartMenuDir@/Uninstall Qt 3D Studio.lnk", " --uninstall");
+        }
+        if (installer.value("os") === "x11") {
+            // patch the installation
+            patchLinuxInstallation()
         }
     } catch (e) {
         console.log(e);
