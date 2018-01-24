@@ -246,6 +246,9 @@ if __name__ == "__main__":
     environment = get_common_environment(callerArguments.qt5path, callerArguments)
     environment["INSTALL_BASENAME"] = "qt-creator"
     environment["INSTALLER_ARCHIVE"] = "qtcreator.7z"
+
+    environment["QTC_NO_CLANG_LIBTOOLING"] = "1"
+
     if callerArguments.debug:
         buildType = 'debug'
     else:
