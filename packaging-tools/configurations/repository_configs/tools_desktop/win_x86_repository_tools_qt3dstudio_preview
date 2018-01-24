@@ -33,8 +33,9 @@ name:                   preview
 identifier:             windows
 
 [PackageConfigurationFiles]
-file_list:              x86-tools-qt3dstudio-windows-online-preview-conf
-
+file_list:              x86-tools-qt3dstudio-windows-online-preview-conf,
+                        qt-gplv3-license-conf,
+                        qt-gpl3-except-license-conf
 
 [PackageTemplates]
-template_dirs:          preview_pkg_qt3dstudio
+template_dirs:          preview_pkg_qt3dstudio, pkg_qt3dstudio, pkg_tools

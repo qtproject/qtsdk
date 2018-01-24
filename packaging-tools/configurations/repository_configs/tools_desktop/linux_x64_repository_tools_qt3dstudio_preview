@@ -33,7 +33,9 @@ name:                   preview
 identifier:             linux
 
 [PackageConfigurationFiles]
-file_list:              tools-qt3dstudio-linux-online-preview-conf
+file_list:              tools-qt3dstudio-linux-online-preview-conf,
+                        qt-gplv3-license-conf,
+                        qt-gpl3-except-license-conf
 
 [PackageTemplates]
-template_dirs:          preview_pkg_qt3dstudio
+template_dirs:          preview_pkg_qt3dstudio, pkg_qt3dstudio, pkg_tools
