@@ -38,7 +38,6 @@ template_dirs:          preview_pkg_qt5_511
 [preview]
 [preview.qt.qt5.511]
 [preview.qt.qt5.511.src]
-[preview.qt.qt5.511.logs]
 [preview.qt.qt5.511.qtcharts]
 [preview.qt.qt5.511.qtdatavis3d]
 [preview.qt.qt5.511.qtpurchasing]
