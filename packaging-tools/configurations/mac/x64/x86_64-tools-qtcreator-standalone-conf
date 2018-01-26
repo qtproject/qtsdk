@@ -28,7 +28,7 @@
 
 
 [qt.tools.qtcreator]
-archives:               tools.qtcreator
+archives:               tools.qtcreator,
                         tools.sdktool
 target_install_base:    /
 package_default:        true
