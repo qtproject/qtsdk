@@ -28,12 +28,21 @@
 
 
 [qt.tools.qtcreator]
-archives:               tools.qtcreator
+archives:               tools.qtcreator,
+                        tools.sdktool
 target_install_base:    /Tools/QtCreator
 package_default:        true
+
 [tools.qtcreator]
 archive_uri:            %QT_CREATOR_BASE_PATH%/windows_vs%QTC_MSVC%_32/qtcreator.7z
 package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:
 archive_name:           qtcreator.7z
+
+[tools.sdktool]
+archive_uri:            %QT_CREATOR_BASE_PATH%/windows_vs2015_32/sdktool.7z
+package_strip_dirs:
+target_install_dir:     /bin
+rpath_target:
+archive_name:           qtcreator_sdktool.7z

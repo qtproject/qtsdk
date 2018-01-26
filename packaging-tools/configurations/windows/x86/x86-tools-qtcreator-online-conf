@@ -43,7 +43,8 @@
 [qt.tools.qtcreator]
 archives:               tools.qtcreator,
                         tools.qtcreator.wininterrupt32,
-                        tools.qtcreator.wininterrupt64
+                        tools.qtcreator.wininterrupt64,
+                        tools.sdktool
 target_install_base:    /Tools/QtCreator
 package_default:        true
 
@@ -67,3 +68,10 @@ package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:
 archive_name:           wininterrupt64.7z
+
+[tools.sdktool]
+archive_uri:            %QT_CREATOR_BASE_PATH%/windows_vs2015_32/sdktool.7z
+package_strip_dirs:
+target_install_dir:     /bin
+rpath_target:
+archive_name:           qtcreator_sdktool.7z

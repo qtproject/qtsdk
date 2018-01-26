@@ -29,11 +29,20 @@
 
 [qt.tools.qtcreator]
 archives:               tools.qtcreator
+                        tools.sdktool
 target_install_base:    /
 package_default:        true
+
 [tools.qtcreator]
 archive_uri:            %QT_CREATOR_BASE_PATH%/mac_x64/qtcreator.7z
 package_strip_dirs:
 target_install_dir:     /
 rpath_target:
 archive_name:           qtcreator.7z
+
+[tools.sdktool]
+archive_uri:            %QT_CREATOR_BASE_PATH%/mac_x64/sdktool.7z
+package_strip_dirs:
+target_install_dir:     /Qt Creator.app/Contents/Resources
+rpath_target:
+archive_name:           qtcreator_sdktool.7z
