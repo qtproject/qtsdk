@@ -828,8 +828,6 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                                       additional_arguments=perfparser_additional_arguments)])
         additional_plugins.extend([make_QtcPlugin('perfprofiler', 'perfprofiler', qtcreator_version,
                                                   modules=qt_module_local_urls, dependencies=plugin_dependencies, qmake_arguments=qmake_arguments)])
-        additional_plugins.extend([make_QtcPlugin('qmlpreview', 'qmlpreview', qtcreator_version,
-                                                  modules=qt_module_local_urls, dependencies=plugin_dependencies, qmake_arguments=qmake_arguments)])
         additional_plugins.extend([make_QtcPlugin('b2qt-qtcreator-plugin', 'b2qt-qtcreator-plugin', qtcreator_version, modules=qt_module_local_urls,
                                                   dependencies=plugin_dependencies + ['perfprofiler'], qmake_arguments=qmake_arguments)])
         additional_plugins.extend([make_QtcPlugin('gammarayintegration', 'gammarayintegration', qtcreator_version,
@@ -844,6 +842,10 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                                   modules=qt_module_local_urls,
                                                   dependencies=plugin_dependencies + ['b2qt-qtcreator-plugin'],
                                                   qmake_arguments=qmake_arguments)])
+
+    # qmlpreview does work on macOs
+    additional_plugins.extend([make_QtcPlugin('qmlpreview', 'qmlpreview', qtcreator_version,
+                                              modules=qt_module_local_urls, dependencies=plugin_dependencies, qmake_arguments=qmake_arguments)])
 
     # Build Qt Creator plugins
     icu_local_url = bld_utils.file_url(os.path.join(qtcreator_temp, os.path.basename(icu_libs))) if bldinstallercommon.is_linux_platform() else None
