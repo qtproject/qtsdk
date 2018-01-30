@@ -106,10 +106,6 @@ INSTALLER_FRAMEWORK_TOOLS   = ''
 IFW_TOOLS_DIR_NAME          = 'ifwt'
 CREATE_MAINTENANCE_TOOL_RESOURCE_FILE = False
 
-INSTALLER_NAMING_SCHEME_COMPILER    = ''
-INSTALLER_NAMING_SCHEME_TARGET_ARCH = ''
-INSTALLER_NAMING_SCHEME_VERSION_NUM = ''
-INSTALLER_NAMING_SCHEME_VERSION_TAG = ''
 LICENSE_TYPE                        = ''
 
 TARGET_INSTALL_DIR_NAME_TAG         = '%TARGET_INSTALL_DIR%'
@@ -235,20 +231,6 @@ def setup_option_parser():
     OPTION_PARSER.add_option("-l", "--license-type",
                              action="store", type="string", dest="license_type", default="opensource",
                              help="installer file name scheme: define license type")
-    OPTION_PARSER.add_option("-a", "--target-architecture",
-                             action="store", type="string", dest="target_architecture", default="",
-                             help="installer file name scheme: define target architecture name")
-    OPTION_PARSER.add_option("-e", "--compiler-name",
-                             action="store", type="string", dest="compiler_name", default="",
-                             help="installer file name scheme: define compile name")
-
-    OPTION_PARSER.add_option("--version-number",
-                             action="store", type="string", dest="installer_version_number", default="",
-                             help="installer file name scheme: define installer version number")
-    OPTION_PARSER.add_option("--version-tag",
-                             action="store", type="string", dest="installer_version_tag", default="",
-                             help="installer file name scheme: define installer version tag (in addition to version number)")
-
     OPTION_PARSER.add_option("--preferred-installer-name",
                              action="store", type="string", dest="preferred_installer_name", default="",
                              help="alternatively define the full installer name excluding the extension (.run, .exe, .app")
@@ -319,10 +301,6 @@ def print_options():
     print
     print "Installer naming scheme options:\n"
     print "License type:                " + LICENSE_TYPE
-    print "Compiler type:               " + INSTALLER_NAMING_SCHEME_COMPILER
-    print "Target arch:                 " + INSTALLER_NAMING_SCHEME_TARGET_ARCH
-    print "Version number:              " + INSTALLER_NAMING_SCHEME_VERSION_NUM
-    print "Version tag:                 " + INSTALLER_NAMING_SCHEME_VERSION_TAG
     print "Key-Value substitution list: "
     print KEY_SUBSTITUTION_LIST
 
@@ -346,15 +324,11 @@ def parse_cmd_line():
     global CREATE_OFFLINE_INSTALLER
     global CREATE_REPOSITORY
     global CREATE_MAINTENANCE_TOOL_RESOURCE_FILE
-    global INSTALLER_NAMING_SCHEME_COMPILER
-    global INSTALLER_NAMING_SCHEME_TARGET_ARCH
     global LICENSE_TYPE
     global CONFIGURATIONS_DIR
     global STRICT_MODE
     global ARCHIVE_SERVER_BASE_URL
     global INSTALLER_FRAMEWORK_TOOLS
-    global INSTALLER_NAMING_SCHEME_VERSION_NUM
-    global INSTALLER_NAMING_SCHEME_VERSION_TAG
 
     global INSTALLER_FRAMEWORK_QT_ARCHIVE_URI
     global INSTALLER_FRAMEWORK_QT_CONFIGURE_OPTIONS
@@ -380,10 +354,6 @@ def parse_cmd_line():
     CREATE_OFFLINE_INSTALLER            = options.offline_installer
     CREATE_REPOSITORY                   = options.create_repository
     STRICT_MODE                         = options.strict_mode
-    INSTALLER_NAMING_SCHEME_TARGET_ARCH = options.target_architecture
-    INSTALLER_NAMING_SCHEME_COMPILER    = options.compiler_name
-    INSTALLER_NAMING_SCHEME_VERSION_NUM = options.installer_version_number
-    INSTALLER_NAMING_SCHEME_VERSION_TAG = options.installer_version_tag
     ARCHIVE_SERVER_BASE_URL             = options.archive_base_url
     INSTALLER_FRAMEWORK_TOOLS           = options.ifw_tools_uri
     REMOVE_PDB_FILES                    = options.remove_pdb_files
@@ -593,7 +563,6 @@ def set_config_xml():
     update_repository_url = bldinstallercommon.safe_config_key_fetch(CONFIG_PARSER_TARGET, 'SdkUpdateRepository', 'repository_url_release')
 
     fileslist = [config_template_dest]
-    bldinstallercommon.replace_in_files(fileslist, SDK_VERSION_NUM_TAG, INSTALLER_NAMING_SCHEME_VERSION_NUM)
     bldinstallercommon.replace_in_files(fileslist, UPDATE_REPOSITORY_URL_TAG, update_repository_url)
     # substitute values also from global substitution list
     for item in KEY_SUBSTITUTION_LIST:
@@ -609,7 +578,6 @@ def substitute_global_tags():
     print '----------------------------------------'
     print 'Substituting global tags:'
     print '%PACKAGE_CREATION_DATE%        = ' + BUILD_TIMESTAMP
-    print '%SDK_VERSION_NUM%              = ' + INSTALLER_NAMING_SCHEME_VERSION_NUM
     print '%VERSION_NUMBER_AUTO_INCREASE% = ' + VERSION_NUMBER_AUTO_INCREASE_VALUE
     for item in KEY_SUBSTITUTION_LIST:
         print item[0] + ' = ' + item[1]
@@ -622,7 +590,6 @@ def substitute_global_tags():
                 path = os.path.join(root, name)
                 fileslist.append(path)
 
-    bldinstallercommon.replace_in_files(fileslist, SDK_VERSION_NUM_TAG, INSTALLER_NAMING_SCHEME_VERSION_NUM)
     bldinstallercommon.replace_in_files(fileslist, PACKAGE_CREATION_DATE_TAG, BUILD_TIMESTAMP)
     bldinstallercommon.replace_in_files(fileslist, VERSION_NUMBER_AUTO_INCREASE_TAG, VERSION_NUMBER_AUTO_INCREASE_VALUE)
     for item in KEY_SUBSTITUTION_LIST:
@@ -1131,18 +1098,6 @@ def create_installer_binary():
 
     if not PREFERRED_INSTALLER_NAME:
         SDK_NAME = SDK_NAME + '-' + platform + '-' + LICENSE_TYPE
-        # optional
-        if INSTALLER_NAMING_SCHEME_VERSION_NUM:
-            SDK_NAME += '-' + INSTALLER_NAMING_SCHEME_VERSION_NUM
-        # optional
-        if INSTALLER_NAMING_SCHEME_VERSION_TAG:
-            SDK_NAME += '-' + INSTALLER_NAMING_SCHEME_VERSION_TAG
-        # optional
-        if INSTALLER_NAMING_SCHEME_COMPILER:
-            SDK_NAME = SDK_NAME + '-' + INSTALLER_NAMING_SCHEME_COMPILER
-        # optional
-        if INSTALLER_NAMING_SCHEME_TARGET_ARCH:
-            SDK_NAME = SDK_NAME + '-' + INSTALLER_NAMING_SCHEME_TARGET_ARCH
         SDK_NAME = SDK_NAME + '-' + installer_type
     else:
         SDK_NAME = PREFERRED_INSTALLER_NAME

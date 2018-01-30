@@ -306,13 +306,6 @@ def create_installer(job, packages_base_url, installer_type):
     cmd_args = cmd_args + ['-f', job.configurations_file]
     cmd_args = cmd_args + [installer_type]
     cmd_args = cmd_args + ['-l', job.license]
-    arch_naming = job.architecture
-    package_type = job.get_package_type()
-    if package_type:
-        arch_naming = arch_naming + '-' + package_type
-    cmd_args = cmd_args + ['-a', arch_naming]
-    cmd_args = cmd_args + ['--version-number=' + job.version_number]
-    cmd_args = cmd_args + ['--version-tag=' + job.version_number_tag]
     cmd_args = cmd_args + ['-u', packages_base_url]
     cmd_args = cmd_args + ['--ifw-tools=' + job.ifw_tools]
     cmd_args = cmd_args + ['--preferred-installer-name=' + job.installer_name]
