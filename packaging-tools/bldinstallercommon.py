@@ -101,12 +101,12 @@ def is_content_url_valid(url):
     # throws error if url does not point to valid object
     result = False
     try:
-        urllib2.urlopen(head_request(url))
-        result = True
+        response = urllib2.urlopen(url)
+        total_size = response.info().getheader('Content-Length').strip()
+        return total_size > 0
     except Exception:
         pass
-
-    return result
+    return False
 
 
 ###############################
