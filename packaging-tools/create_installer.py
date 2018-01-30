@@ -1067,10 +1067,10 @@ def create_installer_binary():
 ##############################################################
 # Create the repository
 ##############################################################
-def create_offline_repository():
-    """Create offline repository using repogen tool."""
+def create_online_repository():
+    """Create online repository using repogen tool."""
     print '=================================================='
-    print '= Create offline repository'
+    print '= Create online repository'
     print '=================================================='
 
     # handle special case if MaintenanceTool repository build and
@@ -1219,7 +1219,7 @@ def create_installer():
         if bldinstallercommon.is_mac_platform():
             create_mac_disk_image()
     if CREATE_REPOSITORY:
-        create_offline_repository()
+        create_online_repository()
     # print warning messages if encountered any problems
     print_warnings()
 
