@@ -100,7 +100,6 @@ ARCHIVE_LOCATION_RESOLVER   = None
 SDK_COMPONENT_LIST          = []
 SDK_COMPONENT_LIST_SKIPPED  = []
 SDK_COMPONENT_IGNORE_LIST   = []
-USE_LEGACY_IFW              = False
 STRICT_MODE                 = True
 ARCHIVE_SERVER_BASE_URL     = ''
 INSTALLER_FRAMEWORK_TOOLS   = ''
@@ -216,9 +215,6 @@ def setup_option_parser():
     OPTION_PARSER.add_option("-r", "--create-repo",
                              action="store_true", dest="create_repository", default=False,
                              help="create offline repository")
-    OPTION_PARSER.add_option("-g", "--legacy-repogen",
-                             action="store_true", dest="legacy_repogen", default=False,
-                             help="use legacy repogen, uses different cmd line syntax")
     OPTION_PARSER.add_option("-s", "--strict",
                              action="store_true", dest="strict_mode", default=True,
                              help="use strict mode, abort on any error")
@@ -318,7 +314,6 @@ def print_options():
     print "Development mode:            %r" % (DEVELOPMENT_MODE)
     print "Incremental mode:            %r" % (INCREMENTAL_MODE)
     print "Archive skip:                %r" % (ARCHIVE_DOWNLOAD_SKIP)
-    print "Legacy IFW:                  %r" % (USE_LEGACY_IFW)
     print "Strict mode:                 %r" % (STRICT_MODE)
     print "Remove pdb files:            %r" % (REMOVE_PDB_FILES)
     print
@@ -351,7 +346,6 @@ def parse_cmd_line():
     global CREATE_OFFLINE_INSTALLER
     global CREATE_REPOSITORY
     global CREATE_MAINTENANCE_TOOL_RESOURCE_FILE
-    global USE_LEGACY_IFW
     global INSTALLER_NAMING_SCHEME_COMPILER
     global INSTALLER_NAMING_SCHEME_TARGET_ARCH
     global LICENSE_TYPE
@@ -385,7 +379,6 @@ def parse_cmd_line():
     CREATE_ONLINE_INSTALLER             = options.online_installer
     CREATE_OFFLINE_INSTALLER            = options.offline_installer
     CREATE_REPOSITORY                   = options.create_repository
-    USE_LEGACY_IFW                      = options.legacy_repogen
     STRICT_MODE                         = options.strict_mode
     INSTALLER_NAMING_SCHEME_TARGET_ARCH = options.target_architecture
     INSTALLER_NAMING_SCHEME_COMPILER    = options.compiler_name
@@ -1159,11 +1152,7 @@ def create_installer_binary():
     if CREATE_ONLINE_INSTALLER:
         # binarycreator arguments
         cmd_args = [BINARYCREATOR_TOOL, '-t', INSTALLERBASE_TOOL, '-v', '-p', PACKAGES_FULL_PATH_DST]
-        # check if we are using older binarycreator version
-        if USE_LEGACY_IFW:
-            cmd_args = cmd_args + ['-c', CONFIG_DIR_DST, SDK_NAME, ROOT_COMPONENT_NAME]
-        else:
-            cmd_args = cmd_args + ['--online-only', '-c', CONFIG_DIR_DST + os.sep + 'config.xml', SDK_NAME]
+        cmd_args = cmd_args + ['--online-only', '-c', CONFIG_DIR_DST + os.sep + 'config.xml', SDK_NAME]
 
     # if offline-only installer
     if CREATE_OFFLINE_INSTALLER:
@@ -1174,11 +1163,7 @@ def create_installer_binary():
         package_exclude_list = package_exclude_list.replace('\n', '')
         if package_exclude_list:
             cmd_args = cmd_args + ['-e', package_exclude_list]
-        # check if we are using older binarycreator version
-        if USE_LEGACY_IFW:
-            cmd_args = cmd_args + ['-c', CONFIG_DIR_DST, SDK_NAME, ROOT_COMPONENT_NAME]
-        else:
-            cmd_args = cmd_args + ['-c', CONFIG_DIR_DST + os.sep + 'config.xml', SDK_NAME]
+        cmd_args = cmd_args + ['-c', CONFIG_DIR_DST + os.sep + 'config.xml', SDK_NAME]
 
     # use license resource file if given
     license_resource_file = os.path.join(CONFIG_DIR_DST, 'license.qrc')
@@ -1226,12 +1211,7 @@ def create_offline_repository():
         print 'Creating repository for the SDK ...'
         print '    Outputdir: ' + REPO_OUTPUT_DIR
         print '      pkg src: ' + PACKAGES_FULL_PATH_DST
-        repogen_args = []
-        if USE_LEGACY_IFW:
-            print '(legacy syntax)'
-            repogen_args = [REPOGEN_TOOL, '-p', PACKAGES_FULL_PATH_DST, '-c', CONFIG_DIR_DST, REPO_OUTPUT_DIR, ROOT_COMPONENT_NAME, '-v']
-        else:
-            repogen_args = [REPOGEN_TOOL, '-p', PACKAGES_FULL_PATH_DST, REPO_OUTPUT_DIR]
+        repogen_args = [REPOGEN_TOOL, '-p', PACKAGES_FULL_PATH_DST, REPO_OUTPUT_DIR]
         # create repository
         bldinstallercommon.do_execute_sub_process(repogen_args, SCRIPT_ROOT_DIR)
         if not os.path.exists(REPO_OUTPUT_DIR):
