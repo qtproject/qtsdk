@@ -90,7 +90,6 @@ SDK_NAME_ROOT               = ''
 SDK_NAME                    = ''
 DEBUG_RPATH                 = False
 DUMP_CONFIG                 = False
-DEVELOPMENT_MODE            = False
 INCREMENTAL_MODE            = False
 ARCHIVE_DOWNLOAD_SKIP       = False
 CREATE_ONLINE_INSTALLER     = False
@@ -121,16 +120,6 @@ REMOVE_PDB_FILES                    = 'False'
 
 KEY_SUBSTITUTION_LIST               = []
 PREFERRED_INSTALLER_NAME            = ''
-# ----------------------------------------------------------------------
-INSTALLER_FRAMEWORK_QT_ARCHIVE_URI              = ''
-INSTALLER_FRAMEWORK_QT_CONFIGURE_OPTIONS        = ''
-INSTALLER_FRAMEWORK_URL                         = ''
-INSTALLER_FRAMEWORK_BRANCH                      = ''
-INSTALLER_FRAMEWORK_QMAKE_ARGS                  = ''
-INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_URL     = ''
-INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_BRANCH  = ''
-INSTALLER_FRAMEWORK_OPENSSL                     = ''
-# ----------------------------------------------------------------------
 
 
 class MultipleOption(Option):
@@ -196,9 +185,6 @@ def setup_option_parser():
                              action="store", type="string", dest="configuration_file", default="",
                              help="define configurations directory where to read installer configuration files")
 
-    OPTION_PARSER.add_option("-d", "--devmode",
-                             action="store_true", dest="devmode", default=False,
-                             help="enable development mode, build static Qt and IFW from sources")
     OPTION_PARSER.add_option("-i", "--incremental",
                              action="store_true", dest="incremental", default=False,
                              help="enable incremental development mode")
@@ -234,32 +220,6 @@ def setup_option_parser():
     OPTION_PARSER.add_option("--preferred-installer-name",
                              action="store", type="string", dest="preferred_installer_name", default="",
                              help="alternatively define the full installer name excluding the extension (.run, .exe, .app")
-    # dev mode i.e. building installer-framework
-    OPTION_PARSER.add_option("--installer-framework-qt-archive-uri",
-                             action="store", type="string", dest="installer_framework_qt_archive_uri", default=IfwOptions.default_qt_src_pkg,
-                             help="If you wish to build ifw: qt source package uri for that")
-    OPTION_PARSER.add_option("--installer-framework-qt-configure_options",
-                             action="store", type="string", dest="installer_framework_qt_configure_options",
-                             default=bld_ifw_tools.get_default_qt_configure_options(os.environ.get('IFW_OPENSSL_DIR')),
-                             help="If you wish to build ifw: qt configure optionss for static build")
-    OPTION_PARSER.add_option("--installer-framework-url",
-                             action="store", type="string", dest="installer_framework_url", default=IfwOptions.default_qt_installer_framework_url,
-                             help="If you wish to build ifw: Qt Installer-Framework URL")
-    OPTION_PARSER.add_option("--installer-framework-branch",
-                             action="store", type="string", dest="installer_framework_branch", default=IfwOptions.default_qt_installer_framework_branch_qt,
-                             help="If you wish to build ifw: Qt Installer-Framework branch")
-    OPTION_PARSER.add_option("--installer-framework-qmake-args",
-                             action="store", type="string", dest="installer_framework_qmake_args", default=IfwOptions.default_qt_installer_framework_qmake_args,
-                             help="If you wish to build ifw: qmake arguments for Qt Installer-Framework build")
-    OPTION_PARSER.add_option("--installer-framework-product-key-checker-url",
-                             action="store", type="string", dest="installer_framework_product_key_checker_url", default="",
-                             help="If you wish to build ifw with commercial product key checker: URL for product key checker")
-    OPTION_PARSER.add_option("--installer-framework-product-key-checker-branch",
-                             action="store", type="string", dest="installer_framework_product_key_checker_branch", default="",
-                             help="If you wish to build ifw with commercial product key checker: branch for product key checker")
-    OPTION_PARSER.add_option("--installer-framework-openssl",
-                             action="store", type="string", dest="installer_framework_openssl", default="",
-                             help="If you wish to build ifw: optional directory with OpenSSL libraries on Windows")
     # global key-value substitution
     OPTION_PARSER.add_option("--add-substitution",
                              action="extend", type="string", dest="global_key_value_substitution_list",
@@ -293,7 +253,6 @@ def print_options():
     print "Create offline installer:    %r" % (CREATE_OFFLINE_INSTALLER)
     print "Create repository:           %r" % (CREATE_REPOSITORY)
     print "MaintenanceTool rcc:         %r" % (CREATE_MAINTENANCE_TOOL_RESOURCE_FILE)
-    print "Development mode:            %r" % (DEVELOPMENT_MODE)
     print "Incremental mode:            %r" % (INCREMENTAL_MODE)
     print "Archive skip:                %r" % (ARCHIVE_DOWNLOAD_SKIP)
     print "Strict mode:                 %r" % (STRICT_MODE)
@@ -317,7 +276,6 @@ def parse_cmd_line():
     (options, dummy) = OPTION_PARSER.parse_args()
 
     global MAIN_CONFIG_NAME
-    global DEVELOPMENT_MODE
     global INCREMENTAL_MODE
     global ARCHIVE_DOWNLOAD_SKIP
     global CREATE_ONLINE_INSTALLER
@@ -330,15 +288,6 @@ def parse_cmd_line():
     global ARCHIVE_SERVER_BASE_URL
     global INSTALLER_FRAMEWORK_TOOLS
 
-    global INSTALLER_FRAMEWORK_QT_ARCHIVE_URI
-    global INSTALLER_FRAMEWORK_QT_CONFIGURE_OPTIONS
-    global INSTALLER_FRAMEWORK_URL
-    global INSTALLER_FRAMEWORK_BRANCH
-    global INSTALLER_FRAMEWORK_QMAKE_ARGS
-    global INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_URL
-    global INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_BRANCH
-    global INSTALLER_FRAMEWORK_OPENSSL
-
     global KEY_SUBSTITUTION_LIST
     global PREFERRED_INSTALLER_NAME
     global VERSION_NUMBER_AUTO_INCREASE_VALUE
@@ -347,7 +296,6 @@ def parse_cmd_line():
     CONFIGURATIONS_DIR                  = options.configurations_dir
     MAIN_CONFIG_NAME                    = options.configuration_file
     LICENSE_TYPE                        = options.license_type
-    DEVELOPMENT_MODE                    = options.devmode
     INCREMENTAL_MODE                    = options.incremental
     ARCHIVE_DOWNLOAD_SKIP               = options.archive_skip
     CREATE_ONLINE_INSTALLER             = options.online_installer
@@ -360,15 +308,6 @@ def parse_cmd_line():
 
     if os.environ.get('CREATE_MAINTENANCE_TOOL_RESOURCE_FILE') in ['yes', 'true', '1']:
         CREATE_MAINTENANCE_TOOL_RESOURCE_FILE = True
-
-    INSTALLER_FRAMEWORK_QT_ARCHIVE_URI              = options.installer_framework_qt_archive_uri
-    INSTALLER_FRAMEWORK_QT_CONFIGURE_OPTIONS        = options.installer_framework_qt_configure_options
-    INSTALLER_FRAMEWORK_URL                         = options.installer_framework_url
-    INSTALLER_FRAMEWORK_BRANCH                      = options.installer_framework_branch
-    INSTALLER_FRAMEWORK_QMAKE_ARGS                  = options.installer_framework_qmake_args
-    INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_URL     = options.installer_framework_product_key_checker_url
-    INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_BRANCH  = options.installer_framework_product_key_checker_branch
-    INSTALLER_FRAMEWORK_OPENSSL                     = options.installer_framework_openssl
 
     PREFERRED_INSTALLER_NAME                        = options.preferred_installer_name
 
@@ -386,8 +325,6 @@ def parse_cmd_line():
                 KEY_SUBSTITUTION_LIST.append([key, value])
     KEY_SUBSTITUTION_LIST.append(['%LICENSE%', LICENSE_TYPE])
 
-    if INCREMENTAL_MODE:
-        DEVELOPMENT_MODE = True
     if CREATE_ONLINE_INSTALLER and CREATE_OFFLINE_INSTALLER:
         sys.stderr.write('*** Error! This script does not support (yet) creating offline and online installers at the same time!')
         sys.stderr.write('*** Choose either offline or online!')
@@ -437,11 +374,6 @@ def init_data():
     global CONFIG_DIR_DST
     global PLATFORM_IDENTIFIER
 
-    if DEVELOPMENT_MODE:
-        print ' --------------------------'
-        print ' [Development mode enabled]'
-        print ' --------------------------'
-
     common_conf_path = CONFIGURATIONS_DIR + os.sep + COMMON_CONFIG_DIR_NAME + os.sep + COMMON_CONFIG_NAME
     target_conf_path = MAIN_CONFIG_NAME
     CONFIG_PARSER_COMMON = ConfigParser.ConfigParser()
@@ -479,10 +411,10 @@ def init_data():
             # if not then assume the old directory layout is being used
             else:
                 PACKAGES_DIR_NAME_LIST.append(os.path.join(CONFIGURATIONS_DIR, package_template_dir))
-    if not DEVELOPMENT_MODE:
-        tools_dir_name = IFW_TOOLS_DIR_NAME
-        IFW_TOOLS_DIR = SCRIPT_ROOT_DIR + os.sep + tools_dir_name
-        IFW_TOOLS_DIR = os.path.normpath(IFW_TOOLS_DIR)
+
+    tools_dir_name = IFW_TOOLS_DIR_NAME
+    IFW_TOOLS_DIR = SCRIPT_ROOT_DIR + os.sep + tools_dir_name
+    IFW_TOOLS_DIR = os.path.normpath(IFW_TOOLS_DIR)
 
     # init data for archive locator
     ARCHIVE_LOCATION_RESOLVER = ArchiveLocationResolver(CONFIG_PARSER_TARGET, ARCHIVE_SERVER_BASE_URL, CONFIGURATIONS_DIR, KEY_SUBSTITUTION_LIST)
@@ -998,69 +930,54 @@ def install_ifw_tools():
     global REPOGEN_TOOL
 
     package_save_as_temp = None
-    tools_bin_path = IFW_TOOLS_DIR # default
-    # if "devmode" mode used, then build IFW from sources
-    if DEVELOPMENT_MODE:
-        # create options object
-        options = IfwOptions(INSTALLER_FRAMEWORK_QT_ARCHIVE_URI,
-                             INSTALLER_FRAMEWORK_QT_CONFIGURE_OPTIONS,
-                             INSTALLER_FRAMEWORK_URL,
-                             INSTALLER_FRAMEWORK_BRANCH,
-                             INSTALLER_FRAMEWORK_QMAKE_ARGS,
-                             INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_URL,
-                             INSTALLER_FRAMEWORK_PRODUCT_KEY_CHECKER_BRANCH,
-                             INSTALLER_FRAMEWORK_OPENSSL
-                            )
 
-        options.development_mode = True
-        options.incremental_mode = INCREMENTAL_MODE
-        tools_dir_temp = bld_ifw_tools.build_ifw(options)
-        tools_bin_path = SCRIPT_ROOT_DIR + os.sep + tools_dir_temp
-    elif not os.path.exists(IFW_TOOLS_DIR):
-        if INSTALLER_FRAMEWORK_TOOLS:
-            package_url = INSTALLER_FRAMEWORK_TOOLS
-        else:
-            package_url = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'InstallerFrameworkTools')['package_url']
-        # create needed dirs
-        bldinstallercommon.create_dirs(IFW_TOOLS_DIR)
-        package_save_as_temp = IFW_TOOLS_DIR + os.sep + os.path.basename(package_url)
-        package_save_as_temp = os.path.normpath(package_save_as_temp)
-        if not(INCREMENTAL_MODE and os.path.exists(package_save_as_temp)):
-            print ' Source url:   ' + package_url
-            print ' Install dest: ' + package_save_as_temp
-            # download IFW archive
-            if not package_url == '':
-                print ' Downloading:  ' + package_url
-                res = bldinstallercommon.is_content_url_valid(package_url)
-                if not(res):
-                    sys.stderr.write('*** Package URL is invalid: [' + package_url + ']')
-                    sys.stderr.write('*** Abort!')
-                    raise ValueError()
-                bldinstallercommon.retrieve_url(package_url, package_save_as_temp)
-            if not (os.path.isfile(package_save_as_temp)):
-                sys.stderr.write('*** Downloading failed! Aborting!')
-                raise RuntimeError()
-            # extract IFW archive
-            bldinstallercommon.extract_file(package_save_as_temp, IFW_TOOLS_DIR)
-            os.remove(package_save_as_temp)
-            dir_items = os.listdir(IFW_TOOLS_DIR)
-            items = len(dir_items)
-            if items == 1:
-                dir_name = dir_items[0]
-                os.chdir(IFW_TOOLS_DIR)
-                bldinstallercommon.move_tree(dir_name, '.')
-                bldinstallercommon.remove_tree(IFW_TOOLS_DIR + os.sep + dir_name)
-                os.chdir(SCRIPT_ROOT_DIR)
-            else:
-                sys.stderr.write('*** Unsupported dir structure for installer-framework-tools package?!')
+    if os.path.exists(IFW_TOOLS_DIR):
+        shutil.rmtree(IFW_TOOLS_DIR)
+
+    if INSTALLER_FRAMEWORK_TOOLS:
+        package_url = INSTALLER_FRAMEWORK_TOOLS
+    else:
+        package_url = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'InstallerFrameworkTools')['package_url']
+    # create needed dirs
+    bldinstallercommon.create_dirs(IFW_TOOLS_DIR)
+    package_save_as_temp = IFW_TOOLS_DIR + os.sep + os.path.basename(package_url)
+    package_save_as_temp = os.path.normpath(package_save_as_temp)
+    if not(INCREMENTAL_MODE and os.path.exists(package_save_as_temp)):
+        print ' Source url:   ' + package_url
+        print ' Install dest: ' + package_save_as_temp
+        # download IFW archive
+        if not package_url == '':
+            print ' Downloading:  ' + package_url
+            res = bldinstallercommon.is_content_url_valid(package_url)
+            if not(res):
+                sys.stderr.write('*** Package URL is invalid: [' + package_url + ']')
                 sys.stderr.write('*** Abort!')
-                raise RuntimeError()
+                raise ValueError()
+            bldinstallercommon.retrieve_url(package_url, package_save_as_temp)
+        if not (os.path.isfile(package_save_as_temp)):
+            sys.stderr.write('*** Downloading failed! Aborting!')
+            raise RuntimeError()
+        # extract IFW archive
+        bldinstallercommon.extract_file(package_save_as_temp, IFW_TOOLS_DIR)
+        os.remove(package_save_as_temp)
+        dir_items = os.listdir(IFW_TOOLS_DIR)
+        items = len(dir_items)
+        if items == 1:
+            dir_name = dir_items[0]
+            os.chdir(IFW_TOOLS_DIR)
+            bldinstallercommon.move_tree(dir_name, '.')
+            bldinstallercommon.remove_tree(IFW_TOOLS_DIR + os.sep + dir_name)
+            os.chdir(SCRIPT_ROOT_DIR)
+        else:
+            sys.stderr.write('*** Unsupported dir structure for installer-framework-tools package?!')
+            sys.stderr.write('*** Abort!')
+            raise RuntimeError()
 
     executable_suffix = bldinstallercommon.get_executable_suffix()
-    ARCHIVEGEN_TOOL = bldinstallercommon.locate_executable(tools_bin_path, 'archivegen' + executable_suffix)
-    BINARYCREATOR_TOOL = bldinstallercommon.locate_executable(tools_bin_path, 'binarycreator' + executable_suffix)
-    INSTALLERBASE_TOOL = bldinstallercommon.locate_executable(tools_bin_path, 'installerbase' + executable_suffix)
-    REPOGEN_TOOL = bldinstallercommon.locate_executable(tools_bin_path, 'repogen' + executable_suffix)
+    ARCHIVEGEN_TOOL = bldinstallercommon.locate_executable(IFW_TOOLS_DIR, 'archivegen' + executable_suffix)
+    BINARYCREATOR_TOOL = bldinstallercommon.locate_executable(IFW_TOOLS_DIR, 'binarycreator' + executable_suffix)
+    INSTALLERBASE_TOOL = bldinstallercommon.locate_executable(IFW_TOOLS_DIR, 'installerbase' + executable_suffix)
+    REPOGEN_TOOL = bldinstallercommon.locate_executable(IFW_TOOLS_DIR, 'repogen' + executable_suffix)
     # check
     if not (os.path.isfile(ARCHIVEGEN_TOOL)):
         raise IOError('*** Archivegen tool not found: ' + ARCHIVEGEN_TOOL)
