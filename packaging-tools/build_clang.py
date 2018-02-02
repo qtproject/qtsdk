@@ -287,7 +287,8 @@ def cmake_command(toolchain, src_path, build_path, install_path, profile_data_pa
                '-DCMAKE_INSTALL_PREFIX=' + install_path,
                '-G',
                cmake_generator(toolchain),
-               '-DCMAKE_BUILD_TYPE=' + build_type]
+               '-DCMAKE_BUILD_TYPE=' + build_type,
+               "-DLLVM_LIT_ARGS='-v'"]
     if is_msvc_toolchain(toolchain):
         command.append('-DLLVM_EXPORT_SYMBOLS_FOR_PLUGINS=1')
     command.extend(bitness_flags(bitness))
