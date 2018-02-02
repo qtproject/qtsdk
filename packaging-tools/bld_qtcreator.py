@@ -356,3 +356,7 @@ if __name__ == "__main__":
                 '--verbose', '-o', os.path.join(qtCreatorBuildDirectory, 'qtcreator_dev.7z'),
                 qtCreatorTempDevDirectory],
                 qtCreatorBuildDirectory, callerArguments = callerArguments, init_environment = environment)
+
+    # write information about git sha
+    with open(os.path.join(qtCreatorBuildDirectory, 'qtcreator.7z.git_sha'), 'w') as f:
+        f.write(buildGitSHA)
