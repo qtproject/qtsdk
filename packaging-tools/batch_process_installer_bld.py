@@ -75,7 +75,7 @@ class BuildJob:
         self.repo_content_type          = repo_content_type
         self.repo_components_to_update  = repo_components_to_update
         self.repo_url_specifier         = repo_url_specifier
-        self.installer_name             = preformat_global_version_and_tag(installer_name, version_number, version_number_tag)
+        self.installer_name             = installer_name
         self.rta_key_list               = rta_keys.replace(' ', '')
         self.format_substitution_list(substitution_list)
 
@@ -400,7 +400,6 @@ def create_online_repository(build_job, packages_base_url, forced_version_number
                 '-f', build_job.configurations_file, \
                 '--create-repo', \
                 '-l', build_job.license, \
-                '--version-number=' + build_job.version_number, \
                 '-u', packages_base_url, \
                 '--ifw-tools='+ build_job.ifw_tools]
     if forced_version_number_bump:
