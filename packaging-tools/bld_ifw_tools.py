@@ -262,7 +262,7 @@ class IfwOptions:
 ###############################
 # Build IFW
 ###############################
-def build_ifw(options, create_installer=False):
+def build_ifw(options, create_installer=False, build_ifw_examples=False):
     # verbose
     options.print_data()
     #clean environment first
@@ -275,6 +275,8 @@ def build_ifw(options, create_installer=False):
     build_qt(options, options.qt_build_dir, options.qt_configure_options, options.qt_build_modules)
     # build installer framework
     build_installer_framework(options)
+    if build_ifw_examples:
+        build_installer_framework_examples(options)
     # steps when creating ifw installer
     if create_installer:
         configure_options = get_dynamic_qt_configure_options() + '-prefix ' + options.qt_build_dir_dynamic + os.sep + 'qtbase'
@@ -404,6 +406,31 @@ def build_installer_framework(options):
     cmd_args = options.make_cmd
     bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), options.installer_framework_build_dir)
 
+def build_installer_framework_examples(options):
+    print('--------------------------------------------------------------------')
+    print('Building Installer Framework Examples')
+    file_binarycreator = os.path.join(options.installer_framework_build_dir, 'bin', 'binarycreator')
+    if bldinstallercommon.is_win_platform():
+        file_binarycreator += '.exe'
+    if not os.path.exists(file_binarycreator):
+        print('*** Unable to find binarycreator: {0}, aborting!'.format(file_binarycreator))
+        sys.exit(-1)
+
+    ifw_examples = os.path.join(options.installer_framework_source_dir, 'examples')
+
+    for root, dirs, files in os.walk(ifw_examples):
+        if 'doc' in dirs:
+            dirs.remove('doc')  # don't visit doc dir
+        if 'translations' in dirs:
+            dirs.remove('translations')  # for now don't visit translation example as qm files needs to be generated first
+        for directory in dirs:
+            print("********** building example " + directory)
+            config_file =  os.path.join(root, directory, 'config', 'config.xml')
+            package_dir = os.path.join(root, directory, 'packages')
+            target_dir = os.path.join(root, directory, 'installer')
+            bldinstallercommon.do_execute_sub_process(args=(file_binarycreator, '--offline-only', '-c', config_file, '-p', package_dir, target_dir), execution_path=package_dir)
+        #Breaking here as we don't want to go through sub directories
+        break;
 
 ###############################
 # function
@@ -630,6 +657,7 @@ def setup_argument_parser():
     parser.add_argument('--debug', help="Build the ifw in debug mode", action='store_true', required=False, default=False)
     parser.add_argument('--create_installer', help="Build the ifw and wrap it in the installer", action='store_true', required=False, default=False)
     parser.add_argument('--incremental', help="Build the ifw in incremental mode", action='store_true', required=False, default=False)
+    parser.add_argument('--build_ifw_examples', help="Build the IFW examples", action='store_true', required=False, default=False)
     return parser
 
 
@@ -662,6 +690,6 @@ if __name__ == "__main__":
                          CARGS.incremental
                         )
     # build ifw tools
-    build_ifw(OPTIONS, CARGS.create_installer)
+    build_ifw(OPTIONS, CARGS.create_installer, CARGS.build_ifw_examples)
 
 
