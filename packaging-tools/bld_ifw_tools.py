@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #############################################################################
 ##
 ## Copyright (C) 2018 The Qt Company Ltd.
@@ -39,10 +40,12 @@ import bldinstallercommon
 import pkg_constants
 import shutil
 import shlex
+import traceback
+import subprocess
+from multiprocessing.connection import Listener
 
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 ARCH_EXT = '.zip' if platform.system().lower().startswith('win') else '.tar.xz'
-
 
 
 ##################################################################
@@ -141,7 +144,7 @@ class IfwOptions:
     default_qt_src_pkg                          = 'http://download.qt.io/official_releases/qt/5.9/5.9.5/single/qt-everywhere-opensource-src-5.9.5' + ARCH_EXT
     default_qt_installer_framework_url          = 'git://code.qt.io/installer-framework/installer-framework.git'
     default_qt_installer_framework_branch_qt    = '3.0'
-    default_qt_installer_framework_qmake_args   = ['-config', 'release', '-config', 'static']
+    default_qt_installer_framework_qmake_args   = ['-r', '-config', 'release', '-config', 'static']
 
     def __init__(self,
                  qt_source_package_uri,
@@ -155,7 +158,12 @@ class IfwOptions:
                  qt_binaries_dynamic,
                  signserver,
                  signpwd,
-                 incremental_build = False):
+                 incremental_build = False,
+                 squish_dir = "",
+                 squish_src = ""
+                 ):
+        self.squish_dir                                 = squish_dir
+        self.squish_src                                 = squish_src
         self.signserver                                 = signserver
         self.signpwd                                    = signpwd
         self.incremental_mode                           = incremental_build
@@ -164,6 +172,7 @@ class IfwOptions:
         self.qt_build_dir_dynamic                       = os.path.join(ROOT_DIR, 'qt-bld-dynamic')
         self.installer_framework_source_dir             = os.path.join(ROOT_DIR, 'ifw-src')
         self.installer_framework_build_dir              = os.path.join(ROOT_DIR, 'ifw-bld')
+        self.installer_framework_build_dir_squish       = os.path.join(ROOT_DIR, 'ifw-bld_squish')
         self.installer_framework_pkg_dir                = os.path.join(ROOT_DIR, 'ifw-pkg')
         self.installer_framework_target_dir             = os.path.join(ROOT_DIR, 'ifw-target')
         self.qt_installer_framework_uri                 = qt_installer_framework_uri
@@ -212,21 +221,22 @@ class IfwOptions:
             self.architecture = bldinstallercommon.get_architecture()
         self.plat_suffix                                = bldinstallercommon.get_platform_suffix()
         self.installer_framework_archive_name           = 'installer-framework-build-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
+        self.installer_framework_with_squish_archive_name = 'installer-framework-build-squish-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
         self.installer_base_archive_name                = 'installerbase-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
         self.installer_framework_payload_arch           = 'installer-framework-build-stripped-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
         self.qt_source_package_uri                      = qt_source_package_uri
         self.qt_source_package_uri_saveas               = os.path.join(ROOT_DIR, os.path.basename(self.qt_source_package_uri))
         # Set Qt build prefix
-        qt_prefix = ' -prefix ' + self.qt_build_dir + os.sep + 'qtbase'
-        self.qt_configure_options = qt_configure_options + qt_prefix
+        qt_prefix                                       = ' -prefix ' + self.qt_build_dir + os.sep + 'qtbase'
+        self.qt_configure_options                       = qt_configure_options + qt_prefix
         # Product key checker
         self.product_key_checker_pri                    = product_key_checker_pri
         if product_key_checker_pri:
             if os.path.isfile(product_key_checker_pri):
-                self.qt_installer_framework_qmake_args      += ['-r', 'PRODUCTKEYCHECK_PRI_FILE=' + self.product_key_checker_pri]
+                self.qt_installer_framework_qmake_args += ['PRODUCTKEYCHECK_PRI_FILE=' + self.product_key_checker_pri]
         # macOS specific
         if bldinstallercommon.is_mac_platform():
-            self.qt_installer_framework_qmake_args += ['-r', '"LIBS+=-framework IOKit"']
+            self.qt_installer_framework_qmake_args     += ['"LIBS+=-framework IOKit"']
         # sanity check
         self.sanity_check()
 
@@ -238,9 +248,9 @@ class IfwOptions:
             sys.exit(-1)
         if self.product_key_checker_pri:
             if os.path.isfile(self.product_key_checker_pri):
-                print('Using product key checker: '.format(self.product_key_checker_pri))
+                print('Using product key checker: {0}'.format(self.product_key_checker_pri))
             else:
-                print('*** Error! Given product key checker is not a valid file: '.format(self.product_key_checker_pri))
+                print('*** Error! Given product key checker is not a valid file: {0}'.format(self.product_key_checker_pri))
                 sys.exit(-1)
 
     def print_data(self):
@@ -262,6 +272,7 @@ class IfwOptions:
         print('installer_framework_source_dir:          {0}'.format(self.installer_framework_source_dir))
         print('installer_framework_build_dir:           {0}'.format(self.installer_framework_build_dir))
         print('installer_framework_archive_name:        {0}'.format(self.installer_framework_archive_name))
+        print('installer_framework_with_squish_archive_name: {0}'.format(self.installer_framework_with_squish_archive_name))
         print('installer_base_archive_name:             {0}'.format(self.installer_base_archive_name))
         print('installer_framework_pkg_dir:             {0}'.format(self.installer_framework_pkg_dir))
         print('installer_framework_target_dir:          {0}'.format(self.installer_framework_target_dir))
@@ -269,6 +280,8 @@ class IfwOptions:
         print('product_key_checker:                     {0}'.format(self.product_key_checker_pri))
         print('qt_binaries_static:                      {0}'.format(self.qt_binaries_static))
         print('qt_binaries_dynamic:                     {0}'.format(self.qt_binaries_dynamic))
+        print('squish_dir:                              {0}'.format(self.squish_dir))
+        print('squish_src:                              {0}'.format(self.squish_src))
         print('-----------------------------------------')
 
 
@@ -289,6 +302,9 @@ def build_ifw(options, create_installer=False, build_ifw_examples=False):
     else:
         prepare_qt_sources(options)
         build_qt(options, options.qt_build_dir, options.qt_configure_options, options.qt_build_modules)
+
+    if(options.squish_src):
+        build_squish(options)
     # build installer framework
     build_installer_framework(options)
     if build_ifw_examples:
@@ -310,7 +326,9 @@ def build_ifw(options, create_installer=False, build_ifw_examples=False):
         create_installer_package(options)
     #archive
     archive_installerbase(options)
-    archive_installer_framework(options)
+    archive_installer_framework(options.installer_framework_build_dir, options.installer_framework_archive_name, options.build_artifacts_dir)
+    if (options.squish_dir):
+        archive_installer_framework(options.installer_framework_build_dir_squish, options.installer_framework_with_squish_archive_name, options.build_artifacts_dir)
     return os.path.basename(options.installer_framework_build_dir)
 
 
@@ -392,6 +410,36 @@ def build_qt(options, qt_build_dir, qt_configure_options, qt_modules):
 ###############################
 # function
 ###############################
+def build_squish(options):
+
+    print('--------------------------------------------------------------------')
+    print('Configuring Squish')
+    qmake_bin = os.path.join(options.qt_build_dir, 'qtbase', 'bin', options.qt_qmake_bin)
+    print ('qmake path ' + qmake_bin)
+
+    if bldinstallercommon.is_win_platform():
+        cmd_args = "configure --with-qmake=" + qmake_bin + " --enable-qmake-config --disable-all --enable-idl --enable-qt"
+        print("command args " + cmd_args)
+        bldinstallercommon.do_execute_sub_process(cmd_args, options.squish_src)
+    else:
+        cmd_args = os.path.join(options.squish_src, "configure") + " --with-qmake=" + qmake_bin + " --enable-qmake-config --disable-all --enable-idl --enable-qt"
+        print("command args " + cmd_args)
+        bldinstallercommon.do_execute_sub_process(shlex.split(cmd_args), options.squish_src)
+
+    print('--------------------------------------------------------------------')
+    print("building form source " + options.squish_src)
+    print('Building Squish')
+
+    if bldinstallercommon.is_win_platform():
+        bldinstallercommon.do_execute_sub_process('build', options.squish_src)
+        bldinstallercommon.do_execute_sub_process('build install DESTDIR=' + options.squish_dir, options.squish_src)
+    else:
+        bldinstallercommon.do_execute_sub_process(shlex.split(os.path.join(options.squish_src, 'build')), options.squish_src)
+        bldinstallercommon.do_execute_sub_process(shlex.split(os.path.join(options.squish_src,'build install DESTDIR=') + options.squish_dir), options.squish_src)
+
+###############################
+# function
+###############################
 def prepare_installer_framework(options):
     if options.incremental_mode and os.path.exists(options.installer_framework_source_dir):
         return
@@ -399,6 +447,8 @@ def prepare_installer_framework(options):
     print('Prepare Installer Framework source')
     #create dirs
     bldinstallercommon.create_dirs(options.installer_framework_build_dir)
+    if (options.squish_dir):
+        bldinstallercommon.create_dirs(options.installer_framework_build_dir_squish)
     if options.qt_installer_framework_uri.endswith('.git'):
         # clone repos
         bldinstallercommon.clone_repository(options.qt_installer_framework_uri, options.qt_installer_framework_branch, options.installer_framework_source_dir)
@@ -406,6 +456,13 @@ def prepare_installer_framework(options):
         # fetch src package
         prepare_compressed_package(options.qt_installer_framework_uri, options.qt_installer_framework_uri_saveas, options.installer_framework_source_dir)
 
+
+def start_IFW_build(options, cmd_args, installer_framework_build_dir):
+    print("cmd_args: " + bldinstallercommon.list_as_string(cmd_args))
+    bldinstallercommon.do_execute_sub_process(cmd_args, installer_framework_build_dir)
+    cmd_args = options.make_cmd
+    print("cmd_args: " + bldinstallercommon.list_as_string(cmd_args))
+    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), installer_framework_build_dir)
 
 ###############################
 # function
@@ -430,14 +487,25 @@ def build_installer_framework(options):
     cmd_args = [qmake_bin]
     cmd_args += options.qt_installer_framework_qmake_args
     cmd_args += [options.installer_framework_source_dir]
-    bldinstallercommon.do_execute_sub_process(cmd_args, options.installer_framework_build_dir)
-    cmd_args = options.make_cmd
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), options.installer_framework_build_dir)
+    start_IFW_build(options, cmd_args, options.installer_framework_build_dir)
+    if options.squish_dir:
+        print('--------------------------------------------------------------------')
+        print('Build Installer Framework with squish support')
+        if not os.path.exists(options.installer_framework_build_dir_squish):
+            bldinstallercommon.create_dirs(options.installer_framework_build_dir_squish)
+        cmd_args = [qmake_bin]
+        cmd_args += options.qt_installer_framework_qmake_args
+        cmd_args += ['SQUISH_PATH=' + options.squish_dir]
+        cmd_args += [options.installer_framework_source_dir]
+        start_IFW_build(options, cmd_args, options.installer_framework_build_dir_squish)
 
 def build_installer_framework_examples(options):
     print('--------------------------------------------------------------------')
     print('Building Installer Framework Examples')
-    file_binarycreator = os.path.join(options.installer_framework_build_dir, 'bin', 'binarycreator')
+    if options.squish_dir:
+        file_binarycreator = os.path.join(options.installer_framework_build_dir_squish, 'bin', 'binarycreator')
+    else:
+        file_binarycreator = os.path.join(options.installer_framework_build_dir, 'bin', 'binarycreator')
     if bldinstallercommon.is_win_platform():
         file_binarycreator += '.exe'
     if not os.path.exists(file_binarycreator):
@@ -458,7 +526,22 @@ def build_installer_framework_examples(options):
             target_dir = os.path.join(root, directory, 'installer')
             bldinstallercommon.do_execute_sub_process(args=(file_binarycreator, '--offline-only', '-c', config_file, '-p', package_dir, target_dir), execution_path=package_dir)
         #Breaking here as we don't want to go through sub directories
-        break;
+        break
+    file_squishDir = options.squish_dir
+    if os.path.exists(file_squishDir):
+        print('--------------------------------------------------------------------')
+        print('Running squish tests')
+        # Windows
+        if sys.platform.startswith('win'):
+            squishserver_handle = subprocess.Popen(os.path.join(file_squishDir, 'bin', 'squishserver.exe'))
+            bldinstallercommon.do_execute_sub_process(args=('squishrunner.exe --testsuite ' + os.path.join(os.getcwd(), 'squish_suites', 'suite_IFW_examples')), execution_path=os.path.join(file_squishDir, 'bin'))
+            squishserver_handle.kill() # this will not kill squishserver most likely
+            subprocess.Popen("TASKKILL /IM _squishserver.exe /F") #this should kill squish server
+        # Unix
+        else:
+            squishserver_handle = subprocess.Popen(shlex.split(os.path.join(file_squishDir, "bin", "squishserver")), shell=False)
+            bldinstallercommon.do_execute_sub_process(args=shlex.split(os.path.join(file_squishDir, "bin", "squishrunner") + ' --testsuite ' +os.path.join(os.getcwd(), "squish_suites", "suite_IFW_examples")), execution_path=os.path.join(file_squishDir, "bin"))
+            squishserver_handle.kill() #kills squish server
 
 ###############################
 # function
@@ -534,6 +617,8 @@ def create_installer_package(options):
 def clean_build_environment(options):
     if os.path.isfile(options.installer_framework_archive_name):
         os.remove(options.installer_framework_archive_name)
+    if os.path.isfile(options.installer_framework_with_squish_archive_name):
+        os.remove(options.installer_framework_with_squish_archive_name)
     if os.path.isfile(options.installer_framework_payload_arch):
         os.remove(options.installer_framework_payload_arch)
     if os.path.exists(options.build_artifacts_dir):
@@ -541,6 +626,8 @@ def clean_build_environment(options):
     bldinstallercommon.create_dirs(options.build_artifacts_dir)
     if os.path.exists(options.installer_framework_build_dir):
         bldinstallercommon.remove_tree(options.installer_framework_build_dir)
+    if os.path.exists(options.installer_framework_build_dir_squish):
+        bldinstallercommon.remove_tree(options.installer_framework_build_dir_squish)
 
     if os.path.exists(options.installer_framework_pkg_dir):
         shutil.rmtree(options.installer_framework_pkg_dir)
@@ -555,7 +642,7 @@ def clean_build_environment(options):
     if os.path.exists(options.qt_source_dir):
         bldinstallercommon.remove_tree(options.qt_source_dir)
     if os.path.exists(options.qt_build_dir):
-        bldinstallercommon.remove_tree(options.qt_build_dir)
+        bldinstallercommon.remove_tree(options.qt_source_dir)
     if os.path.isfile(options.qt_source_package_uri_saveas):
         os.remove(options.qt_source_package_uri_saveas)
     if os.path.isfile(options.qt_installer_framework_uri_saveas):
@@ -565,17 +652,17 @@ def clean_build_environment(options):
 ###############################
 # function
 ###############################
-def archive_installer_framework(options):
+def archive_installer_framework(installer_framework_build_dir, installer_framework_archive_name, build_artifacts_dir):
     print('--------------------------------------------------------------------')
     print('Archive Installer Framework')
     # first strip out all unnecessary files
-    for root, dummy, files in os.walk(options.installer_framework_build_dir):
+    for root, dummy, files in os.walk(installer_framework_build_dir):
         for filename in files:
             if filename.endswith(('.moc', 'Makefile', '.cpp', '.h', '.o')) or filename == 'Makefile':
                 os.remove(os.path.join(root, filename))
-    cmd_args = ['7z', 'a', options.installer_framework_archive_name, os.path.basename(options.installer_framework_build_dir)]
+    cmd_args = ['7z', 'a', installer_framework_archive_name, os.path.basename(installer_framework_build_dir)]
     bldinstallercommon.do_execute_sub_process(cmd_args, ROOT_DIR)
-    shutil.move(options.installer_framework_archive_name, options.build_artifacts_dir)
+    shutil.move(installer_framework_archive_name, build_artifacts_dir)
 
 
 ###############################
@@ -701,8 +788,9 @@ def setup_argument_parser():
     parser.add_argument('--qt_binaries_dynamic', help="Use prebuilt Qt package instead of building from scratch", required=False)
     parser.add_argument('--sign_server', help="Signing server address", required=False)
     parser.add_argument('--sign_server_pwd', help="Signing server parssword", required=False)
+    parser.add_argument('--squish_dir', help="Path to Squish. If set, runs squish tests to IFW examples", required=False, default='')
+    parser.add_argument('--squish_src', help="Path to Squish sources. If set, Squish is built", required=False, default='')
     return parser
-
 
 ###############################
 # Main
@@ -736,7 +824,9 @@ if __name__ == "__main__":
                          CARGS.qt_binaries_dynamic,
                          signserver,
                          signpwd,
-                         CARGS.incremental
+                         CARGS.incremental,
+                         CARGS.squish_dir,
+                         CARGS.squish_src
                         )
     # build ifw tools
     build_ifw(OPTIONS, CARGS.create_installer, CARGS.build_ifw_examples)
