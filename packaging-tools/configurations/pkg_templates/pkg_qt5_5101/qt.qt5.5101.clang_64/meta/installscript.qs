@@ -34,16 +34,16 @@ function Component()
         var xcodeVersion = installer.execute("/usr/bin/xcodebuild", new Array("-version"))[0];
         if (xcodeVersion) {
             var version = xcodeVersion.replace( /\D+/g, '');
-            if (parseInt(version) >= parseInt(400) && parseInt(version) <= parseInt(500)) {
+            if (parseInt(version) >= parseInt(820)) {
                 QMessageBox["warning"]("XcodeVersionError",
-                        qsTr("You need to update Xcode to latest version!"),
-                        qsTr("It is recommeneded to have Xcode version greater than 4.0.0 and smaller than 5.0.0 for Qt5.10 compilations with clang."));
+                        qsTr("You need to update Xcode to newer version!"),
+                        qsTr("It is recommeneded to have Xcode version greater than 8.2 for Qt5.10 compilations with clang."));
             }
         }
         else {
             QMessageBox["warning"]("XcodeError",
                 qsTr("Xcode installation not found!"),
-                qsTr("You need to install Xcode version 5.0.0. Download Xcode from https://developer.apple.com/xcode\n"));
+                qsTr("You need to install Xcode version 8.2 (or newer) and set up Xcode command line tools. Download Xcode from https://developer.apple.com\n"));
         }
     }
     // Determine if this is a online snapshot build
