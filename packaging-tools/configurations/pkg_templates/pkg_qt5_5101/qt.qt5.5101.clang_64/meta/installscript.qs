@@ -29,12 +29,11 @@
 // constructor
 function Component()
 {
-
     if (installer.value("os") == "mac") {
         var xcodeVersion = installer.execute("/usr/bin/xcodebuild", new Array("-version"))[0];
         if (xcodeVersion) {
             var version = xcodeVersion.replace( /\D+/g, '');
-            if (parseInt(version) >= parseInt(820)) {
+            if (parseInt(version) <= parseInt(820)) {
                 QMessageBox["warning"]("XcodeVersionError",
                         qsTr("You need to update Xcode to newer version!"),
                         qsTr("It is recommeneded to have Xcode version greater than 8.2 for Qt5.10 compilations with clang."));
