@@ -4,8 +4,8 @@
     <Description>Documentation for Qt5.10 GPLv3 components (QtPurchasing)</Description>
     <Version>5.10.1-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
-    <Script>installscript.qs</Script>
     <Virtual>true</Virtual>
+    <AutoDependOn>qt.qt5.5101.qtpurchasing</AutoDependOn>
     <SortingPriority>1</SortingPriority>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
