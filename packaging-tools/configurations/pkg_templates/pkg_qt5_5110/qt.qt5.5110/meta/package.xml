@@ -6,7 +6,7 @@
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Script>installscript.qs</Script>
     <Virtual>false</Virtual>
-    <SortingPriority>590</SortingPriority>
+    <SortingPriority>5110</SortingPriority>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
 
