@@ -224,6 +224,9 @@ def is_msvc_toolchain(toolchain):
 def is_mingw_toolchain(toolchain):
     return 'mingw' in toolchain
 
+def is_gcc_toolchain(toolchain):
+    return 'g++' in toolchain
+
 def cmake_generator(toolchain):
     if bldinstallercommon.is_win_platform():
         return 'MinGW Makefiles' if is_mingw_toolchain(toolchain) else 'NMake Makefiles JOM'
@@ -294,6 +297,8 @@ def cmake_command(toolchain, src_path, build_path, install_path, profile_data_pa
     command.extend(bitness_flags(bitness))
     command.extend(rtti_flags(toolchain))
     command.extend(profile_data_flags(toolchain, profile_data_path, first_run))
+    if is_gcc_toolchain(toolchain):
+        command.extend(['-DCMAKE_CXX_FLAGS="-D_GLIBCXX_USE_CXX11_ABI=0"'])
     command.append(src_path)
 
     return command
