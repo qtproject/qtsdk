@@ -35,7 +35,7 @@ import shutil
 from build_wrapper import init_snapshot_dir_and_upload_files
 
 
-class TestStringMethods(unittest.TestCase):
+class TestBuildWrapper(unittest.TestCase):
 
     def test_init_snapshot_dir_and_upload_files(self):
         temp_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'build_wrapper_test')
