@@ -378,6 +378,7 @@ def handle_gammaray_build(optionDict):
     cmd_args.extend(['--module_dir', os.path.join(work_dir, 'src', 'external', 'gammaray'),
                      '--module-name', 'gammaray',
                      '--qt5path', os.path.join(work_dir, 'gammaray_qt5_install'),
+                     '--add-config-arg=-DGAMMARAY_INSTALL_QT_LAYOUT=ON',
                      '--add-config-arg=-DCMAKE_SKIP_BUILD_RPATH=OFF',
                      '--add-config-arg=-DCMAKE_BUILD_WITH_INSTALL_RPATH=OFF',
                      '--add-config-arg=-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=FALSE',
