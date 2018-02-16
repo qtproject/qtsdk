@@ -32,12 +32,19 @@ import getpass
 import glob
 import unittest
 import shutil
+from ddt import ddt, data, unpack  # type: ignore
 from build_wrapper import init_snapshot_dir_and_upload_files
 
 
+@ddt
 class TestBuildWrapper(unittest.TestCase):
 
-    def test_init_snapshot_dir_and_upload_files(self):
+    @data(
+        ("test-project-name", "1.0", "1234567890"),
+        ("test-project-name-2", "snapshots/1.2.3", "1234567890")
+    )
+    @unpack
+    def test_init_snapshot_dir_and_upload_files(self, projectName, versioOrBranch, buildNumber):
         temp_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'build_wrapper_test')
         optionDict = {}
         optionDict['WORK_DIR'] = os.getcwd()
@@ -47,10 +54,10 @@ class TestBuildWrapper(unittest.TestCase):
         optionDict['PACKAGE_STORAGE_SERVER_ADDR'] = user + '@127.0.0.1'
         optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] = temp_dir
         filesToUpload = [os.path.basename(x) for x in glob.glob('./*.sh')]
-        init_snapshot_dir_and_upload_files(optionDict, 'test-project-name', '1.0', '1234567890', filesToUpload)
+        init_snapshot_dir_and_upload_files(optionDict, projectName, versioOrBranch, buildNumber, filesToUpload)
 
-        remote_path_base            = os.path.join(temp_dir, 'test-project-name', '1.0')
-        remote_path_snapshot_dir    = os.path.join(remote_path_base, '1234567890')
+        remote_path_base            = os.path.join(temp_dir, projectName, versioOrBranch)
+        remote_path_snapshot_dir    = os.path.join(remote_path_base, buildNumber)
         remote_path_latest_link     = os.path.join(remote_path_base, 'latest')
         print(remote_path_latest_link)
         self.assertTrue(os.path.isdir(remote_path_base))
