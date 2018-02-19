@@ -598,6 +598,14 @@ class Selector(object): # Select interesting changes, discard boring.
             report how many hits we saw of each recipe.
             """
 
+            # Fatuous substitutions:
+            for pair in (('Q_QDOC', 'Q_CLANG_QDOC'), ('Q_DECL_FINAL', 'final')):
+                def test(words, k=pair[1]):
+                    return k in words
+                def purge(words, p=pair):
+                    return [p[0] if w == p[1] else w for w in words]
+                yield test, purge
+
             # Don't ignore constexpr or nothrow; can't retract once added to an API.
             # Words to ignore:
             for key in ('explicit', # ? 'inline',
