@@ -119,12 +119,12 @@ my @allheaders = ();
 while (<STDIN>) {
     chomp;
     normalizePath(\$_);
-    continue if $ignore_headers{$_} || $qpa_headers{$_};
+    next if $ignore_headers{$_} || $qpa_headers{$_};
     push @allheaders, $_ if $_;
 }
 
 foreach my $lib (keys %modules) {
-    continue if $allmoduleheadersprivate{$lib};
+    next if $allmoduleheadersprivate{$lib};
     # iteration info
     my $pathtoheaders = $moduleheaders{$lib} ? $moduleheaders{$lib} : "";
     my $module = $modules{$lib};
@@ -133,7 +133,7 @@ foreach my $lib (keys %modules) {
     shift @dirs if $dirs[0] =~ s/^>//;
 
     foreach my $module_dir (@dirs) {
-        continue if $module_dir =~ /^\^/;
+        next if $module_dir =~ /^\^/;
         my @headers_paths = split(/;/, $pathtoheaders);
         if (@headers_paths) {
             @headers_paths = map { "$module_dir/$_" } @headers_paths;
