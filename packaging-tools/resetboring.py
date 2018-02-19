@@ -604,7 +604,7 @@ class Selector(object): # Select interesting changes, discard boring.
                         'Q_REQUIRED_RESULT', 'Q_NORETURN',
                         'Q_DECL_CONST_FUNCTION', 'Q_ALWAYS_INLINE'):
                 def test(words, k=key):
-                    return any(w == k for w in words)
+                    return k in words
                 def purge(words, k=key):
                     return [w for w in words if w != k]
                 yield test, purge
@@ -623,14 +623,14 @@ class Selector(object): # Select interesting changes, discard boring.
             # guide where to add entry to old.
 
             # Would like to
-            # s/QtPrivete::QEnableIf<...>::Type/std::enable_if<...>::type/
+            # s/QtPrivate::QEnableIf<...>::Type/std::enable_if<...>::type/
             # but the brace-matching is a bit much for this parser; and it
             # tends to get split across lines anyway ...
 
             # Synonyms for 0:
             for key in ('Q_NULLPTR', 'nullptr'):
                 def test(words, z=key):
-                    return any(w == z for w in words)
+                    return z in words
                 def purge(words, z=key):
                     return [('0', 'Q_NULLPTR', 'nullptr') if w == z else w for w in words]
                 yield test, purge
