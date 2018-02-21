@@ -567,7 +567,7 @@ class Selector(object): # Select interesting changes, discard boring.
                     elif text and text[-1].isalnum() and word[0].isalnum():
                         text += ' '
                     text += word
-                    if not indent and word[-1].isalnum() and orig[0].isalnum():
+                    if not indent and word[-1].isalnum() and orig and orig[0].isalnum():
                         orig = ' ' + orig # may get discarded in a drop next time round
 
             return text.rstrip() if orig else text
