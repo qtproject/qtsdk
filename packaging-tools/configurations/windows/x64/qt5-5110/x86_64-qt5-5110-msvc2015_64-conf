@@ -164,14 +164,6 @@ target_install_base:    /%QT_VERSION%/msvc2015_64
 [qt5.5110.qtscript.win64_msvc2015_64]
 archive_uri:            /qt/%QT_VERSION%/latest/qtscript/qtscript-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
 
-# QtWebEngine provided as separate installable component in installer
-[qt.qt5.5110.qtwebengine]
-[qt.qt5.5110.qtwebengine.win64_msvc2015_64]
-archives:               qt5.5110.qtwebengine.win64_msvc2015_64
-target_install_base:    /%QT_VERSION%/msvc2015_64
-[qt5.5110.qtwebengine.win64_msvc2015_64]
-archive_uri:            /qt/%QT_VERSION%/latest/qtwebengine/qtwebengine-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
-
 # QtNetworkAuth provided as separate installable component in installer
 [qt.qt5.5110.qtnetworkauth]
 [qt.qt5.5110.qtnetworkauth.win64_msvc2015_64]

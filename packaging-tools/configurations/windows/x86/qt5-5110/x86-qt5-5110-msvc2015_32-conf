@@ -156,14 +156,6 @@ target_install_base:    /%QT_VERSION%/msvc2015
 [qt5.5110.qtscript.win32_msvc2015]
 archive_uri:            /qt/%QT_VERSION%/latest/qtscript/qtscript-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z
 
-# QtWebEngine provided as separate installable component in installer
-[qt.qt5.5110.qtwebengine]
-[qt.qt5.5110.qtwebengine.win32_msvc2015]
-archives:               qt5.5110.qtwebengine.win32_msvc2015
-target_install_base:    /%QT_VERSION%/msvc2015
-[qt5.5110.qtwebengine.win32_msvc2015]
-archive_uri:            /qt/%QT_VERSION%/latest/qtwebengine/qtwebengine-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86.7z
-
 # Qt Remote Objects provided as separate installable component in installer
 [qt.qt5.5110.qtremoteobjects]
 [qt.qt5.5110.qtremoteobjects.win32_msvc2015]
