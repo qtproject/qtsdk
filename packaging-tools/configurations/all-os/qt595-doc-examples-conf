@@ -1,0 +1,189 @@
+#############################################################################
+##
+## Copyright (C) 2018 The Qt Company Ltd.
+## Contact: https://www.qt.io/licensing/
+##
+## This file is part of the release tools of the Qt Toolkit.
+##
+## $QT_BEGIN_LICENSE:GPL-EXCEPT$
+## Commercial License Usage
+## Licensees holding valid commercial Qt licenses may use this file in
+## accordance with the commercial license agreement provided with the
+## Software or, alternatively, in accordance with the terms contained in
+## a written agreement between you and The Qt Company. For licensing terms
+## and conditions see https://www.qt.io/terms-conditions. For further
+## information use the contact form at https://www.qt.io/contact-us.
+##
+## GNU General Public License Usage
+## Alternatively, this file may be used under the terms of the GNU
+## General Public License version 3 as published by the Free Software
+## Foundation with exceptions as appearing in the file LICENSE.GPL3-EXCEPT
+## included in the packaging of this file. Please review the following
+## information to ensure the GNU General Public License requirements will
+## be met: https://www.gnu.org/licenses/gpl-3.0.html.
+##
+## $QT_END_LICENSE$
+##
+#############################################################################
+
+[qt.595.doc]
+archives:               595.doc
+target_install_base:    /Docs/Qt-5.9.5/
+[595.doc]
+archive_uri:            /qt/%QT_VERSION%/latest/doc/qt-everywhere-documentation.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+
+[qt.595.examples]
+archives:               595.examples
+target_install_base:    /Examples/Qt-5.9.5/
+[595.examples]
+archive_uri:            /qt/%QT_VERSION%/latest/examples/qt-everywhere-examples-%QT_VERSION_AND_TAG%.7z
+package_strip_dirs:     1
+
+[qt.595.doc.qtcharts]
+archives:               595.doc.qtcharts
+target_install_base:    /Docs/Qt-5.9.5/
+[595.doc.qtcharts]
+archive_uri:            /qt/%QT_VERSION%/latest/doc/qtcharts-documentation.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+
+[qt.595.doc.qtdatavis3d]
+archives:               595.doc.qtdatavis3d
+target_install_base:    /Docs/Qt-5.9.5/
+[595.doc.qtdatavis3d]
+archive_uri:            /qt/%QT_VERSION%/latest/doc/qtdatavisualization-documentation.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+
+[qt.595.doc.qtpurchasing]
+archives:               595.doc.qtpurchasing
+target_install_base:    /Docs/Qt-5.9.5/
+[595.doc.qtpurchasing]
+archive_uri:            /qt/%QT_VERSION%/latest/doc/qtpurchasing-documentation.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+
+[qt.595.doc.qtvirtualkeyboard]
+archives:               595.doc.qtvirtualkeyboard
+target_install_base:    /Docs/Qt-5.9.5/
+[595.doc.qtvirtualkeyboard]
+archive_uri:            /qt/%QT_VERSION%/latest/doc/qtvirtualkeyboard-documentation.%SRC_ARCHIVE_TYPE%
+package_strip_dirs:     1
+
+[qt.595.doc.qtscript]
+archives:               595.doc.qtscript, 595.doc.qtscripttools
+target_install_base:    /Docs/Qt-5.9.5/
+[595.doc.qtscript]
+archive_uri:            /qt/%QT_VERSION%/latest/doc/qtscript-documentation.%SRC_ARCHIVE_TYPE%
+target_install_dir:
+package_strip_dirs:     1
+[595.doc.qtscripttools]
+archive_uri:            /qt/%QT_VERSION%/latest/doc/qtscripttools-documentation.%SRC_ARCHIVE_TYPE%
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.595.doc.qtremoteobjects]
+archives:               595.doc.qtremoteobjects
+target_install_base:    /Docs/Qt-5.9.5/
+[595.doc.qtremoteobjects]
+archive_uri:            /qt/%QT_VERSION%/latest/doc/qtremoteobjects-documentation.%SRC_ARCHIVE_TYPE%
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.595.doc.qtwebengine]
+archives:               595.doc.qtwebengine
+target_install_base:    /Docs/Qt-5.9.5/
+[595.doc.qtwebengine]
+archive_uri:            /qt/%QT_VERSION%/latest/doc/qtwebengine-documentation.%SRC_ARCHIVE_TYPE%
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.595.doc.qtspeech]
+archives:               595.doc.qtspeech
+target_install_base:    /Docs/Qt-5.9.5/
+[595.doc.qtspeech]
+archive_uri:            /qt/%QT_VERSION%/latest/doc/qtspeech-documentation.%SRC_ARCHIVE_TYPE%
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.595.doc.qtnetworkauth]
+archives:               595.doc.qtnetworkauth
+target_install_base:    /Docs/Qt-5.9.5/
+[595.doc.qtnetworkauth]
+archive_uri:            /qt/%QT_VERSION%/latest/doc/qtnetworkauth-documentation.%SRC_ARCHIVE_TYPE%
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.595.examples.qtcharts]
+archives:               595.examples.qtcharts
+target_install_base:    /Examples/Qt-5.9.5/
+[595.examples.qtcharts]
+archive_uri:            /qt/%QT_VERSION%/latest/examples/qtcharts-examples-%QT_VERSION_AND_TAG%.7z
+package_strip_dirs:     1
+
+[qt.595.examples.qtdatavis3d]
+archives:               595.examples.qtdatavis3d
+target_install_base:    /Examples/Qt-5.9.5/
+[595.examples.qtdatavis3d]
+archive_uri:            /qt/%QT_VERSION%/latest/examples/qtdatavis3d-examples-%QT_VERSION_AND_TAG%.7z
+package_strip_dirs:     1
+
+[qt.595.examples.qtpurchasing]
+archives:               595.examples.qtpurchasing
+target_install_base:    /Examples/Qt-5.9.5/
+[595.examples.qtpurchasing]
+archive_uri:            /qt/%QT_VERSION%/latest/examples/qtpurchasing-examples-%QT_VERSION_AND_TAG%.7z
+package_strip_dirs:     1
+
+[qt.595.examples.qtvirtualkeyboard]
+archives:               595.examples.qtvirtualkeyboard
+target_install_base:    /Examples/Qt-5.9.5/
+[595.examples.qtvirtualkeyboard]
+archive_uri:            /qt/%QT_VERSION%/latest/examples/qtvirtualkeyboard-examples-%QT_VERSION_AND_TAG%.7z
+package_strip_dirs:     1
+
+[qt.595.examples.qtscript]
+archives:               595.examples.qtscript
+target_install_base:    /Examples/Qt-5.9.5/
+[595.examples.qtscript]
+archive_uri:            /qt/%QT_VERSION%/latest/examples/qtscript-examples-%QT_VERSION_AND_TAG%.7z
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.595.examples.qtserialbus]
+archives:               595.examples.qtserialbus
+target_install_base:    /Examples/Qt-5.9.5/
+[595.examples.qtserialbus]
+archive_uri:            /qt/%QT_VERSION%/latest/examples/qtserialbus-examples-%QT_VERSION_AND_TAG%.7z
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.595.examples.qtspeech]
+archives:               595.examples.qtspeech
+target_install_base:    /Examples/Qt-5.9.5/
+[595.examples.qtspeech]
+archive_uri:            /qt/%QT_VERSION%/latest/examples/qtspeech-examples-%QT_VERSION_AND_TAG%.7z
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.595.examples.qtnetworkauth]
+archives:               595.examples.qtnetworkauth
+target_install_base:    /Examples/Qt-5.9.5/
+[595.examples.qtnetworkauth]
+archive_uri:            /qt/%QT_VERSION%/latest/examples/qtnetworkauth-examples-%QT_VERSION_AND_TAG%.7z
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.595.examples.qtremoteobjects]
+archives:               595.examples.qtremoteobjects
+target_install_base:    /Examples/Qt-5.9.5/
+[595.examples.qtremoteobjects]
+archive_uri:            /qt/%QT_VERSION%/latest/examples/qtremoteobjects-examples-%QT_VERSION_AND_TAG%.7z
+target_install_dir:
+package_strip_dirs:     1
+
+[qt.595.examples.qtwebengine]
+archives:               595.examples.qtwebengine
+target_install_base:    /Examples/Qt-5.9.5/
+[595.examples.qtwebengine]
+archive_uri:            /qt/%QT_VERSION%/latest/examples/qtwebengine-examples-%QT_VERSION_AND_TAG%.7z
+target_install_dir:
+package_strip_dirs:     1
