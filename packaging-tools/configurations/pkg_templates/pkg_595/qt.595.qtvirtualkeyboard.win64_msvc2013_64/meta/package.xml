@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>Qt Virtual Keyboard for msvc2013 64-bit</DisplayName>
+    <Description></Description>
+    <Version>5.9.5-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <AutoDependOn>qt.595.qtvirtualkeyboard, qt.595.win64_msvc2013_64</AutoDependOn>
+    <Dependencies>qt.595.win64_msvc2013_64</Dependencies>
+    <Virtual>true</Virtual>
+    <Script>installscript.qs</Script>
+    <SortingPriority></SortingPriority>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>
+
+
