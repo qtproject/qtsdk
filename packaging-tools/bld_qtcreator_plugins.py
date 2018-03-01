@@ -168,6 +168,7 @@ def build_plugins(caller_arguments):
 
     # environment
     environment = get_common_environment(paths.qt5, caller_arguments)
+    buildGitSHA = gitSHA(paths.source, caller_arguments)
 
     # build plugins
     print('------------')
@@ -175,6 +176,8 @@ def build_plugins(caller_arguments):
     qmake_command = [qmake_filepath]
     qmake_command.append(paths.source)
     qmake_command.extend(common_qmake_arguments)
+    if buildGitSHA:
+        qmake_command.append('QTC_PLUGIN_REVISION=' + buildGitSHA)
     runCommand(qmake_command, paths.build,
         callerArguments = caller_arguments, init_environment = environment)
     runBuildCommand(currentWorkingDirectory = paths.build,
@@ -213,7 +216,6 @@ def build_plugins(caller_arguments):
 
     # write information about git sha
     with open(caller_arguments.target_7zfile + '.git_sha', 'w') as f:
-        buildGitSHA = gitSHA(paths.source, caller_arguments)
         f.write(buildGitSHA)
 
     # clean up
