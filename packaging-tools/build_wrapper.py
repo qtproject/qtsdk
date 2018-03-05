@@ -913,6 +913,14 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     build_qtcreator_plugins(additional_plugins, qtcreator_path, qtcreator_dev_path, icu_url=icu_local_url, openssl_url=openssl_local_url)
 
     if bldinstallercommon.is_linux_platform():
+        # summary of git SHA1s
+        sha1s = collect_qt_creator_plugin_sha1s(additional_plugins)
+        licensemanaging_source = os.path.join(work_dir, 'license-managing')
+        if os.path.exists(licensemanaging_source):
+            sha1s.append('license-managing: ' + bld_utils.gitSHA(licensemanaging_source))
+        sha1s.append('qt-creator: ' + bld_utils.gitSHA(qtcreator_source))
+        with open(os.path.join(work_dir, 'SHA1'), 'w') as f:
+            f.writelines([sha + '\n' for sha in sha1s])
         # Create opensource source package
         bldinstallercommon.do_execute_sub_process([os.path.join(work_dir, 'qt-creator', 'scripts', 'createSourcePackages.py'),
                                                    qtcreator_version, 'opensource'], work_dir)
@@ -922,14 +930,6 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                                       os.path.join(work_dir, 'qt-creator'))
             bldinstallercommon.do_execute_sub_process([os.path.join(work_dir, 'qt-creator', 'scripts', 'createSourcePackages.py'),
                                                        qtcreator_version, 'enterprise'], work_dir)
-        # summary of git SHA1s
-        sha1s = collect_qt_creator_plugin_sha1s(additional_plugins)
-        licensemanaging_source = os.path.join(work_dir, 'license-managing')
-        if os.path.exists(licensemanaging_source):
-            sha1s.append('license-managing: ' + bld_utils.gitSHA(licensemanaging_source))
-        sha1s.append('qt-creator: ' + bld_utils.gitSHA(qtcreator_source))
-        with open(os.path.join(work_dir, 'SHA1'), 'w') as f:
-            f.writelines([sha + '\n' for sha in sha1s])
 
     # Build sdktool
     if sdktool_qtbase_src:
