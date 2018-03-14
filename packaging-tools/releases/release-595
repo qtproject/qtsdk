@@ -20,11 +20,11 @@ arg_substitution_list:          %QT_VERSION%=%GLOBAL_VERSION%,
                                 %QT_VERSION_AND_TAG%=%GLOBAL_VERSION_AND_TAG%,
                                 %QT_INSTALL_DIR_NAME%=5.9.5,
                                 %QT_LICENSE_TYPE%=%LICENSE%,
-                                %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.5.1_59x/latest_successful,
-                                %SDKTOOL_ARCHIVE_QTCREATOR_VERSION%=qtcreator/snapshots/4.5.1_59x/latest_successful,
+                                %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.5.2_59x/latest_successful,
+                                %SDKTOOL_ARCHIVE_QTCREATOR_VERSION%=qtcreator/snapshots/4.5.2_59x/latest_successful,
                                 %SDKTOOL_INSTALL_PATH%=Tools/Settings,
-                                %QTC_VERSION%=4.5.1,
-                                %QTC_DISPLAY_VERSION%=4.5.1,
+                                %QTC_VERSION%=4.5.2,
+                                %QTC_DISPLAY_VERSION%=4.5.2,
                                 %QTC_MSVC%=2015
 
 ################################################################################
