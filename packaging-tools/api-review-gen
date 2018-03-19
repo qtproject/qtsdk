@@ -190,7 +190,6 @@ case `git branch | grep -wF " $BRANCH" | grep "^[* ] $BRANCH"'$'` in
         case "$AMEND" in
             '--replace')
                 mutter "On prior branch $BRANCH; shall be removed and recreated"
-                checkout "$RELEASE"
                 ;;
             '--amend')
                 mutter "Already on branch $BRANCH; preparing to amend it"
@@ -239,6 +238,7 @@ fi
 if [ "$AMEND" = '--replace' ]
 then
     AMEND=
+    checkout "$RELEASE"
     run git branch -D "$BRANCH"
     checkout -b "$BRANCH" "$PRIOR"
 fi
