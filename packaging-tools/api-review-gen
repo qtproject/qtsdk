@@ -283,6 +283,9 @@ apiheaders () {
     fi
 }
 
+# Make sure any sub-submodules are in their right states:
+git submodule update --checkout
+
 mutter "Purging obsolete headers" # so renames get detected and handled correctly:
 apiheaders HEAD | while read h
 # Update former API headers, remove them if removed:
