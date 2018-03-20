@@ -63,14 +63,24 @@ Options:
  -h
  --help    Print this help and exit.
 
+ -t ID
+ --task ID
+ --task-number ID
+           Include a Task-number: in the commit message, with the
+           given id, ID, of the bug-tracker issue being used to keep
+           track of the API review.
+
  -a
- --amend   Amend existing commit rather than extending review branch.
+ --amend   Amend existing commit rather than extending the review
+           branch, if it exists already.
 
  -r
  --replace Replace existing branch, if present, re-using its last
            Change-Id, rather than updating it.  (Conflicts with
            --amend, which should be preferred unless these scripts
-           have changed.  If both are used, the last wins.)
+           have changed.  If both are used, the last wins.)  If
+           --task-number has not been specified, any Task-number:
+           footer in the earlier commit will also be preserved.
 
  -v
  --verbose Say what's happening as it happens.
@@ -142,6 +152,7 @@ do  case $1 in
         -h|--help) help; exit 0 ;;
         -a|--amend) AMEND=--amend; shift ;;
         -r|--replace) AMEND=--replace; shift ;;
+        -t|--task|--task-number) TASK="$2"; shift 2 ;;
         -v|--verbose) CHATTY=more; shift ;;
         -q|--quiet) CHATTY=less; shift ;;
         --) shift; break ;;
@@ -233,6 +244,8 @@ then
         [ -n "$CHANGEID" ] || die "No prior Change-Id from $BRANCH"
         expr "$CHANGEID" : "^I[0-9a-f]\{40\}$" >/dev/null || \
             die "Bad prior Change-Id ($CHANGEID) from $BRANCH"
+        # Also preserve Task-number, if present and not over-ridden:
+        [ -n "$TASK" ] || TASK=`git show --summary $BRANCH | sed -ne '/Task-number:/ s/.*: *//p'`
     fi
 fi
 if [ "$AMEND" = '--replace' ]
@@ -347,11 +360,10 @@ of course, to restore any changes you think aren't boring.
 Remember that the parent of this commit is $PRIOR, not $RELEASE, despite
 the review being sent to the latter in Gerrit.
 EOF
-  if [ -n "$CHANGEID" ]
-  then
-      echo
-      echo "Change-Id: $CHANGEID"
-  fi ) > "$GITDIR/COMMIT_EDITMSG"
+  [ -z "$CHANGEID$TASK" ] || echo
+  [ -z "$TASK" ] || echo "Task-number: $TASK"
+  [ -z "$CHANGEID" ] || echo "Change-Id: $CHANGEID"
+  ) > "$GITDIR/COMMIT_EDITMSG"
 # The git status in that holds a lock that precludes the git commit;
 # so we can't just pipe the message and use -F - to deliver it.
 run git commit $QUIET $AMEND -F "$GITDIR/COMMIT_EDITMSG"

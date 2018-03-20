@@ -44,6 +44,7 @@ help () {
     # Example data:
     [ "$LAST" ] || LAST=v5.9.0
     [ "$NEXT" ] || NEXT=5.10
+    [ "$TASK" ] || TASK=QTBUG-5678
     ME=`basename $0`
     cat <<EOF
 
@@ -90,9 +91,9 @@ relevant module is missing (not cloned), this script silently skips
 it; you do need to have a suitable full work tree.
 
 By way of example, here's the work-flow for producing an API review
-between $LAST and $NEXT (you can set LAST and NEXT in the environment
-to configure the examples), assuming qtsdk/packaging-tools is in your
-PATH:
+between $LAST and $NEXT to be tracked by Jira issue $TASK (you
+can set LAST, NEXT and TASK in the environment to configure the
+examples), assuming qtsdk/packaging-tools is in your PATH:
 
  Get qt5 up to date, but with the old .gitmodules:
  $ git checkout $NEXT && git pull --ff-only
@@ -110,7 +111,7 @@ PATH:
         git fetch origin $NEXT:$NEXT '||' git pull --ff-only
 
  Generate review branches:
- $ $ME -r $LAST -r $NEXT api-review-gen $LAST $NEXT
+ $ $ME -r $LAST -r $NEXT api-review-gen -t $TASK $LAST $NEXT
 
  Examine residual diff (should all be boring):
  $ $ME -r api-review-$LAST-$NEXT git diff -b -D
