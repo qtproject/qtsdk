@@ -22,7 +22,8 @@ arg_substitution_list:          %QT_VERSION%=%GLOBAL_VERSION%,
                                 %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.6.0_510x/latest_successful,
                                 %QTC_VERSION%=4.6.0,
                                 %QTC_DISPLAY_VERSION%=4.6.0,
-                                %QTC_MSVC%=2015
+                                %QTC_MSVC%=2015,
+                                %MAINTENANCE_TOOL_VERSION%=3.0.4
 
 ################################################################################
 ## Linux offline

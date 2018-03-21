@@ -25,7 +25,8 @@ arg_substitution_list:          %QT_VERSION%=%GLOBAL_VERSION%,
                                 %SDKTOOL_INSTALL_PATH%=Tools/Settings,
                                 %QTC_VERSION%=4.5.2,
                                 %QTC_DISPLAY_VERSION%=4.5.2,
-                                %QTC_MSVC%=2015
+                                %QTC_MSVC%=2015,
+                                %MAINTENANCE_TOOL_VERSION%=3.0.4
 
 ################################################################################
 ## Linux offline
