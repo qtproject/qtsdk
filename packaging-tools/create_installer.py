@@ -117,6 +117,7 @@ SORTING_PRIORITY_TAG                = '%SORTING_PRIORITY%'
 VERSION_NUMBER_AUTO_INCREASE_TAG    = '%VERSION_NUMBER_AUTO_INCREASE%'
 VERSION_NUMBER_AUTO_INCREASE_VALUE  = ''
 REMOVE_PDB_FILES                    = 'False'
+REMOVE_WINDOWS_DEBUG_LIBRARIES      = 'False'
 
 KEY_SUBSTITUTION_LIST               = []
 PREFERRED_INSTALLER_NAME            = ''
@@ -232,6 +233,11 @@ def setup_option_parser():
     OPTION_PARSER.add_option("--remove-pdb-files",
                              action="store_true", dest="remove_pdb_files", default="False",
                              help="Windows only: Removes Windows pdb files (offline installer or emulator packaging)")
+    # enable Windows debug libraries removal
+    OPTION_PARSER.add_option("--remove-windows-debug-libraries",
+                             action="store_true", dest="remove_windows_debug_libraries", default="False",
+                             help="Windows only: Removes Windows debug libraries")
+
 
 
 ##############################################################
@@ -257,6 +263,7 @@ def print_options():
     print "Archive skip:                %r" % (ARCHIVE_DOWNLOAD_SKIP)
     print "Strict mode:                 %r" % (STRICT_MODE)
     print "Remove pdb files:            %r" % (REMOVE_PDB_FILES)
+    print "Remove Windows debug libraries:   %r" % (REMOVE_WINDOWS_DEBUG_LIBRARIES)
     print
     print "Installer naming scheme options:\n"
     print "License type:                " + LICENSE_TYPE
@@ -292,6 +299,7 @@ def parse_cmd_line():
     global PREFERRED_INSTALLER_NAME
     global VERSION_NUMBER_AUTO_INCREASE_VALUE
     global REMOVE_PDB_FILES
+    global REMOVE_WINDOWS_DEBUG_LIBRARIES
 
     CONFIGURATIONS_DIR                  = options.configurations_dir
     MAIN_CONFIG_NAME                    = options.configuration_file
@@ -305,6 +313,7 @@ def parse_cmd_line():
     ARCHIVE_SERVER_BASE_URL             = options.archive_base_url
     INSTALLER_FRAMEWORK_TOOLS           = options.ifw_tools_uri
     REMOVE_PDB_FILES                    = options.remove_pdb_files
+    REMOVE_WINDOWS_DEBUG_LIBRARIES      = options.remove_windows_debug_libraries
 
     if os.environ.get('CREATE_MAINTENANCE_TOOL_RESOURCE_FILE') in ['yes', 'true', '1']:
         CREATE_MAINTENANCE_TOOL_RESOURCE_FILE = True
@@ -322,6 +331,9 @@ def parse_cmd_line():
                 key, value = item.split(delimeter)
                 if key == "%REMOVE_PDB_FILES%":
                     REMOVE_PDB_FILES = value
+                KEY_SUBSTITUTION_LIST.append([key, value])
+                if key == "%REMOVE_WINDOWS_DEBUG_LIBRARIES%":
+                    REMOVE_WINDOWS_DEBUG_LIBRARIES = value
                 KEY_SUBSTITUTION_LIST.append([key, value])
     KEY_SUBSTITUTION_LIST.append(['%LICENSE%', LICENSE_TYPE])
 
@@ -753,6 +765,40 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
                 bldinstallercommon.delete_files_by_type_recursive(pdb_plugins_dir, '\S*\.pdb')
         else:
             print 'Removal of pdb files is allowed only when creating offline installer!'
+
+        # removes Windows debug libraries
+        # at this point of packaging we don't necessarily have reliable source of library names
+        # we trust Windows debug library filenames to follow *d.dll | *d.lib industry standard naming convention
+        # but we must consider that library filenames can end with letter 'd' in release build
+        # and exclude those from removable items
+        if REMOVE_WINDOWS_DEBUG_LIBRARIES.lower() == "true":
+            for directory in ('bin', 'lib', 'qml', 'plugins'):
+                windows_debug_library_dir = bldinstallercommon.locate_directory(install_dir, directory)
+                print 'Erasing Windows debug libraries from: ' + windows_debug_library_dir
+                # go through all library types and related qmake files
+                debug_library_file_endings = ['dll', 'lib', 'prl']
+                for debug_library_file_type in debug_library_file_endings:
+                    if os.path.exists(windows_debug_library_dir):
+                        # make list of all debug library names
+                        all_debug_files_list = bldinstallercommon.make_files_list(windows_debug_library_dir, '\S*d\.' + debug_library_file_type)
+                        # in case library name ends with 'd' we need to keep that and remove only library with double d at the end of file name
+                        double_d_debug_files_list = bldinstallercommon.make_files_list(windows_debug_library_dir, '\S*dd\.' + debug_library_file_type)
+                        if double_d_debug_files_list:
+                            # check intersection of all debug libraries and library names ending with letter 'd'
+                            debug_files_list_intersection = set(all_debug_files_list).intersection(double_d_debug_files_list)
+                            for debug_library_name in set(debug_files_list_intersection):
+                                # remove one 'd' from library names ending letter 'd' also in release builds
+                                # and exclude from removed libraries
+                                altered_library_name = debug_library_name[:-5] + debug_library_name[-5+1:]
+                                all_debug_files_list.remove(altered_library_name)
+                                for item in all_debug_files_list:
+                                    if os.path.exists(item):
+                                        os.remove(item)
+                        else:
+                            # there are no library names ending letter 'd' in this package
+                            # we can remove all debug libraries with filenames ending *d.dll | *d.lib
+                            if os.path.exists(windows_debug_library_dir):
+                                bldinstallercommon.delete_files_by_type_recursive(windows_debug_library_dir, '\S*d\.' + debug_library_file_type)
 
     if archive.rpath_target:
         if not archive.rpath_target.startswith(os.sep):
