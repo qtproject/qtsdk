@@ -6,7 +6,6 @@
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.tools</Dependencies>
     <Virtual>true</Virtual>
-    <AutoDependOn>qt.qt5.5110</AutoDependOn>
     <SortingPriority>1</SortingPriority>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>

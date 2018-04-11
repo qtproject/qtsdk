@@ -148,14 +148,6 @@ archive_uri:            /qt/%QT_VERSION%/latest/examples/qtscript-examples-%QT_V
 target_install_dir:
 package_strip_dirs:     1
 
-[qt.qt5.5110.examples.qtserialbus]
-archives:               qt5.5110.examples.qtserialbus
-target_install_base:    /Examples/Qt-5.11.0/
-[qt5.5110.examples.qtserialbus]
-archive_uri:            /qt/%QT_VERSION%/latest/examples/qtserialbus-examples-%QT_VERSION_AND_TAG%.7z
-target_install_dir:
-package_strip_dirs:     1
-
 [qt.qt5.5110.examples.qtnetworkauth]
 archives:               qt5.5110.examples.qtnetworkauth
 target_install_base:    /Examples/Qt-5.11.0/
