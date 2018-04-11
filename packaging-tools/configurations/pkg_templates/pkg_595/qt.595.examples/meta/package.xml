@@ -7,7 +7,6 @@
     <Script>installscript.qs</Script>
     <Dependencies>qt.tools</Dependencies>
     <Virtual>true</Virtual>
-    <AutoDependOn>qt.595</AutoDependOn>
     <SortingPriority>1</SortingPriority>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>

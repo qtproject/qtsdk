@@ -7,6 +7,7 @@
     <Default>false</Default>
     <SortingPriority>85</SortingPriority>
     <AutoDependOn></AutoDependOn>
+    <Dependencies>qt.595.doc.qtvirtualkeyboard, qt.595.examples.qtvirtualkeyboard</Dependencies>
     <Script>installscript.qs</Script>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>

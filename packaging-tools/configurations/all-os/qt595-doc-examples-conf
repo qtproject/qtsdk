@@ -148,14 +148,6 @@ archive_uri:            /qt/%QT_VERSION%/latest/examples/qtscript-examples-%QT_V
 target_install_dir:
 package_strip_dirs:     1
 
-[qt.595.examples.qtserialbus]
-archives:               595.examples.qtserialbus
-target_install_base:    /Examples/Qt-5.9.5/
-[595.examples.qtserialbus]
-archive_uri:            /qt/%QT_VERSION%/latest/examples/qtserialbus-examples-%QT_VERSION_AND_TAG%.7z
-target_install_dir:
-package_strip_dirs:     1
-
 [qt.595.examples.qtspeech]
 archives:               595.examples.qtspeech
 target_install_base:    /Examples/Qt-5.9.5/
