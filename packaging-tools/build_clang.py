@@ -60,12 +60,12 @@ def git_clone_and_checkout(base_path, remote_repository_url, directory, revision
     bld_utils.runCommand(['git', 'checkout', revision], local_repo_path)
 
 def get_clang(base_path, llvm_revision, clang_revision, tools_revision):
-    git_clone_and_checkout(base_path, 'git@github.com:llvm-mirror/llvm.git', 'llvm', llvm_revision)
-    git_clone_and_checkout(base_path, 'git@github.com:llvm-mirror/clang.git', 'llvm/tools/clang', clang_revision)
-    git_clone_and_checkout(base_path, 'git@github.com:llvm-mirror/clang-tools-extra.git', 'llvm/tools/clang/tools/extra', tools_revision)
+    git_clone_and_checkout(base_path, 'git://code.qt.io/clang/llvm.git', 'llvm', llvm_revision)
+    git_clone_and_checkout(base_path, 'git://code.qt.io/clang/clang.git', 'llvm/tools/clang', clang_revision)
+    git_clone_and_checkout(base_path, 'git://code.qt.io/clang/clang-tools-extra.git', 'llvm/tools/clang/tools/extra', tools_revision)
 
 def get_clazy(base_path, clazy_revision):
-    git_clone_and_checkout(base_path, 'git@github.com:KDE/clazy.git', 'llvm/tools/clang/tools/extra/clazy', clazy_revision)
+    git_clone_and_checkout(base_path, 'git://code.qt.io/clang/clazy.git', 'llvm/tools/clang/tools/extra/clazy', clazy_revision)
 
 def msvc_version():
     msvc_ver = os.environ.get('MSVC_VERSION')
@@ -206,14 +206,6 @@ def mingw_training(base_path, qtcreator_path, bitness):
 
     # Train mingw libclang library with build QtCreator
     bld_utils.runCommand([os.path.join(training_dir, 'runBatchFiles.bat')], base_path, callerArguments = None, init_environment = None, onlyErrorCaseOutput=False, expectedExitCodes=[0,1])
-
-def apply_patch(src_path, patch_filepath):
-    print('Applying patch: "' + patch_filepath + '" in "' + src_path + '"')
-    bld_utils.runCommand(['git', 'apply', '--whitespace=fix', patch_filepath], src_path)
-
-def apply_patches(src_path, patch_filepaths):
-    for patch in patch_filepaths:
-        apply_patch(src_path, patch)
 
 def is_msvc_toolchain(toolchain):
     return 'msvc' in toolchain
@@ -384,10 +376,6 @@ def main():
     #
     # CLAZY_REVISION
     # Git revision, branch or tag for Clazy check out
-    #
-    # CLANG_PATCHES
-    # Absolute path (or relative to PKG_NODE_ROOT) where patches are that
-    # should be applied to Clang. Files matching *.patch will be applied.
 
     bldinstallercommon.init_common_module(os.path.dirname(os.path.realpath(__file__)))
     base_path = os.path.join(os.environ['PKG_NODE_ROOT'])
@@ -410,24 +398,13 @@ def main():
     get_clang(base_path, os.environ['LLVM_REVISION'], os.environ['CLANG_REVISION'], os.environ['CLANG_TOOLS_EXTRA_REVISION'])
     if clazy_revision:
         get_clazy(base_path, clazy_revision)
-    patch_src_path = os.environ.get('CLANG_PATCHES')
-    if patch_src_path:
-        if not os.path.isabs(patch_src_path):
-            patch_src_path = os.path.join(base_path, patch_src_path)
-        if not os.path.exists(patch_src_path):
-            raise IOError, 'CLANG_PATCHES is set, but directory ' + patch_src_path + ' does not exist, aborting.'
-        print 'CLANG_PATCHES: Applying patches from ' + patch_src_path
-        apply_patches(src_path, sorted(glob.glob(os.path.join(patch_src_path, '*.patch'))))
-    else:
-        print 'CLANG_PATCHES: Not set, skipping.'
 
-    qtcreator_path = os.path.abspath(os.path.join(patch_src_path, '..', '..', '..'))
     # TODO: put args in some struct to improve readability, add error checks
     build_clang(toolchain, src_path, build_path, install_path, profile_data_path, True, bitness, environment, build_type='Release')
     if is_mingw_toolchain(toolchain):
         shutil.rmtree(profile_data_path)
         os.makedirs(profile_data_path)
-        mingw_training(base_path, qtcreator_path, bitness)
+        mingw_training(base_path, os.path.abspath('qt-creator'), bitness)
         build_clang(toolchain, src_path, build_path, install_path, profile_data_path, False, bitness, environment, build_type='Release')
 
     check_clang(toolchain, build_path, environment)
