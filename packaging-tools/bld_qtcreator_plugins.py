@@ -182,8 +182,18 @@ def build_plugins(caller_arguments):
         callerArguments = caller_arguments, init_environment = environment)
     runBuildCommand(currentWorkingDirectory = paths.build,
         callerArguments = caller_arguments, init_environment = environment)
+    # TODO temporary workaround for qdoc not finding a suitable libclang in the system QTBUG-66015
+    qdoc_environment = dict(environment)
+    if os.environ.get('QDOC_LLVM_INSTALL_DIR'):
+        qdoc_lib_path = os.path.join(os.environ['QDOC_LLVM_INSTALL_DIR'], 'bin' if bldinstallercommon.is_win_platform() else 'lib')
+        if bldinstallercommon.is_linux_platform():
+            qdoc_environment['LD_LIBRARY_PATH'] = os.pathsep.join([qdoc_lib_path, qdoc_environment['LD_LIBRARY_PATH']])
+        elif bldinstallercommon.is_win_platform():
+            qdoc_environment['PATH'] = os.pathsep.join([qdoc_lib_path, qdoc_environment['PATH']])
+        else:
+            qdoc_environment['DYLD_LIBRARY_PATH'] = qdoc_lib_path
     runBuildCommand("docs", currentWorkingDirectory = paths.build,
-        callerArguments = caller_arguments, init_environment = environment)
+        callerArguments = caller_arguments, init_environment = qdoc_environment)
 
     # run custom deploy script
     if caller_arguments.deploy_command:

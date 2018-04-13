@@ -285,8 +285,19 @@ if __name__ == "__main__":
 
     # on windows the install command is usual nmake so single threaded
     # because docs is creating same directory at the same time sometimes
+
+    # TODO temporary workaround for qdoc not finding a suitable libclang in the system QTBUG-66015
+    qdoc_environment = dict(environment)
+    if os.environ.get('QDOC_LLVM_INSTALL_DIR'):
+        qdoc_lib_path = os.path.join(os.environ['QDOC_LLVM_INSTALL_DIR'], 'bin' if bldinstallercommon.is_win_platform() else 'lib')
+        if bldinstallercommon.is_linux_platform():
+            qdoc_environment['LD_LIBRARY_PATH'] = os.pathsep.join([qdoc_lib_path, qdoc_environment['LD_LIBRARY_PATH']])
+        elif bldinstallercommon.is_win_platform():
+            qdoc_environment['PATH'] = os.pathsep.join([qdoc_lib_path, qdoc_environment['PATH']])
+        else:
+            qdoc_environment['DYLD_LIBRARY_PATH'] = qdoc_lib_path
     runInstallCommand("docs", currentWorkingDirectory = qtCreatorBuildDirectory, callerArguments = callerArguments,
-        init_environment = environment)
+        init_environment = qdoc_environment)
 
     if not bldinstallercommon.is_mac_platform():
         runInstallCommand(['install', 'install_docs'], currentWorkingDirectory = qtCreatorBuildDirectory,

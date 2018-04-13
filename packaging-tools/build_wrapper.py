@@ -436,7 +436,9 @@ def make_QtcPlugin(name, path, version, dependencies=None, modules=None,
                      qmake_arguments=qmake_arguments or [],
                      build=build)
 
-def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url=None, openssl_url=None):
+def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url=None, openssl_url=None, build_environment=None):
+    if not build_environment:
+        build_environment = dict(os.environ)
     work_dir = optionDict['WORK_DIR']
     for plugin in plugins:
         if not plugin.build or not os.path.isdir(os.path.join(work_dir, plugin.path)):
@@ -484,7 +486,7 @@ def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url
         cmd_arguments.extend(['--out-dev', os.path.join(work_dir, plugin.name + '_dev.7z')])
         cmd_arguments.append('--cleanup')
         cmd_arguments.append(os.path.join(work_dir, plugin.name + '.7z'))
-        bldinstallercommon.do_execute_sub_process(cmd_arguments, work_dir)
+        bldinstallercommon.do_execute_sub_process(cmd_arguments, work_dir, extra_env=build_environment)
         # source package
         if bldinstallercommon.is_linux_platform():
             bldinstallercommon.do_execute_sub_process(['python', '-u', os.path.join(qtcreator_dev_path, 'scripts', 'createSourcePackages.py'),
@@ -759,6 +761,12 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
             download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
                 opt_clang_url, opt_clang_path, download_temp, None))
 
+        # TODO temporary workaround for qdoc not finding a suitable libclang in the system QTBUG-66015
+        qdoc_clang_extract_path = os.path.join(download_temp, 'libclang-qdoc')
+        qdoc_clang_url = ('http://download.qt.io/development_releases/prebuilt/libclang/libclang-release_40-' + optionDict['QTC_PLATFORM'] + '.7z')
+        download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(qdoc_clang_url, qdoc_clang_extract_path, download_temp, None))
+        build_environment['QDOC_LLVM_INSTALL_DIR'] = os.path.join(qdoc_clang_extract_path, 'libclang')
+
     if elfutils_url:
         elfutils_path = os.path.join(download_temp, 'elfutils')
         download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
@@ -910,7 +918,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                                '-o' + qtcreator_path], work_dir)
     bldinstallercommon.do_execute_sub_process(['7z', 'x', '-y', os.path.join(work_dir, 'qt-creator_build', 'qtcreator_dev.7z'),
                                                '-o' + qtcreator_dev_path], work_dir)
-    build_qtcreator_plugins(additional_plugins, qtcreator_path, qtcreator_dev_path, icu_url=icu_local_url, openssl_url=openssl_local_url)
+    build_qtcreator_plugins(additional_plugins, qtcreator_path, qtcreator_dev_path, icu_url=icu_local_url, openssl_url=openssl_local_url, build_environment=build_environment)
 
     if bldinstallercommon.is_linux_platform():
         # summary of git SHA1s
