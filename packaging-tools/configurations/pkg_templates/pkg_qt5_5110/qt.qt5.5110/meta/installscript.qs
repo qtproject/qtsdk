@@ -36,12 +36,16 @@ function Component()
         snapshotBuild = true;
 
     if (snapshotBuild) {
-        // Indicate in DisplayName and Description that this is a snapshot build
-        var displayName = component.value("DisplayName");
-        var description = component.value("Description");
-        component.setValue("DisplayName", displayName + " %QT_RELEASE_TAG% snapshot (#%BUILD_NUMBER%)")
-        component.setValue("Description", description + " %QT_RELEASE_TAG% snapshot (#%BUILD_NUMBER%)")
-
+        // Add automatic dependency for preview component
+        var autoDependency = component.value("AutoDependOn");
+        var dependencyStr = "preview.qt.qt5.511";
+        if (autoDependency) {
+            component.setValue("AutoDependOn", autoDependency + "," + dependencyStr)
+        }
+        else {
+            component.setValue("AutoDependOn", dependencyStr)
+        }
+        // this is a snapshot (preview) build, hide the main node from online
         if (!installer.isOfflineOnly())
             component.setValue("Virtual", "true")
     }
