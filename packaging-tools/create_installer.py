@@ -760,11 +760,11 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
             qml_examples_only(examples_dir)
 
     # remove debug information files when explicitly defined so.
-    if REMOVE_PDB_FILES.lower() or REMOVE_DEBUG_INFORMATION_FILES.lower() == "true":
+    if REMOVE_PDB_FILES.lower() == "true" or REMOVE_DEBUG_INFORMATION_FILES.lower() == "true":
         remove_all_debug_information_files(install_dir)
 
     # remove debug libraries
-    if REMOVE_WINDOWS_DEBUG_LIBRARIES.lower() or REMOVE_DEBUG_LIBRARIES.lower() == "true":
+    if REMOVE_WINDOWS_DEBUG_LIBRARIES.lower() == "true" or REMOVE_DEBUG_LIBRARIES.lower() == "true":
         remove_all_debug_libraries(install_dir)
 
     if archive.rpath_target:
