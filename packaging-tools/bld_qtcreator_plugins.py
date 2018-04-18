@@ -193,11 +193,13 @@ def build_plugins(caller_arguments):
         else:
             # macOS System Integrity Protection prevents passing DYLD_LIBRARY_PATH through qdoc_wrapper.sh
             # so we have to manually adapt the script instead
-            with open(os.path.join(paths.build, 'qdoc_wrapper.sh'), 'r') as f:
-                lines = f.readlines()
-                lines.insert(1, 'export DYLD_LIBRARY_PATH="' + qdoc_lib_path + '"\n')
-            with open(os.path.join(paths.build, 'qdoc_wrapper.sh'), 'w') as f:
-                f.writelines(lines)
+            wrapper = os.path.join(paths.build, 'qdoc_wrapper.sh')
+            if os.path.exists(wrapper):
+                with open(wrapper, 'r') as f:
+                    lines = f.readlines()
+                    lines.insert(1, 'export DYLD_LIBRARY_PATH="' + qdoc_lib_path + '"\n')
+                with open(wrapper, 'w') as f:
+                    f.writelines(lines)
     runBuildCommand("docs", currentWorkingDirectory = paths.build,
         callerArguments = caller_arguments, init_environment = qdoc_environment)
 
