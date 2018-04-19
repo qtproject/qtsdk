@@ -1106,7 +1106,7 @@ def replace_latest_successful_installer(optionDict, installer_name, installer_na
         if "embedded" in installer_name_final.lower():
             regex = re.compile(r'.*online(?:(?!_\d{4}).)*')
     else:
-        regex = re.compile('.*' + optionDict['VERSION_FULL'])
+        regex = re.compile('.*' + optionDict['VERSION'])
     installer_base_name = "".join(regex.findall(installer_name_final))
     if not installer_base_name:
         print('*** Empty installer base name string')
