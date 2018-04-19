@@ -761,11 +761,11 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
             download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
                 opt_clang_url, opt_clang_path, download_temp, None))
 
-        # TODO temporary workaround for qdoc not finding a suitable libclang in the system QTBUG-66015
-        qdoc_clang_extract_path = os.path.join(download_temp, 'libclang-qdoc')
-        qdoc_clang_url = ('http://download.qt.io/development_releases/prebuilt/libclang/libclang-release_40-' + optionDict['QTC_PLATFORM'] + '.7z')
-        download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(qdoc_clang_url, qdoc_clang_extract_path, download_temp, None))
-        build_environment['QDOC_LLVM_INSTALL_DIR'] = os.path.join(qdoc_clang_extract_path, 'libclang')
+    # TODO temporary workaround for qdoc not finding a suitable libclang in the system QTBUG-66015
+    qdoc_clang_extract_path = os.path.join(download_temp, 'libclang-qdoc')
+    qdoc_clang_url = ('http://download.qt.io/development_releases/prebuilt/libclang/libclang-release_40-' + optionDict['QTC_PLATFORM'] + '.7z')
+    download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(qdoc_clang_url, qdoc_clang_extract_path, download_temp, None))
+    build_environment['QDOC_LLVM_INSTALL_DIR'] = os.path.join(qdoc_clang_extract_path, 'libclang')
 
     if elfutils_url:
         elfutils_path = os.path.join(download_temp, 'elfutils')
