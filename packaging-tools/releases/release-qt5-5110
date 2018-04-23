@@ -38,7 +38,7 @@ rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-5.11.0_tests
 ## macOS offline
 ################################################################################
 [release.511.offline.mac.x64]
-assign_to_machine_label:    mac-physical-10.11-x64-pm
+assign_to_machine_label:    mac-clang-10.11-x64
 arg_configurations_file:    offline_installer_jobs/5.11.0/mac_x64_offline
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz
 installer_name:             qt-opensource-mac-x64-%GLOBAL_VERSION_AND_TAG%
