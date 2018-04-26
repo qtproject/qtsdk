@@ -180,3 +180,6 @@ target_install_base:    /%QT_VERSION%/msvc2015_64
 [qt5.5110.qtwebglplugin.win64_msvc2015_64]
 archive_uri:            /qt/%QT_VERSION%/latest/qtwebglplugin/qtwebglplugin-Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64.7z
 
+# QtWebEngine provided as separate installable component in installer
+[qt.qt5.5110.qtwebengine]
+[qt.qt5.5110.qtwebengine.win64_msvc2015_64]
