@@ -761,7 +761,9 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
 
     # remove debug information files when explicitly defined so.
     if REMOVE_PDB_FILES.lower() == "true" or REMOVE_DEBUG_INFORMATION_FILES.lower() == "true":
-        remove_all_debug_information_files(install_dir)
+        # don't remove debug information files from debug information archives
+        if not archive.archive_name.endswith('debug-symbols.7z'):
+            remove_all_debug_information_files(install_dir)
 
     # remove debug libraries
     if REMOVE_WINDOWS_DEBUG_LIBRARIES.lower() == "true" or REMOVE_DEBUG_LIBRARIES.lower() == "true":
