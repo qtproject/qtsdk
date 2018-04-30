@@ -10,9 +10,13 @@ windows-x64:                installer-framework-build-tqtc_3.0-win-x86.7z
 linux-x64:                  installer-framework-build-tqtc_3.0-linux-x64.7z
 mac-x64:                    installer-framework-build-tqtc_3.0-mac-x64.7z
 
+[product.variables]
+PRODUCT_VERSION:                5.11.0
+PRODUCT_TAG:                    rc
+
 [release.global]
 version:                        5.11.0
-version_tag:                    beta4
+version_tag:                    rc
 module_exclude_list:            qtdocgallery, qtfeedback, qtjsondb, qtpim, qtqa, qtrepotools, qtsystems
 module_separate_install_list:   qtremoteobjects, qtscxml, qtscript, qtserialbus, qtwebengine
 arg_substitution_list:          %QT_VERSION%=%GLOBAL_VERSION%,
@@ -30,7 +34,8 @@ arg_substitution_list:          %QT_VERSION%=%GLOBAL_VERSION%,
 ################################################################################
 [release.511.offline.linux.x64]
 arg_configurations_file:    offline_installer_jobs/5.11.0/linux_x64_offline
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz,
+                            %REMOVE_DEBUG_INFORMATION_FILES%=true
 installer_name:             qt-opensource-linux-x64-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-5.11.0_tests_linux_all
 
@@ -51,7 +56,7 @@ rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-5.11.0_tests
 assign_to_machine_label:    win-msvc2015-Windows10-x64
 arg_configurations_file:    offline_installer_jobs/5.11.0/win_x86_offline
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip,
-                            %REMOVE_PDB_FILES%=true
+                            %REMOVE_DEBUG_INFORMATION_FILES%=true
 installer_name:             qt-opensource-windows-x86-%GLOBAL_VERSION_AND_TAG%
 rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-5.11.0_tests_windows_all
 
