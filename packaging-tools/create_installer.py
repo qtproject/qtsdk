@@ -223,7 +223,7 @@ def setup_option_parser():
                              help="installer file name scheme: define license type")
     OPTION_PARSER.add_option("--preferred-installer-name",
                              action="store", type="string", dest="preferred_installer_name", default="",
-                             help="alternatively define the full installer name excluding the extension (.run, .exe, .app")
+                             help="alternatively define the full installer name excluding the extension (.run, .exe, .app)")
     # global key-value substitution
     OPTION_PARSER.add_option("--add-substitution",
                              action="extend", type="string", dest="global_key_value_substitution_list",
@@ -235,7 +235,7 @@ def setup_option_parser():
     # enable debug information files removal
     OPTION_PARSER.add_option("--remove-debug-information-files",
                              action="store_true", dest="remove_debug_information_files", default="False",
-                             help="Removes debug information files like *.pdb, *.debug, *.dSYM etc")
+                             help="Removes debug information files. Besides 'True' and 'False' values accepts also debug file type as parameter")
     # enable debug libraries removal
     OPTION_PARSER.add_option("--remove-debug-libraries",
                              action="store_true", dest="remove_debug_libraries", default="False",
@@ -759,11 +759,18 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
             examples_dir = bldinstallercommon.locate_directory(install_dir, 'examples')
             qml_examples_only(examples_dir)
 
-    # remove debug information files when explicitly defined so.
-    if REMOVE_PDB_FILES.lower() == "true" or REMOVE_DEBUG_INFORMATION_FILES.lower() == "true":
+    # remove debug information files when explicitly defined so
+    if REMOVE_PDB_FILES.lower() != "false" or REMOVE_DEBUG_INFORMATION_FILES.lower() != "false":
         # don't remove debug information files from debug information archives
         if not archive.archive_name.endswith('debug-symbols.7z'):
-            remove_all_debug_information_files(install_dir)
+            # Check if debug information file types are defined
+            if REMOVE_PDB_FILES.lower() == "true" or REMOVE_DEBUG_INFORMATION_FILES.lower() == "true":
+                # Remove debug information files according to host platform defaults
+                remove_all_debug_information_files(install_dir)
+            # Debug information file type is given as parameter
+            else:
+                # Remove debug information files regardless of host platform
+                remove_debug_information_files_by_file_type(install_dir, REMOVE_DEBUG_INFORMATION_FILES.lower())
 
     # remove debug libraries
     if REMOVE_WINDOWS_DEBUG_LIBRARIES.lower() == "true" or REMOVE_DEBUG_LIBRARIES.lower() == "true":
@@ -784,11 +791,12 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
     cmd_args = [ ARCHIVEGEN_TOOL, saveas] + content_list
     bldinstallercommon.do_execute_sub_process(cmd_args, data_dir_dest)
 
+
 ##############################################################
 # Remove debug information files
 ##############################################################
 def remove_all_debug_information_files(install_dir):
-    """Remove debug information files."""
+    """Remove debug information files according to host machine."""
     if bldinstallercommon.is_win_platform():
         debug_information_file_ending = 'pdb'
     elif bldinstallercommon.is_linux_platform():
@@ -798,11 +806,19 @@ def remove_all_debug_information_files(install_dir):
     else:
         raise ValueError('Host is not identified as Windows, Linux or macOS')
 
+    remove_debug_information_files_by_file_type(install_dir, debug_information_file_ending)
+
+
+##############################################################
+# Remove debug information files by file type
+##############################################################
+def remove_debug_information_files_by_file_type(install_dir, debug_information_file_ending):
+    """Remove debug information files by file type"""
     for directory in ('bin', 'lib', 'qml', 'plugins'):
         debug_information_dir = bldinstallercommon.locate_directory(install_dir, directory)
         if os.path.exists(debug_information_dir):
             print 'Removing debug information files from: ' + debug_information_dir
-            if bldinstallercommon.is_mac_platform():
+            if debug_information_file_ending == 'dSYM':
                 # On macOS, debug symbols are often in stand alone bundles. os.walk used by bldinstallercommon.py
                 # helper functions doesn't support wildchars on path names so using glob instead
                 list_of_debug_information_files = glob.glob(debug_information_dir + '/*.' + debug_information_file_ending)
