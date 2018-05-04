@@ -698,12 +698,12 @@ def calculate_rpath(file_full_path, destination_lib_path):
 ##############################################################
 # Handle the RPath in the given component files
 ##############################################################
-def handle_component_rpath(component_root_path, destination_lib_path):
+def handle_component_rpath(component_root_path, destination_lib_paths):
     print '        @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
     print '        Handle RPath'
     print ''
     print '        Component root path:  ' + component_root_path
-    print '        Destination lib path: ' + destination_lib_path
+    print '        Destination lib path: ' + destination_lib_paths
 
     # loop on all files
     for root, dirs, files in os.walk(component_root_path):
@@ -711,8 +711,13 @@ def handle_component_rpath(component_root_path, destination_lib_path):
             file_full_path = os.path.join(root, name)
             if not os.path.isdir(file_full_path) and not os.path.islink(file_full_path):
                 if requires_rpath(file_full_path):
-                    dst = os.path.normpath(component_root_path + os.sep + destination_lib_path)
-                    rp = calculate_rpath(file_full_path, dst)
+                    rpaths = []
+                    for destination_lib_path in destination_lib_paths.split(':'):
+                        dst = os.path.normpath(component_root_path + os.sep + destination_lib_path)
+                        rp = calculate_rpath(file_full_path, dst)
+                        rpaths.append(rp)
+
+                    rp = ':'.join(rpaths)
                     if sanity_check_rpath_max_length(file_full_path, rp):
                         #print '        RPath value: [' + rp + '] for file: [' + file_full_path + ']'
                         cmd_args = ['chrpath', '-r', rp, file_full_path]
