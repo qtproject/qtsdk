@@ -717,6 +717,14 @@ def handle_component_rpath(component_root_path, destination_lib_paths):
                         rp = calculate_rpath(file_full_path, dst)
                         rpaths.append(rp)
 
+                    # look for existing $ORIGIN path in the binary
+                    origin_rpath = re.search(r'\$ORIGIN[^:\n]*',
+                        subprocess.Popen(['chrpath', '-l', file_full_path],
+                        stdout=subprocess.PIPE).stdout.read())
+
+                    if origin_rpath and origin_rpath.group() not in rpaths:
+                        rpaths.append(origin_rpath.group())
+
                     rp = ':'.join(rpaths)
                     if sanity_check_rpath_max_length(file_full_path, rp):
                         #print '        RPath value: [' + rp + '] for file: [' + file_full_path + ']'
