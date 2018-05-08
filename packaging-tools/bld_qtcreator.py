@@ -316,9 +316,6 @@ if __name__ == "__main__":
         if callerArguments.keychain_unlock_script:
             runCommand(callerArguments.keychain_unlock_script, qtCreatorBuildDirectory, callerArguments = callerArguments,
                 init_environment = environment)
-        # environment has to have SIGNING_IDENTITY, can have SIGNING_FLAGS
-        runInstallCommand('codesign', currentWorkingDirectory = qtCreatorBuildDirectory,
-            callerArguments = callerArguments, init_environment = environment)
 
     if bldinstallercommon.is_win_platform():
         runInstallCommand('deployartifacts', qtCreatorBuildDirectory,
