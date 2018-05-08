@@ -39,4 +39,3 @@ file_list:              x86-tools-qtcreator-online-preview-conf,
 [PackageTemplates]
 template_dirs:          preview_pkg_qtcreator
 
-[preview]

@@ -40,5 +40,3 @@ package_url:            http://download.qt.io/development_releases/prebuilt/mac/
 
 [PackageTemplates]
 template_dirs:          preview_pkg_qtcreator
-
-[preview]
