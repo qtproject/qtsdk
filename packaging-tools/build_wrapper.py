@@ -1223,7 +1223,7 @@ def trigger_rta(optionDict, rta_description_files_dir):
             for item in rta_keys:
                 item = item.rstrip().replace(' ', '')
                 if item:
-                    url = rta_server_base_url + item + '/build?token=JENKINS_SQUISH'
+                    url = rta_server_base_url + item + '/build?token=RTA_JENKINS'
                     print('Triggering RTA case: {0}'.format(url))
                     urllib.urlretrieve(url)
         f.close()

@@ -37,7 +37,7 @@ arg_configurations_file:    offline_installer_jobs/5.11.0/linux_x64_offline
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz,
                             %REMOVE_DEBUG_INFORMATION_FILES%=true
 installer_name:             qt-opensource-linux-x64-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-5.11.0_tests_linux_all
+rta_key_list:               RTA_trigger_5.11.0_Smoke_offline_opensource_linux
 
 ################################################################################
 ## macOS offline
@@ -47,7 +47,7 @@ assign_to_machine_label:    mac-physical-10.13-x64-pm
 arg_configurations_file:    offline_installer_jobs/5.11.0/mac_x64_offline
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz
 installer_name:             qt-opensource-mac-x64-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-5.11.0_tests_mac_all
+rta_key_list:               RTA_trigger_5.11.0_Smoke_offline_opensource_mac
 
 ################################################################################
 ## Windows offline
@@ -58,7 +58,7 @@ arg_configurations_file:    offline_installer_jobs/5.11.0/win_x86_offline
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip,
                             %REMOVE_DEBUG_INFORMATION_FILES%=true
 installer_name:             qt-opensource-windows-x86-%GLOBAL_VERSION_AND_TAG%
-rta_key_list:               Qt_RTA_opensource_offlineInstallerSmoke-5.11.0_tests_windows_all
+rta_key_list:               RTA_trigger_5.11.0_Smoke_offline_opensource_win
 
 ################################################################################
 ## Linux repository
@@ -81,7 +81,7 @@ arg_configurations_file:    repository_configs/android_qt5/linux_x64_android_rep
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
 repo_components_to_update:  qt.qt5.5110.*
 repo_url_specifier:         linux_x64/android/qt5_5110
-rta_key_list:
+rta_key_list:               RTA_trigger_5.11.0_Smoke_online_opensource_linux
 
 ################################################################################
 ## Windows repository
@@ -111,7 +111,7 @@ arg_configurations_file:    repository_configs/winrt_qt5/win_x64_winrt_repositor
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
 repo_components_to_update:  qt.qt5.5110.*
 repo_url_specifier:         windows_x86/winrt/qt5_5110
-rta_key_list:
+rta_key_list:               RTA_trigger_5.11.0_Smoke_online_opensource_win
 
 ################################################################################
 ## macOS repository
@@ -141,5 +141,5 @@ arg_configurations_file:    repository_configs/ios_qt5/mac_x64_ios_repository_qt
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
 repo_components_to_update:  qt.qt5.5110.*
 repo_url_specifier:         mac_x64/ios/qt5_5110
-rta_key_list:
+rta_key_list:               RTA_trigger_5.11.0_Smoke_online_opensource_mac
 
