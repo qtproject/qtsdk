@@ -24,7 +24,7 @@ arg_substitution_list:      %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.7.0-bet
 [release.qtcreator.repository.linux.x64.preview]
 arg_configurations_file:    repository_configs/tools_desktop/preview_linux_x64_repository_tools_qtcreator
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
-repo_components_to_update:  preview,preview.qt.tools.qtcreator.*
+repo_components_to_update:  preview.qt.tools.qtcreator.*
 repo_url_specifier:         linux_x64/desktop/tools_qtcreator_preview
 
 
@@ -34,7 +34,7 @@ repo_url_specifier:         linux_x64/desktop/tools_qtcreator_preview
 [release.qtcreator.repository.windows.x86.preview]
 arg_configurations_file:    repository_configs/tools_desktop/preview_win_x86_repository_tools_qtcreator
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
-repo_components_to_update:  preview,preview.qt.tools.qtcreator.*,preview.qt.tools.qtcreatorcdbext*
+repo_components_to_update:  preview.qt.tools.qtcreator.*,preview.qt.tools.qtcreatorcdbext*
 repo_url_specifier:         windows_x86/desktop/tools_qtcreator_preview
 
 
@@ -44,5 +44,5 @@ repo_url_specifier:         windows_x86/desktop/tools_qtcreator_preview
 [release.qtcreator.repository.mac.x64.preview]
 arg_configurations_file:    repository_configs/tools_desktop/preview_mac_x64_repository_tools_qtcreator
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.gz
-repo_components_to_update:  preview,preview.qt.tools.qtcreator.*
+repo_components_to_update:  preview.qt.tools.qtcreator.*
 repo_url_specifier:         mac_x64/desktop/tools_qtcreator_preview
