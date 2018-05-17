@@ -856,6 +856,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                               modules=qt_module_local_urls, dependencies=plugin_dependencies, qmake_arguments=qmake_arguments)])
     additional_plugins.extend([make_QtcPlugin('isoiconbrowser', 'qtquickdesigner', qtcreator_version,
                                               modules=qt_module_local_urls, dependencies=plugin_dependencies, qmake_arguments=qmake_arguments)])
+    additional_plugins.extend([make_QtcPlugin('b2qt-qtcreator-plugin', 'b2qt-qtcreator-plugin', qtcreator_version, modules=qt_module_local_urls,
+                                              dependencies=plugin_dependencies, qmake_arguments=qmake_arguments)])
     if not bldinstallercommon.is_mac_platform():
         build_perfparser = False
         if use_separate_elfutils:
@@ -889,8 +891,6 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                                       additional_arguments=perfparser_additional_arguments)])
         additional_plugins.extend([make_QtcPlugin('perfprofiler', 'perfprofiler', qtcreator_version,
                                                   modules=qt_module_local_urls, dependencies=plugin_dependencies, qmake_arguments=qmake_arguments)])
-        additional_plugins.extend([make_QtcPlugin('b2qt-qtcreator-plugin', 'b2qt-qtcreator-plugin', qtcreator_version, modules=qt_module_local_urls,
-                                                  dependencies=plugin_dependencies + ['perfprofiler'], qmake_arguments=qmake_arguments)])
         additional_plugins.extend([make_QtcPlugin('gammarayintegration', 'gammarayintegration', qtcreator_version,
                                                   modules=qt_module_local_urls + [kdsme_url, gammaray_url] + module_urls(['qt3d', 'qtgamepad']),
                                                   dependencies=plugin_dependencies + ['b2qt-qtcreator-plugin', 'perfprofiler'],
