@@ -12,11 +12,11 @@ mac-x64:                    installer-framework-build-tqtc_3.0-mac-x64.7z
 
 [product.variables]
 PRODUCT_VERSION:                5.11.0
-PRODUCT_TAG:                    rc2
+PRODUCT_TAG:
 
 [release.global]
 version:                        5.11.0
-version_tag:                    rc2
+version_tag:
 module_exclude_list:            qtdocgallery, qtfeedback, qtjsondb, qtpim, qtqa, qtrepotools, qtsystems
 module_separate_install_list:   qtremoteobjects, qtscxml, qtscript, qtserialbus, qtwebengine
 arg_substitution_list:          %QT_VERSION%=%GLOBAL_VERSION%,
@@ -65,20 +65,20 @@ rta_key_list:               RTA_trigger_5.11.0_Smoke_offline_opensource_win
 ################################################################################
 [release.511.repository.linux.x64]
 arg_configurations_file:    repository_configs/desktop_qt5/linux_x64_repository_qt5_5110
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=false
 repo_components_to_update:  qt.qt5.5110.*
 repo_url_specifier:         linux_x64/desktop/qt5_5110
 rta_key_list:
 
 [release.511.repository.linux.x64.src_doc_examples]
 arg_configurations_file:    repository_configs/desktop_qt5/repository_qt5_5110_src_doc_examples
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=false
 repo_components_to_update:  qt.qt5.5110.*
 repo_url_specifier:         linux_x64/desktop/qt5_5110_src_doc_examples
 
 [release.511.repository.linux.x64.android]
 arg_configurations_file:    repository_configs/android_qt5/linux_x64_android_repository_qt5_5110
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=false
 repo_components_to_update:  qt.qt5.5110.*
 repo_url_specifier:         linux_x64/android/qt5_5110
 rta_key_list:               RTA_trigger_5.11.0_Smoke_online_opensource_linux
@@ -88,27 +88,27 @@ rta_key_list:               RTA_trigger_5.11.0_Smoke_online_opensource_linux
 ################################################################################
 [release.511.repository.windows.x86]
 arg_configurations_file:    repository_configs/desktop_qt5/win_x86_repository_qt5_5110
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=false
 repo_components_to_update:  qt.qt5.5110.*
 repo_url_specifier:         windows_x86/desktop/qt5_5110
 rta_key_list:
 
 [release.511.repository.windows.x86.src_doc_examples]
 arg_configurations_file:    repository_configs/desktop_qt5/repository_qt5_5110_src_doc_examples
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=false
 repo_components_to_update:  qt.qt5.5110.*
 repo_url_specifier:         windows_x86/desktop/qt5_5110_src_doc_examples
 
 [release.511.repository.windows.x86.android]
 arg_configurations_file:    repository_configs/android_qt5/win_x86_android_repository_qt5_5110
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=false
 repo_components_to_update:  qt.qt5.5110.*
 repo_url_specifier:         windows_x86/android/qt5_5110
 rta_key_list:
 
 [release.511.repository.windows.x86.winrt]
 arg_configurations_file:    repository_configs/winrt_qt5/win_x64_winrt_repository_qt5_5110
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip, %ONLINE_SNAPSHOT_BUILD%=false
 repo_components_to_update:  qt.qt5.5110.*
 repo_url_specifier:         windows_x86/winrt/qt5_5110
 rta_key_list:               RTA_trigger_5.11.0_Smoke_online_opensource_win
@@ -118,27 +118,27 @@ rta_key_list:               RTA_trigger_5.11.0_Smoke_online_opensource_win
 ################################################################################
 [release.511.repository.mac.x64]
 arg_configurations_file:    repository_configs/desktop_qt5/mac_x64_repository_qt5_5110
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=false
 repo_components_to_update:  qt.qt5.5110.*
 repo_url_specifier:         mac_x64/desktop/qt5_5110
 rta_key_list:
 
 [release.511.repository.mac.x64.src_doc_examples]
 arg_configurations_file:    repository_configs/desktop_qt5/repository_qt5_5110_src_doc_examples
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=false
 repo_components_to_update:  qt.qt5.5110.*
 repo_url_specifier:         mac_x64/desktop/qt5_5110_src_doc_examples
 
 [release.511.repository.mac.x64.android]
 arg_configurations_file:    repository_configs/android_qt5/mac_x64_android_repository_qt5_5110
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=false
 repo_components_to_update:  qt.qt5.5110.*
 repo_url_specifier:         mac_x64/android/qt5_5110
 rta_key_list:
 
 [release.511.repository.mac.x64.ios]
 arg_configurations_file:    repository_configs/ios_qt5/mac_x64_ios_repository_qt5_5110
-arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=true
+arg_substitution_list:      %SRC_ARCHIVE_TYPE%=tar.xz, %ONLINE_SNAPSHOT_BUILD%=false
 repo_components_to_update:  qt.qt5.5110.*
 repo_url_specifier:         mac_x64/ios/qt5_5110
 rta_key_list:               RTA_trigger_5.11.0_Smoke_online_opensource_mac
