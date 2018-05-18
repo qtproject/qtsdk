@@ -791,7 +791,9 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     qt_modules = ['qtbase', 'qtdeclarative', 'qtgraphicaleffects',
                   'qtimageformats', 'qtlocation', 'qtmacextras',
                   'qtquickcontrols', 'qtquickcontrols2', 'qtscript', 'qtsvg', 'qttools',
-                  'qttranslations', 'qtwayland', 'qtx11extras', 'qtxmlpatterns']
+                  'qttranslations', 'qtx11extras', 'qtxmlpatterns']
+    if not qtcreator_version.startswith('4.6.'):
+        qt_modules.append('qtwayland')
     qt_module_urls = module_urls(qt_modules)
     if qt_extra_module_url:
         qt_module_urls.append(qt_extra_module_url)
