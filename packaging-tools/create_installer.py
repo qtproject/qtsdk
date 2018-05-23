@@ -1,27 +1,40 @@
 #!/usr/bin/env python
 #############################################################################
 ##
-## Copyright (C) 2018 The Qt Company Ltd.
-## Contact: https://www.qt.io/licensing/
+## Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
+## Contact: http://www.qt-project.org/legal
 ##
 ## This file is part of the release tools of the Qt Toolkit.
 ##
-## $QT_BEGIN_LICENSE:GPL-EXCEPT$
+## $QT_BEGIN_LICENSE:LGPL$
 ## Commercial License Usage
 ## Licensees holding valid commercial Qt licenses may use this file in
 ## accordance with the commercial license agreement provided with the
 ## Software or, alternatively, in accordance with the terms contained in
-## a written agreement between you and The Qt Company. For licensing terms
-## and conditions see https://www.qt.io/terms-conditions. For further
-## information use the contact form at https://www.qt.io/contact-us.
+## a written agreement between you and Digia.  For licensing terms and
+## conditions see http://qt.digia.com/licensing.  For further information
+## use the contact form at http://qt.digia.com/contact-us.
+##
+## GNU Lesser General Public License Usage
+## Alternatively, this file may be used under the terms of the GNU Lesser
+## General Public License version 2.1 as published by the Free Software
+## Foundation and appearing in the file LICENSE.LGPL included in the
+## packaging of this file.  Please review the following information to
+## ensure the GNU Lesser General Public License version 2.1 requirements
+## will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+##
+## In addition, as a special exception, Digia gives you certain additional
+## rights.  These rights are described in the Digia Qt LGPL Exception
+## version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
 ##
 ## GNU General Public License Usage
 ## Alternatively, this file may be used under the terms of the GNU
-## General Public License version 3 as published by the Free Software
-## Foundation with exceptions as appearing in the file LICENSE.GPL3-EXCEPT
-## included in the packaging of this file. Please review the following
-## information to ensure the GNU General Public License requirements will
-## be met: https://www.gnu.org/licenses/gpl-3.0.html.
+## General Public License version 3.0 as published by the Free Software
+## Foundation and appearing in the file LICENSE.GPL included in the
+## packaging of this file.  Please review the following information to
+## ensure the GNU General Public License version 3.0 requirements will be
+## met: http://www.gnu.org/copyleft/gpl.html.
+##
 ##
 ## $QT_END_LICENSE$
 ##
@@ -472,12 +485,7 @@ def set_config_directory():
     """Copy config directory into correct place."""
     print '----------------------------------------'
     print ' Set config directory'
-    include_filter = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'ConfigDirLgpl')['include_filter']
-    if include_filter and include_filter in LICENSE_TYPE:
-        config_dir_template = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'ConfigDirLgpl')['template_name']
-    else:
-        config_dir_template = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'ConfigDir')['template_name']
-
+    config_dir_template = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'ConfigDir')['template_name']
     config_dir_template = os.path.normpath(CONFIGURATIONS_DIR + os.sep + config_dir_template)
 
     if not os.path.exists(CONFIG_DIR_DST):
@@ -635,13 +643,7 @@ def parse_component_data(configuration_file, configurations_base_path):
                 # validate component
                 sdk_component.validate()
                 if sdk_component.is_valid():
-                    # if include filter defined for component it is included only if LICENSE_TYPE matches to include_filter
-                    # same configuration file can contain components that are included only to either edition
-                    if sdk_component.include_filter and sdk_component.include_filter in LICENSE_TYPE:
-                        SDK_COMPONENT_LIST.append(sdk_component)
-                    # components without include_filter definition are added by default
-                    elif not sdk_component.include_filter:
-                        SDK_COMPONENT_LIST.append(sdk_component)
+                    SDK_COMPONENT_LIST.append(sdk_component)
                 else:
                     if CREATE_OFFLINE_INSTALLER and sdk_component.optional_for_offline_installer():
                         print('*** Warning! The [{0}] was not valid but it was marked optional for offline installers so skipping it.'.format(sdk_component.package_name))
