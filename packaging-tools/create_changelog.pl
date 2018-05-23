@@ -181,8 +181,15 @@ chdir(shift @ARGV) if (scalar @ARGV);
 collect_entries();
 collect_reverts();
 for my $toplevel (sort keys %log) {
-    print "\n$toplevel\n";
-    print '-' x (length $toplevel) . "\n";
+    my $full_line = 76;
+    my $centered_header = $full_line - length($toplevel) - 2;
+    my $left_margin = int($centered_header / 2);
+    my $right_margin = $centered_header - $left_margin;
+    print "\n";
+    print '*' x ($full_line) . "\n";
+    print
+    '*' . ' ' x ($left_margin) . "$toplevel" . ' ' x ($right_margin) . "*\n";
+    print "*" x ($full_line) . "\n";
 
     my $value = \$log{$toplevel};
 
@@ -205,3 +212,4 @@ for my $toplevel (sort keys %log) {
         }
     }
 }
+
