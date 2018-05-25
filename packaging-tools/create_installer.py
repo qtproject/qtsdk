@@ -472,7 +472,12 @@ def set_config_directory():
     """Copy config directory into correct place."""
     print '----------------------------------------'
     print ' Set config directory'
-    include_filter = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'ConfigDirLgpl')['include_filter']
+    # ConfigDirLgpl is optional field so it can be ignored
+    include_filter = ''
+    try:
+        include_filter = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'ConfigDirLgpl')['include_filter']
+    except Exception:
+        pass
     if include_filter and include_filter in LICENSE_TYPE:
         config_dir_template = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'ConfigDirLgpl')['template_name']
     else:
