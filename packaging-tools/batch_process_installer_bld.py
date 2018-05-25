@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #############################################################################
 ##
-## Copyright (C) 2016 The Qt Company Ltd.
+## Copyright (C) 2018 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -244,7 +244,7 @@ def get_job_list(optionDict, job_type_specifier, branch, arch, global_version, g
             # determine full path for the conf file
             full_conf_file_path = os.path.join(conf_file_base_dir, arg_configurations_file)
             # create build job
-            job = BuildJob(is_repo_job, license_type, s, arch, version_number, version_number_tag, conf_file_base_dir, full_conf_file_path, ifw_tools_url, arg_substitution_list, repo_content_type, repo_components_to_update, repo_url_specifier, installer_name, rta_key_list)
+            job = BuildJob(is_repo_job, license_type, s, arch, version_number, version_number_tag, conf_file_base_dir, full_conf_file_path, ifw_tools_url, arg_substitution_list, repo_content_type, repo_components_to_update, repo_url_specifier, installer_name, rta_key_list, include_filter)
             if (job.validate()):
                 job_list.append(job)
     return job_list
