@@ -1075,9 +1075,8 @@ def handle_installer_build(optionDict, project_name, installer_type):
         installer_name_final = item[3]
         # sign
         sign_installer(installer_output_dir, installer_name, installer_name_base)
-        # copy installer(s) to various locations:
+        # copy installer(s) to respective build number directory:
         remote_copy_installer(optionDict, remote_path_snapshot, installer_name, installer_output_dir, installer_name_final)
-        remote_copy_installer(optionDict, remote_path_latest_available, installer_name, installer_output_dir, installer_name_final)
         # Keep only the latest one in the "latest_available" directory i.e. delete the previous one
         replace_latest_successful_installer(optionDict, installer_name, installer_name_final, remote_path_latest_available, installer_output_dir)
     # Trigger rta cases
@@ -1117,8 +1116,7 @@ def replace_latest_successful_installer(optionDict, installer_name, installer_na
         cmd_args = [optionDict['SSH_COMMAND'], optionDict['PACKAGE_STORAGE_SERVER_ADDR'], 'rm', '-f', old_installer]
         bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, False)
         # save new installer to latest_successful directory
-        cmd_args = [optionDict['SCP_COMMAND'], installer_name, optionDict['PACKAGE_STORAGE_SERVER_ADDR'] + ':' + ls_installer_dir + '/' + installer_name_final]
-        bldinstallercommon.do_execute_sub_process(cmd_args, installer_output)
+        remote_copy_installer(optionDict, ls_installer_dir, installer_name, installer_output, installer_name_final)
 
 
 ###############################
