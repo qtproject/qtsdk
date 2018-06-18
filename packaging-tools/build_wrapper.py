@@ -850,6 +850,18 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                               modules=qt_module_local_urls, dependencies=plugin_dependencies, qmake_arguments=qmake_arguments)])
     additional_plugins.extend([make_QtcPlugin('b2qt-qtcreator-plugin', 'b2qt-qtcreator-plugin', qtcreator_version, modules=qt_module_local_urls,
                                               dependencies=plugin_dependencies, qmake_arguments=qmake_arguments)])
+    additional_plugins.extend([make_QtcPlugin('gammarayintegration', 'gammarayintegration', qtcreator_version,
+                                              modules=qt_module_local_urls + [kdsme_url, gammaray_url] + module_urls(['qt3d', 'qtgamepad']),
+                                              dependencies=plugin_dependencies + ['b2qt-qtcreator-plugin'],
+                                              qmake_arguments=qmake_arguments,
+                                              additional_arguments=[
+                                              '--deploy-command', 'python',
+                                              '--deploy-command=-u',
+                                              '--deploy-command', os.path.join(work_dir, 'gammarayintegration', 'scripts', 'deploy.py')])])
+    additional_plugins.extend([make_QtcPlugin('appmanagerintegration', 'pcore-plugin-appman', qtcreator_version,
+                                              modules=qt_module_local_urls,
+                                              dependencies=plugin_dependencies + ['b2qt-qtcreator-plugin'],
+                                              qmake_arguments=qmake_arguments)])
     if not bldinstallercommon.is_mac_platform():
         build_perfparser = False
         if use_separate_elfutils:
@@ -883,18 +895,6 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                                       additional_arguments=perfparser_additional_arguments)])
         additional_plugins.extend([make_QtcPlugin('perfprofiler', 'perfprofiler', qtcreator_version,
                                                   modules=qt_module_local_urls, dependencies=plugin_dependencies, qmake_arguments=qmake_arguments)])
-        additional_plugins.extend([make_QtcPlugin('gammarayintegration', 'gammarayintegration', qtcreator_version,
-                                                  modules=qt_module_local_urls + [kdsme_url, gammaray_url] + module_urls(['qt3d', 'qtgamepad']),
-                                                  dependencies=plugin_dependencies + ['b2qt-qtcreator-plugin', 'perfprofiler'],
-                                                  qmake_arguments=qmake_arguments,
-                                                  additional_arguments=[
-                                                  '--deploy-command', 'python',
-                                                  '--deploy-command=-u',
-                                                  '--deploy-command', os.path.join(work_dir, 'gammarayintegration', 'scripts', 'deploy.py')])])
-        additional_plugins.extend([make_QtcPlugin('appmanagerintegration', 'pcore-plugin-appman', qtcreator_version,
-                                                  modules=qt_module_local_urls,
-                                                  dependencies=plugin_dependencies + ['b2qt-qtcreator-plugin'],
-                                                  qmake_arguments=qmake_arguments)])
 
     # qmlpreview does work on macOs
     additional_plugins.extend([make_QtcPlugin('qmlpreview', 'qmlpreview', qtcreator_version,
