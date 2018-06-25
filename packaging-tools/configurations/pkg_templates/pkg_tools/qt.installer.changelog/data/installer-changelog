@@ -1,4 +1,36 @@
 ****************************************************************************
+*                        3.0.5                                             *
+****************************************************************************
+- Installer-Framework (MaintenanceTool and installers) built against Qt5.9.5
+- Improved metadata download:
+ -> Metadata downloaded in smaller chunks
+ -> Metadata download amount decreased by skipping the empty 7z download
+ -> Metadata warning log only in verbose mode
+- Fixed incorrect package uninstall (QTIFW-1114)
+
+****************************************************************************
+*                        3.0.4                                             *
+****************************************************************************
+- Added User-Agent parameter to network headers when communicating with
+  installer backend
+- Fixed installer crash at the end of install
+- Proxy usage fixes
+- Added new --no-proxy option for Installer and MaintenanceTool
+
+****************************************************************************
+*                        3.0.2-1                                           *
+****************************************************************************
+- Fixed crash when install deactivation failed in the end of uninstall.
+- Fixed crashes when downloadable package is missing (QTIFW-1064)
+
+****************************************************************************
+*                        3.0.2                                             *
+****************************************************************************
+- Installer-Framework (MaintenanceTool and installers) built against Qt5.9.0
+- Removed hard coded root repository urls from config.xml.
+  All repository url's are now fetched from server
+
+****************************************************************************
 *                        2.0.4-2                                           *
 ****************************************************************************
 - Installer-Framework (MaintenanceTool and installers) built against Qt5.6.2

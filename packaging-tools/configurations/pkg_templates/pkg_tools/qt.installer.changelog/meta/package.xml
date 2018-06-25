@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt Installer Changelog</DisplayName>
     <Description></Description>
-    <Version>1.0.2</Version>
+    <Version>%MAINTENANCE_TOOL_VERSION%</Version>
     <Virtual>true</Virtual>
     <AutoDependOn>qt</AutoDependOn>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
