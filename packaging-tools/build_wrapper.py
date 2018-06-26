@@ -179,6 +179,10 @@ def handle_ifw_build(optionDict):
     qt_src_pkg = optionDict['IFW_QT_SRC_PKG'] # mandatory env variable
     if not qt_src_pkg.endswith(('.zip', '.7z', '.tar.gz', '.tar.xz')):
         qt_src_pkg = qt_src_pkg + '.zip' if bldinstallercommon.is_win_platform() else qt_src_pkg + '.tar.gz'
+    # Prebuilt static Qt
+    qt_static_bin_pkg = optionDict['IFW_STATIC_QT_BIN_PKG']
+    # Prebuilt DYNAMIC Qt
+    qt_dynamic_bin_pkg = optionDict['IFW_DYNAMIC_QT_BIN_PKG']
     # OpenSSL
     openssl_dir = optionDict.get('IFW_OPENSSL_DIR', '')
     qt_configure_options = bld_ifw_tools.get_default_qt_configure_options(openssl_dir)
@@ -211,7 +215,9 @@ def handle_ifw_build(optionDict):
                                  ifw_qmake_args,
                                  openssl_dir,
                                  product_key_checker_pri,
-                                 False)
+                                 qt_static_bin_pkg,
+                                 qt_dynamic_bin_pkg,
+                                 False) # incremental
     # build ifw tools
     bld_ifw_installer = True if 'CREATE_IFW_INSTALLER' in optionDict else False
     bld_ifw_tools.build_ifw(ifw_bld_options, bld_ifw_installer)
