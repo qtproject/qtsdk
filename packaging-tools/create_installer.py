@@ -796,6 +796,26 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
 
 
 ##############################################################
+# Substitute pkg template directory names
+##############################################################
+def substitute_package_name(package_name):
+    ver = qt_pkg_version()
+    if ver:
+        return package_name.replace("%QT_PKG_VERSION%", ver)
+    return package_name  # no substitution
+
+
+##############################################################
+# Substitute pkg template version
+##############################################################
+def qt_pkg_version():
+    for item in KEY_SUBSTITUTION_LIST:
+        if "%QT_PKG_VERSION%" in item:
+            return item[1]
+        if "%QT_PKG_VERSION_MINOR%" in item:
+            return item[1]
+
+##############################################################
 # Remove debug information files
 ##############################################################
 def remove_all_debug_information_files(install_dir):
@@ -829,7 +849,7 @@ def remove_debug_information_files_by_file_type(install_dir, debug_information_f
                     bldinstallercommon.remove_tree(debug_information)
             else:
                # This will only take the text connected to the debug information file by grabbing all non-space characters (\S)
-               bldinstallercommon.delete_files_by_type_recursive(debug_information_dir, '\S*\.' + debug_information_file_ending)
+               bldinstallercommon.delete_files_by_type_recursive(debug_information_dir, '\S*\.' + debug_information_file_ending) # pylint: disable=W1401
 
 
 ##############################################################
@@ -850,9 +870,9 @@ def remove_all_debug_libraries(install_dir):
             for debug_library_file_type in debug_library_file_endings:
                 if os.path.exists(windows_debug_library_dir):
                     # make list of all debug library names
-                    all_debug_files_list = bldinstallercommon.make_files_list(windows_debug_library_dir, '\S*d\.' + debug_library_file_type)
+                    all_debug_files_list = bldinstallercommon.make_files_list(windows_debug_library_dir, '\S*d\.' + debug_library_file_type) # pylint: disable=W1401
                     # in case library name ends with 'd' we need to keep that and remove only library with double d at the end of file name
-                    double_d_debug_files_list = bldinstallercommon.make_files_list(windows_debug_library_dir, '\S*dd\.' + debug_library_file_type)
+                    double_d_debug_files_list = bldinstallercommon.make_files_list(windows_debug_library_dir, '\S*dd\.' + debug_library_file_type) # pylint: disable=W1401
                     if double_d_debug_files_list:
                         # check intersection of all debug libraries and library names ending with letter 'd'
                         debug_files_list_intersection = set(all_debug_files_list).intersection(double_d_debug_files_list)
@@ -868,15 +888,15 @@ def remove_all_debug_libraries(install_dir):
                         # there are no library names ending letter 'd' in this package
                         # we can remove all debug libraries with filenames ending *d.dll | *d.lib
                         if os.path.exists(windows_debug_library_dir):
-                            bldinstallercommon.delete_files_by_type_recursive(windows_debug_library_dir, '\S*d\.' + debug_library_file_type)
+                            bldinstallercommon.delete_files_by_type_recursive(windows_debug_library_dir, '\S*d\.' + debug_library_file_type) # pylint: disable=W1401
     # remove macOS debug libraries
     elif bldinstallercommon.is_mac_platform():
         for directory in ('bin', 'lib', 'qml', 'plugins'):
             macOS_debug_library_dir = bldinstallercommon.locate_directory(install_dir, directory)
             print 'Removing macOS debug libraries from: ' + macOS_debug_library_dir
-            debug_library_file_ending = '_debug\.*'
+            debug_library_file_ending = '_debug\.*' # pylint: disable=W1401
             if os.path.exists(macOS_debug_library_dir):
-                bldinstallercommon.delete_files_by_type_recursive(macOS_debug_library_dir, '\S*' + debug_library_file_ending)
+                bldinstallercommon.delete_files_by_type_recursive(macOS_debug_library_dir, '\S*' + debug_library_file_ending) # pylint: disable=W1401
     else:
         print 'Host was not Windows or macOS. For Linux and others we don\'t do anything at the moment'
 
@@ -906,7 +926,9 @@ def create_target_components(target_config):
 
         # not a static component so "build" it
         sdk_component.print_component_data()
-        dest_base = PACKAGES_FULL_PATH_DST + os.sep + sdk_component.package_name + os.sep
+        # substitute pkg_template dir names and package_name
+        package_name = substitute_package_name(sdk_component.package_name)
+        dest_base = PACKAGES_FULL_PATH_DST + os.sep + package_name + os.sep
         meta_dir_dest = os.path.normpath(dest_base + 'meta')
         data_dir_dest = os.path.normpath(dest_base + 'data')
         temp_data_dir = os.path.normpath(dest_base + 'tmp')
@@ -970,7 +992,7 @@ def qml_examples_only(examples_dir):
         print '*** Archive not cleaned'
         return
     subdir_list = []
-    regex = re.compile('^qml\S.*')
+    regex = re.compile('^qml\S.*') # pylint: disable=W1401
     for root, dirs, dummy in os.walk(examples_dir):
         for basename in dirs:
             if regex.search(basename):

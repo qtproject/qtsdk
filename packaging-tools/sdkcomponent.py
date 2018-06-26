@@ -82,6 +82,7 @@ class SdkComponent:
         self.static_component            = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'static_component')
         self.root_component              = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'root_component')
         self.package_name                = section_name
+        self.package_subst_name          = section_name
         self.packages_full_path_list     = packages_full_path_list
         self.archives                    = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'archives')
         self.archives                    = self.archives.replace(' ', '').replace('\n', '')
@@ -124,8 +125,13 @@ class SdkComponent:
     def validate(self):
         # look up correct package template directory from list
         found = False
+        for item in self.key_value_substitution_list:
+            if "%QT_PKG_VERSION%" in item:
+                self.package_name = self.package_name.replace(item[0], item[1])
+            if "%QT_PKG_VERSION_MINOR%" in item:
+                self.package_name = self.package_name.replace(item[0], item[1])
         for item in self.packages_full_path_list:
-            template_full_path = os.path.normpath(item + os.sep + self.package_name)
+            template_full_path = os.path.normpath(item + os.sep + self.package_subst_name)
             if os.path.exists(template_full_path):
                 if not found:
                     # take the first match
