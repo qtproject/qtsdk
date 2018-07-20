@@ -658,26 +658,28 @@ class Selector(object): # Select interesting changes, discard boring.
             # needlessly exercising them:
 
             # 5.10: common switch from while (0) to while (false)
-            swap = (('while', '(', '0', ')'), ('while', '(', 'false', ')'))
-            def find(words, after=swap[1]):
-                try:
-                    ind = 0
-                    while True:
-                        ind = words.index(after[0], ind)
-                        if all(words[i + ind] == tok for i, tok in enumerate(after)):
-                            yield ind
-                        ind += 1
-                except ValueError: # when .index() doesn't find after[0]
-                    pass
-            def test(words, get=find):
-                for it in get(words):
-                    return True
-                return False
-            def purge(words, pair=swap, get=find):
-                for ind in get(words):
-                    words[ind : ind + len(pair[1])] = pair[0]
-                return words
-            yield test, purge
+            # 5.12: Q_DECL_EQ_DELETE -> = delete
+            for swap in ((('while', '(', '0', ')'), ('while', '(', 'false', ')')),
+                         (('Q_DECL_EQ_DELETE', ';'), ('=', 'delete', ';'))):
+                def find(words, after=swap[1]):
+                    try:
+                        ind = 0
+                        while True:
+                            ind = words.index(after[0], ind)
+                            if all(words[i + ind] == tok for i, tok in enumerate(after)):
+                                yield ind
+                            ind += 1
+                    except ValueError: # when .index() doesn't find after[0]
+                        pass
+                def test(words, get=find):
+                    for it in get(words):
+                        return True
+                    return False
+                def purge(words, pair=swap, get=find):
+                    for ind in get(words):
+                        words[ind : ind + len(pair[1])] = pair[0]
+                    return words
+                yield test, purge
 
             # Used by next two #if-ery mungers:
             def find(words, key):
