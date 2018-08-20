@@ -54,7 +54,7 @@ import batch_process_installer_bld
 import bld_icu_tools
 import pkg_constants
 from pkg_constants import ICU_BUILD_OUTPUT_DIR
-from threadedwork import ThreadedWork
+from threadedwork import ThreadedWork, Task
 import bld_sdktool
 
 
@@ -313,6 +313,25 @@ def generate_bin_target_dictionary():
             if ci_target_postfix:
                 CI_TARGET_POSTFIX[label] = ci_target_postfix
 
+###############################
+# Download Qt documentation, extract and repackage with toplevel dir renamed
+###############################
+def create_download_documentation_task(base_url, download_path):
+    url = base_url  + '/doc/qt-everywhere-documentation.zip'
+    download_filepath = os.path.join(download_path, 'qt-everywhere-documentation.zip')
+    extract_path = os.path.join(download_path, 'qt-everywhere-documentation')
+    target_filepath = os.path.join(download_path, 'qt-everywhere-documentation.7z')
+    def repackage():
+        source_path = os.path.join(extract_path, 'doc')
+        os.rename(os.path.join(extract_path, 'qt-everywhere-documentation'),
+                  source_path)
+        bld_utils.runCommand(['7z', 'a', '-mx9', target_filepath, source_path],
+                             extract_path, None)
+    task = Task("downloading documentation from {0} and repackaging it as {1}".format(url, target_filepath))
+    task.addFunction(bld_utils.download, url, download_filepath)
+    task.addFunction(bldinstallercommon.create_extract_function(download_filepath, extract_path, None))
+    task.addFunction(repackage)
+    return (task, bld_utils.file_url(target_filepath))
 
 ###############################
 # handle_gammaray_build
@@ -771,6 +790,13 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
             python_url, python_path, download_temp, None))
 
+    # Documentation package for cross-references to Qt.
+    # Unfortunately this doesn't follow the normal module naming convention.
+    # We have to download, unpack, and repack renaming the toplevel directory.
+    (documentation_task, documentation_local_url) = create_download_documentation_task(
+        pkg_base_path + '/' + qt_base_path, os.path.join(download_temp, 'qtdocumentation'))
+    download_packages_work.addTaskObject(documentation_task)
+
     download_packages_work.run()
 
     # copy optimized clang package
@@ -785,6 +811,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                   'qtquickcontrols', 'qtquickcontrols2', 'qtscript', 'qtsvg', 'qttools',
                   'qttranslations', 'qtx11extras', 'qtxmlpatterns']
     qt_module_urls = module_urls(qt_modules)
+    qt_module_urls.append(documentation_local_url)
     if qt_extra_module_url:
         qt_module_urls.append(qt_extra_module_url)
     qt_module_local_urls = [bld_utils.file_url(os.path.join(qtcreator_temp, os.path.basename(url)))
