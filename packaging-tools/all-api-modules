@@ -113,6 +113,10 @@ examples), assuming qtsdk/packaging-tools is in your PATH:
  Generate review branches:
  $ $ME -r $LAST -r $NEXT api-review-gen -t $TASK $LAST $NEXT
 
+ Add a --amend before the -t in that to update review branches to
+ reflect changes in imminent release (e.g. fixes for an earlier round
+ of review) after updating $NEXT as above.
+
  Examine residual diff (should all be boring):
  $ $ME -r api-review-$LAST-$NEXT git diff -b -D
 
@@ -123,8 +127,8 @@ examples), assuming qtsdk/packaging-tools is in your PATH:
  $ $ME -r api-review-$LAST-$NEXT \\
         if git diff --quiet $LAST api-review-$LAST-$NEXT ';' \\
         then git reset --hard HEAD '&&' \\
-        git checkout $NEXT '&&' \\
-        git branch -D api-review-$LAST-$NEXT ';' fi
+             git checkout $NEXT '&&' \\
+             git branch -D api-review-$LAST-$NEXT ';' fi
  Note the use of quoted shell metacharacters; $ME shall
  eval the command, ensuring they do their proper job.
 
@@ -137,11 +141,6 @@ examples), assuming qtsdk/packaging-tools is in your PATH:
  When $LAST has changed (only relevant when using a branch here),
  rebase review branches onto it:
  $ $ME -r api-review-$LAST-$NEXT git rebase $LAST api-review-$LAST-$NEXT
-
- Update review branches to reflect changes in imminent release
- (e.g. fixes for an earlier round of review) after updating $NEXT as
- above:
- $ $ME -r $LAST -r $NEXT api-review-gen --amend $LAST $NEXT
 EOF
 }
 warn () { echo "$@" >&2; }
