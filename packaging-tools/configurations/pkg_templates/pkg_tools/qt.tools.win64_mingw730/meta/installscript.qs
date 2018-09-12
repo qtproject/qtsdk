@@ -54,8 +54,8 @@ Component.prototype.createOperations = function()
 
             var tcId = "ProjectExplorer.ToolChain.Mingw:" + component.name;
             var dbgId = "Debugger." + component.name;
-            installer.setValue("MINGW730_64_TCID", tcId);
-            installer.setValue("MINGW730_64_DBGID", dbgId);
+            installer.setValue("MINGW730_TCID", tcId);
+            installer.setValue("MINGW730_DBGID", dbgId);
 
             component.addOperation("Execute",
                                    ["{0,2}", "@SDKToolBinary@", "addTC",
