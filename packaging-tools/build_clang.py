@@ -389,8 +389,7 @@ def main():
     bitness = 64 if '64' in os.environ['cfg'] else 32
     toolchain = os.environ['cfg'].split('-')[1].lower()
     environment = build_environment(toolchain, bitness)
-    clazy_tag = '-clazy' if clazy_revision else ''
-    result_file_path = os.path.join(base_path, 'libclang-' + branch + '-' + os.environ['CLANG_PLATFORM'] + clazy_tag + '.7z')
+    result_file_path = os.path.join(base_path, 'libclang-' + branch + '-' + os.environ['CLANG_PLATFORM'] + '.7z')
     profile_data_path = os.path.join(build_path, 'profile_data')
     remote_path = (os.environ['PACKAGE_STORAGE_SERVER_USER'] + '@' + os.environ['PACKAGE_STORAGE_SERVER'] + ':'
                    + os.environ['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + os.environ['CLANG_UPLOAD_SERVER_PATH'])
