@@ -279,12 +279,11 @@ def build_ifw(options, create_installer=False, build_ifw_examples=False):
     clean_build_environment(options)
     #checkout sources
     prepare_installer_framework(options)
-    # copy qt sources. Also when fetching qt binaries as there are stuff the qt binaries need
-    prepare_qt_sources(options)
-    # extract qt binaries if qt binaries found, else build qt
+
     if options.qt_binaries_static:
         prepare_compressed_package(options.qt_binaries_static, options.qt_binaries_static_saveas, options.qt_build_dir)
     else:
+        prepare_qt_sources(options)
         build_qt(options, options.qt_build_dir, options.qt_configure_options, options.qt_build_modules)
     # build installer framework
     build_installer_framework(options)
@@ -371,12 +370,16 @@ def build_qt(options, qt_build_dir, qt_configure_options, qt_modules):
     cmd_args = options.qt_configure_bin + ' ' + configure_options
     # shlex does not like backslashes
     cmd_args = cmd_args.replace('\\', '/')
-    bldinstallercommon.do_execute_sub_process(shlex.split(cmd_args), qt_build_dir, True, False, get_build_env(options.openssl_dir))
+    bldinstallercommon.do_execute_sub_process(shlex.split(cmd_args), options.qt_source_dir, True, False, get_build_env(options.openssl_dir))
     print('--------------------------------------------------------------------')
     print('Building Qt')
     cmd_args = options.make_cmd
     cmd_args += qt_modules
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), qt_build_dir, True, False, get_build_env(options.openssl_dir))
+    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), options.qt_source_dir, True, False, get_build_env(options.openssl_dir))
+    print('--------------------------------------------------------------------')
+    print('Installing Qt')
+    cmd_args = options.make_install_cmd
+    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), options.qt_source_dir)
 
 ###############################
 # function
