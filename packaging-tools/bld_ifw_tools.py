@@ -174,10 +174,10 @@ class IfwOptions:
         self.qt_binaries_dynamic                        = qt_binaries_dynamic
         if self.qt_binaries_dynamic:
             self.qt_binaries_dynamic_saveas             = os.path.join(ROOT_DIR, os.path.basename(self.qt_binaries_dynamic))
-        self.qt_build_modules                           = " module-qtbase module-qtdeclarative module-qttools module-qttranslations"
-        self.qt_build_modules_docs                      = " module-qttools"
+        self.qt_build_modules                           = ["qtbase", "qtdeclarative", "qttools", "qttranslations"]
+        self.qt_build_modules_docs                      = ["qtbase", "qttools"]
         if bldinstallercommon.is_win_platform():
-            self.qt_build_modules                       += " module-qtwinextras"
+            self.qt_build_modules.append("qtwinextras")
             self.make_cmd                               = 'nmake'
             self.make_doc_cmd                           = 'nmake'
             self.make_install_cmd                       = 'nmake install'
@@ -374,12 +374,16 @@ def build_qt(options, qt_build_dir, qt_configure_options, qt_modules):
     print('--------------------------------------------------------------------')
     print('Building Qt')
     cmd_args = options.make_cmd
-    cmd_args += qt_modules
+    for module in qt_modules:
+        cmd_args += " module-"+module
     bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), options.qt_source_dir, True, False, get_build_env(options.openssl_dir))
     print('--------------------------------------------------------------------')
     print('Installing Qt')
     cmd_args = options.make_install_cmd
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), options.qt_source_dir)
+    for module in qt_modules:
+        moduleDir = os.path.join(options.qt_source_dir, module)
+        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), moduleDir)
+
 
 ###############################
 # function
