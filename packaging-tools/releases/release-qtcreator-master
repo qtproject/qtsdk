@@ -13,7 +13,7 @@ mac-x64:                    installer-framework-build-tqtc_3.0-mac-x64.7z
 [release.global]
 version:                    4.8.0
 version_tag:                beta2
-arg_substitution_list:      %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.8.0-beta2_512x/latest_successful,
+arg_substitution_list:      %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.8.0-beta2_511x/latest_successful,
                             %QTC_VERSION%=4.7.83,
                             %QTC_DISPLAY_VERSION%=%GLOBAL_VERSION_AND_TAG%,
                             %QTC_MSVC%=2015
