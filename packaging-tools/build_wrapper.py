@@ -217,6 +217,8 @@ def handle_ifw_build(optionDict):
                                  product_key_checker_pri,
                                  qt_static_bin_pkg,
                                  qt_dynamic_bin_pkg,
+                                 optionDict['SIGNING_SERVER'],
+                                 optionDict['SIGNING_PASSWORD'],
                                  False) # incremental
     # build ifw tools
     bld_ifw_installer = True if 'CREATE_IFW_INSTALLER' in optionDict else False

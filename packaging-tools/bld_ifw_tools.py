@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #############################################################################
 ##
-## Copyright (C) 2016 The Qt Company Ltd.
+## Copyright (C) 2018 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -153,7 +153,11 @@ class IfwOptions:
                  product_key_checker_pri,
                  qt_binaries_static,
                  qt_binaries_dynamic,
+                 signserver,
+                 signpwd,
                  incremental_build = False):
+        self.signserver                                 = signserver
+        self.signpwd                                    = signpwd
         self.incremental_mode                           = incremental_build
         self.qt_source_dir                              = os.path.join(ROOT_DIR, 'qt-src')
         self.qt_build_dir                               = os.path.join(ROOT_DIR, 'qt-bld')
@@ -593,6 +597,8 @@ def archive_installerbase(options):
         bin_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, 'installerbase.exe')
         bin_temp = ROOT_DIR + os.sep + 'tempSDKMaintenanceToolBase.exe'
         shutil.copy(bin_path, bin_temp)
+        if options.signserver and options.signpwd:
+            sign_windows_installerbase('tempSDKMaintenanceToolBase.exe', ROOT_DIR + os.sep, True, options)
         cmd_args_archive = ['7z', 'a', options.installer_base_archive_name, bin_temp]
         cmd_args_clean = ['del', bin_temp]
     bldinstallercommon.do_execute_sub_process(cmd_args_archive, ROOT_DIR)
@@ -602,6 +608,15 @@ def archive_installerbase(options):
         sys.exit(-1)
     shutil.move(options.installer_base_archive_name, options.build_artifacts_dir)
 
+###############################
+# sign windows installerbase
+###############################
+def sign_windows_installerbase(file_name, working_dir, abort_on_fail, options):
+    print('--------------------------------------------------------------------')
+    print('Sign Windows Installerbase')
+    cmd_args = [r'C:\Utils\sign\signtool.exe', 'sign', '/v', '/du', options.signserver, '/p', options.signpwd,
+                '/t', 'http://timestamp.verisign.com/scripts/timestamp.dll', '/f', r'C:\utils\sign\keys.pfx', file_name]
+    bldinstallercommon.do_execute_sub_process(cmd_args, working_dir, abort_on_fail)
 
 ###############################
 # function
@@ -684,6 +699,8 @@ def setup_argument_parser():
     parser.add_argument('--build_ifw_examples', help="Build the IFW examples", action='store_true', required=False, default=False)
     parser.add_argument('--qt_binaries_static', help="Use prebuilt Qt package instead of building from scratch", required=False)
     parser.add_argument('--qt_binaries_dynamic', help="Use prebuilt Qt package instead of building from scratch", required=False)
+    parser.add_argument('--sign_server', help="Signing server address", required=False)
+    parser.add_argument('--sign_server_pwd', help="Signing server parssword", required=False)
     return parser
 
 
@@ -699,6 +716,8 @@ if __name__ == "__main__":
     qt_src               = IfwOptions.default_qt_src_pkg if not CARGS.qt_archive_uri else CARGS.qt_archive_uri
     qt_configure_options = get_static_qt_configure_options(CARGS.openssl_dir) if not CARGS.qt_configure_options else CARGS.qt_configure_options
     ifw_branch           = IfwOptions.default_qt_installer_framework_branch_qt if not CARGS.ifw_branch else CARGS.ifw_branch
+    signserver           = '' if not CARGS.sign_server else CARGS.sign_server
+    signpwd              = '' if not CARGS.sign_server_pwd else CARGS.sign_server_pwd
 
     qt_conf_args = CARGS.qt_configure_options
     ifw_qmake_args = CARGS.ifw_qmake_args
@@ -715,6 +734,8 @@ if __name__ == "__main__":
                          CARGS.product_key_checker_pri,
                          CARGS.qt_binaries_static,
                          CARGS.qt_binaries_dynamic,
+                         signserver,
+                         signpwd,
                          CARGS.incremental
                         )
     # build ifw tools
