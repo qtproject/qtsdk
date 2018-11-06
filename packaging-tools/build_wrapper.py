@@ -99,7 +99,7 @@ def unlock_keychain():
 ###############################
 def lock_keychain():
     cmd_args = ['/Users/qt/lock-keychain.sh']
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
+    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, abort_on_fail=False)
 
 
 ###############################
