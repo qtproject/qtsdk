@@ -842,9 +842,14 @@ def remove_debug_information_files_by_file_type(install_dir, debug_information_f
         if os.path.exists(debug_information_dir):
             print 'Removing debug information files from: ' + debug_information_dir
             if debug_information_file_ending == 'dSYM':
-                # On macOS, debug symbols are often in stand alone bundles. os.walk used by bldinstallercommon.py
-                # helper functions doesn't support wildchars on path names so using glob instead
-                list_of_debug_information_files = glob.glob(debug_information_dir + '/*.' + debug_information_file_ending)
+                # On macOS, debug symbols are in folder bundles instead of files. os.walk used by bldinstallercommon.py
+                # helper functions doesn't directly support wildchars on path names so alternative approach for removing
+                # dSYM folders is required compared to Linux and Windows debug information files.
+                list_of_debug_information_files = []
+                for root, dirs, files in os.walk(debug_information_dir):
+                    for d in dirs:
+                        if d.endswith('dSYM'):
+                            list_of_debug_information_files.append(os.path.join(root, d))
                 for debug_information in list_of_debug_information_files:
                     bldinstallercommon.remove_tree(debug_information)
             else:
