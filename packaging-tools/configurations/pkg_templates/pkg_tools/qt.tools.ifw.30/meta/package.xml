@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Qt Installer Framework 3.0</DisplayName>
     <Description>The Qt Installer Framework provides a set of tools and utilities to create installers for the supported desktop Qt platforms: Linux, Microsoft Windows, and macOS.</Description>
-    <Version>3.0.4</Version>
+    <Version>%MAINTENANCE_TOOL_VERSION%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Default>false</Default>
     <SortingPriority>490</SortingPriority>
