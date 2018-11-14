@@ -2,9 +2,9 @@
 ## Global defines
 ################################################################################
 [ifwtools]
-windows-x86:                installer-framework-build-3.0.6_tqtc-win-x86.7z
-linux-x64:                  installer-framework-build-3.0.6_tqtc-linux-x64.7z
-mac-x64:                    installer-framework-build-3.0.6_tqtc-mac-x64.7z
+windows-x86:                installer-framework-build-tqtc_3.0.6-win-x86.7z
+linux-x64:                  installer-framework-build-tqtc_3.0.6-linux-x64.7z
+mac-x64:                    installer-framework-build-tqtc_3.0.6-mac-x64.7z
 
 [release.global]
 version:                    3.0.6
