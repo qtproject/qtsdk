@@ -108,6 +108,7 @@ REMOVE_PDB_FILES                    = 'False'
 REMOVE_WINDOWS_DEBUG_LIBRARIES      = 'False'
 REMOVE_DEBUG_INFORMATION_FILES      = 'False'
 REMOVE_DEBUG_LIBRARIES              = 'False'
+MAX_CPU_COUNT                       = 8
 
 KEY_SUBSTITUTION_LIST               = []
 PREFERRED_INSTALLER_NAME            = ''
@@ -235,6 +236,10 @@ def setup_option_parser():
     OPTION_PARSER.add_option("--remove-windows-debug-libraries",
                              action="store_true", dest="remove_windows_debug_libraries", default="False",
                              help="(Obsolete) Windows only: Removes Windows debug libraries")
+    # set maximum number of cpu's used on packaging
+    OPTION_PARSER.add_option("--max-cpu-count",
+                             action="store_true", dest="max_cpu_count", default=8,
+                             help="Set maximum number of CPU's used on packaging. Default: 8")
 
 
 ##############################################################
@@ -263,6 +268,7 @@ def print_options():
     print "Remove debug libraries:      %r" % (REMOVE_DEBUG_LIBRARIES)
     print "(Obsolete) Remove pdb files: %r" % (REMOVE_PDB_FILES)
     print "(Obsolete) Remove Windows debug libraries: %r" % (REMOVE_WINDOWS_DEBUG_LIBRARIES)
+    print "Maximum number of CPU's used on packaging: %r" % (MAX_CPU_COUNT)
     print
     print "Installer naming scheme options:\n"
     print "License type:                " + LICENSE_TYPE
@@ -301,6 +307,7 @@ def parse_cmd_line():
     global REMOVE_WINDOWS_DEBUG_LIBRARIES
     global REMOVE_DEBUG_INFORMATION_FILES
     global REMOVE_DEBUG_LIBRARIES
+    global MAX_CPU_COUNT
 
     CONFIGURATIONS_DIR                  = options.configurations_dir
     MAIN_CONFIG_NAME                    = options.configuration_file
@@ -317,6 +324,7 @@ def parse_cmd_line():
     REMOVE_DEBUG_LIBRARIES              = options.remove_debug_libraries
     REMOVE_PDB_FILES                    = options.remove_pdb_files
     REMOVE_WINDOWS_DEBUG_LIBRARIES      = options.remove_windows_debug_libraries
+    MAX_CPU_COUNT                       = options.max_cpu_count
 
     if os.environ.get('CREATE_MAINTENANCE_TOOL_RESOURCE_FILE') in ['yes', 'true', '1']:
         CREATE_MAINTENANCE_TOOL_RESOURCE_FILE = True
@@ -846,7 +854,7 @@ def remove_debug_information_files_by_file_type(install_dir, debug_information_f
                 # helper functions doesn't directly support wildchars on path names so alternative approach for removing
                 # dSYM folders is required compared to Linux and Windows debug information files.
                 list_of_debug_information_files = []
-                for root, dirs, files in os.walk(debug_information_dir):
+                for root, dirs, files in os.walk(debug_information_dir): # pylint: disable=W0612
                     for d in dirs:
                         if d.endswith('dSYM'):
                             list_of_debug_information_files.append(os.path.join(root, d))
@@ -974,8 +982,8 @@ def create_target_components(target_config):
                                                  get_component_data, sdk_component, archive, install_dir, data_dir_dest, compress_content_dir)
 
     if not ARCHIVE_DOWNLOAD_SKIP:
-        # start the work threaded, more then 8 parallel downloads are not so useful
-        getComponentDataWork.run(min([8, multiprocessing.cpu_count()]))
+        # start the work threaded, more than 8 parallel downloads are not so useful
+        getComponentDataWork.run(min([MAX_CPU_COUNT, multiprocessing.cpu_count()]))
 
     for sdk_component in SDK_COMPONENT_LIST:
         # substitute tags
