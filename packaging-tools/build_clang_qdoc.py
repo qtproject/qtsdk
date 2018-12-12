@@ -462,13 +462,11 @@ def main():
     else:
         print 'CLANG_PATCHES: Not set, skipping.'
 
-    qtcreator_path = os.path.abspath(os.path.join(patch_src_path, '..', '..', '..'))
     # TODO: put args in some struct to improve readability, add error checks
     build_clang(toolchain, src_path, build_path, install_path, profile_data_path, True, bitness, environment, build_type='Release')
     if is_mingw_toolchain(toolchain):
         shutil.rmtree(profile_data_path)
         os.makedirs(profile_data_path)
-        mingw_training(base_path, qtcreator_path, bitness)
         build_clang(toolchain, src_path, build_path, install_path, profile_data_path, False, bitness, environment, build_type='Release')
 
     check_clang(toolchain, build_path, environment)
