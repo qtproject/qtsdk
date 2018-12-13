@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #############################################################################
 ##
-## Copyright (C) 2018 The Qt Company Ltd.
+## Copyright (C) 2020 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -239,6 +239,7 @@ class IfwOptions:
         self.installer_framework_archive_name           = 'installer-framework-build-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
         self.installer_framework_with_squish_archive_name = 'installer-framework-build-squish-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
         self.installer_base_archive_name                = 'installerbase-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
+        self.binarycreator_archive_name                 = 'binarycreator-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
         self.installer_framework_payload_arch           = 'installer-framework-build-stripped-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
         self.qt_source_package_uri                      = qt_source_package_uri
         self.qt_source_package_uri_saveas               = os.path.join(ROOT_DIR, os.path.basename(self.qt_source_package_uri))
@@ -293,6 +294,7 @@ class IfwOptions:
         print('installer_framework_archive_name:        {0}'.format(self.installer_framework_archive_name))
         print('installer_framework_with_squish_archive_name: {0}'.format(self.installer_framework_with_squish_archive_name))
         print('installer_base_archive_name:             {0}'.format(self.installer_base_archive_name))
+        print('binarycreator_archive_name:              {0}'.format(self.binarycreator_archive_name))
         print('installer_framework_pkg_dir:             {0}'.format(self.installer_framework_pkg_dir))
         print('installer_framework_target_dir:          {0}'.format(self.installer_framework_target_dir))
         print('installer_framework_payload_arch:        {0}'.format(self.installer_framework_payload_arch))
@@ -346,6 +348,7 @@ def build_ifw(options, create_installer=False, build_ifw_examples=False):
     #archive
     archive_installerbase(options)
     archive_installer_framework(options.installer_framework_build_dir, options.installer_framework_archive_name, options, True)
+    archive_binarycreator(options)
     if (options.squish_dir):
         archive_installer_framework(options.installer_framework_build_dir_squish, options.installer_framework_with_squish_archive_name, options, False)
     return os.path.basename(options.installer_framework_build_dir)
@@ -760,6 +763,27 @@ def archive_installerbase(options):
         print('*** Failed to generate archive: {0}'.format(options.installer_base_archive_name))
         sys.exit(-1)
     shutil.move(options.installer_base_archive_name, options.build_artifacts_dir)
+
+###############################
+# function
+###############################
+def archive_binarycreator(options):
+    print('--------------------------------------------------------------------')
+    print('Archive Installerbase and Binarycreator')
+    cmd_args_archive = []
+    if bldinstallercommon.is_linux_platform() or bldinstallercommon.is_mac_platform():
+        bin_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, 'installerbase')
+        binarycreator_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, 'binarycreator')
+    elif bldinstallercommon.is_win_platform():
+        bin_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, 'installerbase.exe')
+        binarycreator_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, 'binarycreator.exe')
+    else:
+        raise Exception("Not a supported platform")
+    cmd_args_archive = ['7z', 'a', options.binarycreator_archive_name, bin_path, binarycreator_path]
+    bldinstallercommon.do_execute_sub_process(cmd_args_archive, ROOT_DIR)
+    if not os.path.isfile(options.binarycreator_archive_name):
+        raise Exception("*** Failed to generate archive: {0}".format(options.binarycreator_archive_name))
+    shutil.move(options.binarycreator_archive_name, options.build_artifacts_dir)
 
 ###############################
 # sign windows installerbase
