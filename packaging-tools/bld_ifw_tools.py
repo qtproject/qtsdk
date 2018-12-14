@@ -191,9 +191,9 @@ class IfwOptions:
         self.qt_build_modules_docs                      = ["qtbase", "qttools"]
         if bldinstallercommon.is_win_platform():
             self.qt_build_modules.append("qtwinextras")
-            self.make_cmd                               = 'nmake'
-            self.make_doc_cmd                           = 'nmake'
-            self.make_install_cmd                       = 'nmake install'
+            self.make_cmd                               = 'jom.exe'
+            self.make_doc_cmd                           = 'jom.exe'
+            self.make_install_cmd                       = 'jom.exe install'
             self.qt_qmake_bin                           = 'qmake.exe'
             self.qt_configure_bin                       = self.qt_source_dir + os.sep + 'configure.bat'
         else:
