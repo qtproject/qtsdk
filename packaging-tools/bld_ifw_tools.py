@@ -307,7 +307,7 @@ def build_ifw(options, create_installer=False, build_ifw_examples=False):
         build_squish(options)
     # build installer framework
     build_installer_framework(options)
-    if build_ifw_examples:
+    if build_ifw_examples or options.squish_dir:
         build_installer_framework_examples(options)
     # steps when creating ifw installer
     if create_installer:

@@ -208,6 +208,11 @@ def handle_ifw_build(optionDict):
             temp = bldinstallercommon.locate_file(optionDict['WORK_DIR'], product_key_checker_pri)
             product_key_checker_pri = temp if temp else product_key_checker_pri
 
+    if optionDict['ENABLE_TESTS'] == "true" and bldinstallercommon.is_win_platform():
+        squish_dir = 'C:\\Utils\\Squish_IFW'
+    else:
+        squish_dir = ''
+
     # options object for ifw build
     ifw_bld_options = IfwOptions(qt_src_pkg,
                                  qt_configure_options,
@@ -219,7 +224,8 @@ def handle_ifw_build(optionDict):
                                  qt_dynamic_bin_pkg,
                                  optionDict['SIGNING_SERVER'],
                                  optionDict['SIGNING_PASSWORD'],
-                                 False) # incremental
+                                 False,
+                                 squish_dir) # incremental
     # build ifw tools
     bld_ifw_installer = True if 'CREATE_IFW_INSTALLER' in optionDict else False
     bld_ifw_tools.build_ifw(ifw_bld_options, bld_ifw_installer)
