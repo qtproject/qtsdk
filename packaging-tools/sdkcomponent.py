@@ -126,10 +126,7 @@ class SdkComponent:
         # look up correct package template directory from list
         found = False
         for item in self.key_value_substitution_list:
-            if "%QT_PKG_VERSION%" in item:
-                self.package_name = self.package_name.replace(item[0], item[1])
-            if "%QT_PKG_VERSION_MINOR%" in item:
-                self.package_name = self.package_name.replace(item[0], item[1])
+            self.package_name = self.package_name.replace(item[0], item[1])
         for item in self.packages_full_path_list:
             template_full_path = os.path.normpath(item + os.sep + self.package_subst_name)
             if os.path.exists(template_full_path):

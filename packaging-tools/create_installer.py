@@ -807,21 +807,10 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
 # Substitute pkg template directory names
 ##############################################################
 def substitute_package_name(package_name):
-    ver = qt_pkg_version()
-    if ver:
-        return package_name.replace("%QT_PKG_VERSION%", ver)
-    return package_name  # no substitution
-
-
-##############################################################
-# Substitute pkg template version
-##############################################################
-def qt_pkg_version():
     for item in KEY_SUBSTITUTION_LIST:
-        if "%QT_PKG_VERSION%" in item:
-            return item[1]
-        if "%QT_PKG_VERSION_MINOR%" in item:
-            return item[1]
+        package_name = package_name.replace(item[0], item[1])
+
+    return package_name
 
 ##############################################################
 # Remove debug information files
