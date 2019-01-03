@@ -344,8 +344,10 @@ def handle_repo_build(optionDict, branch, arch, update_staging_repo, update_prod
     repo_job_list = get_repo_job_list(optionDict, branch, arch, global_version, global_version_tag)
     if (len(repo_job_list) == 0):
         raise RuntimeError('*** Fatal error! No repository build jobs found. Probably an error? %s' % conf_file)
-    # init repo dirs
-    init_repositories(optionDict, repo_job_list)
+
+    if (update_staging_repo or update_production_repo):
+        # init repo dirs
+        init_repositories(optionDict, repo_job_list)
     # is this snapshot build? Then enable component version number forced update
     forced_version_number_bump = False
     if update_staging_repo and not update_production_repo:
@@ -363,30 +365,31 @@ def handle_repo_build(optionDict, branch, arch, update_staging_repo, update_prod
     # handle repo build jobs
     for job in repo_job_list:
         create_online_repository(job, packages_base_url, forced_version_number_bump)
-        # determine testination path on test server
-        dest_path_repository, dest_path_pkg = generate_repo_dest_path_pending(optionDict, job)
-        # copy repo content to test server
-        source_path_repository  = os.path.join(release_tools_dir, 'online_repository')
-        source_path_pkg         = os.path.join(release_tools_dir, 'pkg')
-        push_online_repository(optionDict, optionDict['PKG_STAGING_SERVER'], optionDict['PKG_STAGING_SERVER_UNAME'], source_path_repository, dest_path_repository)
-        push_online_repository(optionDict, optionDict['PKG_STAGING_SERVER'], optionDict['PKG_STAGING_SERVER_UNAME'], source_path_pkg, dest_path_pkg)
-        # remove local repository and pkg directories
-        bldinstallercommon.remove_tree(source_path_repository)
-        bldinstallercommon.remove_tree(source_path_pkg)
-        # update repo in testing area
-        staging_repo_updated, production_repo_updated = update_online_repo(optionDict, job, update_staging_repo, update_production_repo)
-        # write the rta description file only if staging repository creation was ok
-        # remove also temp staging repositories from 'staging_pending' and 'production_dist_update_work' directories
-        server_addr = optionDict['PKG_STAGING_SERVER_UNAME'] + '@' + optionDict['PKG_STAGING_SERVER']
-        if (staging_repo_updated):
-            rta_description_file = open(rta_description_file_name, 'a')
-            rta_description_file.write(job.repo_url_specifier + ' ' + job.rta_key_list + '\n')
-            rta_description_file.close()
-            staging_temp_content_to_be_deleted = generate_repo_path_for_pending_area(optionDict, job)
-            delete_online_repo_paths(optionDict, server_addr, staging_temp_content_to_be_deleted)
-        if (production_repo_updated):
-            production_temp_content_to_be_deleted = optionDict['REPO_STAGING_SERVER_TEST_REPO_DIST_WORK'] + '/' + optionDict['ONLINE_REPOSITORY_BASE_NAME'] + '/' + job.repo_url_specifier
-            delete_online_repo_paths(optionDict, server_addr, production_temp_content_to_be_deleted)
+        if (update_staging_repo or update_production_repo):
+            # determine testination path on test server
+            dest_path_repository, dest_path_pkg = generate_repo_dest_path_pending(optionDict, job)
+            # copy repo content to test server
+            source_path_repository  = os.path.join(release_tools_dir, 'online_repository')
+            source_path_pkg         = os.path.join(release_tools_dir, 'pkg')
+            push_online_repository(optionDict, optionDict['PKG_STAGING_SERVER'], optionDict['PKG_STAGING_SERVER_UNAME'], source_path_repository, dest_path_repository)
+            push_online_repository(optionDict, optionDict['PKG_STAGING_SERVER'], optionDict['PKG_STAGING_SERVER_UNAME'], source_path_pkg, dest_path_pkg)
+            # remove local repository and pkg directories
+            bldinstallercommon.remove_tree(source_path_repository)
+            bldinstallercommon.remove_tree(source_path_pkg)
+            # update repo in testing area
+            staging_repo_updated, production_repo_updated = update_online_repo(optionDict, job, update_staging_repo, update_production_repo)
+            # write the rta description file only if staging repository creation was ok
+            # remove also temp staging repositories from 'staging_pending' and 'production_dist_update_work' directories
+            server_addr = optionDict['PKG_STAGING_SERVER_UNAME'] + '@' + optionDict['PKG_STAGING_SERVER']
+            if (staging_repo_updated):
+                rta_description_file = open(rta_description_file_name, 'a')
+                rta_description_file.write(job.repo_url_specifier + ' ' + job.rta_key_list + '\n')
+                rta_description_file.close()
+                staging_temp_content_to_be_deleted = generate_repo_path_for_pending_area(optionDict, job)
+                delete_online_repo_paths(optionDict, server_addr, staging_temp_content_to_be_deleted)
+            if (production_repo_updated):
+                production_temp_content_to_be_deleted = optionDict['REPO_STAGING_SERVER_TEST_REPO_DIST_WORK'] + '/' + optionDict['ONLINE_REPOSITORY_BASE_NAME'] + '/' + job.repo_url_specifier
+                delete_online_repo_paths(optionDict, server_addr, production_temp_content_to_be_deleted)
 
 
 # helper function to create online repository
