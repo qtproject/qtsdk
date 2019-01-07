@@ -359,7 +359,7 @@ def handle_remove_readonly(func, path, exc):
 def remove_tree(path):
     if os.path.isdir(path) and os.path.exists(path):
         if IS_WIN_PLATFORM:
-            path = win32api.GetShortPathName(path)
+            path = win32api.GetShortPathName(path.replace('/', '\\'))
             #a funny thing is that rmdir does not set an exitcode it is just using the last set one
             try:
                 runCommand(['rmdir', path, '/S', '/Q'], SCRIPT_ROOT_DIR, onlyErrorCaseOutput=True)
