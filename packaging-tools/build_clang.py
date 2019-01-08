@@ -51,6 +51,7 @@ import bld_qtcreator
 import bldinstallercommon
 import environmentfrombatchfile
 import threadedwork
+import multiprocessing
 
 def git_clone_and_checkout(base_path, remote_repository_url, directory, revision):
     bld_utils.runCommand(['git', 'clone', '--no-checkout', remote_repository_url, directory], base_path)
@@ -254,7 +255,7 @@ def rtti_flags(toolchain):
 
 def build_command(toolchain):
     if bldinstallercommon.is_win_platform():
-        command = ['mingw32-make', '-j8'] if is_mingw_toolchain(toolchain) else ['jom']
+        command = ['mingw32-make', '-j{}'.format(multiprocessing.cpu_count())] if is_mingw_toolchain(toolchain) else ['jom']
     else:
         command = ['make']
     return command
