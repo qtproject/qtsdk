@@ -239,7 +239,7 @@ build_node_labels:          win-msvc2013-Windows8.1-x64_OpenGL
 [meta.windows.x86.msvc2015_32]
 ci_target_postfix:          Windows-Windows_10-MSVC2015-Windows-Windows_10-X86
 build_target_dir:           windows_vs2015_32
-build_node_labels:          win-msvc2015-Windows10-x86
+build_node_labels:          win-msvc2015-Windows10-x86, win-msvc2017-Windows10-x86_QtDS
 
 [meta.windows.x86.msvc2015_64]
 ci_target_postfix:          Windows-Windows_10-MSVC2015-Windows-Windows_10-X86_64
