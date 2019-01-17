@@ -68,7 +68,7 @@ Options:
  --task-number ID
            Include a Task-number: in the commit message, with the
            given id, ID, of the bug-tracker issue being used to keep
-           track of the API review.
+           track of the API change review.
 
  -a
  --amend   Amend existing commit rather than extending the review

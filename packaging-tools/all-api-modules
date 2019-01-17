@@ -49,18 +49,18 @@ help () {
     cat <<EOF
 
 Run from the top-level (qt5) directory of a full Qt checkout with the
-module-set of an imminent release.  For API review generation, check
-out .gitmodules on the reference version, so as to use its list of
-modules (and skip modules that were in preview back then).  Give this
-script a command to run in each module; the purpose of this script is
-to run api-review-gen on each; but it also serves to prepare for this
-and later to run a git push to send the results to Gerrit for review.
-See examples below and output of ./api-review-gen -h for further
-details.
+module-set of an imminent release.  For API change review generation,
+check out .gitmodules on the reference version, so as to use its list
+of modules (and skip modules that were in preview back then).  Give
+this script a command to run in each module; the purpose of this
+script is to run api-review-gen on each; but it also serves to prepare
+for this and later to run a git push to send the results to Gerrit for
+review.  See examples below and output of ./api-review-gen -h for
+further details.
 
 Although this script can be used to run a general command in each
 module, its selection of modules is specifically geared towards the
-particular task of generating API reviews, under the conditions
+particular task of generating API change reviews, under the conditions
 described above; a general module iterator might one day replace it,
 but please don't try to evolve this into that.
 
@@ -90,8 +90,8 @@ release tag, another for an imminent release branch.  Note that, if a
 relevant module is missing (not cloned), this script silently skips
 it; you do need to have a suitable full work tree.
 
-By way of example, here's the work-flow for producing an API review
-between $LAST and $NEXT to be tracked by Jira issue $TASK (you
+By way of example, here's the work-flow for producing an API change
+review between $LAST and $NEXT to be tracked by Jira issue $TASK (you
 can set LAST, NEXT and TASK in the environment to configure the
 examples), assuming qtsdk/packaging-tools is in your PATH:
 
