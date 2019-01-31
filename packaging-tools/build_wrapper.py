@@ -801,6 +801,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
             download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
                 opt_clang_url, opt_clang_path, download_temp, None))
 
+    elfutils_path = None
     if elfutils_url:
         elfutils_path = os.path.join(download_temp, 'elfutils')
         download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
