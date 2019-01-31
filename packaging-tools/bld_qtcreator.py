@@ -65,6 +65,7 @@ def add_commandline_arguments(parser):
         parser.add_argument('--python_path', help="path to python libraries for use by cdbextension")
         parser.add_argument('--skip_cdb', help="skip cdbextension and the python dependency packaging step",
             action='store_true', default=False)
+    parser.add_argument('--elfutils_path', help='elfutils installation path for use by perfprofiler')
 
 def add_common_commandline_arguments(parser):
     if bldinstallercommon.is_win_platform():
@@ -262,6 +263,17 @@ if __name__ == "__main__":
         'CONFIG+=' + buildType,
         'CONFIG+=force_debug_info',
         'CONFIG+=separate_debug_info']
+
+    # perfparser for Qt Creator >= 4.9
+    if callerArguments.elfutils_path:
+        qmakeCommand.append('ELFUTILS_INSTALL_DIR=' + callerArguments.elfutils_path)
+        if bldinstallercommon.is_linux_platform():
+            elfutils_install_path = qtCreatorInstallDirectory + '/lib/elfutils'
+            qmakeCommand.append('PERFPARSER_ELFUTILS_INSTALLDIR=' + elfutils_install_path)
+            qmakeCommand.append('PERFPARSER_ELFUTILS_BACKENDS_INSTALLDIR=' + elfutils_install_path)
+        if bldinstallercommon.is_win_platform():
+            qmakeCommand.append('PERFPARSER_ELFUTILS_INSTALLDIR=' + qtCreatorInstallDirectory + '/bin')
+            qmakeCommand.append('PERFPARSER_ELFUTILS_BACKENDS_INSTALLDIR=' + qtCreatorInstallDirectory + '/lib/elfutils')
 
     if bldinstallercommon.is_mac_platform():
         qmakeCommand.append('QMAKE_MAC_SDK=macosx') # work around QTBUG-41238

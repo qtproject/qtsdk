@@ -861,6 +861,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
             cmd_args.extend(['--openssl7z', openssl_libs])
     if python_path:
         cmd_args.extend(['--python_path', python_path])
+    if elfutils_path:
+        cmd_args.extend(['--elfutils_path', elfutils_path])
     if skip_cdb:
         cmd_args.append('--skip_cdb')
     if not bldinstallercommon.is_win_platform():
