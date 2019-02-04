@@ -849,6 +849,7 @@ class Selector(object): # Select interesting changes, discard boring.
 
 class Scanner(object): # Support for its .disclaimed()
     __litmus = (
+        'This file is not part of the Qt API',
         'This header file may change from version to version without notice, or even be removed',
         'Usage of this API may make your code source and binary incompatible with future versions of Qt',
         )
