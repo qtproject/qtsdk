@@ -935,9 +935,13 @@ def main(args, hear, talk, complain):
             elif old.path: # disclaimed or removed: ignore by restoring
                 assert new.path or kind == 'delete', (kind, new.path)
                 index[old.path] = Selector.restore(store[old.sha], old.mode)
+                talk.write(old.path + '\n')
+                if new.path and new.path != old.path:
+                    talk.write(new.path + '\n')
             else: # new but disclaimed: ignore by discarding
                 assert kind == 'add' and new.path, (kind, new.path)
                 del index[new.path]
+                talk.write(new.path + '\n')
 
         index.write()
     except IOError: # ... and any other errors that just mean failure.

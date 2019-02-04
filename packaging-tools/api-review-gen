@@ -318,7 +318,7 @@ then
 fi
 
 mutter "Reverting the boring bits"
-run "$THERE/resetboring.py" --disclaim
+run "$THERE/resetboring.py" --disclaim | xargs -r git checkout $QUIET "$PRIOR" --
 
 if git diff --quiet --cached "$PRIOR"
 then retire "All the change here looks boring: check with git diff -D"
