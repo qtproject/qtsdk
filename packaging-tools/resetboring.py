@@ -612,9 +612,10 @@ class Selector(object): # Select interesting changes, discard boring.
             report how many hits we saw of each recipe.
             """
 
-            # Fatuous substitutions:
+            # Fatuous substitutions (see below for Q_DECL_OVERRIDE):
             for pair in (('Q_QDOC', 'Q_CLANG_QDOC'),
                          ('Q_DECL_FINAL', 'final'),
+                         ('Q_DECL_CONSTEXPR', 'constexpr'),
                          ('Q_DECL_NOTHROW', 'noexcept')):
                 def test(words, k=pair[1]):
                     return k in words
