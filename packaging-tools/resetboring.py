@@ -38,6 +38,35 @@
 ## $QT_END_LICENSE$
 ##
 #############################################################################
+"""Script to exclude boring changes from the staging area for a commit
+
+We start on a branch off an old release, with headers from a newer
+branch checked out (and thus staged) in it; git diff should say
+nothing, while git diff --cached describes how the headers have
+changed.  We want to separate the boring changes (e.g. to copyright
+headers) from the interesting ones (actual changes to the API).
+
+The basic idea is to do an automated git reset -p that discards any
+hunk entirely in the copyright header (recognized by its $-delimited
+end marker) and, for any other hunks present, checks for certain
+standard boring changes that we want to ignore.  If such changes are
+present, the hunk is replaced by one that omits the given boring
+changes; otherwise, the hunk is left alone.  Once we are done, git
+diff --cached should contain nothing boring and git diff should be
+entirely boring.  Only git's staging area is changed.
+
+This script emits to stdout the names of files that should be restored
+to their prior version (i.e. as in the old release; for files from the
+newer branch, this should remove them); it is left to the script
+driving this one (api-review-gen) to act on that.  Passing --disclaim
+as a command-line option ensures all changed files with (known
+variants on) the usual 'We mean it' disclaimer shall be named in this
+output.
+
+Errors and warnings are sent to stderr, not stdout.
+Nothing is read from standard input.
+"""
+
 # See: https://www.dulwich.io/apidocs/dulwich.html
 try:
     from dulwich.repo import Repo
@@ -45,21 +74,6 @@ try:
 except ImportError:
     print('I need the python package dulwich (python-dulwich on Debian).')
     raise
-
-# We start on a branch off an old release, with headers from a newer
-# release checked out (and thus staged) in it; git diff should say
-# nothing, while git diff --cached describes how the headers have
-# changed.  We want to separate the boring changes (e.g. to copyright
-# headers) from the interesting ones (actual changes to the API).
-#
-# The basic idea is to do an automated git reset -p that discards any
-# hunk entirely in the copyright header (recognized by its $-delimited
-# end marker) and, for any other hunks present, checks for certain
-# standard boring changes that we want to ignore.  If such changes are
-# present, the hunk is replaced by one that omits the given boring
-# changes; otherwise, the hunk is left alone.  Once we are done, git
-# diff --cached should contain nothing boring and git diff should be
-# entirely boring.  Only git's staging area is changed.
 
 class Selector(object): # Select interesting changes, discard boring.
     """Handles removing boring changes from one file.
@@ -905,6 +919,16 @@ class Scanner(object): # Support for its .disclaimed()
 def main(args, hear, talk, complain):
     # Future: we may want to parse more args, query the user or wrap
     # talk, complain for verbosity control.
+    """Reset boring changes
+
+    See doc-string of this file for outline.
+
+    Required arguments - args, hear, talk and complain -- should,
+    respectively, be (or behave as, e.g. if mocking to test) sys.argv,
+    sys.stdin, sys.stdout and sys.stderr.  The only command-line
+    option supported (in args) is a '--disclaim' flag, to treat as
+    boring all changes in files with the standard 'We mean it'
+    disclaimer; it is usual to pass this flag.\n"""
     ignore = Scanner.disclaimed if '--disclaim' in args else (lambda p, w: False)
 
     # We're in the root directory of the module:
