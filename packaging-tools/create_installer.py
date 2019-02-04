@@ -103,6 +103,7 @@ PACKAGE_CREATION_DATE_TAG           = '%PACKAGE_CREATION_DATE%'
 INSTALL_PRIORITY_TAG                = '%INSTALL_PRIORITY%'
 SORTING_PRIORITY_TAG                = '%SORTING_PRIORITY%'
 VERSION_NUMBER_AUTO_INCREASE_TAG    = '%VERSION_NUMBER_AUTO_INCREASE%'
+COMPONENT_SHA1_TAG                  = '%COMPONENT_SHA1%'
 VERSION_NUMBER_AUTO_INCREASE_VALUE  = ''
 REMOVE_PDB_FILES                    = 'False'
 REMOVE_WINDOWS_DEBUG_LIBRARIES      = 'False'
@@ -706,8 +707,19 @@ def create_metadata_map(sdk_component):
     # target install dir substitution
     if sdk_component.target_install_base:
         component_metadata_tag_pair_list.append([TARGET_INSTALL_DIR_NAME_TAG, sdk_component.target_install_base])
+    # component sha1 substitution
+    if sdk_component.component_sha1:
+        component_metadata_tag_pair_list.append([COMPONENT_SHA1_TAG, sdk_component.component_sha1])
 
     return component_metadata_tag_pair_list
+
+def get_component_sha1_file(sdk_component, sha1_file_dest):
+    """download component sha1 file"""
+    bld_utils.download(sdk_component.component_sha1_uri, sha1_file_dest)
+
+    # read sha1 from the file
+    with open(sha1_file_dest, "r") as sha1_file:
+        sdk_component.component_sha1 = sha1_file.read().strip()
 
 def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compress_content_dir):
     """download and create data for a component"""
@@ -792,6 +804,15 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
             archive.rpath_target = os.sep + archive.rpath_target
         if bldinstallercommon.is_linux_platform() or bldinstallercommon.is_solaris_platform():
             bldinstallercommon.handle_component_rpath(install_dir, archive.rpath_target)
+
+    if archive.component_sha1_file:
+        # read sha1 from the file
+        sha1_file_path = install_dir + os.sep + archive.component_sha1_file
+        if os.path.exists(sha1_file_path):
+            with open(sha1_file_path, "r") as sha1_file:
+                sdk_component.component_sha1 = sha1_file.read().strip()
+        else:
+            raise ValueError('Component SHA1 file "{0}" not found'.format(archive.component_sha1_file))
 
     # lastly compress the component back to .7z archive
     content_list = os.listdir(compress_content_dir)
@@ -969,6 +990,11 @@ def create_target_components(target_config):
                         data_dir_dest = win32api.GetShortPathName(data_dir_dest)
                     getComponentDataWork.addTask("adding {0} to {1}".format(archive.archive_name, sdk_component.package_name),
                                                  get_component_data, sdk_component, archive, install_dir, data_dir_dest, compress_content_dir)
+        # handle component sha1 uri
+        if sdk_component.component_sha1_uri:
+            sha1_file_dest = os.path.normpath(dest_base + 'SHA1')
+            getComponentDataWork.addTask("getting component sha1 file for {0}".format(sdk_component.package_name),
+                                         get_component_sha1_file, sdk_component, sha1_file_dest)
 
     if not ARCHIVE_DOWNLOAD_SKIP:
         # start the work threaded, more than 8 parallel downloads are not so useful

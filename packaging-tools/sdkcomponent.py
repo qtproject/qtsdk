@@ -46,6 +46,7 @@ class SdkComponent:
             self.package_finalize_items = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'package_finalize_items')
             self.target_install_dir     = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'target_install_dir') # todo, is needed?
             self.rpath_target           = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'rpath_target')
+            self.component_sha1_file    = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'component_sha1_file')
             self.nomalize_archive_uri(package_name, archive_server_name, archive_location_resolver)
             self.archive_name           = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'archive_name')
             if not self.archive_name:
@@ -94,6 +95,10 @@ class SdkComponent:
         self.package_default             = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'package_default')
         self.install_priority            = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'install_priority')
         self.sorting_priority            = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'sorting_priority')
+        self.component_sha1              = ""
+        self.component_sha1_uri          = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'component_sha1_uri')
+        if (self.component_sha1_uri):
+            self.component_sha1_uri = archive_location_resolver.resolve_full_uri(self.package_name, self.archive_server_name, self.component_sha1_uri)
         self.optional_for_offline        = False
         self.key_value_substitution_list = key_value_substitution_list
         self.archive_skip                = False
