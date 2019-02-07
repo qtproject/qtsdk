@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <Package>
-    <DisplayName>Tools</DisplayName>
+    <DisplayName>Developer and Designer Tools</DisplayName>
     <Description>IDE, Internationalization, Design and other tools to accelerate development.</Description>
-    <Version>1.0.8-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
+    <Version>1.0.9-0%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Script>installscript.qs</Script>
     <Essential>true</Essential>
