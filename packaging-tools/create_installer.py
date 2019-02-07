@@ -494,8 +494,7 @@ def set_config_directory():
 
     config_dir_template = os.path.normpath(CONFIGURATIONS_DIR + os.sep + config_dir_template)
 
-    if not os.path.exists(CONFIG_DIR_DST):
-        bldinstallercommon.create_dirs(CONFIG_DIR_DST)
+    bldinstallercommon.create_dirs(CONFIG_DIR_DST)
     bldinstallercommon.copy_tree(config_dir_template, CONFIG_DIR_DST)
     print ' -> copied [' + config_dir_template + '] into [' + CONFIG_DIR_DST + ']'
 
@@ -524,8 +523,7 @@ def set_config_xml():
     if os.path.exists(config_template_dest):
         os.remove(config_template_dest)
         print ' -> deleted old existing config.xml: ' + config_template_dest
-    if not os.path.exists(config_template_dest_dir):
-        bldinstallercommon.create_dirs(config_template_dest_dir)
+    bldinstallercommon.create_dirs(config_template_dest_dir)
     shutil.copy(config_template_source, config_template_dest)
     print ' -> copied [' + config_template_source + '] into [' + config_template_dest + ']'
 
@@ -590,25 +588,6 @@ def substitute_component_tags(tag_pair_list, meta_dir_dest):
             bldinstallercommon.replace_in_files(fileslist, tag, value)
         else:
             print '    Warning! Ignoring incomplete tag pair [ ' + tag + ' ] for [ ' + value + ' ] pair'
-
-##############################################################
-# Create offline static component
-##############################################################
-def create_offline_static_component(target_config, section, static_package_src):
-    """Create installable offline target component from static data."""
-    print '--------------------------------------------------------------------------------'
-    print ' Static package: [' + section + ']'
-    # Create needed dirs
-    package_dest_dir = os.path.normpath(PACKAGES_FULL_PATH_DST + os.sep + section)
-    bldinstallercommon.create_dirs(package_dest_dir)
-    # copy static content, assumption is that content is on local machine or on
-    # accessible network share
-    print '      Copying static package: '   + section
-    print '              Package source: '   + static_package_src
-    print '              Package dest:   '   + package_dest_dir
-    bldinstallercommon.copy_tree(static_package_src, package_dest_dir)
-    print '      Copying static package: Done!'
-    print '--------------------------------------------------------------------------------'
 
 ##############################################################
 # Parse SDK components
@@ -930,8 +909,7 @@ def remove_all_debug_libraries(install_dir):
 def create_target_components(target_config):
     """Create target components."""
     global ROOT_COMPONENT_NAME
-    if not os.path.lexists(PACKAGES_FULL_PATH_DST):
-        bldinstallercommon.create_dirs(PACKAGES_FULL_PATH_DST)
+    bldinstallercommon.create_dirs(PACKAGES_FULL_PATH_DST)
 
     print '================================================================='
     print '= Creating SDK components'
@@ -942,12 +920,6 @@ def create_target_components(target_config):
         # check first for top level component
         if sdk_component.root_component == 'yes':
             ROOT_COMPONENT_NAME = sdk_component.package_name
-        # check if static component or not
-        if sdk_component.static_component:
-            create_offline_static_component(sdk_component)
-            continue
-
-        # not a static component so "build" it
         sdk_component.print_component_data()
         # substitute pkg_template dir names and package_name
         package_name = substitute_package_name(sdk_component.package_name)
@@ -958,8 +930,7 @@ def create_target_components(target_config):
         # save path for later substitute_component_tags call
         sdk_component.meta_dir_dest = meta_dir_dest
         # create meta destination folder
-        if not os.path.lexists(meta_dir_dest):
-            bldinstallercommon.create_dirs(meta_dir_dest)
+        bldinstallercommon.create_dirs(meta_dir_dest)
         # Copy Meta data
         metadata_content_source_root = os.path.normpath(sdk_component.pkg_template_dir + os.sep + 'meta')
         bldinstallercommon.copy_tree(metadata_content_source_root, meta_dir_dest)
@@ -981,10 +952,8 @@ def create_target_components(target_config):
                         continue
                     # adding get_component_data task to our work queue
                     # Create needed data dirs before the threads start to work
-                    if not os.path.lexists(install_dir):
-                        bldinstallercommon.create_dirs(install_dir)
-                    if not os.path.lexists(data_dir_dest):
-                        bldinstallercommon.create_dirs(data_dir_dest)
+                    bldinstallercommon.create_dirs(install_dir)
+                    bldinstallercommon.create_dirs(data_dir_dest)
                     if platform.system().lower().startswith('win'):
                         install_dir = win32api.GetShortPathName(install_dir)
                         data_dir_dest = win32api.GetShortPathName(data_dir_dest)
@@ -995,6 +964,12 @@ def create_target_components(target_config):
             sha1_file_dest = os.path.normpath(dest_base + 'SHA1')
             getComponentDataWork.addTask("getting component sha1 file for {0}".format(sdk_component.package_name),
                                          get_component_sha1_file, sdk_component, sha1_file_dest)
+
+        # maybe there is some static data
+        data_content_source_root = os.path.normpath(sdk_component.pkg_template_dir + os.sep + 'data')
+        if os.path.exists(data_content_source_root):
+            bldinstallercommon.create_dirs(data_dir_dest)
+            bldinstallercommon.copy_tree(data_content_source_root, data_dir_dest)
 
     if not ARCHIVE_DOWNLOAD_SKIP:
         # start the work threaded, more than 8 parallel downloads are not so useful
