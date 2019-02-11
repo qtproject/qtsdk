@@ -44,6 +44,7 @@ import os
 import sys
 import bldinstallercommon
 import pkg_constants
+from urlparse import urlparse
 
 SERVER_NAMESPACE                = 'ArchiveRemoteLocation'
 PACKAGE_REMOTE_LOCATION_RELEASE = 'release'
@@ -160,6 +161,10 @@ class ArchiveLocationResolver:
         res = bldinstallercommon.is_content_url_valid(archive_uri)
         if res:
             return archive_uri
+        else:
+            parts = urlparse(archive_uri)
+            if parts.scheme and parts.netloc:
+                raise RuntimeError("Url: [%s] points to valid location but it is inaccessible." % (archive_uri))
         # 4. try to compose full URL
         temp = self.server_url_by_name(server_name)
         if not temp.endswith('/') and not archive_uri.startswith('/'):
