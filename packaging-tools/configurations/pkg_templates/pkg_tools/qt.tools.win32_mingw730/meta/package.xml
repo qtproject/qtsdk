@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+    <DisplayName>MinGW 7.3.0 32-bit</DisplayName>
+    <Description>MinGW-builds 7.3.0 32-bit toolchain.</Description>
+    <Version>7.3.0-0</Version>
+    <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
+    <Dependencies>qt.tools.qtcreator</Dependencies>
+    <Default>false</Default>
+    <Script>installscript.qs</Script>
+    <SortingPriority>730</SortingPriority>
+    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
+</Package>

@@ -1,6 +1,6 @@
 #############################################################################
 ##
-## Copyright (C) 2018 The Qt Company Ltd.
+## Copyright (C) 2019 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -26,22 +26,13 @@
 ##
 #############################################################################
 
-[PackageNamespace]
-name:                   qt
 
-[PlatformIdentifier]
-identifier:             windows
-
-[PackageConfigurationFiles]
-file_list:              x86-tools-mingw-conf,
-                        x86-tools-mingw48-conf,
-                        x86-tools-mingw482-conf,
-                        x86-tools-mingw491-conf,
-                        x86-tools-mingw492-conf,
-                        x86-tools-mingw530-conf,
-                        x86_64-tools-mingw730-conf,
-                        x86-tools-mingw730-conf
-
-[PackageTemplates]
-template_dirs:          pkg_tools
-
+[qt.tools.win32_mingw730]
+archives:               tools.win32_mingw730
+target_install_base:    /Tools/mingw730_32
+[tools.win32_mingw730]
+archive_uri:            http://download.qt.io/development_releases/prebuilt/mingw_32/i686-7.3.0-release-posix-dwarf-rt_v5-rev0.7z
+package_strip_dirs:     1
+target_install_dir:     /
+rpath_target:
+archive_name:           i686-7.3.0-release-posix-dwarf-rt_v5-rev0.7z
