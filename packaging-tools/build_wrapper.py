@@ -429,7 +429,7 @@ def handle_gammaray_build(optionDict):
     # upload
     base_path = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/gammaray/' + gammaray_version
     base_upload_path = base_path + '/' + optionDict['BUILD_NUMBER']
-    upload_path = base_upload_path + '/' + BIN_TARGET_DIRS[optionDict['TARGET_ENV']]
+    upload_path = base_upload_path + '/' + optionDict['QTC_PLATFORM']
     latest_path = base_path + '/latest'
     create_remote_dirs(optionDict, optionDict['PACKAGE_STORAGE_SERVER_ADDR'], upload_path)
     update_latest_link(optionDict, base_upload_path, latest_path)
@@ -588,7 +588,7 @@ def collect_qt_creator_plugin_sha1s(plugins):
 def upload_files(remote_path, file_upload_list, optionDict):
     # prepare remote paths
     pkg_storage_server = optionDict['PACKAGE_STORAGE_SERVER_ADDR']
-    target_env_dir = BIN_TARGET_DIRS[optionDict['TARGET_ENV']]
+    target_env_dir = optionDict['QTC_PLATFORM']
     latest_path = remote_path + '/latest'
     dir_path = remote_path + '/' + optionDict['BUILD_NUMBER']
     create_remote_dirs(optionDict, pkg_storage_server, dir_path + '/' + target_env_dir)
@@ -603,7 +603,7 @@ def update_job_link(remote_path_base, remote_target_path, optionDict):
     update_latest_link(optionDict, remote_target_path, remote_link)
 
 def handle_qt_creator_plugins_build(optionDict, plugin_conf_file_path):
-    target_env_dir = BIN_TARGET_DIRS[optionDict['TARGET_ENV']]
+    target_env_dir = optionDict['QTC_PLATFORM']
     work_dir = optionDict['WORK_DIR']
     optionDict['TARGET_ENV_DIR'] = target_env_dir # inject for plugin configs
     download_temp = os.path.join(work_dir, 'downloads')
@@ -707,7 +707,7 @@ def handle_qt_creator_plugins_build(optionDict, plugin_conf_file_path):
 # handle_qt_creator_build
 ###############################
 def handle_qt_creator_build(optionDict, qtCreatorPlugins):
-    target_env_dir = BIN_TARGET_DIRS[optionDict['TARGET_ENV']]
+    target_env_dir = optionDict['QTC_PLATFORM']
     work_dir = optionDict['WORK_DIR']
     build_environment = dict(os.environ)
 
@@ -1065,7 +1065,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
 ###############################
 def handle_sdktool_build(optionDict):
     # environment
-    target_env_dir = BIN_TARGET_DIRS[optionDict['TARGET_ENV']]
+    target_env_dir = optionDict['QTC_PLATFORM']
     work_dir = optionDict['WORK_DIR']
     qtcreator_version = get_qtcreator_version(os.path.join(work_dir, 'qt-creator'))
     qtcreator_edition_name = optionDict.get('QT_CREATOR_EDITION_NAME') # optional
