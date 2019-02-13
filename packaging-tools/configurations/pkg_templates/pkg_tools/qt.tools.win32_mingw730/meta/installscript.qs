@@ -31,7 +31,7 @@
 function Component()
 {
     installer.valueChanged.connect( this, Component.prototype.reactOnTargetDirChange );
-    // set the default values to MINGW730_DIR
+    // set the default values to MINGW730_32_DIR
     Component.prototype.reactOnTargetDirChange("TargetDir", installer.value("TargetDir"));
 }
 
@@ -39,7 +39,7 @@ Component.prototype.reactOnTargetDirChange = function(key, value)
 {
     if (key == "TargetDir") {
         var path = value + "%TARGET_INSTALL_DIR%";
-        installer.setValue("MINGW730_DIR", path.replace(/\\/g, "/"));
+        installer.setValue("MINGW730_32_DIR", path.replace(/\\/g, "/"));
     }
 }
 
@@ -61,7 +61,7 @@ Component.prototype.createOperations = function()
                                    ["{0,2}", "@SDKToolBinary@", "addTC",
                                     "--id", tcId + ".gcc",
                                     "--name", "MinGW 7.3.0 32-bit for C",
-                                    "--path", "@MINGW730_DIR@/bin/gcc.exe",
+                                    "--path", "@MINGW730_32_DIR@/bin/gcc.exe",
                                     "--abi", "x86-windows-msys-pe-32bit",
                                     "--language", "1",
                                     "--supportedAbis", "x86-windows-msys-pe-32bit",
@@ -72,7 +72,7 @@ Component.prototype.createOperations = function()
                                    ["{0,2}", "@SDKToolBinary@", "addTC",
                                     "--id", tcId + ".g++",
                                     "--name", "MinGW 7.3.0 32-bit for C++",
-                                    "--path", "@MINGW730_DIR@/bin/g++.exe",
+                                    "--path", "@MINGW730_32_DIR@/bin/g++.exe",
                                     "--abi", "x86-windows-msys-pe-32bit",
                                     "--language", "2",
                                     "--supportedAbis", "x86-windows-msys-pe-32bit",
@@ -83,7 +83,7 @@ Component.prototype.createOperations = function()
                                    ["{0,2}", "@SDKToolBinary@", "addDebugger",
                                     "--id", dbgId,
                                     "--name", "GNU gdb 8.1 for MinGW 7.3.0 32-bit",
-                                    "--binary", "@MINGW730_DIR@/bin/gdb.exe",
+                                    "--binary", "@MINGW730_32_DIR@/bin/gdb.exe",
                                     "--abis", "x86-windows-msys-pe-32bit",
                                     "--engine", "1",
                                     "UNDOEXECUTE",
@@ -91,7 +91,7 @@ Component.prototype.createOperations = function()
 
             component.addOperation("Execute",
                                    ["{0,4}", "@SDKToolBinary@", "addKeys",
-                                    "android", "MakeExtraSearchDirectory", "QString:@MINGW730_DIR@/bin"]);
+                                    "android", "MakeExtraSearchDirectory", "QString:@MINGW730_32_DIR@/bin"]);
         } catch( e ) {
             print( e );
         }
