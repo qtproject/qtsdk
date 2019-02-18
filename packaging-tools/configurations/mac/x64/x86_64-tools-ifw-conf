@@ -12,8 +12,19 @@ archive_name:           ifw-mac-x64.7z
 archives:               tools.ifw.30
 target_install_base:    /Tools/QtInstallerFramework/3.0
 [tools.ifw.30]
+archive_uri:            /opensource/ifw/installer-framework/installer-framework-build-stripped-3.0.6-mac-x64.7z
+package_strip_dirs:     1
+target_install_dir:     /
+rpath_target:
+archive_name:           ifw-mac-x64.7z
+
+[qt.tools.ifw.31]
+archives:               tools.ifw.31
+target_install_base:    /Tools/QtInstallerFramework/3.1
+[tools.ifw.31]
 archive_uri:            /opensource/ifw/installer-framework/installer-framework-build-stripped-%MAINTENANCE_TOOL_VERSION%-mac-x64.7z
 package_strip_dirs:     1
 target_install_dir:     /
 rpath_target:
 archive_name:           ifw-mac-x64.7z
+
