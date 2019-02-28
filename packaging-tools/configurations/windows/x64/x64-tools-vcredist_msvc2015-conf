@@ -31,7 +31,7 @@
 archives:               tools.vcredist_msvc2015_x64
 target_install_base:    /vcredist
 [tools.vcredist_msvc2015_x64]
-archive_uri:            http://download.qt.io/development_releases/prebuilt/vcredist/vcredist_msvc2015_x64.7z
+archive_uri:            http://master.qt.io/development_releases/prebuilt/vcredist/vcredist_msvc2015_x64.7z
 package_strip_dirs:     0
 target_install_dir:     /
 archive_name:           vcredist_msvc2015_x64.7z
