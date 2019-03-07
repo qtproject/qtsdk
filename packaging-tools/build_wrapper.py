@@ -1001,18 +1001,6 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         bld_sdktool.zip_sdktool(sdktool_target_path, os.path.join(work_dir, 'sdktool.7z'))
 
     # Upload
-    # snapshot directory
-    if snapshot_server and snapshot_path:
-        if qtcreator_version:
-            snapshot_path += '/' + qtcreator_version
-        cmd_args = [optionDict['SSH_COMMAND'], pkg_storage_server, "ssh", snapshot_server,
-            'mkdir', '-p', snapshot_path + '/' + build_id + '/installer_source/' + target_env_dir]
-        bldinstallercommon.do_execute_sub_process(cmd_args, work_dir, True)
-        cmd_args = [optionDict['SSH_COMMAND'], pkg_storage_server, "ssh", snapshot_server,
-            'ln', '-sfn', snapshot_path + '/' + build_id, snapshot_path + '/latest']
-        bldinstallercommon.do_execute_sub_process(cmd_args, work_dir, True)
-        snapshot_path += '/' + build_id
-
     file_upload_list = [] # pairs (source, dest), source relative to WORK_DIR, dest relative to server + dir_path
     snapshot_upload_list = [] # pairs (source, dest), source relative to server + dir_path, dest relative to snapshot server + snapshot_path
 
@@ -1031,9 +1019,9 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     file_upload_list.append(('qt-creator_build/qtcreator.7z', target_env_dir + '/qtcreator.7z'))
     file_upload_list.append(('qt-creator_build/qtcreator_dev.7z', target_env_dir + '/qtcreator_dev.7z'))
     file_upload_list.append(('qt-creator_build/qtcreator-debug.7z', target_env_dir + '/qtcreator-debug.7z'))
-    snapshot_upload_list.append((target_env_dir + '/qtcreator.7z', 'installer_source/' + target_env_dir + '/qtcreator.7z'))
-    snapshot_upload_list.append((target_env_dir + '/qtcreator_dev.7z', 'installer_source/' + target_env_dir + '/qtcreator_dev.7z'))
-    snapshot_upload_list.append((target_env_dir + '/qtcreator-debug.7z', 'installer_source/' + target_env_dir + '/qtcreator-debug.7z'))
+    snapshot_upload_list.append((target_env_dir + '/qtcreator.7z', 'qtcreator.7z'))
+    snapshot_upload_list.append((target_env_dir + '/qtcreator_dev.7z', 'qtcreator_dev.7z'))
+    snapshot_upload_list.append((target_env_dir + '/qtcreator-debug.7z', 'qtcreator-debug.7z'))
     for plugin in additional_plugins:
         plugin_name = plugin.name + '.7z'
         plugin_dev_name = plugin.name + '_dev.7z'
@@ -1043,19 +1031,26 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
             file_upload_list.append((plugin_dev_name, target_env_dir + '/' + plugin_dev_name))
     if bldinstallercommon.is_win_platform():
         file_upload_list.append(('qt-creator_build/qtcreatorcdbext.7z', target_env_dir + '/qtcreatorcdbext.7z'))
-        snapshot_upload_list.append((target_env_dir + '/qtcreatorcdbext.7z', 'installer_source/' + target_env_dir + '/qtcreatorcdbext.7z'))
         file_upload_list.append(('qt-creator_build/wininterrupt.7z', target_env_dir + '/wininterrupt.7z'))
-        snapshot_upload_list.append((target_env_dir + '/wininterrupt.7z', 'installer_source/' + target_env_dir + '/wininterrupt.7z'))
+        snapshot_upload_list.append((target_env_dir + '/qtcreatorcdbext.7z', 'qtcreatorcdbext.7z'))
+        snapshot_upload_list.append((target_env_dir + '/wininterrupt.7z', 'wininterrupt.7z'))
     if sdktool_qtbase_src:
         file_upload_list.append(('sdktool.7z', target_env_dir + '/sdktool.7z'))
     # upload files
     upload_files(base_path, file_upload_list, optionDict)
     remote_path = base_path + '/latest'
+    # public snapshot
     if snapshot_server and snapshot_path:
+        qtcreator_shortversion = re.match(r'\d+[.]\d+', qtcreator_version).group()
+        snapshot_path += '/' + qtcreator_shortversion + '/' + qtcreator_version
+        snapshot_path += '/installer_source/' + build_id + '/' + target_env_dir
+        cmd_args = [optionDict['SSH_COMMAND'], pkg_storage_server, "ssh", snapshot_server,
+                    'mkdir', '-p', snapshot_path]
+        bldinstallercommon.do_execute_sub_process(cmd_args, work_dir, True)
         for source, destination in snapshot_upload_list:
             cmd_args = [optionDict['SSH_COMMAND'], pkg_storage_server, "scp",
-                remote_path + '/' + source,
-                snapshot_server + ':' + snapshot_path + '/' + destination]
+                        remote_path + '/' + source,
+                        snapshot_server + ':' + snapshot_path + '/' + destination]
             bldinstallercommon.do_execute_sub_process(cmd_args, work_dir)
     # create link from job name to display name
     update_job_link(unversioned_base_path, base_path, optionDict)
