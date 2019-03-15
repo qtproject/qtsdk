@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>MinGW 7.3.0 64 bit</DisplayName>
     <Description>MinGW-builds 7.3.0 64 bit toolchain.</Description>
-    <Version>7.3.0-1</Version>
+    <Version>7.3.0-1%VERSION_NUMBER_AUTO_INCREASE%</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Dependencies>qt.tools.qtcreator</Dependencies>
     <Default>false</Default>
