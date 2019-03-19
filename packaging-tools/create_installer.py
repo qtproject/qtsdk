@@ -50,9 +50,11 @@ import bld_ifw_tools
 from bld_ifw_tools import IfwOptions
 from archiveresolver import ArchiveLocationResolver
 from sdkcomponent import SdkComponent
+from patch_qt import patchFiles, patchQtEdition
 
 # ----------------------------------------------------------------------
 BUILD_TIMESTAMP             = strftime('%Y-%m-%d', gmtime())
+RELEASE_TIME_STAMP          = BUILD_TIMESTAMP  # default value
 CONFIG_PARSER_COMMON        = 0
 CONFIG_PARSER_TARGET        = 0
 OPTION_PARSER               = 0
@@ -309,6 +311,7 @@ def parse_cmd_line():
     global REMOVE_DEBUG_INFORMATION_FILES
     global REMOVE_DEBUG_LIBRARIES
     global MAX_CPU_COUNT
+    global RELEASE_TIME_STAMP
 
     CONFIGURATIONS_DIR                  = options.configurations_dir
     MAIN_CONFIG_NAME                    = options.configuration_file
@@ -349,6 +352,8 @@ def parse_cmd_line():
                     REMOVE_DEBUG_INFORMATION_FILES = value
                 if key == "%REMOVE_DEBUG_LIBRARIES%":
                     REMOVE_DEBUG_LIBRARIES = value
+                if key == "%RELEASE_TIME_STAMP%":
+                    RELEASE_TIME_STAMP = value
                 KEY_SUBSTITUTION_LIST.append([key, value])
     KEY_SUBSTITUTION_LIST.append(['%LICENSE%', LICENSE_TYPE])
 
@@ -760,6 +765,12 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
         if 'qml_examples_only' in archive.package_finalize_items:
             examples_dir = bldinstallercommon.locate_directory(install_dir, 'examples')
             qml_examples_only(examples_dir)
+        if 'patch_qt' in archive.package_finalize_items:
+            patchFiles(install_dir, product='qt_framework')
+        if 'set_executable' in archive.package_finalize_items:
+            handle_set_executable(install_dir, archive.package_finalize_items)
+        if 'set_licheck' in archive.package_finalize_items:
+            handle_set_licheck(install_dir, archive.package_finalize_items, licheckFileName, releaseDate)
 
     # remove debug information files when explicitly defined so
     if REMOVE_PDB_FILES.lower() != "false" or REMOVE_DEBUG_INFORMATION_FILES.lower() != "false":
@@ -801,6 +812,33 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
     saveas = os.path.normpath(data_dir_dest + os.sep + archive.archive_name)
     cmd_args = [ ARCHIVEGEN_TOOL, saveas] + content_list
     bldinstallercommon.do_execute_sub_process(cmd_args, data_dir_dest)
+
+
+def handle_set_executable(baseDir, packageFinalizeItems):
+    for item in parsePackageFinalizeItems(packageFinalizeItems, 'set_executable'):
+        expectedPath = os.path.join(baseDir, item)
+        if not os.path.exists(expectedPath):
+            raise ValueError('Can not set executable bit as path not found: "{0}"'.format(expectedPath))
+        os.chmod(expectedPath, 0o755)
+        print('Executable bit set for: {0}'.format(expectedPath))
+
+
+def handle_set_licheck(baseDir, packageFinalizeItems):
+    for licheckFileName in parsePackageFinalizeItems(packageFinalizeItems, 'set_licheck'):
+        licheckFilePath = os.path.join(baseDir, licheckFileName)
+        if not os.path.exists(licheckFilePath):
+            raise ValueError('Can not set licheck as path not found: "{0}"'.format(licheckFilePath))
+        patchQtEdition(baseDir, licheckFileName, RELEASE_TIME_STAMP)
+        print('Licheck set for: {0}'.format(expectedPath))
+        break
+
+
+def parsePackageFinalizeItems(packageFinalizeItems, itemCategory):
+    for item in packageFinalizeItems.split(","):
+        if itemCategory not in item:
+            continue
+        parts = item.split("=")
+        yield parts[-1].strip()
 
 
 ##############################################################
@@ -1363,4 +1401,5 @@ def create_installer():
 ##############################################################
 # Start build process
 ##############################################################
-main()
+if __name__ == "__main__":
+    main()
