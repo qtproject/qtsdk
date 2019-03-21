@@ -26,37 +26,21 @@
 ##
 #############################################################################
 
-[preview.qt.tools.qtcreator]
-archives:               tools.qtcreator,
-                        tools.qtcreator.wininterrupt32,
-                        tools.qtcreator.wininterrupt64,
-                        tools.sdktool
+[preview.qt.tools.qtcreatorcdbext]
+archives:               tools.qtcreatorcdbext32,
+                        tools.qtcreatorcdbext64
 target_install_base:    /Tools/Preview/Qt Creator %QTC_DISPLAY_VERSION%
 
-[tools.qtcreator]
-archive_uri:            %QT_CREATOR_BASE_PATH%/windows_msvc2017_x86/qtcreator.7z
+[tools.qtcreatorcdbext32]
+archive_uri:            %QT_CREATOR_BASE_PATH%/windows_msvc2017_x86/qtcreatorcdbext.7z
 package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:
-archive_name:           preview-qtcreator.7z
+archive_name:           preview-qtcreatorcdbext32.7z
 
-[tools.qtcreator.wininterrupt32]
-archive_uri:            %QT_CREATOR_BASE_PATH%/windows_msvc2017_x86/wininterrupt.7z
+[tools.qtcreatorcdbext64]
+archive_uri:            %QT_CREATOR_BASE_PATH%/windows_msvc2017_x64/qtcreatorcdbext.7z
 package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:
-archive_name:           preview-wininterrupt32.7z
-
-[tools.qtcreator.wininterrupt64]
-archive_uri:            %QT_CREATOR_BASE_PATH%/windows_msvc2017_x64/wininterrupt.7z
-package_strip_dirs:     0
-target_install_dir:     /
-rpath_target:
-archive_name:           preview-wininterrupt64.7z
-
-[tools.sdktool]
-archive_uri:            %QT_CREATOR_BASE_PATH%/windows_msvc2017_x86/sdktool.7z
-package_strip_dirs:
-target_install_dir:     /bin
-rpath_target:
-archive_name:           qtcreator_sdktool.7z
+archive_name:           preview-qtcreatorcdbext64.7z

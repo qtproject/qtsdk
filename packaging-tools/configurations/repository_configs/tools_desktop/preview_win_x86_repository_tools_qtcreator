@@ -34,8 +34,7 @@ identifier:             windows
 
 [PackageConfigurationFiles]
 file_list:              x86-tools-qtcreator-online-preview-conf,
-                        tools-qtcreatorcdbext-msvc2015-preview-conf
+                        tools-qtcreatorcdbext-online-preview-conf
 
 [PackageTemplates]
 template_dirs:          preview_pkg_qtcreator
-

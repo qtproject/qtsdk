@@ -26,21 +26,22 @@
 ##
 #############################################################################
 
-[preview.qt.tools.qtcreatorcdbext]
+[qt.tools.qtcreatorcdbext]
 archives:               tools.qtcreatorcdbext32,
                         tools.qtcreatorcdbext64
-target_install_base:    /Tools/Preview/Qt Creator %QTC_DISPLAY_VERSION%
+target_install_base:    /
+package_default:        true
 
 [tools.qtcreatorcdbext32]
-archive_uri:            %QT_CREATOR_BASE_PATH%/windows_vs2015_32/qtcreatorcdbext.7z
+archive_uri:            %QT_CREATOR_BASE_PATH%/windows_msvc2017_x86/qtcreatorcdbext.7z
 package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:
-archive_name:           preview-qtcreatorcdbext32.7z
+archive_name:           qtcreatorcdbext32.7z
 
 [tools.qtcreatorcdbext64]
-archive_uri:            %QT_CREATOR_BASE_PATH%/windows_vs2015_64/qtcreatorcdbext.7z
+archive_uri:            %QT_CREATOR_BASE_PATH%/windows_msvc2017_x64/qtcreatorcdbext.7z
 package_strip_dirs:     0
 target_install_dir:     /
 rpath_target:
-archive_name:           preview-qtcreatorcdbext64.7z
+archive_name:           qtcreatorcdbext64.7z
