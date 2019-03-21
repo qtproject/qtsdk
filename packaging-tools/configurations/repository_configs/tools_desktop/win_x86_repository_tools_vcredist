@@ -38,7 +38,9 @@ file_list:              x86-tools-vcredist_32-conf,
                         x86-tools-vcredist_msvc2013-conf,
                         x64-tools-vcredist_msvc2013-conf,
                         x86-tools-vcredist_msvc2015-conf,
-                        x64-tools-vcredist_msvc2015-conf
+                        x64-tools-vcredist_msvc2015-conf,
+                        x86-tools-vcredist_msvc2017-conf,
+                        x64-tools-vcredist_msvc2017-conf
 
 [PackageTemplates]
 template_dirs:          pkg_tools
