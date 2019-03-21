@@ -52,23 +52,20 @@ import bldinstallercommon
 import environmentfrombatchfile
 import threadedwork
 
+def git_clone_and_checkout(base_path, remote_repository_url, directory, revision):
+    bld_utils.runCommand(['git', 'clone', '--no-checkout', remote_repository_url, directory], base_path)
+    local_repo_path = os.path.join(base_path, directory)
+    bld_utils.runCommand(['git', 'config', 'core.eol', 'lf'], local_repo_path)
+    bld_utils.runCommand(['git', 'config', 'core.autocrlf', 'input'], local_repo_path)
+    bld_utils.runCommand(['git', 'checkout', revision], local_repo_path)
+
 def get_clang(base_path, llvm_revision, clang_revision, tools_revision):
-    bld_utils.runCommand(['git', 'clone', '--no-checkout', 'git@github.com:llvm-mirror/llvm.git'], base_path)
-    bld_utils.runCommand(['git', 'config', 'core.eol', 'lf'], os.path.join(base_path, 'llvm'))
-    bld_utils.runCommand(['git', 'config', 'core.autocrlf', 'input'], os.path.join(base_path, 'llvm'))
-    bld_utils.runCommand(['git', 'checkout', llvm_revision], os.path.join(base_path, 'llvm'))
-    bld_utils.runCommand(['git', 'clone', '--no-checkout', 'git@github.com:llvm-mirror/clang.git'], os.path.join(base_path, 'llvm', 'tools'))
-    bld_utils.runCommand(['git', 'config', 'core.eol', 'lf'], os.path.join(base_path, 'llvm', 'tools', 'clang'))
-    bld_utils.runCommand(['git', 'config', 'core.autocrlf', 'input'], os.path.join(base_path, 'llvm', 'tools', 'clang'))
-    bld_utils.runCommand(['git', 'checkout', clang_revision], os.path.join(base_path, 'llvm', 'tools', 'clang'))
-    bld_utils.runCommand(['git', 'clone', '--no-checkout', 'git@github.com:llvm-mirror/clang-tools-extra.git', os.path.join(base_path, 'llvm', 'tools', 'clang', 'tools', 'extra')], '.')
-    bld_utils.runCommand(['git', 'config', 'core.eol', 'lf'], os.path.join(base_path, 'llvm', 'tools', 'clang', 'tools', 'extra'))
-    bld_utils.runCommand(['git', 'config', 'core.autocrlf', 'input'], os.path.join(base_path, 'llvm', 'tools', 'clang', 'tools', 'extra'))
-    bld_utils.runCommand(['git', 'checkout', tools_revision], os.path.join(base_path, 'llvm', 'tools', 'clang', 'tools', 'extra'))
+    git_clone_and_checkout(base_path, 'git://code.qt.io/clang/llvm.git', 'llvm', llvm_revision)
+    git_clone_and_checkout(base_path, 'git://code.qt.io/clang/clang.git', 'llvm/tools/clang', clang_revision)
+    git_clone_and_checkout(base_path, 'git://code.qt.io/clang/clang-tools-extra.git', 'llvm/tools/clang/tools/extra', tools_revision)
 
 def get_clazy(base_path, clazy_revision):
-    bld_utils.runCommand(['git', 'clone', '--no-checkout', 'git@github.com:KDE/clazy.git'], os.path.join(base_path, 'llvm', 'tools', 'clang', 'tools', 'extra'))
-    bld_utils.runCommand(['git', 'checkout', clazy_revision], os.path.join(base_path, 'llvm', 'tools', 'clang', 'tools', 'extra', 'clazy'))
+    git_clone_and_checkout(base_path, 'git://code.qt.io/clang/clazy.git', 'llvm/tools/clang/tools/extra/clazy', clazy_revision)
 
 def msvc_version():
     msvc_ver = os.environ.get('MSVC_VERSION')
