@@ -7,7 +7,7 @@ linux-x64:                  installer-framework-build-tqtc_3.1.0-linux-x64.7z
 mac-x64:                    installer-framework-build-tqtc_3.1.0-mac-x64.7z
 
 [release.global]
-version:                    3.1.0-1
+version:                    3.1.0
 version_tag:
 arg_substitution_list:      %MAINTENANCE_TOOL_VERSION%=%GLOBAL_VERSION%
 
