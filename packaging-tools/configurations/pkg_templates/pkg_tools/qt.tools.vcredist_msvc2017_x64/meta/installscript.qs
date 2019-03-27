@@ -29,8 +29,8 @@
 // constructor
 function Component()
 {
-    // only install c++ runtime if it is needed, no minor version check of the c++ runtime till we need it
-    if (installer.value("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\15.0\\VC\\Runtimes\\x64\\Installed") != 1)
+    // msvc2015 and msvc2017 are compatible but everything greater or same 14.1 is a vcredist for msvc2017.
+    if (installer.value("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\14.0\\VC\\Runtimes\\x64\\Minor") < 1)
         component.setValue("RequiresAdminRights", "true");
 }
 
@@ -40,7 +40,7 @@ Component.prototype.createOperations = function()
     // so that the simulator finds its fonts and applications find the simulator
     component.createOperations();
 
-    if (installer.value("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\15.0\\VC\\Runtimes\\x64\\Installed") != 1) {
+    if (installer.value("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\14.0\\VC\\Runtimes\\x64\\Minor") < 1) {
         // return value 3010 means it need a reboot, but in most cases it is not needed for run Qt application
         // return value 5100 means there's a newer version of the runtime already installed
         component.addElevatedOperation("Execute", "{0,3010,1638,5100}", "@TargetDir@\\vcredist\\vcredist_msvc2017_x64.exe", "/norestart", "/q");
