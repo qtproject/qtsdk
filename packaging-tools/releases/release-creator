@@ -10,12 +10,12 @@ linux-x64:                  installer-framework-build-tqtc_3.0-linux-x64.7z
 mac-x64:                    installer-framework-build-tqtc_3.0-mac-x64.7z
 
 [release.global]
-version:                    4.8.2
+version:                    4.9.0
 version_tag:
-arg_substitution_list:      %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.8.2_512x/latest_successful,
+arg_substitution_list:      %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.9.0_5.12.2/latest_successful,
                             %QTC_VERSION%=%GLOBAL_VERSION%,
                             %QTC_DISPLAY_VERSION%=%GLOBAL_VERSION_AND_TAG%,
-                            %QTC_MSVC%=2015
+                            %QTC_MSVC%=2017
 
 
 ################################################################################

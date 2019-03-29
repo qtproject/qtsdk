@@ -1,6 +1,6 @@
 #############################################################################
 ##
-## Copyright (C) 2017 The Qt Company Ltd.
+## Copyright (C) 2019 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -26,26 +26,39 @@
 ##
 #############################################################################
 
-[PackageNamespace]
-name:                   qt
 
-[PlatformIdentifier]
-identifier:             windows
+[qt.tools.qtcreator]
+archives:               tools.qtcreator,
+                        tools.qtcreator.wininterrupt32,
+                        tools.qtcreator.wininterrupt64,
+                        tools.sdktool
+target_install_base:    /
+package_default:        true
 
-[PackageConfigurationFiles]
-file_list:              qt-conf,
-                        qtcreator-license-conf,
-                        x64-tools-qtcreator-msvc2015-conf,
-                        tools-qtcreatorcdbext-msvc2015-standalone-conf,
-                        x86-tools-vcredist_msvc2015-conf,
-                        x64-tools-vcredist_msvc2015-conf
+[tools.qtcreator]
+archive_uri:            %QT_CREATOR_BASE_PATH%/windows_msvc2017_x64/qtcreator.7z
+package_strip_dirs:     0
+target_install_dir:     /
+rpath_target:
+archive_name:           qtcreator.7z
 
-[ConfigDir]
-template_name:          config_qtcreator
+[tools.qtcreator.wininterrupt32]
+archive_uri:            %QT_CREATOR_BASE_PATH%/windows_msvc2017_x86/wininterrupt.7z
+package_strip_dirs:     0
+target_install_dir:     /
+rpath_target:
+archive_name:           wininterrupt32.7z
 
-[ConfigXml]
-template_name:          config.xml.template.windows.qtcreator.x64
+[tools.qtcreator.wininterrupt64]
+archive_uri:            %QT_CREATOR_BASE_PATH%/windows_msvc2017_x64/wininterrupt.7z
+package_strip_dirs:     0
+target_install_dir:     /
+rpath_target:
+archive_name:           wininterrupt64.7z
 
-[PackageTemplates]
-template_dirs:          pkg_qtcreator_standalone, pkg_tools
-
+[tools.sdktool]
+archive_uri:            %QT_CREATOR_BASE_PATH%/windows_msvc2017_x64/sdktool.7z
+package_strip_dirs:
+target_install_dir:     /bin
+rpath_target:
+archive_name:           qtcreator_sdktool.7z
