@@ -71,30 +71,44 @@ def get_clazy(base_path, clazy_revision):
 def msvc_version():
     msvc_ver = os.environ.get('MSVC_VERSION')
     if not msvc_ver:
-        msvc_ver = '14.0'
+        msvc_ver = '14.1'
     return msvc_ver
 
 def msvc_year_version():
     return {
         '12.0': 'MSVC2013',
         '14.0': 'MSVC2015',
-        '14.1': 'MSVC2017'
-    }.get(os.environ.get('MSVC_VERSION'), 'MSVC2015')
+        '14.1': 'MSVC2017',
+        '14.2': 'MSVC2019'
+    }.get(os.environ.get('MSVC_VERSION'), 'MSVC2017')
+
+def msvc_year():
+    return {
+        '12.0': '2013',
+        '14.0': '2015',
+        '14.1': '2017',
+        '14.2': '2019'
+    }.get(os.environ.get('MSVC_VERSION'), 'MSVC2017')
 
 def msvc_year_version_libclang():
     return {
         '12.0': 'vs2013',
         '14.0': 'vs2015',
-        '14.1': 'vs2017'
-    }.get(os.environ.get('MSVC_VERSION'), 'vs2015')
+        '14.1': 'vs2017',
+        '14.2': 'vs2019'
+    }.get(os.environ.get('MSVC_VERSION'), 'vs2017')
 
 def msvc_environment(bitness):
     program_files = os.path.join('C:', '/Program Files (x86)')
     if not os.path.exists(program_files):
         program_files = os.path.join('C:', '/Program Files')
     msvc_ver = msvc_version()
-    vcvarsall = os.path.join(program_files, 'Microsoft Visual Studio ' + msvc_ver, 'VC', 'vcvarsall.bat')
-    arg = 'amd64' if bitness == 64 else 'x86'
+    if msvc_ver == '14.1' or msvc_ver == '14.2':
+        vcvarsall = os.path.join(program_files, 'Microsoft Visual Studio', msvc_year(), 'Professional', 'VC', 'Auxiliary', 'Build', 'vcvarsall.bat')
+        arg = 'x64' if bitness == 64 else 'x86'
+    else:
+        vcvarsall = os.path.join(program_files, 'Microsoft Visual Studio ' + msvc_ver, 'VC', 'vcvarsall.bat')
+        arg = 'amd64' if bitness == 64 else 'x86'
     return environmentfrombatchfile.get(vcvarsall, arguments=arg)
 
 def paths_with_sh_exe_removed(path_value):
@@ -132,10 +146,10 @@ def training_qtcreator_version():
         qtcreator_ver = '4.5'
     return qtcreator_ver
 
-def training_libclang_version():
-    libclang_ver = os.environ.get('TRAINING_LIBCLANG_VERSION')
+def training_libclang_label():
+    libclang_ver = os.environ.get('TRAINING_LIBCLANG_LABEL')
     if not libclang_ver:
-        libclang_ver = 'release_50'
+        libclang_ver = 'libclang-release_70-based-windows-vs2015'
     return libclang_ver
 
 def mingw_training(base_path, qtcreator_path, bitness):
@@ -179,8 +193,8 @@ def mingw_training(base_path, qtcreator_path, bitness):
     download_packages_work.addTaskObject(bldinstallercommon.create_qt_download_task(qt_module_urls, qt_dir, qt_temp, None))
     download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
         'http://' + pkg_server \
-            + '/packages/jenkins/qtcreator_libclang/libclang-' + training_libclang_version() \
-            + '-windows-' + msvc_year_version_libclang() + '_' + str(bitness) + '-clazy.7z',
+            + '/packages/jenkins/qtcreator_libclang/' + training_libclang_label() \
+            + '_' + str(bitness) + '.7z',
         creator_libclang_dir,
         base_path,
         None))
