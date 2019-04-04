@@ -921,9 +921,9 @@ class Scanner(object): # Support for its .disclaimed()
 
         return False
 
+# Future: we may want to parse more args, query the user or wrap
+# talk, complain for verbosity control.
 def main(args, hear, talk, complain):
-    # Future: we may want to parse more args, query the user or wrap
-    # talk, complain for verbosity control.
     """Reset boring changes
 
     See doc-string of this file for outline.
