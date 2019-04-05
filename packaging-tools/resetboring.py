@@ -674,8 +674,11 @@ class Selector(object): # Select interesting changes, discard boring.
 
             # 5.10: common switch from while (0) to while (false)
             # 5.12: Q_DECL_EQ_DELETE -> = delete
+            # 5.14: qMove -> std::move
             for swap in ((('while', '(', '0', ')'), ('while', '(', 'false', ')')),
-                         (('Q_DECL_EQ_DELETE', ';'), ('=', 'delete', ';'))):
+                         (('Q_DECL_EQ_DELETE', ';'), ('=', 'delete', ';')),
+                         (('qMove',), ('std', '::', 'move')),
+                         ):
                 def find(words, after=swap[1]):
                     try:
                         ind = 0
