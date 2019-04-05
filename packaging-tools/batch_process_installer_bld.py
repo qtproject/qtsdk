@@ -366,7 +366,7 @@ def handle_repo_build(optionDict, branch, arch, update_staging_repo, update_prod
         # determine testination path on test server
         dest_path_repository, dest_path_pkg = generate_repo_dest_path_pending(optionDict, job)
         # copy repo content to test server
-        source_path_repository  = os.path.join(release_tools_dir, 'repository')
+        source_path_repository  = os.path.join(release_tools_dir, 'online_repository')
         source_path_pkg         = os.path.join(release_tools_dir, 'pkg')
         push_online_repository(optionDict, optionDict['PKG_STAGING_SERVER'], optionDict['PKG_STAGING_SERVER_UNAME'], source_path_repository, dest_path_repository)
         push_online_repository(optionDict, optionDict['PKG_STAGING_SERVER'], optionDict['PKG_STAGING_SERVER_UNAME'], source_path_pkg, dest_path_pkg)
@@ -415,8 +415,14 @@ def push_online_repository(optionDict, server_addr, username, directory_to_copy,
     print('Preparing to copy: {0}'.format(directory_to_copy))
     where_to_copy = ensure_unix_paths(where_to_copy)
     destination  = username + '@' + server_addr + ':' + where_to_copy + '/'
-    cmd_args = [optionDict['SCP_COMMAND'], '-r', '.', destination]
-    bldinstallercommon.do_execute_sub_process(cmd_args, directory_to_copy)
+
+    parts = directory_to_copy.strip(os.path.sep).split(os.path.sep)
+    parentDir = os.path.sep + os.path.sep.join(parts[:-1])
+    dirToCopy = parts[-1]
+    if bldinstallercommon.is_win_platform():
+        parentDir = os.path.sep.join(parts[:-1])
+    cmd_args = [optionDict['SCP_COMMAND'], '-r', dirToCopy, destination]
+    bldinstallercommon.do_execute_sub_process(cmd_args, parentDir)
 
 
 # init online repository directory structure at remote server
@@ -462,8 +468,8 @@ def generate_repo_path_for_pending_area(optionDict, build_job):
 # generate temporary 'pkg' and 'online_repository' pending area paths for repo update work
 def generate_repo_dest_path_pending(optionDict, repo_job):
     base_path_pending = generate_repo_path_for_pending_area(optionDict, repo_job)
-    dest_path_repository = ensure_unix_paths(os.path.join(base_path_pending, 'online_repository'))
-    dest_path_pkg = ensure_unix_paths(os.path.join(base_path_pending, 'pkg'))
+    dest_path_repository = ensure_unix_paths(os.path.join(base_path_pending))
+    dest_path_pkg = ensure_unix_paths(os.path.join(base_path_pending))
     return dest_path_repository, dest_path_pkg
 
 

@@ -137,7 +137,7 @@ def update_repository(source_pkg, target_repo, components_to_update):
         cmd_args += [target_repo]
     else:
         cmd_args += ['--include', ','.join(components_to_update), target_repo]
-    bldinstallercommon.do_execute_sub_process(cmd_args, source_pkg)
+    bldinstallercommon.do_execute_sub_process(cmd_args, source_pkg, True)
 
 
 ###############################
@@ -156,8 +156,9 @@ def is_number(s):
 ###############################
 def sanity_check(component_list, source_pkg):
     source_packages = []
-    for name in os.listdir(source_pkg):
-        temp = os.path.join(source_pkg, name)
+    source_pkg_path = os.path.join(source_pkg, 'online_repository')
+    for name in os.listdir(source_pkg_path):
+        temp = os.path.join(source_pkg_path, name)
         if os.path.isdir(temp):
             source_packages.append(name)
     for item in component_list:
@@ -169,7 +170,7 @@ def sanity_check(component_list, source_pkg):
             item = left.rstrip('.')
         if item not in source_packages:
             print('*** Sanity check fail!')
-            print('*** Can not update component: [{0}] as it does not exist under: {1}'.format(orig_item, source_pkg))
+            print('*** Can not update component: [{0}] as it does not exist under: {1}'.format(orig_item, source_pkg_path))
             raise RuntimeError()
 
 
@@ -271,8 +272,9 @@ def parse_components_from_argument(caller_arguments):
     return_list = []
     # parse all possible components in source repo
     full_component_listing = []
-    for name in os.listdir(caller_arguments.source_pkg):
-        temp = os.path.join(caller_arguments.source_pkg, name)
+    source_pkg_path = os.path.join(caller_arguments.source_pkg, 'pkg')
+    for name in os.listdir(source_pkg_path):
+        temp = os.path.join(source_pkg_path, name)
         if os.path.isdir(temp):
             full_component_listing.append(name)
     # figure out all components that should be updated
@@ -299,9 +301,10 @@ if __name__ == "__main__":
     # 1) target repository directory must be empty i.e. we initialize things for the first time
     # 2) copy the source repository as target repository 1:1 and nothing else
     if CALLER_ARGUMENTS.source_repo:
-        if not os.path.isdir(CALLER_ARGUMENTS.source_repo) or not os.path.isfile(os.path.join(CALLER_ARGUMENTS.source_repo, 'Updates.xml')):
+        source_repo = os.path.join(CALLER_ARGUMENTS.source_repo, 'online_repository')
+        if not os.path.isdir(source_repo) or not os.path.isfile(os.path.join(source_repo, 'Updates.xml')):
             print('*** The given source directory does not seem to be proper repository? Abort!')
-            print('Given source repository: {0}'.format(CALLER_ARGUMENTS.source_repo))
+            print('Given source repository: {0}'.format(source_repo))
             raise RuntimeError()
         if os.path.isfile(os.path.join(CALLER_ARGUMENTS.target_repo, 'Updates.xml')):
             print('The given destination directory already contains a repository.')
@@ -312,10 +315,10 @@ if __name__ == "__main__":
             # create dirs
             bldinstallercommon.create_dirs(CALLER_ARGUMENTS.target_repo)
             # copy repository
-            bldinstallercommon.copy_tree(CALLER_ARGUMENTS.source_repo, CALLER_ARGUMENTS.target_repo)
+            bldinstallercommon.copy_tree(source_repo, CALLER_ARGUMENTS.target_repo)
             # everything done now!
             print('Repository initialized:')
-            print('Source:      {0}'.format(CALLER_ARGUMENTS.source_repo))
+            print('Source:      {0}'.format(source_repo))
             print('Destination: {0}'.format(CALLER_ARGUMENTS.target_repo))
             sys.exit()
     # fetch tools
