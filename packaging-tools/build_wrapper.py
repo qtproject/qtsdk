@@ -1140,7 +1140,8 @@ def handle_installer_build(optionDict, project_name, installer_type):
         ext_server_base_url  = optionDict['EXT_SERVER_BASE_URL']
         ext_server_base_path = optionDict['EXT_SERVER_BASE_PATH']
         # opensource distribution server directories  #TODO, below
-        ext_dest_dir = ext_server_base_path + '/snapshots/' + project_name + '/' + optionDict['VERSION'][:3] + '/' + optionDict['VERSION_FULL'] + '/' + optionDict['BUILD_NUMBER']
+        short_version = '.'.join(optionDict['VERSION'].split('.')[:2])  # 4.10.x -> 4.10
+        ext_dest_dir = ext_server_base_path + '/snapshots/' + project_name + '/' + short_version + '/' + optionDict['VERSION_FULL'] + '/' + optionDict['BUILD_NUMBER']
         cmd_args_mkdir_pkg = [optionDict['SSH_COMMAND'], optionDict['PACKAGE_STORAGE_SERVER_ADDR']]
         cmd_args_mkdir_ext = cmd_args_mkdir_pkg + ['ssh', ext_server_base_url, 'mkdir -p', ext_dest_dir]
         bldinstallercommon.do_execute_sub_process(cmd_args_mkdir_ext, SCRIPT_ROOT_DIR)
