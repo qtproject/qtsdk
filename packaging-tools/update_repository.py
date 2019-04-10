@@ -331,12 +331,13 @@ if __name__ == "__main__":
     else:
         COMPONENTS_TO_UPDATE = parse_components_from_argument(CALLER_ARGUMENTS)
     # sanity check
+    source_pkg_path = os.path.join(CALLER_ARGUMENTS.source_pkg, 'pkg')
     sanity_check(COMPONENTS_TO_UPDATE, CALLER_ARGUMENTS.source_pkg)
     # backup current repo
     if CALLER_ARGUMENTS.backup_base_dir:
         backup_repo(CALLER_ARGUMENTS.backup_base_dir, CALLER_ARGUMENTS.target_repo)
     # update repo
-    update_repository(CALLER_ARGUMENTS.source_pkg, CALLER_ARGUMENTS.target_repo, COMPONENTS_TO_UPDATE)
+    update_repository(source_pkg_path, CALLER_ARGUMENTS.target_repo, COMPONENTS_TO_UPDATE)
     print('\nRepository updated successfully!')
 
 
