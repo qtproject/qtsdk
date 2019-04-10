@@ -13,6 +13,7 @@
     <!-- @homeDir@ and @rootDir@ are some of the supported vars -->
     <TargetDir>@homeDir@/Applications/Qt Creator %QTC_DISPLAY_VERSION%</TargetDir>
     <WizardDefaultHeight>560</WizardDefaultHeight>
+    <WizardDefaultWidth>820</WizardDefaultWidth>
     <AllowSpaceInPath>true</AllowSpaceInPath>
     <MaintenanceToolName>Uninstall Qt Creator</MaintenanceToolName>
 </Installer>

@@ -12,7 +12,8 @@
     <!-- @homeDir@ and @rootDir@ are some of the supported vars -->
     <TargetDir>@homeDir@/qtcreator-%QTC_DISPLAY_VERSION%</TargetDir>
     <AdminTargetDir>/opt/qtcreator-%QTC_DISPLAY_VERSION%</AdminTargetDir>
-    <WizardDefaultHeight>520</WizardDefaultHeight>
+    <WizardDefaultHeight>560</WizardDefaultHeight>
+    <WizardDefaultWidth>820</WizardDefaultWidth>
     <AllowSpaceInPath>true</AllowSpaceInPath>
     <MaintenanceToolName>QtCreatorUninstaller</MaintenanceToolName>
 </Installer>
