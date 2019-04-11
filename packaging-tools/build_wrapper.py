@@ -344,11 +344,12 @@ def create_download_documentation_task(base_url, download_path):
         bld_utils.runCommand(['7z', 'a', '-mmt2', target_filepath, source_path],
                              extract_path, None)
 
-    task = Task("downloading documentation from {0} and repackaging it as {1}".format(url, target_filepath))
-    task.addFunction(bld_utils.download, url, download_filepath)
-    task.addFunction(bldinstallercommon.create_extract_function(download_filepath, extract_path, None))
-    task.addFunction(repackage)
-    return (task, bld_utils.file_url(target_filepath))
+    download_task = Task("downloading documentation from {0}".format(url))
+    download_task.addFunction(bld_utils.download, url, download_filepath)
+    repackage_task = Task("repackaging documentation as {0}".format(target_filepath))
+    repackage_task.addFunction(bldinstallercommon.create_extract_function(download_filepath, extract_path, None))
+    repackage_task.addFunction(repackage)
+    return (download_task, repackage_task, bld_utils.file_url(target_filepath))
 
 ###############################
 # handle_gammaray_build
@@ -780,7 +781,14 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     if gammaray_url:
         gammaray_url = (pkg_base_path + '/' + gammaray_url + '/' + target_env_dir + '/qt5_gammaray.7z')
 
-    download_packages_work = ThreadedWork('Get and extract all needed packages')
+    download_work = ThreadedWork('Download packages')
+    extract_work = Task('Extract packages')
+
+    def add_download_extract(url, target_path):
+        (download, extract) = bldinstallercommon.create_download_and_extract_tasks(
+            url, target_path, download_temp, None)
+        download_work.addTaskObject(download)
+        extract_work.addFunction(extract.do)
 
     # clang package
     use_optimized_libclang = False
@@ -791,38 +799,38 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         clang_suffix = optionDict.get('CLANG_FILESUFFIX')
         clang_suffix = clang_suffix if clang_suffix is not None else ''
         clang_url = (pkg_base_path + '/' + optionDict['CLANG_FILEBASE'] + '-' + optionDict['CLANG_PLATFORM'] + clang_suffix + '.7z')
-        download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
-            clang_url, clang_extract_path, download_temp, None))
+        add_download_extract(clang_url, clang_extract_path)
         use_optimized_libclang = bldinstallercommon.is_win_platform()
         if use_optimized_libclang:
             postfix = '64' if '64' in optionDict['TARGET_ENV'] else '32'
             opt_clang_url = (pkg_base_path + '/' + optionDict['CLANG_FILEBASE'] + '-windows-mingw_' + postfix + clang_suffix + '.7z')
             opt_clang_path = os.path.join(download_temp, 'opt_libclang')
             opt_clang_lib = os.path.join(opt_clang_path, 'libclang', 'bin', 'libclang.dll')
-            download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
-                opt_clang_url, opt_clang_path, download_temp, None))
+            add_download_extract(opt_clang_url, opt_clang_path)
 
     elfutils_path = None
     if elfutils_url:
         elfutils_path = os.path.join(download_temp, 'elfutils')
-        download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
-            elfutils_url, elfutils_path, download_temp, None))
+        add_download_extract(elfutils_url, elfutils_path)
 
     python_path = None
     python_url = optionDict.get('PYTHON_URL')
     if bldinstallercommon.is_win_platform() and python_url:
         python_path = os.path.join(download_temp, 'python')
-        download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
-            python_url, python_path, download_temp, None))
+        add_download_extract(python_url, python_path)
 
     # Documentation package for cross-references to Qt.
     # Unfortunately this doesn't follow the normal module naming convention.
     # We have to download, unpack, and repack renaming the toplevel directory.
-    (documentation_task, documentation_local_url) = create_download_documentation_task(
+    (download, repackage, documentation_local_url) = create_download_documentation_task(
         pkg_base_path + '/' + qt_base_path, os.path.join(download_temp, 'qtdocumentation'))
-    download_packages_work.addTaskObject(documentation_task)
+    download_work.addTaskObject(download)
+    extract_work.addFunction(repackage.do)
 
-    download_packages_work.run()
+    download_packages_work = Task('Get and extract all needed packages')
+    download_packages_work.addFunction(download_work.run)
+    download_packages_work.addFunction(extract_work.do)
+    download_packages_work.do()
 
     # copy optimized clang package
     if use_optimized_libclang:
