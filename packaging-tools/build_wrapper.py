@@ -340,7 +340,8 @@ def create_download_documentation_task(base_url, download_path):
         source_path = os.path.join(extract_path, 'doc')
         os.rename(os.path.join(extract_path, 'qt-everywhere-documentation'),
                   source_path)
-        bld_utils.runCommand(['7z', 'a', target_filepath, source_path],
+        # limit compression to 2 cores to limit memory footprint for 32bit Windows
+        bld_utils.runCommand(['7z', 'a', '-mmt2', target_filepath, source_path],
                              extract_path, None)
 
     task = Task("downloading documentation from {0} and repackaging it as {1}".format(url, target_filepath))
