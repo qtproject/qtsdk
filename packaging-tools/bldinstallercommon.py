@@ -305,7 +305,12 @@ def move_tree(srcdir, dstdir, pattern=None):
             os.mkdir(dstfname)
             move_tree(srcfname, dstfname)
         elif pattern is None or fnmatch.fnmatch(name, pattern):
-            shutil.move(srcfname, dstfname)
+            if os.path.islink(srcfname):  # shutil.move fails moving directory symlinks over file system bounds...
+                linkto = os.readlink(srcfname)
+                os.symlink(linkto, dstfname)
+                os.remove(srcfname)
+            else:
+                shutil.move(srcfname, dstfname)
 
 
 ###############################
