@@ -3,7 +3,7 @@ rem set up running Qt Creator
 set BasePath=%cd%
 set ScriptPath=%~dp0
 
-call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86_amd64
+call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\VC\Auxiliary\Build\vcvarsall.bat" x64
 set PATH=%BasePath%\qt\lib;%BasePath%\qt\bin;%BasePath%\qtcreator_build\bin;%BasePath%\debugview;%PATH%
 set PATH=%PATH%;%BasePath%\logs\
 

@@ -1,14 +1,14 @@
-openProject "c:/work/build/qt-creator/qtcreator.pro"
+openProject "c:/Users/qt/work/build/qt-creator/qtcreator.pro"
 
 # Train initial parsing
-openDocument "c:/work/build/qt-creator/src/plugins/texteditor/texteditor.cpp"
+openDocument "c:/Users/qt/work/build/qt-creator/src/plugins/texteditor/texteditor.cpp"
 closeAllDocuments
-openDocument "c:/work/build/qt-creator/src/plugins/texteditor/texteditor.cpp"
+openDocument "c:/Users/qt/work/build/qt-creator/src/plugins/texteditor/texteditor.cpp"
 closeAllDocuments
-openDocument "c:/work/build/qt-creator/src/plugins/texteditor/texteditor.cpp"
+openDocument "c:/Users/qt/work/build/qt-creator/src/plugins/texteditor/texteditor.cpp"
 closeAllDocuments
 
-openDocument "c:/work/build/qt-creator/src/plugins/texteditor/texteditor.cpp"
+openDocument "c:/Users/qt/work/build/qt-creator/src/plugins/texteditor/texteditor.cpp"
 
 setCursor 8342 1
 
