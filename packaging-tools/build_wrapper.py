@@ -537,7 +537,8 @@ def get_qtcreator_version(path_to_qtcreator_src, optionDict):
     possible_version_locations = [optionDict.get('IDE_BRANDING_PRI'), # optional
                                   os.path.join(path_to_qtcreator_src, 'qtcreator_ide_branding.pri'), # used since QtCreator 4.10
                                   os.path.join(path_to_qtcreator_src, 'qtcreator.pri')]# old path till 4.9, can be removed in the future
-    with open(os.path.join(path_to_qtcreator_src, 'qtcreator.pri'), 'r') as f:
+    for path in possible_version_locations:
+    with open(path, 'r') as f:
         for line in f:
             match = expr.match(line)
             if match:
