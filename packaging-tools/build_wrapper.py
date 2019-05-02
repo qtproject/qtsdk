@@ -746,9 +746,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     snapshot_server = optionDict.get('SNAPSHOT_SERVER') # optional
     snapshot_path = optionDict['SNAPSHOT_SERVER_PATH'] # optional
     qt_base_path = optionDict['QTC_QT_BASE_DIR']
-    ide_display_name = optionDict.get('IDE_DISPLAY_NAME') # optional
-    ide_id = optionDict.get('IDE_ID') # optional
-    ide_cased_id = optionDict.get('IDE_CASED_ID') # optional
+    ide_branding_pri = optionDict.get('IDE_BRANDING_PRI') # optional
     installer_patch = optionDict.get('INSTALLER_PATCH') # optional
     skip_cdb = optionDict.get('SKIP_CDB') # optional
     build_id = optionDict['BUILD_NUMBER']
@@ -881,12 +879,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         cmd_args.extend(['--buildcommand', os.path.normpath('C:/Utils/jom/jom.exe'),
                          '--installcommand', os.path.normpath('nmake.exe')])
     renaming_qmake_arguments = []
-    if ide_display_name:
-        renaming_qmake_arguments.append('IDE_DISPLAY_NAME=' + ide_display_name)
-    if ide_id:
-        renaming_qmake_arguments.append('IDE_ID=' + ide_id)
-    if ide_cased_id:
-        renaming_qmake_arguments.append('IDE_CASED_ID=' + ide_cased_id)
+    if ide_branding_pri:
+        renaming_qmake_arguments.append('IDE_BRANDING_PRI=' + ide_branding_pri)
     cmd_args.extend([arg for value in renaming_qmake_arguments for arg in ['--add-qmake-argument', value]])
     bldinstallercommon.do_execute_sub_process(cmd_args, work_dir, extra_env=build_environment)
 
