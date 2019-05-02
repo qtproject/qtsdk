@@ -532,8 +532,11 @@ def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url
                                                        '-n', plugin.name,
                                                        plugin.version, 'enterprise'], work_dir)
 
-def get_qtcreator_version(path_to_qtcreator_src):
+def get_qtcreator_version(path_to_qtcreator_src, optionDict):
     expr = re.compile(r'\s*QTCREATOR_DISPLAY_VERSION\s*=\s*([^\s]+)')
+    possible_version_locations = [optionDict.get('IDE_BRANDING_PRI'), # optional
+                                  os.path.join(path_to_qtcreator_src, 'qtcreator_ide_branding.pri'), # used since QtCreator 4.10
+                                  os.path.join(path_to_qtcreator_src, 'qtcreator.pri')]# old path till 4.9, can be removed in the future
     with open(os.path.join(path_to_qtcreator_src, 'qtcreator.pri'), 'r') as f:
         for line in f:
             match = expr.match(line)
@@ -667,7 +670,7 @@ def handle_qt_creator_plugins_build(optionDict, plugin_conf_file_path):
     download_packages_work.run()
 
     # final fixup
-    qtcreator_version = get_qtcreator_version(qtcreator_dev_path)
+    qtcreator_version = get_qtcreator_version(qtcreator_dev_path, optionDict)
     print('Qt Creator version: ' + qtcreator_version)
 
     def fixup_version(plugin):
@@ -732,7 +735,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
 
     # Build time variables
     qtcreator_source = os.path.join(work_dir, 'qt-creator')
-    qtcreator_version = get_qtcreator_version(qtcreator_source)
+    qtcreator_version = get_qtcreator_version(qtcreator_source, optionDict)
     pkg_base_path = optionDict['PACKAGE_STORAGE_SERVER_PATH_HTTP']
     # Check if the archives reside on network disk (http) or on local file system
     scheme = "" if urlparse.urlparse(pkg_base_path).scheme != "" else "file://"
@@ -1065,7 +1068,7 @@ def handle_sdktool_build(optionDict):
     # environment
     target_env_dir = optionDict['QTC_PLATFORM']
     work_dir = optionDict['WORK_DIR']
-    qtcreator_version = get_qtcreator_version(os.path.join(work_dir, 'qt-creator'))
+    qtcreator_version = get_qtcreator_version(os.path.join(work_dir, 'qt-creator'), optionDict)
     qtcreator_edition_name = optionDict.get('QT_CREATOR_EDITION_NAME') # optional
     base_path = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/qtcreator/snapshots/' + qtcreator_version
     sdktool_qtbase_src = optionDict['SDKTOOL_QTBASESRC_BASE'] + optionDict['SDKTOOL_QTBASESRC_EXT']
