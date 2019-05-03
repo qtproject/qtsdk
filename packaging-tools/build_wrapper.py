@@ -538,11 +538,11 @@ def get_qtcreator_version(path_to_qtcreator_src, optionDict):
                                   os.path.join(path_to_qtcreator_src, 'qtcreator_ide_branding.pri'), # used since QtCreator 4.10
                                   os.path.join(path_to_qtcreator_src, 'qtcreator.pri')]# old path till 4.9, can be removed in the future
     for path in possible_version_locations:
-    with open(path, 'r') as f:
-        for line in f:
-            match = expr.match(line)
-            if match:
-                return match.group(1)
+        with open(path, 'r') as f:
+            for line in f:
+                match = expr.match(line)
+                if match:
+                    return match.group(1)
     return None
 
 def make_QtcPlugin_from_json(plugin_json):
