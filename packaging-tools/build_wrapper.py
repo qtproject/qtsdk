@@ -534,15 +534,18 @@ def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url
 
 def get_qtcreator_version(path_to_qtcreator_src, optionDict):
     expr = re.compile(r'\s*QTCREATOR_DISPLAY_VERSION\s*=\s*([^\s]+)')
-    possible_version_locations = [optionDict.get('IDE_BRANDING_PRI'), # optional
-                                  os.path.join(path_to_qtcreator_src, 'qtcreator_ide_branding.pri'), # used since QtCreator 4.10
-                                  os.path.join(path_to_qtcreator_src, 'qtcreator.pri')]# old path till 4.9, can be removed in the future
-    for path in [p for p in possible_version_locations if p]:
-        with open(path, 'r') as f:
-            for line in f:
-                match = expr.match(line)
-                if match:
-                    return match.group(1)
+
+    default_version_locations = [os.path.join(path_to_qtcreator_src, 'qtcreator_ide_branding.pri'),  # used since QtCreator 4.10
+                                 os.path.join(path_to_qtcreator_src, 'qtcreator.pri')]  # old path till 4.9, can be removed in the future
+    default_version_location = next(p for p in default_version_locations if os.path.exists(p))
+    branding_version_location = optionDict.get('IDE_BRANDING_PRI'),  # optional
+    version_location = branding_version_location if branding_version_location else default_version_location
+
+    with open(version_location, 'r') as f:
+        for line in f:
+            match = expr.match(line)
+            if match:
+                return match.group(1)
     return None
 
 def make_QtcPlugin_from_json(plugin_json):
