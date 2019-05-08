@@ -38,7 +38,8 @@ file_list:              qt-conf,
                         x86-tools-qtcreator-standalone-master-conf,
                         tools-qtcreatorcdbext-standalone-master-conf,
                         x86-tools-vcredist_msvc2017-conf,
-                        x64-tools-vcredist_msvc2017-conf
+                        x64-tools-vcredist_msvc2017-conf,
+                        tools-windows-kits-debuggers-conf
 
 [ConfigDir]
 template_name:          config_qtcreator

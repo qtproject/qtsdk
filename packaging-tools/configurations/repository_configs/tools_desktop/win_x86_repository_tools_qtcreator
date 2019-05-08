@@ -47,7 +47,8 @@ identifier:             windows
 
 [PackageConfigurationFiles]
 file_list:              x86-tools-qtcreator-online-conf,
-                        tools-qtcreatorcdbext-online-conf
+                        tools-qtcreatorcdbext-online-conf,
+                        tools-windows-kits-debuggers-conf
 
 [PackageTemplates]
 template_dirs:          pkg_tools

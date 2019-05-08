@@ -43,7 +43,7 @@ repo_url_specifier:         linux_x64/desktop/tools_qtcreator
 arg_configurations_file:    repository_configs/tools_desktop/win_x86_repository_tools_qtcreator
 arg_substitution_list:      %SRC_ARCHIVE_TYPE%=zip
 repo_content_type:          qtcreator
-repo_components_to_update:  qt.tools.qtcreator.*,qt.tools.qtcreatorcdbext*
+repo_components_to_update:  qt.tools.qtcreator.*,qt.tools.qtcreatorcdbext,qt.tools.windows_kits_debuggers
 repo_url_specifier:         windows_x86/desktop/tools_qtcreator
 
 

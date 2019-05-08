@@ -26,26 +26,20 @@
 ##
 #############################################################################
 
-[PackageNamespace]
-name:                   qt
+[qt.tools.windows_kits_debuggers]
+archives:               tools.windows_kits_debuggers_x64,
+                        tools.windows_kits_debuggers_x86
+target_install_base:    /vcredist
+package_default:        true
 
-[PlatformIdentifier]
-identifier:             windows
+[tools.windows_kits_debuggers_x64]
+archive_uri:            http://master.qt.io/development_releases/prebuilt/vcredist/X64%20Debuggers%20And%20Tools-x64_en-us.7z
+package_strip_dirs:     0
+target_install_dir:     /
+archive_name:           X64 Debuggers And Tools-x64_en-us.7z
 
-[PackageConfigurationFiles]
-file_list:              qt-conf,
-                        qtcreator-license-conf,
-                        x64-tools-qtcreator-standalone-master-conf,
-                        tools-qtcreatorcdbext-standalone-master-conf,
-                        x86-tools-vcredist_msvc2017-conf,
-                        x64-tools-vcredist_msvc2017-conf,
-                        tools-windows-kits-debuggers-conf
-
-[ConfigDir]
-template_name:          config_qtcreator
-
-[ConfigXml]
-template_name:          config.xml.template.windows.qtcreator.x64
-
-[PackageTemplates]
-template_dirs:          pkg_qtcreator_standalone, pkg_tools
+[tools.windows_kits_debuggers_x86]
+archive_uri:            http://master.qt.io/development_releases/prebuilt/vcredist/X86%20Debuggers%20And%20Tools-x86_en-us.7z
+package_strip_dirs:     0
+target_install_dir:     /
+archive_name:           x86 Debuggers And Tools-x86_en-us.7z

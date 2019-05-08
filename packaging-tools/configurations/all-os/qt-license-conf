@@ -46,6 +46,8 @@
 
 [qt.license.python]
 
+[qt.license.win10sdk]
+
 [qt.license.thirdparty]
 archives:               fdl_license
 target_install_base:    /Licenses
