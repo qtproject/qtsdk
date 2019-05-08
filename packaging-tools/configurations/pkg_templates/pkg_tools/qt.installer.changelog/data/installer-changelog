@@ -1,4 +1,13 @@
 ****************************************************************************
+*                        3.1.0                                             *
+****************************************************************************
+- Added support for repository categories
+- Added support for preselecting some repository categories
+- Added support for continuing install although there are unstable components
+- Remove references to hard coded license agreement files
+- Increased installer default width
+
+****************************************************************************
 *                        3.0.5                                             *
 ****************************************************************************
 - Installer-Framework (MaintenanceTool and installers) built against Qt5.9.5
