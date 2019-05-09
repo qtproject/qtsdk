@@ -823,7 +823,10 @@ def git_archive_repo(repo_and_ref):
     # define archive
     (repository, ref) = repo_and_ref.split("#")
     project_name = repository.split("/")[-1].split(".")[0]
-    archive_name = os.path.join(SCRIPT_ROOT_DIR, project_name + "-" + ref.replace("/", "-") + ".tar.gz")
+    file_extension = ".tar.gz"
+    if is_win_platform():
+        file_extension = ".zip"
+    archive_name = os.path.join(SCRIPT_ROOT_DIR, project_name + "-" + ref.replace("/", "-") + file_extension)
     if os.path.isfile(archive_name):
         os.remove(archive_name)
     # create temp directory
