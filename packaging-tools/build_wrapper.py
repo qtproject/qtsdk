@@ -269,7 +269,7 @@ def handle_ifw_build(optionDict):
         installer_name, installer_name_base, installer_name_final = generate_installer_final_name(optionDict, file_name)
         sign_installer(artifacts_dir, installer_name, installer_name_base)
     # Upload
-    files_to_upload = [f for f in os.listdir(artifacts_dir) if f.endswith((".dmg", ".run", ".exe", ".7z", ".tar.gz"))]
+    files_to_upload = [f for f in os.listdir(artifacts_dir) if f.endswith((".dmg", ".run", ".exe", ".7z", ".tar.gz", ".zip"))]
     for item in files_to_upload:
         if bldinstallercommon.is_win_platform():
             cmd_args = [optionDict['SCP_COMMAND'], item, optionDict['PACKAGE_STORAGE_SERVER_ADDR'] + ':' + optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + optionDict['LICENSE'] + '/ifw/' + ifw_dest_dir_name + '/']
