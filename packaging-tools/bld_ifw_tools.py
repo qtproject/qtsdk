@@ -338,9 +338,9 @@ def build_ifw(options, create_installer=False, build_ifw_examples=False):
         create_installer_package(options)
     #archive
     archive_installerbase(options)
-    archive_installer_framework(options.installer_framework_build_dir, options.installer_framework_archive_name, options.build_artifacts_dir)
+    archive_installer_framework(options.installer_framework_build_dir, options.installer_framework_archive_name, options, True)
     if (options.squish_dir):
-        archive_installer_framework(options.installer_framework_build_dir_squish, options.installer_framework_with_squish_archive_name, options.build_artifacts_dir)
+        archive_installer_framework(options.installer_framework_build_dir_squish, options.installer_framework_with_squish_archive_name, options, False)
     return os.path.basename(options.installer_framework_build_dir)
 
 
@@ -463,7 +463,8 @@ def prepare_installer_framework(options):
         bldinstallercommon.create_dirs(options.installer_framework_build_dir_squish)
     if options.qt_installer_framework_uri.endswith('.git'):
         # clone repos
-        bldinstallercommon.clone_repository(options.qt_installer_framework_uri, options.qt_installer_framework_branch, options.installer_framework_source_dir)
+        bldinstallercommon.clone_repository(options.qt_installer_framework_uri, options.qt_installer_framework_branch, options.installer_framework_source_dir, True)
+
     else:
         # fetch src package
         prepare_compressed_package(options.qt_installer_framework_uri, options.qt_installer_framework_uri_saveas, options.installer_framework_source_dir)
@@ -673,7 +674,7 @@ def clean_build_environment(options):
 ###############################
 # function
 ###############################
-def archive_installer_framework(installer_framework_build_dir, installer_framework_archive_name, build_artifacts_dir):
+def archive_installer_framework(installer_framework_build_dir, installer_framework_archive_name, options, create_tagged_package):
     print('--------------------------------------------------------------------')
     print('Archive Installer Framework')
     # first strip out all unnecessary files
@@ -683,8 +684,17 @@ def archive_installer_framework(installer_framework_build_dir, installer_framewo
                 os.remove(os.path.join(root, filename))
     cmd_args = [ARCHIVE_PROGRAM, 'a', installer_framework_archive_name, os.path.basename(installer_framework_build_dir)]
     bldinstallercommon.do_execute_sub_process(cmd_args, ROOT_DIR)
-    shutil.move(installer_framework_archive_name, build_artifacts_dir)
-
+    shutil.move(installer_framework_archive_name, options.build_artifacts_dir)
+    # Check if installer framework is created from branch. If so, check if the branch is tagged and
+    # create a package with a tagged name.
+    # Package with the tagged name is needed for creating e.g. offline installers from stable builds
+    if options.qt_installer_framework_uri.endswith('.git') and create_tagged_package:
+        tag = bldinstallercommon.get_tag_from_branch(options.installer_framework_source_dir, options.qt_installer_framework_branch)
+        if tag:
+            print('Create archive from tag {0}'.format(tag))
+            installer_framework_tagged_archive = 'installer-framework-build-' + tag + "-" + options.plat_suffix + '-' + options.architecture + '.7z'
+            print('Create archive {0}'.format(installer_framework_tagged_archive))
+            shutil.copy(os.path.join(options.build_artifacts_dir, installer_framework_archive_name), os.path.join(options.build_artifacts_dir, installer_framework_tagged_archive))
 
 ###############################
 # function

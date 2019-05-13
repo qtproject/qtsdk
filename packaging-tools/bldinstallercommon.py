@@ -815,6 +815,33 @@ def clone_repository(repo_url, repo_branch_or_tag, destination_folder, full_clon
         cmd_args = ['git', 'submodule', 'update', '--init']
         do_execute_sub_process(cmd_args, destination_folder)
 
+#####################################################################
+# This function returns a tag if the given branch is tagged. Branch
+# parameter can be also a tag, in that case we return empty string.
+#####################################################################
+def get_tag_from_branch(directory, branch):
+    tag = ""
+    # Check if we already have checked out a tag
+    cmd_args = ['git', 'symbolic-ref', 'HEAD']
+    return_code, tag = do_execute_sub_process(cmd_args, directory, False, True)
+    if return_code != -1:
+        print("Already checked out a tag. THIS IS TOTALLY OK, PLEASE IGNORE THE ABOVE ERROR.")
+        tag = ""
+    else:
+        # Check what sha1 we have checked out
+        cmd_args = ['git', 'rev-parse', '--short', 'HEAD']
+        return_code, sha1 = do_execute_sub_process(cmd_args, directory, False, True)
+        if return_code == -1:
+            # Check if the sha1 matches to any tag
+            sha1 = sha1.strip('\n')
+            cmd_args = ['git', 'describe', '--exact-match', sha1]
+            return_code, tag = do_execute_sub_process(cmd_args, directory, False, True)
+            tag = tag.strip('\n')
+            if return_code != -1:
+                print('No tag found for branch. THIS IS TOTALLY OK, PLEASE IGNORE THE ABOVE ERROR.')
+                tag = ""
+    return tag
+
 
 ###############################
 # git archive given repository
