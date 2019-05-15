@@ -146,9 +146,7 @@ def main():
 ##############################################################
 def check_required_tools():
     """Check that valid tools are present in the build environment."""
-    print(sys.path)
     from distutils.spawn import find_executable
-    print(find_executable('7z'))
     if not find_executable('7z'):
         raise EnvironmentError("7z tool not found in the PATH")
 
@@ -1269,7 +1267,6 @@ def inject_update_rcc_to_archive(archive_file_path, file_to_be_injected):
     if not os.path.isfile(archive_file_path):
         print('*** Unable to locate file: {0}'.format(archive_file_path))
     archive_file_name = os.path.basename(archive_file_path)
-    print(archive_file_name)
     # copy to tmp location
     tmp_dir = os.path.join(os.path.dirname(archive_file_path), '_tmp')
     bldinstallercommon.create_dirs(tmp_dir)
