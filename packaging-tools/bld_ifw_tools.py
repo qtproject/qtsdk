@@ -513,6 +513,7 @@ def build_installer_framework_examples(options):
         sys.exit(-1)
 
     ifw_examples = os.path.join(options.installer_framework_source_dir, 'examples')
+    ifw_example_binaries = []
 
     for root, dirs, files in os.walk(ifw_examples):
         if 'doc' in dirs:
@@ -523,8 +524,11 @@ def build_installer_framework_examples(options):
             print("********** building example " + directory)
             config_file =  os.path.join(root, directory, 'config', 'config.xml')
             package_dir = os.path.join(root, directory, 'packages')
-            target_dir = os.path.join(root, directory, 'installer')
-            bldinstallercommon.do_execute_sub_process(args=(file_binarycreator, '--offline-only', '-c', config_file, '-p', package_dir, target_dir), execution_path=package_dir)
+            target_filename = os.path.join(root, directory, 'installer')
+            bldinstallercommon.do_execute_sub_process(args=(file_binarycreator, '--offline-only', '-c', config_file, '-p', package_dir, target_filename), execution_path=package_dir)
+            if bldinstallercommon.is_win_platform:
+                target_filename += '.exe'
+            ifw_example_binaries.append(target_filename)
         #Breaking here as we don't want to go through sub directories
         break
     file_squishDir = options.squish_dir
@@ -542,6 +546,11 @@ def build_installer_framework_examples(options):
             squishserver_handle = subprocess.Popen(shlex.split(os.path.join(file_squishDir, "bin", "squishserver")), shell=False)
             bldinstallercommon.do_execute_sub_process(args=shlex.split(os.path.join(file_squishDir, "bin", "squishrunner") + ' --testsuite ' +os.path.join(os.getcwd(), "squish_suites", "suite_IFW_examples")), execution_path=os.path.join(file_squishDir, "bin"))
             squishserver_handle.kill() #kills squish server
+
+        # Delete the example executables we have created for Squish
+        for example in ifw_example_binaries:
+            print("Removing " + example)
+            os.remove(example)
 
 ###############################
 # function
