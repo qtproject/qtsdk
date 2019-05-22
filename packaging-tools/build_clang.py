@@ -60,13 +60,11 @@ def git_clone_and_checkout(base_path, remote_repository_url, directory, revision
     bld_utils.runCommand(['git', 'config', 'core.autocrlf', 'input'], local_repo_path)
     bld_utils.runCommand(['git', 'checkout', revision], local_repo_path)
 
-def get_clang(base_path, llvm_revision, clang_revision, tools_revision):
-    git_clone_and_checkout(base_path, 'git://code.qt.io/clang/llvm.git', 'llvm', llvm_revision)
-    git_clone_and_checkout(base_path, 'git://code.qt.io/clang/clang.git', 'llvm/tools/clang', clang_revision)
-    git_clone_and_checkout(base_path, 'git://code.qt.io/clang/clang-tools-extra.git', 'llvm/tools/clang/tools/extra', tools_revision)
+def get_clang(base_path, llvm_revision):
+    git_clone_and_checkout(base_path, 'git://code.qt.io/clang/llvm-project.git', 'llvm', llvm_revision)
 
 def get_clazy(base_path, clazy_revision):
-    git_clone_and_checkout(base_path, 'git://code.qt.io/clang/clazy.git', 'llvm/tools/clang/tools/extra/clazy', clazy_revision)
+    git_clone_and_checkout(base_path, 'git://code.qt.io/clang/clazy.git', 'llvm/clang-tools-extra/clazy', clazy_revision)
 
 def msvc_version():
     msvc_ver = os.environ.get('MSVC_VERSION')
@@ -295,6 +293,7 @@ def cmake_command(toolchain, src_path, build_path, install_path, profile_data_pa
                '-G',
                cmake_generator(toolchain),
                '-DCMAKE_BUILD_TYPE=' + build_type,
+               '-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra',
                "-DLLVM_LIT_ARGS='-v'"]
     if is_msvc_toolchain(toolchain):
         command.append('-DLLVM_EXPORT_SYMBOLS_FOR_PLUGINS=1')
@@ -381,13 +380,7 @@ def main():
     # "PACKAGE_STORAGE_SERVER_USER@PACKAGE_STORAGE_SERVER:PACKAGE_STORAGE_SERVER_BASE_DIR/CLANG_UPLOAD_SERVER_PATH"
     #
     # LLVM_REVISION
-    # Git revision, branch or tag for LLVM check out
-    #
-    # CLANG_REVISION
-    # Git revision, branch or tag for Clang check out
-    #
-    # CLANG_TOOLS_EXTRA_REVISION
-    # Git revision, branch or tag for clang-tools-extra check out
+    # Git revision, branch or tag for LLVM/Clang check out
     #
     # CLAZY_REVISION
     # Git revision, branch or tag for Clazy check out
@@ -396,7 +389,7 @@ def main():
     base_path = os.path.join(os.environ['PKG_NODE_ROOT'])
     branch = os.environ['CLANG_BRANCH']
     clazy_revision = os.environ.get('CLAZY_REVISION')
-    src_path = os.path.join(base_path, 'llvm')
+    src_path = os.path.join(base_path, 'llvm/llvm')
     build_path = os.path.join(base_path, 'build')
     src_clazy_path = os.path.join(base_path, 'clazy')
     build_clazy_path = os.path.join(base_path, 'clazy_build')
@@ -409,7 +402,7 @@ def main():
     remote_path = (os.environ['PACKAGE_STORAGE_SERVER_USER'] + '@' + os.environ['PACKAGE_STORAGE_SERVER'] + ':'
                    + os.environ['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + os.environ['CLANG_UPLOAD_SERVER_PATH'])
 
-    get_clang(base_path, os.environ['LLVM_REVISION'], os.environ['CLANG_REVISION'], os.environ['CLANG_TOOLS_EXTRA_REVISION'])
+    get_clang(base_path, os.environ['LLVM_REVISION'])
     if clazy_revision:
         get_clazy(base_path, clazy_revision)
 
