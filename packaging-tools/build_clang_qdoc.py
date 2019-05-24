@@ -51,6 +51,7 @@ import bld_qtcreator
 import bldinstallercommon
 import environmentfrombatchfile
 import threadedwork
+import multiprocessing
 
 def git_clone_and_checkout(base_path, remote_repository_url, directory, revision):
     bld_utils.runCommand(['git', 'clone', '--no-checkout', remote_repository_url, directory], base_path)
