@@ -81,7 +81,7 @@ SDK_NAME                    = ''
 DEBUG_RPATH                 = False
 DUMP_CONFIG                 = False
 INCREMENTAL_MODE            = False
-ARCHIVE_DOWNLOAD_SKIP       = False
+DRY_RUN                     = False
 CREATE_ONLINE_INSTALLER     = False
 CREATE_OFFLINE_INSTALLER    = False
 CREATE_REPOSITORY           = False
@@ -198,8 +198,8 @@ def setup_option_parser():
     OPTION_PARSER.add_option("-S", "--non-strict",
                              action="store_false", dest="strict_mode", default=True,
                              help="non strict mode, try to keep on going despite of errors")
-    OPTION_PARSER.add_option("--archive-skip",
-                             action="store_true", dest="archive_skip", default=False,
+    OPTION_PARSER.add_option("--dry-run",
+                             action="store_true", dest="dry_run", default=False,
                              help="for testing purposes (faster testing), skip downloading archives")
     # optional override
     OPTION_PARSER.add_option("-u", "--archive-base-url",
@@ -265,7 +265,7 @@ def print_options():
     print "Create repository:           %r" % (CREATE_REPOSITORY)
     print "MaintenanceTool rcc:         %r" % (CREATE_MAINTENANCE_TOOL_RESOURCE_FILE)
     print "Incremental mode:            %r" % (INCREMENTAL_MODE)
-    print "Archive skip:                %r" % (ARCHIVE_DOWNLOAD_SKIP)
+    print "Dry run:                     %r" % (DRY_RUN)
     print "Strict mode:                 %r" % (STRICT_MODE)
     print "Remove debug information files: %r" % (REMOVE_DEBUG_INFORMATION_FILES)
     print "Remove debug libraries:      %r" % (REMOVE_DEBUG_LIBRARIES)
@@ -292,7 +292,7 @@ def parse_cmd_line():
 
     global MAIN_CONFIG_NAME
     global INCREMENTAL_MODE
-    global ARCHIVE_DOWNLOAD_SKIP
+    global DRY_RUN
     global CREATE_ONLINE_INSTALLER
     global CREATE_OFFLINE_INSTALLER
     global CREATE_REPOSITORY
@@ -317,7 +317,7 @@ def parse_cmd_line():
     MAIN_CONFIG_NAME                    = options.configuration_file
     LICENSE_TYPE                        = options.license_type
     INCREMENTAL_MODE                    = options.incremental
-    ARCHIVE_DOWNLOAD_SKIP               = options.archive_skip
+    DRY_RUN                             = options.dry_run
     CREATE_ONLINE_INSTALLER             = options.online_installer
     CREATE_OFFLINE_INSTALLER            = options.offline_installer
     CREATE_REPOSITORY                   = options.create_repository
@@ -628,7 +628,7 @@ def parse_component_data(configuration_file, configurations_base_path):
         if sectionNameSpace in PACKAGE_NAMESPACE:
             if section not in SDK_COMPONENT_IGNORE_LIST:
                 sdk_component = SdkComponent(section, configuration, PACKAGES_DIR_NAME_LIST, ARCHIVE_LOCATION_RESOLVER, KEY_SUBSTITUTION_LIST, CREATE_OFFLINE_INSTALLER)
-                if ARCHIVE_DOWNLOAD_SKIP:
+                if DRY_RUN:
                     sdk_component.setArchiveSkip(True)
                 # validate component
                 sdk_component.validate()
@@ -1009,7 +1009,7 @@ def create_target_components(target_config):
             bldinstallercommon.create_dirs(data_dir_dest)
             bldinstallercommon.copy_tree(data_content_source_root, data_dir_dest)
 
-    if not ARCHIVE_DOWNLOAD_SKIP:
+    if not DRY_RUN:
         # start the work threaded, more than 8 parallel downloads are not so useful
         getComponentDataWork.run(min([MAX_CPU_COUNT, multiprocessing.cpu_count()]))
 
