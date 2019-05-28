@@ -1,4 +1,13 @@
 ****************************************************************************
+*                        3.1.1                                             *
+****************************************************************************
+- Revert "We don't patch product keys anymore so remove unnecessary code" (QTBUG-75323)
+- Fixed big maintenancetool in offline installs
+- Disallow navigating back to credentials page after it's first completion
+- Allow commercial installation from sign up fields
+- Improve offline installers login flow without internet connection
+
+****************************************************************************
 *                        3.1.0                                             *
 ****************************************************************************
 - Added support for repository categories

@@ -7,5 +7,4 @@
     <AutoDependOn>qt</AutoDependOn>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <SortingPriority>0</SortingPriority>
-    <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
