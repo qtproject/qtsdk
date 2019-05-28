@@ -200,6 +200,29 @@ class TestPackaging(unittest.TestCase):
         testStr = "qtgamepad-Linux-RHEL_7_4-GCC-QNX-QNX_700-ARMv8.7z"
         self.assertEqual("qtgamepad", getProjectNameFromArtifactName(testStr))
 
+    @unittest.skipUnless(os.environ.get("PKG_TEST_QT_CONFIG_BASE_PATH"), "Skipping because 'PKG_TEST_QT_CONFIG_BASE_PATH' is not set")
+    @unittest.skipUnless(os.environ.get("PKG_TEST_QT_ARTIFACTS_URL"), "Skipping because 'PKG_TEST_QT_CONFIG_BASE_PATH' is not set")
+    @unittest.skipUnless(os.environ.get("PKG_TEST_QT_IFW_TOOL_URL"), "Skipping because 'PKG_TEST_QT_IFW_TOOL_URL' is not set")
+    def test_createInstaller(self):
+        from bldinstallercommon import do_execute_sub_process
+        import platform
+        extension = '.run' if platform.system().lower().startswith('linux') else ''
+        path = os.path.join(os.environ.get("PKG_TEST_QT_CONFIG_BASE_PATH"), "offline_installer_jobs", "5.9.3")
+        offlineJobs = os.listdir(path)
+        for offlineJob in offlineJobs:
+            cmd_args = ['python', '-u', 'create_installer.py']
+            cmd_args = cmd_args + ['-c', os.environ.get("PKG_TEST_QT_CONFIG_BASE_PATH")]
+            cmd_args = cmd_args + ['-f', os.path.join(path, offlineJob)]
+            cmd_args = cmd_args + ['--offline']
+            cmd_args = cmd_args + ['-l', 'enterprise']
+            cmd_args = cmd_args + ['-u', os.environ.get("PKG_TEST_QT_ARTIFACTS_URL")]
+            cmd_args = cmd_args + ['--ifw-tools=' + os.environ.get("PKG_TEST_QT_IFW_TOOL_URL")]
+            cmd_args = cmd_args + ['--preferred-installer-name=' + offlineJob]
+            cmd_args = cmd_args + ['--dry-run']
+            do_execute_sub_process(cmd_args, os.getcwd())
+            self.assertTrue(os.path.exists(os.path.join(os.getcwd(), 'installer_output', offlineJob + extension)))
+
+
 
 if __name__ == '__main__':
     unittest.main()
