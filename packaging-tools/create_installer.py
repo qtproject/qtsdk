@@ -1093,79 +1093,62 @@ def cleanup_docs(install_dir):
 ##############################################################
 # Install Installer-Framework tools
 ##############################################################
-def install_ifw_tools():
-    """Setup Installer-Framework tools."""
-    print '=================================================='
-    print '= Install Installer Framework tools'
-    print '=================================================='
+def set_ifw_tools(ifwToolsDir):
     global ARCHIVEGEN_TOOL
     global BINARYCREATOR_TOOL
     global INSTALLERBASE_TOOL
     global REPOGEN_TOOL
 
-    package_save_as_temp = None
-
-    if os.path.exists(IFW_TOOLS_DIR):
-        shutil.rmtree(IFW_TOOLS_DIR)
-
-    if INSTALLER_FRAMEWORK_TOOLS:
-        package_url = INSTALLER_FRAMEWORK_TOOLS
-    else:
-        package_url = bldinstallercommon.config_section_map(CONFIG_PARSER_TARGET,'InstallerFrameworkTools')['package_url']
-    # create needed dirs
-    bldinstallercommon.create_dirs(IFW_TOOLS_DIR)
-    package_save_as_temp = IFW_TOOLS_DIR + os.sep + os.path.basename(package_url)
-    package_save_as_temp = os.path.normpath(package_save_as_temp)
-    if not(INCREMENTAL_MODE and os.path.exists(package_save_as_temp)):
-        print ' Source url:   ' + package_url
-        print ' Install dest: ' + package_save_as_temp
-        # download IFW archive
-        if not package_url == '':
-            print ' Downloading:  ' + package_url
-            res = bldinstallercommon.is_content_url_valid(package_url)
-            if not(res):
-                sys.stderr.write('*** Package URL is invalid: [' + package_url + ']')
-                sys.stderr.write('*** Abort!')
-                raise ValueError()
-            bldinstallercommon.retrieve_url(package_url, package_save_as_temp)
-        if not (os.path.isfile(package_save_as_temp)):
-            sys.stderr.write('*** Downloading failed! Aborting!')
-            raise RuntimeError()
-        # extract IFW archive
-        bldinstallercommon.extract_file(package_save_as_temp, IFW_TOOLS_DIR)
-        os.remove(package_save_as_temp)
-        dir_items = os.listdir(IFW_TOOLS_DIR)
-        items = len(dir_items)
-        if items == 1:
-            dir_name = dir_items[0]
-            os.chdir(IFW_TOOLS_DIR)
-            bldinstallercommon.move_tree(dir_name, '.')
-            bldinstallercommon.remove_tree(IFW_TOOLS_DIR + os.sep + dir_name)
-            os.chdir(SCRIPT_ROOT_DIR)
-        else:
-            sys.stderr.write('*** Unsupported dir structure for installer-framework-tools package?!')
-            sys.stderr.write('*** Abort!')
-            raise RuntimeError()
-
     executable_suffix = bldinstallercommon.get_executable_suffix()
-    ARCHIVEGEN_TOOL = bldinstallercommon.locate_executable(IFW_TOOLS_DIR, 'archivegen' + executable_suffix)
-    BINARYCREATOR_TOOL = bldinstallercommon.locate_executable(IFW_TOOLS_DIR, 'binarycreator' + executable_suffix)
-    INSTALLERBASE_TOOL = bldinstallercommon.locate_executable(IFW_TOOLS_DIR, 'installerbase' + executable_suffix)
-    REPOGEN_TOOL = bldinstallercommon.locate_executable(IFW_TOOLS_DIR, 'repogen' + executable_suffix)
+    ARCHIVEGEN_TOOL = bldinstallercommon.locate_executable(ifwToolsDir, 'archivegen' + executable_suffix)
+    BINARYCREATOR_TOOL = bldinstallercommon.locate_executable(ifwToolsDir, 'binarycreator' + executable_suffix)
+    INSTALLERBASE_TOOL = bldinstallercommon.locate_executable(ifwToolsDir, 'installerbase' + executable_suffix)
+    REPOGEN_TOOL = bldinstallercommon.locate_executable(ifwToolsDir, 'repogen' + executable_suffix)
     # check
-    if not (os.path.isfile(ARCHIVEGEN_TOOL)):
-        raise IOError('*** Archivegen tool not found: ' + ARCHIVEGEN_TOOL)
-    if not (os.path.isfile(BINARYCREATOR_TOOL)):
-        raise IOError('*** Binarycreator tool not found: ' + BINARYCREATOR_TOOL)
-    if not (os.path.isfile(INSTALLERBASE_TOOL)):
-        raise IOError('*** Installerbase tool not found: ' + INSTALLERBASE_TOOL)
-    if not (os.path.isfile(REPOGEN_TOOL)):
-        raise IOError('*** Repogen tool not found: ' + REPOGEN_TOOL)
+    assert os.path.isfile(ARCHIVEGEN_TOOL), "Archivegen tool not found: {0}".format(ARCHIVEGEN_TOOL)
+    assert os.path.isfile(BINARYCREATOR_TOOL), "Binary creator tool not found: {0}".format(BINARYCREATOR_TOOL)
+    assert os.path.isfile(INSTALLERBASE_TOOL), "Installerbase not found: {0}".format(INSTALLERBASE_TOOL)
+    assert os.path.isfile(REPOGEN_TOOL), "Repogen tool not found: {0}".format(REPOGEN_TOOL)
+    print('Archive generator tool: ' + ARCHIVEGEN_TOOL)
+    print('Binary creator tool: ' + BINARYCREATOR_TOOL)
+    print('Repogen tool: ' + REPOGEN_TOOL)
+    print('Installerbase: ' + INSTALLERBASE_TOOL)
 
-    print ' ARCHIVEGEN_TOOL: ' + ARCHIVEGEN_TOOL
-    print ' BINARYCREATOR_TOOL: ' + BINARYCREATOR_TOOL
-    print ' INSTALLERBASE_TOOL: ' + INSTALLERBASE_TOOL
-    print ' REPOGEN_TOOL: ' + REPOGEN_TOOL
+
+def download_and_extract_ifw_tools():
+    package_save_as_temp = os.path.join(IFW_TOOLS_DIR, os.path.basename(INSTALLER_FRAMEWORK_TOOLS))
+    package_save_as_temp = os.path.normpath(package_save_as_temp)
+    # download ifw archive if not present on disk
+    if not os.path.exists(package_save_as_temp):
+        # create needed dirs
+        bldinstallercommon.create_dirs(IFW_TOOLS_DIR)
+        print(' Downloading:  ' + INSTALLER_FRAMEWORK_TOOLS)
+        if not bldinstallercommon.is_content_url_valid(INSTALLER_FRAMEWORK_TOOLS):
+            raise Exception("Package URL is invalid: [" + INSTALLER_FRAMEWORK_TOOLS + "]")
+        bldinstallercommon.retrieve_url(INSTALLER_FRAMEWORK_TOOLS, package_save_as_temp)
+        if not (os.path.isfile(package_save_as_temp)):
+            raise Exception("Downloading failed! Aborting!")
+    # extract ifw archive
+    bldinstallercommon.extract_file(package_save_as_temp, IFW_TOOLS_DIR)
+    print("IFW tools extracted into: {0}".format(IFW_TOOLS_DIR))
+
+
+def install_ifw_tools():
+    """Setup Installer-Framework tools."""
+    print('==================================================')
+    print('= Install Installer Framework tools')
+    print('==================================================')
+
+    # check if the ifw tools is already extracted on disk to save time
+    if not os.path.exists(IFW_TOOLS_DIR):
+        download_and_extract_ifw_tools()
+
+    try:
+        set_ifw_tools(IFW_TOOLS_DIR)
+    except Exception:
+        # try to download and set from scratch if the ifw archive on disk was corrupted
+        download_and_extract_ifw_tools()
+        set_ifw_tools(IFW_TOOLS_DIR)
 
 
 ##############################################################

@@ -242,11 +242,6 @@
         template_dirs:          pkg_beta                                        # The script needs the location where to load the templates. Now it points to:
                                                                                 # '/configurations/pkg_beta'
 
-        [InstallerFrameworkTools]                                               # If you choose to use pre-build Installer-Framework binaries & tools you can give the full package url here
-        name:                   ifwt                                            # but it is preferred to use the command line argument 'devmode' so the script will build the Installer-Framework
-        package_url:            http://<server_address_here>/packages/.../installer-framework-build-linux-64bit.7z
-        version:                1.2.0
-
 
 
     Note! So far no installable components have been defined yet! In the example
