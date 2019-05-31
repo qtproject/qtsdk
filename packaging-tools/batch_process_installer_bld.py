@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #############################################################################
 ##
-## Copyright (C) 2018 The Qt Company Ltd.
+## Copyright (C) 2019 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -168,12 +168,12 @@ def get_job_list(optionDict, job_type_specifier, branch, arch, global_version, g
     license_type        = optionDict['LICENSE']
     platform            = optionDict['HOST_PLATFORM']
     conf_file_base_dir  = optionDict['CONFIGURATIONS_FILE_BASE_DIR']
-    ifw_base_url        = optionDict['IFW_TOOLS_BASE_URL']
+    ifw_base_url        = optionDict.get('IFW_TOOLS_BASE_URL', None)
     print('Get [{0}] build job list for: {1}'.format(job_type_specifier, platform + '-' + arch))
     if not os.path.isfile(conf_file):
         raise IOError('*** Fatal error! Given file does not exist: %s' % conf_file)
     # ensure the string ends with '/'
-    if not ifw_base_url.endswith('/'):
+    if ifw_base_url and not ifw_base_url.endswith('/'):
         ifw_base_url += '/'
     parser = ConfigParser.ConfigParser()
     parser.readfp(open(conf_file))
@@ -332,7 +332,7 @@ def handle_repo_build(optionDict, branch, arch, update_staging_repo, update_prod
         raise IOError('*** Fatal error! Given file does not exist: %s' % conf_file)
     init_env(optionDict)
     packages_base_url   = optionDict['PACKAGE_STORAGE_SERVER_PATH_HTTP']
-    ifw_base_url        = optionDict['IFW_TOOLS_BASE_URL']
+    ifw_base_url        = optionDict.get('IFW_TOOLS_BASE_URL', None)
     release_tools_dir   = SCRIPT_ROOT_DIR
     # parse conf file
     parser = ConfigParser.ConfigParser()
@@ -499,7 +499,10 @@ def update_online_repo(optionDict, job, update_staging_repo, update_production_r
     staging_server_addr = optionDict['PKG_STAGING_SERVER_UNAME'] + '@' + optionDict['PKG_STAGING_SERVER']
     staging_server_ifw_tools = 'installer-framework-build-linux-x64.7z'
     script = optionDict['REPO_STAGING_SERVER_HOME_TOOLS'] + '/' + 'update_repository.py'
-    repogen_tools = optionDict['IFW_TOOLS_BASE_URL'] + '/' + staging_server_ifw_tools
+    if optionDict.get('IFW_TOOLS_BASE_URL', None):
+        repogen_tools = optionDict['IFW_TOOLS_BASE_URL'] + '/' + staging_server_ifw_tools
+    else:
+        repogen_tools = staging_server_ifw_tools
     # determine paths on test server
     staging_source_repo, staging_source_pkg = generate_repo_dest_path_pending(optionDict, job)
     repo_components_to_update = job.repo_components_to_update
