@@ -5,14 +5,14 @@
 ## Global defines
 ################################################################################
 [ifwtools]
-windows-x86:                installer-framework-build-tqtc_3.1.1-win-x86.7z
-linux-x64:                  installer-framework-build-tqtc_3.1.1-linux-x64.7z
-mac-x64:                    installer-framework-build-tqtc_3.1.1-mac-x64.7z
+windows-x86:                http://ci-files02-hki.intra.qt.io/packages/jenkins/archive/ifw/enterprise/unifiedqt/3.1.1/installer-framework-build-3.1.1-tqtc-win-x86.7z
+linux-x64:                  http://ci-files02-hki.intra.qt.io/packages/jenkins/archive/ifw/enterprise/unifiedqt/3.1.1/installer-framework-build-3.1.1-tqtc-linux-x64.7z
+mac-x64:                    http://ci-files02-hki.intra.qt.io/packages/jenkins/archive/ifw/enterprise/unifiedqt/3.1.1/installer-framework-build-3.1.1-tqtc-mac-x64.7z
 
 [release.global]
-version:                    4.9.1
+version:                    4.9.2
 version_tag:
-arg_substitution_list:      %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.9.1_5.12.3/latest_successful,
+arg_substitution_list:      %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.9.2_5.12.3/latest_successful,
                             %QTC_VERSION%=%GLOBAL_VERSION%,
                             %QTC_DISPLAY_VERSION%=%GLOBAL_VERSION_AND_TAG%,
                             %QTC_MSVC%=2017
