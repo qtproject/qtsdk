@@ -54,7 +54,7 @@ import threadedwork
 import multiprocessing
 
 def git_clone_and_checkout(base_path, remote_repository_url, directory, revision):
-    bld_utils.runCommand(['git', 'clone', '--no-checkout', remote_repository_url, directory], base_path)
+    bld_utils.runCommand(['git', 'clone', '--no-checkout', '--recursive', remote_repository_url, directory], base_path)
     local_repo_path = os.path.join(base_path, directory)
     bld_utils.runCommand(['git', 'config', 'core.eol', 'lf'], local_repo_path)
     bld_utils.runCommand(['git', 'config', 'core.autocrlf', 'input'], local_repo_path)
@@ -62,9 +62,6 @@ def git_clone_and_checkout(base_path, remote_repository_url, directory, revision
 
 def get_clang(base_path, llvm_revision):
     git_clone_and_checkout(base_path, 'git://code.qt.io/clang/llvm-project.git', 'llvm', llvm_revision)
-
-def get_clazy(base_path, clazy_revision):
-    git_clone_and_checkout(base_path, 'git://code.qt.io/clang/clazy.git', 'llvm/clang-tools-extra/clazy', clazy_revision)
 
 def msvc_version():
     msvc_ver = os.environ.get('MSVC_VERSION')
@@ -340,16 +337,6 @@ def profile_data(toolchain):
     if bldinstallercommon.is_win_platform() and is_mingw_toolchain(toolchain):
         return os.getenv('PROFILE_DATA_URL')
 
-def rename_clazy_lib(toolchain, install_path):
-    if not is_msvc_toolchain(toolchain):
-        librariesPath = os.path.join(install_path, 'lib')
-        if not os.path.exists(os.path.join(librariesPath, 'ClangLazy.a')):
-            librariesPath = os.path.join(install_path, 'lib64')
-        clazyLibPath = os.path.join(librariesPath, 'libClangLazy.a')
-        if os.path.exists(clazyLibPath):
-            os.remove(clazyLibPath)
-        os.rename(os.path.join(librariesPath, 'ClangLazy.a'), clazyLibPath)
-
 def main():
     # Used Environment variables:
     #
@@ -381,18 +368,12 @@ def main():
     #
     # LLVM_REVISION
     # Git revision, branch or tag for LLVM/Clang check out
-    #
-    # CLAZY_REVISION
-    # Git revision, branch or tag for Clazy check out
 
     bldinstallercommon.init_common_module(os.path.dirname(os.path.realpath(__file__)))
     base_path = os.path.join(os.environ['PKG_NODE_ROOT'])
     branch = os.environ['CLANG_BRANCH']
-    clazy_revision = os.environ.get('CLAZY_REVISION')
     src_path = os.path.join(base_path, 'llvm/llvm')
     build_path = os.path.join(base_path, 'build')
-    src_clazy_path = os.path.join(base_path, 'clazy')
-    build_clazy_path = os.path.join(base_path, 'clazy_build')
     install_path = os.path.join(base_path, 'libclang')
     bitness = 64 if '64' in os.environ['cfg'] else 32
     toolchain = os.environ['cfg'].split('-')[1].lower()
@@ -403,8 +384,6 @@ def main():
                    + os.environ['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + os.environ['CLANG_UPLOAD_SERVER_PATH'])
 
     get_clang(base_path, os.environ['LLVM_REVISION'])
-    if clazy_revision:
-        get_clazy(base_path, clazy_revision)
 
     # TODO: put args in some struct to improve readability, add error checks
     build_clang(toolchain, src_path, build_path, install_path, profile_data_path, True, bitness, environment, build_type='Release')
