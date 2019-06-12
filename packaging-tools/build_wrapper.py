@@ -45,6 +45,7 @@ import shutil
 import platform
 import urllib
 import urlparse
+from urllib2 import urlopen
 from time import gmtime, strftime
 import bld_ifw_tools
 from bld_ifw_tools import IfwOptions
@@ -330,24 +331,48 @@ def generate_bin_target_dictionary():
 ###############################
 # Download Qt documentation, extract and repackage with toplevel dir renamed
 ###############################
+def move_files_to_parent_dir(source):
+    destination = os.path.abspath(os.path.join(source, os.pardir))
+    print("Moving files from: [{0}] to: [{1}]".format(source, destination))
+    assert os.path.isdir(source), "The given source is not a directory: %s" % source
+    assert os.path.isdir(destination), "The destination is not a directory: %s" % destination
+    files_list = os.listdir(source)
+    for file in files_list:
+        shutil.move(os.path.join(source, file), destination)
+    os.rmdir(source)
+
+
 def create_download_documentation_task(base_url, download_path):
-    url = base_url  + '/doc/qt-everywhere-documentation.zip'
-    download_filepath = os.path.join(download_path, 'qt-everywhere-documentation.zip')
-    extract_path = os.path.join(download_path, 'qt-everywhere-documentation')
+    urlpath = urlopen(base_url + "/doc")
+    string = urlpath.read().decode('utf-8')
+    pattern = re.compile('[0-9a-zA-Z-]*.zip')
+
+    file_list = pattern.findall(string)
+    file_list = list(dict.fromkeys(file_list))
+
+    extract_path = os.path.join(download_path, 'tqtc-qt5-documentation')
     target_filepath = os.path.join(download_path, 'qt-everywhere-documentation.7z')
 
-    def repackage():
-        source_path = os.path.join(extract_path, 'doc')
-        os.rename(os.path.join(extract_path, 'qt-everywhere-documentation'),
-                  source_path)
-        # limit compression to 2 cores to limit memory footprint for 32bit Windows
-        bld_utils.runCommand(['7z', 'a', '-mmt2', target_filepath, source_path],
-                             extract_path, None)
+    def create_remove_one_dir_level_function(path):
+        return lambda: move_files_to_parent_dir(path)
 
-    download_task = Task("downloading documentation from {0}".format(url))
-    download_task.addFunction(bld_utils.download, url, download_filepath)
+    def repackage():
+        source_path = extract_path
+        dest_doc_path = os.path.join(download_path, 'doc')
+        os.rename(source_path, dest_doc_path)
+        # limit compression to 2 cores to limit memory footprint for 32bit Windows
+        bld_utils.runCommand(['7z', 'a', '-mmt2', target_filepath, dest_doc_path],
+                             dest_doc_path, None)
+
+    download_task = Task("downloading documentation from {0}".format(base_url))
+    for item in file_list:
+        url = base_url + '/doc/' + item
+        download_filepath = os.path.join(download_path, item)
+        download_task.addFunction(bld_utils.download, url, download_filepath)
+        download_task.addFunction(bldinstallercommon.create_extract_function(download_filepath, extract_path, None))
+        download_task.addFunction(create_remove_one_dir_level_function(os.path.join(extract_path, item.rstrip(".zip"))))
+
     repackage_task = Task("repackaging documentation as {0}".format(target_filepath))
-    repackage_task.addFunction(bldinstallercommon.create_extract_function(download_filepath, extract_path, None))
     repackage_task.addFunction(repackage)
     return (download_task, repackage_task, bld_utils.file_url(target_filepath))
 
