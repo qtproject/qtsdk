@@ -54,11 +54,12 @@ import threadedwork
 import multiprocessing
 
 def git_clone_and_checkout(base_path, remote_repository_url, directory, revision):
-    bld_utils.runCommand(['git', 'clone', '--no-checkout', '--recursive', remote_repository_url, directory], base_path)
-    local_repo_path = os.path.join(base_path, directory)
-    bld_utils.runCommand(['git', 'config', 'core.eol', 'lf'], local_repo_path)
-    bld_utils.runCommand(['git', 'config', 'core.autocrlf', 'input'], local_repo_path)
-    bld_utils.runCommand(['git', 'checkout', revision], local_repo_path)
+    bld_utils.runCommand(['git', 'clone',
+                          '--config', 'core.eol=lf',
+                          '--config', 'core.autocrlf=input',
+                          '--branch', revision,
+                          '--recursive',
+                          remote_repository_url, directory], base_path)
 
 def get_clang(base_path, llvm_revision):
     git_clone_and_checkout(base_path, 'git://code.qt.io/clang/llvm-project.git', 'llvm', llvm_revision)
