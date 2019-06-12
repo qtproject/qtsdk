@@ -298,8 +298,6 @@ def cmake_command(toolchain, src_path, build_path, install_path, profile_data_pa
     command.extend(bitness_flags(bitness))
     command.extend(rtti_flags(toolchain))
     command.extend(profile_data_flags(toolchain, profile_data_path, first_run))
-    if is_gcc_toolchain(toolchain):
-        command.extend(['-DCMAKE_CXX_FLAGS=-D_GLIBCXX_USE_CXX11_ABI=0'])
     command.append(src_path)
 
     return command
