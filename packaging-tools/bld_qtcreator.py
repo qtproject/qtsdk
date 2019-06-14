@@ -149,6 +149,16 @@ def patch_qt_pri_files(qt5_path):
             with open(filepath, 'r') as f:
                 contents = f.read()
             contents = contents.replace(qt_install_prefix, qt5_path)
+            # fix paths that were written into GammaRay's module pri files
+            # Windows
+            contents = contents.replace('/Users/qt/work/build/src/external/gammaray_install',
+                                        qt5_path)
+            # macOS
+            contents = contents.replace('/Users/qt/work/build/gammaray_qt5_install',
+                                        qt5_path)
+            # Linux
+            contents = contents.replace('/home/qt/work/build/gammaray_qt5_install',
+                                        qt5_path)
             with open(filepath, 'w') as f:
                 f.write(contents)
 
