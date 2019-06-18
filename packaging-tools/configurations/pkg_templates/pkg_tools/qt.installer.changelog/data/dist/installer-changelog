@@ -1,4 +1,11 @@
 ****************************************************************************
+*                        3.1.2                                             *
+****************************************************************************
+- Uncapitalize the email used on login and signup (QTIFW-1368)
+- Disable navigating back to welcome page during login/signup operations (QTPM-954)
+- More responsive label messages for sign-up fields (QTPM-955)
+
+****************************************************************************
 *                        3.1.1                                             *
 ****************************************************************************
 - Revert "We don't patch product keys anymore so remove unnecessary code" (QTBUG-75323)
