@@ -11,9 +11,9 @@ mac-x64:                    http://ci-files02-hki.intra.qt.io/packages/jenkins/a
 
 [release.global]
 version:                    4.10.0
-version_tag:                beta1
-arg_substitution_list:      %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.10.0-beta1_5.13.0/latest_successful,
-                            %QTC_VERSION%=4.9.82,
+version_tag:                beta2
+arg_substitution_list:      %QT_CREATOR_BASE_PATH%=qtcreator/snapshots/4.10.0-beta2_5.13.0/latest_successful,
+                            %QTC_VERSION%=4.9.83,
                             %QTC_DISPLAY_VERSION%=%GLOBAL_VERSION_AND_TAG%,
                             %QTC_MSVC%=2017
 
