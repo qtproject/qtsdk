@@ -392,6 +392,10 @@ def handle_gammaray_build(optionDict):
     # Get gammaray sources if not present yet
     if 'GAMMARAY_INTEGRATION_GIT_URL' in optionDict:
         cloneGammarayRepo(optionDict['GAMMARAY_INTEGRATION_GIT_URL'], optionDict['GAMMARAY_INTEGRATION_GIT_BRANCH_OR_TAG'], 'src')
+    if 'GAMMARAY_INTEGRATION_OVERRIDE_GAMMARAY_SHA' in optionDict:
+        bldinstallercommon.do_execute_sub_process(['git', 'checkout',
+                                                   optionDict['GAMMARAY_INTEGRATION_OVERRIDE_GAMMARAY_SHA']],
+                                                  os.path.join(work_dir, 'src', 'external', 'gammaray'))
 
     gammaray_version = optionDict['GAMMARAY_VERSION']
     icu_libs = optionDict.get('ICU_LIBS') # optional
