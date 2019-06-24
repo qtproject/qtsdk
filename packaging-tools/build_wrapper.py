@@ -376,6 +376,40 @@ def create_download_documentation_task(base_url, download_path):
     repackage_task.addFunction(repackage)
     return (download_task, repackage_task, bld_utils.file_url(target_filepath))
 
+def create_download_openssl_task(url, download_path):
+    # create openssl 7zips which just contain the DLLs / SOs, so they can just be extracted
+    # into the Qt lib directory and later on deployed with Qt
+    (_, filename) = os.path.split(url)
+    download_filepath = os.path.join(download_path, filename)
+    extract_path = os.path.join(download_path, 'openssl_download')
+    target_filepath = os.path.join(download_path, 'openssl.7z')
+
+    def repackage():
+        listing = os.listdir(extract_path)
+        subdircount = len(listing)
+        base_path = os.path.join(extract_path, listing[0]) if subdircount >= 1 else extract_path
+        win64dir = os.path.join(base_path, 'Win_x64', 'bin')
+        win32dir = os.path.join(base_path, 'Win_x86', 'bin')
+        linuxdir = os.path.join(base_path, 'openssl', 'lib')
+        if os.path.exists(win64dir):
+            source_path = win64dir
+            pattern = '*.dll'
+        elif os.path.exists(win32dir):
+            source_path = win32dir
+            pattern = '*.dll'
+        else:
+            source_path = linuxdir
+            pattern = '*.so*'
+        bld_utils.runCommand(['7z', 'a', '-mmt2', target_filepath, pattern],
+                             source_path, None)
+
+    download_task = Task('downloading openssl from {0}'.format(url))
+    download_task.addFunction(bld_utils.download, url, download_filepath)
+    repackage_task = Task("repackaging openssl as {0}".format(target_filepath))
+    repackage_task.addFunction(bldinstallercommon.create_extract_function(download_filepath, extract_path, None))
+    repackage_task.addFunction(repackage)
+    return (download_task, repackage_task, bld_utils.file_url(target_filepath))
+
 ###############################
 # handle_gammaray_build
 ###############################
@@ -788,6 +822,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     build_id = optionDict['BUILD_NUMBER']
     icu_libs = optionDict.get('ICU_LIBS') # optional
     openssl_libs = optionDict.get('OPENSSL_LIBS') # optional
+    openssl_local_url = None # optionally defined later
     qt_extra_module_url = optionDict.get('QT_EXTRA_MODULE_URL') # optional
     qt_postfix = os.environ['QT_POSTFIX']
     sdktool_base = optionDict.get('SDKTOOL_QTBASESRC_BASE') # optional
@@ -861,6 +896,11 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     download_work.addTaskObject(download)
     extract_work.addFunction(repackage.do)
 
+    if openssl_libs:
+        (download, repackage, openssl_local_url) = create_download_openssl_task(openssl_libs, os.path.join(download_temp, 'openssl'))
+        download_work.addTaskObject(download)
+        extract_work.addFunction(repackage.do)
+
     download_packages_work = Task('Get and extract all needed packages')
     download_packages_work.addFunction(download_work.run)
     download_packages_work.addFunction(extract_work.do)
@@ -901,8 +941,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         opengl_url = optionDict['OPENGLSW_URL']
         cmd_args.extend(['--d3dcompiler7z', d3d_url,
                          '--opengl32sw7z', opengl_url])
-        if openssl_libs:
-            cmd_args.extend(['--openssl7z', openssl_libs])
+    if openssl_local_url:
+        cmd_args.extend(['--openssl7z', openssl_local_url])
     if python_path:
         cmd_args.extend(['--python_path', python_path])
     if elfutils_path:
@@ -998,7 +1038,6 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
 
     # Build Qt Creator plugins
     icu_local_url = bld_utils.file_url(os.path.join(qtcreator_temp, os.path.basename(icu_libs))) if bldinstallercommon.is_linux_platform() else None
-    openssl_local_url = bld_utils.file_url(os.path.join(qtcreator_temp, os.path.basename(openssl_libs))) if bldinstallercommon.is_win_platform() else None
     ## extract qtcreator bin and dev packages
     qtcreator_path = os.path.join(work_dir, 'qtc_build')
     qtcreator_dev_path = os.path.join(work_dir, 'qtc_dev')
