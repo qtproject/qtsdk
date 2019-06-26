@@ -35,6 +35,7 @@ import bldinstallercommon
 def qt_static_configure_options():
     return ['-release', '-opensource', '-confirm-license', '-accessibility',
             '-no-gui',
+            '-no-openssl',
             '-nomake', 'examples',
             '-nomake', 'tests',
             '-static'] + qt_static_platform_configure_options()
