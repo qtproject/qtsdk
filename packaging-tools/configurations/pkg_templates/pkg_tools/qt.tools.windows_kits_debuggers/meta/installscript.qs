@@ -64,7 +64,7 @@ Component.prototype.createOperations = function()
     component.createOperations();
 
     if (checkx64DebuggerVersion())
-        component.addElevatedOperation("Execute", "{0,3010,1638,5100}", "msiexec", "/i", "@TargetDir@\\vcredist\\X64 Debuggers And Tools-x64_en-us.msi", "/norestart", "/q");
+        component.addElevatedOperation("Execute", "{0,3010,1638,1618,5100}", "msiexec", "/i", "@TargetDir@\\vcredist\\X64 Debuggers And Tools-x64_en-us.msi", "/norestart", "/q");
     if (checkx86DebuggerVersion())
-        component.addElevatedOperation("Execute", "{0,3010,1638,5100}", "msiexec", "/i", "@TargetDir@\\vcredist\\x86 Debuggers And Tools-x86_en-us.msi", "/norestart", "/q");
+        component.addElevatedOperation("Execute", "{0,3010,1638,1618,5100}", "msiexec", "/i", "@TargetDir@\\vcredist\\x86 Debuggers And Tools-x86_en-us.msi", "/norestart", "/q");
 }
