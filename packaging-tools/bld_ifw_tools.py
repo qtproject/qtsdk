@@ -68,8 +68,8 @@ def get_static_qt_configure_options(openssl_dir):
     if platform.system().lower().startswith('win'):
         options += '-static-runtime '
         if openssl_dir:
-            options += 'OPENSSL_LIBS="-lssleay32MT -llibeay32MT -lcrypt32 -lgdi32" '
-            options += '-I {0}\\include -L {0}\\lib\\VC\\static '.format(openssl_dir)
+            options += 'OPENSSL_LIBS="-llibssl -llibcrypto -lUser32 -lWs2_32 -lAdvapi32 -lCrypt32" '
+            options += '-I {0}\\include -L {0}\\lib '.format(openssl_dir)
     return options
 
 
@@ -110,7 +110,7 @@ def get_common_qt_configure_options():
         if plat.startswith('linux'):
             options += '-qt-xcb -no-opengl -no-icu -no-libudev '
             options += '-qt-pcre -no-glib -no-egl '
-            options += '-no-xinput2 -no-sm '
+            options += '-no-sm '
         if bldinstallercommon.is_mac_platform():
             options += '-no-freetype '
     return options
@@ -141,7 +141,7 @@ def get_build_env(openssl_dir):
 ###############################
 class IfwOptions:
 
-    default_qt_src_pkg                          = 'http://download.qt.io/official_releases/qt/5.9/5.9.5/single/qt-everywhere-opensource-src-5.9.5' + ARCH_EXT
+    default_qt_src_pkg                          = 'http://download.qt.io/official_releases/qt/5.12/5.12.4/single/qt-everywhere-src-5.12.4' + ARCH_EXT
     default_qt_installer_framework_url          = 'git://code.qt.io/installer-framework/installer-framework.git'
     default_qt_installer_framework_branch_qt    = '3.1'
     default_qt_installer_framework_qmake_args   = ['-r', '-config', 'release', '-config', 'static']
