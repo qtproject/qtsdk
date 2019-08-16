@@ -241,7 +241,7 @@ def setup_option_parser():
                              help="(Obsolete) Windows only: Removes Windows debug libraries")
     # set maximum number of cpu's used on packaging
     OPTION_PARSER.add_option("--max-cpu-count",
-                             action="store_true", dest="max_cpu_count", default=8,
+                             action="store", type="int", dest="max_cpu_count", default=8,
                              help="Set maximum number of CPU's used on packaging. Default: 8")
 
 
