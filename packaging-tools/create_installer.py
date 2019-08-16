@@ -718,6 +718,7 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
        and not archive.package_finalize_items \
        and not archive.rpath_target \
        and sdk_component.target_install_base == '/' \
+       and not archive.target_install_dir \
        and package_raw_name == archive.archive_name:
         print '     No repackaging actions required for the package, just download it directly to data directory'
         downloadedArchive = os.path.normpath(data_dir_dest + os.sep + package_raw_name)
