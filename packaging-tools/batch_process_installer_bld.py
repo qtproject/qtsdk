@@ -309,6 +309,7 @@ def create_installer(job, packages_base_url, installer_type):
     cmd_args = cmd_args + ['-u', packages_base_url]
     cmd_args = cmd_args + ['--ifw-tools=' + job.ifw_tools]
     cmd_args = cmd_args + ['--preferred-installer-name=' + job.installer_name]
+    cmd_args = cmd_args + ['--max-cpu-count=' + str(6 if bldinstallercommon.is_win_platform() else 8)]
     if (len(job.substitution_arg_list) > 0):
         for item in job.substitution_arg_list:
             cmd_args = cmd_args + [item]
