@@ -462,9 +462,19 @@ def clean_work_dirs():
     """Clean working directories."""
     print '----------------------------------------'
     print ' Cleaning environment'
-    shutil.rmtree(PACKAGES_FULL_PATH_DST, ignore_errors=True)  # delete "/packages"
-    shutil.rmtree(REPO_OUTPUT_DIR, ignore_errors=True)  # delete "/repositories"
-    shutil.rmtree(CONFIG_DIR_DST, ignore_errors=True)  # delete "/config"
+
+    # delete "/packages"
+    if os.path.exists(PACKAGES_FULL_PATH_DST):
+        bldinstallercommon.remove_tree(PACKAGES_FULL_PATH_DST)
+        print ' -> deleted old existing directory: ' + PACKAGES_FULL_PATH_DST
+    # delete "/repositories"
+    if os.path.exists(REPO_OUTPUT_DIR):
+        bldinstallercommon.remove_tree(REPO_OUTPUT_DIR)
+        print ' -> deleted old existing directory: ' + REPO_OUTPUT_DIR
+    # delete "/config"
+    if os.path.exists(CONFIG_DIR_DST):
+        bldinstallercommon.remove_tree(CONFIG_DIR_DST)
+        print ' -> deleted old existing directory: ' + CONFIG_DIR_DST
 
 
 ##############################################################
@@ -874,7 +884,7 @@ def remove_debug_information_files_by_file_type(install_dir, debug_information_f
                         if d.endswith('dSYM'):
                             list_of_debug_information_files.append(os.path.join(root, d))
                 for debug_information in list_of_debug_information_files:
-                    shutil.rmtree(debug_information)
+                    bldinstallercommon.remove_tree(debug_information)
             else:
                # This will only take the text connected to the debug information file by grabbing all non-space characters (\S)
                bldinstallercommon.delete_files_by_type_recursive(debug_information_dir, '\S*\.' + debug_information_file_ending) # pylint: disable=W1401
@@ -1006,7 +1016,8 @@ def create_target_components(target_config):
         substitute_component_tags(create_metadata_map(sdk_component), sdk_component.meta_dir_dest)
         if hasattr(sdk_component, 'temp_data_dir') and os.path.exists(sdk_component.temp_data_dir):
             # lastly remove temp dir after all data is prepared
-            shutil.rmtree(sdk_component.temp_data_dir)
+            if not bldinstallercommon.remove_tree(sdk_component.temp_data_dir):
+                raise IOError('Unable to remove directory: %s' % sdk_component.temp_data_dir)
             # substitute downloadable archive names in installscript.qs
             substitute_component_tags(sdk_component.generate_downloadable_archive_list(), sdk_component.meta_dir_dest)
 
