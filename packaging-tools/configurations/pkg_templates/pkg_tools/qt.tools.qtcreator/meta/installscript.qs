@@ -54,8 +54,13 @@ function Component()
     if (installer.value("os") == "win") {
         // Creator needs vcredist 32bit on windows
         component.addDependency("qt.tools.vcredist_msvc%QTC_MSVC%_x86");
-        if (systemInfo.currentCpuArchitecture == "x86_64")
+        // for OpenSSL
+        component.addDependency("qt.tools.vcredist");
+        if (systemInfo.currentCpuArchitecture == "x86_64") {
             component.addDependency("qt.tools.vcredist_msvc%QTC_MSVC%_x64");
+            // for OpenSSL
+            component.addDependency("qt.tools.vcredist_64");
+        }
     }
 
     if (installer.value("os") == "x11") {
@@ -270,4 +275,3 @@ Component.prototype.installationFinished = function()
         print(e);
     }
 }
-

@@ -37,6 +37,8 @@ file_list:              qt-conf,
                         qtcreator-license-conf,
                         x64-tools-qtcreator-standalone-conf,
                         tools-qtcreatorcdbext-standalone-conf,
+                        x86-tools-vcredist_32-conf,
+                        x86_64-tools-vcredist_64-conf,
                         x86-tools-vcredist_msvc2017-conf,
                         x64-tools-vcredist_msvc2017-conf
 
@@ -48,4 +50,3 @@ template_name:          config.xml.template.windows.qtcreator.x64
 
 [PackageTemplates]
 template_dirs:          pkg_qtcreator_standalone, pkg_tools
-

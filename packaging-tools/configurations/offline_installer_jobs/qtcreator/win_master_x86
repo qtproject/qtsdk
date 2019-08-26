@@ -37,6 +37,8 @@ file_list:              qt-conf,
                         qtcreator-license-conf,
                         x86-tools-qtcreator-standalone-master-conf,
                         tools-qtcreatorcdbext-standalone-master-conf,
+                        x86-tools-vcredist_32-conf,
+                        x86_64-tools-vcredist_64-conf,
                         x86-tools-vcredist_msvc2017-conf,
                         x64-tools-vcredist_msvc2017-conf,
                         tools-windows-kits-debuggers-conf
