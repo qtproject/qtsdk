@@ -334,6 +334,9 @@ fi
 ( echo "WIP: API comparison from $PRIOR to $RELEASE"
   echo
   git status | grep 'deleted:' | tr '\t' ' '
+  git diff | wc | python -c 'import sys; row = sys.stdin.readline().split(); print; \
+        print (("Excluded %s lines (%s words, %s bytes) of boring changes." % tuple(row)) \
+              if any(int(x) != 0 for x in row) else "Found nothing boring to ignore.")'
   cat <<EOF
 
 Note to reviewers: if you know of other changes to API, not covered by
