@@ -617,7 +617,7 @@ class Selector(object): # Select interesting changes, discard boring.
             for pair in (('Q_QDOC', 'Q_CLANG_QDOC'),
                          ('Q_DECL_FINAL', 'final'),
                          ('Q_DECL_CONSTEXPR', 'constexpr'),
-                         ('Q_DECL_NOTHROW', 'noexcept')):
+                         ):
                 def test(words, k=pair[1]):
                     return k in words
                 def purge(words, p=pair):
@@ -652,14 +652,6 @@ class Selector(object): # Select interesting changes, discard boring.
             # s/QtPrivate::QEnableIf<...>::Type/std::enable_if<...>::type/
             # but the brace-matching is a bit much for this parser; and it
             # tends to get split across lines anyway ...
-
-            # Synonyms for 0:
-            for key in ('Q_NULLPTR', 'nullptr'):
-                def test(words, z=key):
-                    return z in words
-                def purge(words, z=key):
-                    return [('0', 'Q_NULLPTR', 'nullptr') if w == z else w for w in words]
-                yield test, purge
 
             # Filter out various common end-of-line comments:
             for sought in (('//', '=', 'default'), ('//', 'LCOV_EXCL_LINE')):
@@ -704,6 +696,18 @@ class Selector(object): # Select interesting changes, discard boring.
                         offset += step # Update the correction
                     return words
                 yield test, purge
+
+            # Multi-step transitions (oldest first in each tuple):
+            for seq in (('0', 'Q_NULLPTR', 'nullptr'),
+                        # Needs to happen after handling of Q_DECL_NOEXCEPT_EXPR():
+                        ('Q_DECL_NOTHROW', 'Q_DECL_NOEXCEPT', 'noexcept'),
+                        ):
+                for key in seq[1:]:
+                    def test(words, z=key):
+                        return z in words
+                    def purge(words, z=key, s=seq):
+                        return [s if w == z else w for w in words]
+                    yield test, purge
 
             # Used by next two #if-ery mungers:
             def find(words, key):
