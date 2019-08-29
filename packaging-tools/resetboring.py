@@ -685,6 +685,8 @@ class Selector(object): # Select interesting changes, discard boring.
                         ind = 0
                         while True:
                             ind = words.index(after[0], ind)
+                            if len(words) < ind + len(after):
+                                break # definitely doesn't match, here or later
                             if all(words[i + ind] == tok for i, tok in enumerate(after)):
                                 yield ind
                             ind += 1
@@ -695,8 +697,11 @@ class Selector(object): # Select interesting changes, discard boring.
                         return True
                     return False
                 def purge(words, pair=swap, get=find):
+                    offset, step = 0, len(pair[0]) - len(pair[1])
                     for ind in get(words):
+                        ind += offset # Correct for earlier edits
                         words[ind : ind + len(pair[1])] = pair[0]
+                        offset += step # Update the correction
                     return words
                 yield test, purge
 
