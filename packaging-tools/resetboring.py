@@ -402,6 +402,12 @@ class Selector(object): # Select interesting changes, discard boring.
             only differences between them are boring.
             """
             tokens = cls.__split(text)
+            # FIXME: if several recipes apply, the returned selection
+            # of variants should represent the result of applying each
+            # subset of those recipes; this includes the case of
+            # applying one recipe repeatedly, where each candidate
+            # application may be included or omitted independently.
+            # But this would complicate harmonize() ...
             for test, purge in cls.recipe:
                 if test(tokens):
                     tokens = purge(tokens)
@@ -667,10 +673,14 @@ class Selector(object): # Select interesting changes, discard boring.
 
             # 5.10: common switch from while (0) to while (false)
             # 5.12: Q_DECL_EQ_DELETE -> = delete
-            # 5.14: qMove -> std::move
+            # 5.14: qMove -> std::move, Q_DECL_NOEXCEPT_EXPR(...) -> noexcept(...)
             for swap in ((('while', '(', '0', ')'), ('while', '(', 'false', ')')),
                          (('Q_DECL_EQ_DELETE', ';'), ('=', 'delete', ';')),
                          (('qMove',), ('std', '::', 'move')),
+                         # Needs to happen before handling of Q_DECL_NOEXCEPT (as both replace "noexcept"):
+                         # Gets complicated by the first case being common:
+                         (('Q_DECL_NOEXCEPT_EXPR', '(', 'noexcept', '('), ('noexcept', '(', 'noexcept', '(')),
+                         (('Q_DECL_NOEXCEPT_EXPR', '(', '('), ('noexcept', '(', '(')),
                          ):
                 def find(words, after=swap[1]):
                     try:
