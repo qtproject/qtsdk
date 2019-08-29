@@ -414,7 +414,8 @@ class Selector(object): # Select interesting changes, discard boring.
 
             If any token is a tuple, instead of a simple string, yield
             each variant on the tokens, replacing each such tuple by
-            each of its entries.
+            each of its entries or omitting its contribution for a
+            None entry, if it has one.
             """
             for ind, here in enumerate(tokens):
                 if isinstance(here, tuple):
