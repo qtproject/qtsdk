@@ -47,6 +47,15 @@ from multiprocessing.connection import Listener
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 ARCH_EXT = '.zip' if platform.system().lower().startswith('win') else '.tar.xz'
 
+ARCHIVE_PROGRAM = '7z'
+if platform.system().lower().startswith('darwin'):
+    try:
+        print("Trying to use 7z from")
+        subprocess.call(['where', '7z'])
+    except OSError as e:
+        print("7z not found from path. Try to use 7z from /usr/local/bin")
+        ARCHIVE_PROGRAM = '/usr/local/bin/7z'
+
 
 ##################################################################
 # Get default Qt configure arguments. Platform is detected.
@@ -597,7 +606,7 @@ def create_installer_package(options):
     shutil.copytree(os.path.join(options.installer_framework_source_dir, 'examples'), os.path.join(package_dir, 'examples'))
     shutil.copy(os.path.join(options.installer_framework_source_dir, 'README'), package_dir)
     # pack payload into separate .7z archive for later usage
-    cmd_args = ['7z', 'a', options.installer_framework_payload_arch, package_dir]
+    cmd_args = [ARCHIVE_PROGRAM, 'a', options.installer_framework_payload_arch, package_dir]
     bldinstallercommon.do_execute_sub_process(cmd_args, ROOT_DIR)
     shutil.move(os.path.join(ROOT_DIR, options.installer_framework_payload_arch), options.build_artifacts_dir)
     # create 7z
@@ -669,7 +678,7 @@ def archive_installer_framework(installer_framework_build_dir, installer_framewo
         for filename in files:
             if filename.endswith(('.moc', 'Makefile', '.cpp', '.h', '.o')) or filename == 'Makefile':
                 os.remove(os.path.join(root, filename))
-    cmd_args = ['7z', 'a', installer_framework_archive_name, os.path.basename(installer_framework_build_dir)]
+    cmd_args = [ARCHIVE_PROGRAM, 'a', installer_framework_archive_name, os.path.basename(installer_framework_build_dir)]
     bldinstallercommon.do_execute_sub_process(cmd_args, ROOT_DIR)
     shutil.move(installer_framework_archive_name, build_artifacts_dir)
 
@@ -687,7 +696,7 @@ def archive_installerbase(options):
         bin_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, 'installerbase')
         bin_temp = ROOT_DIR + os.sep + '.tempSDKMaintenanceTool'
         shutil.copy(bin_path, bin_temp)
-        cmd_args_archive = ['7z', 'a', options.installer_base_archive_name, bin_temp]
+        cmd_args_archive = [ARCHIVE_PROGRAM, 'a', options.installer_base_archive_name, bin_temp]
         cmd_args_clean = ['rm', bin_temp]
     if bldinstallercommon.is_win_platform():
         bin_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, 'installerbase.exe')
@@ -695,7 +704,7 @@ def archive_installerbase(options):
         shutil.copy(bin_path, bin_temp)
         if options.signserver and options.signpwd:
             sign_windows_installerbase('tempSDKMaintenanceToolBase.exe', ROOT_DIR + os.sep, True, options)
-        cmd_args_archive = ['7z', 'a', options.installer_base_archive_name, bin_temp]
+        cmd_args_archive = [ARCHIVE_PROGRAM, 'a', options.installer_base_archive_name, bin_temp]
         cmd_args_clean = ['del', bin_temp]
     bldinstallercommon.do_execute_sub_process(cmd_args_archive, ROOT_DIR)
     bldinstallercommon.do_execute_sub_process(cmd_args_clean, ROOT_DIR)
@@ -724,7 +733,7 @@ def archive_nib(options):
     content_root_path = content_parent_path + os.sep + 'qt_menu.nib'
     content_parent_path = os.path.normpath(content_parent_path)
     content_root_path = os.path.normpath(content_root_path)
-    cmd_args = ['7z', 'a', options.mac_qt_menu_nib_archive_name, content_root_path]
+    cmd_args = [ARCHIVE_PROGRAM, 'a', options.mac_qt_menu_nib_archive_name, content_root_path]
     bldinstallercommon.do_execute_sub_process(cmd_args, ROOT_DIR)
     if not os.path.isfile(options.mac_qt_menu_nib_archive_name):
         print('*** Failed to generate archive: {0}'.format(options.mac_qt_menu_nib_archive_name))
@@ -739,7 +748,7 @@ def archive_macdeployqt(options):
     print('--------------------------------------------------------------------')
     print('Archive macdeployqt')
     content_path = options.qt_build_dir + os.sep + 'tools/macdeployqt/macchangeqt/macchangeqt'
-    cmd_args_archive = ['7z', 'a', options.mac_deploy_qt_archive_name, content_path]
+    cmd_args_archive = [ARCHIVE_PROGRAM, 'a', options.mac_deploy_qt_archive_name, content_path]
     bldinstallercommon.do_execute_sub_process(cmd_args_archive, ROOT_DIR)
     if not os.path.isfile(options.mac_deploy_qt_archive_name):
         print('*** Failed to generate archive: {0}'.format( options.mac_deploy_qt_archive_name))
