@@ -528,27 +528,30 @@ def parseQtCreatorPlugins(pkgConfFile):
     return pluginList
 
 QtcPlugin = collections.namedtuple('QtcPlugin', ['name', 'path', 'version', 'dependencies', 'modules',
-                                                 'additional_arguments', 'qmake_arguments', 'build'])
+                                                 'additional_arguments', 'qmake_arguments', 'submodules', 'build'])
 def make_QtcPlugin(name, path, version, dependencies=None, modules=None,
-                   additional_arguments=None, qmake_arguments=None, build=True):
+                   additional_arguments=None, qmake_arguments=None, submodules=False, build=True):
     return QtcPlugin(name=name, path=path, version=version,
                      dependencies=dependencies or [],
                      modules=modules or [],
                      additional_arguments=additional_arguments or [],
                      qmake_arguments=qmake_arguments or [],
+                     submodules=submodules,
                      build=build)
 
 def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url=None, openssl_url=None):
     work_dir = optionDict['WORK_DIR']
     for plugin in plugins:
-        if not plugin.build or not os.path.isdir(os.path.join(work_dir, plugin.path)):
+        plugin_path = os.path.join(work_dir, plugin.path)
+        if not plugin.build or not os.path.isdir(plugin_path):
             continue
-
+        if plugin.submodules:
+            bldinstallercommon.do_execute_sub_process(['git', 'submodule', 'update', '--init'], plugin_path)
         cmd_arguments = ['python', '-u', os.path.join(SCRIPT_ROOT_DIR, 'bld_qtcreator_plugins.py'),
                          '--clean',
                          '--qtc-build', qtcreator_path,
                          '--qtc-dev', qtcreator_dev_path,
-                         '--plugin-path', os.path.join(work_dir, plugin.path),
+                         '--plugin-path', plugin_path,
                          '--build-path', work_dir]
         if bldinstallercommon.is_win_platform():
             cmd_arguments.extend(['--buildcommand', os.path.normpath('C:/Utils/jom/jom.exe'),
@@ -612,7 +615,6 @@ def get_qtcreator_version(path_to_qtcreator_src, optionDict):
     return None
 
 def make_QtcPlugin_from_json(plugin_json):
-    build_prop = plugin_json.get('Build')
     return QtcPlugin(name=plugin_json['Name'],
                      path=plugin_json['Path'],
                      version=plugin_json.get('Version'),
@@ -620,7 +622,8 @@ def make_QtcPlugin_from_json(plugin_json):
                      modules=plugin_json.get('Modules') or [],
                      additional_arguments=plugin_json.get('AdditionalArguments') or [],
                      qmake_arguments=plugin_json.get('QmakeArguments') or [],
-                     build=build_prop if build_prop is not None else True)
+                     submodules=plugin_json.get('Submodules') or False,
+                     build=plugin_json.get('Build') or True)
 
 def parse_qt_creator_plugin_conf(plugin_conf_file_path, optionDict):
     data = {}
@@ -995,6 +998,9 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                               modules=qt_module_local_urls,
                                               dependencies=plugin_dependencies + ['b2qt-qtcreator-plugin'],
                                               qmake_arguments=qmake_arguments)]),
+    additional_plugins.extend([make_QtcPlugin('plugin-telemetry', 'plugin-telemetry', qtcreator_version,
+                                              modules=qt_module_local_urls,
+                                              submodules=True)]),
 
     # Build Qt Creator plugins
     icu_local_url = bld_utils.file_url(os.path.join(qtcreator_temp, os.path.basename(icu_libs))) if bldinstallercommon.is_linux_platform() else None
