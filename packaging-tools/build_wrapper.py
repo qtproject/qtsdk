@@ -833,7 +833,6 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     has_unlock_keychain_script = os.path.exists(unlock_keychain_script())
     # from 4.4 on we use external elfutil builds and also build on Windows
     elfutils_url = optionDict.get('ELFUTILS_URL')
-    use_separate_elfutils = bool(elfutils_url)
 
     def module_filename(module):
         return module + '-' + qt_postfix + '.7z'
@@ -996,45 +995,6 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                               modules=qt_module_local_urls,
                                               dependencies=plugin_dependencies + ['b2qt-qtcreator-plugin'],
                                               qmake_arguments=qmake_arguments)]),
-    if not bldinstallercommon.is_mac_platform():
-        build_perfparser = False
-        if use_separate_elfutils:
-            build_perfparser = True
-            perfparser_additional_arguments = ['--deploy']
-            perfparser_qmake_arguments = ['ELFUTILS_INSTALL_DIR=' + elfutils_path]
-            if bldinstallercommon.is_linux_platform():
-                perfparser_qmake_arguments.extend([
-                    'PERFPARSER_APP_DESTDIR=' + os.path.join(work_dir, 'perfparser-target', 'libexec', 'qtcreator'),
-                    'PERFPARSER_APP_INSTALLDIR=' + os.path.join(work_dir, 'perfparser-target', 'libexec', 'qtcreator'),
-                    'PERFPARSER_ELFUTILS_INSTALLDIR=' + os.path.join(work_dir, 'perfparser-target', 'lib', 'elfutils'),
-                    'PERFPARSER_ELFUTILS_BACKENDS_INSTALLDIR=' + os.path.join(work_dir, 'perfparser-target', 'lib', 'elfutils')])
-            elif bldinstallercommon.is_win_platform():
-                perfparser_qmake_arguments.extend([
-                    'PERFPARSER_APP_DESTDIR=' + os.path.join(work_dir, 'perfparser-target', 'bin'),
-                    'PERFPARSER_APP_INSTALLDIR=' + os.path.join(work_dir, 'perfparser-target', 'bin'),
-                    'PERFPARSER_ELFUTILS_INSTALLDIR=' + os.path.join(work_dir, 'perfparser-target', 'bin'),
-                    'PERFPARSER_ELFUTILS_BACKENDS_INSTALLDIR=' + os.path.join(work_dir, 'perfparser-target', 'lib', 'elfutils')])
-        elif bldinstallercommon.is_linux_platform():
-            build_perfparser = True
-            perfparser_additional_arguments = []
-            perfparser_qmake_arguments = [
-                'PERFPARSER_BUNDLED_ELFUTILS=true',
-                'PERFPARSER_APP_DESTDIR=' + os.path.join(work_dir, 'perfparser-target', 'libexec', 'qtcreator'),
-                'PERFPARSER_ELFUTILS_DESTDIR=' + os.path.join(work_dir, 'perfparser-target', 'lib', 'qtcreator'),
-                'PERFPARSER_APP_INSTALLDIR=' + os.path.join(work_dir, 'perfparser-target', 'libexec', 'qtcreator'),
-                'PERFPARSER_ELFUTILS_INSTALLDIR=' + os.path.join(work_dir, 'perfparser-target', 'lib', 'qtcreator')]
-        if build_perfparser:
-            additional_plugins.extend([make_QtcPlugin('perfparser', 'perfparser', qtcreator_version, modules=qt_module_local_urls,
-                                                      qmake_arguments=perfparser_qmake_arguments,
-                                                      additional_arguments=perfparser_additional_arguments)])
-        additional_plugins.extend([make_QtcPlugin('perfprofiler', 'perfprofiler', qtcreator_version,
-                                                  modules=qt_module_local_urls, dependencies=plugin_dependencies,
-                                                  qmake_arguments=qmake_arguments)])
-
-    # qmlpreview does work on macOs
-    additional_plugins.extend([make_QtcPlugin('qmlpreview', 'qmlpreview', qtcreator_version,
-                                              modules=qt_module_local_urls, dependencies=plugin_dependencies,
-                                              qmake_arguments=qmake_arguments)])
 
     # Build Qt Creator plugins
     icu_local_url = bld_utils.file_url(os.path.join(qtcreator_temp, os.path.basename(icu_libs))) if bldinstallercommon.is_linux_platform() else None
