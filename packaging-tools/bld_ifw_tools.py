@@ -119,7 +119,7 @@ def get_common_qt_configure_options():
         if plat.startswith('linux'):
             options += '-qt-xcb -no-opengl -no-icu -no-libudev '
             options += '-qt-pcre -no-glib -no-egl '
-            options += '-no-sm '
+            options += '-no-sm -qt-harfbuzz '
         if bldinstallercommon.is_mac_platform():
             options += '-no-freetype '
     return options
@@ -142,6 +142,9 @@ def get_build_env(openssl_dir):
     tmp = dict(os.environ)
     if bldinstallercommon.is_mac_platform() and os.path.isdir(openssl_dir):
         tmp['OPENSSL_LIBS'] = "-L{0}/lib -lssl -lcrypto".format(openssl_dir)
+    if bldinstallercommon.is_linux_platform() and os.path.isdir(openssl_dir):
+        tmp['OPENSSL_LIBS'] = "-I{0}/include -L{0}/lib -ldl -lssl -lcrypto -lpthread".format(openssl_dir)
+
     return tmp
 
 
