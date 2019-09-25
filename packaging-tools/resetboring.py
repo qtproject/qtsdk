@@ -631,9 +631,9 @@ class Selector(object): # Select interesting changes, discard boring.
                 yield test, purge
 
             # Don't ignore constexpr or nothrow; can't retract once added to an API.
+            # Don't ignore explicit; it matters.
             # Words to ignore:
-            for key in ('explicit', # ? 'inline',
-                        'Q_REQUIRED_RESULT', 'Q_NORETURN',
+            for key in ('Q_REQUIRED_RESULT', 'Q_NORETURN', # ? 'inline',
                         'Q_DECL_CONST_FUNCTION', 'Q_ALWAYS_INLINE'):
                 def test(words, k=key):
                     return k in words
