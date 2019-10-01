@@ -108,8 +108,9 @@ def lock_keychain():
 ###############################
 def sign_mac_executable(file_path, working_dir, abort_on_fail):
     unlock_keychain()
-    s_arg = 'Developer ID Application: The Qt Company Oy'
-    cmd_args = ['codesign', '--verbose=3', '-r', '/Users/qt/csreq_qt_company.txt', '-s', s_arg, file_path]
+    s_arg = 'Developer ID Application: The Qt Company Oy ({0})'.format(os.environ['QT_CODESIGN_IDENTITY_KEY'])
+    # "-o runtime" is required for notarization
+    cmd_args = ['codesign', '-o', 'runtime', '--verbose=3', '-r', '/Users/qt/csreq_qt_company.txt', '-s', s_arg, file_path]
     bldinstallercommon.do_execute_sub_process(cmd_args, working_dir, abort_on_fail)
 
 
@@ -267,7 +268,7 @@ def handle_ifw_build(optionDict):
     file_list = [f for f in os.listdir(artifacts_dir) if f.endswith((".dmg", ".run", ".exe"))]
     for file_name in file_list:
         installer_name, installer_name_base, installer_name_final = generate_installer_final_name(optionDict, file_name)
-        sign_installer(artifacts_dir, installer_name, installer_name_base)
+        sign_installer(artifacts_dir, installer_name, installer_name_base, optionDict.get('NOTARIZE'))
     # Upload
     files_to_upload = [f for f in os.listdir(artifacts_dir) if f.endswith((".dmg", ".run", ".exe", ".7z", ".tar.gz", ".zip"))]
     for item in files_to_upload:
@@ -1178,7 +1179,7 @@ def handle_installer_build(optionDict, project_name, installer_type):
         installer_name_base = item[2]
         installer_name_final = item[3]
         # sign
-        sign_installer(installer_output_dir, installer_name, installer_name_base)
+        sign_installer(installer_output_dir, installer_name, installer_name_base, optionDict.get('NOTARIZE'))
         # copy installer(s) to respective build number directory:
         remote_copy_installer(optionDict, remote_path_snapshot, installer_name, installer_output_dir, installer_name_final)
         # Keep only the latest one in the "latest_available" directory i.e. delete the previous one
@@ -1227,15 +1228,24 @@ def replace_latest_successful_installer(optionDict, installer_name, installer_na
 ###############################
 # Sign installer
 ###############################
-def sign_installer(installer_output_dir, installer_name, installer_name_base):
+def sign_installer(installer_output_dir, installer_name, installer_name_base, notarize):
     if installer_name.endswith(".dmg"):
         sign_mac_executable(installer_name_base + '.app', installer_output_dir, True)
         disk_image_filepath = os.path.join(installer_output_dir, installer_name_base) + '.dmg'
         cmd_args = ['hdiutil', 'create', '-srcfolder', os.path.join(installer_output_dir, installer_name_base) + '.app', '-volname', installer_name_base, '-format', 'UDBZ', disk_image_filepath, '-ov', '-scrub', '-size', '4g']
         bldinstallercommon.do_execute_sub_process(cmd_args, installer_output_dir)
-        sign_mac_executable(disk_image_filepath, installer_output_dir, True)
+        if notarize:
+            notarizeDmg(disk_image_filepath, installer_name_base)
     if installer_name.endswith(".exe"):
         sign_windows_executable(installer_name, installer_output_dir, True)
+
+
+def notarizeDmg(dmgPath, installer_name_base):
+    # bundle-id is just a unique identifier without any special meaning, used to track the notarization progress
+    bundleId = installer_name_base + "-" + strftime('%Y-%m-%d', gmtime())
+    bundleId = bundleId.replace('_', '-').replace(' ', '')  # replace illegal characters for bundleId
+    args = ['python3', 'notarize.py', '--dmg=' + dmgPath, '--bundle-id=' + bundleId]
+    bldinstallercommon.do_execute_sub_process(args, SCRIPT_ROOT_DIR)
 
 
 ###############################
