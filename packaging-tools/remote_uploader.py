@@ -27,7 +27,16 @@
 ##
 #############################################################################
 
-import sh
+import platform
+try:
+    import sh
+except ImportError:
+    # fallback: emulate the sh API with pbs
+    import pbs
+    class Sh(object):
+        def __getattr__(self, attr):
+            return pbs.Command(attr)
+    sh = Sh()
 
 
 class RemoteUploader:
@@ -38,6 +47,7 @@ class RemoteUploader:
         self.ssh = sh.ssh.bake("-o", "GSSAPIAuthentication=no", "-o", "StrictHostKeyChecking=no", remoteServerUserName + '@' + remoteServer)
         self.remoteLogin = remoteServerUserName + '@' + remoteServer
         self.remoteTargetBaseDir = remoteBasePath + '/' + projectName + '/' + branch + '/'
+        self.remoteLatestLink = self.remoteTargetBaseDir + 'latest'
         self.remoteTargetDir = ''
 
     def initRemoteSnapshotDir(self, buildId):
@@ -58,7 +68,17 @@ class RemoteUploader:
         if destDirName:
             remoteDestination = remoteDestination + '/' + destDirName + '/'
         print("Copying [{0}] to [{1}]".format(fileName, remoteDestination))
-        self.remoteCopy = sh.rsync.bake(fileName, remoteDestination)
+        copyTool = sh.scp.bake if platform.system().lower() == "windows" else sh.rsync.bake
+        remoteCopy = copyTool(fileName, remoteDestination)
         if self.dryRun:
             return
-        self.remoteCopy()
+        remoteCopy()
+
+    def updateLatestSymlink(self, forceUpdate=True):
+        print("Creating remote symlink: [{0}] -> [{1}]".format(self.remoteLatestLink, self.remoteTargetDir))
+        if not self.dryRun:
+            options = "-sfn" if forceUpdate else "-sn"
+            try:
+                self.ssh.ln(options, self.remoteTargetDir, self.remoteLatestLink)
+            except sh.ErrorReturnCode_1:
+                print("Symbolic link already exists.")

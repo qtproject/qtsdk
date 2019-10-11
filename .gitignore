@@ -17,3 +17,6 @@ Makefile
 /packaging-tools/qt-bld-dynamic
 /packaging-tools/qt-install-dynamic
 /packaging-tools/ifw-pkg
+/packaging-tools/qt_pkg
+/packaging-tools/lm_bld
+/packaging-tools/lm_install_root
