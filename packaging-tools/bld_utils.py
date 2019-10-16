@@ -133,7 +133,10 @@ def download(url, target, read_block_size = 1048576):
         # now a download can be a local path
         if os.path.lexists(url) and os.path.isfile(url):
             print("copying file from '{0}' to {1}".format(url, target))
-            os.makedirs(os.path.dirname(target))
+            try:
+                os.makedirs(os.path.dirname(target))
+            except:
+                pass
             shutil.copy2(url, target)
             print("Done" + os.linesep)
             return
