@@ -50,9 +50,17 @@ import os
 import threading
 import traceback
 import time
-import Queue as queue # The Queue module has been renamed to queue in Python 3.
 import sys
-import __builtin__
+
+try:
+   import queue #python2
+except ImportError:
+   import Queue as queue #python3
+
+try:
+    import __builtin__ #python2
+except ImportError:
+    import builtins as __builtin__#python3
 
 # we are using RLock, because threadedPrint is using the same lock
 outputLock = threading.RLock()
