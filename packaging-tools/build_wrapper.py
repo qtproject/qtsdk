@@ -343,7 +343,7 @@ def move_files_to_parent_dir(source):
 
 
 def create_download_documentation_task(base_url, download_path):
-    doc_base_url = base_url + "/doc"
+    doc_base_url = base_url + "doc"
 
     useLocal = urlparse.urlparse(doc_base_url).scheme == "file"
     if useLocal:
