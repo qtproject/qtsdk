@@ -366,8 +366,8 @@ def create_download_documentation_task(base_url, download_path):
         source_path = extract_path
         dest_doc_path = os.path.join(download_path, 'doc')
         os.rename(source_path, dest_doc_path)
-        # limit compression to 4 cores to limit memory footprint for 32bit Windows
-        bld_utils.runCommand(['7z', 'a', '-mx1', '-mmt4', target_filepath, dest_doc_path],
+        # limit compression to 2 cores to limit memory footprint for 32bit Windows
+        bld_utils.runCommand(['7z', 'a', '-mx1', '-mmt2', '-md32m', '-ms=1g', target_filepath, dest_doc_path],
                              dest_doc_path, None)
 
     download_task = Task("downloading documentation from {0}".format(base_url))
