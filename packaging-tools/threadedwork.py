@@ -186,9 +186,6 @@ class ThreadedWork():
     def addTask(self, description, function, *arguments):
         self.addTaskObject(Task(description, function, *arguments))
 
-    def addTask(self, task):
-        self.addTaskObject(task)
-
     def addTaskObject(self, task):
         task.taskNumber = self.taskNumber
         if self.exitFunction:
