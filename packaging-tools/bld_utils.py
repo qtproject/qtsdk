@@ -131,6 +131,10 @@ def download(url, target, read_block_size = 1048576):
         if os.path.lexists(target):
             raise Exception("Can not download '{0}' to '{1}' as target. The file already exists.".format(url, target))
         # now a download can be a local path
+        if url.startswith("file://"):
+            # because scheme of a absolute windows path is the drive letter in python 2,
+            # we need to use file:// as a work around in urls
+            url = url[len("file://"):]
         if os.path.lexists(url) and os.path.isfile(url):
             print("copying file from '{0}' to {1}".format(url, target))
             try:
