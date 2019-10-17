@@ -345,11 +345,11 @@ def move_files_to_parent_dir(source):
 def create_download_documentation_task(base_url, download_path):
     doc_base_url = base_url + "/doc"
 
-    useLocal = urlparse.urlparse(doc_base_url).scheme != "file://"
+    useLocal = urlparse.urlparse(doc_base_url).scheme == "file://"
     if useLocal:
         file_list = os.listdir(doc_base_url[len("file://"):])
     else:
-        urlpath = urllib2.urlopen(doc_base_url)
+        urlpath = urlopen(doc_base_url)
         string = urlpath.read().decode('utf-8')
         pattern = re.compile('[0-9a-zA-Z-]*.zip')
 
