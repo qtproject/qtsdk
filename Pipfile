@@ -1,0 +1,23 @@
+[[source]]
+verify_ssl = true
+url = "https://pypi.org/simple"
+name = "pypi"
+
+[dev-packages]
+pylint = "*"
+rope = "*"
+autopep8 = "*"
+
+[packages]
+sh = "==1.12.14"
+ddt = "==1.1.1"
+python-dateutil = "==2.6.1"
+mypy = "==0.720"
+typed-ast = "==1.4.0"
+"flake8" = "==3.7.8"
+rainbow_logging_handler = "==2.2.2"
+gitpython = "*"
+stestr = "*"
+typing = "*"
+wget = "*"
+colorlog = "*"

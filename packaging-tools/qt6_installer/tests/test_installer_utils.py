@@ -102,7 +102,7 @@ class TestInstallerUtils(unittest.TestCase):
     @testhelpers.asyncio_test
     async def test_download_archive(self) -> None:
         with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmpBaseDir:
-            downloadedFile = download_archive("http://{0}/packages/jenkins/python/src/Python-3.8.1.tgz".format(packageServer), tmpBaseDir)
+            downloadedFile = download_archive("http://{0}/packages/jenkins/python/src/Python-3.8.1.tgz".format(testhelpers.packageServer), tmpBaseDir)
             self.assertTrue(os.path.isfile(downloadedFile))
 
 

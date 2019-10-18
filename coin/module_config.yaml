@@ -1,0 +1,20 @@
+version: 1
+accept_configuration:
+  condition: and
+  conditions:
+      - condition: property  # No cross compilation
+        property: host.os
+        equals_property: target.os
+      - condition: property  # Currently test only on linux
+        property: host.os
+        equals_value: Linux
+build_instructions:
+  - type: ExecuteCommand
+    command: make qtsdktest -j1
+    maxTimeInSeconds: 1800
+    maxTimeBetweenOutput: 1800
+    userMessageOnFailure: >
+      One or more tests failed. Please check logs to see which ones. There is a big likelihood
+      that it is a regression caused by a tested change.
+
+test_instructions: []  # CI for qtsdk runs tests during build phase

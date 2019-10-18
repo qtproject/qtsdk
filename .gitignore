@@ -1,4 +1,3 @@
-Makefile
 .qmake.super
 *.pyc
 *.7z
