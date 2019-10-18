@@ -130,22 +130,27 @@ def download(url, target, read_block_size = 1048576):
             target = os.path.join(os.path.abspath(target), filename)
         if os.path.lexists(target):
             raise Exception("Can not download '{0}' to '{1}' as target. The file already exists.".format(url, target))
-        # now a download can be a local path
-        if url.startswith("file:///"):
+        def localDownload(localFilePath, targtFilePath):
+            if os.path.isfile(localFilePath):
+                print("copying file from '{0}' to {1}".format(localFilePath, targtFilePath))
+                try:
+                    os.makedirs(os.path.dirname(targtFilePath))
+                except:
+                    pass
+                shutil.copy2(localFilePath, target)
+                print("Done" + os.linesep)
+
+        if os.path.lexists(url[len("file:///"):]):
             # because scheme of a absolute windows path is the drive letter in python 2,
             # we need to use file:// as a work around in urls
-            url = url[len("file:///"):]
+            localDownload(url[len("file:///"):], target)
+            return
         # there is code which only have two slashes - protocol://host/path <- localhost can be omitted
-        if url.startswith("file://"):
-            url = url[len("file://"):]
-        if os.path.lexists(url) and os.path.isfile(url):
-            print("copying file from '{0}' to {1}".format(url, target))
-            try:
-                os.makedirs(os.path.dirname(target))
-            except:
-                pass
-            shutil.copy2(url, target)
-            print("Done" + os.linesep)
+        if os.path.lexists(url[len("file://"):]):
+            localDownload(url[len("file://"):], target)
+            return
+        if os.path.lexists(url):
+            localDownload(url, target)
             return
 
         savefile_tmp = os.extsep.join((target, 'tmp'))
