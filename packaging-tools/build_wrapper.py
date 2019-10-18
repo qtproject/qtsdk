@@ -347,7 +347,7 @@ def create_download_documentation_task(base_url, download_path):
 
     useLocal = urlparse.urlparse(doc_base_url).scheme == "file"
     if useLocal:
-        file_list = os.listdir(doc_base_url[len("file://"):])
+        file_list = os.listdir(doc_base_url[len("file:///"):])
     else:
         urlpath = urlopen(doc_base_url)
         string = urlpath.read().decode('utf-8')
