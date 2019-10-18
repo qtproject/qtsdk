@@ -285,8 +285,8 @@ def readArtifactsFromUrlRecursive(url, results):
         if _isDirectory(url_new):
             readArtifactsFromUrlRecursive(url_new, results)
 
-        # we expect .tar.gz extension for all build artifacts
-        if url_new.endswith(".tar.gz"):
+        # we expect .7z or .tar.gz extension for all build artifacts
+        if url_new.endswith((".tar.gz", ".7z")):
             results.append(url_new)
 
 
