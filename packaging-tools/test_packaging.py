@@ -175,9 +175,10 @@ class TestPackaging(unittest.TestCase):
     def test_readArtifactsFromUrlRecursive(self):
         from qt_prepare_artifacts import readArtifactsFromUrlRecursive
         artifactsList = []
-        readArtifactsFromUrlRecursive(os.environ.get("PKG_TEST_QT_ARTIFACTS_URL"), artifactsList)
+        testUrl = os.environ.get("PKG_TEST_QT_ARTIFACTS_URL") + "/archive/qt/5.13/5.13.1-final-released/latest/"
+        readArtifactsFromUrlRecursive(testUrl, artifactsList)
         for item in artifactsList:
-            self.assertTrue(item.endswith(".7z"))
+            self.assertTrue(item.endswith((".tar.gz", ".7z")))
 
     def test_pysideSplitRequired(self):
         from qt_prepare_artifacts import pysideSplitRequired
@@ -207,10 +208,11 @@ class TestPackaging(unittest.TestCase):
         from bldinstallercommon import do_execute_sub_process
         import platform
         extension = '.run' if platform.system().lower().startswith('linux') else ''
+        testsDir = os.path.dirname(os.path.abspath(__file__))
         path = os.path.join(os.environ.get("PKG_TEST_QT_CONFIG_BASE_PATH"), "offline_installer_jobs", "5.9.3")
         offlineJobs = os.listdir(path)
         for offlineJob in offlineJobs:
-            cmd_args = ['python', '-u', 'create_installer.py']
+            cmd_args = ['python', '-u', os.path.join(testsDir, 'create_installer.py')]
             cmd_args = cmd_args + ['-c', os.environ.get("PKG_TEST_QT_CONFIG_BASE_PATH")]
             cmd_args = cmd_args + ['-f', os.path.join(path, offlineJob)]
             cmd_args = cmd_args + ['--offline']
@@ -219,8 +221,11 @@ class TestPackaging(unittest.TestCase):
             cmd_args = cmd_args + ['--ifw-tools=' + os.environ.get("PKG_TEST_QT_IFW_TOOL_URL")]
             cmd_args = cmd_args + ['--preferred-installer-name=' + offlineJob]
             cmd_args = cmd_args + ['--dry-run']
-            do_execute_sub_process(cmd_args, os.getcwd())
-            self.assertTrue(os.path.exists(os.path.join(os.getcwd(), 'installer_output', offlineJob + extension)))
+            try:
+                do_execute_sub_process(cmd_args, os.getcwd())
+            except Exception as e:
+                self.assertTrue(False, "Failed to execute: [{0}] -> {1}".format(" ".join(cmd_args), str(e)))
+            self.assertTrue(os.path.exists(os.path.join(testsDir, 'installer_output', offlineJob + extension)), "No installers generated")
 
 
 
