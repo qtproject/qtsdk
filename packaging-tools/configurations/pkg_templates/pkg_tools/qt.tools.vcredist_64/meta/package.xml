@@ -2,11 +2,10 @@
 <Package>
     <DisplayName>VCRedist for MSVC 64bit</DisplayName>
     <Description>Needed by all included Qt applications.</Description>
-    <Version>2011-03-03</Version>
+    <Version>2019-10-29</Version>
     <ReleaseDate>%PACKAGE_CREATION_DATE%</ReleaseDate>
     <Script>installscript.qs</Script>
     <Virtual>true</Virtual>
     <!--<ForcedInstallation>true</ForcedInstallation>-->
-    <RequiresAdminRights>true</RequiresAdminRights>
     <DownloadableArchives><!--ONLINE_ARCHIVE_LIST--></DownloadableArchives>
 </Package>
