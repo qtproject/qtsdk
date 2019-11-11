@@ -209,10 +209,9 @@ def handle_ifw_build(optionDict):
             temp = bldinstallercommon.locate_file(optionDict['WORK_DIR'], product_key_checker_pri)
             product_key_checker_pri = temp if temp else product_key_checker_pri
 
-    if optionDict['ENABLE_TESTS'] == "true" and bldinstallercommon.is_win_platform():
+    squish_dir = ''
+    if 'ENABLE_TESTS' in optionDict and optionDict['ENABLE_TESTS'] == "true" and bldinstallercommon.is_win_platform():
         squish_dir = 'C:\\Utils\\Squish_IFW'
-    else:
-        squish_dir = ''
 
     # options object for ifw build
     ifw_bld_options = IfwOptions(qt_src_pkg,
