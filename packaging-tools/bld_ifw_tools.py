@@ -46,6 +46,9 @@ from multiprocessing.connection import Listener
 
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 ARCH_EXT = '.zip' if platform.system().lower().startswith('win') else '.tar.xz'
+QT_VERSION = '5.12'
+QT_VERSION_MINOR = '5.12.4'
+
 
 ARCHIVE_PROGRAM = '7z'
 if platform.system().lower().startswith('darwin'):
@@ -153,7 +156,7 @@ def get_build_env(openssl_dir):
 ###############################
 class IfwOptions:
 
-    default_qt_src_pkg                          = 'http://download.qt.io/official_releases/qt/5.12/5.12.4/single/qt-everywhere-src-5.12.4' + ARCH_EXT
+    default_qt_src_pkg                          = 'http://download.qt.io/official_releases/qt/' + QT_VERSION + '/' + QT_VERSION_MINOR + '/single/qt-everywhere-src-' + QT_VERSION_MINOR + ARCH_EXT
     default_qt_installer_framework_url          = 'git://code.qt.io/installer-framework/installer-framework.git'
     default_qt_installer_framework_branch_qt    = '3.1'
     default_qt_installer_framework_qmake_args   = ['-r', '-config', 'release', '-config', 'static']
@@ -172,7 +175,8 @@ class IfwOptions:
                  signpwd,
                  incremental_build = False,
                  squish_dir = "",
-                 squish_src = ""
+                 squish_src = "",
+                 archive_qt = False
                  ):
         self.squish_dir                                 = squish_dir
         self.squish_src                                 = squish_src
@@ -249,6 +253,9 @@ class IfwOptions:
         # macOS specific
         if bldinstallercommon.is_mac_platform():
             self.qt_installer_framework_qmake_args     += ['"LIBS+=-framework IOKit"']
+        self.archive_qt                                 = archive_qt
+        self.qt_static_binary_name                      = 'qt-bin-' + QT_VERSION + '-' + self.plat_suffix + '_static.7z'
+        self.qt_shared_binary_name                      = 'qt-bin-' + QT_VERSION + '-' + self.plat_suffix + '_shared.7z'
         # sanity check
         self.sanity_check()
 
@@ -632,6 +639,34 @@ def create_installer_package(options):
         shutil.move(os.path.join(options.installer_framework_target_dir, artifact), destFileName)
     os.chdir(current_dir)
 
+################################################################
+# Build and archive Qt for IFW builds
+################################################################
+def build_and_archive_qt(options):
+    print('--------------------------------------------------------------------')
+    print('Build static Qt')
+    prepare_qt_sources(options)
+    build_qt(options, options.qt_build_dir, options.qt_configure_options, options.qt_build_modules)
+
+    print('--------------------------------------------------------------------')
+    print('Archive static Qt binaries')
+    cmd_args_archive = [ARCHIVE_PROGRAM, 'a', options.qt_static_binary_name, options.qt_build_dir]
+    bldinstallercommon.do_execute_sub_process(cmd_args_archive, ROOT_DIR)
+
+    print('--------------------------------------------------------------------')
+    print('Build shared Qt')
+    configure_options = get_dynamic_qt_configure_options() + '-prefix ' + options.qt_build_dir_dynamic + os.sep + 'qtbase'
+    # Although we have a shadow build qt sources are still contaminated. Unpack sources again.
+    if os.path.exists(options.qt_source_dir):
+        bldinstallercommon.remove_tree(options.qt_source_dir)
+    prepare_qt_sources(options)
+    build_qt(options, options.qt_build_dir_dynamic, configure_options, options.qt_build_modules_docs)
+
+    print('--------------------------------------------------------------------')
+    print('Archive shared Qt binaries')
+    cmd_args_archive = [ARCHIVE_PROGRAM, 'a', options.qt_shared_binary_name, options.qt_build_dir_dynamic]
+    bldinstallercommon.do_execute_sub_process(cmd_args_archive, ROOT_DIR)
+
 
 ###############################
 # function
@@ -821,6 +856,7 @@ def setup_argument_parser():
     parser.add_argument('--sign_server_pwd', help="Signing server parssword", required=False)
     parser.add_argument('--squish_dir', help="Path to Squish. If set, runs squish tests to IFW examples", required=False, default='')
     parser.add_argument('--squish_src', help="Path to Squish sources. If set, Squish is built", required=False, default='')
+    parser.add_argument('--archive_qt', help="Build and archive both static and shared Qt binaries for IFW", action='store_true', required=False, default=False)
     return parser
 
 ###############################
@@ -857,9 +893,13 @@ if __name__ == "__main__":
                          signpwd,
                          CARGS.incremental,
                          CARGS.squish_dir,
-                         CARGS.squish_src
+                         CARGS.squish_src,
+                         CARGS.archive_qt
                         )
     # build ifw tools
-    build_ifw(OPTIONS, CARGS.create_installer, CARGS.build_ifw_examples)
+    if CARGS.archive_qt:
+        build_and_archive_qt(OPTIONS)
+    else:
+        build_ifw(OPTIONS, CARGS.create_installer, CARGS.build_ifw_examples)
 
 
