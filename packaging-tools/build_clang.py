@@ -309,7 +309,10 @@ def build_clang(toolchain, src_path, build_path, install_path, profile_data_path
     cmake_cmd = cmake_command(toolchain, src_path, build_path, install_path, profile_data_path, first_run, bitness, build_type)
 
     bldinstallercommon.do_execute_sub_process(cmake_cmd, build_path, extra_env=environment)
-    build_and_install(toolchain, build_path, environment, ['libclang', 'clang', 'llvm-config'], ['install/strip'])
+    build_targets = ['install/strip']
+    if is_msvc_toolchain(toolchain):
+        build_targets = ['install'] # There is no 'install/strip' for nmake.
+    build_and_install(toolchain, build_path, environment, ['libclang', 'clang', 'llvm-config'], build_targets)
 
 def check_clang(toolchain, build_path, environment):
     if is_msvc_toolchain(toolchain) or is_mingw_toolchain(toolchain):
