@@ -741,7 +741,8 @@ def handle_component_rpath(component_root_path, destination_lib_paths):
 ###############################
 # function
 ###############################
-def do_execute_sub_process(args, execution_path, abort_on_fail=True, get_output=False, extra_env=dict(os.environ)):
+def do_execute_sub_process(args, execution_path, abort_on_fail=True, get_output=False,
+                           extra_env=dict(os.environ), redirect_output=None):
     print '      --------------------------------------------------------------------'
     print '      Executing:      [' + list_as_string(args) + ']'
     print '      Execution path: [' + execution_path + ']'
@@ -755,6 +756,9 @@ def do_execute_sub_process(args, execution_path, abort_on_fail=True, get_output=
             if get_output:
                 theproc = subprocess.Popen(args, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=False, env=extra_env, cwd=execution_path )
                 output = theproc.communicate()[0]
+            elif redirect_output:
+                theproc = subprocess.Popen(args, shell=True, stdout=redirect_output, stderr=STDOUT, close_fds=False, env=extra_env, cwd=execution_path )
+                theproc.communicate()
             else:
                 theproc = subprocess.Popen(args, shell=True, close_fds=False, env=extra_env, cwd=execution_path)
                 theproc.communicate()
@@ -763,6 +767,9 @@ def do_execute_sub_process(args, execution_path, abort_on_fail=True, get_output=
             if get_output:
                 theproc = subprocess.Popen(args, shell=False, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True, env=extra_env, cwd=execution_path)
                 output = theproc.communicate()[0]
+            elif redirect_output:
+                theproc = subprocess.Popen(args, shell=False, stdout=redirect_output, stderr=STDOUT, close_fds=False, env=extra_env, cwd=execution_path )
+                theproc.communicate()
             else:
                 theproc = subprocess.Popen(args, env=extra_env, cwd=execution_path)
                 theproc.communicate()

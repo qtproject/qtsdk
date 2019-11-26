@@ -546,14 +546,34 @@ def make_QtcPlugin(name, path, version, dependencies=None, modules=None,
                      submodules=submodules,
                      build=build)
 
-def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url=None, openssl_url=None):
+# writes output of process to log_filepath
+# on error it dumps the log file to stdout as well
+def check_call_log(args, execution_path, extra_env=dict(os.environ),
+                   log_filepath=None, log_overwrite=False):
+    if not log_filepath:
+        bldinstallercommon.do_execute_sub_process(args, execution_path,
+                                                  extra_env=extra_env)
+    else:
+        try:
+            with open(log_filepath, 'w' if log_overwrite else 'a') as f:
+                bldinstallercommon.do_execute_sub_process(args, execution_path,
+                                                          extra_env=extra_env,
+                                                          redirect_output=f)
+        except Exception:
+            with open(log_filepath, 'r') as f:
+                print(f.read())
+            raise
+
+def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url=None,
+                            openssl_url=None, log_filepath=None):
     work_dir = optionDict['WORK_DIR']
     for plugin in plugins:
         plugin_path = os.path.join(work_dir, plugin.path)
         if not plugin.build or not os.path.isdir(plugin_path):
             continue
         if plugin.submodules:
-            bldinstallercommon.do_execute_sub_process(['git', 'submodule', 'update', '--init'], plugin_path)
+            check_call_log(['git', 'submodule', 'update', '--init'],
+                           plugin_path, log_filepath=log_filepath)
         cmd_arguments = ['python', '-u', os.path.join(SCRIPT_ROOT_DIR, 'bld_qtcreator_plugins.py'),
                          '--clean',
                          '--qtc-build', qtcreator_path,
@@ -596,14 +616,16 @@ def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url
         cmd_arguments.extend(['--out-dev', os.path.join(work_dir, plugin.name + '_dev.7z')])
         cmd_arguments.append('--cleanup')
         cmd_arguments.append(os.path.join(work_dir, plugin.name + '.7z'))
-        bldinstallercommon.do_execute_sub_process(cmd_arguments, work_dir)
+        check_call_log(cmd_arguments, work_dir, log_filepath=log_filepath)
         # source package
         if bldinstallercommon.is_linux_platform():
-            bldinstallercommon.do_execute_sub_process(['python', '-u',
-                                                       os.path.join(qtcreator_dev_path, 'scripts', 'createSourcePackages.py'),
-                                                       '-p', os.path.join(work_dir, plugin.path),
-                                                       '-n', plugin.name,
-                                                       plugin.version, 'enterprise'], work_dir)
+            check_call_log(['python', '-u',
+                            os.path.join(qtcreator_dev_path, 'scripts', 'createSourcePackages.py'),
+                            '-p', os.path.join(work_dir, plugin.path),
+                            '-n', plugin.name,
+                            plugin.version, 'enterprise'],
+                           work_dir,
+                           log_filepath=log_filepath)
 
 def get_qtcreator_version(path_to_qtcreator_src, optionDict):
     expr = re.compile(r'\s*QTCREATOR_DISPLAY_VERSION\s*=\s*([^\s]+)')
@@ -843,6 +865,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     has_unlock_keychain_script = os.path.exists(unlock_keychain_script())
     # from 4.4 on we use external elfutil builds and also build on Windows
     elfutils_url = optionDict.get('ELFUTILS_URL')
+    log_filepath = os.path.join(work_dir, 'build_log.txt')
 
     def module_filename(module):
         return module + '-' + qt_postfix + '.7z'
@@ -968,7 +991,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     if ide_branding_pri:
         renaming_qmake_arguments.append('IDE_BRANDING_PRI=' + ide_branding_pri)
     cmd_args.extend([arg for value in renaming_qmake_arguments for arg in ['--add-qmake-argument', value]])
-    bldinstallercommon.do_execute_sub_process(cmd_args, work_dir, extra_env=build_environment)
+    check_call_log(cmd_args, work_dir, extra_env=build_environment, log_filepath=log_filepath, log_overwrite=True)
 
     if bldinstallercommon.is_mac_platform() and has_unlock_keychain_script:
         lock_keychain()
@@ -1015,12 +1038,12 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     ## extract qtcreator bin and dev packages
     qtcreator_path = os.path.join(work_dir, 'qtc_build')
     qtcreator_dev_path = os.path.join(work_dir, 'qtc_dev')
-    bldinstallercommon.do_execute_sub_process(['7z', 'x', '-y', os.path.join(work_dir, 'qt-creator_build', 'qtcreator.7z'),
-                                               '-o' + qtcreator_path], work_dir)
-    bldinstallercommon.do_execute_sub_process(['7z', 'x', '-y', os.path.join(work_dir, 'qt-creator_build', 'qtcreator_dev.7z'),
-                                               '-o' + qtcreator_dev_path], work_dir)
+    check_call_log(['7z', 'x', '-y', os.path.join(work_dir, 'qt-creator_build', 'qtcreator.7z'), '-o' + qtcreator_path],
+                   work_dir, log_filepath=log_filepath)
+    check_call_log(['7z', 'x', '-y', os.path.join(work_dir, 'qt-creator_build', 'qtcreator_dev.7z'), '-o' + qtcreator_dev_path],
+                   work_dir, log_filepath=log_filepath)
     build_qtcreator_plugins(additional_plugins, qtcreator_path, qtcreator_dev_path, icu_url=icu_local_url,
-                            openssl_url=openssl_local_url)
+                            openssl_url=openssl_local_url, log_filepath=log_filepath)
 
     if bldinstallercommon.is_linux_platform():
         # summary of git SHA1s
@@ -1032,14 +1055,16 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         with open(os.path.join(work_dir, 'SHA1'), 'w') as f:
             f.writelines([sha + '\n' for sha in sha1s])
         # Create opensource source package
-        bldinstallercommon.do_execute_sub_process([os.path.join(work_dir, 'qt-creator', 'scripts', 'createSourcePackages.py'),
-                                                   qtcreator_version, 'opensource'], work_dir)
+        check_call_log([os.path.join(work_dir, 'qt-creator', 'scripts', 'createSourcePackages.py'),
+                        qtcreator_version, 'opensource'],
+                       work_dir, log_filepath=log_filepath)
         # Create enterprise source package
         if installer_patch:
-            bldinstallercommon.do_execute_sub_process(['git', 'am', '-3', installer_patch],
-                                                      os.path.join(work_dir, 'qt-creator'))
-            bldinstallercommon.do_execute_sub_process([os.path.join(work_dir, 'qt-creator', 'scripts', 'createSourcePackages.py'),
-                                                       qtcreator_version, 'enterprise'], work_dir)
+            check_call_log(['git', 'am', '-3', installer_patch],
+                           os.path.join(work_dir, 'qt-creator'), log_filepath=log_filepath)
+            check_call_log([os.path.join(work_dir, 'qt-creator', 'scripts', 'createSourcePackages.py'),
+                            qtcreator_version, 'enterprise'],
+                           work_dir, log_filepath=log_filepath)
 
     # Build sdktool
     if sdktool_qtbase_src:
@@ -1055,6 +1080,9 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     # Upload
     file_upload_list = [] # pairs (source, dest), source relative to WORK_DIR, dest relative to server + dir_path
     snapshot_upload_list = [] # pairs (source, dest), source relative to server + dir_path, dest relative to snapshot server + snapshot_path
+
+    # build log
+    file_upload_list.append((log_filepath, target_env_dir + '/build_log.txt'))
 
     # macOS opensource dmg
     if bldinstallercommon.is_mac_platform():
