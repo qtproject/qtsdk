@@ -747,6 +747,7 @@ def do_execute_sub_process(args, execution_path, abort_on_fail=True, get_output=
     print '      Executing:      [' + list_as_string(args) + ']'
     print '      Execution path: [' + execution_path + ']'
     print '      Abort on fail:  [' + str(abort_on_fail) + ']'
+    sys.stdout.flush()
     theproc = None
     return_code = -1
     output      = ''
@@ -781,13 +782,17 @@ def do_execute_sub_process(args, execution_path, abort_on_fail=True, get_output=
                 print output
             else:
                 print 'Note, no output from the sub process!'
+                sys.stdout.flush()
             raise Exception('*** Execution failed with code: {0}'.format(theproc.returncode))
         print '      --------------------------------------------------------------------'
+        sys.stdout.flush()
     except Exception:
         sys.stderr.write('      ERROR - ERROR - ERROR - ERROR - ERROR - ERROR !!!' + os.linesep)
         sys.stderr.write('      Executing:      [' + list_as_string(args) + ']' + os.linesep)
         sys.stderr.write('      Execution path: [' + execution_path + ']' + os.linesep)
         traceback.print_exc()
+        sys.stderr.flush()
+        sys.stdout.flush()
         if abort_on_fail:
             raise
         else:

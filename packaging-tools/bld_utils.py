@@ -304,6 +304,7 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None, init_en
     else:
         print("No currentWorkingDirectory set!")
     print("Last command:      " + ' '.join(commandAsList))
+    sys.stdout.flush()
 
     if currentWorkingDirectory and not os.path.lexists(currentWorkingDirectory):
         raise Exception("The current working directory is not existing: %s" % currentWorkingDirectory)

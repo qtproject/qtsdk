@@ -95,10 +95,16 @@ class StdOutHook:
 
                 sys.__stdout__.write(newOutput + cleanerString)
 
+    def flush(self):
+        sys.__stdout__.flush()
+
 class StdErrHook:
     def write(self, text):
         with outputLock:
             sys.__stderr__.write(text)
+
+    def flush(self):
+        sys.__stderr__.flush()
 
 # builtin print() isn't threadsafe, lets make it threadsafe
 def threadedPrint(*a, **b):
