@@ -546,6 +546,28 @@ def make_QtcPlugin(name, path, version, dependencies=None, modules=None,
                      submodules=submodules,
                      build=build)
 
+class BuildLog:
+    def __init__(self, log_filepath, log_overwrite=False):
+        self.file = None
+        self.log_filepath = log_filepath
+        self.log_overwrite = log_overwrite
+
+    def __enter__(self):
+        try:
+            self.file = open(self.log_filepath, 'w' if self.log_overwrite else 'a')
+        except Exception:
+            print('Failed to write log file "' + self.log_filepath + '"')
+            sys.stdout.flush()
+            raise
+        return self.file
+
+    def __exit__(self, type, value, traceback):
+        self.file.close()
+        if type:  # exception raised -> print the log and re-raise
+            with open(self.log_filepath, 'r') as f:
+                print(f.read())
+            return True  # re-raise
+
 # writes output of process to log_filepath
 # on error it dumps the log file to stdout as well
 def check_call_log(args, execution_path, extra_env=dict(os.environ),
@@ -554,15 +576,10 @@ def check_call_log(args, execution_path, extra_env=dict(os.environ),
         bldinstallercommon.do_execute_sub_process(args, execution_path,
                                                   extra_env=extra_env)
     else:
-        try:
-            with open(log_filepath, 'w' if log_overwrite else 'a') as f:
-                bldinstallercommon.do_execute_sub_process(args, execution_path,
-                                                          extra_env=extra_env,
-                                                          redirect_output=f)
-        except Exception:
-            with open(log_filepath, 'r') as f:
-                print(f.read())
-            raise
+        with BuildLog(log_filepath, log_overwrite) as f:
+            bldinstallercommon.do_execute_sub_process(args, execution_path,
+                                                      extra_env=extra_env,
+                                                      redirect_output=f)
 
 def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url=None,
                             openssl_url=None, log_filepath=None):
@@ -1070,12 +1087,15 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     if sdktool_qtbase_src:
         sdktool_build_path = os.path.join(work_dir, 'sdktool_build')
         sdktool_target_path = os.path.join(sdktool_build_path, 'target')
-        bld_sdktool.build_sdktool(sdktool_qtbase_src, os.path.join(sdktool_build_path, 'qt'),
-            os.path.join(work_dir, 'qt-creator', 'src', 'tools', 'sdktool'),
-            os.path.join(sdktool_build_path, 'src', 'tools', 'sdktool'),
-            sdktool_target_path,
-            'nmake' if bldinstallercommon.is_win_platform() else 'make')
-        bld_sdktool.zip_sdktool(sdktool_target_path, os.path.join(work_dir, 'sdktool.7z'))
+        with BuildLog(log_filepath) as f:
+            bld_sdktool.build_sdktool(sdktool_qtbase_src, os.path.join(sdktool_build_path, 'qt'),
+                os.path.join(work_dir, 'qt-creator', 'src', 'tools', 'sdktool'),
+                os.path.join(sdktool_build_path, 'src', 'tools', 'sdktool'),
+                sdktool_target_path,
+                'nmake' if bldinstallercommon.is_win_platform() else 'make',
+                redirect_output=f)
+            bld_sdktool.zip_sdktool(sdktool_target_path, os.path.join(work_dir, 'sdktool.7z'),
+                                    redirect_output=f)
 
     # Upload
     file_upload_list = [] # pairs (source, dest), source relative to WORK_DIR, dest relative to server + dir_path
