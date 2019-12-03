@@ -1,9 +1,13 @@
 ****************************************************************************
-*                        3.1.2                                             *
+*                        3.2.0                                             *
 ****************************************************************************
 - Uncapitalize the email used on login and signup (QTIFW-1368)
 - Disable navigating back to welcome page during login/signup operations (QTPM-954)
 - More responsive label messages for sign-up fields (QTPM-955)
+- Updated to Qt version Qt5.12.4 for installer and maintenancetool builds
+- Updated the OpenSSL version to 1.1.1d
+- Extended support for more than one type of packaging license resource (QTIFW-1359)
+- Patch files per component, not per installation directory (QTIFW-1180)
 
 ****************************************************************************
 *                        3.1.1                                             *
