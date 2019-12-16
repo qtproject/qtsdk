@@ -964,8 +964,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     # Define the exact archive locations for each required module.
     qt_modules = ['qtbase', 'qtdeclarative', 'qtgraphicaleffects',
                   'qtimageformats', 'qtlocation', 'qtmacextras',
-                  'qtquickcontrols', 'qtquickcontrols2', 'qtscript',
-                  'qtserialport', 'qtsvg', 'qttools',
+                  'qtquickcontrols', 'qtquickcontrols2', 'qtquicktimeline',
+                  'qtscript', 'qtserialport', 'qtsvg', 'qttools',
                   'qttranslations', 'qtx11extras', 'qtxmlpatterns']
     qt_module_urls = module_urls(qt_modules)
     qt_module_urls.append(documentation_local_url)
