@@ -3,7 +3,7 @@
 
 #############################################################################
 ##
-## Copyright (C) 2019 The Qt Company Ltd.
+## Copyright (C) 2020 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -203,8 +203,8 @@ def handleBuild(args: argparse.Namespace) -> None:
     artifactsFilePath = archive(args, installRootDir, currentDir)
 
     remoteUploader = RemoteUploader(False, args.remote_server, args.username, args.remote_base_path, qtVersion, args.project_name)
-    remoteUploader.initRemoteSnapshotDir(args.build_id)
-    remoteUploader.copyToRemote(artifactsFilePath, "")
+    remoteUploader.init_snapshot_upload_path(args.project_name, qtVersion, args.build_id)
+    remoteUploader.copyToRemote(artifactsFilePath)
     remoteUploader.updateLatestSymlink()
 
 

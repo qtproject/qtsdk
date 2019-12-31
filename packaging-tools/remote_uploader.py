@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #############################################################################
 ##
-## Copyright (C) 2019 The Qt Company Ltd.
+## Copyright (C) 2020 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -27,6 +27,9 @@
 ##
 #############################################################################
 
+import os
+import sys
+import argparse
 import platform
 try:
     import sh
@@ -42,39 +45,53 @@ except ImportError:
 class RemoteUploader:
     """RemoteUploader can be used to upload given file(s) to remote network disk."""
 
-    def __init__(self, dryRun, remoteServer, remoteServerUserName, remoteBasePath, branch, projectName):
+    def __init__(self, dryRun, remoteServer, remoteServerUserName, remoteBasePath):
         self.dryRun = dryRun
         self.ssh = sh.ssh.bake("-o", "GSSAPIAuthentication=no", "-o", "StrictHostKeyChecking=no", remoteServerUserName + '@' + remoteServer)
+        self.copyTool = sh.scp.bake if platform.system().lower() == "windows" else sh.rsync.bake
         self.remoteLogin = remoteServerUserName + '@' + remoteServer
-        self.remoteTargetBaseDir = remoteBasePath + '/' + projectName + '/' + branch + '/'
-        self.remoteLatestLink = self.remoteTargetBaseDir + 'latest'
-        self.remoteTargetDir = ''
+        self.remoteTargetBaseDir = remoteBasePath
+        self.init_finished = False
 
-    def initRemoteSnapshotDir(self, buildId):
-        """Create snapshot directory on the remote disk containing the basic directory structure required by installer configs."""
-        self.remoteTargetDir = self.remoteTargetBaseDir + buildId
-        self.releaseSymbolsDir = '/debug_information'
-        self.ensureRemoteDir(self.remoteTargetDir + self.releaseSymbolsDir)
+    def init_snapshot_upload_path(self, projectName, version, snapshotId):
+        assert not self.init_finished, "Already initialized as: {0}".format(self.remoteTargetDir)
+        self.remoteTargetDir = self.remoteTargetBaseDir + "/" + projectName + "/" + version + "/" + snapshotId
+        self.remoteLatestLink = self.remoteTargetBaseDir + "/" + projectName + "/" + version + "/latest"
+        self.init_finished = True
+        self.ensureRemoteDir(self.remoteTargetDir)
+
+    def init_upload_path(self, remotePath):
+        assert not self.init_finished, "Already initialized as: {0}".format(self.remoteTargetDir)
+        self.remoteTargetDir = self.remoteTargetBaseDir + "/" + remotePath
+        self.init_finished = True
+        self.ensureRemoteDir(self.remoteTargetDir)
 
     def ensureRemoteDir(self, remoteDir):
+        assert self.init_finished, "RemoteUploader not initialized!"
         print("Creating remote directory: {0}".format(remoteDir))
         if self.dryRun:
             return
         self.ssh.mkdir("-p", remoteDir)
 
-    def copyToRemote(self, fileName, destDirName):
+    def _copyToRemote(self, fileName, destDirName):
+        assert self.init_finished, "RemoteUploader not initialized!"
         """Copy the given file to destDirName which is relative to remoteBasePath."""
         remoteDestination = self.remoteLogin + ':' + self.remoteTargetDir
         if destDirName:
             remoteDestination = remoteDestination + '/' + destDirName + '/'
         print("Copying [{0}] to [{1}]".format(fileName, remoteDestination))
-        copyTool = sh.scp.bake if platform.system().lower() == "windows" else sh.rsync.bake
-        remoteCopy = copyTool(fileName, remoteDestination)
+        remoteCopy = self.copyTool(fileName, remoteDestination)
         if self.dryRun:
             return
         remoteCopy()
 
+    def copyToRemote(self, path: str, destDirName=""):
+        items = [path] if os.path.isfile(path) else [os.path.join(path, x) for x in os.listdir(path)]
+        for item in items:
+            self._copyToRemote(item, destDirName)
+
     def updateLatestSymlink(self, forceUpdate=True):
+        assert self.init_finished, "RemoteUploader not initialized!"
         print("Creating remote symlink: [{0}] -> [{1}]".format(self.remoteLatestLink, self.remoteTargetDir))
         if not self.dryRun:
             options = "-sfn" if forceUpdate else "-sn"
@@ -82,3 +99,23 @@ class RemoteUploader:
                 self.ssh.ln(options, self.remoteTargetDir, self.remoteLatestLink)
             except sh.ErrorReturnCode_1:
                 print("Symbolic link already exists.")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(prog="Copy given file or directory contents to remote.")
+    parser.add_argument("--dry-run", dest="dry_run", action='store_true', help="Dry-run the command.")
+    parser.add_argument("--source", dest="source", type=str, required=True, help="What to copy to remote. Can be a file or a directory")
+    parser.add_argument("--remote-server", dest="remote_server", type=str, default=os.getenv("REMOTE_SERVER"), help="Remote server name/address.")
+    parser.add_argument("--remote-server-user", dest="remote_server_user", type=str, default=os.getenv("REMOTE_SERVER_USER"), help="Remote server user name.")
+    parser.add_argument("--remote-server-base-path", dest="remote_server_base_path", type=str, default=os.getenv("REMOTE_SERVER_BASE_PATH"), help="Remote server base path.")
+    parser.add_argument("--project-name", dest="project_name", type=str, required=True, help="Project name")
+    parser.add_argument("--project-version", dest="project_version", type=str, required=True, help="Project version")
+    parser.add_argument("--project-snapshot-id", dest="project_snapshot_id", type=str, required=True, help="Project snapshot id")
+
+    args = parser.parse_args(sys.argv[1:])
+
+    uploader = RemoteUploader(args.dry_run, args.remote_server, args.remote_server_user, args.remote_server_base_path)
+    uploader.init_snapshot_upload_path(args.project_name, args.project_version, args.project_snapshot_id)
+    uploader.copyToRemote(args.source)
+    uploader.updateLatestSymlink()
+

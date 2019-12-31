@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #############################################################################
 ##
-## Copyright (C) 2019 The Qt Company Ltd.
+## Copyright (C) 2020 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -236,7 +236,7 @@ def collectDebugSymbolFiles(inputDir, outputDir, configurationName, projectName,
                 print("Directory does not exist: {0}".format(finalArchiveDir))
             raise
     finalArchiveName = projectName + "-" + configurationName + '-debug-symbols' + ".7z"
-    archiveAndUploadToRemote(debugFileArchiveDir, finalArchiveName, remoteUploader.releaseSymbolsDir.strip('/'))
+    archiveAndUploadToRemote(debugFileArchiveDir, finalArchiveName, remoteUploader.remoteTargetDir + '/debug_information')
     shutil.rmtree(debugFileArchiveDir)
 
 
@@ -416,7 +416,7 @@ def updateBuildTrigger(args):
     sha1PrepareArtifactsFile = os.path.join(os.getcwd(), "SHA1_PREPARE_ARTIFACTS")
     with open(sha1PrepareArtifactsFile, "w") as f:
         f.write(data + "\n")
-    remoteUploader.copyToRemote(fileName="SHA1_PREPARE_ARTIFACTS", destDirName="")
+    remoteUploader.copyToRemote(fileName="SHA1_PREPARE_ARTIFACTS")
     print("SHA1_PREPARE_ARTIFACTS: {0} written to: {1}".format(data, args.artifacts_url))
 
 
@@ -445,7 +445,7 @@ if __name__ == "__main__":
     projectName = getProjectNameFromArtifactsBaseUrl(args.artifacts_url)
     projectBranch = getProjectBranchFromArtifactsBaseUrl(args.artifacts_url)
     remoteUploader = RemoteUploader(args.dry_run, args.remote_server, args.username, args.remote_base_path, projectBranch, projectName)
-    remoteUploader.initRemoteSnapshotDir(buildId)
+    remoteUploader.init_snapshot_upload_path(projectName, projectBranch, buildId)
 
     prepareArtifacts(args)
     updateBuildTrigger(args)
