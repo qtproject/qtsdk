@@ -878,6 +878,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     # from 4.4 on we use external elfutil builds and also build on Windows
     elfutils_url = optionDict.get('ELFUTILS_URL')
     log_filepath = os.path.join(work_dir, 'build_log.txt')
+    notarize = optionDict.get('NOTARIZE')
 
     def module_filename(module):
         return module + '-' + qt_postfix + '.7z'
@@ -1090,6 +1091,10 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                 redirect_output=f)
             bld_sdktool.zip_sdktool(sdktool_target_path, os.path.join(work_dir, 'sdktool.7z'),
                                     redirect_output=f)
+
+    # notarize
+    if bldinstallercommon.is_mac_platform() and notarize:
+        notarizeDmg('qt-creator_build/qt-creator.dmg', 'Qt Creator')
 
     # Upload
     file_upload_list = [] # pairs (source, dest), source relative to WORK_DIR, dest relative to server + dir_path
