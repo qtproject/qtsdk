@@ -535,15 +535,14 @@ def parseQtCreatorPlugins(pkgConfFile):
     return pluginList
 
 QtcPlugin = collections.namedtuple('QtcPlugin', ['name', 'path', 'version', 'dependencies', 'modules',
-                                                 'additional_arguments', 'qmake_arguments', 'submodules', 'build'])
+                                                 'additional_arguments', 'qmake_arguments', 'build'])
 def make_QtcPlugin(name, path, version, dependencies=None, modules=None,
-                   additional_arguments=None, qmake_arguments=None, submodules=False, build=True):
+                   additional_arguments=None, qmake_arguments=None, build=True):
     return QtcPlugin(name=name, path=path, version=version,
                      dependencies=dependencies or [],
                      modules=modules or [],
                      additional_arguments=additional_arguments or [],
                      qmake_arguments=qmake_arguments or [],
-                     submodules=submodules,
                      build=build)
 
 class BuildLog:
@@ -588,9 +587,6 @@ def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url
         plugin_path = os.path.join(work_dir, plugin.path)
         if not plugin.build or not os.path.isdir(plugin_path):
             continue
-        if plugin.submodules:
-            check_call_log(['git', 'submodule', 'update', '--init'],
-                           plugin_path, log_filepath=log_filepath)
         cmd_arguments = ['python', '-u', os.path.join(SCRIPT_ROOT_DIR, 'bld_qtcreator_plugins.py'),
                          '--clean',
                          '--qtc-build', qtcreator_path,
@@ -668,7 +664,6 @@ def make_QtcPlugin_from_json(plugin_json):
                      modules=plugin_json.get('Modules') or [],
                      additional_arguments=plugin_json.get('AdditionalArguments') or [],
                      qmake_arguments=plugin_json.get('QmakeArguments') or [],
-                     submodules=plugin_json.get('Submodules') or False,
                      build=plugin_json.get('Build') or True)
 
 def parse_qt_creator_plugin_conf(plugin_conf_file_path, optionDict):
@@ -1047,8 +1042,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                               dependencies=plugin_dependencies + ['b2qt-qtcreator-plugin'],
                                               qmake_arguments=qmake_arguments)]),
     additional_plugins.extend([make_QtcPlugin('plugin-telemetry', 'plugin-telemetry', qtcreator_version,
-                                              modules=qt_module_local_urls,
-                                              submodules=True)]),
+                                              modules=qt_module_local_urls)]),
 
     # Build Qt Creator plugins
     icu_local_url = bld_utils.file_url(os.path.join(qtcreator_temp, os.path.basename(icu_libs))) if bldinstallercommon.is_linux_platform() else None
