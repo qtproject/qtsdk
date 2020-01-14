@@ -36,7 +36,7 @@ import argparse
 import platform
 import logging
 import subprocess
-from typing import Dict
+from typing import Dict, Tuple
 from bld_python import build_python
 import logging_util
 from runner import exec_cmd
@@ -62,13 +62,14 @@ def get_env(pythonInstallation: str) -> Dict[str, str]:
     return env
 
 
-def locate_venv() -> str:
-    output = subprocess.getoutput('pipenv --venv')
-    path = output.splitlines()[0].strip()
-    return path
+def locate_venv(pythonDir: str, env: Dict[str, str]) -> str:
+    pipenv = os.path.join(pythonDir, "bin", "pipenv")
+    assert os.path.isfile(pipenv), "The 'pipenv' executable did not exist: {0}".format(pipenv)
+    output = subprocess.check_output(pipenv + " --venv", shell=True, env=env).decode("utf-8")
+    return output.splitlines()[0].strip()
 
 
-async def create_venv(pythonSrc: str) -> Dict[str, str]:
+async def create_venv(pythonSrc: str) -> Tuple[str, Dict[str, str]]:
     log.info("Creating Python virtual env..")
     prefix = os.path.join(os.path.expanduser("~"), "_python_bld")
     installDir = await build_python(pythonSrc, prefix)
@@ -83,8 +84,8 @@ async def create_venv(pythonSrc: str) -> Dict[str, str]:
     cmd = [pipenv, 'install']
     log.info("Installing pipenv requirements into: %s", prefix)
     await exec_cmd(cmd=cmd, timeout=60 * 30, env=env)  # give it 30 mins
-    log.info("Virtual env created into: %s", locate_venv())
-    return env
+    log.info("Virtual env created into: %s", locate_venv(installDir, env))
+    return (installDir, env)
 
 
 if __name__ == "__main__":

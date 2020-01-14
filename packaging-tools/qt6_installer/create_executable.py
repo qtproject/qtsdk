@@ -35,6 +35,7 @@ import asyncio
 import argparse
 import logging
 import logging_util
+from typing import Dict
 from runner import exec_cmd
 from python_env import create_venv, locate_venv
 
@@ -42,19 +43,19 @@ from python_env import create_venv, locate_venv
 log = logging.getLogger("qtinstaller.createexec")
 
 
-def locate_executable_from_venv(fileName: str) -> str:
-    venvPath = locate_venv()
+def locate_executable_from_venv(pythonInstallDir: str, fileName: str, env: Dict[str, str]) -> str:
+    venvPath = locate_venv(pythonInstallDir, env)
     filePath = os.path.join(venvPath, "bin", fileName)
     assert os.path.isfile(filePath), "Could not find given file '{0}' from: {1}".format(fileName, filePath)
     return filePath
 
 
 async def generate_executable(pythonSrc: str, pyinstaller: str, fileName: str) -> str:
-    env = await create_venv(pythonSrc)
+    pythonInstallDir, env = await create_venv(pythonSrc)
 
     cmd = ['pipenv', 'run', 'pip', 'install', pyinstaller]
     await exec_cmd(cmd=cmd, timeout=60 * 15, env=env)  # give it 15 mins
-    cmd = ['pipenv', 'run', 'pyinstaller', '--onefile', locate_executable_from_venv(fileName)]
+    cmd = ['pipenv', 'run', 'pyinstaller', '--onefile', locate_executable_from_venv(pythonInstallDir, fileName, env)]
     await exec_cmd(cmd=cmd, timeout=60 * 15, env=env)  # give it 15 mins
 
     destPath = os.path.join(os.getcwd(), "dist")
