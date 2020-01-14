@@ -52,10 +52,12 @@ def locate_executable_from_venv(pythonInstallDir: str, fileName: str, env: Dict[
 
 async def generate_executable(pythonSrc: str, pyinstaller: str, fileName: str) -> str:
     pythonInstallDir, env = await create_venv(pythonSrc)
+    pipenv = os.path.join(pythonInstallDir, "bin", "pipenv")
+    assert os.path.isfile(pipenv), "Could not find pipenv: '{0}'".format(pipenv)
 
-    cmd = ['pipenv', 'run', 'pip', 'install', pyinstaller]
+    cmd = [pipenv, 'run', 'pip', 'install', pyinstaller]
     await exec_cmd(cmd=cmd, timeout=60 * 15, env=env)  # give it 15 mins
-    cmd = ['pipenv', 'run', 'pyinstaller', '--onefile', locate_executable_from_venv(pythonInstallDir, fileName, env)]
+    cmd = [pipenv, 'run', 'pyinstaller', '--onefile', locate_executable_from_venv(pythonInstallDir, fileName, env)]
     await exec_cmd(cmd=cmd, timeout=60 * 15, env=env)  # give it 15 mins
 
     destPath = os.path.join(os.getcwd(), "dist")
