@@ -31,15 +31,12 @@ import os
 import sys
 import argparse
 import platform
-try:
-    import sh
-except ImportError:
-    # fallback: emulate the sh API with pbs
-    import pbs
-    class Sh(object):
-        def __getattr__(self, attr):
-            return pbs.Command(attr)
-    sh = Sh()
+import subprocess
+from shutil import which
+
+
+class RemoteUploaderError(Exception):
+    pass
 
 
 class RemoteUploader:
@@ -47,11 +44,22 @@ class RemoteUploader:
 
     def __init__(self, dryRun, remoteServer, remoteServerUserName, remoteBasePath):
         self.dryRun = dryRun
-        self.ssh = sh.ssh.bake("-o", "GSSAPIAuthentication=no", "-o", "StrictHostKeyChecking=no", remoteServerUserName + '@' + remoteServer)
-        self.copyTool = sh.scp.bake if platform.system().lower() == "windows" else sh.rsync.bake
+        self.set_tools(remoteServer, remoteServerUserName)
         self.remoteLogin = remoteServerUserName + '@' + remoteServer
         self.remoteTargetBaseDir = remoteBasePath
         self.init_finished = False
+
+    def set_tools(self, remoteServer, remoteServerUserName):
+        self.ssh_cmd = ['ssh', '-o', 'GSSAPIAuthentication=no', '-o', 'StrictHostKeyChecking=no', remoteServerUserName + '@' + remoteServer]
+        system = platform.system().lower()
+        if "windows" in system:
+            if not which("scp"):
+                raise RemoteUploaderError("'scp' tool not found from PATH")
+            self.copy_cmd = ['scp']
+        else:
+            if not which("rsync"):
+                raise RemoteUploaderError("'rsync' tool not found from PATH")
+            self.copy_cmd = ['rsync']
 
     def init_snapshot_upload_path(self, projectName, version, snapshotId):
         assert not self.init_finished, "Already initialized as: {0}".format(self.remoteTargetDir)
@@ -69,9 +77,10 @@ class RemoteUploader:
     def ensureRemoteDir(self, remoteDir):
         assert self.init_finished, "RemoteUploader not initialized!"
         print("Creating remote directory: {0}".format(remoteDir))
-        if self.dryRun:
-            return
-        self.ssh.mkdir("-p", remoteDir)
+        cmd = self.ssh_cmd + ['mkdir', '-p', remoteDir]
+        print("Executing: ", ' '.join(cmd))
+        if not self.dryRun:
+            subprocess.check_call(cmd, timeout=60)  # give it 60s
 
     def _copyToRemote(self, fileName, destDirName):
         assert self.init_finished, "RemoteUploader not initialized!"
@@ -80,10 +89,10 @@ class RemoteUploader:
         if destDirName:
             remoteDestination = remoteDestination + '/' + destDirName + '/'
         print("Copying [{0}] to [{1}]".format(fileName, remoteDestination))
-        remoteCopy = self.copyTool(fileName, remoteDestination)
-        if self.dryRun:
-            return
-        remoteCopy()
+        cmd = self.copy_cmd + [fileName, remoteDestination]
+        print("Executing: ", ' '.join(cmd))
+        if not self.dryRun:
+            subprocess.check_call(cmd, timeout=60 * 10)  # give it 10 mins
 
     def copyToRemote(self, path: str, destDirName=""):
         items = [path] if os.path.isfile(path) else [os.path.join(path, x) for x in os.listdir(path)]
@@ -93,12 +102,15 @@ class RemoteUploader:
     def updateLatestSymlink(self, forceUpdate=True):
         assert self.init_finished, "RemoteUploader not initialized!"
         print("Creating remote symlink: [{0}] -> [{1}]".format(self.remoteLatestLink, self.remoteTargetDir))
-        if not self.dryRun:
-            options = "-sfn" if forceUpdate else "-sn"
-            try:
-                self.ssh.ln(options, self.remoteTargetDir, self.remoteLatestLink)
-            except sh.ErrorReturnCode_1:
-                print("Symbolic link already exists.")
+        options = ["-sfn"] if forceUpdate else ["-sn"]
+        try:
+            cmd = self.ssh_cmd + ['ln'] + options + [self.remoteTargetDir, self.remoteLatestLink]
+            print("Executing: ", ' '.join(cmd))
+            if not self.dryRun:
+                subprocess.check_call(cmd, timeout=60)  # give it 60s
+        except subprocess.CalledProcessError:
+            print("Failed to execute: ", ' '.join(cmd))
+            raise
 
 
 if __name__ == "__main__":
