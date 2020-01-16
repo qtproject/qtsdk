@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #############################################################################
 ##
-## Copyright (C) 2017 The Qt Company Ltd.
+## Copyright (C) 2020 The Qt Company Ltd.
 ## Copyright (C) 2014 BlackBerry Limited. All rights reserved.
 ## Contact: https://www.qt.io/licensing/
 ##
@@ -580,6 +580,25 @@ def check_call_log(args, execution_path, extra_env=dict(os.environ),
                                                       extra_env=extra_env,
                                                       redirect_output=f)
 
+def create_qtcreator_source_package(source_path, plugin_name, version, edition, target_path, log_filepath):
+    namepart = '-' + plugin_name if plugin_name else ''
+    file_base = 'qt-creator-' + edition + namepart + '-src-' + version
+    target_base = os.path.join(target_path, file_base)
+    create_tar = bldinstallercommon.is_linux_platform()
+    create_zip = bldinstallercommon.is_win_platform() and '64' not in optionDict['TARGET_ENV']
+    if create_tar or create_zip:
+        if not os.path.exists(target_base):
+            os.makedirs(target_base)
+        bldinstallercommon.copy_tree(source_path, target_base)
+        if create_tar:
+            check_call_log(['tar', 'czf', file_base + '.tar.gz', '--exclude', '.git', file_base],
+                           target_path, log_filepath=log_filepath)
+            check_call_log(['tar', 'cJf', file_base + '.tar.xz', '--exclude', '.git', file_base],
+                           target_path, log_filepath=log_filepath)
+        if create_zip:
+            check_call_log(['7z', 'a', '-tzip', file_base + '.zip', file_base, '-xr!.git'],
+                           target_path, log_filepath=log_filepath)
+
 def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url=None,
                             openssl_url=None, log_filepath=None):
     work_dir = optionDict['WORK_DIR']
@@ -630,15 +649,8 @@ def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url
         cmd_arguments.append('--cleanup')
         cmd_arguments.append(os.path.join(work_dir, plugin.name + '.7z'))
         check_call_log(cmd_arguments, work_dir, log_filepath=log_filepath)
-        # source package
-        if bldinstallercommon.is_linux_platform():
-            check_call_log(['python', '-u',
-                            os.path.join(qtcreator_dev_path, 'scripts', 'createSourcePackages.py'),
-                            '-p', os.path.join(work_dir, plugin.path),
-                            '-n', plugin.name,
-                            plugin.version, 'enterprise'],
-                           work_dir,
-                           log_filepath=log_filepath)
+        create_qtcreator_source_package(os.path.join(work_dir, plugin.path), plugin.name, plugin.version,
+                                        'enterprise', work_dir, log_filepath)
 
 def get_qtcreator_version(path_to_qtcreator_src, optionDict):
     expr = re.compile(r'\s*QTCREATOR_DISPLAY_VERSION\s*=\s*([^\s]+)')
@@ -1066,17 +1078,16 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         sha1s.append('qt-creator: ' + bld_utils.get_commit_SHA(qtcreator_source))
         with open(os.path.join(work_dir, 'SHA1'), 'w') as f:
             f.writelines([sha + '\n' for sha in sha1s])
-        # Create opensource source package
-        check_call_log([os.path.join(work_dir, 'qt-creator', 'scripts', 'createSourcePackages.py'),
-                        qtcreator_version, 'opensource'],
-                       work_dir, log_filepath=log_filepath)
-        # Create enterprise source package
-        if installer_patch:
-            check_call_log(['git', 'am', '-3', installer_patch],
-                           os.path.join(work_dir, 'qt-creator'), log_filepath=log_filepath)
-            check_call_log([os.path.join(work_dir, 'qt-creator', 'scripts', 'createSourcePackages.py'),
-                            qtcreator_version, 'enterprise'],
-                           work_dir, log_filepath=log_filepath)
+
+    # Create opensource source package
+    create_qtcreator_source_package(os.path.join(work_dir, 'qt-creator'), None, qtcreator_version,
+                                    'opensource', work_dir, log_filepath)
+    # Create enterprise source package
+    if installer_patch:
+        check_call_log(['git', 'apply', '-3', installer_patch],
+                       os.path.join(work_dir, 'qt-creator'), log_filepath=log_filepath)
+        create_qtcreator_source_package(os.path.join(work_dir, 'qt-creator'), None, qtcreator_version,
+                                        'enterprise', work_dir, log_filepath)
 
     # Build sdktool
     if sdktool_qtbase_src:
@@ -1107,10 +1118,11 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     if bldinstallercommon.is_mac_platform():
         file_upload_list.append(('qt-creator_build/qt-creator.dmg', 'qt-creator-opensource-mac-x86_64-' + qtcreator_version + '.dmg'))
 
+    # source packages
+    source_package_list = glob(os.path.join(work_dir, 'qt-creator-*-src-' + qtcreator_version + '.*'))
+    file_upload_list.extend([(os.path.basename(fn), '') for fn in source_package_list])
+
     if bldinstallercommon.is_linux_platform():
-        # source packages
-        source_package_list = glob(os.path.join(work_dir, 'qt-creator-*-src-' + qtcreator_version + '.*'))
-        file_upload_list.extend([(fn, '') for fn in source_package_list])
         # summary of git SHA1s
         file_upload_list.append(('SHA1', ''))
 
