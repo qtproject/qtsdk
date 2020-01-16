@@ -52,7 +52,7 @@ import sys
 
 # own imports
 from threadedwork import ThreadedWork
-from bld_utils import gitSHA, runBuildCommand, runInstallCommand, runCommand, stripVars
+from bld_utils import get_commit_SHA, runBuildCommand, runInstallCommand, runCommand, stripVars
 import bldinstallercommon
 
 from bld_qtcreator import add_common_commandline_arguments, patch_qt_pri_files, qmake_binary, get_common_environment
@@ -168,7 +168,8 @@ def build_plugins(caller_arguments):
 
     # environment
     environment = get_common_environment(paths.qt5, caller_arguments)
-    buildGitSHA = gitSHA(paths.source, caller_arguments)
+    # get SHA either via git, or if that fails look for a .tag file
+    buildGitSHA = get_commit_SHA(paths.source, caller_arguments)
 
     # build plugins
     print('------------')

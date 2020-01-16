@@ -420,6 +420,18 @@ def gitSHA(path, callerArguments = None):
         return getReturnValue(gitBinary + " rev-list -n1 HEAD", currentWorkingDirectory = path, callerArguments = callerArguments).strip()
     return ''
 
+
+# get commit SHA either directly from git, or from a .tag file in the source directory
+def get_commit_SHA(source_path, callerArguments = None):
+    buildGitSHA = gitSHA(source_path, callerArguments)
+    if not buildGitSHA:
+        tagfile = os.path.join(source_path, '.tag')
+        if os.path.exists(tagfile):
+            with open(tagfile, 'r') as f:
+                buildGitSHA = f.read().strip()
+    return buildGitSHA
+
+
 def isGitDirectory(repository_path):
     if not repository_path:
         return False

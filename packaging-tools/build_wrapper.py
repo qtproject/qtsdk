@@ -694,7 +694,7 @@ def collect_qt_creator_plugin_sha1s(plugins):
     sha1s = []
     for name in [p.name for p in plugins if p.build and os.path.isdir(os.path.join(work_dir, p.path))]:
         with open(os.path.join(work_dir, name + '.7z.git_sha'), 'r') as f:
-            sha = f.read()
+            sha = f.read().strip()
             sha1s.append(name + ': ' + sha)
     return sorted(sha1s)
 
@@ -1062,8 +1062,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         sha1s = collect_qt_creator_plugin_sha1s(additional_plugins)
         licensemanaging_source = os.path.join(work_dir, 'license-managing')
         if os.path.exists(licensemanaging_source):
-            sha1s.append('license-managing: ' + bld_utils.gitSHA(licensemanaging_source))
-        sha1s.append('qt-creator: ' + bld_utils.gitSHA(qtcreator_source))
+            sha1s.append('license-managing: ' + bld_utils.get_commit_SHA(licensemanaging_source))
+        sha1s.append('qt-creator: ' + bld_utils.get_commit_SHA(qtcreator_source))
         with open(os.path.join(work_dir, 'SHA1'), 'w') as f:
             f.writelines([sha + '\n' for sha in sha1s])
         # Create opensource source package

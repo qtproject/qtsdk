@@ -52,7 +52,7 @@ import sys
 
 # own imports
 from threadedwork import ThreadedWork
-from bld_utils import gitSHA, runBuildCommand, runCommand, runInstallCommand, stripVars
+from bld_utils import get_commit_SHA, runBuildCommand, runCommand, runInstallCommand, stripVars
 import bldinstallercommon
 
 def add_commandline_arguments(parser):
@@ -264,7 +264,7 @@ if __name__ == "__main__":
         buildType = 'debug'
     else:
         buildType = 'release'
-    buildGitSHA = gitSHA(qtCreatorSourceDirectory, callerArguments)
+    buildGitSHA = get_commit_SHA(qtCreatorSourceDirectory, callerArguments)
     qtCreatorProFile = os.path.join(qtCreatorSourceDirectory, 'qtcreator.pro')
 
     qmakeCommand = [qmakeBinary, qtCreatorProFile,
