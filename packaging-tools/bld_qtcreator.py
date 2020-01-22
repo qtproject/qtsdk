@@ -100,7 +100,7 @@ def add_common_commandline_arguments(parser):
         dest='additional_qmake_arguments', action='append')
 
     if bldinstallercommon.is_linux_platform():
-        parser.add_argument('--icu7z', help="a file or url where it get icu libs as 7z", required=True)
+        parser.add_argument('--icu7z', help="a file or url where it get icu libs as 7z")
 
     # if we are on windows, maybe we want some other arguments
     if bldinstallercommon.is_win_platform():
