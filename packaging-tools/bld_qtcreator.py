@@ -186,8 +186,6 @@ def get_common_environment(qt5_path, caller_arguments):
 
 
 if __name__ == "__main__":
-    bldinstallercommon.init_common_module(os.path.dirname(os.path.realpath(__file__)))
-
     # install an argument parser
     parser = argparse.ArgumentParser(description="build Qt 5 based Qt Creator",
         formatter_class=argparse.RawTextHelpFormatter)

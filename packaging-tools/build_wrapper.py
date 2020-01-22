@@ -1653,7 +1653,6 @@ def initPkgOptions(args):
 
 
 if __name__ == '__main__':
-    bldinstallercommon.init_common_module(SCRIPT_ROOT_DIR)
     # Define supported build steps
     bld_ifw                                 = 'ifw'
     bld_qtcreator                           = 'build_creator'

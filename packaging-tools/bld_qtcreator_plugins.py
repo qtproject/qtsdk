@@ -231,7 +231,6 @@ def build_plugins(caller_arguments):
             bldinstallercommon.remove_tree(paths.qtc_build)
 
 def main():
-    bldinstallercommon.init_common_module(os.path.dirname(os.path.realpath(__file__)))
     caller_arguments = parse_arguments()
     build_plugins(caller_arguments)
 

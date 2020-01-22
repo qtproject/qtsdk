@@ -77,6 +77,35 @@ IS_WIN_PLATFORM         = False
 DEBUG_RPATH             = False
 MAX_DEBUG_PRINT_LENGTH  = 10000
 
+###############################
+# function
+###############################
+def set_platform_specific_data():
+    global PLATFORM_SUFFIX
+    global IS_UNIX_PLATFORM
+    global IS_LINUX_PLATFORM
+    global IS_SOLARIS_PLATFORM
+    global IS_MAC_PLATFORM
+    global IS_WIN_PLATFORM
+    plat = platform.system().lower()
+    if plat.startswith('win'):
+        PLATFORM_SUFFIX = 'win'
+        IS_WIN_PLATFORM = True
+    elif plat.startswith('linux'):
+        PLATFORM_SUFFIX = 'linux'
+        IS_UNIX_PLATFORM = True
+        IS_LINUX_PLATFORM = True
+    elif plat.startswith('sun'):
+        PLATFORM_SUFFIX = 'solaris'
+        IS_UNIX_PLATFORM = True
+        IS_SOLARIS_PLATFORM = True
+    elif plat.startswith('darwin'):
+        PLATFORM_SUFFIX = 'mac'
+        IS_UNIX_PLATFORM = True
+        IS_MAC_PLATFORM = True
+    else:
+        raise EnvironmentError('*** Unsupported platform, abort!')
+
 
 ###############################
 # function
@@ -85,6 +114,9 @@ def init_common_module(root_path):
     global SCRIPT_ROOT_DIR
     SCRIPT_ROOT_DIR = root_path
     set_platform_specific_data()
+
+
+init_common_module(os.path.dirname(os.path.realpath(__file__)))
 
 
 ###############################
@@ -143,36 +175,6 @@ def retrieve_url(url, savefile):
         except: #swallow, do not shadow actual error
             pass
         raise exc
-
-###############################
-# function
-###############################
-def set_platform_specific_data():
-    global PLATFORM_SUFFIX
-    global IS_UNIX_PLATFORM
-    global IS_LINUX_PLATFORM
-    global IS_SOLARIS_PLATFORM
-    global IS_MAC_PLATFORM
-    global IS_WIN_PLATFORM
-    plat = platform.system().lower()
-    if plat.startswith('win'):
-        PLATFORM_SUFFIX = 'win'
-        IS_WIN_PLATFORM = True
-    elif plat.startswith('linux'):
-        PLATFORM_SUFFIX = 'linux'
-        IS_UNIX_PLATFORM = True
-        IS_LINUX_PLATFORM = True
-    elif plat.startswith('sun'):
-        PLATFORM_SUFFIX = 'solaris'
-        IS_UNIX_PLATFORM = True
-        IS_SOLARIS_PLATFORM = True
-    elif plat.startswith('darwin'):
-        PLATFORM_SUFFIX = 'mac'
-        IS_UNIX_PLATFORM = True
-        IS_MAC_PLATFORM = True
-    else:
-        raise EnvironmentError('*** Unsupported platform, abort!')
-
 
 ###############################
 # function
