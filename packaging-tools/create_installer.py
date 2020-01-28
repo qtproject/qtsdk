@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #############################################################################
 ##
-## Copyright (C) 2018 The Qt Company Ltd.
+## Copyright (C) 2020 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -983,7 +983,7 @@ def create_target_components(target_config):
                 if CREATE_OFFLINE_INSTALLER or CREATE_REPOSITORY:
                     # Create needed data dirs
                     compress_content_dir = os.path.normpath(temp_data_dir + os.sep + archive.archive_name)
-                    install_dir = os.path.normpath(compress_content_dir + sdk_component.target_install_base + os.sep + archive.target_install_dir)
+                    install_dir = os.path.normpath(compress_content_dir + archive.get_archive_installation_directory())
 
                     if INCREMENTAL_MODE and os.path.exists(os.path.join(data_dir_dest, archive.archive_name)):
                         continue

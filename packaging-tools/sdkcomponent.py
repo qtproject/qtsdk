@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #############################################################################
 ##
-## Copyright (C) 2018 The Qt Company Ltd.
+## Copyright (C) 2020 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -39,12 +39,17 @@ class SdkComponent:
     """SdkComponent class contains all required info for one installable SDK component"""
     class DownloadableArchive:
         """DownloadableArchive subclass contains all required info about data packages for one SDK component"""
-        def __init__(self, archive, package_name, archive_server_name, target_config, archive_location_resolver, key_value_substitution_list):
+        def __init__(self, archive, package_name, parent_target_install_base, archive_server_name, target_config, archive_location_resolver, key_value_substitution_list):
             self.archive_uri            = bldinstallercommon.config_section_map(target_config, archive)['archive_uri']
             self.extract_archive        = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'extract_archive')
             self.package_strip_dirs     = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'package_strip_dirs')
             self.package_finalize_items = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'package_finalize_items')
-            self.target_install_dir     = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'target_install_dir') # todo, is needed?
+            # parent's 'target_install_base'
+            self.parent_target_install_base = parent_target_install_base
+            # in case the individual archive needs to be installed outside the root dir specified by the parent component
+            self.target_install_base    = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'target_install_base')
+            # this is relative to 1) current archive's 'target_install_base' 2) parent components 'target_install_base'. (1) takes priority
+            self.target_install_dir     = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'target_install_dir').lstrip(os.path.sep)
             self.rpath_target           = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'rpath_target')
             self.component_sha1_file    = bldinstallercommon.safe_config_key_fetch(target_config, archive, 'component_sha1_file')
             self.nomalize_archive_uri(package_name, archive_server_name, archive_location_resolver)
@@ -60,6 +65,7 @@ class SdkComponent:
                     self.archive_name += '.7z'
             # substitute key-value pairs if any
             for item in key_value_substitution_list:
+                self.target_install_base = self.target_install_base.replace(item[0], item[1])
                 self.target_install_dir = self.target_install_dir.replace(item[0], item[1])
                 self.archive_name       = self.archive_name.replace(item[0], item[1])
 
@@ -77,6 +83,12 @@ class SdkComponent:
         def path_leaf(self, path):
             head, tail = ntpath.split(path)
             return tail or ntpath.basename(head)
+
+        def get_archive_installation_directory(self):
+            if self.target_install_base:
+                return os.path.join(self.target_install_base, self.target_install_dir)
+            else:
+                return os.path.join(self.parent_target_install_base, self.target_install_dir)
 
 
     def __init__(self, section_name, target_config, packages_full_path_list, archive_location_resolver, key_value_substitution_list, is_offline_build):
@@ -214,7 +226,7 @@ class SdkComponent:
                 # check that archive template exists
                 if not target_config.has_section(archive):
                     raise RuntimeError('*** Error! Given archive section does not exist in configuration file: %s' % archive)
-                archive_obj = SdkComponent.DownloadableArchive(archive, self.package_name, self.archive_server_name,
+                archive_obj = SdkComponent.DownloadableArchive(archive, self.package_name, self.target_install_base, self.archive_server_name,
                                                                target_config, archive_location_resolver,
                                                                self.key_value_substitution_list)
                 self.downloadable_archive_list.append(archive_obj)
@@ -253,7 +265,7 @@ class SdkComponent:
                 print '   ---------------------------------------------------------------'
                 print '   Downloadable archive name:  ' + archive.archive_name
                 print '   Archive strip dirs:         ' + archive.package_strip_dirs
-                print '   Archive target install dir: ' + archive.target_install_dir
+                print '   Archive target install dir: ' + archive.get_archive_installation_directory()
                 print '   Archive RPath target:       ' + archive.rpath_target
                 print '   Archive URI:                ' + archive.archive_uri
 
