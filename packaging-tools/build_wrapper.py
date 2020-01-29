@@ -1069,13 +1069,17 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     build_qtcreator_plugins(additional_plugins, qtcreator_path, qtcreator_dev_path, icu_url=icu_local_url,
                             openssl_url=openssl_local_url, log_filepath=log_filepath)
 
+    qtcreator_sha = bld_utils.get_commit_SHA(qtcreator_source)
+    with open(os.path.join(work_dir, 'QTC_SHA1'), 'w') as f:
+        f.write(qtcreator_sha + '\n')
+
     if bldinstallercommon.is_linux_platform():
         # summary of git SHA1s
         sha1s = collect_qt_creator_plugin_sha1s(additional_plugins)
         licensemanaging_source = os.path.join(work_dir, 'license-managing')
         if os.path.exists(licensemanaging_source):
             sha1s.append('license-managing: ' + bld_utils.get_commit_SHA(licensemanaging_source))
-        sha1s.append('qt-creator: ' + bld_utils.get_commit_SHA(qtcreator_source))
+        sha1s.append('qt-creator: ' + qtcreator_sha)
         with open(os.path.join(work_dir, 'SHA1'), 'w') as f:
             f.writelines([sha + '\n' for sha in sha1s])
 
@@ -1121,18 +1125,23 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     # source packages
     source_package_list = glob(os.path.join(work_dir, 'qt-creator-*-src-' + qtcreator_version + '.*'))
     file_upload_list.extend([(os.path.basename(fn), '') for fn in source_package_list])
+    qtc_source_packages = [os.path.basename(fn) for fn in
+                           glob(os.path.join(work_dir, 'qt-creator-opensource-src-' + qtcreator_version + '.*'))]
+    snapshot_upload_list.extend([(fn, fn) for fn in qtc_source_packages])
 
     if bldinstallercommon.is_linux_platform():
         # summary of git SHA1s
         file_upload_list.append(('SHA1', ''))
+    file_upload_list.append(('QTC_SHA1', target_env_dir + '/QTC_SHA1'))
+    snapshot_upload_list.append((target_env_dir + '/QTC_SHA1', target_env_dir + '/SHA1'))
 
     # installer 7z sources
     file_upload_list.append(('qt-creator_build/qtcreator.7z', target_env_dir + '/qtcreator.7z'))
     file_upload_list.append(('qt-creator_build/qtcreator_dev.7z', target_env_dir + '/qtcreator_dev.7z'))
     file_upload_list.append(('qt-creator_build/qtcreator-debug.7z', target_env_dir + '/qtcreator-debug.7z'))
-    snapshot_upload_list.append((target_env_dir + '/qtcreator.7z', 'qtcreator.7z'))
-    snapshot_upload_list.append((target_env_dir + '/qtcreator_dev.7z', 'qtcreator_dev.7z'))
-    snapshot_upload_list.append((target_env_dir + '/qtcreator-debug.7z', 'qtcreator-debug.7z'))
+    snapshot_upload_list.append((target_env_dir + '/qtcreator.7z', target_env_dir + '/qtcreator.7z'))
+    snapshot_upload_list.append((target_env_dir + '/qtcreator_dev.7z', target_env_dir + '/qtcreator_dev.7z'))
+    snapshot_upload_list.append((target_env_dir + '/qtcreator-debug.7z', target_env_dir + '/qtcreator-debug.7z'))
     for plugin in additional_plugins:
         plugin_name = plugin.name + '.7z'
         plugin_dev_name = plugin.name + '_dev.7z'
@@ -1143,8 +1152,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     if bldinstallercommon.is_win_platform():
         file_upload_list.append(('qt-creator_build/qtcreatorcdbext.7z', target_env_dir + '/qtcreatorcdbext.7z'))
         file_upload_list.append(('qt-creator_build/wininterrupt.7z', target_env_dir + '/wininterrupt.7z'))
-        snapshot_upload_list.append((target_env_dir + '/qtcreatorcdbext.7z', 'qtcreatorcdbext.7z'))
-        snapshot_upload_list.append((target_env_dir + '/wininterrupt.7z', 'wininterrupt.7z'))
+        snapshot_upload_list.append((target_env_dir + '/qtcreatorcdbext.7z', target_env_dir + '/qtcreatorcdbext.7z'))
+        snapshot_upload_list.append((target_env_dir + '/wininterrupt.7z', target_env_dir + '/wininterrupt.7z'))
     if sdktool_qtbase_src:
         file_upload_list.append(('sdktool.7z', target_env_dir + '/sdktool.7z'))
     # upload files
@@ -1154,9 +1163,9 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     if snapshot_server and snapshot_path:
         qtcreator_shortversion = re.match(r'\d+[.]\d+', qtcreator_version).group()
         snapshot_path += '/' + qtcreator_shortversion + '/' + qtcreator_version
-        snapshot_path += '/installer_source/' + build_id + '/' + target_env_dir
+        snapshot_path += '/installer_source/' + build_id + '/'
         cmd_args = [optionDict['SSH_COMMAND'], pkg_storage_server, "ssh", snapshot_server,
-                    'mkdir', '-p', snapshot_path]
+                    'mkdir', '-p', snapshot_path + target_env_dir]
         bldinstallercommon.do_execute_sub_process(cmd_args, work_dir, True)
         for source, destination in snapshot_upload_list:
             cmd_args = [optionDict['SSH_COMMAND'], pkg_storage_server, "scp",
