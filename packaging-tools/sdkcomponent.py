@@ -86,9 +86,9 @@ class SdkComponent:
 
         def get_archive_installation_directory(self):
             if self.target_install_base:
-                return os.path.join(self.target_install_base, self.target_install_dir)
+                return self.target_install_base + os.path.sep + self.target_install_dir
             else:
-                return os.path.join(self.parent_target_install_base, self.target_install_dir)
+                return self.parent_target_install_base + os.path.sep + self.target_install_dir
 
 
     def __init__(self, section_name, target_config, packages_full_path_list, archive_location_resolver, key_value_substitution_list, is_offline_build):
