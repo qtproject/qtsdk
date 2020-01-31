@@ -223,6 +223,9 @@ class SdkComponent:
         if self.archives:
             archives_list = self.archives.split(',')
             for archive in archives_list:
+                if not archive:
+                    print "Warning: There appears to be ',' issues in the config file archive list for component: ", self.package_name
+                    continue
                 # check that archive template exists
                 if not target_config.has_section(archive):
                     raise RuntimeError('*** Error! Given archive section does not exist in configuration file: %s' % archive)
