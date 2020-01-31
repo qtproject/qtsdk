@@ -34,7 +34,7 @@ import collections
 
 BuildParams = collections.namedtuple('BuildParams',
                                      ['src_path', 'build_path', 'target_path',
-                                      'make_command', 'redirect_output'])
+                                      'make_command', 'use_cmake', 'redirect_output'])
 
 def qt_static_configure_options():
     return ['-release', '-opensource', '-confirm-license', '-accessibility',
@@ -56,9 +56,6 @@ def qt_src_path(qt_build_base):
 
 def qt_build_path(qt_build_base):
     return os.path.join(qt_build_base, 'build')
-
-def qmake_path(qt_build_base):
-    return os.path.join(qt_build_path(qt_build_base), 'bin', 'qmake')
 
 def package_extension(url):
     if url.endswith('.tar.gz'):
@@ -87,26 +84,53 @@ def configure_qt(params, src, build):
                                               build, redirect_output=params.redirect_output)
 
 def build_qt(params, build):
-    bldinstallercommon.do_execute_sub_process(params.make_command, build, redirect_output=params.redirect_output)
+    bldinstallercommon.do_execute_sub_process([params.make_command], build, redirect_output=params.redirect_output)
 
-def build_sdktool_impl(params, qmake_command):
+def build_sdktool_impl(params, qt_build_path):
     bldinstallercommon.create_dirs(params.build_path)
-    bldinstallercommon.do_execute_sub_process([qmake_command, '-after', 'DESTDIR=' + params.target_path,
-                                               params.src_path],
-                                              params.build_path, redirect_output=params.redirect_output)
-    bldinstallercommon.do_execute_sub_process(params.make_command, params.build_path,
-                                              redirect_output=params.redirect_output)
+    if not params.use_cmake:
+        qmake_command = os.path.join(qt_build_path, 'bin', 'qmake')
+        bldinstallercommon.do_execute_sub_process([qmake_command, '-after', 'DESTDIR=' + params.target_path,
+                                                   params.src_path],
+                                                  params.build_path, redirect_output=params.redirect_output)
+        bldinstallercommon.do_execute_sub_process([params.make_command], params.build_path,
+                                                  redirect_output=params.redirect_output)
+    else:
+        cmake_args = ['cmake',
+                      '-DCMAKE_PREFIX_PATH=' + qt_build_path,
+                      '-DCMAKE_BUILD_TYPE=Release']
+        # force MSVC on Windows, because it looks for GCC in the PATH first,
+        # even if MSVC is first mentioned in the PATH...
+        # TODO would be nicer if we only did this if cl.exe is indeed first in the PATH
+        if bldinstallercommon.is_win_platform():
+            cmake_args += ['-DCMAKE_C_COMPILER=cl', '-DCMAKE_CXX_COMPILER=cl']
+
+        bldinstallercommon.do_execute_sub_process(cmake_args +
+                                                  ['-G', 'Ninja', params.src_path],
+                                                  params.build_path,
+                                                  redirect_output=params.redirect_output)
+        bldinstallercommon.do_execute_sub_process(['cmake', '--build', '.'], params.build_path,
+                                                  redirect_output=params.redirect_output)
+        bldinstallercommon.do_execute_sub_process(['cmake',
+                                                   '--install', '.',
+                                                   '--prefix', params.target_path],
+                                                  params.build_path,
+                                                  redirect_output=params.redirect_output)
 
 def build_sdktool(qt_src_url, qt_build_base, sdktool_src_path, sdktool_build_path, sdktool_target_path,
-                  make_command, redirect_output=None):
-    params = BuildParams(src_path=sdktool_src_path, build_path=sdktool_build_path, target_path=sdktool_target_path,
-                         make_command=make_command, redirect_output=redirect_output)
+                  make_command, use_cmake=False, redirect_output=None):
+    params = BuildParams(src_path=sdktool_src_path,
+                         build_path=sdktool_build_path,
+                         target_path=sdktool_target_path,
+                         make_command=make_command,
+                         use_cmake=use_cmake,
+                         redirect_output=redirect_output)
     qt_src = qt_src_path(qt_build_base)
     qt_build = qt_build_path(qt_build_base)
     get_and_extract_qt_src(qt_src_url, qt_build_base, qt_src)
     configure_qt(params, qt_src, qt_build)
     build_qt(params, qt_build)
-    build_sdktool_impl(params, qmake_path(qt_build_base))
+    build_sdktool_impl(params, qt_build)
 
 def zip_sdktool(sdktool_target_path, out_7zip, redirect_output=None):
     glob = "*.exe" if bldinstallercommon.is_win_platform() else "*"
