@@ -1109,7 +1109,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
 
     # notarize
     if bldinstallercommon.is_mac_platform() and notarize:
-        notarizeDmg('qt-creator_build/qt-creator.dmg', 'Qt Creator')
+        notarizeDmg(os.path.join(work_dir, 'qt-creator_build', 'qt-creator.dmg'), 'Qt Creator')
 
     # Upload
     file_upload_list = [] # pairs (source, dest), source relative to WORK_DIR, dest relative to server + dir_path
