@@ -1162,15 +1162,23 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     # public snapshot
     if snapshot_server and snapshot_path:
         qtcreator_shortversion = re.match(r'\d+[.]\d+', qtcreator_version).group()
-        snapshot_path += '/' + qtcreator_shortversion + '/' + qtcreator_version
-        snapshot_path += '/installer_source/' + build_id + '/'
-        cmd_args = [optionDict['SSH_COMMAND'], pkg_storage_server, "ssh", snapshot_server,
-                    'mkdir', '-p', snapshot_path + target_env_dir]
-        bldinstallercommon.do_execute_sub_process(cmd_args, work_dir, True)
+        snapshot_base = snapshot_path + '/' + qtcreator_shortversion + '/' + qtcreator_version + '/installer_source/'
+        snapshot_target = snapshot_base + build_id + '/'
+        bldinstallercommon.do_execute_sub_process(
+            [optionDict['SSH_COMMAND'], pkg_storage_server,
+             "ssh", snapshot_server,
+             'mkdir', '-p', snapshot_target + target_env_dir],
+            work_dir, True)
+        bldinstallercommon.do_execute_sub_process(
+            [optionDict['SSH_COMMAND'], pkg_storage_server,
+             "ssh", snapshot_server,
+             'ln', '-sfn', snapshot_target, snapshot_base + 'latest'],
+            work_dir, True)
+
         for source, destination in snapshot_upload_list:
             cmd_args = [optionDict['SSH_COMMAND'], pkg_storage_server, "scp",
                         remote_path + '/' + source,
-                        snapshot_server + ':' + snapshot_path + '/' + destination]
+                        snapshot_server + ':' + snapshot_target + '/' + destination]
             bldinstallercommon.do_execute_sub_process(cmd_args, work_dir)
     # create link from job name to display name
     update_job_link(unversioned_base_path, base_path, optionDict)
