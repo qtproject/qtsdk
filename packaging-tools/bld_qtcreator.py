@@ -268,6 +268,7 @@ if __name__ == "__main__":
     qmakeCommand = [qmakeBinary, qtCreatorProFile,
         'QTC_PREFIX=' + qtCreatorInstallDirectory,
         'DEFINES+=IDE_REVISION=' + buildGitSHA,
+        'DEFINES+=IDE_REVISION_URL=https://code.qt.io/cgit/qt-creator/qt-creator.git/log/?id=' + buildGitSHA,
         'CONFIG+=' + buildType,
         'CONFIG+=force_debug_info',
         'CONFIG+=separate_debug_info']
