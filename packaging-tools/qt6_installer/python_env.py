@@ -34,15 +34,14 @@ import sys
 import asyncio
 import argparse
 import platform
-import logging
 import subprocess
 from typing import Dict, Tuple
 from bld_python import build_python
-import logging_util
+from logging_util import init_logger
 from runner import exec_cmd
 
 
-log = logging.getLogger("qtinstaller.pythonenv")
+log = init_logger(__name__, debug_mode=False)
 
 
 def get_env(pythonInstallation: str) -> Dict[str, str]:

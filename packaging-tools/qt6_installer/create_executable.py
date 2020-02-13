@@ -33,14 +33,13 @@ import os
 import sys
 import asyncio
 import argparse
-import logging
-import logging_util
+from logging_util import init_logger
 from typing import Dict
 from runner import exec_cmd
 from python_env import create_venv, locate_venv
 
 
-log = logging.getLogger("qtinstaller.createexec")
+log = init_logger(__name__, debug_mode=False)
 
 
 def locate_executable_from_venv(pythonInstallDir: str, fileName: str, env: Dict[str, str]) -> str:

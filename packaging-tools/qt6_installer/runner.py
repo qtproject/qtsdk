@@ -32,12 +32,11 @@
 import os
 import asyncio
 import subprocess
-import logging
-import logging_util
+from logging_util import init_logger
 from typing import List, Dict
 
 
-log = logging.getLogger("qtinstaller.runner")
+log = init_logger(__name__, debug_mode=False)
 
 
 async def exec_cmd(cmd: List[str], timeout: int=60 * 60, env: Dict[str, str]=os.environ.copy()) -> None:

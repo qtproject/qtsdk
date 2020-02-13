@@ -29,21 +29,49 @@
 ##
 #############################################################################
 
-import sys
 import logging
-
-LOG_FMT_CI = "%(asctime)s %(levelname)s:%(filename)s:%(lineno)d(%(process)d): %(message)s"
-log = logging.getLogger("qtinstaller")
-log.setLevel(logging.INFO)
+import colorlog
 
 
-# Unify format of all messages
-try:
-    from rainbow_logging_handler import RainbowLoggingHandler
-    handler = RainbowLoggingHandler(sys.stderr, color_asctime=(None, None, False))
-except ImportError:
-    handler = logging.StreamHandler()
+def init_logger(dunder_name, debug_mode) -> logging.Logger:
+    log_format = (
+        '%(asctime)s '
+        '%(levelname)s: '
+        '%(message)s'
+    )
+    bold_seq = '\033[1m'
+    colorlog_format = (
+        f'{bold_seq} '
+        '%(log_color)s '
+        f'{log_format}'
+    )
+    colorlog.basicConfig(format=colorlog_format)
+    logger = logging.getLogger(dunder_name)
 
-formatter = logging.Formatter(LOG_FMT_CI)
-handler.setFormatter(formatter)
-log.addHandler(handler)
+    if debug_mode:
+        logger.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(logging.INFO)
+
+    # Output full log
+    fh = logging.FileHandler('packaging.log')
+    fh.setLevel(logging.DEBUG)
+    formatter = logging.Formatter(log_format)
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)
+
+    # Output warning log
+    fh = logging.FileHandler('packaging.warning.log')
+    fh.setLevel(logging.WARNING)
+    formatter = logging.Formatter(log_format)
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)
+
+    # Output error log
+    fh = logging.FileHandler('packaging.error.log')
+    fh.setLevel(logging.ERROR)
+    formatter = logging.Formatter(log_format)
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)
+
+    return logger

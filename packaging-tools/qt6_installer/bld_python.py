@@ -36,17 +36,16 @@ import fnmatch
 import asyncio
 import argparse
 import platform
-import logging
 import multiprocessing
 from shutil import which, rmtree
 from contextlib import contextmanager
 from typing import Generator, Callable, List
 from urllib.parse import urlparse
-import logging_util
+from logging_util import init_logger
 from runner import exec_cmd
 
 
-log = logging.getLogger("qtinstaller.bldpython")
+log = init_logger(__name__, debug_mode=False)
 
 
 class BldPythonError(Exception):
