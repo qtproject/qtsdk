@@ -34,7 +34,7 @@ import sys
 import asyncio
 import argparse
 from logging_util import init_logger
-from typing import Dict
+from typing import Dict, List
 from runner import exec_cmd
 from python_env import create_venv, locate_venv
 
@@ -49,15 +49,16 @@ def locate_executable_from_venv(pythonInstallDir: str, fileName: str, env: Dict[
     return filePath
 
 
-async def generate_executable(pythonSrc: str, pyinstaller: str, fileName: str) -> str:
+async def generate_executable(pythonSrc: str, pyinstaller: str, fileNameList: List[str]) -> str:
     pythonInstallDir, env = await create_venv(pythonSrc)
     pipenv = os.path.join(pythonInstallDir, "bin", "pipenv")
     assert os.path.isfile(pipenv), "Could not find pipenv: '{0}'".format(pipenv)
 
     cmd = [pipenv, 'run', 'pip', 'install', pyinstaller]
     await exec_cmd(cmd=cmd, timeout=60 * 15, env=env)  # give it 15 mins
-    cmd = [pipenv, 'run', 'pyinstaller', '--onefile', locate_executable_from_venv(pythonInstallDir, fileName, env)]
-    await exec_cmd(cmd=cmd, timeout=60 * 15, env=env)  # give it 15 mins
+    for fileName in fileNameList:
+        cmd = [pipenv, 'run', 'pyinstaller', '--onefile', locate_executable_from_venv(pythonInstallDir, fileName, env)]
+        await exec_cmd(cmd=cmd, timeout=60 * 15, env=env)  # give it 15 mins
 
     destPath = os.path.join(os.getcwd(), "dist")
     generatedFiles = [os.path.join(destPath, x) for x in os.listdir(destPath)]
@@ -70,8 +71,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="Create executable file from given Python file in virtualenv using pyinstaller.")
     parser.add_argument("--python-src", dest="python_src", type=str, default=os.getenv("PYTHON_SRC"), help="Path to local checkout or .zip/.7z/.tar.gz")
     parser.add_argument("--pyinstaller", dest="pyinstaller", type=str, default=os.getenv("PYINSTALLER_SRC"), help="Location of pyinstaller .zip/.7z/.tar.gz")
-    parser.add_argument("--file", dest="file", type=str, required=True, help="Name of the Python file inside the virtual env which is transformed as executable")
+    parser.add_argument("--file", dest="file_list", action='append', required=True, help="Name of the Python file inside the virtual env which is transformed as executable")
 
     args = parser.parse_args(sys.argv[1:])
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(generate_executable(args.python_src, args.pyinstaller, args.file))
+    loop.run_until_complete(generate_executable(args.python_src, args.pyinstaller, args.file_list))
