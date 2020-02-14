@@ -33,10 +33,12 @@ import os
 import sys
 import asyncio
 import argparse
+import shutil
 from logging_util import init_logger
 from typing import Dict, List
 from runner import exec_cmd
 from python_env import create_venv, locate_venv
+from urllib.parse import urlparse
 
 
 log = init_logger(__name__, debug_mode=False)
@@ -49,15 +51,53 @@ def locate_executable_from_venv(pythonInstallDir: str, fileName: str, env: Dict[
     return filePath
 
 
-async def generate_executable(pythonSrc: str, pyinstaller: str, fileNameList: List[str]) -> str:
+def is_valid_url(url: str) -> bool:
+    try:
+        parts = urlparse(url)
+        return all([parts.scheme, parts.netloc, parts.path])
+    except Exception:
+        pass
+    return False
+
+
+async def clone_repo(url: str, destinationDir: str, env: Dict[str, str]) -> None:
+    assert not os.path.isdir(destinationDir), "Destination dir already exists: {0}".format(destinationDir)
+    os.makedirs(os.path.dirname(destinationDir), exist_ok=True)
+    log.info("Cloning repo: %s -> %s", url, destinationDir)
+    cmd = ['git', 'clone', url, destinationDir]
+    await exec_cmd(cmd=cmd, timeout=60 * 15, env=env)  # give it 15 mins
+
+
+async def pip_install_from_checkout(pipenv: str, checkoutDir: str, env: Dict[str, str]) -> None:
+    log.info("Installing pip package from git checkout: %s", checkoutDir)
+    cmd = [pipenv, 'run', 'pip', 'install', '-e', checkoutDir]
+    await exec_cmd(cmd=cmd, timeout=60 * 60, env=env)  # give it 60 mins
+
+
+async def generate_executable(pythonSrc: str, pyinstaller: str, fileNameList: List[str], pipPackages: List[str]) -> str:
     pythonInstallDir, env = await create_venv(pythonSrc)
     pipenv = os.path.join(pythonInstallDir, "bin", "pipenv")
     assert os.path.isfile(pipenv), "Could not find pipenv: '{0}'".format(pipenv)
 
+    _pipPackages = []  # type: List[str]
+    for pkg in pipPackages or []:
+        if is_valid_url(pkg):
+            destinationDir = os.path.join(os.getcwd(), "_git_tmp", pkg.split("/")[-1])
+            shutil.rmtree(destinationDir, ignore_errors=True)
+            await clone_repo(pkg, destinationDir, env)
+            _pipPackages.append(destinationDir)
+        else:
+            _pipPackages.append(pkg)
+
+    for package in _pipPackages:
+        await pip_install_from_checkout(pipenv, package, env)
+
     cmd = [pipenv, 'run', 'pip', 'install', pyinstaller]
     await exec_cmd(cmd=cmd, timeout=60 * 15, env=env)  # give it 15 mins
     for fileName in fileNameList:
-        cmd = [pipenv, 'run', 'pyinstaller', '--onefile', locate_executable_from_venv(pythonInstallDir, fileName, env)]
+        # if the path does not point to actual file then we assume it exists under the virtualenv
+        _fileName = fileName if os.path.isfile(fileName) else locate_executable_from_venv(pythonInstallDir, fileName, env)
+        cmd = [pipenv, 'run', 'pyinstaller', '--console', '--hidden-import=glob', '--onefile', _fileName]
         await exec_cmd(cmd=cmd, timeout=60 * 15, env=env)  # give it 15 mins
 
     destPath = os.path.join(os.getcwd(), "dist")
@@ -71,8 +111,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="Create executable file from given Python file in virtualenv using pyinstaller.")
     parser.add_argument("--python-src", dest="python_src", type=str, default=os.getenv("PYTHON_SRC"), help="Path to local checkout or .zip/.7z/.tar.gz")
     parser.add_argument("--pyinstaller", dest="pyinstaller", type=str, default=os.getenv("PYINSTALLER_SRC"), help="Location of pyinstaller .zip/.7z/.tar.gz")
-    parser.add_argument("--file", dest="file_list", action='append', required=True, help="Name of the Python file inside the virtual env which is transformed as executable")
+    parser.add_argument("--add-pip-package", dest="pip_packages", action='append', help="Install Python packages from git url or local checkout")
+    parser.add_argument("--file", dest="file_list", action='append', required=True, help="Absolute path to the file which needs to be transformed as executable")
 
     args = parser.parse_args(sys.argv[1:])
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(generate_executable(args.python_src, args.pyinstaller, args.file_list))
+    loop.run_until_complete(generate_executable(args.python_src, args.pyinstaller, args.file_list, args.pip_packages))
