@@ -123,11 +123,12 @@ if __name__ == "__main__":
     parser.add_argument("--project-name", dest="project_name", type=str, required=True, help="Project name")
     parser.add_argument("--project-version", dest="project_version", type=str, required=True, help="Project version")
     parser.add_argument("--project-snapshot-id", dest="project_snapshot_id", type=str, required=True, help="Project snapshot id")
+    parser.add_argument("--subdir-name", dest="subdir_name", type=str, required=False, help="If needed create a subdirectory where to upload the source file(s).")
 
     args = parser.parse_args(sys.argv[1:])
 
     uploader = RemoteUploader(args.dry_run, args.remote_server, args.remote_server_user, args.remote_server_base_path)
     uploader.init_snapshot_upload_path(args.project_name, args.project_version, args.project_snapshot_id)
-    uploader.copyToRemote(args.source)
+    uploader.copyToRemote(args.source, args.subdir_name)
     uploader.updateLatestSymlink()
 
