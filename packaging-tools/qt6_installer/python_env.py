@@ -38,7 +38,7 @@ import subprocess
 from typing import Dict, Tuple
 from bld_python import build_python
 from logging_util import init_logger
-from runner import exec_cmd
+from runner import async_exec_cmd
 
 
 log = init_logger(__name__, debug_mode=False)
@@ -77,12 +77,12 @@ async def create_venv(pythonSrc: str) -> Tuple[str, Dict[str, str]]:
     assert os.path.isfile(pip3), "The 'pip3' executable did not exist: {0}".format(pip3)
     log.info("Installing pipenv..")
     cmd = [pip3, 'install', 'pipenv']
-    await exec_cmd(cmd=cmd, timeout=60 * 15, env=env)  # give it 15 mins
+    await async_exec_cmd(cmd=cmd, timeout=60 * 15, env=env)  # give it 15 mins
     pipenv = os.path.join(installDir, "bin", "pipenv")
     assert os.path.isfile(pipenv), "The 'pipenv' executable did not exist: {0}".format(pipenv)
     cmd = [pipenv, 'install']
     log.info("Installing pipenv requirements into: %s", prefix)
-    await exec_cmd(cmd=cmd, timeout=60 * 30, env=env)  # give it 30 mins
+    await async_exec_cmd(cmd=cmd, timeout=60 * 30, env=env)  # give it 30 mins
     log.info("Virtual env created into: %s", locate_venv(installDir, env))
     return (installDir, env)
 

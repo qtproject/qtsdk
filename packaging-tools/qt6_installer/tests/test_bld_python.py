@@ -31,93 +31,12 @@
 
 import testhelpers
 import os
-import io
 import unittest
-from ddt import ddt
 import tempfile
-import tarfile
-from socket import getaddrinfo
-from bld_python import BldPythonError, is_valid_url_path, cd, get_extract_cmd, extract_sources, download_sources, \
-                        locate_source_root
-
-packageServer = "ci-files02-hki.intra.qt.io"
+from bld_python import BldPythonError, locate_source_root
 
 
-def _isInternalFileServerReachable():
-    try:
-        getaddrinfo(packageServer, 80)
-    except:
-        return False
-    return True
-
-
-@ddt
 class TestBldPython(unittest.TestCase):
-
-    @testhelpers.asyncio_test
-    async def test_cd(self) -> None:
-        cwd = os.getcwd()
-        with tempfile.TemporaryDirectory(dir=cwd) as tmpBaseDir:
-            with cd(tmpBaseDir):
-                self.assertEqual(tmpBaseDir, os.getcwd())
-        self.assertEqual(cwd, os.getcwd())
-
-    @testhelpers.asyncio_test_parallel_data(
-        ("https://www.qt.io", False),
-        ("https://", False),
-        (None, False),
-        ("https://www.qt.io/some/file.tar.gz", True),
-    )
-    async def test_is_valid_url_path(self, url: str, expectedResult: bool) -> None:
-        self.assertEqual(is_valid_url_path(url), expectedResult,
-                         "URL: {0} - expected result: {1} - result was: {2}".format(url, expectedResult, not expectedResult))
-
-    @testhelpers.asyncio_test_parallel_data(
-        ("https://www.qt.io/some/file.zip", "7z"),
-        ("https://www.qt.io/some/file.tar.gz", "tar"),
-        ("https://www.qt.io/some/file.7z", "7z"),
-        ("https://www.qt.io/some/file.tgz", "tar")
-    )
-    async def test_valid_extractor(self, archive: str, expectedExtractor: str) -> None:
-        extractCmd = get_extract_cmd(archive)
-        self.assertEqual(extractCmd[0], expectedExtractor, "Not a valid extractor Callable obtained for: {0}".format(archive))
-
-    @testhelpers.asyncio_test
-    async def test_invalid_extractor(self) -> None:
-        with self.assertRaises(BldPythonError):
-            get_extract_cmd("https://www.qt.io/some/file.foo.bar")
-
-    @testhelpers.asyncio_test
-    async def test_extract_sources(self) -> None:
-        with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmpBaseDir:
-            # create some test paths
-            tempPath = os.path.join("foo", "bar")
-            absoluteTempPath = os.path.join(tmpBaseDir, tempPath)
-            os.makedirs(absoluteTempPath)
-            # create tmp file
-            tempFileName = "foobar.txt"
-            tempFilePath = os.path.join(absoluteTempPath, tempFileName)
-            with open(tempFilePath, 'w+') as f:
-                f.write("\n")
-            self.assertTrue(os.path.isfile(tempFilePath))
-
-            # create fake tar archive
-            tarArchivePath = os.path.join(tmpBaseDir, "foobar.tar")
-            with tarfile.open(tarArchivePath, "w") as tarFile:
-                with open(tempFilePath, mode='rb') as _tempFile:
-                    fileData = _tempFile.read()
-                    tarFile.addfile(tarfile.TarInfo(os.path.join(tempPath, tempFileName)), io.BytesIO(fileData))
-
-            destDir = os.path.join(tmpBaseDir, "dest_dir")
-            await extract_sources(tarArchivePath, destDir)
-            self.assertTrue(os.path.isfile(os.path.join(destDir, tempPath, "foobar.txt")))
-
-    @testhelpers.asyncio_test
-    @unittest.skipUnless(_isInternalFileServerReachable(), "Skipping because '{0}' is not accessible".format(packageServer))
-    async def test_download_sources(self) -> None:
-        with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmpBaseDir:
-            downloadedFile = download_sources("http://{0}/packages/jenkins/python/src/Python-3.8.1.tgz".format(packageServer), tmpBaseDir)
-            self.assertTrue(os.path.isfile(downloadedFile))
 
     @testhelpers.asyncio_test
     async def test_locate_source_root(self) -> None:

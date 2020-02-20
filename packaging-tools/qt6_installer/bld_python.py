@@ -31,18 +31,14 @@
 
 import os
 import sys
-import wget
-import fnmatch
 import asyncio
 import argparse
 import platform
 import multiprocessing
 from shutil import which, rmtree
-from contextlib import contextmanager
-from typing import Generator, Callable, List
-from urllib.parse import urlparse
 from logging_util import init_logger
-from runner import exec_cmd
+from runner import async_exec_cmd
+from installer_utils import cd, is_valid_url_path, extract_archive, download_archive
 
 
 log = init_logger(__name__, debug_mode=False)
@@ -50,56 +46,6 @@ log = init_logger(__name__, debug_mode=False)
 
 class BldPythonError(Exception):
     pass
-
-
-@contextmanager
-def cd(path: str) -> Generator:
-    oldwd = os.getcwd()
-    os.chdir(path)
-    try:
-        yield
-    finally:
-        os.chdir(oldwd)
-
-
-def is_valid_url_path(url: str) -> bool:
-    try:
-        result = urlparse(url)
-        return all([result.scheme, result.netloc, result.path])
-    except Exception:
-        return False
-
-
-def get_extract_cmd(artifact: str) -> List[str]:
-    if artifact.endswith(".7z") or artifact.endswith(".zip"):
-        return ['7z', 'x', artifact]
-    elif any(fnmatch.fnmatch(artifact, p) for p in ["*.tar*", "*.tgz"]):
-        return ['tar', '-xf', artifact]
-    else:
-        raise BldPythonError("Could not find suitable extractor for: {0}".format(artifact))
-
-
-async def extract_sources(artifact: str, destinationDir: str) -> None:
-    log.info("Extracting file: %s into: %s", artifact, destinationDir)
-    extractCmd = get_extract_cmd(artifact)
-    try:
-        os.makedirs(destinationDir, exist_ok=True)
-        with cd(destinationDir):
-            await exec_cmd(extractCmd)
-    except Exception:
-        log.exception("Could not extact a file %s to %s", artifact, destinationDir)
-        raise
-
-
-def download_sources(url: str, destDir: str) -> str:
-    parts = urlparse(url)
-    fileName = os.path.basename(parts.path)
-    destFile = os.path.join(destDir, fileName)
-    if os.path.isfile(destFile):
-        log.info("Using existing downloaded file: %s", destFile)
-    else:
-        wget.download(url, destFile)
-    return destFile
 
 
 async def prepare_sources(src: str, tmpBaseDir: str) -> str:
@@ -110,10 +56,10 @@ async def prepare_sources(src: str, tmpBaseDir: str) -> str:
     rmtree(srcTmpDir, ignore_errors=True)
     os.makedirs(srcTmpDir)
     if os.path.isfile(src):
-        await extract_sources(src, srcTmpDir)
+        await extract_archive(src, srcTmpDir)
     elif is_valid_url_path(src):
-        destFile = download_sources(src, tmpBaseDir)
-        await extract_sources(destFile, srcTmpDir)
+        destFile = download_archive(src, tmpBaseDir)
+        await extract_archive(destFile, srcTmpDir)
     else:
         raise BldPythonError("Could not prepare sources from: {0}".format(src))
     return srcTmpDir
@@ -150,9 +96,9 @@ async def _build_python(srcDir: str, bldDir: str, prefix: str) -> str:
     os.makedirs(bldDir)
 
     with cd(bldDir):
-        await exec_cmd(configureCmd)
-        await exec_cmd(makeCmd)
-        await exec_cmd(makeInstallCmd)
+        await async_exec_cmd(configureCmd)
+        await async_exec_cmd(makeCmd)
+        await async_exec_cmd(makeInstallCmd)
     log.info("Python built successfully and installed to: %s", prefix)
     return prefix
 

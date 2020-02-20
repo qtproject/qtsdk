@@ -32,18 +32,27 @@
 import testhelpers
 import asyncio
 import unittest
-from runner import exec_cmd
+from runner import exec_cmd, async_exec_cmd
 
 
 class TestRunner(unittest.TestCase):
 
     @testhelpers.asyncio_test
-    async def test_exec_cmd(self) -> None:
-        await exec_cmd(['echo', "TEST"])
+    async def test_async_exec_cmd(self) -> None:
+        await async_exec_cmd(['echo', "TEST"])
 
         cmd = ['sleep', '2']
         with self.assertRaises(asyncio.TimeoutError):
-            await exec_cmd(cmd, timeout=1)
+            await async_exec_cmd(cmd, timeout=1)
+
+    @testhelpers.asyncio_test
+    async def test_exec_cmd(self) -> None:
+        output = exec_cmd(['echo', "TEST"])
+        self.assertEqual(output, "TEST")
+
+        cmd = ['sleep', '2']
+        with self.assertRaises(asyncio.TimeoutError):
+            await async_exec_cmd(cmd, timeout=1)
 
 
 if __name__ == '__main__':
