@@ -141,6 +141,8 @@ def parse_data(settings, task_filters: List[str]) -> List[ReleaseTask]:
 
 
 def parse_config(configFile: str, task_filters: List[str]) -> List[ReleaseTask]:
+    if not os.path.isfile(configFile):
+        raise ReleaseTaskError("Not such file: {0}".format(configFile))
     settings = ConfigParser(interpolation=ExtendedInterpolation())
     settings.read(configFile)
     return parse_data(settings, task_filters)
