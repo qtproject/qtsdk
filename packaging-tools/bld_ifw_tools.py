@@ -47,7 +47,7 @@ from multiprocessing.connection import Listener
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 ARCH_EXT = '.zip' if platform.system().lower().startswith('win') else '.tar.xz'
 QT_VERSION = '5.12'
-QT_VERSION_MINOR = '5.12.4'
+QT_VERSION_MINOR = '5.12.7'
 
 
 ARCHIVE_PROGRAM = '7z'
@@ -99,7 +99,7 @@ def get_common_allos_qt_configure_options():
 # Get common Qt configure arguments for unix platform
 ##################################################################
 def get_common_unix_qt_configure_options():
-    options = '-qt-zlib -qt-libpng -qt-libjpeg -no-cups '
+    options = '-qt-zlib -qt-libpng -qt-libjpeg -no-cups -disable-vulkan '
     return options
 
 
@@ -158,7 +158,7 @@ class IfwOptions:
 
     default_qt_src_pkg                          = 'http://download.qt.io/official_releases/qt/' + QT_VERSION + '/' + QT_VERSION_MINOR + '/single/qt-everywhere-src-' + QT_VERSION_MINOR + ARCH_EXT
     default_qt_installer_framework_url          = 'git://code.qt.io/installer-framework/installer-framework.git'
-    default_qt_installer_framework_branch_qt    = '3.1'
+    default_qt_installer_framework_branch_qt    = '3.2'
     default_qt_installer_framework_qmake_args   = ['-r', '-config', 'release', '-config', 'static']
 
     def __init__(self,
