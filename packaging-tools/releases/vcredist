@@ -1,12 +1,12 @@
-
+[B
 ################################################################################
 ## Global defines
 ################################################################################
 [ifwtools]
-windows-x86:                http://ci-files02-hki.intra.qt.io/packages/jenkins/archive/ifw/enterprise/unifiedqt/3.1.1/installer-framework-build-3.1.1-tqtc-win-x86.7z
-windows-x64:                http://ci-files02-hki.intra.qt.io/packages/jenkins/archive/ifw/enterprise/unifiedqt/3.1.1/installer-framework-build-3.1.1-tqtc-win-x86.7z
-linux-x64:                  http://ci-files02-hki.intra.qt.io/packages/jenkins/archive/ifw/enterprise/unifiedqt/3.1.1/installer-framework-build-3.1.1-tqtc-linux-x64.7z
-mac-x64:                    http://ci-files02-hki.intra.qt.io/packages/jenkins/archive/ifw/enterprise/unifiedqt/3.1.1/installer-framework-build-3.1.1-tqtc-mac-x64.7z
+windows-x86:                http://ci-files02-hki.intra.qt.io/packages/jenkins/archive/ifw/enterprise/unifiedqt/3.2.2/installer-framework-build-3.2.2-tqtc-win-x86.7z
+windows-x64:                http://ci-files02-hki.intra.qt.io/packages/jenkins/archive/ifw/enterprise/unifiedqt/3.2.2/installer-framework-build-3.2.2-tqtc-win-x86.7z
+linux-x64:                  http://ci-files02-hki.intra.qt.io/packages/jenkins/archive/ifw/enterprise/unifiedqt/3.2.2/installer-framework-build-3.2.2-tqtc-linux-x64.7z
+mac-x64:                    http://ci-files02-hki.intra.qt.io/packages/jenkins/archive/ifw/enterprise/unifiedqt/3.2.2/installer-framework-build-3.2.2-tqtc-mac-x64.7z
 
 [release.global]
 version:                    1.0.0
