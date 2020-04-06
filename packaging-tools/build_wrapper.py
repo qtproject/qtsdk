@@ -1039,12 +1039,9 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     additional_plugins.extend([make_QtcPlugin('isoiconbrowser', 'qtquickdesigner', qtcreator_version,
                                               modules=qt_module_local_urls, dependencies=plugin_dependencies,
                                               qmake_arguments=qmake_arguments)])
-    additional_plugins.extend([make_QtcPlugin('b2qt-qtcreator-plugin', 'b2qt-qtcreator-plugin', qtcreator_version,
-                                              modules=qt_module_local_urls, dependencies=plugin_dependencies,
-                                              qmake_arguments=qmake_arguments)])
     additional_plugins.extend([make_QtcPlugin('gammarayintegration', 'gammarayintegration', qtcreator_version,
                                               modules=qt_module_local_urls + [kdsme_url, gammaray_url] + module_urls(['qt3d', 'qtgamepad']),
-                                              dependencies=plugin_dependencies + ['b2qt-qtcreator-plugin'],
+                                              dependencies=plugin_dependencies,
                                               qmake_arguments=qmake_arguments,
                                               additional_arguments=[
                                                   '--deploy-command', 'python',
@@ -1052,7 +1049,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                                   '--deploy-command', os.path.join(work_dir, 'gammarayintegration', 'scripts', 'deploy.py')])])
     additional_plugins.extend([make_QtcPlugin('appmanagerintegration', 'pcore-plugin-appman', qtcreator_version,
                                               modules=qt_module_local_urls,
-                                              dependencies=plugin_dependencies + ['b2qt-qtcreator-plugin'],
+                                              dependencies=plugin_dependencies,
                                               qmake_arguments=qmake_arguments)]),
     additional_plugins.extend([make_QtcPlugin('plugin-telemetry', 'plugin-telemetry', qtcreator_version,
                                               modules=qt_module_local_urls)]),
