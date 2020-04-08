@@ -1117,7 +1117,9 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
 
     # macOS opensource dmg
     if bldinstallercommon.is_mac_platform():
-        file_upload_list.append(('qt-creator_build/qt-creator.dmg', 'qt-creator-opensource-mac-x86_64-' + qtcreator_version + '.dmg'))
+        dmg_filename = 'qt-creator-opensource-mac-x86_64-' + qtcreator_version + '.dmg'
+        file_upload_list.append(('qt-creator_build/qt-creator.dmg', dmg_filename))
+        snapshot_upload_list.append((dmg_filename, dmg_filename))
 
     # source packages
     source_package_list = glob(os.path.join(work_dir, 'qt-creator-*-src-' + qtcreator_version + '.*'))
