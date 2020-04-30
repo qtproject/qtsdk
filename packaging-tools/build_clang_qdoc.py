@@ -54,47 +54,57 @@ import threadedwork
 import multiprocessing
 
 def git_clone_and_checkout(base_path, remote_repository_url, directory, revision):
-    bld_utils.runCommand(['git', 'clone', '--no-checkout', remote_repository_url, directory], base_path)
-    local_repo_path = os.path.join(base_path, directory)
-    bld_utils.runCommand(['git', 'config', 'core.eol', 'lf'], local_repo_path)
-    bld_utils.runCommand(['git', 'config', 'core.autocrlf', 'input'], local_repo_path)
-    bld_utils.runCommand(['git', 'checkout', revision], local_repo_path)
+    bld_utils.runCommand(['git', 'clone',
+                          '--config', 'core.eol=lf',
+                          '--config', 'core.autocrlf=input',
+                          '--branch', revision,
+                          '--recursive',
+                          remote_repository_url, directory], base_path)
 
-def get_clang(base_path, llvm_revision, clang_revision, tools_revision):
-    git_clone_and_checkout(base_path, 'git://code.qt.io/clang/llvm.git', 'llvm', llvm_revision)
-    git_clone_and_checkout(base_path, 'git://code.qt.io/clang/clang.git', 'llvm/tools/clang', clang_revision)
-    git_clone_and_checkout(base_path, 'git://code.qt.io/clang/clang-tools-extra.git', 'llvm/tools/clang/tools/extra', tools_revision)
-
-def get_clazy(base_path, clazy_revision):
-    git_clone_and_checkout(base_path, 'git://code.qt.io/clang/clazy.git', 'llvm/tools/clang/tools/extra/clazy', clazy_revision)
+def get_clang(base_path, llvm_revision):
+    git_clone_and_checkout(base_path, 'git://code.qt.io/clang/llvm-project.git', 'llvm', llvm_revision)
 
 def msvc_version():
     msvc_ver = os.environ.get('MSVC_VERSION')
     if not msvc_ver:
-        msvc_ver = '14.0'
+        msvc_ver = '14.1'
     return msvc_ver
 
 def msvc_year_version():
     return {
         '12.0': 'MSVC2013',
         '14.0': 'MSVC2015',
-        '14.1': 'MSVC2017'
-    }.get(os.environ.get('MSVC_VERSION'), 'MSVC2015')
+        '14.1': 'MSVC2017',
+        '14.2': 'MSVC2019'
+    }.get(os.environ.get('MSVC_VERSION'), 'MSVC2017')
+
+def msvc_year():
+    return {
+        '12.0': '2013',
+        '14.0': '2015',
+        '14.1': '2017',
+        '14.2': '2019'
+    }.get(os.environ.get('MSVC_VERSION'), 'MSVC2017')
 
 def msvc_year_version_libclang():
     return {
         '12.0': 'vs2013',
         '14.0': 'vs2015',
-        '14.1': 'vs2017'
-    }.get(os.environ.get('MSVC_VERSION'), 'vs2015')
+        '14.1': 'vs2017',
+        '14.2': 'vs2019'
+    }.get(os.environ.get('MSVC_VERSION'), 'vs2017')
 
 def msvc_environment(bitness):
     program_files = os.path.join('C:', '/Program Files (x86)')
     if not os.path.exists(program_files):
         program_files = os.path.join('C:', '/Program Files')
     msvc_ver = msvc_version()
-    vcvarsall = os.path.join(program_files, 'Microsoft Visual Studio ' + msvc_ver, 'VC', 'vcvarsall.bat')
-    arg = 'amd64' if bitness == 64 else 'x86'
+    if msvc_ver == '14.1' or msvc_ver == '14.2':
+        vcvarsall = os.path.join(program_files, 'Microsoft Visual Studio', msvc_year(), 'Professional', 'VC', 'Auxiliary', 'Build', 'vcvarsall.bat')
+        arg = 'x64' if bitness == 64 else 'x64_x86'
+    else:
+        vcvarsall = os.path.join(program_files, 'Microsoft Visual Studio ' + msvc_ver, 'VC', 'vcvarsall.bat')
+        arg = 'amd64' if bitness == 64 else 'x64_x86'
     return environmentfrombatchfile.get(vcvarsall, arguments=arg)
 
 def paths_with_sh_exe_removed(path_value):
@@ -114,108 +124,6 @@ def build_environment(toolchain, bitness):
     else:
         return None # == process environment
 
-def training_qt_version():
-    qt_ver = os.environ.get('TRAINING_QT_VERSION')
-    if not qt_ver:
-        qt_ver = '5.10'
-    return qt_ver
-
-def training_qt_long_version():
-    qt_ver = os.environ.get('TRAINING_QT_LONG_VERSION')
-    if not qt_ver:
-        qt_ver = '5.10.0-final-released'
-    return qt_ver
-
-def training_qtcreator_version():
-    qtcreator_ver = os.environ.get('TRAINING_QTCREATOR_VERSION')
-    if not qtcreator_ver:
-        qtcreator_ver = '4.5'
-    return qtcreator_ver
-
-def training_libclang_version():
-    libclang_ver = os.environ.get('TRAINING_LIBCLANG_VERSION')
-    if not libclang_ver:
-        libclang_ver = 'release_50'
-    return libclang_ver
-
-def mingw_training(base_path, qtcreator_path, bitness):
-    # Checkout qt-creator, download libclang for build, qt installer and DebugView
-
-    bld_utils.runCommand(['git', 'checkout', training_qtcreator_version()], qtcreator_path)
-
-    # Set up paths
-    script_dir = os.path.dirname(os.path.realpath(__file__))
-    debugview_dir = os.path.join(base_path, 'debugview')
-    creator_build_dir = os.path.join(base_path, 'qtcreator_build')
-    creator_libclang_dir = os.path.join(base_path, 'qtcreator_libclang')
-    creator_settings_dir = os.path.join(base_path, 'qtc-settings')
-    creator_logs_dir = os.path.join(base_path, 'logs')
-    training_dir = os.path.join(script_dir, 'libclang_training')
-    qt_dir = os.path.join(base_path, 'qt')
-
-    # Create some paths
-    os.makedirs(debugview_dir)
-    os.makedirs(creator_build_dir)
-    os.makedirs(creator_settings_dir)
-    os.makedirs(creator_logs_dir)
-
-    pkg_server = os.environ['PACKAGE_STORAGE_SERVER']
-
-    # Install Qt
-    qt_modules = ['qtbase', 'qtdeclarative', 'qtgraphicaleffects',
-                 'qtimageformats', 'qtlocation', 'qtmacextras',
-                 'qtquickcontrols', 'qtquickcontrols2', 'qtscript', 'qtsvg', 'qttools',
-                 'qttranslations', 'qtx11extras', 'qtxmlpatterns']
-    qt_base_url = 'http://' + pkg_server + '/packages/jenkins/archive/qt/' \
-        + training_qt_version() + '/' + training_qt_long_version() + '/latest'
-
-    arg = 'X86_64' if bitness == 64 else 'X86'
-    msvc_year_ver = msvc_year_version()
-
-    qt_postfix = '-Windows-Windows_10-' + msvc_year_ver + '-Windows-Windows_10-' + arg + '.7z'
-    qt_module_urls = [qt_base_url + '/' + module + '/' + module + qt_postfix for module in qt_modules]
-    qt_temp = os.path.join(base_path, 'qt_download')
-    download_packages_work = threadedwork.ThreadedWork("get and extract Qt")
-    download_packages_work.addTaskObject(bldinstallercommon.create_qt_download_task(qt_module_urls, qt_dir, qt_temp, None))
-    download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
-        'http://' + pkg_server \
-            + '/packages/jenkins/qtcreator_libclang/libclang-' + training_libclang_version() \
-            + '-windows-' + msvc_year_version_libclang() + '_' + str(bitness) + '-clazy.7z',
-        creator_libclang_dir,
-        base_path,
-        None))
-    download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
-        'https://download.sysinternals.com/files/DebugView.zip',
-        debugview_dir,
-        base_path,
-        None))
-    download_packages_work.run()
-    bld_qtcreator.patch_qt_pri_files(qt_dir)
-    bldinstallercommon.patch_qt(qt_dir)
-
-    # Build QtCreator with installed libclang and qt
-    # Debug version of QtCreator is required to support running .batch files
-    msvc_env = msvc_environment(bitness)
-    msvc_env['LLVM_INSTALL_DIR'] = os.path.join(creator_libclang_dir, 'libclang')
-    bld_utils.runCommand([os.path.join(qt_dir, 'bin', 'qmake.exe'), os.path.join(qtcreator_path, 'qtcreator.pro'), '-spec', 'win32-msvc', 'CONFIG+=debug'], creator_build_dir, None, msvc_env)
-    bld_utils.runCommand(['jom', 'qmake_all'], creator_build_dir, None, msvc_env)
-    bld_utils.runCommand(['jom'], creator_build_dir, None, msvc_env)
-    qtConfFile = open(os.path.join(creator_build_dir, 'bin', 'qt.conf'), "w")
-    qtConfFile.write("[Paths]" + os.linesep)
-    qtConfFile.write("Prefix=../../qt" + os.linesep)
-    qtConfFile.close()
-
-    # Train mingw libclang library with build QtCreator
-    bld_utils.runCommand([os.path.join(training_dir, 'runBatchFiles.bat')], base_path, callerArguments = None, init_environment = None, onlyErrorCaseOutput=False, expectedExitCodes=[0,1])
-
-def apply_patch(src_path, patch_filepath):
-    print('Applying patch: "' + patch_filepath + '" in "' + src_path + '"')
-    bld_utils.runCommand(['git', 'apply', '--whitespace=fix', patch_filepath], src_path)
-
-def apply_patches(src_path, patch_filepaths):
-    for patch in patch_filepaths:
-        apply_patch(src_path, patch)
-
 def is_msvc_toolchain(toolchain):
     return 'msvc' in toolchain
 
@@ -231,19 +139,7 @@ def cmake_generator(toolchain):
     else:
         return 'Unix Makefiles'
 
-# We need '-fprofile-correction -Wno-error=coverage-mismatch' to deal with possible conflicts
-# in the initial build while using profiler data from the build with plugins
-def profile_data_flags(toolchain, profile_data_path, first_run):
-    if profile_data_path and is_mingw_toolchain(toolchain):
-        profile_flag = '-fprofile-generate' if first_run else '-fprofile-correction -Wno-error=coverage-mismatch -fprofile-use'
-        compiler_flags = profile_flag + '=' + profile_data_path
-        linker_flags = compiler_flags + ' -static-libgcc -static-libstdc++ -static'
-        return [
-            '-DCMAKE_C_FLAGS=' + compiler_flags,
-            '-DCMAKE_CXX_FLAGS=' + compiler_flags,
-            '-DCMAKE_SHARED_LINKER_FLAGS=' + linker_flags,
-            '-DCMAKE_EXE_LINKER_FLAGS=' + linker_flags,
-        ]
+def static_flags(toolchain):
     if is_mingw_toolchain(toolchain):
         linker_flags = '-static-libgcc -static-libstdc++ -static'
         return ['-DCMAKE_SHARED_LINKER_FLAGS=' + linker_flags,
@@ -281,72 +177,38 @@ def build_and_install(toolchain, build_path, environment, build_targets, install
     build_cmd = build_command(toolchain)
     bldinstallercommon.do_execute_sub_process(build_cmd + build_targets, build_path, extra_env=environment)
     install_cmd = install_command(toolchain)
-    if install_targets:
-        bldinstallercommon.do_execute_sub_process(install_cmd + install_targets, build_path, extra_env=environment)
+    bldinstallercommon.do_execute_sub_process(install_cmd + install_targets, build_path, extra_env=environment)
 
-def cmake_base_command(toolchain, src_path, install_path, profile_data_path, first_run, bitness, build_type):
+def cmake_command(toolchain, src_path, build_path, install_path, bitness, build_type):
     command = ['cmake',
                '-DCMAKE_INSTALL_PREFIX=' + install_path,
                '-G',
                cmake_generator(toolchain),
                '-DCMAKE_BUILD_TYPE=' + build_type,
+               '-DLLVM_ENABLE_PROJECTS=clang',
+               '-DLIBCLANG_BUILD_STATIC=ON',
+               '-DLLVM_ENABLE_PIC=OFF',
                "-DLLVM_LIT_ARGS='-v'"]
     if is_msvc_toolchain(toolchain):
         command.append('-DLLVM_EXPORT_SYMBOLS_FOR_PLUGINS=1')
     command.extend(bitness_flags(bitness))
     command.extend(rtti_flags(toolchain))
-    command.extend(profile_data_flags(toolchain, profile_data_path, first_run))
-    if is_gcc_toolchain(toolchain):
-        command.extend(['-DCMAKE_CXX_FLAGS=-D_GLIBCXX_USE_CXX11_ABI=0'])
-    return command
-
-def cmake_command(toolchain, src_path, install_path, profile_data_path, first_run, bitness, build_type):
-    command = cmake_base_command(toolchain, src_path, install_path, profile_data_path, first_run, bitness, build_type)
+    command.extend(static_flags(toolchain))
     command.append(src_path)
+
     return command
 
-def cmake_static_libclang(toolchain, src_path, install_path, profile_data_path, bitness, build_type):
-    command = cmake_base_command(toolchain, src_path, install_path, profile_data_path, False, bitness, build_type)
-    command.append('-DLIBCLANG_BUILD_STATIC=1')
-    command.append(src_path)
-    return command
-
-def build_clang(toolchain, src_path, build_path, install_path, profile_data_path, first_run, bitness=64, environment=None, build_type='Release'):
+def build_clang(toolchain, src_path, build_path, install_path, bitness=64, environment=None, build_type='Release'):
     if build_path and not os.path.lexists(build_path):
         os.makedirs(build_path)
 
-    cmake_cmd = cmake_command(toolchain, src_path, install_path, profile_data_path, first_run, bitness, build_type)
+    cmake_cmd = cmake_command(toolchain, src_path, build_path, install_path, bitness, build_type)
 
     bldinstallercommon.do_execute_sub_process(cmake_cmd, build_path, extra_env=environment)
-    build_and_install(toolchain, build_path, environment, ['libclang', 'clang', 'llvm-config'], ['install'])
-
-def build_static_libclang(toolchain, src_path, build_path, install_path, profile_data_path, bitness=64, environment=None, build_type='Release'):
-    if build_path and not os.path.lexists(build_path):
-        os.makedirs(build_path)
-    cmake_cmd = cmake_static_libclang(toolchain, src_path, install_path, profile_data_path, bitness, build_type)
-
-    bldinstallercommon.do_execute_sub_process(cmake_cmd, build_path, extra_env=environment)
-    build_and_install(toolchain, build_path, environment, ['libclang_static'], [])
-
-    if is_mingw_toolchain(toolchain):
-        shutil.copy2(os.path.join(build_path, 'lib', 'liblibclang_static.a'), os.path.join(install_path, 'lib', 'libclang_static.a'))
-    else:
-        shutil.copy2(os.path.join(build_path, 'lib', 'libclang_static.a'), os.path.join(install_path, 'lib'))
-
-def build_static_libclang_msvc(toolchain, src_path, build_path, install_path, profile_data_path, bitness=64, environment=None, build_type='Release'):
-    build_path_static = os.path.join(build_path, 'static_build')
-    if build_path_static and not os.path.lexists(build_path_static):
-        os.makedirs(build_path_static)
-
-    cmake_cmd = cmake_static_libclang(toolchain, src_path, install_path, profile_data_path, bitness, build_type)
-
-    bldinstallercommon.do_execute_sub_process(cmake_cmd, build_path_static, extra_env=environment)
-    build_and_install(toolchain, build_path_static, environment, ['libclang_static', 'libclang'], [])
-    pack_command = ['lib.exe', '/OUT:' + os.path.join(install_path, 'lib', 'libclang_static.lib')]
-    for file in os.listdir(os.path.join(build_path_static, 'lib')):
-        if file.endswith('.lib') and file != 'libclang.lib':
-            pack_command.append(file)
-    bld_utils.runCommand(pack_command, os.path.join(build_path_static, 'lib'), None, environment)
+    build_targets = ['install/strip']
+    if is_msvc_toolchain(toolchain):
+        build_targets = ['install'] # There is no 'install/strip' for nmake.
+    build_and_install(toolchain, build_path, environment, ['libclang', 'clang', 'llvm-config'], build_targets)
 
 def check_clang(toolchain, build_path, environment):
     if is_msvc_toolchain(toolchain) or is_mingw_toolchain(toolchain):
@@ -368,20 +230,6 @@ def upload_clang(file_path, remote_path):
     scp_bin = '%SCP%' if bldinstallercommon.is_win_platform() else 'scp'
     scp_command = [scp_bin, filename, remote_path]
     bld_utils.runCommand(scp_command, path)
-
-def profile_data(toolchain):
-    if bldinstallercommon.is_win_platform() and is_mingw_toolchain(toolchain):
-        return os.getenv('PROFILE_DATA_URL')
-
-def rename_clazy_lib(toolchain, install_path):
-    if not is_msvc_toolchain(toolchain):
-        librariesPath = os.path.join(install_path, 'lib')
-        if not os.path.exists(os.path.join(librariesPath, 'ClangLazy.a')):
-            librariesPath = os.path.join(install_path, 'lib64')
-        clazyLibPath = os.path.join(librariesPath, 'libClangLazy.a')
-        if os.path.exists(clazyLibPath):
-            os.remove(clazyLibPath)
-        os.rename(os.path.join(librariesPath, 'ClangLazy.a'), clazyLibPath)
 
 def main():
     # Used Environment variables:
@@ -413,66 +261,27 @@ def main():
     # "PACKAGE_STORAGE_SERVER_USER@PACKAGE_STORAGE_SERVER:PACKAGE_STORAGE_SERVER_BASE_DIR/CLANG_UPLOAD_SERVER_PATH"
     #
     # LLVM_REVISION
-    # Git revision, branch or tag for LLVM check out
-    #
-    # CLANG_REVISION
-    # Git revision, branch or tag for Clang check out
-    #
-    # CLANG_TOOLS_EXTRA_REVISION
-    # Git revision, branch or tag for clang-tools-extra check out
-    #
-    # CLAZY_REVISION
-    # Git revision, branch or tag for Clazy check out
-    #
-    # CLANG_PATCHES
-    # Absolute path (or relative to PKG_NODE_ROOT) where patches are that
-    # should be applied to Clang. Files matching *.patch will be applied.
+    # Git revision, branch or tag for LLVM/Clang check out
 
     bldinstallercommon.init_common_module(os.path.dirname(os.path.realpath(__file__)))
     base_path = os.path.join(os.environ['PKG_NODE_ROOT'])
     branch = os.environ['CLANG_BRANCH']
-    clazy_revision = os.environ.get('CLAZY_REVISION')
-    src_path = os.path.join(base_path, 'llvm')
+    src_path = os.path.join(base_path, 'llvm/llvm')
     build_path = os.path.join(base_path, 'build')
-    src_clazy_path = os.path.join(base_path, 'clazy')
-    build_clazy_path = os.path.join(base_path, 'clazy_build')
     install_path = os.path.join(base_path, 'libclang')
     bitness = 64 if '64' in os.environ['cfg'] else 32
     toolchain = os.environ['cfg'].split('-')[1].lower()
     environment = build_environment(toolchain, bitness)
-    clazy_tag = '-clazy' if clazy_revision else ''
-    result_file_path = os.path.join(base_path, 'libclang-' + branch + '-' + os.environ['CLANG_PLATFORM'] + clazy_tag + '.7z')
-    profile_data_path = os.path.join(build_path, 'profile_data')
+    result_file_path = os.path.join(base_path, 'libclang-' + branch + '-' + os.environ['CLANG_PLATFORM'] + '.7z')
     remote_path = (os.environ['PACKAGE_STORAGE_SERVER_USER'] + '@' + os.environ['PACKAGE_STORAGE_SERVER'] + ':'
                    + os.environ['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + os.environ['CLANG_UPLOAD_SERVER_PATH'])
 
-    get_clang(base_path, os.environ['LLVM_REVISION'], os.environ['CLANG_REVISION'], os.environ['CLANG_TOOLS_EXTRA_REVISION'])
-    if clazy_revision:
-        get_clazy(base_path, clazy_revision)
-    patch_src_path = os.environ.get('CLANG_PATCHES')
-    if patch_src_path:
-        if not os.path.isabs(patch_src_path):
-            patch_src_path = os.path.join(base_path, patch_src_path)
-        if not os.path.exists(patch_src_path):
-            raise IOError, 'CLANG_PATCHES is set, but directory ' + patch_src_path + ' does not exist, aborting.'
-        print 'CLANG_PATCHES: Applying patches from ' + patch_src_path
-        apply_patches(src_path, sorted(glob.glob(os.path.join(patch_src_path, '*.patch'))))
-    else:
-        print 'CLANG_PATCHES: Not set, skipping.'
+    get_clang(base_path, os.environ['LLVM_REVISION'])
 
     # TODO: put args in some struct to improve readability, add error checks
-    build_clang(toolchain, src_path, build_path, install_path, profile_data_path, True, bitness, environment, build_type='Release')
-    if is_mingw_toolchain(toolchain):
-        shutil.rmtree(profile_data_path)
-        os.makedirs(profile_data_path)
-        build_clang(toolchain, src_path, build_path, install_path, profile_data_path, False, bitness, environment, build_type='Release')
+    build_clang(toolchain, src_path, build_path, install_path, True, bitness, environment, build_type='Release')
 
     check_clang(toolchain, build_path, environment)
-
-    if is_msvc_toolchain(toolchain):
-        build_static_libclang_msvc(toolchain, src_path, build_path, install_path, profile_data_path, bitness, environment, build_type='Release')
-    else:
-        build_static_libclang(toolchain, src_path, build_path, install_path, profile_data_path, bitness, environment, build_type='Release')
 
     package_clang(install_path, result_file_path)
     upload_clang(result_file_path, remote_path)
