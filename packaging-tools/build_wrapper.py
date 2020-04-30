@@ -916,6 +916,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     log_filepath = os.path.join(work_dir, 'build_log.txt')
     notarize = optionDict.get('NOTARIZE')
     use_cmake = optionDict.get('USE_CMAKE')
+    usp_server_url = optionDict.get('USP_SERVER_URL')
+    usp_auth_key = optionDict.get('USP_AUTH_KEY')
     qt_temp = os.path.join(work_dir, 'qt-creator_temp') if not use_cmake else os.path.join(work_dir, 'qt_temp')
 
     def module_filename(module):
@@ -1102,8 +1104,13 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                               modules=qt_module_local_urls,
                                               dependencies=plugin_dependencies,
                                               qmake_arguments=qmake_arguments)]),
+    plugin_telemetry_args = []
+    if use_cmake and usp_server_url and usp_auth_key:
+        plugin_telemetry_args = ['--add-config=-DUSP_SERVER_URL=' + usp_server_url,
+                                 '--add-config=-DUSP_AUTH_KEY=' + usp_auth_key]
     additional_plugins.extend([make_QtcPlugin('plugin-telemetry', 'plugin-telemetry', qtcreator_version,
-                                              modules=qt_module_local_urls)]),
+                                              modules=qt_module_local_urls,
+                                              additional_arguments=plugin_telemetry_args)]),
 
     # Build Qt Creator plugins
     icu_local_url = bld_utils.file_url(os.path.join(qt_temp, os.path.basename(icu_libs))) if bldinstallercommon.is_linux_platform() else None
