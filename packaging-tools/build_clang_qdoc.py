@@ -279,7 +279,7 @@ def main():
     get_clang(base_path, os.environ['LLVM_REVISION'])
 
     # TODO: put args in some struct to improve readability, add error checks
-    build_clang(toolchain, src_path, build_path, install_path, True, bitness, environment, build_type='Release')
+    build_clang(toolchain, src_path, build_path, install_path, bitness, environment, build_type='Release')
 
     check_clang(toolchain, build_path, environment)
 
