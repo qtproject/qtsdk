@@ -188,6 +188,7 @@ def cmake_command(toolchain, src_path, build_path, install_path, bitness, build_
                '-DLLVM_ENABLE_PROJECTS=clang',
                '-DLLVM_USE_CRT_RELEASE=MT',
                '-DLIBCLANG_BUILD_STATIC=ON',
+               '-DLLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN=ON',
                '-DLLVM_ENABLE_PIC=OFF',
                "-DLLVM_LIT_ARGS='-v'"]
     if is_msvc_toolchain(toolchain):
