@@ -186,6 +186,7 @@ def cmake_command(toolchain, src_path, build_path, install_path, bitness, build_
                cmake_generator(toolchain),
                '-DCMAKE_BUILD_TYPE=' + build_type,
                '-DLLVM_ENABLE_PROJECTS=clang',
+               '-DLLVM_TARGETS_TO_BUILD=X86',
                '-DLLVM_USE_CRT_RELEASE=MT',
                '-DLIBCLANG_BUILD_STATIC=ON',
                '-DLLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN=ON',
