@@ -101,10 +101,10 @@ def msvc_environment(bitness):
     msvc_ver = msvc_version()
     if msvc_ver == '14.1' or msvc_ver == '14.2':
         vcvarsall = os.path.join(program_files, 'Microsoft Visual Studio', msvc_year(), 'Professional', 'VC', 'Auxiliary', 'Build', 'vcvarsall.bat')
-        arg = 'x64' if bitness == 64 else 'x64_x86'
+        arg = 'x64' if bitness == 64 else 'x86'
     else:
         vcvarsall = os.path.join(program_files, 'Microsoft Visual Studio ' + msvc_ver, 'VC', 'vcvarsall.bat')
-        arg = 'amd64' if bitness == 64 else 'x64_x86'
+        arg = 'amd64' if bitness == 64 else 'x86'
     return environmentfrombatchfile.get(vcvarsall, arguments=arg)
 
 def paths_with_sh_exe_removed(path_value):
