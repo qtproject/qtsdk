@@ -149,7 +149,7 @@ def static_flags(toolchain):
 
 def bitness_flags(bitness):
     if bitness == 32 and bldinstallercommon.is_linux_platform():
-        return ['-DLIBXML2_LIBRARIES=/usr/lib/libxml2.so', '-DLLVM_BUILD_32_BITS=ON']
+        return ['-DLLVM_BUILD_32_BITS=ON']
     return []
 
 def rtti_flags(toolchain):
@@ -188,6 +188,7 @@ def cmake_command(toolchain, src_path, build_path, install_path, bitness, build_
                '-DLLVM_ENABLE_PROJECTS=clang',
                '-DLLVM_TARGETS_TO_BUILD=X86',
                '-DLLVM_USE_CRT_RELEASE=MT',
+               '-DLLVM_ENABLE_LIBXML2=OFF',
                '-DLIBCLANG_BUILD_STATIC=ON',
                '-DLLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN=ON',
                '-DLLVM_ENABLE_PIC=OFF',
