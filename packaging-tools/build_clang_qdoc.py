@@ -67,7 +67,7 @@ def get_clang(base_path, llvm_revision):
 def msvc_version():
     msvc_ver = os.environ.get('MSVC_VERSION')
     if not msvc_ver:
-        msvc_ver = '14.1'
+        msvc_ver = '14.2'
     return msvc_ver
 
 def msvc_year_version():
@@ -76,7 +76,7 @@ def msvc_year_version():
         '14.0': 'MSVC2015',
         '14.1': 'MSVC2017',
         '14.2': 'MSVC2019'
-    }.get(os.environ.get('MSVC_VERSION'), 'MSVC2017')
+    }.get(os.environ.get('MSVC_VERSION'), 'MSVC2019')
 
 def msvc_year():
     return {
@@ -84,7 +84,7 @@ def msvc_year():
         '14.0': '2015',
         '14.1': '2017',
         '14.2': '2019'
-    }.get(os.environ.get('MSVC_VERSION'), 'MSVC2017')
+    }.get(os.environ.get('MSVC_VERSION'), 'MSVC2019')
 
 def msvc_year_version_libclang():
     return {
@@ -92,7 +92,7 @@ def msvc_year_version_libclang():
         '14.0': 'vs2015',
         '14.1': 'vs2017',
         '14.2': 'vs2019'
-    }.get(os.environ.get('MSVC_VERSION'), 'vs2017')
+    }.get(os.environ.get('MSVC_VERSION'), 'vs2019')
 
 def msvc_environment(bitness):
     program_files = os.path.join('C:', '/Program Files (x86)')
@@ -186,6 +186,7 @@ def cmake_command(toolchain, src_path, build_path, install_path, bitness, build_
                cmake_generator(toolchain),
                '-DCMAKE_BUILD_TYPE=' + build_type,
                '-DLLVM_ENABLE_PROJECTS=clang',
+               '-DLLVM_USE_CRT_RELEASE=MT',
                '-DLIBCLANG_BUILD_STATIC=ON',
                '-DLLVM_ENABLE_PIC=OFF',
                "-DLLVM_LIT_ARGS='-v'"]
