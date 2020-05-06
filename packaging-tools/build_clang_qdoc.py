@@ -118,9 +118,14 @@ def build_environment(toolchain, bitness):
             environment = dict(os.environ)
             # cmake says "For MinGW make to work correctly sh.exe must NOT be in your path."
             environment['PATH'] = paths_with_sh_exe_removed(environment['PATH'])
+            environment['CC'] = 'gcc'
+            environment['CXX'] = 'g++'
             return environment
         else:
-            return msvc_environment(bitness)
+            environment = msvc_environment(bitness)
+            environment['CC'] = 'cl'
+            environment['CXX'] = 'cl'
+            return environment
     else:
         return None # == process environment
 
