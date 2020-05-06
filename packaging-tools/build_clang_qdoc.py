@@ -135,7 +135,7 @@ def is_gcc_toolchain(toolchain):
 
 def cmake_generator(toolchain):
     if bldinstallercommon.is_win_platform():
-        return 'MinGW Makefiles' if is_mingw_toolchain(toolchain) else 'NMake Makefiles JOM'
+        return 'Ninja'
     else:
         return 'Unix Makefiles'
 
@@ -159,14 +159,14 @@ def rtti_flags(toolchain):
 
 def build_command(toolchain):
     if bldinstallercommon.is_win_platform():
-        command = ['mingw32-make', '-j{}'.format(multiprocessing.cpu_count())] if is_mingw_toolchain(toolchain) else ['jom']
+        command = ['ninja']
     else:
         command = ['make']
     return command
 
 def install_command(toolchain):
     if bldinstallercommon.is_win_platform():
-        command = ['mingw32-make', '-j1'] if is_mingw_toolchain(toolchain) else ['nmake']
+        command = ['ninja', '-j', '1']
     else:
         command = ['make', '-j1']
     return command
