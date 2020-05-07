@@ -171,7 +171,7 @@ def build_command(toolchain):
 
 def install_command(toolchain):
     if bldinstallercommon.is_win_platform():
-        command = ['ninja', '-j', '1']
+        command = ['ninja']
     else:
         command = ['make', '-j1']
     return command
