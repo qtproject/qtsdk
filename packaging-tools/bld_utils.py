@@ -379,7 +379,7 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None, init_en
         raise Exception("Different exit code then expected({0}): {1}{2}".format(expectedExitCodes, exitCode, prettyLastOutput))
     return exitCode
 
-def runInstallCommand(arguments = ['install'], currentWorkingDirectory = None, callerArguments = None, init_environment = None):
+def runInstallCommand(arguments = ['install'], currentWorkingDirectory = None, callerArguments = None, init_environment = None, onlyErrorCaseOutput = False):
     if init_environment is None:
         init_environment = {}
     if hasattr(callerArguments, 'installcommand') and callerArguments.installcommand:
@@ -392,7 +392,7 @@ def runInstallCommand(arguments = ['install'], currentWorkingDirectory = None, c
 
     if arguments:
         installcommand.extend(arguments if __builtin__.type(arguments) is list else arguments.split())
-    return runCommand(installcommand, currentWorkingDirectory, callerArguments, init_environment = init_environment)
+    return runCommand(installcommand, currentWorkingDirectory, callerArguments, init_environment = init_environment, onlyErrorCaseOutput = onlyErrorCaseOutput)
 
 def runBuildCommand(arguments = None, currentWorkingDirectory = None, callerArguments = None, init_environment = None, onlyErrorCaseOutput = False, expectedExitCodes=[0]):
     if init_environment is None:
