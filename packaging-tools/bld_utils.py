@@ -394,7 +394,7 @@ def runInstallCommand(arguments = ['install'], currentWorkingDirectory = None, c
         installcommand.extend(arguments if __builtin__.type(arguments) is list else arguments.split())
     return runCommand(installcommand, currentWorkingDirectory, callerArguments, init_environment = init_environment)
 
-def runBuildCommand(arguments = None, currentWorkingDirectory = None, callerArguments = None, init_environment = None):
+def runBuildCommand(arguments = None, currentWorkingDirectory = None, callerArguments = None, init_environment = None, onlyErrorCaseOutput = False, expectedExitCodes=[0]):
     if init_environment is None:
         init_environment = {}
     buildcommand = ['make']
@@ -403,7 +403,7 @@ def runBuildCommand(arguments = None, currentWorkingDirectory = None, callerArgu
 
     if arguments:
         buildcommand.extend(arguments if __builtin__.type(arguments) is list else arguments.split())
-    return runCommand(buildcommand, currentWorkingDirectory, callerArguments, init_environment = init_environment)
+    return runCommand(buildcommand, currentWorkingDirectory, callerArguments, init_environment = init_environment, onlyErrorCaseOutput = onlyErrorCaseOutput, expectedExitCodes = expectedExitCodes)
 
 def getReturnValue(command, currentWorkingDirectory = None, init_environment = None, callerArguments = None):
     if init_environment is None:
