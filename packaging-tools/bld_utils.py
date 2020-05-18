@@ -320,7 +320,7 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None, init_en
             stdout = subprocess.PIPE, stderr = subprocess.PIPE,
             cwd = currentWorkingDirectory, bufsize = -1, env = environment)
 
-        maxSavedLineNumbers = 100
+        maxSavedLineNumbers = 1000
         lastStdOutLines = collections.deque(maxlen = maxSavedLineNumbers)
         lastStdErrLines = collections.deque(maxlen = maxSavedLineNumbers)
 
