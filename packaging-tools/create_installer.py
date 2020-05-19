@@ -1239,7 +1239,10 @@ def create_online_repository():
         print 'Creating repository for the SDK ...'
         print '    Outputdir: ' + REPO_OUTPUT_DIR
         print '      pkg src: ' + PACKAGES_FULL_PATH_DST
-        repogen_args = [REPOGEN_TOOL, '-p', PACKAGES_FULL_PATH_DST, REPO_OUTPUT_DIR]
+        repogen_args = [REPOGEN_TOOL]
+        if os.environ.get('IFW_UNITE_METADATA'):
+            repogen_args += ['--unite-metadata']
+        repogen_args += ['-p', PACKAGES_FULL_PATH_DST, REPO_OUTPUT_DIR]
         # create repository
         bldinstallercommon.do_execute_sub_process(repogen_args, SCRIPT_ROOT_DIR)
         if not os.path.exists(REPO_OUTPUT_DIR):
