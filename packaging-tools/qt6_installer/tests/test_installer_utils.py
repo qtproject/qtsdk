@@ -109,8 +109,8 @@ class TestInstallerUtils(unittest.TestCase):
             await extract_archive(tarArchivePath, destDir)
             self.assertTrue(os.path.isfile(os.path.join(destDir, tempPath, "foobar.txt")))
 
-    @testhelpers.asyncio_test
     @unittest.skipUnless(_isInternalFileServerReachable(), "Skipping because '{0}' is not accessible".format(packageServer))
+    @testhelpers.asyncio_test
     async def test_download_archive(self) -> None:
         with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmpBaseDir:
             downloadedFile = download_archive("http://{0}/packages/jenkins/python/src/Python-3.8.1.tgz".format(packageServer), tmpBaseDir)
