@@ -132,7 +132,7 @@ async def upload_ifw_to_remote(ifwTools: str, remoteServer: str, remoteServerHom
     create_remote_paths(remoteServer, [remoteTmpDir])
     # upload content
     cmd = ['rsync', '-avzh', repogenDir + "/", remoteServer + ":" + remoteTmpDir]
-    exec_cmd(cmd, timeout=60*2)
+    exec_cmd(cmd, timeout=60*60)
     # return path on remote poiting to repogen
     return os.path.join(remoteTmpDir, "bin", "repogen")
 
