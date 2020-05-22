@@ -314,6 +314,24 @@ def build_clang(toolchain, src_path, build_path, install_path, profile_data_path
         build_targets = ['install'] # There is no 'install/strip' for nmake.
     build_and_install(toolchain, build_path, environment, ['libclang', 'clang', 'llvm-config'], build_targets)
 
+def build_clazy(toolchain, src_path, build_path, install_path, bitness=64, environment=None):
+    if build_path and not os.path.lexists(build_path):
+        os.makedirs(build_path)
+
+    cmake_cmd = ['cmake',
+                 '-G', cmake_generator(toolchain),
+                 '-DCMAKE_INSTALL_PREFIX=' + install_path,
+                 '-DCMAKE_BUILD_TYPE=Release',
+                 '-DLLVM_ROOT=' + install_path]
+    cmake_cmd.extend(bitness_flags(bitness))
+    cmake_cmd.append(src_path)
+    bldinstallercommon.do_execute_sub_process(cmake_cmd, build_path, extra_env=environment)
+
+    install_targets = ['install/strip']
+    if is_msvc_toolchain(toolchain):
+        install_targets = ['install'] # There is no 'install/strip' for nmake.
+    build_and_install(toolchain, build_path, environment, [], install_targets)
+
 def check_clang(toolchain, build_path, environment):
     if is_msvc_toolchain(toolchain) or is_mingw_toolchain(toolchain):
         tools_path = os.environ.get('WINDOWS_UNIX_TOOLS_PATH')
@@ -373,6 +391,12 @@ def main():
     #
     # LLVM_REVISION
     # Git revision, branch or tag for LLVM/Clang check out
+    #
+    # CLAZY_REPOSITORY_URL
+    # URL to the remote clazy repository
+    #
+    # CLAZY_REVISION
+    # Git revision, branch or tag for clazy check out
 
     bldinstallercommon.init_common_module(os.path.dirname(os.path.realpath(__file__)))
     base_path = os.path.join(os.environ['PKG_NODE_ROOT'])
@@ -388,6 +412,7 @@ def main():
     remote_path = (os.environ['PACKAGE_STORAGE_SERVER_USER'] + '@' + os.environ['PACKAGE_STORAGE_SERVER'] + ':'
                    + os.environ['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + os.environ['CLANG_UPLOAD_SERVER_PATH'])
 
+    ### Get, build and install LLVM/Clang
     get_clang(base_path, os.environ['LLVM_REPOSITORY_URL'], os.environ['LLVM_REVISION'])
 
     # TODO: put args in some struct to improve readability, add error checks
@@ -400,6 +425,19 @@ def main():
 
     check_clang(toolchain, build_path, environment)
 
+    ### Get, build and install clazy
+    git_clone_and_checkout(base_path,
+                           os.environ['CLAZY_REPOSITORY_URL'],
+                           'clazy',
+                           os.environ['CLAZY_REVISION'])
+    build_clazy(toolchain,
+                os.path.join(base_path, 'clazy'),
+                os.path.join(base_path, 'clazy-build'),
+                install_path,
+                bitness,
+                environment)
+
+    ### Package and upload
     package_clang(install_path, result_file_path)
     upload_clang(result_file_path, remote_path)
 
