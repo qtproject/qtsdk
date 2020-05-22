@@ -61,8 +61,8 @@ def git_clone_and_checkout(base_path, remote_repository_url, directory, revision
                           '--recursive',
                           remote_repository_url, directory], base_path)
 
-def get_clang(base_path, llvm_revision):
-    git_clone_and_checkout(base_path, 'git://code.qt.io/clang/llvm-project.git', 'llvm', llvm_revision)
+def get_clang(base_path, llvm_repository_url, llvm_revision):
+    git_clone_and_checkout(base_path, llvm_repository_url, 'llvm', llvm_revision)
 
 def msvc_version():
     msvc_ver = os.environ.get('MSVC_VERSION')
@@ -368,6 +368,9 @@ def main():
     # Define a remote path where to upload the resulting package
     # "PACKAGE_STORAGE_SERVER_USER@PACKAGE_STORAGE_SERVER:PACKAGE_STORAGE_SERVER_BASE_DIR/CLANG_UPLOAD_SERVER_PATH"
     #
+    # LLVM_REPOSITORY_URL
+    # URL to the remote llvm-project repository.
+    #
     # LLVM_REVISION
     # Git revision, branch or tag for LLVM/Clang check out
 
@@ -385,7 +388,7 @@ def main():
     remote_path = (os.environ['PACKAGE_STORAGE_SERVER_USER'] + '@' + os.environ['PACKAGE_STORAGE_SERVER'] + ':'
                    + os.environ['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + os.environ['CLANG_UPLOAD_SERVER_PATH'])
 
-    get_clang(base_path, os.environ['LLVM_REVISION'])
+    get_clang(base_path, os.environ['LLVM_REPOSITORY_URL'], os.environ['LLVM_REVISION'])
 
     # TODO: put args in some struct to improve readability, add error checks
     build_clang(toolchain, src_path, build_path, install_path, profile_data_path, True, bitness, environment, build_type='Release')
