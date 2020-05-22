@@ -35,18 +35,7 @@ import io
 import unittest
 import tempfile
 import tarfile
-from socket import getaddrinfo
 from installer_utils import cd, PackagingError, get_extract_cmd, extract_archive, download_archive, is_valid_url_path
-
-packageServer = "ci-files02-hki.intra.qt.io"
-
-
-def _isInternalFileServerReachable():
-    try:
-        getaddrinfo(packageServer, 80)
-    except Exception:
-        return False
-    return True
 
 
 class TestInstallerUtils(unittest.TestCase):
@@ -109,7 +98,7 @@ class TestInstallerUtils(unittest.TestCase):
             await extract_archive(tarArchivePath, destDir)
             self.assertTrue(os.path.isfile(os.path.join(destDir, tempPath, "foobar.txt")))
 
-    @unittest.skipUnless(_isInternalFileServerReachable(), "Skipping because '{0}' is not accessible".format(packageServer))
+    @unittest.skipUnless(testhelpers.isInternalFileServerReachable(), "Skipping because file server is not accessible")
     @testhelpers.asyncio_test
     async def test_download_archive(self) -> None:
         with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmpBaseDir:

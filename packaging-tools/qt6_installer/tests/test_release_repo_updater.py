@@ -33,7 +33,6 @@ import testhelpers
 import os
 import unittest
 from ddt import ddt
-from socket import getaddrinfo
 import tempfile
 import shutil
 import configparser
@@ -43,17 +42,6 @@ from release_repo_updater import is_safe_repo_directory, upload_ifw_to_remote, u
                                     remote_repository_exists, reset_new_remote_repository, create_remote_repository_backup, \
                                     update_remote_repository, remote_file_exists, build_online_repositories, \
                                     ensure_ext_repo_paths, parse_ext, check_repogen_output, append_to_task_filters
-
-
-packageServer = "ci-files02-hki.intra.qt.io"
-
-
-def _isInternalFileServerReachable():
-    try:
-        getaddrinfo(packageServer, 80)
-    except:
-        return False
-    return True
 
 
 def _write_dummy_file(path: str) -> None:
@@ -131,7 +119,7 @@ class TestReleaseRepoUpdater(unittest.TestCase):
         self.assertTrue(remote_file_exists(self.server, os.path.abspath(__file__)))
         self.assertFalse(remote_file_exists(self.server, "/some/bogus/directory/foo.txt"))
 
-    @unittest.skipUnless(_isInternalFileServerReachable(), "Skipping because '{0}' is not accessible".format(packageServer))
+    @unittest.skipUnless(testhelpers.isInternalFileServerReachable(), "Skipping because file server is not accessible")
     @testhelpers.asyncio_test
     async def test_upload_ifw_to_remote(self) -> None:
         try:
@@ -184,7 +172,7 @@ class TestReleaseRepoUpdater(unittest.TestCase):
             remoteRepoBackupPath = create_remote_repository_backup(self.server, remoteSourceRepoPath)
             self.assertListEqual(sorted(os.listdir(remoteSourceRepoPath)), sorted(os.listdir(remoteRepoBackupPath)))
 
-    @unittest.skipUnless(_isInternalFileServerReachable(), "Skipping because '{0}' is not accessible".format(packageServer))
+    @unittest.skipUnless(testhelpers.isInternalFileServerReachable(), "Skipping because files erver is not accessible")
     @testhelpers.asyncio_test
     async def test_update_remote_repository(self) -> None:
         with tempfile.TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:

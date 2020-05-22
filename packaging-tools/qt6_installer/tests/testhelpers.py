@@ -30,10 +30,12 @@
 #############################################################################
 
 import os
+import sh
 import sys
 import inspect
 import asyncio
 import typing
+import subprocess
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
@@ -60,3 +62,13 @@ def asyncio_test_parallel_data(*data_args, unpack=True):
             _asyncio_test_loop.run_until_complete(asyncio.gather(*calls))
         return wrapped
     return decorator
+
+def isInternalFileServerReachable() -> bool:
+        packageServer = "ci-files02-hki.intra.qt.io"
+        ping = sh.which("ping")
+        try:
+            ret = subprocess.run([ping, "-c", "1", packageServer], timeout=5, capture_output=True)
+            return ret.returncode == 0
+        except subprocess.TimeoutExpired:
+            pass
+        return False
