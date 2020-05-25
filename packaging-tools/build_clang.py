@@ -55,6 +55,7 @@ import multiprocessing
 
 def git_clone_and_checkout(base_path, remote_repository_url, directory, revision):
     bld_utils.runCommand(['git', 'clone',
+                          '--depth', '1',
                           '--config', 'core.eol=lf',
                           '--config', 'core.autocrlf=input',
                           '--branch', revision,
