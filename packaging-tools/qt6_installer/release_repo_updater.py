@@ -104,7 +104,7 @@ def create_remote_script(server: str, cmd: List[str], remoteScriptPath: str, scr
         os.chmod(tempFilePath, 0o755)
         create_remote_paths(server, [remoteScriptPath])
         cmd = ['rsync', '-avzh', tempFilePath, server + ":" + remoteScriptPath]
-        exec_cmd(cmd, timeout=60 * 2)
+        exec_cmd(cmd, timeout=60 * 60)
         return os.path.join(remoteScriptPath, scriptFileName)
 
 
@@ -159,7 +159,7 @@ def trigger_rta(rtaServerUrl: str, task: ReleaseTask) -> None:
 
 def _remote_path_exists(server: str, remotePath: str, type: str) -> bool:
     cmd = get_remote_login_cmd(server) + ['test', type, remotePath, '&& echo OK || echo NOK']
-    output = subprocess.check_output(' '.join(cmd), shell=True, timeout=60).decode("utf-8")
+    output = subprocess.check_output(' '.join(cmd), shell=True, timeout=60 * 2).decode("utf-8")
     return output.strip() == "OK"
 
 
@@ -193,13 +193,13 @@ def is_safe_repo_directory(paths: List[str]) -> None:
 def create_remote_paths(server: str, paths: List[str]) -> None:
     is_safe_repo_directory(paths)
     cmd = get_remote_login_cmd(server) + ['mkdir -p', ' '.join(paths)]
-    exec_cmd(cmd, timeout=60)
+    exec_cmd(cmd, timeout=60 * 2)
 
 
 def delete_remote_paths(server: str, paths: List[str]) -> None:
     is_safe_repo_directory(paths)
     cmd = get_remote_login_cmd(server) + ['rm -rf', ' '.join(paths)]
-    exec_cmd(cmd, timeout=60)
+    exec_cmd(cmd, timeout=60 * 2)
 
 
 def upload_pending_repository_content(server: str, sourcePath: str, remoteDestinationPath: str) -> None:
@@ -308,7 +308,7 @@ async def spawn_remote_background_task(server: str, serverHome: str, remoteCmd: 
         tip = ""
     cmd = ["nohup"] + remoteCmd + ["</dev/null >", remoteLogFile, "2>&1"]
     remoteScriptFileName = "sync-production-" + tip + "-" + timestamp + ".sh"
-    await execute_remote_cmd(server, serverHome, cmd, remoteScriptFileName, timeout=60*2)  # give it 2 minutes to spawn the task at remote
+    await execute_remote_cmd(server, serverHome, cmd, remoteScriptFileName, timeout=60*60)
 
 
 async def update_repository(stagingServer: str, repoLayout: QtRepositoryLayout, task: ReleaseTask,
