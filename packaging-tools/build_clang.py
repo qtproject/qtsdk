@@ -352,7 +352,7 @@ def check_clang(toolchain, build_path, environment):
 
 def package_clang(install_path, result_file_path):
     (basepath, dirname) = os.path.split(install_path)
-    zip_command = ['7z', 'a', result_file_path, dirname]
+    zip_command = ['7z', 'a', '-mmt2', result_file_path, dirname]
     bld_utils.runCommand(zip_command, basepath)
 
 def upload_clang(file_path, remote_path):
