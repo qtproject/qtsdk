@@ -292,6 +292,7 @@ def cmake_command(toolchain, src_path, build_path, install_path, profile_data_pa
                '-G',
                cmake_generator(toolchain),
                '-DCMAKE_BUILD_TYPE=' + build_type,
+               '-DLLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN=ON',
                '-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra',
                "-DLLVM_LIT_ARGS='-v'"]
     if is_msvc_toolchain(toolchain):
