@@ -331,7 +331,8 @@ def build_clazy(toolchain, src_path, build_path, install_path, bitness=64, envir
                  '-G', cmake_generator(toolchain),
                  '-DCMAKE_INSTALL_PREFIX=' + install_path,
                  '-DCMAKE_BUILD_TYPE=Release',
-                 '-DLLVM_ROOT=' + install_path]
+                 '-DCMAKE_PREFIX_PATH=' + install_path,
+                 '-DCLANG_LIBRARY_IMPORT=libclang']
     cmake_cmd.extend(bitness_flags(bitness))
     cmake_cmd.append(src_path)
     bldinstallercommon.do_execute_sub_process(cmake_cmd, build_path, extra_env=environment)
