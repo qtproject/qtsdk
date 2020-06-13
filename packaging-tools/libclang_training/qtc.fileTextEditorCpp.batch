@@ -1,14 +1,14 @@
-openProject "c:/Users/qt/work/build/qt-creator/qtcreator.pro"
+openProject "qt-creator/qtcreator.pro"
 
 # Train initial parsing
-openDocument "c:/Users/qt/work/build/qt-creator/src/plugins/texteditor/texteditor.cpp"
+openDocument "qt-creator/src/plugins/texteditor/texteditor.cpp"
 closeAllDocuments
-openDocument "c:/Users/qt/work/build/qt-creator/src/plugins/texteditor/texteditor.cpp"
+openDocument "qt-creator/src/plugins/texteditor/texteditor.cpp"
 closeAllDocuments
-openDocument "c:/Users/qt/work/build/qt-creator/src/plugins/texteditor/texteditor.cpp"
+openDocument "qt-creator/src/plugins/texteditor/texteditor.cpp"
 closeAllDocuments
 
-openDocument "c:/Users/qt/work/build/qt-creator/src/plugins/texteditor/texteditor.cpp"
+openDocument "qt-creator/src/plugins/texteditor/texteditor.cpp"
 
 setCursor 8342 1
 
@@ -37,4 +37,3 @@ complete
 
 # Wait in order to inspect the result
 processEvents 3000
-

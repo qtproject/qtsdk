@@ -95,6 +95,12 @@ def msvc_year_version_libclang():
         '14.2': 'vs2019'
     }.get(os.environ.get('MSVC_VERSION'), 'vs2017')
 
+def cmake_version():
+    cmake_ver = os.environ.get('CMAKE_VERSION')
+    if not cmake_ver:
+        cmake_ver = '3.17.1'
+    return cmake_ver
+
 def msvc_environment(bitness):
     program_files = os.path.join('C:', '/Program Files (x86)')
     if not os.path.exists(program_files):
@@ -148,30 +154,24 @@ def training_qtcreator_version():
         qtcreator_ver = '4.5'
     return qtcreator_ver
 
-def training_libclang_label():
-    libclang_ver = os.environ.get('TRAINING_LIBCLANG_LABEL')
-    if not libclang_ver:
-        libclang_ver = 'libclang-release_70-based-windows-vs2015'
-    return libclang_ver
-
-def mingw_training(base_path, qtcreator_path, bitness):
+def mingw_training(base_path, qtcreator_path, environment, bitness):
     # Checkout qt-creator, download libclang for build, qt installer and DebugView
 
-    bld_utils.runCommand(['git', 'checkout', training_qtcreator_version()], qtcreator_path)
+    git_clone_and_checkout(base_path, 'git://code.qt.io/qt-creator/qt-creator.git', qtcreator_path, training_qtcreator_version())
 
     # Set up paths
     script_dir = os.path.dirname(os.path.realpath(__file__))
     debugview_dir = os.path.join(base_path, 'debugview')
+    cmake_dir = os.path.join(base_path, 'cmake')
     creator_build_dir = os.path.join(base_path, 'qtcreator_build')
-    creator_libclang_dir = os.path.join(base_path, 'qtcreator_libclang')
+    creator_install_dir = os.path.join(base_path, 'qtcreator_install')
     creator_settings_dir = os.path.join(base_path, 'qtc-settings')
     creator_logs_dir = os.path.join(base_path, 'logs')
     training_dir = os.path.join(script_dir, 'libclang_training')
     qt_dir = os.path.join(base_path, 'qt')
+    qt_mingw_dir = os.path.join(base_path, 'qt_mingw')
 
     # Create some paths
-    os.makedirs(debugview_dir)
-    os.makedirs(creator_build_dir)
     os.makedirs(creator_settings_dir)
     os.makedirs(creator_logs_dir)
 
@@ -179,50 +179,150 @@ def mingw_training(base_path, qtcreator_path, bitness):
 
     # Install Qt
     qt_modules = ['qtbase', 'qtdeclarative', 'qtgraphicaleffects',
-                 'qtimageformats', 'qtlocation', 'qtmacextras',
+                 'qtimageformats', 'qtlocation',
                  'qtquickcontrols', 'qtquickcontrols2', 'qtscript', 'qtsvg', 'qttools',
-                 'qttranslations', 'qtx11extras', 'qtxmlpatterns']
+                 'qttranslations', 'qtxmlpatterns']
+
     qt_base_url = 'http://' + pkg_server + '/packages/jenkins/archive/qt/' \
         + training_qt_version() + '/' + training_qt_long_version() + '/latest'
-
-    arg = 'X86_64' if bitness == 64 else 'X86'
     msvc_year_ver = msvc_year_version()
+    if bitness == 64:
+      qt_mingw_postfix = '-Windows-Windows_10-Mingw-Windows-Windows_10-X86_64.7z'
+      qt_postfix = '-Windows-Windows_10-' + msvc_year_ver + '-Windows-Windows_10-X86_64.7z'
+    else:
+      qt_mingw_postfix = '-Windows-Windows_7-Mingw-Windows-Windows_7-X86.7z'
+      qt_postfix = '-Windows-Windows_10-' + msvc_year_ver + '-Windows-Windows_10-X86.7z'
 
-    qt_postfix = '-Windows-Windows_10-' + msvc_year_ver + '-Windows-Windows_10-' + arg + '.7z'
     qt_module_urls = [qt_base_url + '/' + module + '/' + module + qt_postfix for module in qt_modules]
+    qt_mingw_module_urls = [qt_base_url + '/' + module + '/' + module + qt_mingw_postfix for module in qt_modules]
     qt_temp = os.path.join(base_path, 'qt_download')
+    qt_mingw_temp = os.path.join(base_path, 'qt_download_mingw')
     download_packages_work = threadedwork.ThreadedWork("get and extract Qt")
     download_packages_work.addTaskObject(bldinstallercommon.create_qt_download_task(qt_module_urls, qt_dir, qt_temp, None))
-    download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
-        'http://' + pkg_server \
-            + '/packages/jenkins/qtcreator_libclang/' + training_libclang_label() \
-            + '_' + str(bitness) + '.7z',
-        creator_libclang_dir,
-        base_path,
-        None))
+    download_packages_work.addTaskObject(bldinstallercommon.create_qt_download_task(qt_mingw_module_urls, qt_mingw_dir, qt_mingw_temp, None))
+
     download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
         'https://download.sysinternals.com/files/DebugView.zip',
         debugview_dir,
         base_path,
         None))
+
+    # Install CMake
+    cmake_arch_suffix = 'win64-x64' if bitness == 64 else 'win32-x86'
+    cmake_base_url = 'http://' + pkg_server + '/packages/jenkins/cmake/' \
+        + cmake_version() + '/cmake-' + cmake_version() + '-' + cmake_arch_suffix + '.zip'
+    download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
+        cmake_base_url, cmake_dir, base_path, None))
+
     download_packages_work.run()
-    bld_qtcreator.patch_qt_pri_files(qt_dir)
-    bldinstallercommon.patch_qt(qt_dir)
 
     # Build QtCreator with installed libclang and qt
-    # Debug version of QtCreator is required to support running .batch files
-    msvc_env = msvc_environment(bitness)
-    msvc_env['LLVM_INSTALL_DIR'] = os.path.join(creator_libclang_dir, 'libclang')
-    bld_utils.runCommand([os.path.join(qt_dir, 'bin', 'qmake.exe'), os.path.join(qtcreator_path, 'qtcreator.pro'), '-spec', 'win32-msvc', 'CONFIG+=debug'], creator_build_dir, None, msvc_env)
-    bld_utils.runCommand(['jom', 'qmake_all'], creator_build_dir, None, msvc_env)
-    bld_utils.runCommand(['jom'], creator_build_dir, None, msvc_env)
-    qtConfFile = open(os.path.join(creator_build_dir, 'bin', 'qt.conf'), "w")
-    qtConfFile.write("[Paths]" + os.linesep)
-    qtConfFile.write("Prefix=../../qt" + os.linesep)
-    qtConfFile.close()
+    # WITH_TESTS is required for QtCreator to support running .batch files
+    cmake_command = os.path.join(cmake_dir, 'cmake-' + cmake_version() + '-' + cmake_arch_suffix, 'bin', 'cmake')
+    qtc_cmake = [cmake_command,
+               '-GNinja',
+               '-DCMAKE_BUILD_TYPE=Release',
+               '-DWITH_TESTS=ON',
+
+               '-DBUILD_PLUGIN_ANDROID=OFF',
+               '-DBUILD_PLUGIN_AUTOTEST=OFF',
+               '-DBUILD_PLUGIN_AUTOTOOLSPROJECTMANAGER=OFF',
+               '-DBUILD_PLUGIN_BAREMETAL=OFF',
+               '-DBUILD_PLUGIN_BAZAAR=OFF',
+               '-DBUILD_PLUGIN_BEAUTIFIER=OFF',
+               '-DBUILD_PLUGIN_BINEDITOR=OFF',
+               '-DBUILD_PLUGIN_BOOKMARKS=OFF',
+               '-DBUILD_PLUGIN_BOOT2QT=OFF',
+               '-DBUILD_PLUGIN_CLANGFORMAT=OFF',
+               '-DBUILD_PLUGIN_CLANGPCHMANAGER=OFF',
+               '-DBUILD_PLUGIN_CLANGREFACTORING=OFF',
+               '-DBUILD_PLUGIN_CLASSVIEW=OFF',
+               '-DBUILD_PLUGIN_CLEARCASE=OFF',
+               '-DBUILD_PLUGIN_CODEPASTER=OFF',
+               '-DBUILD_PLUGIN_COMPILATIONDATABASEPROJECTMANAGER=OFF',
+               '-DBUILD_PLUGIN_COMPONENTSPLUGIN=OFF',
+               '-DBUILD_PLUGIN_CPPCHECK=OFF',
+               '-DBUILD_PLUGIN_CTFVISUALIZER=OFF',
+               '-DBUILD_PLUGIN_CVS=OFF',
+               '-DBUILD_PLUGIN_DIFFEDITOR=OFF',
+               '-DBUILD_PLUGIN_EMACSKEYS=OFF',
+               '-DBUILD_PLUGIN_FAKEVIM=OFF',
+               '-DBUILD_PLUGIN_GENERICPROJECTMANAGER=OFF',
+               '-DBUILD_PLUGIN_GIT=OFF',
+               '-DBUILD_PLUGIN_GLSLEDITOR=OFF',
+               '-DBUILD_PLUGIN_HELLOWORLD=OFF',
+               '-DBUILD_PLUGIN_HELP=OFF',
+               '-DBUILD_PLUGIN_IMAGEVIEWER=OFF',
+               '-DBUILD_PLUGIN_IOS=OFF',
+               '-DBUILD_PLUGIN_LANGUAGECLIENT=OFF',
+               '-DBUILD_PLUGIN_MACROS=OFF',
+               '-DBUILD_PLUGIN_MARKETPLACE=OFF',
+               '-DBUILD_PLUGIN_MCUSUPPORT=OFF',
+               '-DBUILD_PLUGIN_MERCURIAL=OFF',
+               '-DBUILD_PLUGIN_MODELEDITOR=OFF',
+               '-DBUILD_PLUGIN_NIM=OFF',
+               '-DBUILD_PLUGIN_PERFORCE=OFF',
+               '-DBUILD_PLUGIN_PERFPROFILER=OFF',
+               '-DBUILD_PLUGIN_PYTHON=OFF',
+               '-DBUILD_PLUGIN_QBSPROJECTMANAGER=OFF',
+               '-DBUILD_PLUGIN_QMLDESIGNER=OFF',
+               '-DBUILD_PLUGIN_QMLJSEDITOR=OFF',
+               '-DBUILD_PLUGIN_QMLJSTOOLS=OFF',
+               '-DBUILD_PLUGIN_QMLPREVIEW=OFF',
+               '-DBUILD_PLUGIN_QMLPREVIEWPLUGIN=OFF',
+               '-DBUILD_PLUGIN_QMLPROFILER=OFF',
+               '-DBUILD_PLUGIN_QMLPROJECTMANAGER=OFF',
+               '-DBUILD_PLUGIN_QNX=OFF',
+               '-DBUILD_PLUGIN_QTQUICKPLUGIN=OFF',
+               '-DBUILD_PLUGIN_REMOTELINUX=OFF',
+               '-DBUILD_PLUGIN_SCXMLEDITOR=OFF',
+               '-DBUILD_PLUGIN_SERIALTERMINAL=OFF',
+               '-DBUILD_PLUGIN_SILVERSEARCHER=OFF',
+               '-DBUILD_PLUGIN_STUDIOWELCOME=OFF',
+               '-DBUILD_PLUGIN_SUBVERSION=OFF',
+               '-DBUILD_PLUGIN_TASKLIST=OFF',
+               '-DBUILD_PLUGIN_TODO=OFF',
+               '-DBUILD_PLUGIN_UPDATEINFO=OFF',
+               '-DBUILD_PLUGIN_VALGRIND=OFF',
+               '-DBUILD_PLUGIN_VCSBASE=OFF',
+               '-DBUILD_PLUGIN_WEBASSEMBLY=OFF',
+               '-DBUILD_PLUGIN_WELCOME=OFF',
+               '-DBUILD_PLUGIN_WINRT=OFF',
+
+               '-DBUILD_EXECUTABLE_BUILDOUTPUTPARSER=OFF',
+               '-DBUILD_EXECUTABLE_CPASTER=OFF',
+               '-DBUILD_EXECUTABLE_CPLUSPLUS-KEYWORDGEN=OFF',
+               '-DBUILD_EXECUTABLE_QML2PUPPET=OFF',
+               '-DBUILD_EXECUTABLE_QTC-ASKPASS=OFF',
+               '-DBUILD_EXECUTABLE_QTCDEBUGGER=OFF',
+               '-DBUILD_EXECUTABLE_QTCREATOR_CTRLC_STUB=OFF',
+               '-DBUILD_EXECUTABLE_QTCREATOR_PROCESS_STUB=OFF',
+               '-DBUILD_EXECUTABLE_QTPROMAKER=OFF',
+               '-DBUILD_EXECUTABLE_SDKTOOL=OFF',
+               '-DBUILD_EXECUTABLE_VALGRIND-FAKE=OFF',
+               '-DBUILD_EXECUTABLE_WIN32INTERRUPT=OFF',
+               '-DBUILD_EXECUTABLE_WIN64INTERRUPT=OFF',
+               '-DBUILD_EXECUTABLE_WINRTDEBUGHELPER=OFF',
+
+               '-DCMAKE_PREFIX_PATH=' + qt_mingw_dir + ';' + os.path.join(base_path, 'libclang'),
+               '-S' + qtcreator_path,
+               '-B' + creator_build_dir]
+
+    # Two times until CMake 3.18
+    bld_utils.runCommand(qtc_cmake, creator_build_dir, None, environment)
+    bld_utils.runCommand(qtc_cmake, creator_build_dir, None, environment)
+    bld_utils.runCommand([cmake_command, '--build', creator_build_dir], creator_build_dir, None, environment)
+    bld_utils.runCommand([cmake_command, '--install', creator_build_dir, '--prefix', creator_install_dir], creator_build_dir, None, environment)
+    bld_utils.runCommand([cmake_command, '--install', creator_build_dir, '--prefix', creator_install_dir, '--component', 'Dependencies'], creator_build_dir, None, environment)
+
+    # Remove the regular libclang.dll which got deployed via 'Dependencies' qtcreator install target
+    os.remove(os.path.join(creator_install_dir, 'bin', 'libclang.dll'))
 
     # Train mingw libclang library with build QtCreator
-    bld_utils.runCommand([os.path.join(training_dir, 'runBatchFiles.bat')], base_path, callerArguments = None, init_environment = None, onlyErrorCaseOutput=False, expectedExitCodes=[0,1])
+    # First time open the project, then close it. This will generate initial settings and .user files. Second time do the actual training.
+    for batchFile in ['qtc.openProject.batch', 'qtc.fileTextEditorCpp.batch']:
+        bld_utils.runCommand([os.path.join(training_dir, 'runBatchFiles.bat'), msvc_version(), 'x64' if bitness == 64 else 'x86', batchFile],
+                            base_path, callerArguments = None, init_environment = None, onlyErrorCaseOutput=False, expectedExitCodes=[0,1])
 
 def is_msvc_toolchain(toolchain):
     return 'msvc' in toolchain
@@ -336,6 +436,9 @@ def build_clazy(toolchain, src_path, build_path, install_path, bitness=64, envir
     if is_msvc_toolchain(toolchain):
         cmake_cmd.append('-DCLANG_LIBRARY_IMPORT=' + build_path + '/../build/lib/clang.lib')
 
+    if bldinstallercommon.is_mac_platform():
+        cmake_cmd.append('-DREADLINK_CMD=greadlink')
+
     cmake_cmd.extend(bitness_flags(bitness))
     cmake_cmd.append(src_path)
     bldinstallercommon.do_execute_sub_process(cmake_cmd, build_path, extra_env=environment)
@@ -388,10 +491,6 @@ def main():
     # "win-MinGW5.3.0-Windows10-x64", "win-MinGW5.3.0-Windows10-x86",
     # "win-msvc2015-Windows10-x64", "win-msvc2015-Windows10-x86"
     #
-    # GENERATE_INSTRUMENTED_BINARIES
-    # Set this to 1 if you want to build MinGW libraries with information
-    # suitable for creating profile optimized builds
-    #
     # PACKAGE_STORAGE_SERVER_USER
     # PACKAGE_STORAGE_SERVER
     # PACKAGE_STORAGE_SERVER_BASE_DIR
@@ -420,8 +519,7 @@ def main():
     bitness = 64 if '64' in os.environ['cfg'] else 32
     toolchain = os.environ['cfg'].split('-')[1].lower()
     environment = build_environment(toolchain, bitness)
-    result_file_path = os.path.join(base_path, 'libclang-' + branch + '-' + os.environ['CLANG_PLATFORM'] + '.7z')
-    profile_data_path = os.path.join(build_path, 'profile_data')
+    profile_data_path = os.path.join(base_path, 'profile_data')
     remote_path = (os.environ['PACKAGE_STORAGE_SERVER_USER'] + '@' + os.environ['PACKAGE_STORAGE_SERVER'] + ':'
                    + os.environ['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + os.environ['CLANG_UPLOAD_SERVER_PATH'])
 
@@ -429,14 +527,30 @@ def main():
     get_clang(base_path, os.environ['LLVM_REPOSITORY_URL'], os.environ['LLVM_REVISION'])
 
     # TODO: put args in some struct to improve readability, add error checks
-    build_clang(toolchain, src_path, build_path, install_path, profile_data_path, True, bitness, environment, build_type='Release')
-    if is_mingw_toolchain(toolchain):
-        shutil.rmtree(profile_data_path)
-        os.makedirs(profile_data_path)
-        mingw_training(base_path, os.path.abspath('qt-creator'), bitness)
-        build_clang(toolchain, src_path, build_path, install_path, profile_data_path, False, bitness, environment, build_type='Release')
-
+    build_clang(toolchain, src_path, build_path, install_path, profile_data_path, False, bitness, environment, build_type='Release')
     check_clang(toolchain, build_path, environment)
+
+    if is_mingw_toolchain(toolchain):
+        # We need to build libclang three times.
+        # First time as a regular build, which would be used by a Qt Creator build to link to libclang/llvm.
+        # Second time a PGO build, which would be trained with Qt Creator itself
+        # Third time will use the training data collected and produce the optimized output
+
+        if os.path.exists(profile_data_path):
+            shutil.rmtree(profile_data_path)
+        os.makedirs(profile_data_path)
+
+        # Update the regular build, so that we can see the differences
+        result_file_path = os.path.join(base_path, 'libclang-' + branch + '-' + os.environ['CLANG_PLATFORM'] + '-regular.7z')
+        package_clang(install_path, result_file_path)
+        upload_clang(result_file_path, remote_path)
+
+        build_path_training = os.path.join(base_path, 'build-training')
+        install_path_training = os.path.join(base_path, 'libclang-training')
+        build_clang(toolchain, src_path, build_path_training, install_path_training, profile_data_path, True, bitness, environment, build_type='Release')
+        mingw_training(base_path, os.path.join(base_path, 'qt-creator'), environment, bitness)
+        build_clang(toolchain, src_path, build_path_training, install_path, profile_data_path, False, bitness, environment, build_type='Release')
+
 
     ### Get, build and install clazy
     git_clone_and_checkout(base_path,
@@ -451,6 +565,7 @@ def main():
                 environment)
 
     ### Package and upload
+    result_file_path = os.path.join(base_path, 'libclang-' + branch + '-' + os.environ['CLANG_PLATFORM'] + '.7z')
     package_clang(install_path, result_file_path)
     upload_clang(result_file_path, remote_path)
 
