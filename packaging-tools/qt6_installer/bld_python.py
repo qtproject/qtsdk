@@ -37,7 +37,7 @@ import platform
 import multiprocessing
 from shutil import which, rmtree
 from logging_util import init_logger
-from runner import async_exec_cmd
+from runner import async_exec_cmd, exec_cmd
 from installer_utils import cd, is_valid_url_path, extract_archive, download_archive
 
 
@@ -84,7 +84,11 @@ async def _build_python(srcDir: str, bldDir: str, prefix: str) -> str:
         makeCmd = ['nmake']
         makeInstallCmd = ['nmake', 'install']
     elif "darwin" in system:
-        configureCmd = [os.path.join(srcDir, 'configure'), '--enable-framework', '--with-openssl=$(brew --prefix openssl)', '--prefix=' + prefix]
+        opensslQueryCmd = ['brew', '--prefix', 'openssl']
+        opensslPath = exec_cmd(opensslQueryCmd)
+        if not os.path.exists(opensslPath):
+            raise BldPythonError("Could not find OpenSSL path. Please check that the required brew formula is installed.")
+        configureCmd = [os.path.join(srcDir, 'configure'), '--enable-shared', '--with-openssl=' + opensslPath, '--prefix=' + prefix]
         makeCmd = ['make', '-j' + cpuCount]
         makeInstallCmd = ['make', 'install']
     else:
