@@ -560,9 +560,9 @@ if __name__ == "__main__":
     parser.add_argument("--rta", dest="rta", type=str, default=os.getenv("RTA_SERVER_BASE_URL"),
                         help="If specified then trigger RTA for tasks found from --config")
 
-    parser.add_argument("--sync-s3", dest="sync_s3", type=str, default=os.getenv("S3_PRODUCTION"),
+    parser.add_argument("--sync-s3", dest="sync_s3", type=str,
                         help="Sync online repositories defined by '--config' file to S3 production. Supports 'enterprise' license only at the moment.")
-    parser.add_argument("--sync-ext", dest="sync_ext", type=str, default=os.getenv("EXT_PRODUCTION"),
+    parser.add_argument("--sync-ext", dest="sync_ext", type=str,
                         help="Sync online repositories defined by '--config' file to Ext production.")
     parser.set_defaults(**defaults)  # these are from provided --config file
     args = parser.parse_args(sys.argv[1:])
