@@ -40,7 +40,7 @@ from installer_utils import PackagingError
 from release_task_reader import parse_data
 from release_repo_updater import is_safe_repo_directory, upload_ifw_to_remote, upload_pending_repository_content, \
                                     remote_repository_exists, reset_new_remote_repository, create_remote_repository_backup, \
-                                    update_remote_repository, remote_file_exists, build_online_repositories, \
+                                    remote_file_exists, build_online_repositories, \
                                     ensure_ext_repo_paths, parse_ext, check_repogen_output, append_to_task_filters
 
 
@@ -156,9 +156,9 @@ class TestReleaseRepoUpdater(unittest.TestCase):
             self.assertTrue(os.path.isfile(os.path.join(remoteTargetRepoPath, "qt.foo.bar2", "meta", "package.xml")))
             self.assertTrue(os.path.isfile(os.path.join(remoteTargetRepoPath, "Updates.xml")))
 
-            # should not allow resetting a new repository if destination already contains a repository (should 'update' instead)
-            with self.assertRaises(PackagingError):
-                reset_new_remote_repository(self.server, remoteSourceRepoPath, remoteTargetRepoPath)
+            # existing repository should be automatically be moved as backup
+            reset_new_remote_repository(self.server, remoteSourceRepoPath, remoteTargetRepoPath)
+            self.assertTrue(os.path.exists(remoteTargetRepoPath + "____snapshot_backup"))
 
     @testhelpers.asyncio_test
     async def test_create_remote_repository_backup(self) -> None:
@@ -170,56 +170,8 @@ class TestReleaseRepoUpdater(unittest.TestCase):
             _write_dummy_file(os.path.join(remoteSourceRepoPath, "Updates.xml"))
 
             remoteRepoBackupPath = create_remote_repository_backup(self.server, remoteSourceRepoPath)
-            self.assertListEqual(sorted(os.listdir(remoteSourceRepoPath)), sorted(os.listdir(remoteRepoBackupPath)))
-
-    @unittest.skipUnless(testhelpers.isInternalFileServerReachable(), "Skipping because files erver is not accessible")
-    @testhelpers.asyncio_test
-    async def test_update_remote_repository(self) -> None:
-        with tempfile.TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
-            remoteTargetRepoPath = os.path.join(tmpBaseDir, "destination_online_repository")
-
-            # initial repository
-            remoteSourceRepoPath = os.path.join(tmpBaseDir, "repository")
-            componentPath = os.path.join(remoteSourceRepoPath, "qt.foo.bar1")
-            componentMetaPath = os.path.join(componentPath, "meta")
-            os.makedirs(componentMetaPath, exist_ok=True)
-            packageXml = os.path.join(componentMetaPath, "package.xml")
-            _write_package_xml(packageXml, "1.0", "2020-01-01")
-            updatesXml = os.path.join(remoteSourceRepoPath, "Updates.xml")
-            _write_updates_xml(updatesXml, "1.0", "2020-01-01")
-
-            # initialize new repository
-            reset_new_remote_repository(self.server, remoteSourceRepoPath, remoteTargetRepoPath)
-
-            expectedPackageXmlPath = os.path.join(remoteTargetRepoPath, "qt.foo.bar1", "meta", "package.xml")
-            expectedUpdatesXmlPath = os.path.join(remoteTargetRepoPath, "Updates.xml")
-            self.assertTrue(os.path.isfile(expectedPackageXmlPath), "Did not find package.xml from expected path: {0}".format(expectedPackageXmlPath))
-            self.assertTrue(os.path.isfile(expectedUpdatesXmlPath), "Did not find Updates.xml from expected path: {0}".format(expectedUpdatesXmlPath))
-
-            # create new repository snapshot
-            remoteSourceRepoPath_pkg = os.path.join(tmpBaseDir, "pkg")
-            componentPath_pkg = os.path.join(remoteSourceRepoPath_pkg, "qt.foo.bar1")
-            componentMetaPath_pkg = os.path.join(componentPath_pkg, "meta")
-            os.makedirs(componentMetaPath_pkg, exist_ok=True)
-            packageXml = os.path.join(componentMetaPath_pkg, "package.xml")
-            _write_package_xml(packageXml, "1.1", "2020-01-02")
-
-            try:
-                # we need repogen tools
-                remoteRepogen = await _get_repogen()
-                # now update
-                update_remote_repository(self.server, remoteRepogen, remoteSourceRepoPath_pkg, remoteTargetRepoPath)
-            finally:
-                self.assertTrue(os.path.isfile(remoteRepogen))
-                shutil.rmtree(os.path.dirname(remoteRepogen))
-
-            # verify the update actually was done
-            with open(os.path.join(remoteTargetRepoPath, "Updates.xml"), 'r') as f:
-                for line in f:
-                    trimmedLine = line.strip()
-                    if trimmedLine.startswith("<Version>"):
-                        self.assertEqual(trimmedLine, "<Version>1.1</Version>")
-                        break
+            self.assertFalse(os.path.exists(remoteSourceRepoPath))
+            self.assertListEqual(sorted(["Updates.xml", "qt.foo.bar1", "qt.foo.bar2"]), sorted(os.listdir(remoteRepoBackupPath)))
 
     @testhelpers.asyncio_test_parallel_data((True, True), (False, False), ("yes", True), ("1", True), ("y", True),
                                             ("false", False), ("n", False), ("0", False), ("no", False))
@@ -243,7 +195,6 @@ class TestReleaseRepoUpdater(unittest.TestCase):
                                         ifwTools="foo", buildRepositories=False)
         task = tasks.pop()
         self.assertTrue(task.source_online_repository_path.endswith("foo/bar/path_1/online_repository"))
-        self.assertTrue(task.source_pkg_path.endswith("foo/bar/path_1/pkg"))
 
     @testhelpers.asyncio_test
     async def test_ensure_ext_repo_paths(self) -> None:

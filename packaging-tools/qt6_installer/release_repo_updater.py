@@ -206,7 +206,7 @@ def upload_pending_repository_content(server: str, sourcePath: str, remoteDestin
     log.info("Uploading pending repository content from: [%s] -> [%s:%s]", sourcePath, server, remoteDestinationPath)
     # When uploading new content to staging the old content is always deleted
     delete_remote_paths(server, [remoteDestinationPath])
-    # repository and pkg tmp paths
+    # repository paths
     create_remote_paths(server, [remoteDestinationPath])
     # upload content
     cmd = ['rsync', '-avzh', sourcePath + "/", server + ":" + remoteDestinationPath]
@@ -216,8 +216,9 @@ def upload_pending_repository_content(server: str, sourcePath: str, remoteDestin
 def reset_new_remote_repository(server: str, remoteSourceRepoPath: str, remoteTargetRepoPath: str) -> None:
     if not remote_repository_exists(server, remoteSourceRepoPath):
         raise PackagingError("The remote source repository path did not exist on the server: {0}:{1}".format(server, remoteSourceRepoPath))
-    if remote_file_exists(server, os.path.join(remoteTargetRepoPath, 'Updates.xml')):
-        raise PackagingError("The remote target repository already exists: {0}:{1}".format(server, remoteTargetRepoPath))
+    if remote_repository_exists(server, remoteTargetRepoPath):
+        # this will _move_ the currect repo as backup
+        create_remote_repository_backup(server, remoteTargetRepoPath)
 
     log.info("Reset new remote repository: source: [%s] target: [%s]", remoteSourceRepoPath, remoteTargetRepoPath)
     create_remote_paths(server, [remoteTargetRepoPath])
@@ -225,31 +226,17 @@ def reset_new_remote_repository(server: str, remoteSourceRepoPath: str, remoteTa
     exec_cmd(cmd, timeout=60 * 60)  # give it 60 mins
 
 
-def create_remote_repository_backup(server: str, remoteTargetRepoPath: str) -> str:
-    remoteRepositoryBackupPath = os.path.join(remoteTargetRepoPath + "-backup-" + timestamp)
-    if remote_repository_exists(server, remoteRepositoryBackupPath):
-        raise PackagingError("The remote target repository back path already exists on the server: {0}:{1}".format(server, remoteRepositoryBackupPath))
-    cmd = get_remote_login_cmd(server) + ['cp', '-Rv', remoteTargetRepoPath, remoteRepositoryBackupPath]
+def create_remote_repository_backup(server: str, remote_repo_path: str) -> None:
+    backup_path = os.path.join(remote_repo_path + "____snapshot_backup")
+    # if there exists a backup already then delete it, we keep only one backup
+    if remote_repository_exists(server, backup_path):
+        log.info("Deleting old backup repo: %s", backup_path)
+        delete_remote_paths(server, [backup_path])
+    # move the repo as backup
+    cmd = get_remote_login_cmd(server) + ['mv', '-v', remote_repo_path, backup_path]
     exec_cmd(cmd, timeout=60 * 60)  # give it 60 mins
-    log.info("Created remote repository backup: %s:%s", server, remoteRepositoryBackupPath)
-    return remoteRepositoryBackupPath
-
-
-def update_remote_repository(server: str, remoteRepogen: str, remoteSourcePkgPath: str, remoteTargetRepoPath: str, updateNewOnly=False) -> None:
-    if not remote_file_exists(server, os.path.join(remoteTargetRepoPath, 'Updates.xml')):
-        raise PackagingError("The remote target repository does not exist - can not update: {0}:{1}".format(server, os.path.join(remoteTargetRepoPath, 'Updates.xml')))
-    if not remote_file_exists(server, remoteRepogen):
-        raise PackagingError("The 'repogen' tool did not exist on the remote server: {0}:{1}".format(server, remoteRepogen))
-
-    log.info("Update remote repository: source: [%s] target: [%s]", remoteSourcePkgPath, remoteTargetRepoPath)
-    cmd = get_remote_login_cmd(server) + [remoteRepogen]
-    if updateNewOnly:
-        cmd += ['--update-new-components']  # usually for production to update only those with version number increase
-    else:
-        cmd += ['--update']  # usually staging
-    cmd += ['-p', remoteSourcePkgPath, remoteTargetRepoPath]
-    output = exec_cmd(cmd, timeout=60 * 60)  # give it 60 mins
-    check_repogen_output(output)
+    log.info("Moved remote repository as backup: %s:%s -> %s", server, remote_repo_path, backup_path)
+    return backup_path
 
 
 async def sync_production_repositories_to_s3(server: str, s3: str, updatedProductionRepositories: Dict[str, str], remoteRootPath: str) -> None:
@@ -314,50 +301,29 @@ async def spawn_remote_background_task(server: str, serverHome: str, remoteCmd: 
 async def update_repository(stagingServer: str, repoLayout: QtRepositoryLayout, task: ReleaseTask,
                             updateStaging: bool, updateProduction: bool, rta: str, remoteRepogen: str) -> None:
     assert task.get_source_online_repository_path(), "Can not update repository: [{0}] because source repo is missing".format(task.get_repo_path())
-    assert task.get_source_pkg_path(), "Can not update repository: [{0}] because source pkg is missing".format(task.get_repo_path())
     # ensure the repository paths exists at server
     log.info("Starting repository update: %s", task.get_repo_path())
     create_remote_paths(stagingServer, repoLayout.get_repo_layout())
 
-    isNewStagingRepository = True
-    isNewProductionRepository = True
-
     remotePendingPath = os.path.join(repoLayout.get_pending_path(), task.get_repo_path())
     remotePendingPathRepository = os.path.join(remotePendingPath, "repository")
-    remotePendingPathPkg = os.path.join(remotePendingPath, "pkg")
 
     remoteStagingDestinationRepositoryPath = os.path.join(repoLayout.get_staging_path(), task.get_repo_path())
     remoteProductionDestinationRepositoryPath = os.path.join(repoLayout.get_production_path(), task.get_repo_path())
 
-    if remote_file_exists(stagingServer, os.path.join(remoteStagingDestinationRepositoryPath, 'Updates.xml')):
-        isNewStagingRepository = False
-    if remote_file_exists(stagingServer, os.path.join(remoteProductionDestinationRepositoryPath, 'Updates.xml')):
-        isNewProductionRepository = False
-
-    # Upload only the needed content to remote for the update:
-    # When creating a new repository from scratch we upload the complete 'repository'.
-    # When updating existing repository we upload the intermediate 'pkg' for the update process.
-    if isNewStagingRepository or isNewProductionRepository:
-        upload_pending_repository_content(stagingServer, task.get_source_online_repository_path(), remotePendingPathRepository)
-    if not isNewStagingRepository or not isNewProductionRepository:
-        upload_pending_repository_content(stagingServer, task.get_source_pkg_path(), remotePendingPathPkg)
+    # We always replace existing repository if previous version should exist.
+    # Previous version is moved as backup
+    upload_pending_repository_content(stagingServer, task.get_source_online_repository_path(), remotePendingPathRepository)
 
     # Now we can run the updates on the remote
     if updateStaging:
-        if isNewStagingRepository:
-            reset_new_remote_repository(stagingServer, remotePendingPathRepository, remoteStagingDestinationRepositoryPath)
-        else:
-            update_remote_repository(stagingServer, remoteRepogen, remotePendingPathPkg, remoteStagingDestinationRepositoryPath, updateNewOnly=False)
+        reset_new_remote_repository(stagingServer, remotePendingPathRepository, remoteStagingDestinationRepositoryPath)
     if updateProduction:
-        if isNewProductionRepository:
-            reset_new_remote_repository(stagingServer, remotePendingPathRepository, remoteProductionDestinationRepositoryPath)
-        else:
-            create_remote_repository_backup(stagingServer, remoteProductionDestinationRepositoryPath)
-            update_remote_repository(stagingServer, remoteRepogen, remotePendingPathPkg, remoteProductionDestinationRepositoryPath, updateNewOnly=True)
+        reset_new_remote_repository(stagingServer, remotePendingPathRepository, remoteProductionDestinationRepositoryPath)
 
-    log.info("Starting update done: %s", task.get_repo_path())
+    log.info("Update done: %s", task.get_repo_path())
     # Now we can delete pending content
-    delete_remote_paths(stagingServer, [remotePendingPathRepository, remotePendingPathPkg])
+    delete_remote_paths(stagingServer, [remotePendingPathRepository])
     # trigger RTA cases for the task if specified
     if rta:
         trigger_rta(rta, task)
@@ -383,7 +349,6 @@ async def build_online_repositories(tasks: List[ReleaseTask], license: str, inst
     for task in tasks:
         tmpDir = os.path.join(tmpBaseDir, task.get_repo_path())
         task.source_online_repository_path = os.path.join(tmpDir, "online_repository")
-        task.source_pkg_path = os.path.join(tmpDir, "pkg")
         if not buildRepositories:
             # this is usually for testing purposes in env where repositories are already built, we just update task objects
             continue
@@ -408,10 +373,7 @@ async def build_online_repositories(tasks: List[ReleaseTask], license: str, inst
 
         onlineRepositoryPath = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "online_repository"))
         assert os.path.isdir(onlineRepositoryPath), "Not a valid path: {0}".format(onlineRepositoryPath)
-        onlineRepositoryPkgPath = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "pkg"))
-        assert os.path.isdir(onlineRepositoryPkgPath), "Not a valid path: {0}".format(onlineRepositoryPkgPath)
         shutil.move(onlineRepositoryPath, task.source_online_repository_path)
-        shutil.move(onlineRepositoryPkgPath, task.source_pkg_path)
         log.info("Repository created at: %s", tmpDir)
 
 
