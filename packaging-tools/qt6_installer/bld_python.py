@@ -31,11 +31,13 @@
 
 import os
 import sys
+import re
 import asyncio
 import argparse
 import platform
 import multiprocessing
-from shutil import which, rmtree
+import subprocess
+from shutil import which, rmtree, copytree
 from logging_util import init_logger
 from runner import async_exec_cmd, exec_cmd
 from installer_utils import cd, is_valid_url_path, extract_archive, download_archive
@@ -50,14 +52,18 @@ class BldPythonError(Exception):
 
 async def prepare_sources(src: str, tmpBaseDir: str) -> str:
     log.info("Preparing sources: %s", src)
-    if os.path.isdir(src):
-        return src
     srcTmpDir = os.path.join(tmpBaseDir, "src_dir")
     rmtree(srcTmpDir, ignore_errors=True)
-    os.makedirs(srcTmpDir)
-    if os.path.isfile(src):
+    if os.path.isdir(src):
+        if "windows" in platform.system().lower():
+            copytree(src, srcTmpDir)
+        else:
+            return src
+    elif os.path.isfile(src):
+        os.makedirs(srcTmpDir)
         await extract_archive(src, srcTmpDir)
     elif is_valid_url_path(src):
+        os.makedirs(srcTmpDir)
         destFile = download_archive(src, tmpBaseDir)
         await extract_archive(destFile, srcTmpDir)
     else:
@@ -72,6 +78,41 @@ def locate_source_root(searchDir: str) -> str:
     raise BldPythonError("Could not find source root directory from: {0}".format(searchDir))
 
 
+async def create_symlink(pythonDir: str):
+    pythonExe = os.path.join(pythonDir, 'python.exe')
+    assert os.path.isfile(pythonExe), "The 'python' executable did not exist: {0}".format(pythonExe)
+    versionCmd = [pythonExe, '--version']
+    versionOutput = subprocess.check_output(versionCmd, shell=True).decode("utf-8")
+    match = re.search('(\d+)\.(\d+)\.(\d+)', versionOutput)
+    if match:
+        destination = os.path.join(pythonDir, 'python' + match.group(1) + match.group(2) + '.exe')
+        os.symlink(pythonExe, destination)
+        log.info("Symbolic link created from %s to %s", pythonExe, destination)
+    else:
+        raise BldPythonError("Could not parse version output: {0}".format(versionOutput))
+
+
+async def _build_python_win(srcDir: str) -> str:
+    log.info("Building..")
+    log.info("Source dir: %s", srcDir)
+    buildBat = os.path.join(srcDir, 'PCbuild', 'build.bat')
+    assert os.path.isfile(buildBat), "The 'build.bat' batch file did not exist: {0}".format(buildBat)
+    await async_exec_cmd([buildBat])
+    destDir = os.path.join(srcDir, 'PCbuild', 'win32')
+    assert os.path.isdir(destDir), "The build destination directory did not exist: {0}".format(destDir)
+    await create_symlink(destDir)
+    log.info("Python built successfully and installed to: %s", destDir)
+    return srcDir
+
+
+async def build_python_win(src: str) -> str:
+    baseDir = os.path.join(os.getcwd(), "python_bld_tmp")
+    os.makedirs(baseDir, exist_ok=True)
+    srcDir = await prepare_sources(src, baseDir)
+    sourceRootDir = locate_source_root(srcDir)
+    return await _build_python_win(sourceRootDir)
+
+
 async def _build_python(srcDir: str, bldDir: str, prefix: str) -> str:
     log.info("Building..")
     log.info("  Source dir: %s", srcDir)
@@ -79,11 +120,7 @@ async def _build_python(srcDir: str, bldDir: str, prefix: str) -> str:
     log.info("  Prefix: %s", prefix)
     system = platform.system().lower()
     cpuCount = str(multiprocessing.cpu_count())
-    if "windows" in system:
-        configureCmd = [os.path.join(srcDir, 'configure'), '--enable-shared', '--prefix=' + prefix]
-        makeCmd = ['nmake']
-        makeInstallCmd = ['nmake', 'install']
-    elif "darwin" in system:
+    if "darwin" in system:
         opensslQueryCmd = ['brew', '--prefix', 'openssl']
         opensslPath = exec_cmd(opensslQueryCmd)
         if not os.path.exists(opensslPath):
@@ -108,6 +145,8 @@ async def _build_python(srcDir: str, bldDir: str, prefix: str) -> str:
 
 
 async def build_python(src: str, prefix: str) -> str:
+    if "windows" in platform.system().lower():
+        return await build_python_win(src)
     if os.path.isdir(prefix):
         log.info("Deleting existing Python build from: %s", prefix)
         rmtree(prefix, ignore_errors=True)

@@ -33,6 +33,7 @@ import os
 import sys
 import asyncio
 import argparse
+import platform
 import shutil
 from logging_util import init_logger
 from typing import Dict, List
@@ -65,9 +66,13 @@ async def pip_install_from_checkout(pipenv: str, checkoutDir: str, env: Dict[str
     await async_exec_cmd(cmd=cmd, timeout=60 * 60, env=env)  # give it 60 mins
 
 
-async def generate_executable(pythonSrc: str, pyinstaller: str, fileNameList: List[str], pipPackages: List[str]) -> str:
-    pythonInstallDir, env = await create_venv(pythonSrc)
-    pipenv = os.path.join(pythonInstallDir, "bin", "pipenv")
+async def generate_executable(pythonSrc: str, pyinstaller: str, fileNameList: List[str], pipPackages: List[str], getPipFile: str) -> str:
+    system = platform.system().lower()
+    pythonInstallDir, env = await create_venv(pythonSrc, getPipFile)
+    if "windows" in system:
+        pipenv = os.path.join(pythonInstallDir, "Scripts", "pipenv.exe")
+    else:
+        pipenv = os.path.join(pythonInstallDir, "bin", "pipenv")
     assert os.path.isfile(pipenv), "Could not find pipenv: '{0}'".format(pipenv)
 
     _pipPackages = []  # type: List[str]
@@ -104,7 +109,8 @@ if __name__ == "__main__":
     parser.add_argument("--pyinstaller", dest="pyinstaller", type=str, default=os.getenv("PYINSTALLER_SRC"), help="Location of pyinstaller .zip/.7z/.tar.gz")
     parser.add_argument("--add-pip-package", dest="pip_packages", action='append', help="Install Python packages from git url or local checkout")
     parser.add_argument("--file", dest="file_list", action='append', required=True, help="Absolute path to the file which needs to be transformed as executable")
+    parser.add_argument("--get-pip-file", dest="get_pip_file", type=str, default=os.getenv("GET_PIP_FILE"), help="Path to get-pip.py needed for installing pip on Windows")
 
     args = parser.parse_args(sys.argv[1:])
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(generate_executable(args.python_src, args.pyinstaller, args.file_list, args.pip_packages))
+    loop.run_until_complete(generate_executable(args.python_src, args.pyinstaller, args.file_list, args.pip_packages, args.get_pip_file))
