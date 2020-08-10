@@ -295,7 +295,7 @@ async def spawn_remote_background_task(server: str, serverHome: str, remoteCmd: 
         tip = ""
     cmd = ["nohup"] + remoteCmd + ["</dev/null >", remoteLogFile, "2>&1"]
     remoteScriptFileName = "sync-production-" + tip + "-" + timestamp + ".sh"
-    await execute_remote_cmd(server, serverHome, cmd, remoteScriptFileName, timeout=60*60)
+    await execute_remote_cmd(server, serverHome, cmd, remoteScriptFileName, timeout=60*60*2)  # 2h timeout for uploading data to CDN
 
 
 async def update_repository(stagingServer: str, repoLayout: QtRepositoryLayout, task: ReleaseTask,
