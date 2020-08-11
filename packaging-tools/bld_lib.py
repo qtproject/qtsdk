@@ -202,7 +202,7 @@ def handleBuild(args: argparse.Namespace) -> None:
     installRootDir = build(qtDestDir, currentDir)
     artifactsFilePath = archive(args, installRootDir, currentDir)
 
-    remoteUploader = RemoteUploader(False, args.remote_server, args.username, args.remote_base_path, qtVersion, args.project_name)
+    remoteUploader = RemoteUploader(False, args.remote_server, args.username, args.remote_base_path)
     remoteUploader.init_snapshot_upload_path(args.project_name, qtVersion, args.build_id)
     remoteUploader.copyToRemote(artifactsFilePath)
     remoteUploader.updateLatestSymlink()
