@@ -55,6 +55,7 @@ import threading
 import collections
 import urlparse
 import urllib
+import copy
 
 #fix that there was var with name "type" in a calling test for runCommand when trying
 #to use __builtin__.type()
@@ -69,6 +70,15 @@ import environmentfrombatchfile
 # make a timeout for download jobs
 import socket
 socket.setdefaulttimeout(30)
+
+# make sure any argument is deep copied, for example the install command changes the makeflags,
+# but should not do that on the further used environment dict
+def deep_copy_arguments(to_call):
+    def f(*args, **kwargs):
+        return to_call(*(copy.deepcopy(x) for x in args),
+                       **{k: copy.deepcopy(v) for k, v in kwargs.items()})
+    return f
+
 
 class DirRenamer(object):
     def __init__(self, path, newName):
@@ -212,6 +222,7 @@ def setValueOnEnvironmentDict(environment, key, value):
     else:
         environment[key] = value
 
+@deep_copy_arguments
 def getEnvironment(init_environment = None, callerArguments = None):
     if init_environment is None:
         init_environment = {}
@@ -260,7 +271,7 @@ def getEnvironment(init_environment = None, callerArguments = None):
             merged_environment[key] = environment[key]
     return merged_environment
 
-
+@deep_copy_arguments
 def runCommand(command, currentWorkingDirectory, callerArguments = None, init_environment = None, onlyErrorCaseOutput=False, expectedExitCodes=[0]):
     if __builtin__.type(expectedExitCodes) is not list:
         raise TypeError("{}({}) is not {}".format("expectedExitCodes", __builtin__.type(expectedExitCodes), list))
@@ -379,6 +390,7 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None, init_en
         raise Exception("Different exit code then expected({0}): {1}{2}".format(expectedExitCodes, exitCode, prettyLastOutput))
     return exitCode
 
+@deep_copy_arguments
 def runInstallCommand(arguments = ['install'], currentWorkingDirectory = None, callerArguments = None, init_environment = None, onlyErrorCaseOutput = False):
     if init_environment is None:
         init_environment = {}
@@ -394,6 +406,7 @@ def runInstallCommand(arguments = ['install'], currentWorkingDirectory = None, c
         installcommand.extend(arguments if __builtin__.type(arguments) is list else arguments.split())
     return runCommand(installcommand, currentWorkingDirectory, callerArguments, init_environment = init_environment, onlyErrorCaseOutput = onlyErrorCaseOutput)
 
+@deep_copy_arguments
 def runBuildCommand(arguments = None, currentWorkingDirectory = None, callerArguments = None, init_environment = None, onlyErrorCaseOutput = False, expectedExitCodes=[0]):
     if init_environment is None:
         init_environment = {}
@@ -405,6 +418,7 @@ def runBuildCommand(arguments = None, currentWorkingDirectory = None, callerArgu
         buildcommand.extend(arguments if __builtin__.type(arguments) is list else arguments.split())
     return runCommand(buildcommand, currentWorkingDirectory, callerArguments, init_environment = init_environment, onlyErrorCaseOutput = onlyErrorCaseOutput, expectedExitCodes = expectedExitCodes)
 
+@deep_copy_arguments
 def getReturnValue(command, currentWorkingDirectory = None, init_environment = None, callerArguments = None):
     if init_environment is None:
         init_environment = {}
@@ -420,7 +434,6 @@ def gitSHA(path, callerArguments = None):
         return getReturnValue(gitBinary + " rev-list -n1 HEAD", currentWorkingDirectory = path, callerArguments = callerArguments).strip()
     return ''
 
-
 # get commit SHA either directly from git, or from a .tag file in the source directory
 def get_commit_SHA(source_path, callerArguments = None):
     buildGitSHA = gitSHA(source_path, callerArguments)
@@ -430,7 +443,6 @@ def get_commit_SHA(source_path, callerArguments = None):
             with open(tagfile, 'r') as f:
                 buildGitSHA = f.read().strip()
     return buildGitSHA
-
 
 def isGitDirectory(repository_path):
     if not repository_path:
