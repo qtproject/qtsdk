@@ -30,6 +30,7 @@
 #############################################################################
 
 import os
+import sys
 import asyncio
 import subprocess
 from logging_util import init_logger
@@ -37,6 +38,11 @@ from typing import List, Dict
 
 
 log = init_logger(__name__, debug_mode=False)
+
+
+if sys.platform == 'win32':
+    loop = asyncio.ProactorEventLoop()
+    asyncio.set_event_loop(loop)
 
 
 def exec_cmd(cmd: List[str], timeout=60) -> str:
