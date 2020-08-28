@@ -88,6 +88,8 @@ class RemoteUploader:
         remoteDestination = self.remoteLogin + ':' + self.remoteTargetDir
         if destDirName:
             remoteDestination = remoteDestination + '/' + destDirName + '/'
+            if "windows" in platform.system().lower():
+                self.ensureRemoteDir(remoteDestination)
         print("Copying [{0}] to [{1}]".format(fileName, remoteDestination))
         cmd = self.copy_cmd + [fileName, remoteDestination]
         print("Executing: ", ' '.join(cmd))
