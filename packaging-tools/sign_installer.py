@@ -53,8 +53,8 @@ def sign_mac_app(app_path: str, codesign_identity_key: str) -> None:
 
 def create_mac_dmg(app_path: str) -> None:
     assert app_path.endswith(".app"), f"Not a valid path to .app bundle: {app_path}"
-    installer_name_base = os.path.basename(app_path).split(".")[0]
-    destination_dmg_path = app_path.split(".")[0] + '.dmg'
+    installer_name_base = os.path.basename(app_path).split(".app")[0]
+    destination_dmg_path = app_path.split(".app")[0] + '.dmg'
     cmd_args = ['hdiutil', 'create', '-srcfolder', app_path, '-volname', installer_name_base]
     cmd_args += ['-format', 'UDBZ', destination_dmg_path, '-ov', '-scrub', '-size', '4g']
     subprocess.check_call(cmd_args)
