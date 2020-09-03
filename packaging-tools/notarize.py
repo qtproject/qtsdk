@@ -36,6 +36,7 @@ import asyncio
 import subprocess
 import logging
 from shutil import which
+from time import gmtime, strftime
 
 LOG_FMT_CI = "%(asctime)s %(levelname)s:%(filename)s:%(lineno)d(%(process)d): %(message)s"
 log = logging.getLogger("Notarizer")
@@ -155,7 +156,7 @@ if __name__ == "__main__":
     parser.add_argument("--dmg", dest="dmg", required=True, type=str, help=".dmg file")
     parser.add_argument("--user", dest="user", type=str, default=os.getenv("AC_USERNAME"), help="App Store Connect Username")
     parser.add_argument("--passwd", dest="passwd", type=str, default=os.getenv("AC_PASSWORD"), help="App Store Connect Password")
-    parser.add_argument("--bundle-id", dest="bundle_id", required=True,  type=str, help="Give unique id for this bundle")
+    parser.add_argument("--bundle-id", dest="bundle_id", default=strftime('%Y-%m-%d-%H-%M-%S', gmtime()), type=str, help="Give unique id for this bundle")
     parser.add_argument("--timeout", dest="timeout", type=int, default=60*60*3, help="Timeout value for the remote requests")
     args = parser.parse_args(sys.argv[1:])
 
