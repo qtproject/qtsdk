@@ -454,6 +454,9 @@ def parse_ext(ext: str) -> Tuple[str, str]:
 def append_to_task_filters(task_filters: List[str], task_filter: str) -> List[str]:
     return ["repository," + x if x else "repository" for x in task_filters] if task_filters else ["repository"]
 
+def format_task_filters(task_filters: List[str]) -> List[str]:
+    if task_filters:
+        return [char.replace('.', ',') for char in task_filters]
 
 if __name__ == "__main__":
     args_from_file_parser = argparse.ArgumentParser(
@@ -538,6 +541,8 @@ if __name__ == "__main__":
     if args.license == "opensource":
         assert not args.sync_s3, "The '--sync-s3' is not supported for 'opensource' license!"
 
+    # format task string in case full task section string is used
+    args.task_filters = format_task_filters(args.task_filters)
     # get repository tasks
     tasks = release_task_reader.parse_config(args.config, task_filters=append_to_task_filters(args.task_filters, "repository"))
     # installer configuration files are relative to the given top level release description file

@@ -41,7 +41,7 @@ from release_task_reader import parse_data
 from release_repo_updater import is_safe_repo_directory, upload_ifw_to_remote, upload_pending_repository_content, \
                                     remote_repository_exists, reset_new_remote_repository, create_remote_repository_backup, \
                                     remote_file_exists, build_online_repositories, \
-                                    ensure_ext_repo_paths, parse_ext, check_repogen_output, append_to_task_filters
+                                    ensure_ext_repo_paths, parse_ext, check_repogen_output, append_to_task_filters, format_task_filters
 
 
 def _write_dummy_file(path: str) -> None:
@@ -243,6 +243,17 @@ class TestReleaseRepoUpdater(unittest.TestCase):
     )
     async def test_append_to_task_filters(self, task_filters: str, expected_result: bool) -> None:
         self.assertEqual(append_to_task_filters(task_filters, "repository"), expected_result)
+
+    @testhelpers.asyncio_test_parallel_data((["task.repository.linux.x64.feature1"], ["task,repository,linux,x64,feature1"]),
+                                            (["task.repository.linux.x64.feature1", "windows.x64,feature2"],
+                                            ["task,repository,linux,x64,feature1", "windows,x64,feature2"]),
+                                            (["offline,linux.x64,feature1"], ["offline,linux,x64,feature1"]),
+                                            (["linux"], ["linux"]),
+                                            ([""], [""])
+    )
+    async def test_format_task_filters(self, task_filters: str, expected_result: bool) -> None:
+        print("test")
+        self.assertEqual(format_task_filters(task_filters), expected_result)
 
 
 if __name__ == '__main__':
