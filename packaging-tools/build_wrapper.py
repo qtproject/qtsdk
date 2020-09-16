@@ -1210,7 +1210,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         if os.path.isfile(os.path.join(work_dir, plugin_dev_name)):
             file_upload_list.append((plugin_dev_name, target_env_dir + '/' + plugin_dev_name))
     if bldinstallercommon.is_win_platform():
-        if skip_cdb:
+        if not skip_cdb:
             file_upload_list.append(('qt-creator_build/qtcreatorcdbext.7z', target_env_dir + '/qtcreatorcdbext.7z'))
             snapshot_upload_list.append((target_env_dir + '/qtcreatorcdbext.7z', target_env_dir + '/qtcreatorcdbext.7z'))
         file_upload_list.append(('qt-creator_build/wininterrupt.7z', target_env_dir + '/wininterrupt.7z'))
