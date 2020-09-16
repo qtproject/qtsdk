@@ -64,6 +64,8 @@ class QtRepositoryLayout:
         self.production = "production"
         # <root_path>/<license>/<pending|staging|production>/<repo_domain>/
         # /data/online_repositories/opensource/pending|staging|production/qtsdkrepository/
+        log.info("self.root_path %s", self.root_path)
+        log.info("self.license %s", self.license)
         self.base_repo_path = os.path.join(self.root_path, self.license)
 
     def get_base_repo_path(self) -> str:
@@ -330,7 +332,7 @@ async def update_repository(stagingServer: str, repoLayout: QtRepositoryLayout, 
 
 
 async def build_online_repositories(tasks: List[ReleaseTask], license: str, installerConfigBaseDir: str, artifactShareBaseUrl: str,
-                                    ifwTools: str, buildRepositories: bool) -> None:
+                                    ifwTools: str, buildRepositories: bool) -> List[str]:
     log.info("Building online repositories: %i", len(tasks))
     # create base tmp dir
     tmpBaseDir = os.path.join(os.getcwd(), "_repo_update_jobs")
@@ -346,6 +348,7 @@ async def build_online_repositories(tasks: List[ReleaseTask], license: str, inst
     assert os.path.isfile(scriptPath), "Not a valid script path: {0}".format(scriptPath)
 
     # build online repositories first
+    done_repositories = []  # type: List[str]
     for task in tasks:
         tmpDir = os.path.join(tmpBaseDir, task.get_repo_path())
         task.source_online_repository_path = os.path.join(tmpDir, "online_repository")
@@ -374,7 +377,9 @@ async def build_online_repositories(tasks: List[ReleaseTask], license: str, inst
         onlineRepositoryPath = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "online_repository"))
         assert os.path.isdir(onlineRepositoryPath), "Not a valid path: {0}".format(onlineRepositoryPath)
         shutil.move(onlineRepositoryPath, task.source_online_repository_path)
-        log.info("Repository created at: %s", tmpDir)
+        log.info("Repository created at: %s", task.source_online_repository_path)
+        done_repositories.append(task.source_online_repository_path)
+    return done_repositories
 
 
 async def update_repositories(tasks: List[ReleaseTask], stagingServer: str, stagingServerRoot: str, repoLayout: QtRepositoryLayout,
@@ -414,14 +419,14 @@ async def sync_production(tasks: List[ReleaseTask], repoLayout: QtRepositoryLayo
 async def handle_update(stagingServer: str, stagingServerRoot: str, license: str, tasks: List[ReleaseTask],
                         repoDomain: str, installerConfigBaseDir: str, artifactShareBaseUrl: str,
                         updateStaging: bool, updateProduction: bool, syncS3: str, syncExt: str, rta: str, ifwTools: str,
-                        buildRepositories: bool, updateRepositories: bool, syncRepositories: bool) -> None:
+                        buildRepositories: bool, updateRepositories: bool, syncRepositories: bool) -> List[str]:
     """Build all online repositories, update those to staging area and sync to production."""
     log.info("Starting repository update for %i tasks..", len(tasks))
 
     # get repository layout
     repoLayout = QtRepositoryLayout(stagingServerRoot, license, repoDomain)
     # this may take a while depending on how big the repositories are
-    await build_online_repositories(tasks, license, installerConfigBaseDir, artifactShareBaseUrl, ifwTools, buildRepositories)
+    ret = await build_online_repositories(tasks, license, installerConfigBaseDir, artifactShareBaseUrl, ifwTools, buildRepositories)
 
     if updateRepositories:
         await update_repositories(tasks, stagingServer, stagingServerRoot, repoLayout, updateStaging, updateProduction, rta, ifwTools)
@@ -429,6 +434,7 @@ async def handle_update(stagingServer: str, stagingServerRoot: str, license: str
         await sync_production(tasks, repoLayout, syncS3, syncExt, stagingServer, stagingServerRoot)
 
     log.info("Repository updates done!")
+    return ret
 
 
 def string_to_bool(value: str) -> bool:
@@ -536,7 +542,6 @@ if __name__ == "__main__":
     do_sync_repositories = args.sync_s3 or args.sync_ext
 
     assert args.config, "'--config' was not given!"
-    assert args.staging_server_root, "'--staging-server-root' was not given!"
     assert "windows" not in platform.system().lower(), "This script is meant to be run on Unix only!"
     if args.license == "opensource":
         assert not args.sync_s3, "The '--sync-s3' is not supported for 'opensource' license!"
@@ -550,8 +555,10 @@ if __name__ == "__main__":
     assert os.path.isdir(installerConfigBaseDir), "Not able to figure out 'configurations/' directory correctly: {0}".format(installerConfigBaseDir)
 
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(handle_update(args.staging_server, args.staging_server_root, args.license, tasks,
-                                          args.repo_domain, installerConfigBaseDir, args.artifact_share_url,
-                                          args.update_staging, args.update_production, args.sync_s3, args.sync_ext,
-                                          args.rta, args.ifw_tools,
-                                          args.build_repositories, do_update_repositories, do_sync_repositories))
+    ret = loop.run_until_complete(handle_update(args.staging_server, args.staging_server_root, args.license, tasks,
+                                                args.repo_domain, installerConfigBaseDir, args.artifact_share_url,
+                                                args.update_staging, args.update_production, args.sync_s3, args.sync_ext,
+                                                args.rta, args.ifw_tools,
+                                                args.build_repositories, do_update_repositories, do_sync_repositories))
+    for repo in ret:
+        log.info(f"{repo}")
