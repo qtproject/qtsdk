@@ -30,6 +30,7 @@
 #############################################################################
 
 import os
+import re
 import sys
 import time
 import shutil
@@ -40,6 +41,7 @@ import datetime
 import argparse
 from configparser import ConfigParser, ExtendedInterpolation
 from typing import List, Dict, Tuple
+from time import gmtime, strftime
 import subprocess
 import release_task_reader
 from urllib.request import urlretrieve
@@ -54,6 +56,7 @@ _currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfra
 _parentdir = os.path.dirname(_currentdir)
 sys.path.insert(0, _parentdir)
 from read_remote_config import get_pkg_value
+import sign_installer
 
 log = init_logger(__name__, debug_mode=False)
 timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d--%H:%M:%S')
@@ -191,7 +194,7 @@ def _remote_path_exists(server: str, remotePath: str, type: str) -> bool:
     return output.strip() == "OK"
 
 
-def remote_repository_exists(server: str, remotePath: str) -> bool:
+def remote_path_exists(server: str, remotePath: str) -> bool:
     return _remote_path_exists(server, remotePath, type="-d")
 
 
@@ -206,7 +209,7 @@ async def ensure_ext_repo_paths(server: str, ext: str, repo: str) -> None:
     await async_exec_cmd(cmd, timeout=60*60*10)
 
 
-def is_safe_repo_directory(paths: List[str]) -> None:
+def is_safe_directory(paths: List[str]) -> None:
     for _path in paths:
         path = os.path.abspath(_path)
         if path == "/":
@@ -219,13 +222,13 @@ def is_safe_repo_directory(paths: List[str]) -> None:
 
 
 def create_remote_paths(server: str, paths: List[str]) -> None:
-    is_safe_repo_directory(paths)
+    is_safe_directory(paths)
     cmd = get_remote_login_cmd(server) + ['mkdir -p', ' '.join(paths)]
     exec_cmd(cmd, timeout=60 * 2)
 
 
 def delete_remote_paths(server: str, paths: List[str]) -> None:
-    is_safe_repo_directory(paths)
+    is_safe_directory(paths)
     cmd = get_remote_login_cmd(server) + ['rm -rf', ' '.join(paths)]
     exec_cmd(cmd, timeout=60 * 2)
 
@@ -242,9 +245,9 @@ def upload_pending_repository_content(server: str, sourcePath: str, remoteDestin
 
 
 def reset_new_remote_repository(server: str, remoteSourceRepoPath: str, remoteTargetRepoPath: str) -> None:
-    if not remote_repository_exists(server, remoteSourceRepoPath):
+    if not remote_path_exists(server, remoteSourceRepoPath):
         raise PackagingError("The remote source repository path did not exist on the server: {0}:{1}".format(server, remoteSourceRepoPath))
-    if remote_repository_exists(server, remoteTargetRepoPath):
+    if remote_path_exists(server, remoteTargetRepoPath):
         # this will _move_ the currect repo as backup
         create_remote_repository_backup(server, remoteTargetRepoPath)
 
@@ -257,7 +260,7 @@ def reset_new_remote_repository(server: str, remoteSourceRepoPath: str, remoteTa
 def create_remote_repository_backup(server: str, remote_repo_path: str) -> None:
     backup_path = os.path.join(remote_repo_path + "____snapshot_backup")
     # if there exists a backup already then delete it, we keep only one backup
-    if remote_repository_exists(server, backup_path):
+    if remote_path_exists(server, backup_path):
         log.info("Deleting old backup repo: %s", backup_path)
         delete_remote_paths(server, [backup_path])
     # move the repo as backup
@@ -484,11 +487,125 @@ def parse_ext(ext: str) -> Tuple[str, str]:
 
 
 def append_to_task_filters(task_filters: List[str], task_filter: str) -> List[str]:
-    return ["repository," + x if x else "repository" for x in task_filters] if task_filters else ["repository"]
+    return [task_filter + "," + x if x else task_filter for x in task_filters] if task_filters else [task_filter]
+
 
 def format_task_filters(task_filters: List[str]) -> List[str]:
     if task_filters:
         return [char.replace('.', ',') for char in task_filters]
+
+
+def create_offline_remote_dirs(task: ReleaseTask, stagingServer: str, stagingServerRoot: str, installerBuildId: str) -> str:
+    remote_base_dir = stagingServerRoot + '/' + task.get_project_name() + '/' + task.get_version() + '/' + 'installers'
+    remote_dir = remote_base_dir + '/' + installerBuildId + '/'
+    remote_latest_available_dir = remote_base_dir + '/' + 'latest_available' + '/'
+    if not remote_path_exists(stagingServer, remote_dir):
+        create_remote_paths(stagingServer, [remote_dir])
+    if not remote_path_exists(stagingServer, remote_latest_available_dir):
+        create_remote_paths(stagingServer, [remote_latest_available_dir])
+    return remote_dir
+
+
+def update_remote_latest_available_dir(newInstaller: str, remoteUploadPath: str, task: ReleaseTask, stagingServerRoot: str, installerBuildId: str) -> None:
+    log.info(f"Update latest available installer directory: {remoteUploadPath}")
+    regex = re.compile('.*' + task.get_version())
+    new_installer_base_path = "".join(regex.findall(newInstaller))
+    path, name = os.path.split(new_installer_base_path)
+
+    # update latest_available
+    latest_available_path = re.sub("\/" + str(installerBuildId) + "\/", "/latest_available/", remoteUploadPath)
+    previous_installer_path = latest_available_path + name + '*'
+    try:
+        cmd_rm = get_remote_login_cmd(stagingServerRoot) + ['rm', previous_installer_path.split(':')[1]]
+        log.info(f"Running remove cmd: {cmd_rm}")
+        exec_cmd(cmd_rm, timeout=60*60)  # 1h
+    except Exception:
+        log.info("Running cmd failed - this happens only if latest_available is empty")
+        pass
+    cmd_cp = get_remote_login_cmd(stagingServerRoot) + ['cp', remoteUploadPath.split(':')[1] + name + '*', latest_available_path.split(':')[1]]
+    log.info(f"Running copy cmd: {cmd_cp}")
+    exec_cmd(cmd_cp, timeout=60*60)  # 1h
+
+
+def upload_offline_to_remote(installerPath: str, remoteUploadPath: str, stagingServer: str, task: ReleaseTask,
+                             installerBuildId: str) -> None:
+    for file in [f for f in os.listdir(installerPath)]:
+        if file.endswith(".app"):
+            continue
+        name, file_ext = os.path.splitext(file)
+        file_name_final = name + "_" + installerBuildId + file_ext
+        installer = os.path.join(installerPath, file_name_final)
+        os.rename(os.path.join(installerPath, file), installer)
+
+        remote_destination = stagingServer + ":" + remoteUploadPath
+        cmd = ['scp', installer, remote_destination]
+        log.info(f"Uploading offline installer: {installer} to: {remote_destination}")
+        exec_cmd(cmd, timeout=60*60)  # 1h
+        update_remote_latest_available_dir(installer, remote_destination, task, stagingServer, installerBuildId)
+
+
+def sign_offline_installer(installer_path: str, installer_name: str) -> None:
+    if platform.system() == "Windows":
+        log.info("Sign Windows installer")
+        sign_installer.sign_windows_executable(os.path.join(installer_path, installer_name) + '.exe')
+    elif platform.system() == "Darwin":
+        log.info("Sign macOS .app bundle")
+        sign_installer.sign_mac_app(os.path.join(installer_path, installer_name + '.app'), get_pkg_value("SIGNING_IDENTITY"))
+        log.info("Create macOS dmg file")
+        sign_installer.create_mac_dmg(os.path.join(installer_path, installer_name) + '.app')
+        log.info("Notarize macOS installer")
+        notarize_dmg(os.path.join(installer_path, installer_name + '.dmg'), installer_name)
+    else:
+        log.info(f"No signing available for this host platform: {platform.system()}")
+
+
+def notarize_dmg(dmgPath, installerBasename) -> None:
+    script_path = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "notarize.py"))
+    # bundle-id is just a unique identifier without any special meaning, used to track the notarization progress
+    bundleId = installerBasename + "-" + strftime('%Y-%m-%d-%H-%M', gmtime())
+    bundleId = bundleId.replace('_', '-').replace(' ', '')  # replace illegal characters for bundleId
+    cmd = ['python3', script_path, '--dmg=' + dmgPath, '--bundle-id=' + bundleId]
+    exec_cmd(cmd, timeout=60*60*3)
+
+
+async def build_offline_tasks(stagingServer: str, stagingServerRoot: str, tasks: List[ReleaseTask], license: str,
+                              installerConfigBaseDir: str, artifactShareBaseUrl: str,
+                              ifwTools: str, installerBuildId: str, updateStaging: bool) -> None:
+    log.info("Offline installer task(s): %i", len(tasks))
+
+    assert license, "The 'license' must be defined!"
+    assert artifactShareBaseUrl, "The 'artifactShareBaseUrl' must be defined!"
+    assert ifwTools, "The 'ifwTools' must be defined!"
+
+    scriptPath = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "create_installer.py"))
+    assert os.path.isfile(scriptPath), "Not a valid script path: {0}".format(scriptPath)
+    installer_output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "installer_output"))
+
+    # build installers
+    for task in tasks:
+        log.info(f"Building offline installer: {task.get_installer_name()}")
+        installerConfigFile = os.path.join(installerConfigBaseDir, task.get_config_file())
+        if not os.path.isfile(installerConfigFile):
+            raise PackagingError(f"Invalid 'config_file' path: {installerConfigFile}")
+
+        python_cmd = "python"
+        if os.environ.get('PYTHON2_32_PATH'):
+            python_cmd = os.path.join(os.environ.get('PYTHON2_32_PATH'), "python.exe")
+        cmd = [python_cmd, scriptPath, "-c", installerConfigBaseDir, "-f", installerConfigFile]
+        cmd += ["--offline", "-l", license, "--license-type", license, "-u", artifactShareBaseUrl, "--ifw-tools", ifwTools]
+        cmd += ["--preferred-installer-name", task.get_installer_name()]
+        cmd.extend(["--add-substitution=" + s for s in task.get_installer_string_replacement_list()])
+        try:
+            await async_exec_cmd(cmd, timeout=60*60*3)  # 3h
+        except Exception as e:
+            log.error(str(e))
+            raise
+
+        sign_offline_installer(installer_output_dir, task.get_installer_name())
+        if updateStaging:
+            remote_upload_path = create_offline_remote_dirs(task, stagingServer, stagingServerRoot, installerBuildId)
+            upload_offline_to_remote(installer_output_dir, remote_upload_path, stagingServer, task, installerBuildId)
+
 
 if __name__ == "__main__":
     args_from_file_parser = argparse.ArgumentParser(
@@ -546,8 +663,12 @@ if __name__ == "__main__":
     parser.add_argument("--repo-domain", dest="repo_domain", type=str, choices=["qtsdkrepository", "marketplace"],
                         help="qtsdkrepository/marketplace")
 
-    parser.add_argument("--build-repositories", dest="build_repositories", type=string_to_bool, nargs='?', default=True,
+    parser.add_argument("--build-repositories", dest="build_repositories", type=string_to_bool, nargs='?', default=False,
                         help="Build online repositories defined by '--config' file on current machine")
+    parser.add_argument("--build-offline", dest="build_offline", type=string_to_bool, nargs='?', default=False,
+                        help="Build offline installers defined by '--config' file")
+    parser.add_argument("--offline-installer-build-id", dest="offline_installer_id", type=str, default=os.getenv('BUILD_NUMBER', timestamp),
+                        help="Add unique id for the offline installer")
 
     parser.add_argument("--update-staging", dest="update_staging", action='store_true', default=os.getenv("DO_UPDATE_STAGING_REPOSITORY", False),
                         help="Should the staging repository be updated?")
@@ -568,23 +689,31 @@ if __name__ == "__main__":
     do_sync_repositories = args.sync_s3 or args.sync_ext
 
     assert args.config, "'--config' was not given!"
-    assert "windows" not in platform.system().lower(), "This script is meant to be run on Unix only!"
+    assert args.staging_server_root, "'--staging-server-root' was not given!"
+
     if args.license == "opensource":
         assert not args.sync_s3, "The '--sync-s3' is not supported for 'opensource' license!"
 
     # format task string in case full task section string is used
     args.task_filters = format_task_filters(args.task_filters)
-    # get repository tasks
-    tasks = release_task_reader.parse_config(args.config, task_filters=append_to_task_filters(args.task_filters, "repository"))
     # installer configuration files are relative to the given top level release description file
     installerConfigBaseDir = os.path.abspath(os.path.join(os.path.dirname(args.config), os.pardir))
     assert os.path.isdir(installerConfigBaseDir), "Not able to figure out 'configurations/' directory correctly: {0}".format(installerConfigBaseDir)
 
     loop = asyncio.get_event_loop()
-    ret = loop.run_until_complete(handle_update(args.staging_server, args.staging_server_root, args.license, tasks,
-                                                args.repo_domain, installerConfigBaseDir, args.artifact_share_url,
-                                                args.update_staging, args.update_production, args.sync_s3, args.sync_ext,
-                                                args.rta, args.ifw_tools,
-                                                args.build_repositories, do_update_repositories, do_sync_repositories))
-    for repo in ret:
-        log.info(f"{repo}")
+    if args.build_offline:
+        # get offline tasks
+        tasks = release_task_reader.parse_config(args.config, task_filters=append_to_task_filters(args.task_filters, "offline"))
+        loop.run_until_complete(build_offline_tasks(args.staging_server, args.staging_server_root, tasks, args.license, installerConfigBaseDir,
+                                                    args.artifact_share_url, args.ifw_tools, args.offline_installer_id,
+                                                    args.update_staging))
+    if args.build_repositories:
+        # get repository tasks
+        tasks = release_task_reader.parse_config(args.config, task_filters=append_to_task_filters(args.task_filters, "repository"))
+        ret = loop.run_until_complete(handle_update(args.staging_server, args.staging_server_root, args.license, tasks,
+                                          args.repo_domain, installerConfigBaseDir, args.artifact_share_url,
+                                          args.update_staging, args.update_production, args.sync_s3, args.sync_ext,
+                                          args.rta, args.ifw_tools,
+                                          args.build_repositories, do_update_repositories, do_sync_repositories))
+        for repo in ret:
+            log.info(f"{repo}")

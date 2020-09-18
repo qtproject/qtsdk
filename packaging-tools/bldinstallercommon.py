@@ -298,11 +298,6 @@ def move_tree(srcdir, dstdir, pattern=None):
         dstfname = os.path.join(dstdir, name)
         if not dstfname:
             raise IOError('*** Fatal error! Unable to create destination file path, too long path name!')
-        if is_win_platform():
-            if len(srcfname) > 255:
-                raise IOError('given srcfname length [%s] too long for Windows: %s' % (len(srcfname), srcfname))
-            if len(dstfname) > 255:
-                raise IOError('given dstfname length [%s] too long for Windows: %s' % (len(dstfname), dstfname))
         if os.path.isdir(srcfname) and not os.path.islink(srcfname):
             os.mkdir(dstfname)
             move_tree(srcfname, dstfname)

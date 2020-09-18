@@ -51,9 +51,12 @@ class ReleaseTask:
             raise ReleaseTaskError("The '[{0}]' has too few dot separated elements!".format(name))
         self.name = name
         self.config_file = settings["config_file"]
+        self.project_name = settings.get("project_name", "")
+        self.version = settings.get("version", "")
         self.substitutions = settings.get("substitutions", "")
         self.repo_path = settings.get("repo_path", "")
         self.repo_components_to_update = settings.get("repo_components_to_update", "")
+        self.installer_name = settings.get("installer_name", "")
         self.rta_key_list = settings.get("rta_key_list", "")
         tmpList = [x.strip() for x in self.substitutions.split(',')] if self.substitutions else []  # type: List[str]
         self.installer_string_replacement_list = list(filter(None, tmpList))
@@ -83,6 +86,15 @@ class ReleaseTask:
 
     def get_repo_components_to_update(self) -> str:
         return self.repo_components_to_update
+
+    def get_installer_name(self) -> str:
+        return self.installer_name
+
+    def get_project_name(self) -> str:
+        return self.project_name
+
+    def get_version(self) -> str:
+        return self.version
 
     def get_repo_path(self) -> str:
         return self.repo_path
