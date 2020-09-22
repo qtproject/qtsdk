@@ -35,6 +35,7 @@ import shutil
 import sys
 import re
 import glob
+import subprocess
 from time import gmtime, strftime
 from optparse import OptionParser, Option
 import multiprocessing # to get the cpu core count
@@ -716,6 +717,7 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
     if package_raw_name.endswith('.7z') \
        and archive.package_strip_dirs == '0' \
        and not archive.package_finalize_items \
+       and not archive.archive_action \
        and not archive.rpath_target \
        and sdk_component.target_install_base == '/' \
        and not archive.target_install_dir \
@@ -746,6 +748,15 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
             # check the case if we downloaded a text file, must ensure proper file endings
             if bldinstallercommon.is_text_file(downloadedArchive):
                 bldinstallercommon.ensure_text_file_endings(downloadedArchive)
+
+        # perform custom action script for the extracted archive
+        if archive.archive_action:
+            script_file, script_args = archive.archive_action.split(",")
+            script_args = script_args or ""
+            script_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), script_file)
+            if not os.path.exists(script_path):
+                raise Exception("Unable to locate custom archive action script: " + script_path)
+            subprocess.check_call([script_path, '--input-dir=' + install_dir, script_args.strip()])
 
         # strip out unnecessary folder structure based on the configuration
         count = 0
