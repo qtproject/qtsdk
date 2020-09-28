@@ -79,11 +79,22 @@ if LOCAL_MODE:
 # sign windows executable
 ###############################
 def sign_windows_executable(file_path, working_dir, abort_on_fail):
-    cmd_args = [r'C:\Utils\sign\signtool.exe', 'sign', '/v', '/du', optionDict['SIGNING_SERVER'], '/p', optionDict['SIGNING_PASSWORD'],
-                '/t', 'http://timestamp.verisign.com/scripts/timestamp.dll', '/f', r'C:\utils\sign\keys.pfx', file_path]
+    signTools = ["signtool.exe", "keys.pfx", "capicom.dll"]
+    signToolsTempDir = r'C:\Utils\sign_tools_temp'
+    for item in signTools:
+        dst = os.path.join(signToolsTempDir, item)
+        curl_cmd_args = ['curl', "--fail", "-L", "--retry", "5", "--retry-delay", "30", "-o", dst, '--create-dirs', "http://ci-files01-hki.intra.qt.io/input/semisecure/sign/current/tools/" + item]
+        bldinstallercommon.do_execute_sub_process(curl_cmd_args, working_dir, abort_on_fail)
+    cmd_args = [os.path.join(signToolsTempDir, 'signtool.exe'), 'sign', '/v', '/du', optionDict['SIGNING_SERVER'], '/p', optionDict['SIGNING_PASSWORD'],
+                '/tr', 'http://timestamp.digicert.com', '/f', os.path.join(signToolsTempDir, 'keys.pfx'), '/td', "sha256", '/fd', "sha256", file_path]
     bldinstallercommon.do_execute_sub_process(cmd_args, working_dir, abort_on_fail)
+    if os.path.exists(signToolsTempDir):
+        shutil.rmtree(signToolsTempDir)
 
 
+###############################
+# Unlock keychain script
+###############################
 def unlock_keychain_script():
     return '/Users/qt/unlock-keychain.sh'
 
@@ -104,7 +115,7 @@ def lock_keychain():
 
 
 ###############################
-# sign windows executable
+# sign macOS executable
 ###############################
 def sign_mac_executable(file_path, working_dir, abort_on_fail):
     unlock_keychain()
