@@ -79,7 +79,7 @@ if LOCAL_MODE:
 # sign windows executable
 ###############################
 def sign_windows_executable(file_path, working_dir, abort_on_fail):
-    signTools = ["signtool.exe", "keys.pfx", "capicom.dll"]
+    signTools = ["signtool32.exe", "keys.pfx", "capicom.dll"]
     signToolsTempDir = r'C:\Utils\sign_tools_temp'
     for item in signTools:
         dst = os.path.join(signToolsTempDir, item)
