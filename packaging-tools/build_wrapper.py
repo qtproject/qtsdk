@@ -85,7 +85,7 @@ def sign_windows_executable(file_path, working_dir, abort_on_fail):
         dst = os.path.join(signToolsTempDir, item)
         curl_cmd_args = ['curl', "--fail", "-L", "--retry", "5", "--retry-delay", "30", "-o", dst, '--create-dirs', "http://ci-files01-hki.intra.qt.io/input/semisecure/sign/current/tools/" + item]
         bldinstallercommon.do_execute_sub_process(curl_cmd_args, working_dir, abort_on_fail)
-    cmd_args = [os.path.join(signToolsTempDir, 'signtool.exe'), 'sign', '/v', '/du', optionDict['SIGNING_SERVER'], '/p', optionDict['SIGNING_PASSWORD'],
+    cmd_args = [os.path.join(signToolsTempDir, 'signtool32.exe'), 'sign', '/v', '/du', optionDict['SIGNING_SERVER'], '/p', optionDict['SIGNING_PASSWORD'],
                 '/tr', 'http://timestamp.digicert.com', '/f', os.path.join(signToolsTempDir, 'keys.pfx'), '/td', "sha256", '/fd', "sha256", file_path]
     bldinstallercommon.do_execute_sub_process(cmd_args, working_dir, abort_on_fail)
     if os.path.exists(signToolsTempDir):
