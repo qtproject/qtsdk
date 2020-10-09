@@ -31,6 +31,7 @@
 
 import os
 import sys
+import shutil
 import argparse
 import subprocess
 import logging
@@ -62,9 +63,16 @@ def create_mac_dmg(app_path: str) -> None:
 
 
 def sign_windows_executable(file_path: str, signing_server: str, signing_pass: str, timestamp: str):
-    cmd_args = [r'C:\Utils\sign\signtool.exe', 'sign', '/v', '/du', signing_server, '/p', signing_pass]
-    cmd_args += ['/t', timestamp, '/f', r'C:\utils\sign\keys.pfx', file_path]
+    signTools = ["signtool32.exe", "keys.pfx", "capicom.dll"]
+    signToolsTempDir = r'C:\Utils\sign_tools_temp'
+    for item in signTools:
+        dst = os.path.join(signToolsTempDir, item)
+        curl_cmd_args = ['curl', "--fail", "-L", "--retry", "5", "--retry-delay", "30", "-o", dst, '--create-dirs', "http://ci-files01-hki.intra.qt.io/input/semisecure/sign/current/tools/" + item]
+        subprocess.check_call(curl_cmd_args)
+    cmd_args = [os.path.join(signToolsTempDir, 'signtool32.exe'), 'sign', '/v', '/du', signing_server, '/p', signing_pass]
+    cmd_args += ['/tr', timestamp, '/f', os.path.join(signToolsTempDir, 'keys.pfx'), '/td', "sha256", '/fd', "sha256", file_path]
     subprocess.check_call(cmd_args)
+    shutil.rmtree(signToolsTempDir)
     log.info(f"Successfully signed: {file_path}")
 
 
@@ -79,9 +87,9 @@ if __name__ == "__main__":
     app_parser.add_argument("--codesign-identity-key", default=os.environ.get('QT_CODESIGN_IDENTITY_KEY'))
 
     exe_parser.add_argument("--file", dest="file_path", required=True, help="Full path to .exe file")
-    exe_parser.add_argument("--signing-server", required=True, default=os.environ.get('SIGNING_SERVER'))
-    exe_parser.add_argument("--signing-pass", required=True, default=os.environ.get('SIGNING_PASSWORD'))
-    exe_parser.add_argument("--timestamp", required=True, default="http://timestamp.verisign.com/scripts/timestamp.dll")
+    exe_parser.add_argument("--signing-server", required=False, default=os.environ.get('SIGNING_SERVER'))
+    exe_parser.add_argument("--signing-pass", required=False, default=os.environ.get('SIGNING_PASSWORD'))
+    exe_parser.add_argument("--timestamp", required=False, default="http://timestamp.digicert.com")
 
     args = parser.parse_args(sys.argv[1:])
     if args.command == 'mac':
