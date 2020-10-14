@@ -109,9 +109,12 @@ def get_common_qmake_arguments(paths, caller_arguments):
             qtc_build_tree = app_bundles[0]
     build_type = 'debug' if caller_arguments.debug else 'release'
     common_qmake_arguments = ['-r', 'CONFIG+={0}'.format(build_type),
+                              'CONFIG+=force_debug_info',
+                              'CONFIG+=separate_debug_info',
                               'IDE_SOURCE_TREE="{0}"'.format(paths.qtc_dev),
                               'IDE_BUILD_TREE="{0}"'.format(qtc_build_tree),
                               'IDE_OUTPUT_PATH="{0}"'.format(paths.target)]
+
     if caller_arguments.plugin_search_paths:
         common_qmake_arguments.append('QTC_PLUGIN_DIRS={0}'.format(' '.join(caller_arguments.plugin_search_paths)))
     if caller_arguments.additional_qmake_arguments:
