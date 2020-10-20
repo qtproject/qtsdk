@@ -98,7 +98,7 @@ def msvc_year_version_libclang():
 def cmake_version():
     cmake_ver = os.environ.get('CMAKE_VERSION')
     if not cmake_ver:
-        cmake_ver = '3.17.1'
+        cmake_ver = '3.18.3'
     return cmake_ver
 
 def msvc_environment(bitness):
@@ -224,92 +224,32 @@ def mingw_training(base_path, qtcreator_path, environment, bitness):
                '-DCMAKE_BUILD_TYPE=Release',
                '-DWITH_TESTS=ON',
 
-               '-DBUILD_PLUGIN_ANDROID=OFF',
-               '-DBUILD_PLUGIN_AUTOTEST=OFF',
-               '-DBUILD_PLUGIN_AUTOTOOLSPROJECTMANAGER=OFF',
-               '-DBUILD_PLUGIN_BAREMETAL=OFF',
-               '-DBUILD_PLUGIN_BAZAAR=OFF',
-               '-DBUILD_PLUGIN_BEAUTIFIER=OFF',
-               '-DBUILD_PLUGIN_BINEDITOR=OFF',
-               '-DBUILD_PLUGIN_BOOKMARKS=OFF',
-               '-DBUILD_PLUGIN_BOOT2QT=OFF',
-               '-DBUILD_PLUGIN_CLANGFORMAT=OFF',
-               '-DBUILD_PLUGIN_CLANGPCHMANAGER=OFF',
-               '-DBUILD_PLUGIN_CLANGREFACTORING=OFF',
-               '-DBUILD_PLUGIN_CLASSVIEW=OFF',
-               '-DBUILD_PLUGIN_CLEARCASE=OFF',
-               '-DBUILD_PLUGIN_CODEPASTER=OFF',
-               '-DBUILD_PLUGIN_COMPILATIONDATABASEPROJECTMANAGER=OFF',
-               '-DBUILD_PLUGIN_COMPONENTSPLUGIN=OFF',
-               '-DBUILD_PLUGIN_CPPCHECK=OFF',
-               '-DBUILD_PLUGIN_CTFVISUALIZER=OFF',
-               '-DBUILD_PLUGIN_CVS=OFF',
-               '-DBUILD_PLUGIN_DIFFEDITOR=OFF',
-               '-DBUILD_PLUGIN_EMACSKEYS=OFF',
-               '-DBUILD_PLUGIN_FAKEVIM=OFF',
-               '-DBUILD_PLUGIN_GENERICPROJECTMANAGER=OFF',
-               '-DBUILD_PLUGIN_GIT=OFF',
-               '-DBUILD_PLUGIN_GLSLEDITOR=OFF',
-               '-DBUILD_PLUGIN_HELLOWORLD=OFF',
-               '-DBUILD_PLUGIN_HELP=OFF',
-               '-DBUILD_PLUGIN_IMAGEVIEWER=OFF',
-               '-DBUILD_PLUGIN_IOS=OFF',
-               '-DBUILD_PLUGIN_LANGUAGECLIENT=OFF',
-               '-DBUILD_PLUGIN_MACROS=OFF',
-               '-DBUILD_PLUGIN_MARKETPLACE=OFF',
-               '-DBUILD_PLUGIN_MCUSUPPORT=OFF',
-               '-DBUILD_PLUGIN_MERCURIAL=OFF',
-               '-DBUILD_PLUGIN_MODELEDITOR=OFF',
-               '-DBUILD_PLUGIN_NIM=OFF',
-               '-DBUILD_PLUGIN_PERFORCE=OFF',
-               '-DBUILD_PLUGIN_PERFPROFILER=OFF',
-               '-DBUILD_PLUGIN_PYTHON=OFF',
-               '-DBUILD_PLUGIN_QBSPROJECTMANAGER=OFF',
-               '-DBUILD_PLUGIN_QMLDESIGNER=OFF',
-               '-DBUILD_PLUGIN_QMLJSEDITOR=OFF',
-               '-DBUILD_PLUGIN_QMLJSTOOLS=OFF',
-               '-DBUILD_PLUGIN_QMLPREVIEW=OFF',
-               '-DBUILD_PLUGIN_QMLPREVIEWPLUGIN=OFF',
-               '-DBUILD_PLUGIN_QMLPROFILER=OFF',
-               '-DBUILD_PLUGIN_QMLPROJECTMANAGER=OFF',
-               '-DBUILD_PLUGIN_QNX=OFF',
-               '-DBUILD_PLUGIN_QTQUICKPLUGIN=OFF',
-               '-DBUILD_PLUGIN_REMOTELINUX=OFF',
-               '-DBUILD_PLUGIN_SCXMLEDITOR=OFF',
-               '-DBUILD_PLUGIN_SERIALTERMINAL=OFF',
-               '-DBUILD_PLUGIN_SILVERSEARCHER=OFF',
-               '-DBUILD_PLUGIN_STUDIOWELCOME=OFF',
-               '-DBUILD_PLUGIN_SUBVERSION=OFF',
-               '-DBUILD_PLUGIN_TASKLIST=OFF',
-               '-DBUILD_PLUGIN_TODO=OFF',
-               '-DBUILD_PLUGIN_UPDATEINFO=OFF',
-               '-DBUILD_PLUGIN_VALGRIND=OFF',
-               '-DBUILD_PLUGIN_VCSBASE=OFF',
-               '-DBUILD_PLUGIN_WEBASSEMBLY=OFF',
-               '-DBUILD_PLUGIN_WELCOME=OFF',
-               '-DBUILD_PLUGIN_WINRT=OFF',
+               '-DBUILD_QBS=OFF',
 
-               '-DBUILD_EXECUTABLE_BUILDOUTPUTPARSER=OFF',
-               '-DBUILD_EXECUTABLE_CPASTER=OFF',
-               '-DBUILD_EXECUTABLE_CPLUSPLUS-KEYWORDGEN=OFF',
-               '-DBUILD_EXECUTABLE_QML2PUPPET=OFF',
-               '-DBUILD_EXECUTABLE_QTC-ASKPASS=OFF',
-               '-DBUILD_EXECUTABLE_QTCDEBUGGER=OFF',
-               '-DBUILD_EXECUTABLE_QTCREATOR_CTRLC_STUB=OFF',
-               '-DBUILD_EXECUTABLE_QTCREATOR_PROCESS_STUB=OFF',
-               '-DBUILD_EXECUTABLE_QTPROMAKER=OFF',
-               '-DBUILD_EXECUTABLE_SDKTOOL=OFF',
-               '-DBUILD_EXECUTABLE_VALGRIND-FAKE=OFF',
-               '-DBUILD_EXECUTABLE_WIN32INTERRUPT=OFF',
-               '-DBUILD_EXECUTABLE_WIN64INTERRUPT=OFF',
-               '-DBUILD_EXECUTABLE_WINRTDEBUGHELPER=OFF',
+               '-DBUILD_PLUGINS_BY_DEFAULT=OFF',
+               '-DBUILD_EXECUTABLES_BY_DEFAULT=OFF',
+
+               '-DBUILD_PLUGIN_CORE=ON',
+               '-DBUILD_PLUGIN_TEXTEDITOR=ON',
+               '-DBUILD_PLUGIN_PROJECTEXPLORER=ON',
+               '-DBUILD_PLUGIN_CPPTOOLS=ON',
+               '-DBUILD_PLUGIN_CPPEDITOR=ON',
+               '-DBUILD_PLUGIN_QMAKEPROJECTMANAGER=ON',
+               '-DBUILD_PLUGIN_CLANGCODEMODEL=ON',
+               '-DBUILD_PLUGIN_CLANGTOOLS=ON',
+               '-DBUILD_PLUGIN_DEBUGGER=ON',
+               '-DBUILD_PLUGIN_DESIGNER=ON',
+               '-DBUILD_PLUGIN_QTSUPPORT=ON',
+               '-DBUILD_PLUGIN_RESOURCEEDITOR=ON',
+
+               '-DBUILD_EXECUTABLE_QTCREATOR=ON',
+               '-DBUILD_EXECUTABLE_ECHO=ON',
+               '-DBUILD_EXECUTABLE_CLANGBACKEND=ON',
 
                '-DCMAKE_PREFIX_PATH=' + qt_mingw_dir + ';' + os.path.join(base_path, 'libclang'),
                '-S' + qtcreator_path,
                '-B' + creator_build_dir]
 
-    # Two times until CMake 3.18
-    bld_utils.runCommand(qtc_cmake, creator_build_dir, None, environment)
     bld_utils.runCommand(qtc_cmake, creator_build_dir, None, environment)
     bld_utils.runCommand([cmake_command, '--build', creator_build_dir], creator_build_dir, None, environment)
     bld_utils.runCommand([cmake_command, '--install', creator_build_dir, '--prefix', creator_install_dir], creator_build_dir, None, environment)
@@ -460,7 +400,7 @@ def check_clang(toolchain, build_path, environment):
 
 def package_clang(install_path, result_file_path):
     (basepath, dirname) = os.path.split(install_path)
-    zip_command = ['7z', 'a', '-mmt2', result_file_path, dirname]
+    zip_command = ['7z', 'a', '-mmt4', result_file_path, dirname]
     bld_utils.runCommand(zip_command, basepath)
 
 def upload_clang(file_path, remote_path):

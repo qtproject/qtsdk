@@ -140,7 +140,7 @@ class DebugView:
         self.executable = 'dbgview.exe'
 
     def startAsync(self):
-        args = [self.executable, '/l', self.logFilePath]
+        args = [self.executable, '/accepteula', '/l', self.logFilePath]
         verboseStart(args)
         self.proc = subprocess.Popen(args, shell=False)
         time.sleep(2)
