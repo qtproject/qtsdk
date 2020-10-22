@@ -629,6 +629,15 @@ def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url
                               '--qt-path', qt_path,
                               '--qtc-path', qtcreator_path,
                               '--output-path', work_dir]
+            for dependency_name in plugin.dependencies:
+                matches = [dep for dep in plugins if dep.name == dependency_name]
+                if not matches:
+                    raise RuntimeError('did not find dependency "{0}" for plugin "{1}"'.format(dependency_name, plugin.name))
+                dependency = matches[0]
+                cmd_arguments.extend(['--add-path', os.path.join(work_dir, dependency.name + '-build', 'build')])
+                for module in dependency.modules:
+                    if module not in modules:
+                        modules.append(module)
             cmd_arguments.extend(plugin.additional_arguments)
         else:
             cmd_arguments = ['python', '-u', os.path.join(SCRIPT_ROOT_DIR, 'bld_qtcreator_plugins.py'),
