@@ -1024,10 +1024,10 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
 
     # Qt Creator build depends on pre-built Qt binary packages.
     # Define the exact archive locations for each required module.
-    qt_modules = ['qtbase', 'qtdeclarative', 'qtgraphicaleffects',
+    qt_modules = ['qt5compat', 'qtbase', 'qtdeclarative', 'qtgraphicaleffects',
                   'qtimageformats', 'qtlocation', 'qtmacextras',
                   'qtquick3d', 'qtquickcontrols', 'qtquickcontrols2', 'qtquicktimeline',
-                  'qtscript', 'qtserialport', 'qtsvg', 'qttools',
+                  'qtscript', 'qtserialport', 'qtshadertools', 'qtsvg', 'qttools',
                   'qttranslations', 'qtx11extras', 'qtxmlpatterns']
     qt_module_urls = module_urls(qt_modules)
     qt_module_urls.append(documentation_local_url)
