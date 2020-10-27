@@ -585,7 +585,7 @@ def build_ifw_docs(options):
     if not os.path.isfile(qmake_bin):
         print('*** Aborting doc build, unable to find qmake from: {0}'.format(options.qt_build_dir_dynamic))
         sys.exit(-1)
-    cmd_args = qmake_bin + ' ' + options.installer_framework_source_dir
+    cmd_args = qmake_bin + ' -r ' + options.installer_framework_source_dir
     bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), options.installer_framework_build_dir)
     cmd_args = options.make_doc_cmd + ' docs'
     env = dict(os.environ)
