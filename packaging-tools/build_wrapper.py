@@ -883,6 +883,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     target_env_dir = optionDict['QTC_PLATFORM']
     work_dir = optionDict['WORK_DIR']
     build_environment = dict(os.environ)
+    # remove LLVM_INSTALL_DIR set by COIN templates
+    build_environment.pop('LLVM_INSTALL_DIR', None)
 
     # Get Qt Creator sources if not present yet
     if 'QT_CREATOR_GIT_URL' in optionDict:
@@ -966,13 +968,15 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
 
     # clang package
     use_optimized_libclang = False
+    llvm_install_dir = None
     clang_filebase = optionDict.get('CLANG_FILEBASE')
-    if clang_filebase:
+    clang_platform = optionDict.get('CLANG_PLATFORM')
+    if clang_filebase and clang_platform:
         clang_extract_path = os.path.join(download_temp, 'libclang')
-        build_environment['LLVM_INSTALL_DIR'] = os.path.join(clang_extract_path, 'libclang') # package contains libclang subdir
+        llvm_install_dir = os.path.join(clang_extract_path, 'libclang') # package contains libclang subdir
         clang_suffix = optionDict.get('CLANG_FILESUFFIX')
         clang_suffix = clang_suffix if clang_suffix is not None else ''
-        clang_url = (pkg_base_path + '/' + optionDict['CLANG_FILEBASE'] + '-' + optionDict['CLANG_PLATFORM'] + clang_suffix + '.7z')
+        clang_url = (pkg_base_path + '/' + optionDict['CLANG_FILEBASE'] + '-' + clang_platform + clang_suffix + '.7z')
         add_download_extract(clang_url, clang_extract_path)
         use_optimized_libclang = bldinstallercommon.is_win_platform()
         if use_optimized_libclang:
@@ -1013,7 +1017,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
 
     # copy optimized clang package
     if use_optimized_libclang:
-        target_libclang_dll = os.path.join(build_environment['LLVM_INSTALL_DIR'], 'bin', 'libclang.dll')
+        target_libclang_dll = os.path.join(llvm_install_dir, 'bin', 'libclang.dll')
         shutil.copyfile(opt_clang_lib, target_libclang_dll)
 
     # Qt Creator build depends on pre-built Qt binary packages.
@@ -1057,6 +1061,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                      '--src', src_path,
                      '--build', build_path,
                      '--qt-path', qt_path]
+        if llvm_install_dir:
+            cmd_args += ['--llvm-path', llvm_install_dir]
         keychain_arg = '--keychain-unlock-script'
         python_arg = '--python-path'
         elfutils_arg = '--elfutils-path'
@@ -1072,6 +1078,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         if ide_branding_pri:
             renaming_qmake_arguments.append('IDE_BRANDING_PRI=' + ide_branding_pri)
         cmd_args.extend([arg for value in renaming_qmake_arguments for arg in ['--add-qmake-argument', value]])
+        if llvm_install_dir:
+            build_environment['LLVM_INSTALL_DIR'] = llvm_install_dir
         keychain_arg = '--keychain_unlock_script'
         python_arg = '--python_path'
         elfutils_arg = '--elfutils_path'
