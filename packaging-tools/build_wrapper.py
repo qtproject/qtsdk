@@ -942,6 +942,10 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     use_cmake = optionDict.get('USE_CMAKE')
     usp_server_url = optionDict.get('USP_SERVER_URL')
     usp_auth_key = optionDict.get('USP_AUTH_KEY')
+    qtc_additional_config = optionDict.get('QTC_ADDITIONAL_CONFIG') # optional
+    disable_docs = optionDict.get('DISABLE_DOCS') # optional
+    if qtc_additional_config:
+        qtc_additional_config = qtc_additional_config.split()
     qt_temp = os.path.join(work_dir, 'qt-creator_temp') if not use_cmake else os.path.join(work_dir, 'qt_temp')
 
     def module_filename(module):
@@ -1069,6 +1073,10 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
             cmd_args += ['--add-module-path', os.path.abspath(ide_branding_path)]
         if ide_branding_app_name:
             cmd_args += ['--app-target', ide_branding_app_name]
+        if qtc_additional_config:
+            cmd_args += ['--add-config=' + value for value in qtc_additional_config]
+        if disable_docs:
+            cmd_args += ['--no-docs']
         keychain_arg = '--keychain-unlock-script'
         python_arg = '--python-path'
         elfutils_arg = '--elfutils-path'
