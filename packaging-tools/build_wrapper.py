@@ -1070,7 +1070,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         if llvm_install_dir:
             cmd_args += ['--llvm-path', llvm_install_dir]
         if ide_branding_path:
-            cmd_args += ['--add-module-path', os.path.abspath(ide_branding_path)]
+            cmd_args += ['--add-module-path', os.path.abspath(ide_branding_path).replace('\\', '/')]
         if ide_branding_app_name:
             cmd_args += ['--app-target', ide_branding_app_name]
         if qtc_additional_config:
