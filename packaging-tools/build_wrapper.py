@@ -920,6 +920,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     snapshot_path = optionDict['SNAPSHOT_SERVER_PATH'] # optional
     qt_base_path = optionDict['QTC_QT_BASE_DIR']
     ide_branding_pri = optionDict.get('IDE_BRANDING_PRI') # optional
+    ide_branding_path = optionDict.get('IDE_BRANDING_PATH') # optional
+    ide_branding_app_name = optionDict.get('IDE_BRANDING_APP_NAME') # optional
     installer_patch = optionDict.get('INSTALLER_PATCH') # optional
     skip_cdb = optionDict.get('SKIP_CDB') # optional
     build_id = optionDict['BUILD_NUMBER']
@@ -1063,6 +1065,10 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                      '--qt-path', qt_path]
         if llvm_install_dir:
             cmd_args += ['--llvm-path', llvm_install_dir]
+        if ide_branding_path:
+            cmd_args += ['--add-module-path', os.path.abspath(ide_branding_path)]
+        if ide_branding_app_name:
+            cmd_args += ['--app-target', ide_branding_app_name]
         keychain_arg = '--keychain-unlock-script'
         python_arg = '--python-path'
         elfutils_arg = '--elfutils-path'
