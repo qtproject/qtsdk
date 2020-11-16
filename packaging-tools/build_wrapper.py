@@ -1240,17 +1240,18 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     file_upload_list.append(('qt-creator_build/qtcreator_dev.7z', target_env_dir + '/qtcreator_dev.7z'))
     snapshot_upload_list.append((target_env_dir + '/qtcreator.7z', target_env_dir + '/qtcreator.7z'))
     snapshot_upload_list.append((target_env_dir + '/qtcreator_dev.7z', target_env_dir + '/qtcreator_dev.7z'))
-    # TODO CMake build
-    if not use_cmake:
-        file_upload_list.append(('qt-creator_build/qtcreator-debug.7z', target_env_dir + '/qtcreator-debug.7z'))
-        snapshot_upload_list.append((target_env_dir + '/qtcreator-debug.7z', target_env_dir + '/qtcreator-debug.7z'))
+    file_upload_list.append(('qt-creator_build/qtcreator-debug.7z', target_env_dir + '/qtcreator-debug.7z'))
+    snapshot_upload_list.append((target_env_dir + '/qtcreator-debug.7z', target_env_dir + '/qtcreator-debug.7z'))
     for plugin in additional_plugins:
         plugin_name = plugin.name + '.7z'
         plugin_dev_name = plugin.name + '_dev.7z'
+        plugin_debug_name = plugin.name + '-debug.7z'
         if os.path.isfile(os.path.join(work_dir, plugin_name)):
             file_upload_list.append((plugin_name, target_env_dir + '/' + plugin_name))
         if os.path.isfile(os.path.join(work_dir, plugin_dev_name)):
             file_upload_list.append((plugin_dev_name, target_env_dir + '/' + plugin_dev_name))
+        if os.path.isfile(os.path.join(work_dir, plugin_debug_name)):
+            file_upload_list.append((plugin_debug_name, target_env_dir + '/' + plugin_debug_name))
     if bldinstallercommon.is_win_platform():
         if not skip_cdb:
             file_upload_list.append(('qt-creator_build/qtcreatorcdbext.7z', target_env_dir + '/qtcreatorcdbext.7z'))
