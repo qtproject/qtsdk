@@ -35,6 +35,7 @@ import shutil
 import argparse
 import subprocess
 import logging
+from read_remote_config import get_pkg_value
 
 log = logging.getLogger("Sign-utility")
 logging.basicConfig(level=logging.INFO, format='%(message)s')
@@ -84,11 +85,11 @@ if __name__ == "__main__":
     exe_parser = subparsers.add_parser("win")
 
     app_parser.add_argument("--file", dest="file_path", required=True, help="Full path to .app file")
-    app_parser.add_argument("--codesign-identity-key", default=os.environ.get('QT_CODESIGN_IDENTITY_KEY'))
+    app_parser.add_argument("--codesign-identity-key", default=get_pkg_value("QT_CODESIGN_IDENTITY_KEY"))
 
     exe_parser.add_argument("--file", dest="file_path", required=True, help="Full path to .exe file")
-    exe_parser.add_argument("--signing-server", required=False, default=os.environ.get('SIGNING_SERVER'))
-    exe_parser.add_argument("--signing-pass", required=False, default=os.environ.get('SIGNING_PASSWORD'))
+    exe_parser.add_argument("--signing-server", required=False, default=get_pkg_value("SIGNING_SERVER"))
+    exe_parser.add_argument("--signing-pass", required=False, default=get_pkg_value("SIGNING_PASSWORD"))
     exe_parser.add_argument("--timestamp", required=False, default="http://timestamp.digicert.com")
 
     args = parser.parse_args(sys.argv[1:])
