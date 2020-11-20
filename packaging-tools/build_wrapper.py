@@ -57,6 +57,7 @@ import pkg_constants
 from pkg_constants import ICU_BUILD_OUTPUT_DIR
 from threadedwork import ThreadedWork, Task
 import bld_sdktool
+from read_remote_config import get_pkg_value
 
 
 # ----------------------------------------------------------------------
@@ -119,7 +120,7 @@ def lock_keychain():
 ###############################
 def sign_mac_executable(file_path, working_dir, abort_on_fail):
     unlock_keychain()
-    s_arg = 'Developer ID Application: The Qt Company Oy ({0})'.format(os.environ['QT_CODESIGN_IDENTITY_KEY'])
+    s_arg = 'Developer ID Application: The Qt Company Oy ({0})'.format(get_pkg_value("QT_CODESIGN_IDENTITY_KEY"))
     # "-o runtime" is required for notarization
     cmd_args = ['codesign', '-o', 'runtime', '--verbose=3', '-r', '/Users/qt/csreq_qt_company.txt', '-s', s_arg, file_path]
     bldinstallercommon.do_execute_sub_process(cmd_args, working_dir, abort_on_fail)
@@ -1148,8 +1149,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                               qmake_arguments=qmake_arguments)]),
     plugin_telemetry_args = []
     if use_cmake and usp_server_url and usp_auth_key:
-        plugin_telemetry_args = ['--add-config=-DUSP_SERVER_URL=' + usp_server_url,
-                                 '--add-config=-DUSP_AUTH_KEY=' + usp_auth_key]
+        plugin_telemetry_args = ['--add-config=-DUSP_SERVER_URL=' + optionDict['USP_SERVER_URL'],
+                                 '--add-config=-DUSP_AUTH_KEY=' + optionDict['USP_AUTH_KEY']]
     additional_plugins.extend([make_QtcPlugin('plugin-telemetry', 'plugin-telemetry', qtcreator_version,
                                               modules=qt_module_local_urls,
                                               additional_arguments=plugin_telemetry_args)]),
@@ -1730,13 +1731,25 @@ def initPkgOptions(args):
         optionDict = dict(os.environ)
         # Check for command line overrides
         optionDict['LICENSE'] = args.license
-        optionDict['PACKAGE_STORAGE_SERVER_ADDR'] = args.server
         optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] = args.path
         optionDict['OPENSSL_LIBS'] = args.openssl_libs
-        optionDict['SNAPSHOT_SERVER'] = args.snapshot_server
         optionDict['SNAPSHOT_SERVER_PATH'] = args.snapshot_path
         optionDict['TARGET_ENV'] = args.target_env if args.target_env else os.environ.get('cfg')
         optionDict['BUILD_NUMBER'] = args.build_number if args.build_number else os.environ.get('BUILD_NUMBER')
+
+        optionDict['SIGNING_SERVER'] = get_pkg_value("SIGNING_SERVER")
+        optionDict['SIGNING_PASSWORD'] = get_pkg_value("SIGNING_PASSWORD")
+        optionDict['USP_SERVER_URL'] = get_pkg_value("USP_SERVER_URL")
+        optionDict['USP_AUTH_KEY'] = get_pkg_value("USP_AUTH_KEY")
+        optionDict['PACKAGE_STORAGE_SERVER_USER'] = get_pkg_value("PACKAGE_STORAGE_SERVER_USER")
+        optionDict['PACKAGE_STORAGE_SERVER'] = get_pkg_value("PACKAGE_STORAGE_SERVER")
+        optionDict['PACKAGE_STORAGE_SERVER_ADDR'] = args.server or get_pkg_value("PACKAGE_STORAGE_SERVER_ADDR")
+        optionDict['PACKAGE_STORAGE_SERVER_PATH_HTTP'] = get_pkg_value("PACKAGE_STORAGE_SERVER_PATH_HTTP")
+        optionDict['SNAPSHOT_SERVER'] = args.snapshot_server or get_pkg_value("SNAPSHOT_SERVER")
+        optionDict['EXT_SERVER_BASE_URL'] = get_pkg_value("EXT_SERVER_BASE_URL")
+        optionDict['RTA_SERVER_BASE_URL'] = get_pkg_value("RTA_SERVER_BASE_URL")
+        optionDict['PKG_STAGING_SERVER'] = get_pkg_value("PKG_STAGING_SERVER")
+        optionDict['PKG_STAGING_SERVER_UNAME'] = get_pkg_value("PKG_STAGING_SERVER_UNAME")
 
         if LOCAL_MODE:
             from getpass import getuser
