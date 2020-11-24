@@ -49,6 +49,12 @@ from installer_utils import PackagingError
 from runner import exec_cmd, async_exec_cmd
 from logging_util import init_logger
 
+import inspect
+_currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+_parentdir = os.path.dirname(_currentdir)
+sys.path.insert(0, _parentdir)
+from read_remote_config import get_pkg_value
+
 log = init_logger(__name__, debug_mode=False)
 timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d--%H:%M:%S')
 
@@ -502,7 +508,7 @@ if __name__ == "__main__":
     parser.add_argument("--ifw-tools", dest="ifw_tools", type=str, default=os.getenv("IFW_TOOLS"),
                         help="Archive which contains the ifw tools")
 
-    parser.add_argument("--staging-server", dest="staging_server", type=str, default=os.getenv("STAGING_SERVER"),
+    parser.add_argument("--staging-server", dest="staging_server", type=str, default=get_pkg_value("STAGING_SERVER_LOGIN"),
                         help="Staging server")
     parser.add_argument("--staging-server-root", dest="staging_server_root", type=str, default=os.getenv("STAGING_SERVER_ROOT"),
                         help="Online repositories root directory")
@@ -528,7 +534,7 @@ if __name__ == "__main__":
     parser.add_argument("--update-production", dest="update_production", action='store_true', default=os.getenv("DO_UPDATE_PRODUCTION_REPOSITORY", False),
                         help="Should the production repository be updated?")
 
-    parser.add_argument("--rta", dest="rta", type=str, default=os.getenv("RTA_SERVER_BASE_URL"),
+    parser.add_argument("--rta", dest="rta", type=str, default=get_pkg_value("RTA_SERVER_BASE_URL"),
                         help="If specified then trigger RTA for tasks found from --config")
 
     parser.add_argument("--sync-s3", dest="sync_s3", type=str,
