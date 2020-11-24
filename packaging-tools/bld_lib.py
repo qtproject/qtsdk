@@ -45,6 +45,7 @@ from typing import List, Tuple
 from urllib.parse import urlparse
 from shutil import which
 from remote_uploader import RemoteUploader
+from read_remote_config import get_pkg_value
 
 LOG_FMT_CI = "%(asctime)s %(levelname)s:%(filename)s:%(lineno)d(%(process)d): %(message)s"
 log = logging.getLogger("Bld")
@@ -212,8 +213,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="Helper script to build a lib against qtbase artifact.")
     parser.add_argument("--qtpkg", dest="qtpkg", type=str, default=os.getenv("QT_PKG_URL"), help="URL pointing to pre-built Qt bin package.")
     parser.add_argument("--src-path", dest="src_path", type=str, default=os.getenv("SRC_PATH"), help="Path to sources")
-    parser.add_argument("--remote-server", dest="remote_server", type=str, default=os.getenv("PACKAGE_STORAGE_SERVER"), help="Output server for build artifacts")
-    parser.add_argument("--username", dest="username", type=str, default=os.getenv("PACKAGE_STORAGE_SERVER_USER"), help="Username for the output server")
+    parser.add_argument("--remote-server", dest="remote_server", type=str, default=get_pkg_value("PACKAGE_STORAGE_SERVER"), help="Output server for build artifacts")
+    parser.add_argument("--username", dest="username", type=str, default=get_pkg_value("PACKAGE_STORAGE_SERVER_USER"), help="Username for the output server")
     parser.add_argument("--remote-base-path", dest="remote_base_path", type=str, default=os.getenv("PACKAGE_STORAGE_SERVER_BASE_DIR"), help="Base path for output")
     parser.add_argument("--project-name", dest="project_name", type=str, default=os.getenv("PROJECT_NAME"), help="Base path for output")
     parser.add_argument("--build-id", dest="build_id", type=str, default=strftime('%Y%m%d%H%M%S', gmtime()), help="Base path for output")
