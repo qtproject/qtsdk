@@ -42,6 +42,7 @@ from bldinstallercommon import retrieve_url, extract_file
 from urllib2 import Request, urlopen
 from bs4 import BeautifulSoup
 from remote_uploader import RemoteUploader
+from read_remote_config import get_pkg_value
 
 qtLocationDir = "qtlocation"
 qtPositioningDir = "qtpositioning"
@@ -431,8 +432,8 @@ def trimArtifactsUrl(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--artifacts-url", dest="artifacts_url", type=str, required=True, help="Input for build artifacts")
-    parser.add_argument("--remote-server", dest="remote_server", type=str, default=os.getenv("PACKAGE_STORAGE_SERVER"), required=True, help="Output server for build artifacts")
-    parser.add_argument("--username", dest="username", required=True, type=str, default=os.getenv("PACKAGE_STORAGE_SERVER_USER"), help="Username for the output server")
+    parser.add_argument("--remote-server", dest="remote_server", type=str, default=get_pkg_value("PACKAGE_STORAGE_SERVER"), required=True, help="Output server for build artifacts")
+    parser.add_argument("--username", dest="username", required=True, type=str, default=get_pkg_value("PACKAGE_STORAGE_SERVER_USER"), help="Username for the output server")
     parser.add_argument("--remote-base-path", dest="remote_base_path", type=str, required=True, default=os.getenv("PACKAGE_STORAGE_SERVER_BASE_DIR"), help="Base path for output")
     parser.add_argument("--dry-run", dest="dry_run", action="store_true", default=False, help="")
     parser.add_argument("--skip-collect-debug-symbols", dest="skip_collect_debug_symbols", action="store_true", default=False, help="Do not collect debug symbols.")
