@@ -54,6 +54,7 @@ import sys
 from threadedwork import ThreadedWork
 from bld_utils import get_commit_SHA, runBuildCommand, runCommand, runInstallCommand, stripVars
 import bldinstallercommon
+from read_remote_config import get_pkg_value
 
 def add_commandline_arguments(parser):
     parser.add_argument('--qt5path', help="here it expects a compiled Qt5", required=True)
@@ -123,8 +124,11 @@ def fix_arguments(callerArguments):
 def check_arguments(callerArguments):
     if bldinstallercommon.is_mac_platform():
         if callerArguments.keychain_unlock_script:
-            if not os.environ['SIGNING_IDENTITY']:
-                print('error: Environment variable SIGNING_IDENTITY not set')
+            # inherited by child processes
+            os.environ["SIGNING_IDENTITY"] = get_pkg_value("SIGNING_IDENTITY")
+            os.environ["SIGNING_FLAGS"] = get_pkg_value("SIGNING_FLAGS")
+            if not os.environ.get('SIGNING_IDENTITY') or not os.environ.get('SIGNING_FLAGS'):
+                print('error: Environment variable(s) SIGNING_IDENTITY/SIGNING_FLAGS not set')
                 sys.exit(1)
     if not os.path.lexists(callerArguments.qt5path) and not callerArguments.qt_modules:
         parser.print_help()
