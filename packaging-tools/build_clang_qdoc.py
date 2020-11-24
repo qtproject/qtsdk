@@ -52,6 +52,7 @@ import bldinstallercommon
 import environmentfrombatchfile
 import threadedwork
 import multiprocessing
+from read_remote_config import get_pkg_value
 
 def git_clone_and_checkout(base_path, remote_repository_url, directory, revision):
     bld_utils.runCommand(['git', 'clone',
@@ -281,7 +282,7 @@ def main():
     toolchain = os.environ['cfg'].split('-')[1].lower()
     environment = build_environment(toolchain, bitness)
     result_file_path = os.path.join(base_path, 'libclang-' + branch + '-' + os.environ['CLANG_PLATFORM'] + '.7z')
-    remote_path = (os.environ['PACKAGE_STORAGE_SERVER_USER'] + '@' + os.environ['PACKAGE_STORAGE_SERVER'] + ':'
+    remote_path = (get_pkg_value("PACKAGE_STORAGE_SERVER_USER") + '@' + get_pkg_value("PACKAGE_STORAGE_SERVER") + ':'
                    + os.environ['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + os.environ['CLANG_UPLOAD_SERVER_PATH'])
 
     get_clang(base_path, os.environ['LLVM_REVISION'])
