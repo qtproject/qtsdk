@@ -45,7 +45,7 @@ class CleanerError(Exception):
 
 
 @contextmanager
-def scd(path: str) -> Generator:
+def cd(path: str) -> Generator:
     oldwd = os.getcwd()
     os.chdir(path)
     try:
