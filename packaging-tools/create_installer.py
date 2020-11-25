@@ -1274,7 +1274,7 @@ def create_maintenance_tool_resource_file():
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
     # archive
     resource_file = os.path.join(SCRIPT_ROOT_DIR, 'update.rcc')
-    installer_base_archive = bldinstallercommon.locate_file(PACKAGES_FULL_PATH_DST, '*installerbase*')
+    installer_base_archive = bldinstallercommon.locate_file(PACKAGES_FULL_PATH_DST, '*installer-framework*')
     if not os.path.isfile(installer_base_archive):
         print('*** Unable to locate installerbase archive from: {0}'.format(PACKAGES_FULL_PATH_DST))
         print('*** update.rcc will not be included in the MaintenanceTool repository!')
