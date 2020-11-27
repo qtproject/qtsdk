@@ -602,13 +602,9 @@ def init_env(optionDict):
     onlineRepositoryBaseName = os.environ.get('ONLINE_REPOSITORY_BASE_NAME')
     optionDict['ONLINE_REPOSITORY_BASE_NAME'] = onlineRepositoryBaseName if onlineRepositoryBaseName else 'qtsdkrepository'
 
-    print('Staging server: {0}'.format(optionDict['PKG_STAGING_SERVER']))
-    print('Staging server uname: {0}'.format(optionDict['PKG_STAGING_SERVER_UNAME']))
     print('Staging server base directory: {0}'.format(optionDict['REPO_STAGING_SERVER_TEST_REPO']))
     print('Staging server base directory pending: {0}'.format(optionDict['REPO_STAGING_SERVER_TEST_REPO_PENDING']))
     print('Staging server tools dir: {0}'.format(optionDict['REPO_STAGING_SERVER_HOME_TOOLS']))
-    print('Production server: {0}'.format(optionDict['PROD_ADDR']))
-    print('Production server uname: {0}'.format(optionDict['PROD_USER']))
     print('Production server base directory: {0}'.format(optionDict['PROD_SRV_REPO_BASE_PATH']))
     print('Production server base directory pending: {0}'.format(optionDict['PROD_SRV_REPO_PENDING_AREA_DIR']))
     print('Production server base directory dist update work: {0}'.format(optionDict['REPO_STAGING_SERVER_TEST_REPO_DIST_WORK']))
