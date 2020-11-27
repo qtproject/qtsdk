@@ -1082,6 +1082,16 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         python_arg = '--python-path'
         elfutils_arg = '--elfutils-path'
         cdb_arg = '--no-cdb'
+        for key in ['SIGNING_IDENTITY', 'SIGNING_FLAGS']:
+            try:
+                value = get_pkg_value(key)
+                # for python2 this is unicode which is not accepted as environment
+                if value and type(value) is not str:
+                    value = value.encode('UTF-8')
+                if value:
+                    build_environment[key] = value
+            except Exception:
+                pass
     else:
         cmd_args = ['python', '-u', os.path.normpath(os.path.join(SCRIPT_ROOT_DIR, 'bld_qtcreator.py')),
                     '--qt5path', qt_path]
