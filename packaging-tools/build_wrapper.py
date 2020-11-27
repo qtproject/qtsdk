@@ -1750,6 +1750,8 @@ def initPkgOptions(args):
         optionDict['RTA_SERVER_BASE_URL'] = get_pkg_value("RTA_SERVER_BASE_URL")
         optionDict['PKG_STAGING_SERVER'] = get_pkg_value("PKG_STAGING_SERVER")
         optionDict['PKG_STAGING_SERVER_UNAME'] = get_pkg_value("PKG_STAGING_SERVER_UNAME")
+        optionDict['PROD_USER'] = get_pkg_value("PROD_USER")
+        optionDict['PROD_ADDR'] = get_pkg_value("PROD_ADDR")
 
         if LOCAL_MODE:
             from getpass import getuser
