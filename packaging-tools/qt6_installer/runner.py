@@ -55,7 +55,7 @@ def exec_cmd(cmd: List[str], timeout=60) -> str:
 async def async_exec_cmd(cmd: List[str], timeout: int=60 * 60, env: Dict[str, str]=os.environ.copy()) -> None:
     p = await asyncio.create_subprocess_exec(*cmd, stdout=None, stderr=subprocess.STDOUT, env=env)
     try:
-        log.info("Calling: %s", cmd)
+        log.info("Calling: %s", ' '.join(cmd))
         await asyncio.wait_for(p.communicate(), timeout=timeout)
     except (asyncio.TimeoutError, subprocess.TimeoutExpired):
         log.error("Timeout (%ss) for: %s", str(timeout), cmd)
