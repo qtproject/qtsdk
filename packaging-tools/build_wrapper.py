@@ -368,6 +368,11 @@ def create_download_documentation_task(base_url, download_path):
         file_list = pattern.findall(string)
         file_list = list(dict.fromkeys(file_list))
 
+    # In Qt 6 a zip file with all html files and index files exists.
+    # Use it if available.
+    if 'qt5-documentation.zip' in file_list:
+        file_list = ['qt5-documentation.zip']
+
     extract_path = os.path.join(download_path, 'tqtc-qt5-documentation')
     target_filepath = os.path.join(download_path, 'qt-everywhere-documentation.7z')
 
