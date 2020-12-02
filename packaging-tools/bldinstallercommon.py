@@ -744,9 +744,10 @@ def handle_component_rpath(component_root_path, destination_lib_paths):
 # function
 ###############################
 def do_execute_sub_process(args, execution_path, abort_on_fail=True, get_output=False,
-                           extra_env=dict(os.environ), redirect_output=None):
+                           extra_env=dict(os.environ), redirect_output=None, args_log=None):
+    _args_log = args_log or list_as_string(args)
     print '      --------------------------------------------------------------------'
-    print '      Executing:      [' + list_as_string(args) + ']'
+    print '      Executing:      [' + _args_log + ']'
     print '      Execution path: [' + execution_path + ']'
     print '      Abort on fail:  [' + str(abort_on_fail) + ']'
     sys.stdout.flush()

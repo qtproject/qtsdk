@@ -88,7 +88,10 @@ def sign_windows_executable(file_path, working_dir, abort_on_fail):
         bldinstallercommon.do_execute_sub_process(curl_cmd_args, working_dir, abort_on_fail)
     cmd_args = [os.path.join(signToolsTempDir, 'signtool32.exe'), 'sign', '/v', '/du', optionDict['SIGNING_SERVER'], '/p', optionDict['SIGNING_PASSWORD'],
                 '/tr', 'http://timestamp.digicert.com', '/f', os.path.join(signToolsTempDir, 'keys.pfx'), '/td', "sha256", '/fd', "sha256", file_path]
-    bldinstallercommon.do_execute_sub_process(cmd_args, working_dir, abort_on_fail)
+    args_log = cmd_args[:]
+    args_log[6] = "****"
+    args_log[8] = "****"
+    bldinstallercommon.do_execute_sub_process(cmd_args, working_dir, abort_on_fail, args_log=' '.join(args_log))
     if os.path.exists(signToolsTempDir):
         shutil.rmtree(signToolsTempDir)
 

@@ -43,6 +43,7 @@ import shlex
 import traceback
 import subprocess
 from multiprocessing.connection import Listener
+from read_remote_config import get_pkg_value
 
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 ARCH_EXT = '.zip' if platform.system().lower().startswith('win') else '.tar.xz'
@@ -791,9 +792,27 @@ def archive_binarycreator(options):
 def sign_windows_installerbase(file_name, working_dir, abort_on_fail, options):
     print('--------------------------------------------------------------------')
     print('Sign Windows Installerbase')
-    cmd_args = [r'C:\Utils\sign\signtool.exe', 'sign', '/v', '/du', options.signserver, '/p', options.signpwd,
-                '/t', 'http://timestamp.verisign.com/scripts/timestamp.dll', '/f', r'C:\utils\sign\keys.pfx', file_name]
-    bldinstallercommon.do_execute_sub_process(cmd_args, working_dir, abort_on_fail)
+    signToolsTempDir = r'C:\Utils\sign_tools_temp'
+    for item in ["signtool32.exe", "keys.pfx", "capicom.dll"]:
+        dst = os.path.join(signToolsTempDir, item)
+        curl_cmd_args = ['curl', "--fail", "-L", "--retry", "5", "--retry-delay", "30", "-o", dst,
+                         '--create-dirs', get_pkg_value("SIGN_TOOLS_ADDR") + item]
+        subprocess.check_call(curl_cmd_args)
+
+    signing_server = get_pkg_value("SIGNING_SERVER")
+    signing_pass = get_pkg_value("SIGNING_PASSWORD")
+    cmd_args = [os.path.join(signToolsTempDir, 'signtool32.exe'), 'sign', '/v', '/du', signing_server, '/p', signing_pass]
+    cmd_args += ['/tr', "http://timestamp.digicert.com", '/f', os.path.join(signToolsTempDir, 'keys.pfx')]
+    cmd_args += ['/td', "sha256", '/fd', "sha256", file_name]
+
+    log_entry = cmd_args[:]
+    log_entry[4] = "****"
+    log_entry[6] = "****"
+    print("Calling: {0}".format(' '.join(log_entry)))
+    subprocess.check_call(cmd_args, stderr=subprocess.STDOUT)  # check_call() will consume output
+    shutil.rmtree(signToolsTempDir)
+    print("Successfully signed: {0}".format(file_name))
+
 
 ###############################
 # function

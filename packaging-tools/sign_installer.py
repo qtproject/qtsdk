@@ -67,11 +67,16 @@ def sign_windows_executable(file_path: str, signing_server: str, signing_pass: s
     signToolsTempDir = r'C:\Utils\sign_tools_temp'
     for item in signTools:
         dst = os.path.join(signToolsTempDir, item)
-        curl_cmd_args = ['curl', "--fail", "-L", "--retry", "5", "--retry-delay", "30", "-o", dst, '--create-dirs', "http://ci-files01-hki.intra.qt.io/input/semisecure/sign/current/tools/" + item]
+        curl_cmd_args = ['curl', "--fail", "-L", "--retry", "5", "--retry-delay", "30", "-o", dst,
+                         '--create-dirs', get_pkg_value("SIGN_TOOLS_ADDR") + item]
         subprocess.check_call(curl_cmd_args)
     cmd_args = [os.path.join(signToolsTempDir, 'signtool32.exe'), 'sign', '/v', '/du', signing_server, '/p', signing_pass]
     cmd_args += ['/tr', timestamp, '/f', os.path.join(signToolsTempDir, 'keys.pfx'), '/td', "sha256", '/fd', "sha256", file_path]
-    subprocess.check_call(cmd_args)
+    log_entry = cmd_args[:]
+    log_entry[4] = "****"
+    log_entry[6] = "****"
+    log.info("Calling: {0}".format(' '.join(log_entry)))
+    subprocess.check_call(cmd_args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     shutil.rmtree(signToolsTempDir)
     log.info(f"Successfully signed: {file_path}")
 
