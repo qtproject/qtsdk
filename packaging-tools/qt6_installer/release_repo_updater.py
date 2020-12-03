@@ -95,12 +95,21 @@ class QtRepositoryLayout:
         return os.path.join(self.base_repo_path, self.production, self.repo_domain)
 
 
-async def execute_remote_cmd(remoteServer: str, remoteServerHome: str, cmd: List[str], scriptFileName: str, timeout=60*60) -> None:
+def has_connection_error(output: str) -> bool:
+    known_errors = ["Could not connect to the endpoint URL"]
+    for line in output.splitlines():
+        for known_error in known_errors:
+            if line.find(known_error) >= 0:
+                return True
+    return False
+
+
+def execute_remote_cmd(remoteServer: str, remoteServerHome: str, cmd: List[str], scriptFileName: str, timeout=60*60) -> None:
     remoteTmpDir = os.path.join(remoteServerHome, "remote_scripts", timestamp)
     create_remote_paths(remoteServer, [remoteTmpDir])
     remoteScript = create_remote_script(remoteServer, cmd, remoteTmpDir, scriptFileName)
     log.info("Created remote script: [%s] with contents: %s", remoteScript, ' '.join(cmd))
-    await execute_remote_script(remoteServer, remoteScript, timeout)
+    execute_remote_script(remoteServer, remoteScript, timeout)
 
 
 def create_remote_script(server: str, cmd: List[str], remoteScriptPath: str, scriptFileName: str) -> str:
@@ -116,9 +125,20 @@ def create_remote_script(server: str, cmd: List[str], remoteScriptPath: str, scr
         return os.path.join(remoteScriptPath, scriptFileName)
 
 
-async def execute_remote_script(server: str, remoteScriptPath: str, timeout=60*60) -> None:
+def execute_remote_script(server: str, remoteScriptPath: str, timeout=60*60) -> None:
     cmd = get_remote_login_cmd(server) + [remoteScriptPath]
-    await async_exec_cmd(cmd, timeout)
+    retry_count = 5
+    delay = 60
+    while retry_count:
+        retry_count -= 1
+        if not has_connection_error(exec_cmd(cmd, timeout)):
+            break
+        if retry_count:
+            log.warning(f"Trying again after {delay}s")
+            time.sleep(delay)
+            delay = delay + delay/2  # 60, 90, 135, 202, 303
+        else:
+            log.critical(f"Execution of the remote script probably failed: {cmd}")
 
 
 async def upload_ifw_to_remote(ifwTools: str, remoteServer: str, remoteServerHome: str) -> str:
@@ -247,7 +267,7 @@ def create_remote_repository_backup(server: str, remote_repo_path: str) -> None:
     return backup_path
 
 
-async def sync_production_repositories_to_s3(server: str, s3: str, updatedProductionRepositories: Dict[str, str], remoteRootPath: str) -> None:
+def sync_production_repositories_to_s3(server: str, s3: str, updatedProductionRepositories: Dict[str, str], remoteRootPath: str) -> None:
     remoteLogsBasePath = os.path.join(remoteRootPath, "s3_sync_logs")
     create_remote_paths(server, [remoteLogsBasePath])
 
@@ -259,17 +279,17 @@ async def sync_production_repositories_to_s3(server: str, s3: str, updatedProduc
         tipPrefix = repo.replace("/", "-") + "-"
 
         remoteLogFile = remoteLogFileBase + "-7z.txt"
-        await sync_production_7z_to_s3(server, remoteRootPath, remoteProductionRepoFullPath, s3RepoPath, remoteLogFile, tipPrefix)
+        sync_production_7z_to_s3(server, remoteRootPath, remoteProductionRepoFullPath, s3RepoPath, remoteLogFile, tipPrefix)
         remoteLogFile = remoteLogFileBase + "-xml.txt"
-        await sync_production_xml_to_s3(server, remoteRootPath, remoteProductionRepoFullPath, s3RepoPath, remoteLogFile, tipPrefix)
+        sync_production_xml_to_s3(server, remoteRootPath, remoteProductionRepoFullPath, s3RepoPath, remoteLogFile, tipPrefix)
 
 
-async def sync_production_7z_to_s3(server: str, serverHome: str, productionRepoPath: str, s3RepoPath: str, remoteLogFile: str, tip: str) -> None:
+def sync_production_7z_to_s3(server: str, serverHome: str, productionRepoPath: str, s3RepoPath: str, remoteLogFile: str, tip: str) -> None:
     log.info("Syncing .7z to s3: [%s:%s] -> [%s]", server, productionRepoPath, s3RepoPath)
 
     cmd = ["aws", "s3", "sync", productionRepoPath, s3RepoPath]
     cmd = cmd + ["--exclude", '"*"', "--include", '"*.7z"', "--include", '"*.sha1"']
-    await spawn_remote_background_task(server, serverHome, cmd, remoteLogFile, tip=tip + "7z")
+    spawn_remote_background_task(server, serverHome, cmd, remoteLogFile, tip=tip + "7z")
 
 
 async def sync_production_xml_to_s3(server: str, serverHome: str, productionRepoPath: str, s3RepoPath: str, remoteLogFile: str, tip: str) -> None:
@@ -277,7 +297,7 @@ async def sync_production_xml_to_s3(server: str, serverHome: str, productionRepo
 
     cmd = ["aws", "s3", "sync", productionRepoPath, s3RepoPath]
     cmd = cmd + ["--cache-control", '"max-age=0"', "--exclude", '"*"', "--include", '"*.xml"']
-    await spawn_remote_background_task(server, serverHome, cmd, remoteLogFile, tip=tip + "xml")
+    spawn_remote_background_task(server, serverHome, cmd, remoteLogFile, tip=tip + "xml")
 
 
 async def sync_production_repositories_to_ext(server: str, ext: str, updatedProductionRepositories: Dict[str, str], remoteRootPath: str) -> None:
@@ -295,15 +315,15 @@ async def sync_production_repositories_to_ext(server: str, ext: str, updatedProd
 
         await ensure_ext_repo_paths(server, extServer, extRepoPath)  # rsync can not create missing nested directories
         cmd = ["rsync", "-r", "--omit-dir-times", "--delete", "--progress", remoteProductionRepoFullPath + "/", extServer + ":" + extRepoPath]
-        await spawn_remote_background_task(server, remoteRootPath, cmd, remoteLogFile, tip=tipPrefix + "ext")
+        spawn_remote_background_task(server, remoteRootPath, cmd, remoteLogFile, tip=tipPrefix + "ext")
 
 
-async def spawn_remote_background_task(server: str, serverHome: str, remoteCmd: List[str], remoteLogFile: str, tip: str) -> None:
+def spawn_remote_background_task(server: str, serverHome: str, remoteCmd: List[str], remoteLogFile: str, tip: str) -> None:
     if not tip:
         tip = ""
     cmd = remoteCmd + ["2>&1", "|", "tee", remoteLogFile]
     remoteScriptFileName = "sync-production-" + tip + "-" + timestamp + ".sh"
-    await execute_remote_cmd(server, serverHome, cmd, remoteScriptFileName, timeout=60*60*2)  # 2h timeout for uploading data to CDN
+    execute_remote_cmd(server, serverHome, cmd, remoteScriptFileName, timeout=60*60*2)  # 2h timeout for uploading data to CDN
 
 
 async def update_repository(stagingServer: str, repoLayout: QtRepositoryLayout, task: ReleaseTask,
@@ -416,7 +436,7 @@ async def sync_production(tasks: List[ReleaseTask], repoLayout: QtRepositoryLayo
 
     # if _all_ repository updates to production were successful then we can sync to production
     if syncS3:
-        await sync_production_repositories_to_s3(stagingServer, syncS3, updatedProductionRepositories, stagingServerRoot)
+        sync_production_repositories_to_s3(stagingServer, syncS3, updatedProductionRepositories, stagingServerRoot)
     if syncExt:
         await sync_production_repositories_to_ext(stagingServer, syncExt, updatedProductionRepositories, stagingServerRoot)
     log.info("Production sync trigger done!")

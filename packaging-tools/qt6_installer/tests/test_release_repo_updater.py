@@ -41,7 +41,8 @@ from release_task_reader import parse_data
 from release_repo_updater import is_safe_repo_directory, upload_ifw_to_remote, upload_pending_repository_content, \
                                     remote_repository_exists, reset_new_remote_repository, create_remote_repository_backup, \
                                     remote_file_exists, build_online_repositories, \
-                                    ensure_ext_repo_paths, parse_ext, check_repogen_output, append_to_task_filters, format_task_filters
+                                    ensure_ext_repo_paths, parse_ext, check_repogen_output, append_to_task_filters, \
+                                    format_task_filters, has_connection_error
 
 
 def _write_dummy_file(path: str) -> None:
@@ -255,6 +256,20 @@ class TestReleaseRepoUpdater(unittest.TestCase):
         print("test")
         self.assertEqual(format_task_filters(task_filters), expected_result)
 
+    @testhelpers.asyncio_test_parallel_data(("qtsdkrepository/windows_x86/desktop/tools_maintenance/log-s3-2020-12-03"
+                                             "--10:18:11-xml.txt:fatal error: Could not connect to the endpoint URL: 'https"
+                                             "://qt-cdn.s3.eu-west-1.amazonaws.com/?list-type=2&prefix=qtsdkreposit"
+                                             "ory%2Fwindows_x86%2Fdesktop%2Ftools_maintenance%2F&encoding-type=url'"
+                                             "qtsdkrepository/", True),
+                                            ("qtsdkrepository/windows_x86/desktop/tools_maintenance/log-s3-2020-12-03"
+                                             "--10:18:11-xml.txt:fatal error: to the endpoint URL: 'https"
+                                             "://qt-cdn.s3.eu-west-1.amazonaws.com/?list-type=2&prefix=qtsdkreposit"
+                                             "ory%2Fwindows_x86%2Fdesktop%2Ftools_maintenance%2F&encoding-type=url'"
+                                             "qtsdkrepository/", False),
+                                            ("", False)
+    )
+    async def test_has_connection_error(self, output: str, expected_result: bool) -> None:
+        self.assertEqual(expected_result, has_connection_error(output))
 
 if __name__ == '__main__':
     unittest.main()
