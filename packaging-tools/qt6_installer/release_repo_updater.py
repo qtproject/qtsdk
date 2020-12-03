@@ -301,7 +301,7 @@ async def sync_production_repositories_to_ext(server: str, ext: str, updatedProd
 async def spawn_remote_background_task(server: str, serverHome: str, remoteCmd: List[str], remoteLogFile: str, tip: str) -> None:
     if not tip:
         tip = ""
-    cmd = remoteCmd + ["</dev/null >", remoteLogFile, "2>&1"]
+    cmd = remoteCmd + ["2>&1", "|", "tee", remoteLogFile]
     remoteScriptFileName = "sync-production-" + tip + "-" + timestamp + ".sh"
     await execute_remote_cmd(server, serverHome, cmd, remoteScriptFileName, timeout=60*60*2)  # 2h timeout for uploading data to CDN
 
