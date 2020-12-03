@@ -1836,7 +1836,7 @@ if __name__ == '__main__':
     parser.add_argument("-l", "--license", dest="license", default="", help="license type: enterprise or opensource")
     parser.add_argument("-b", "--build_number", dest="build_number", default="", help="Unique build number identifier")
     parser.add_argument("-s", "--server", dest="server", default="", help="Upload server e.g. <user>@<host>")
-    parser.add_argument("--override_server_path_http", dest="override_server_path_http", default="", help="In case we already have local downloaded modules or we want to use a different source it can be overwritten here.")
+    parser.add_argument("--override_server_path_http", dest="override_server_path_http", help="In case we already have local downloaded modules or we want to use a different source it can be overwritten here.")
     parser.add_argument("-p", "--path", dest="path", default="", help="Path on server")
     parser.add_argument("-e", "--target_env", dest="target_env", default="", help="Target environment: Linux, Linux_64, mac, win")
     parser.add_argument("-o", "--openssl_libs", dest="openssl_libs", default="", help="Url for pre-compiled openssl libraries")
