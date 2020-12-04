@@ -121,7 +121,7 @@ def lock_keychain():
 def sign_mac_executable(file_path, working_dir, abort_on_fail):
     unlock_keychain()
     # "-o runtime" is required for notarization
-    cmd_args = ['codesign', '-o', 'runtime', '--verbose=3', get_pkg_value("SIGNING_FLAGS").split(), '-s', get_pkg_value("SIGNING_IDENTITY"), file_path]
+    cmd_args = ['codesign', '-o', 'runtime', '--verbose=3', '-r', get_pkg_value("SIGNING_FLAGS"), '-s', get_pkg_value("SIGNING_IDENTITY"), file_path]
     bldinstallercommon.do_execute_sub_process(cmd_args, working_dir, abort_on_fail)
 
 

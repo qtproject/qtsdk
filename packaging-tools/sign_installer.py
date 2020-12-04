@@ -41,14 +41,13 @@ log = logging.getLogger("Sign-utility")
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 
 
-def sign_mac_app(app_path: str, codesign_identity_key: str) -> None:
+def sign_mac_app(app_path: str, signing_identity: str) -> None:
     assert app_path.endswith(".app"), f"Not a valid path to .app bundle: {app_path}"
     # we need to unlock the keychain first
     unlock_script = "/Users/qt/unlock-keychain.sh"
     subprocess.check_call([unlock_script])
-    s_arg = f'Developer ID Application: The Qt Company Oy ({codesign_identity_key})'
     # "-o runtime" is required for notarization
-    cmd_args = ['codesign', '-o', 'runtime', '--verbose=3', '-r', '/Users/qt/csreq_qt_company.txt', '-s', s_arg, app_path]
+    cmd_args = ['codesign', '-o', 'runtime', '--verbose=3', '-r', get_pkg_value("SIGNING_FLAGS"), '-s', signing_identity, app_path]
     subprocess.check_call(cmd_args)
     log.info(f"Successfully signed: {app_path}")
 
@@ -85,7 +84,7 @@ if __name__ == "__main__":
     exe_parser = subparsers.add_parser("win")
 
     app_parser.add_argument("--file", dest="file_path", required=True, help="Full path to .app file")
-    app_parser.add_argument("--codesign-identity-key", default=get_pkg_value("QT_CODESIGN_IDENTITY_KEY"))
+    app_parser.add_argument("--signing-identity", default=get_pkg_value("SIGNING_IDENTITY"))
 
     exe_parser.add_argument("--file", dest="file_path", required=True, help="Full path to .exe file")
     exe_parser.add_argument("--signing-server", required=False, default=get_pkg_value("SIGNING_SERVER"))
@@ -94,7 +93,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args(sys.argv[1:])
     if args.command == 'mac':
-        sign_mac_app(args.file_path, args.codesign_identity_key)
+        sign_mac_app(args.file_path, args.signing_identity)
         create_mac_dmg(args.file_path)
     if args.command == 'win':
         sign_windows_executable(args.file_path, args.signing_server, args.signing_pass, args.timestamp)
