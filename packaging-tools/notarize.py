@@ -31,6 +31,7 @@
 
 import os
 import sys
+import time
 import argparse
 import asyncio
 import subprocess
@@ -133,16 +134,26 @@ async def pollNotarizationCompleted(args, uuid):
 async def embedNotarization(args):
     # Embed the notarization in the dmg package
     cmd = ['xcrun', 'stapler', 'staple', args.dmg]
-    data = await requestCmd(args, cmd)
-    status = parseValueFromData("The staple and validate action", data)
+    retry_count = 5
+    delay = 60
+    while retry_count:
+        retry_count -= 1
+        data = await requestCmd(args, cmd)
+        status = parseValueFromData("The staple and validate action", data)
 
-    if status.lower().startswith("worked"):
-        log.info("The [%s] was notirized successfully!", args.dmg)
-    elif status.lower().startswith("failed"):
+        if status.lower().startswith("worked"):
+            log.info("The [%s] was notirized successfully!", args.dmg)
+            break
+
         log.error("Failed to 'staple' the %s - Reason:\n\n%s", args.dmg, data)
-        raise NotarizationError("Failed to 'staple' the: {0}".format(args.dmg))
-    else:
-        log.warning("Unable to figure out 'staple' result from data:\n\n%s", data)
+
+        if retry_count:
+            log.warning(f"Trying again after {delay}s")
+            time.sleep(delay)
+            delay = delay + delay/2  # 60, 90, 135, 202, 303
+        else:
+            log.critical(f"Execution of the remote script probably failed: {cmd}")
+            raise NotarizationError("Failed to 'staple' the: {0}".format(args.dmg))
 
 
 async def main(args):
