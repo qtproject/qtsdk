@@ -292,7 +292,7 @@ def sync_production_7z_to_s3(server: str, serverHome: str, productionRepoPath: s
     spawn_remote_background_task(server, serverHome, cmd, remoteLogFile, tip=tip + "7z")
 
 
-async def sync_production_xml_to_s3(server: str, serverHome: str, productionRepoPath: str, s3RepoPath: str, remoteLogFile: str, tip: str) -> None:
+def sync_production_xml_to_s3(server: str, serverHome: str, productionRepoPath: str, s3RepoPath: str, remoteLogFile: str, tip: str) -> None:
     log.info("Syncing .xml to s3: [%s:%s] -> [%s]", server, productionRepoPath, s3RepoPath)
 
     cmd = ["aws", "s3", "sync", productionRepoPath, s3RepoPath]
