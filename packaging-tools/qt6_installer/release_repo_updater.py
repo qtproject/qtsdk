@@ -707,7 +707,7 @@ if __name__ == "__main__":
         loop.run_until_complete(build_offline_tasks(args.staging_server, args.staging_server_root, tasks, args.license, installerConfigBaseDir,
                                                     args.artifact_share_url, args.ifw_tools, args.offline_installer_id,
                                                     args.update_staging))
-    if args.build_repositories:
+    else:  # this is either repository build or repository sync build
         # get repository tasks
         tasks = release_task_reader.parse_config(args.config, task_filters=append_to_task_filters(args.task_filters, "repository"))
         ret = loop.run_until_complete(handle_update(args.staging_server, args.staging_server_root, args.license, tasks,
