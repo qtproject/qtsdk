@@ -3,7 +3,7 @@
 
 #############################################################################
 ##
-## Copyright (C) 2020 The Qt Company Ltd.
+## Copyright (C) 2021 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -270,8 +270,9 @@ def create_remote_repository_backup(server: str, remote_repo_path: str) -> None:
     return backup_path
 
 
-def sync_production_repositories_to_s3(server: str, s3: str, updatedProductionRepositories: Dict[str, str], remoteRootPath: str) -> None:
-    remoteLogsBasePath = os.path.join(remoteRootPath, "s3_sync_logs")
+def sync_production_repositories_to_s3(server: str, s3: str, updatedProductionRepositories: Dict[str, str],
+                                       remoteRootPath: str, license: str) -> None:
+    remoteLogsBasePath = os.path.join(remoteRootPath, license, "s3_sync_logs")
     create_remote_paths(server, [remoteLogsBasePath])
 
     for repo, remoteProductionRepoFullPath in updatedProductionRepositories.items():
@@ -303,8 +304,9 @@ def sync_production_xml_to_s3(server: str, serverHome: str, productionRepoPath: 
     spawn_remote_background_task(server, serverHome, cmd, remoteLogFile, tip=tip + "xml")
 
 
-async def sync_production_repositories_to_ext(server: str, ext: str, updatedProductionRepositories: Dict[str, str], remoteRootPath: str) -> None:
-    remoteLogsBasePath = os.path.join(remoteRootPath, "ext_sync_logs")
+async def sync_production_repositories_to_ext(server: str, ext: str, updatedProductionRepositories: Dict[str, str],
+                                              remoteRootPath: str, license: str) -> None:
+    remoteLogsBasePath = os.path.join(remoteRootPath, license, "ext_sync_logs")
     create_remote_paths(server, [remoteLogsBasePath])
 
     extServer, extBasePath = parse_ext(ext)
@@ -427,7 +429,7 @@ async def update_repositories(tasks: List[ReleaseTask], stagingServer: str, stag
 
 
 async def sync_production(tasks: List[ReleaseTask], repoLayout: QtRepositoryLayout, syncS3: str, syncExt: str,
-                          stagingServer: str, stagingServerRoot: str) -> None:
+                          stagingServer: str, stagingServerRoot: str, license: str) -> None:
     log.info("triggering production sync..")
     # collect production sync jobs
     updatedProductionRepositories = {}  # type: Dict[str, str]
@@ -439,9 +441,9 @@ async def sync_production(tasks: List[ReleaseTask], repoLayout: QtRepositoryLayo
 
     # if _all_ repository updates to production were successful then we can sync to production
     if syncS3:
-        sync_production_repositories_to_s3(stagingServer, syncS3, updatedProductionRepositories, stagingServerRoot)
+        sync_production_repositories_to_s3(stagingServer, syncS3, updatedProductionRepositories, stagingServerRoot, license)
     if syncExt:
-        await sync_production_repositories_to_ext(stagingServer, syncExt, updatedProductionRepositories, stagingServerRoot)
+        await sync_production_repositories_to_ext(stagingServer, syncExt, updatedProductionRepositories, stagingServerRoot, license)
     log.info("Production sync trigger done!")
 
 
@@ -460,7 +462,7 @@ async def handle_update(stagingServer: str, stagingServerRoot: str, license: str
     if updateRepositories:
         await update_repositories(tasks, stagingServer, stagingServerRoot, repoLayout, updateStaging, updateProduction, rta, ifwTools)
     if syncRepositories:
-        await sync_production(tasks, repoLayout, syncS3, syncExt, stagingServer, stagingServerRoot)
+        await sync_production(tasks, repoLayout, syncS3, syncExt, stagingServer, stagingServerRoot, license)
 
     log.info("Repository updates done!")
     return ret
