@@ -1317,16 +1317,26 @@ def handle_sdktool_build(optionDict):
     base_path = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/qtcreator/snapshots/' + qtcreator_version
     sdktool_qtbase_src = optionDict['SDKTOOL_QTBASESRC_BASE'] + optionDict['SDKTOOL_QTBASESRC_EXT']
     # build
+    qtcreator_src = os.path.join(work_dir, 'qt-creator')
     sdktool_build_path = os.path.join(work_dir, 'sdktool_build')
     sdktool_target_path = os.path.join(sdktool_build_path, 'target')
     bld_sdktool.build_sdktool(sdktool_qtbase_src, os.path.join(sdktool_build_path, 'qt'),
-        os.path.join(work_dir, 'qt-creator', 'src', 'tools', 'sdktool'),
-        os.path.join(sdktool_build_path, 'src', 'tools', 'sdktool'),
-        sdktool_target_path,
-        'nmake' if bldinstallercommon.is_win_platform() else 'make')
+                              os.path.join(work_dir, 'qt-creator', 'src', 'tools', 'sdktool'),
+                              os.path.join(sdktool_build_path, 'src', 'tools', 'sdktool'),
+                              sdktool_target_path,
+                              'nmake' if bldinstallercommon.is_win_platform() else 'make',
+                              use_cmake=True)
     bld_sdktool.zip_sdktool(sdktool_target_path, os.path.join(work_dir, 'sdktool.7z'))
-    # upload
     file_upload_list = [('sdktool.7z', target_env_dir + '/sdktool.7z')]
+    if bldinstallercommon.is_win_platform(): # wininterrupt & qtcreatorcdbext
+        check_call_log(['python', '-u', os.path.join(qtcreator_src, 'scripts', 'build.py'),
+                        '--src', qtcreator_src,
+                        '--build', os.path.join(work_dir, 'build'),
+                        '--no-qtcreator'],
+                       work_dir)
+        file_upload_list += [('build/wininterrupt.7z', target_env_dir + '/wininterrupt.7z'),
+                             ('build/qtcreatorcdbext.7z', target_env_dir + '/qtcreatorcdbext.7z')]
+    # upload
     if qtcreator_edition_name:
         base_path += '_' + qtcreator_edition_name
     upload_files(base_path, file_upload_list, optionDict)
