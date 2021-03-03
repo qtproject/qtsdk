@@ -72,11 +72,10 @@ async def requestCmd(args, cmd):
 
     while attempts:
         try:
-            log.info("Calling: %s", cmd)
             data = await asyncio.wait_for(p.communicate(), timeout=args.timeout)
             break
         except (asyncio.TimeoutError, subprocess.TimeoutExpired):
-            log.warning("Timeout (%ss) for: %s", str(args.timeout), cmd)
+            log.warning("Timeout (%ss)", str(args.timeout))
             attempts -= 1
             if attempts:
                 log.info("Waiting a bit before next attempt..")
@@ -152,7 +151,7 @@ async def embedNotarization(args):
             time.sleep(delay)
             delay = delay + delay/2  # 60, 90, 135, 202, 303
         else:
-            log.critical(f"Execution of the remote script probably failed: {cmd}")
+            log.critical(f"Execution of the remote script probably failed!")
             raise NotarizationError("Failed to 'staple' the: {0}".format(args.dmg))
 
 
