@@ -932,6 +932,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     ide_branding_app_name = optionDict.get('IDE_BRANDING_APP_NAME') # optional
     installer_patch = optionDict.get('INSTALLER_PATCH') # optional
     skip_cdb = optionDict.get('SKIP_CDB') # optional
+    skip_dmg = optionDict.get('SKIP_DMG') # optional
     build_id = optionDict['BUILD_NUMBER']
     icu_libs = optionDict.get('ICU_LIBS') # optional
     openssl_libs = optionDict.get('OPENSSL_LIBS') # optional
@@ -1085,6 +1086,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
             cmd_args += ['--add-config=' + value for value in qtc_additional_config]
         if disable_docs:
             cmd_args += ['--no-docs']
+        if skip_dmg:
+            cmd_args += ['--no-dmg']
         keychain_arg = '--keychain-unlock-script'
         python_arg = '--python-path'
         elfutils_arg = '--elfutils-path'
