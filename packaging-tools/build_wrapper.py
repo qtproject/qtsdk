@@ -1238,7 +1238,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     file_upload_list.append((log_filepath, target_env_dir + '/build_log.txt'))
 
     # macOS opensource dmg
-    if bldinstallercommon.is_mac_platform():
+    if bldinstallercommon.is_mac_platform() and not skip_dmg:
         dmg_filename = 'qt-creator-opensource-mac-x86_64-' + qtcreator_version + '.dmg'
         file_upload_list.append(('qt-creator_build/qt-creator.dmg', dmg_filename))
         snapshot_upload_list.append((dmg_filename, dmg_filename))
