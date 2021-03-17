@@ -717,15 +717,13 @@ def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url
                                         'enterprise', work_dir, log_filepath)
 
 def get_qtcreator_version(path_to_qtcreator_src, optionDict):
-    expr = re.compile(r'\s*QTCREATOR_DISPLAY_VERSION\s*=\s*([^\s]+)')
+    expr = re.compile(r'\s*set[(]\s*IDE_VERSION_DISPLAY\s*"([^\s]+)"')
 
-    default_version_locations = [os.path.join(path_to_qtcreator_src, 'qtcreator_ide_branding.pri'),  # used since QtCreator 4.10
-                                 os.path.join(path_to_qtcreator_src, 'qtcreator.pri')]  # old path till 4.9, can be removed in the future
-    default_version_location = next(p for p in default_version_locations if os.path.exists(p))
-    branding_version_location = optionDict.get('IDE_BRANDING_PRI')  # optional
-    version_location = branding_version_location if branding_version_location else default_version_location
+    ide_branding_path = optionDict.get('IDE_BRANDING_PATH')  # optional
+    ide_branding_path = ide_branding_path if ide_branding_path else os.path.join(path_to_qtcreator_src, 'cmake')
+    ide_branding_file = os.path.join(ide_branding_path, 'QtCreatorIDEBranding.cmake')
 
-    with open(version_location, 'r') as f:
+    with open(ide_branding_file, 'r') as f:
         for line in f:
             match = expr.match(line)
             if match:
