@@ -554,14 +554,13 @@ def parseQtCreatorPlugins(pkgConfFile):
     return pluginList
 
 QtcPlugin = collections.namedtuple('QtcPlugin', ['name', 'path', 'version', 'dependencies', 'modules',
-                                                 'additional_arguments', 'qmake_arguments', 'build'])
+                                                 'additional_arguments', 'build'])
 def make_QtcPlugin(name, path, version, dependencies=None, modules=None,
-                   additional_arguments=None, qmake_arguments=None, build=True):
+                   additional_arguments=None, build=True):
     return QtcPlugin(name=name, path=path, version=version,
                      dependencies=dependencies or [],
                      modules=modules or [],
                      additional_arguments=additional_arguments or [],
-                     qmake_arguments=qmake_arguments or [],
                      build=build)
 
 class BuildLog:
@@ -694,7 +693,6 @@ def make_QtcPlugin_from_json(plugin_json):
                      dependencies=plugin_json.get('Dependencies') or [],
                      modules=plugin_json.get('Modules') or [],
                      additional_arguments=plugin_json.get('AdditionalArguments') or [],
-                     qmake_arguments=plugin_json.get('QmakeArguments') or [],
                      build=plugin_json.get('Build') or True)
 
 def parse_qt_creator_plugin_conf(plugin_conf_file_path, optionDict):
@@ -715,7 +713,6 @@ def parse_qt_creator_plugin_conf(plugin_conf_file_path, optionDict):
 
     def fixup_plugin(plugin):
         plugin = plugin._replace(modules = [module % optionDict for module in plugin.modules])
-        plugin = plugin._replace(qmake_arguments = [arg % optionDict for arg in plugin.qmake_arguments])
         plugin = plugin._replace(additional_arguments = [arg % optionDict for arg in plugin.additional_arguments])
         return plugin
     return [fixup_plugin(make_QtcPlugin_from_json(plugin)) for plugin in plugins_json if valid_for_platform(plugin)]
@@ -1033,7 +1030,6 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     check_call_log(qt_install_args,
                    work_dir)
     # Define Qt Creator build script arguments
-    renaming_qmake_arguments = []
     cmd_args = ['python', '-u']
     cmd_args += [os.path.join(src_path, 'scripts', 'build.py'),
                  '--src', src_path,
@@ -1051,10 +1047,6 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         cmd_args += ['--no-docs']
     if skip_dmg:
         cmd_args += ['--no-dmg']
-    keychain_arg = '--keychain-unlock-script'
-    python_arg = '--python-path'
-    elfutils_arg = '--elfutils-path'
-    cdb_arg = '--no-cdb'
     for key in ['SIGNING_IDENTITY', 'SIGNING_FLAGS']:
         try:
             value = get_pkg_value(key)
@@ -1068,13 +1060,13 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
 
     if bldinstallercommon.is_mac_platform():
         if has_unlock_keychain_script:
-            cmd_args.extend([keychain_arg, unlock_keychain_script()])
+            cmd_args.extend(['--keychain-unlock-script', unlock_keychain_script()])
     if python_path:
-        cmd_args.extend([python_arg, python_path])
+        cmd_args.extend(['--python-path', python_path])
     if elfutils_path:
-        cmd_args.extend([elfutils_arg, elfutils_path])
+        cmd_args.extend(['--elfutils-path', elfutils_path])
     if skip_cdb:
-        cmd_args.append(cdb_arg)
+        cmd_args.append('--no-cdb')
     check_call_log(cmd_args, work_dir, extra_env=build_environment, log_filepath=log_filepath, log_overwrite=True)
 
     if bldinstallercommon.is_mac_platform() and has_unlock_keychain_script:
@@ -1082,32 +1074,25 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
 
     # Qt Creator plugins
     plugin_dependencies = []
-    qmake_arguments = list(renaming_qmake_arguments)
     additional_plugins = []
 
     if os.path.isdir(os.path.join(work_dir, "licensechecker")):
         add_args = ['--add-path', os.path.join(work_dir, 'license-managing')]
         additional_plugins.extend([make_QtcPlugin('licensechecker', 'licensechecker', qtcreator_version,
                                                   modules=qt_module_local_urls,
-                                                  qmake_arguments=renaming_qmake_arguments,
                                                   additional_arguments=add_args)])
-        qmake_arguments.append('CONFIG+=licensechecker')
         plugin_dependencies = ['licensechecker']
     additional_plugins.extend([make_QtcPlugin('vxworks-qtcreator-plugin', 'vxworks-qtcreator-plugin', qtcreator_version,
-                                              modules=qt_module_local_urls, dependencies=plugin_dependencies,
-                                              qmake_arguments=qmake_arguments)])
+                                              modules=qt_module_local_urls, dependencies=plugin_dependencies)])
     additional_plugins.extend([make_QtcPlugin('isoiconbrowser', 'qtquickdesigner', qtcreator_version,
-                                              modules=qt_module_local_urls, dependencies=plugin_dependencies,
-                                              qmake_arguments=qmake_arguments)])
+                                              modules=qt_module_local_urls, dependencies=plugin_dependencies)])
     additional_plugins.extend([make_QtcPlugin('gammarayintegration', 'gammarayintegration', qtcreator_version,
                                               modules=qt_module_local_urls + [kdsme_url, gammaray_url] + module_urls(['qt3d', 'qtgamepad']),
                                               dependencies=plugin_dependencies,
-                                              qmake_arguments=qmake_arguments,
                                               additional_arguments=['--deploy'])])
     additional_plugins.extend([make_QtcPlugin('appmanagerintegration', 'pcore-plugin-appman', qtcreator_version,
                                               modules=qt_module_local_urls,
-                                              dependencies=plugin_dependencies,
-                                              qmake_arguments=qmake_arguments)]),
+                                              dependencies=plugin_dependencies)]),
     plugin_telemetry_args = []
     if usp_server_url and usp_auth_key:
         plugin_telemetry_args = ['--add-config=-DUSP_SERVER_URL=' + optionDict['USP_SERVER_URL'],
