@@ -618,6 +618,17 @@ def create_qtcreator_source_package(source_path, plugin_name, version, edition, 
             check_call_log(['7z', 'a', '-tzip', file_base + '.zip', file_base, '-xr!.git'],
                            target_path, log_filepath=log_filepath)
 
+def qtcreator_build_plugin_script(qtcreator_dev_path):
+    if bldinstallercommon.is_mac_platform():
+        # scripts can be within the app bundle
+        apps = glob(os.path.join(qtcreator_dev_path, '*.app'))
+        app = apps[0] if apps else os.path.join(qtcreator_dev_path, 'Qt Creator.app')
+        path = os.path.join(app, 'Contents', 'Resources', 'scripts', 'build_plugin.py')
+    else:
+        # scripts can be in share directory
+        path = os.path.join(qtcreator_dev_path, 'share', 'qtcreator', 'scripts', 'build_plugin.py')
+    return path if os.path.exists(path) else os.path.join(qtcreator_dev_path, 'scripts', 'build_plugin.py')
+
 def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url=None,
                             openssl_url=None, log_filepath=None, use_cmake=False):
     work_dir = optionDict['WORK_DIR']
@@ -630,7 +641,7 @@ def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url
         if use_cmake:
             build_path = os.path.join(work_dir, plugin.name + '-build')
             qt_path = os.path.join(build_path, 'qt')
-            cmd_arguments += [os.path.join(qtcreator_path, 'scripts', 'build_plugin.py'),
+            cmd_arguments += [qtcreator_build_plugin_script(qtcreator_dev_path),
                               '--name', plugin.name,
                               '--src', plugin_path,
                               '--build', build_path,
