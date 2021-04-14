@@ -1251,8 +1251,7 @@ def handle_sdktool_build(optionDict):
                               os.path.join(work_dir, 'qt-creator', 'src', 'tools', 'sdktool'),
                               os.path.join(sdktool_build_path, 'src', 'tools', 'sdktool'),
                               sdktool_target_path,
-                              'nmake' if bldinstallercommon.is_win_platform() else 'make',
-                              use_cmake=True)
+                              'nmake' if bldinstallercommon.is_win_platform() else 'make')
     bld_sdktool.zip_sdktool(sdktool_target_path, os.path.join(work_dir, 'sdktool.7z'))
     file_upload_list = [('sdktool.7z', target_env_dir + '/sdktool.7z')]
     if bldinstallercommon.is_win_platform(): # wininterrupt & qtcreatorcdbext
