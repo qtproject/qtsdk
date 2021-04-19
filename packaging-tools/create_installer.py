@@ -99,6 +99,7 @@ CREATE_MAINTENANCE_TOOL_RESOURCE_FILE = False
 LICENSE_TYPE                        = ''
 
 TARGET_INSTALL_DIR_NAME_TAG         = '%TARGET_INSTALL_DIR%'
+ARCHIVES_EXTRACT_DIR_NAME_TAG       = '%ARCHIVES_EXTRACT_DIR%'
 PACKAGE_DEFAULT_TAG                 = '%PACKAGE_DEFAULT_TAG%'
 SDK_VERSION_NUM_TAG                 = '%SDK_VERSION_NUM%'
 UPDATE_REPOSITORY_URL_TAG           = '%UPDATE_REPOSITORY_URL%'
@@ -690,6 +691,9 @@ def create_metadata_map(sdk_component):
     # target install dir substitution
     if sdk_component.target_install_base:
         component_metadata_tag_pair_list.append([TARGET_INSTALL_DIR_NAME_TAG, sdk_component.target_install_base])
+    # archives extract dir substitution
+    if sdk_component.archives_extract_dir:
+        component_metadata_tag_pair_list.append([ARCHIVES_EXTRACT_DIR_NAME_TAG, sdk_component.archives_extract_dir])
     # component sha1 substitution
     if sdk_component.component_sha1:
         component_metadata_tag_pair_list.append([COMPONENT_SHA1_TAG, sdk_component.component_sha1])
