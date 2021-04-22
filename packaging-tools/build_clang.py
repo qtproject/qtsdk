@@ -224,6 +224,7 @@ def mingw_training(base_path, qtcreator_path, environment, bitness):
                '-GNinja',
                '-DCMAKE_BUILD_TYPE=Release',
                '-DWITH_TESTS=ON',
+               '-DBUILD_WITH_PCH=OFF',
 
                '-DBUILD_QBS=OFF',
 
