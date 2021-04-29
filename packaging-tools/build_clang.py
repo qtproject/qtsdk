@@ -341,6 +341,8 @@ def cmake_command(toolchain, src_path, build_path, install_path, profile_data_pa
                '-DCMAKE_BUILD_TYPE=' + build_type,
                '-DLLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN=ON',
                '-DLLVM_ENABLE_LIBXML2=OFF',
+               '-DLLVM_ENABLE_ZLIB=OFF',
+               '-DLLVM_ENABLE_TERMINFO=OFF',
                '-DLLVM_TARGETS_TO_BUILD=X86',
                '-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra',
                "-DLLVM_LIT_ARGS='-v'"]
