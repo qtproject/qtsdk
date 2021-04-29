@@ -194,6 +194,8 @@ def cmake_command(toolchain, src_path, build_path, install_path, bitness, build_
                '-DLLVM_ENABLE_PROJECTS=clang',
                '-DLLVM_TARGETS_TO_BUILD=X86',
                '-DLLVM_ENABLE_LIBXML2=OFF',
+               '-DLLVM_ENABLE_ZLIB=OFF',
+               '-DLLVM_ENABLE_TERMINFO=OFF',
                '-DLIBCLANG_BUILD_STATIC=ON',
                '-DLLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN=ON',
                '-DLLVM_ENABLE_PIC=OFF',
