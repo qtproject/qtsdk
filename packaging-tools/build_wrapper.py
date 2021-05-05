@@ -1092,7 +1092,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                               additional_arguments=['--deploy'])])
     additional_plugins.extend([make_QtcPlugin('appmanagerintegration', 'pcore-plugin-appman', qtcreator_version,
                                               modules=qt_module_local_urls,
-                                              dependencies=plugin_dependencies)]),
+                                              dependencies=plugin_dependencies,
+                                              additional_arguments=['--with-docs'])]),
     plugin_telemetry_args = []
     if usp_server_url and usp_auth_key:
         plugin_telemetry_args = ['--add-config=-DUSP_SERVER_URL=' + optionDict['USP_SERVER_URL'],
