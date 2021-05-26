@@ -31,7 +31,9 @@
 
 import os
 import re
+import sh
 import sys
+import json
 import time
 import shutil
 import asyncio
@@ -40,12 +42,13 @@ import platform
 import datetime
 import argparse
 from configparser import ConfigParser, ExtendedInterpolation
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Optional
 from time import gmtime, strftime
+from pathlib import Path
 import subprocess
 import release_task_reader
-from urllib.request import urlretrieve
-from urllib.error import HTTPError
+from urllib.request import urlretrieve, urlopen
+from urllib.error import HTTPError, URLError
 from release_task_reader import ReleaseTask
 from installer_utils import PackagingError
 from runner import exec_cmd, async_exec_cmd
@@ -60,6 +63,55 @@ import sign_installer
 
 log = init_logger(__name__, debug_mode=False)
 timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d--%H:%M:%S')
+
+
+class event_register(object):
+    event_injector: Path = None
+    python_path: str = None
+
+    def __init__(self, event_name: str, event_injector_path: str, summary_data: Dict[str, str]) -> None:
+        self.event_name = event_name
+        self.summary_data = summary_data
+        self.initialize(event_injector_path)
+
+    @classmethod
+    def initialize(cls, event_injector_path: str):
+        if not cls.python_path:
+            cls.python_path = sh.which("python3")
+        if event_injector_path:
+            cls.event_injector = Path(event_injector_path).resolve(strict=True)
+
+    def __enter__(self) -> 'event_register':
+        if event_register.event_injector:
+            self.register_event(self.event_name, "START", self.summary_data, message="")
+        return self
+
+    def __exit__(self, exc_type, exc_val, traceback) -> bool:
+        ret = True
+        if event_register.event_injector:
+            event_type = "FINISH"
+            if traceback:
+                ret = False  # will cause the exception to be propagated
+                event_type = "ABORT"
+            self.register_event(self.event_name, event_type, self.summary_data, message=exc_val)
+        return ret
+
+    def register_event(self, event_name: str, event_type: str, export_summary: Dict[str, str], message: str) -> None:
+        if not event_register.event_injector:
+            log.warning("Unable to register event as injector not found!")
+            return
+        cmd = [str(event_register.python_path), str(event_register.event_injector), f"--event={event_type}", f"--task={event_name}",
+               f"--project-name={export_summary.get('project', '')}",
+               f"--project-version={export_summary.get('version', '')}",
+               f"--destination-branch={export_summary.get('destination_branch', '')}",
+               f"--integration-id={export_summary.get('id', '')}",
+               f"--sha1={export_summary.get('sha1', '')}",
+               f"--message={message or ''}"]
+        log.info(f"Calling: {' '.join(cmd)}")
+        ret = subprocess.run(cmd, shell=False, check=False, capture_output=True, encoding="utf-8", timeout=60 * 2)
+        if ret.returncode:
+            log.warning(f"Failed to register event - stdout: {ret.stderr}")
+            log.warning(f"Failed to register event - stderr: {ret.stdout}")
 
 
 class QtRepositoryLayout:
@@ -429,7 +481,8 @@ async def update_repositories(tasks: List[ReleaseTask], stagingServer: str, stag
 
 
 async def sync_production(tasks: List[ReleaseTask], repoLayout: QtRepositoryLayout, syncS3: str, syncExt: str,
-                          stagingServer: str, stagingServerRoot: str, license: str) -> None:
+                          stagingServer: str, stagingServerRoot: str, license: str, event_injector: str,
+                          export_data: Dict[str, str]) -> None:
     log.info("triggering production sync..")
     # collect production sync jobs
     updatedProductionRepositories = {}  # type: Dict[str, str]
@@ -441,28 +494,37 @@ async def sync_production(tasks: List[ReleaseTask], repoLayout: QtRepositoryLayo
 
     # if _all_ repository updates to production were successful then we can sync to production
     if syncS3:
-        sync_production_repositories_to_s3(stagingServer, syncS3, updatedProductionRepositories, stagingServerRoot, license)
+        with event_register(f"{license}: repo sync s3", event_injector, export_data):
+            sync_production_repositories_to_s3(stagingServer, syncS3, updatedProductionRepositories,
+                                               stagingServerRoot, license)
     if syncExt:
-        await sync_production_repositories_to_ext(stagingServer, syncExt, updatedProductionRepositories, stagingServerRoot, license)
+        with event_register(f"{license}: repo sync ext", event_injector, export_data):
+            await sync_production_repositories_to_ext(stagingServer, syncExt, updatedProductionRepositories,
+                                                      stagingServerRoot, license)
     log.info("Production sync trigger done!")
 
 
 async def handle_update(stagingServer: str, stagingServerRoot: str, license: str, tasks: List[ReleaseTask],
                         repoDomain: str, installerConfigBaseDir: str, artifactShareBaseUrl: str,
                         updateStaging: bool, updateProduction: bool, syncS3: str, syncExt: str, rta: str, ifwTools: str,
-                        buildRepositories: bool, updateRepositories: bool, syncRepositories: bool) -> List[str]:
+                        buildRepositories: bool, updateRepositories: bool, syncRepositories: bool,
+                        event_injector: str, export_data: Dict[str, str]) -> List[str]:
     """Build all online repositories, update those to staging area and sync to production."""
     log.info("Starting repository update for %i tasks..", len(tasks))
-
     # get repository layout
     repoLayout = QtRepositoryLayout(stagingServerRoot, license, repoDomain)
     # this may take a while depending on how big the repositories are
-    ret = await build_online_repositories(tasks, license, installerConfigBaseDir, artifactShareBaseUrl, ifwTools, buildRepositories)
+    with event_register(f"{license}: repo build", event_injector, export_data):
+        ret = await build_online_repositories(tasks, license, installerConfigBaseDir, artifactShareBaseUrl, ifwTools,
+                                              buildRepositories)
 
     if updateRepositories:
-        await update_repositories(tasks, stagingServer, stagingServerRoot, repoLayout, updateStaging, updateProduction, rta, ifwTools)
+        with event_register(f"{license}: repo update", event_injector, export_data):
+            await update_repositories(tasks, stagingServer, stagingServerRoot, repoLayout, updateStaging, updateProduction,
+                                      rta, ifwTools)
     if syncRepositories:
-        await sync_production(tasks, repoLayout, syncS3, syncExt, stagingServer, stagingServerRoot, license)
+        await sync_production(tasks, repoLayout, syncS3, syncExt, stagingServer, stagingServerRoot, license,
+                              event_injector, export_data)
 
     log.info("Repository updates done!")
     return ret
@@ -609,6 +671,27 @@ async def build_offline_tasks(stagingServer: str, stagingServerRoot: str, tasks:
             upload_offline_to_remote(installer_output_dir, remote_upload_path, stagingServer, task, installerBuildId)
 
 
+def load_export_summary_data(config_file: Path) -> Dict[str, str]:
+    settings = ConfigParser(interpolation=ExtendedInterpolation())
+    settings.read(str(config_file.resolve(strict=True)))
+    ret: Dict[str, str] = {}
+
+    try:
+        summary_url = settings['common.definitions']['export_summary_url']
+        with urlopen(summary_url) as url:
+            ret = json.loads(url.read().decode())
+    except KeyError:
+        # it's ok, not mandatory
+        log.info(f"Export summary file url not present in: {config_file}")
+        pass
+    except URLError as e:
+        log.warning(f"Unable to read export summary file: {str(e)}")
+    except ValueError:
+        # it's ok, not mandatory
+        pass
+    return ret
+
+
 if __name__ == "__main__":
     args_from_file_parser = argparse.ArgumentParser(
             description=__doc__,
@@ -684,6 +767,9 @@ if __name__ == "__main__":
                         help="Sync online repositories defined by '--config' file to S3 production. Supports 'enterprise' license only at the moment.")
     parser.add_argument("--sync-ext", dest="sync_ext", type=str,
                         help="Sync online repositories defined by '--config' file to Ext production.")
+    parser.add_argument("--event-injector", dest="event_injector", type=str, default=os.getenv('PKG_EVENT_INJECTOR'),
+                        help="Register events to monitoring system with the given injector. "
+                             "The --config file must point to export summary file.")
     parser.set_defaults(**defaults)  # these are from provided --config file
     args = parser.parse_args(sys.argv[1:])
 
@@ -702,13 +788,16 @@ if __name__ == "__main__":
     installerConfigBaseDir = os.path.abspath(os.path.join(os.path.dirname(args.config), os.pardir))
     assert os.path.isdir(installerConfigBaseDir), "Not able to figure out 'configurations/' directory correctly: {0}".format(installerConfigBaseDir)
 
+    export_data = load_export_summary_data(Path(args.config)) if args.event_injector else None
+
     loop = asyncio.get_event_loop()
     if args.build_offline:
         # get offline tasks
         tasks = release_task_reader.parse_config(args.config, task_filters=append_to_task_filters(args.task_filters, "offline"))
-        loop.run_until_complete(build_offline_tasks(args.staging_server, args.staging_server_root, tasks, args.license, installerConfigBaseDir,
-                                                    args.artifact_share_url, args.ifw_tools, args.offline_installer_id,
-                                                    args.update_staging))
+        with event_register(f"{args.license}: offline", args.event_injector, export_data):
+            loop.run_until_complete(build_offline_tasks(args.staging_server, args.staging_server_root, tasks, args.license,
+                                                        installerConfigBaseDir, args.artifact_share_url, args.ifw_tools,
+                                                        args.offline_installer_id, args.update_staging))
     else:  # this is either repository build or repository sync build
         # get repository tasks
         tasks = release_task_reader.parse_config(args.config, task_filters=append_to_task_filters(args.task_filters, "repository"))
@@ -716,6 +805,7 @@ if __name__ == "__main__":
                                           args.repo_domain, installerConfigBaseDir, args.artifact_share_url,
                                           args.update_staging, args.update_production, args.sync_s3, args.sync_ext,
                                           args.rta, args.ifw_tools,
-                                          args.build_repositories, do_update_repositories, do_sync_repositories))
+                                          args.build_repositories, do_update_repositories, do_sync_repositories,
+                                          args.event_injector, export_data))
         for repo in ret:
             log.info(f"{repo}")
