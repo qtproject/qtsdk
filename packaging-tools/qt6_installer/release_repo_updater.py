@@ -31,7 +31,6 @@
 
 import os
 import re
-import sh
 import sys
 import json
 import time
@@ -77,7 +76,13 @@ class event_register(object):
     @classmethod
     def initialize(cls, event_injector_path: str):
         if not cls.python_path:
-            cls.python_path = sh.which("python3")
+            if platform.system()  == "Linux":
+                import sh
+                cls.python_path = sh.which("python3")
+            if platform.system() == "Windows":
+                cls.python_path = os.path.join(os.getenv("PYTHON3_PATH"), "python.exe")
+            if platform.system() == "Darwin":
+                cls.python_path = os.path.join(os.getenv("PYTHON3_PATH"), "python3")
         if event_injector_path:
             cls.event_injector = Path(event_injector_path).resolve(strict=True)
 
