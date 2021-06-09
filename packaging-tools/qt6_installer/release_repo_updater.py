@@ -597,7 +597,7 @@ def update_remote_latest_available_dir(newInstaller: str, remoteUploadPath: str,
 
 
 def upload_offline_to_remote(installerPath: str, remoteUploadPath: str, stagingServer: str, task: ReleaseTask,
-                             installerBuildId: str) -> None:
+                             installerBuildId: str, enable_oss_snapshots: bool, license: str) -> None:
     for file in [f for f in os.listdir(installerPath)]:
         if file.endswith(".app"):
             continue
@@ -605,12 +605,13 @@ def upload_offline_to_remote(installerPath: str, remoteUploadPath: str, stagingS
         file_name_final = name + "_" + installerBuildId + file_ext
         installer = os.path.join(installerPath, file_name_final)
         os.rename(os.path.join(installerPath, file), installer)
-
         remote_destination = stagingServer + ":" + remoteUploadPath
         cmd = ['scp', installer, remote_destination]
         log.info(f"Uploading offline installer: {installer} to: {remote_destination}")
         exec_cmd(cmd, timeout=60*60)  # 1h
         update_remote_latest_available_dir(installer, remote_destination, task, stagingServer, installerBuildId)
+        if enable_oss_snapshots and license == "opensource":
+            upload_snapshots_to_remote(stagingServer, remoteUploadPath, task, installerBuildId, file_name_final)
 
 
 def sign_offline_installer(installer_path: str, installer_name: str) -> None:
@@ -640,15 +641,15 @@ def notarize_dmg(dmgPath, installerBasename) -> None:
 async def build_offline_tasks(stagingServer: str, stagingServerRoot: str, tasks: List[ReleaseTask], license: str,
                               installerConfigBaseDir: str, artifactShareBaseUrl: str,
                               ifwTools: str, installerBuildId: str, updateStaging: bool,
-                              event_injector: str, export_data: Dict[str, str]) -> None:
+                              enable_oss_snapshots: bool, event_injector: str, export_data: Dict[str, str]) -> None:
     async with event_register(f"{license}: offline", event_injector, export_data):
         await _build_offline_tasks(stagingServer, stagingServerRoot, tasks, license, installerConfigBaseDir,
-                                   artifactShareBaseUrl, ifwTools, installerBuildId, updateStaging)
+                                   artifactShareBaseUrl, ifwTools, installerBuildId, updateStaging, enable_oss_snapshots)
 
 
 async def _build_offline_tasks(stagingServer: str, stagingServerRoot: str, tasks: List[ReleaseTask], license: str,
                                installerConfigBaseDir: str, artifactShareBaseUrl: str,
-                               ifwTools: str, installerBuildId: str, updateStaging: bool) -> None:
+                               ifwTools: str, installerBuildId: str, updateStaging: bool, enable_oss_snapshots: bool) -> None:
     log.info("Offline installer task(s): %i", len(tasks))
 
     assert license, "The 'license' must be defined!"
@@ -682,7 +683,31 @@ async def _build_offline_tasks(stagingServer: str, stagingServerRoot: str, tasks
         sign_offline_installer(installer_output_dir, task.get_installer_name())
         if updateStaging:
             remote_upload_path = create_offline_remote_dirs(task, stagingServer, stagingServerRoot, installerBuildId)
-            upload_offline_to_remote(installer_output_dir, remote_upload_path, stagingServer, task, installerBuildId)
+            upload_offline_to_remote(installer_output_dir, remote_upload_path, stagingServer, task, installerBuildId, enable_oss_snapshots, license)
+
+
+def upload_snapshots_to_remote(staging_server: str, remote_upload_path: str, task: ReleaseTask, installer_build_id: str, installer_filename: str):
+    project_name = task.get_project_name()
+    version_full = task.get_version()
+    version_minor = re.match(r"\d+\.\d+", version_full).group(0)
+    base, last_dir = os.path.split(get_pkg_value("SNAPSHOT_PATH").rstrip("/"))
+    if last_dir == project_name:
+        snapshot_path = get_pkg_value("SNAPSHOT_PATH")
+    else:
+        snapshot_path = os.path.join(base, project_name)
+    snapshot_upload_path = os.path.join(snapshot_path, version_minor, version_full, installer_build_id)
+    remote_installer_path = os.path.join(remote_upload_path, installer_filename)
+    if platform.system() == "Windows":
+        # commands are run in Linux, adjust the upload paths
+        snapshot_upload_path = snapshot_upload_path.replace("\\", "/")
+        remote_installer_path = remote_installer_path.replace("\\", "/")
+    login = get_remote_login_cmd(staging_server) + get_remote_login_cmd(get_pkg_value("SNAPSHOT_SERVER"))
+    cmd_mkdir = login + ["mkdir", "-p", snapshot_upload_path]
+    log.info(f"Creating offline snapshot directory: {cmd_mkdir}")
+    exec_cmd(cmd_mkdir, timeout=60*60)
+    cmd_scp_installer = get_remote_login_cmd(staging_server) + ["scp", "-r", remote_installer_path] + [get_pkg_value("SNAPSHOT_SERVER") + ":" + snapshot_upload_path + "/"]
+    log.info(f"Uploading offline snapshot: {cmd_scp_installer}")
+    exec_cmd(cmd_scp_installer, timeout=60*60*2)
 
 
 def load_export_summary_data(config_file: Path) -> Dict[str, str]:
@@ -773,6 +798,8 @@ if __name__ == "__main__":
                         help="Should the staging repository be updated?")
     parser.add_argument("--update-production", dest="update_production", action='store_true', default=os.getenv("DO_UPDATE_PRODUCTION_REPOSITORY", False),
                         help="Should the production repository be updated?")
+    parser.add_argument("--enable-oss-snapshots", dest="enable_oss_snapshots", action='store_true', default=False,
+                        help="Upload snapshot to opensource file server")
 
     parser.add_argument("--rta", dest="rta", type=str, default=get_pkg_value("RTA_SERVER_BASE_URL"),
                         help="If specified then trigger RTA for tasks found from --config")
@@ -811,7 +838,8 @@ if __name__ == "__main__":
         loop.run_until_complete(build_offline_tasks(args.staging_server, args.staging_server_root, tasks, args.license,
                                                     installerConfigBaseDir, args.artifact_share_url, args.ifw_tools,
                                                     args.offline_installer_id, args.update_staging,
-                                                    args.event_injector, export_data))
+                                                    args.enable_oss_snapshots, args.event_injector, export_data))
+
     else:  # this is either repository build or repository sync build
         # get repository tasks
         tasks = release_task_reader.parse_config(args.config, task_filters=append_to_task_filters(args.task_filters, "repository"))
