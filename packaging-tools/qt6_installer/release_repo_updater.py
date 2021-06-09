@@ -86,12 +86,12 @@ class event_register(object):
         if event_injector_path:
             cls.event_injector = Path(event_injector_path).resolve(strict=True)
 
-    def __enter__(self) -> 'event_register':
+    async def __aenter__(self) -> 'event_register':
         if event_register.event_injector:
             self.register_event(self.event_name, "START", self.summary_data, message="")
         return self
 
-    def __exit__(self, exc_type, exc_val, traceback) -> bool:
+    async def __aexit__(self, exc_type, exc_val, traceback) -> bool:
         ret = True
         if event_register.event_injector:
             event_type = "FINISH"
@@ -499,11 +499,11 @@ async def sync_production(tasks: List[ReleaseTask], repoLayout: QtRepositoryLayo
 
     # if _all_ repository updates to production were successful then we can sync to production
     if syncS3:
-        with event_register(f"{license}: repo sync s3", event_injector, export_data):
+        async with event_register(f"{license}: repo sync s3", event_injector, export_data):
             sync_production_repositories_to_s3(stagingServer, syncS3, updatedProductionRepositories,
                                                stagingServerRoot, license)
     if syncExt:
-        with event_register(f"{license}: repo sync ext", event_injector, export_data):
+        async with event_register(f"{license}: repo sync ext", event_injector, export_data):
             await sync_production_repositories_to_ext(stagingServer, syncExt, updatedProductionRepositories,
                                                       stagingServerRoot, license)
     log.info("Production sync trigger done!")
@@ -519,12 +519,12 @@ async def handle_update(stagingServer: str, stagingServerRoot: str, license: str
     # get repository layout
     repoLayout = QtRepositoryLayout(stagingServerRoot, license, repoDomain)
     # this may take a while depending on how big the repositories are
-    with event_register(f"{license}: repo build", event_injector, export_data):
+    async with event_register(f"{license}: repo build", event_injector, export_data):
         ret = await build_online_repositories(tasks, license, installerConfigBaseDir, artifactShareBaseUrl, ifwTools,
                                               buildRepositories)
 
     if updateRepositories:
-        with event_register(f"{license}: repo update", event_injector, export_data):
+        async with event_register(f"{license}: repo update", event_injector, export_data):
             await update_repositories(tasks, stagingServer, stagingServerRoot, repoLayout, updateStaging, updateProduction,
                                       rta, ifwTools)
     if syncRepositories:
@@ -639,7 +639,16 @@ def notarize_dmg(dmgPath, installerBasename) -> None:
 
 async def build_offline_tasks(stagingServer: str, stagingServerRoot: str, tasks: List[ReleaseTask], license: str,
                               installerConfigBaseDir: str, artifactShareBaseUrl: str,
-                              ifwTools: str, installerBuildId: str, updateStaging: bool) -> None:
+                              ifwTools: str, installerBuildId: str, updateStaging: bool,
+                              event_injector: str, export_data: Dict[str, str]) -> None:
+    async with event_register(f"{license}: offline", event_injector, export_data):
+        await _build_offline_tasks(stagingServer, stagingServerRoot, tasks, license, installerConfigBaseDir,
+                                   artifactShareBaseUrl, ifwTools, installerBuildId, updateStaging)
+
+
+async def _build_offline_tasks(stagingServer: str, stagingServerRoot: str, tasks: List[ReleaseTask], license: str,
+                               installerConfigBaseDir: str, artifactShareBaseUrl: str,
+                               ifwTools: str, installerBuildId: str, updateStaging: bool) -> None:
     log.info("Offline installer task(s): %i", len(tasks))
 
     assert license, "The 'license' must be defined!"
@@ -799,10 +808,10 @@ if __name__ == "__main__":
     if args.build_offline:
         # get offline tasks
         tasks = release_task_reader.parse_config(args.config, task_filters=append_to_task_filters(args.task_filters, "offline"))
-        with event_register(f"{args.license}: offline", args.event_injector, export_data):
-            loop.run_until_complete(build_offline_tasks(args.staging_server, args.staging_server_root, tasks, args.license,
-                                                        installerConfigBaseDir, args.artifact_share_url, args.ifw_tools,
-                                                        args.offline_installer_id, args.update_staging))
+        loop.run_until_complete(build_offline_tasks(args.staging_server, args.staging_server_root, tasks, args.license,
+                                                    installerConfigBaseDir, args.artifact_share_url, args.ifw_tools,
+                                                    args.offline_installer_id, args.update_staging,
+                                                    args.event_injector, export_data))
     else:  # this is either repository build or repository sync build
         # get repository tasks
         tasks = release_task_reader.parse_config(args.config, task_filters=append_to_task_filters(args.task_filters, "repository"))
