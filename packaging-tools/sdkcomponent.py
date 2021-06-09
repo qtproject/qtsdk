@@ -156,9 +156,9 @@ class SdkComponent:
                 else:
                     # sanity check, duplicate template should not exist to avoid
                     # problems!
-                    print '*** Found duplicate template for: ' + self.package_name
-                    print '*** Ignoring: ' + template_full_path
-                    print '*** Using:    ' + self.pkg_template_dir
+                    print ('*** Found duplicate template for: ' + self.package_name)
+                    print ('*** Ignoring: ' + template_full_path)
+                    print ('*** Using:    ' + self.pkg_template_dir)
         self.parse_archives(self.target_config, self.archive_location_resolver)
         self.check_component_data(self.target_config)
 
@@ -226,7 +226,7 @@ class SdkComponent:
             archives_list = self.archives.split(',')
             for archive in archives_list:
                 if not archive:
-                    print "Warning: There appears to be ',' issues in the config file archive list for component: ", self.package_name
+                    print ("Warning: There appears to be ',' issues in the config file archive list for component: ", self.package_name)
                     continue
                 # check that archive template exists
                 if not target_config.has_section(archive):
@@ -252,25 +252,25 @@ class SdkComponent:
 
 
     def print_component_data(self):
-        print '============================================================='
-        print ' [' + self.package_name + ']'
+        print ('=============================================================')
+        print (' [' + self.package_name + ']')
         if self.static_component:
-            print ' Static component:    ' + self.static_component
+            print (' Static component:    ' + self.static_component)
             return
         if self.root_component:
-            print ' Root component:      ' + self.root_component
-        print ' Include filter:      ' + self.include_filter
-        print ' Target install base: ' + self.target_install_base
-        print ' Version:             ' + self.version
-        print ' Version tag:         ' + self.version_tag
-        print ' Package default:     ' + self.package_default
+            print (' Root component:      ' + self.root_component)
+        print (' Include filter:      ' + self.include_filter)
+        print (' Target install base: ' + self.target_install_base)
+        print (' Version:             ' + self.version)
+        print (' Version tag:         ' + self.version_tag)
+        print (' Package default:     ' + self.package_default)
         if self.downloadable_archive_list:
-            print ' Archives:'
+            print (' Archives:')
             for archive in self.downloadable_archive_list:
-                print '   ---------------------------------------------------------------'
-                print '   Downloadable archive name:  ' + archive.archive_name
-                print '   Archive strip dirs:         ' + archive.package_strip_dirs
-                print '   Archive target install dir: ' + archive.get_archive_installation_directory()
-                print '   Archive RPath target:       ' + archive.rpath_target
-                print '   Archive URI:                ' + archive.archive_uri
+                print ('   ---------------------------------------------------------------')
+                print ('   Downloadable archive name:  ' + archive.archive_name)
+                print ('   Archive strip dirs:         ' + archive.package_strip_dirs)
+                print ('   Archive target install dir: ' + archive.get_archive_installation_directory())
+                print ('   Archive RPath target:       ' + archive.rpath_target)
+                print ('   Archive URI:                ' + archive.archive_uri)
 

@@ -122,9 +122,8 @@ def enableThreadedPrint(enable = True, threadCount = multiprocessing.cpu_count()
         global outputFormatString
         outputStates = [""] * (threadCount)
         outputFormatString = ""
-        for x in xrange(threadCount):
+        for x in range(threadCount):
             outputFormatString = outputFormatString + "{" + str(x) + ":10}"
-
         sys.stdout = StdOutHook()
         sys.stderr = StdErrHook()
         __builtin__.print = threadedPrint

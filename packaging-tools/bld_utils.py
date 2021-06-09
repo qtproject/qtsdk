@@ -154,7 +154,7 @@ def download(url, target, read_block_size = 1048576):
         try:
             # use urlopen which raise an error if that file is not existing
             response = urllib.request.urlopen(url)
-            total_size = response.info().getheader('Content-Length').strip()
+            total_size = response.info().get('Content-Length').strip()
             print("Downloading file from '{0}' with size {1} bytes to {2}".format(url, total_size, target))
             # run the download
             received_size = urllib2_response_read(response, savefile_tmp, read_block_size, total_size)

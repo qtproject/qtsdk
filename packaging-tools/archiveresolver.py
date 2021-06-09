@@ -31,7 +31,7 @@ import os
 import sys
 import bldinstallercommon
 import pkg_constants
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 SERVER_NAMESPACE                = 'ArchiveRemoteLocation'
 PACKAGE_REMOTE_LOCATION_RELEASE = 'release'
@@ -161,10 +161,10 @@ class ArchiveLocationResolver:
     # Print out server list
     ###############################
     def print_server_list(self):
-        print '--------------------------------------------------'
-        print ' Server list:'
+        print ('--------------------------------------------------')
+        print (' Server list:')
         for server in self.server_list:
-            print ' ---------------------------------------------'
-            print ' Server name: ' + server.server_name
-            print ' Server url:  ' + server.server_url
+            print (' ---------------------------------------------')
+            print (' Server name: ' + server.server_name)
+            print (' Server url:  ' + server.server_url)
 

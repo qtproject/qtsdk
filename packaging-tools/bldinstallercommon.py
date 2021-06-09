@@ -469,7 +469,7 @@ def config_section_map(conf, section):
                 print('skip: %s' % option)
         except:
             print('exception on %s!' % option)
-            dict1[option] = None
+            dict1[option] = ''
     return dict1
 
 
