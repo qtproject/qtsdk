@@ -93,11 +93,11 @@ class event_register(object):
 
     async def __aexit__(self, exc_type, exc_val, traceback) -> bool:
         ret = True
+        event_type = "FINISH"
+        if traceback:
+            ret = False  # will cause the exception to be propagated
+            event_type = "ABORT"
         if event_register.event_injector:
-            event_type = "FINISH"
-            if traceback:
-                ret = False  # will cause the exception to be propagated
-                event_type = "ABORT"
             self.register_event(self.event_name, event_type, self.summary_data, message=exc_val)
         return ret
 
