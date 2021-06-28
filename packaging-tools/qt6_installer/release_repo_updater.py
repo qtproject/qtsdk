@@ -695,7 +695,7 @@ def upload_snapshots_to_remote(staging_server: str, remote_upload_path: str, tas
         snapshot_path = get_pkg_value("SNAPSHOT_PATH")
     else:
         snapshot_path = os.path.join(base, project_name)
-    snapshot_upload_path = os.path.join(snapshot_path, version_minor, version_full, installer_build_id)
+    snapshot_upload_path = os.path.join(snapshot_path, version_minor, version_full + task.get_prerelease_version(), installer_build_id)
     remote_installer_path = os.path.join(remote_upload_path, installer_filename)
     if platform.system() == "Windows":
         # commands are run in Linux, adjust the upload paths

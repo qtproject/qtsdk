@@ -53,6 +53,7 @@ class ReleaseTask:
         self.config_file = settings["config_file"]
         self.project_name = settings.get("project_name", "")
         self.version = settings.get("version", "")
+        self.prerelease_version = settings.get("prerelease_version", "")
         self.substitutions = settings.get("substitutions", "")
         self.repo_path = settings.get("repo_path", "")
         self.repo_components_to_update = settings.get("repo_components_to_update", "")
@@ -95,6 +96,9 @@ class ReleaseTask:
 
     def get_version(self) -> str:
         return self.version
+
+    def get_prerelease_version(self) -> str:
+        return self.prerelease_version.strip()
 
     def get_repo_path(self) -> str:
         return self.repo_path
