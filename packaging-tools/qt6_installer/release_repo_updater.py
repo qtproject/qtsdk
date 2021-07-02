@@ -41,7 +41,7 @@ import platform
 import datetime
 import argparse
 from configparser import ConfigParser, ExtendedInterpolation
-from typing import List, Dict, Tuple, Optional
+from typing import List, Dict, Tuple
 from time import gmtime, strftime
 from pathlib import Path
 import subprocess
@@ -76,7 +76,7 @@ class event_register(object):
     @classmethod
     def initialize(cls, event_injector_path: str):
         if not cls.python_path:
-            if platform.system()  == "Linux":
+            if platform.system() == "Linux":
                 import sh
                 cls.python_path = sh.which("python3")
             if platform.system() == "Windows":
@@ -240,7 +240,7 @@ def trigger_rta(rtaServerUrl: str, task: ReleaseTask) -> None:
         log.info("Triggering RTA case: %s", url)
         try:
             urlretrieve(url)
-        except HTTPError as e:
+        except HTTPError:
             log.error("Failed to trigger RTA for: %s", url)
             # let it proceed
 
@@ -582,7 +582,7 @@ def update_remote_latest_available_dir(newInstaller: str, remoteUploadPath: str,
     path, name = os.path.split(new_installer_base_path)
 
     # update latest_available
-    latest_available_path = re.sub("\/" + str(installerBuildId) + "\/", "/latest_available/", remoteUploadPath)
+    latest_available_path = re.sub(r"\/" + str(installerBuildId) + r"\/", "/latest_available/", remoteUploadPath)
     previous_installer_path = latest_available_path + name + '*'
     try:
         cmd_rm = get_remote_login_cmd(stagingServerRoot) + ['rm', previous_installer_path.split(':')[1]]
@@ -844,10 +844,10 @@ if __name__ == "__main__":
         # get repository tasks
         tasks = release_task_reader.parse_config(args.config, task_filters=append_to_task_filters(args.task_filters, "repository"))
         ret = loop.run_until_complete(handle_update(args.staging_server, args.staging_server_root, args.license, tasks,
-                                          args.repo_domain, installerConfigBaseDir, args.artifact_share_url,
-                                          args.update_staging, args.update_production, args.sync_s3, args.sync_ext,
-                                          args.rta, args.ifw_tools,
-                                          args.build_repositories, do_update_repositories, do_sync_repositories,
-                                          args.event_injector, export_data))
+                                      args.repo_domain, installerConfigBaseDir, args.artifact_share_url,
+                                      args.update_staging, args.update_production, args.sync_s3, args.sync_ext,
+                                      args.rta, args.ifw_tools,
+                                      args.build_repositories, do_update_repositories, do_sync_repositories,
+                                      args.event_injector, export_data))
         for repo in ret:
             log.info(f"{repo}")
