@@ -47,7 +47,6 @@ import subprocess
 import urlparse
 
 import bld_utils
-import bld_qtcreator
 import bldinstallercommon
 import environmentfrombatchfile
 import threadedwork
