@@ -606,9 +606,6 @@ def create_target_components(task):
                     # Create needed data dirs
                     compress_content_dir = os.path.normpath(temp_data_dir + os.sep + archive.archive_name)
                     install_dir = os.path.normpath(compress_content_dir + archive.get_archive_installation_directory())
-
-                    if task.incremental and os.path.exists(os.path.join(data_dir_dest, archive.archive_name)):
-                        continue
                     # adding get_component_data task to our work queue
                     # Create needed data dirs before the threads start to work
                     bldinstallercommon.create_dirs(install_dir)
@@ -886,8 +883,7 @@ def create_installer(task):
     # check required tools
     check_required_tools()
     # clean env before starting
-    if not task.incremental:
-        clean_work_dirs(task)
+    clean_work_dirs(task)
     # set config templates
     if task.online_installer or task.offline_installer:
         set_config_directory(task)
@@ -961,7 +957,6 @@ class QtInstallerTask:
         self.remove_debug_libraries = args.remove_debug_libraries
         self.remove_pdb_files = args.remove_pdb_files
 
-        self.incremental = args.incremental
         self.offline_installer = args.offline_installer
         self.online_installer = args.online_installer
         self.create_repository = args.create_repository
@@ -1094,8 +1089,6 @@ if __name__ == "__main__":
                         help="define configurations directory where to read installer configuration files")
     parser.add_argument("-f", "--configuration-file", dest="configuration_file", type=str,
                         help="define configuration file for installer content")
-    parser.add_argument("-i", "--incremental", dest="incremental", action='store_true', default=False,
-                        help="Enable incremental development mode")
     parser.add_argument("-o", "--offline", dest="offline_installer", action='store_true', default=False,
                         help="Create online installer")
     parser.add_argument("-O", "--online", dest="online_installer", action='store_true', default=False,
