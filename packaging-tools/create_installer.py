@@ -76,7 +76,7 @@ def check_required_tools():
     """Check that valid tools are present in the build environment."""
     from distutils.spawn import find_executable
     if not find_executable('7z'):
-        raise EnvironmentError("7z tool not found in the PATH")
+        raise CreateInstallerError("7z tool not found in the PATH")
 
 
 ##############################################################
@@ -222,7 +222,7 @@ def parse_component_data(task, configuration_file, configurations_base_path):
         allos_conf_file_dir = os.path.normpath(task.configurations_dir + os.sep + 'all-os')
         file_full_path = bldinstallercommon.locate_file(allos_conf_file_dir, configuration_file)
     if not file_full_path:
-        raise ValueError('*** Aborting, unable to locate the specified file. Check the configuration files for possible error(s).')
+        raise CreateInstallerError('*** Aborting, unable to locate the specified file. Check the configuration files for possible error(s).')
     log.info("Reading target configuration file: {0}".format(file_full_path))
     configuration = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
     configuration.readfp(open(file_full_path))
@@ -258,8 +258,7 @@ def parse_component_data(task, configuration_file, configurations_base_path):
                         log.warning("The [{0}] was not valid but it was marked optional for offline installers so skipping it.".format(sdk_component.package_name))
                     else:
                         if task.strict_mode:
-                            log.info("{0}".format(sdk_component.error_msg()))
-                            raise ValueError()
+                            raise CreateInstallerError("{0}".format(sdk_component.error_msg()))
                         else:
                             log.warning("Ignored component in non-strict mode (missing archive data or metadata?): {0}".format(section))
                             task.sdk_component_list_skipped.append(sdk_component)
@@ -370,7 +369,7 @@ def get_component_data(task, sdk_component, archive, install_dir, data_dir_dest,
             script_args = script_args or ""
             script_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), script_file)
             if not os.path.exists(script_path):
-                raise Exception("Unable to locate custom archive action script: " + script_path)
+                raise CreateInstallerError("Unable to locate custom archive action script: {0}".format(script_path))
             subprocess.check_call([script_path, '--input-dir=' + install_dir, script_args.strip()])
 
         # strip out unnecessary folder structure based on the configuration
@@ -423,7 +422,7 @@ def get_component_data(task, sdk_component, archive, install_dir, data_dir_dest,
             with open(sha1_file_path, "r") as sha1_file:
                 sdk_component.component_sha1 = sha1_file.read().strip()
         else:
-            raise ValueError('Component SHA1 file "{0}" not found'.format(archive.component_sha1_file))
+            raise CreateInstallerError("Component SHA1 file '{0}' not found".format(archive.component_sha1_file))
 
     # lastly compress the component back to .7z archive
     content_list = os.listdir(compress_content_dir)
@@ -439,7 +438,7 @@ def handle_set_executable(baseDir, packageFinalizeItems):
     for item in parsePackageFinalizeItems(packageFinalizeItems, 'set_executable'):
         expectedPath = os.path.join(baseDir, item)
         if not os.path.exists(expectedPath):
-            raise ValueError('Can not set executable bit as path not found: "{0}"'.format(expectedPath))
+            raise CreateInstallerError('Can not set executable bit as path not found: "{0}"'.format(expectedPath))
         os.chmod(expectedPath, 0o755)
         log.info("Executable bit set for: {0}".format(expectedPath))
 
@@ -448,7 +447,7 @@ def handle_set_licheck(task, baseDir, packageFinalizeItems):
     for licheckFileName in parsePackageFinalizeItems(packageFinalizeItems, 'set_licheck'):
         licheckFilePath = os.path.join(baseDir, licheckFileName)
         if not os.path.exists(licheckFilePath):
-            raise ValueError('Can not set licheck as path not found: "{0}"'.format(licheckFilePath))
+            raise CreateInstallerError('Can not set licheck as path not found: "{0}"'.format(licheckFilePath))
         patchQtEdition(baseDir, licheckFileName, task.build_timestamp)
         log.info("Licheck set for: {0}".format(licheckFilePath))
         break
@@ -483,7 +482,7 @@ def remove_all_debug_information_files(install_dir):
     elif bldinstallercommon.is_mac_platform():
         debug_information_file_ending = 'dSYM'
     else:
-        raise ValueError('Host is not identified as Windows, Linux or macOS')
+        raise CreateInstallerError('Host is not identified as Windows, Linux or macOS')
 
     remove_debug_information_files_by_file_type(install_dir, debug_information_file_ending)
 
@@ -641,7 +640,7 @@ def create_target_components(task):
         if hasattr(sdk_component, 'temp_data_dir') and os.path.exists(sdk_component.temp_data_dir):
             # lastly remove temp dir after all data is prepared
             if not bldinstallercommon.remove_tree(sdk_component.temp_data_dir):
-                raise IOError('Unable to remove directory: %s' % sdk_component.temp_data_dir)
+                raise CreateInstallerError("Unable to remove directory: {0}".format(sdk_component.temp_data_dir))
             # substitute downloadable archive names in installscript.qs
             substitute_component_tags(sdk_component.generate_downloadable_archive_list(), sdk_component.meta_dir_dest)
 
@@ -804,7 +803,7 @@ def create_online_repository(task):
         # create repository
         bldinstallercommon.do_execute_sub_process(repogen_args, task.script_root_dir)
         if not os.path.exists(task.repo_output_dir):
-            raise IOError('*** Fatal error! Unable to create repository directory: ' + task.repo_output_dir)
+            raise CreateInstallerError("Unable to create repository directory: {0}".format(task.repo_output_dir))
 
 
 ##############################################################
@@ -1079,10 +1078,10 @@ class QtInstallerTask:
             bldinstallercommon.create_dirs(self.ifw_tools_dir)
             log.info("Downloading: {0}".format(self.ifw_tools_uri))
             if not bldinstallercommon.is_content_url_valid(self.ifw_tools_uri):
-                raise Exception("Package URL is invalid: [" + self.ifw_tools_uri + "]")
+                raise CreateInstallerError("Package URL is invalid: {0}".format(self.ifw_tools_uri))
             bldinstallercommon.retrieve_url(self.ifw_tools_uri, package_save_as_temp)
             if not (os.path.isfile(package_save_as_temp)):
-                raise Exception("Downloading failed! Aborting!")
+                raise CreateInstallerError("Downloading failed! Aborting!")
         # extract ifw archive
         bldinstallercommon.extract_file(package_save_as_temp, self.ifw_tools_dir)
         log.info("IFW tools extracted into: {0}".format(self.ifw_tools_dir))
