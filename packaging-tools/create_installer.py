@@ -97,22 +97,14 @@ def clean_work_dirs(task):
 def set_config_directory(task):
     """Copy config directory into correct place."""
     log.info("Set config directory")
-    # ConfigDirLgpl is optional field so it can be ignored
-    include_filter = ''
-    try:
-        include_filter = task.config.get('ConfigDirLgpl', 'include_filter')
-    except Exception:
-        pass
-    if include_filter and include_filter in task.license_type:
-        config_dir_template = task.config.get('ConfigDirLgpl', 'template_name')
-    else:
-        config_dir_template = task.config.get('ConfigDir', 'template_name')
-
-    config_dir_template = os.path.normpath(task.configurations_dir + os.sep + config_dir_template)
+    config_dir_template = task.config.get('ConfigDir', 'template_name')
+    config_template_src = os.path.normpath(os.path.join(task.configurations_dir, config_dir_template))
+    if not os.path.exists(config_template_src):
+        raise CreateInstallerError("No such 'config' template directory: '{0}'".format(config_template_src))
 
     bldinstallercommon.create_dirs(task.config_dir_dst)
-    bldinstallercommon.copy_tree(config_dir_template, task.config_dir_dst)
-    log.info("Copied: '{0}' into: {1}".format(config_dir_template, task.config_dir_dst))
+    bldinstallercommon.copy_tree(config_template_src, task.config_dir_dst)
+    log.info("Copied: '{0}' into: {1}".format(config_template_src, task.config_dir_dst))
 
 
 ##############################################################
