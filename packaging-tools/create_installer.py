@@ -34,7 +34,6 @@ import os
 import shutil
 import sys
 import re
-import glob
 import subprocess
 from time import gmtime, strftime
 import argparse
@@ -47,8 +46,6 @@ from threadedwork import ThreadedWork
 import bld_utils
 import bldinstallercommon
 import pkg_constants
-import bld_ifw_tools
-from bld_ifw_tools import IfwOptions
 from archiveresolver import ArchiveLocationResolver
 from sdkcomponent import SdkComponent
 from patch_qt import patchFiles, patchQtEdition
@@ -61,7 +58,6 @@ log.setLevel("INFO")
 TARGET_INSTALL_DIR_NAME_TAG         = '%TARGET_INSTALL_DIR%'
 ARCHIVES_EXTRACT_DIR_NAME_TAG       = '%ARCHIVES_EXTRACT_DIR%'
 PACKAGE_DEFAULT_TAG                 = '%PACKAGE_DEFAULT_TAG%'
-SDK_VERSION_NUM_TAG                 = '%SDK_VERSION_NUM%'
 UPDATE_REPOSITORY_URL_TAG           = '%UPDATE_REPOSITORY_URL%'
 PACKAGE_CREATION_DATE_TAG           = '%PACKAGE_CREATION_DATE%'
 INSTALL_PRIORITY_TAG                = '%INSTALL_PRIORITY%'
@@ -176,7 +172,7 @@ def substitute_global_tags(task):
     # initialize the file list
     fileslist = []
     for directory in task.directories_for_substitutions:
-        for root, dummy, files in os.walk(directory):
+        for root, _, files in os.walk(directory):
             for name in files:
                 path = os.path.join(root, name)
                 fileslist.append(path)
@@ -199,7 +195,7 @@ def substitute_component_tags(tag_pair_list, meta_dir_dest):
     # initialize the file list
     fileslist = []
 
-    for root, dummy, files in os.walk(meta_dir_dest):
+    for root, _, files in os.walk(meta_dir_dest):
         for name in files:
             path = os.path.join(root, name)
             fileslist.append(path)
@@ -660,7 +656,7 @@ def qml_examples_only(examples_dir):
         return
     subdir_list = []
     regex = re.compile('^qml\S.*') # pylint: disable=W1401
-    for root, dirs, dummy in os.walk(examples_dir):
+    for root, dirs, _ in os.walk(examples_dir):
         for basename in dirs:
             if regex.search(basename):
                 root_dir = root
