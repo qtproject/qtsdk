@@ -84,20 +84,11 @@ def check_required_tools():
 ##############################################################
 def clean_work_dirs(task):
     """Clean working directories."""
-    log.info("Cleaning environment")
-
-    # delete "/packages"
-    if os.path.exists(task.packages_full_path_dst):
-        bldinstallercommon.remove_tree(task.packages_full_path_dst)
-        log.debug("Deleted directory: {0}".format(task.packages_full_path_dst))
-    # delete "/repositories"
-    if os.path.exists(task.repo_output_dir):
-        bldinstallercommon.remove_tree(task.repo_output_dir)
-        log.debug("Deleted directory: {0}".format(task.repo_output_dir))
-    # delete "/config"
-    if os.path.exists(task.config_dir_dst):
-        bldinstallercommon.remove_tree(task.config_dir_dst)
-        log.debug("Deleted directory: {0}".format(task.config_dir_dst))
+    log.info("Cleaning work environment")
+    for item in [task.packages_full_path_dst, task.repo_output_dir, task.config_dir_dst]:
+        if os.path.exists(item):
+            bldinstallercommon.remove_tree(item)
+            log.debug("Deleted directory: {0}".format(item))
 
 
 ##############################################################
