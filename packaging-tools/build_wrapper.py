@@ -1011,7 +1011,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                             for url in qt_module_urls]
 
     # download and install qt
-    qt_path = os.path.join(work_dir, 'qt5_install_dir')
+    qt_path = os.path.join(work_dir, 'qt_install_dir')
     src_path = os.path.join(work_dir, 'qt-creator')
     build_path = os.path.join(work_dir, 'qt-creator_build')
     qt_install_args = ['python', '-u', os.path.join(SCRIPT_ROOT_DIR, 'install_qt.py'),
