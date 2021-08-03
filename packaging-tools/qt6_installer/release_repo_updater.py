@@ -823,6 +823,10 @@ if __name__ == "__main__":
     if args.license == "opensource":
         assert not args.sync_s3, "The '--sync-s3' is not supported for 'opensource' license!"
 
+    # user explicitly disabled rta triggers
+    if args.rta in ["0", "disable", "false", "no"]:
+        args.rta = None
+
     # format task string in case full task section string is used
     args.task_filters = format_task_filters(args.task_filters)
     # installer configuration files are relative to the given top level release description file
