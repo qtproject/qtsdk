@@ -66,10 +66,10 @@ def clean_content(input_dir: str, preserve_rules: List[str]) -> None:
     log.info(f"Cleaning content from: '{input_dir}' - preserve_rules: {preserve_rules}")
     if not os.path.isdir(input_dir):
         raise CleanerError(f"Not a valid input directory: {input_dir}")
-
+    split_preserve_rules = [word for line in preserve_rules for word in line.split()]
     with cd(input_dir):
         files_to_keep = []
-        for mask in preserve_rules:
+        for mask in split_preserve_rules:
             files_to_keep.extend(glob(mask, recursive=True))
         for p in Path(".").rglob("*"):
             if str(p) in files_to_keep:
