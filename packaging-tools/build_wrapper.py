@@ -891,7 +891,6 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     snapshot_path = optionDict['SNAPSHOT_SERVER_PATH'] # optional
     qt_base_path = optionDict['QTC_QT_BASE_DIR']
     ide_branding_path = optionDict.get('IDE_BRANDING_PATH') # optional
-    ide_branding_app_name = optionDict.get('IDE_BRANDING_APP_NAME') # optional
     installer_patch = optionDict.get('INSTALLER_PATCH') # optional
     skip_cdb = optionDict.get('SKIP_CDB') # optional
     skip_dmg = optionDict.get('SKIP_DMG') # optional
@@ -1039,8 +1038,6 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         cmd_args += ['--llvm-path', llvm_install_dir]
     if ide_branding_path:
         cmd_args += ['--add-module-path', os.path.abspath(ide_branding_path)]
-    if ide_branding_app_name:
-        cmd_args += ['--app-target', ide_branding_app_name]
     if qtc_additional_config:
         cmd_args += ['--add-config=' + value for value in qtc_additional_config]
     if disable_docs:
