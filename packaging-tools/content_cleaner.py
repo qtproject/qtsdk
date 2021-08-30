@@ -3,7 +3,7 @@
 
 #############################################################################
 ##
-## Copyright (C) 2020 The Qt Company Ltd.
+## Copyright (C) 2021 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -62,7 +62,7 @@ def remove_empty_directories(root_path: str):
                 os.removedirs(dirPath)
 
 
-def clean_content(input_dir: str, preserve_rules: List[str]) -> None:
+def preserve_content(input_dir: str, preserve_rules: List[str]) -> None:
     log.info(f"Cleaning content from: '{input_dir}' - preserve_rules: {preserve_rules}")
     if not os.path.isdir(input_dir):
         raise CleanerError(f"Not a valid input directory: {input_dir}")
@@ -81,10 +81,36 @@ def clean_content(input_dir: str, preserve_rules: List[str]) -> None:
     remove_empty_directories(input_dir)
 
 
+def remove_content(input_dir: str, remove_rules: List[str]) -> None:
+    log.info(f"Removing files from: '{input_dir}' - remove_rules: {remove_rules}")
+    if not os.path.isdir(input_dir):
+        raise CleanerError(f"Not a valid input directory: {input_dir}")
+    split_remove_rules = [word for line in remove_rules for word in line.split()]
+    with cd(input_dir):
+        files_to_remove = []
+        for mask in split_remove_rules:
+            files_to_remove.extend(glob(mask, recursive=True))
+        for p in Path(".").rglob("*"):
+            if os.path.isdir(p):
+                continue
+            if str(p) in files_to_remove:
+                log.info(f"Removing: {p}")
+                os.remove(p)
+    remove_empty_directories(input_dir)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="Clean all files from the --input-dir directory except those defined by --glob-rule")
     parser.add_argument("--input-dir", dest="input_dir", required=True, help="Directory to scan")
-    parser.add_argument("--preserve", dest="preserve_rules", required=True, action='append',
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--preserve", dest="preserve_rules", action='append',
                         help="One or multiple glob based rules which files to keep")
+    group.add_argument("--remove", dest="remove_rules", action='append',
+                        help="One or multiple glob based rules which files to remove")
     args = parser.parse_args(sys.argv[1:])
-    clean_content(args.input_dir, args.preserve_rules)
+    if args.preserve_rules:
+        preserve_content(args.input_dir, args.preserve_rules)
+    elif args.remove_rules:
+        remove_content(args.input_dir, args.remove_rules)
+    else:
+        sys.exit(1)
