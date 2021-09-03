@@ -457,7 +457,7 @@ async def build_online_repositories(tasks: List[ReleaseTask], license: str, inst
             cmd += ["--add-substitution=" + substitution]
 
         try:
-            await async_exec_cmd(cmd, timeout=60*60*2)  # 2h for one repo build should suffice
+            await async_exec_cmd(cmd, timeout=60*60*3)  # 3h for one repo build
         except Exception as e:
             log.error(str(e))
             raise
