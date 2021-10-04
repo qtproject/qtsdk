@@ -20,7 +20,10 @@ Makefile
 /packaging-tools/qt_pkg
 /packaging-tools/lm_bld
 /packaging-tools/lm_install_root
-/packaging-tools/qt6_installer/ifw_tools
-/packaging-tools/qt6_installer/_repo_update_jobs
-packaging*.log
+installer_output/
+ifw_tools/
+_repo_update_jobs/
+*.log
 .stestr/*
+.idea
+ifw_pkg_tmp
