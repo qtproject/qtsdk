@@ -1,1 +1,0 @@
--commercial -confirm-license -debug-and-release -release -nomake tests -nomake examples -skip qtenginio -xplatform winphone-arm-msvc2012
