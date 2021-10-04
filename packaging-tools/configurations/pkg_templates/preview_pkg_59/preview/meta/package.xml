@@ -1,8 +1,0 @@
-<Package>
-<DisplayName>Preview</DisplayName>
-<Description>Latest Qt and related package preview snapshots</Description>
-<Version>1.0.0-0</Version>
-<ReleaseDate>2017-05-12</ReleaseDate>
-<Checkable>false</Checkable>
-<SortingPriority>1</SortingPriority>
-</Package>
