@@ -51,7 +51,6 @@ import bld_ifw_tools
 from bld_ifw_tools import IfwOptions
 import bld_utils
 import bldinstallercommon
-import batch_process_installer_bld
 import bld_icu_tools
 import pkg_constants
 from pkg_constants import ICU_BUILD_OUTPUT_DIR
@@ -1265,73 +1264,6 @@ def handle_sdktool_build(optionDict):
         base_path += '_' + qtcreator_edition_name
     upload_files(base_path, file_upload_list, optionDict)
 
-###############################
-# handle_offline_installer_build
-###############################
-def handle_offline_installer_build(optionDict):
-    # Project name, default is always "qt"
-    project_name = optionDict['PROJECT_NAME'] if 'PROJECT_NAME' in optionDict else 'qt'
-    handle_installer_build(optionDict, project_name, 'offline')
-
-
-###############################
-# handle_online_installer_build
-###############################
-def handle_online_installer_build(optionDict):
-    # Project name, default is always "qt"
-    project_name = optionDict['PROJECT_NAME'] if 'PROJECT_NAME' in optionDict else 'online_installers'
-    handle_installer_build(optionDict, project_name, 'online')
-
-
-###############################
-# handle_installer_build
-###############################
-def handle_installer_build(optionDict, project_name, installer_type):
-    # Create remote directories under <project_name>/<version>
-    remote_path_base                        = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + project_name + '/' + optionDict['VERSION'] + '/' + 'installers'  # TODO
-    remote_path_snapshot                    = remote_path_base + '/' + optionDict['BUILD_NUMBER']
-    remote_path_latest_available            = remote_path_base + '/' + 'latest_available'
-    # ensure remote directories exist
-    create_remote_dirs(optionDict, optionDict['PACKAGE_STORAGE_SERVER_ADDR'], remote_path_snapshot)
-    create_remote_dirs(optionDict, optionDict['PACKAGE_STORAGE_SERVER_ADDR'], remote_path_latest_available)
-    # Determine local installer output directory
-    installer_output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.INSTALLER_OUTPUT_DIR_NAME)
-    # Create all installers for this host
-    arch = 'x64' if (optionDict['TARGET_ENV'].find('64') != -1) else 'x86'
-    batch_process_installer_bld.handle_installer_build(optionDict, installer_type, 'release', arch)
-    # Generate installer file name list
-    installer_list = []
-    dir_list = [f for f in os.listdir(installer_output_dir) if not f.endswith(".app")]
-    for file_name in dir_list:
-        installer_name, installer_name_base, installer_name_final = generate_installer_final_name(optionDict, file_name)
-        installer_list.append((file_name, installer_name, installer_name_base, installer_name_final))
-    # Sign and copy to network drive
-    for item in installer_list:
-        installer_name = item[1]
-        installer_name_base = item[2]
-        installer_name_final = item[3]
-        # sign
-        sign_installer(installer_output_dir, installer_name, installer_name_base, optionDict.get('NOTARIZE'))
-        # copy installer(s) to respective build number directory:
-        remote_copy_installer(optionDict, remote_path_snapshot, installer_name, installer_output_dir, installer_name_final)
-        # Keep only the latest one in the "latest_available" directory i.e. delete the previous one
-        replace_latest_successful_installer(optionDict, installer_name, installer_name_final, remote_path_latest_available, installer_output_dir)
-    # Trigger rta cases
-    trigger_rta(optionDict, os.path.join(SCRIPT_ROOT_DIR, pkg_constants.RTA_DESCRIPTION_FILE_DIR_NAME))
-    # Do we upload the installers to opensource/public network drive?
-    if optionDict.get('EXPORT_OPENSOURCE_INSTALLER', '').lower() in ["yes", "true", "1"]:
-        # opensource distribution server address and path
-        ext_server_base_url  = optionDict['EXT_SERVER_BASE_URL']
-        ext_server_base_path = optionDict['EXT_SERVER_BASE_PATH']
-        # opensource distribution server directories  #TODO, below
-        short_version = '.'.join(optionDict['VERSION'].split('.')[:2])  # 4.10.x -> 4.10
-        ext_dest_dir = ext_server_base_path + '/snapshots/' + project_name + '/' + short_version + '/' + optionDict['VERSION_FULL'] + '/' + optionDict['BUILD_NUMBER']
-        cmd_args_mkdir_pkg = [optionDict['SSH_COMMAND'], optionDict['PACKAGE_STORAGE_SERVER_ADDR']]
-        cmd_args_mkdir_ext = cmd_args_mkdir_pkg + ['ssh', ext_server_base_url, 'mkdir -p', ext_dest_dir]
-        bldinstallercommon.do_execute_sub_process(cmd_args_mkdir_ext, SCRIPT_ROOT_DIR)
-        # Copy installers
-        for item in installer_list:
-            remote_copy_installer_opensource(optionDict, remote_path_snapshot, ext_server_base_url, ext_dest_dir, item[3])
 
 
 ###############################
@@ -1427,73 +1359,6 @@ def delete_remote_directory_tree(optionDict, remote_dir):
     cmd_args = [optionDict['SSH_COMMAND'], optionDict['PACKAGE_STORAGE_SERVER_ADDR'], 'rm -rf', remote_dir]
     bldinstallercommon.do_execute_sub_process(cmd_args, optionDict['WORK_DIR'])
 
-
-###############################
-# Trigger RTA cases
-###############################
-def trigger_rta(optionDict, rta_description_files_dir):
-    # check if rta cases define for this build job
-    if not os.path.isdir(rta_description_files_dir):
-        raise IOError('*** Error - Given rta_description_files_dir does not exist: %s' % rta_description_files_dir)
-    dir_list = os.listdir(rta_description_files_dir)
-    matching = [s for s in dir_list if pkg_constants.RTA_DESCRIPTION_FILE_NAME_BASE in s]
-    if not matching:
-        print('No RTA cases defined for this build job.')
-        return
-    # obtain RTA server base url
-    if not optionDict['RTA_SERVER_BASE_URL']:
-        print('*** Error - RTA_SERVER_BASE_URL env. variable is not defined. Unable to proceed! RTA not run for this build job!')
-        return
-    rta_server_base_url = optionDict['RTA_SERVER_BASE_URL']
-    if not rta_server_base_url.endswith('/'):
-        rta_server_base_url += '/'
-    # iterate rta description files
-    for rta_description_file in matching:
-        print('Reading RTA description file: {0}'.format(os.path.join(rta_description_files_dir, rta_description_file)))
-        rta_file = os.path.join(rta_description_files_dir, rta_description_file)
-        f = open(rta_file)
-        for line in iter(f):
-            line_split = line.split(' ')
-            if len(line_split) != 2:
-                raise RuntimeError('*** Error - Invalid format in rta description file %s, line: %s' % (rta_file, line))
-            rta_keys = line_split[1].split(',')
-            for item in rta_keys:
-                item = item.rstrip().replace(' ', '')
-                if item:
-                    url = rta_server_base_url + item + '/build?token=RTA_JENKINS'
-                    print('Triggering RTA case: {0}'.format(url))
-                    urllib.urlretrieve(url)
-        f.close()
-
-
-################################
-# Handle online repository build
-################################
-def handle_online_repository_build(optionDict):
-    conf_file = optionDict['RELEASE_DESCRIPTION_FILE']
-    if not os.path.exists(conf_file):
-        raise IOError('*** The given file does not exist: %s' % conf_file)
-    if optionDict['TARGET_ENV'].find('64') != -1:
-        arch = 'x64'
-    else:
-        arch = 'x86'
-
-    # do we update staging repository?
-    update_staging_repo = True
-    if optionDict['DO_UPDATE_STAGING_REPOSITORY']:
-        update = optionDict['DO_UPDATE_STAGING_REPOSITORY']
-        if update.lower() in ['no', 'false', '0']:
-            update_staging_repo = False
-    # do we also update production repository?
-    update_production_repo = False
-    if optionDict['DO_UPDATE_PRODUCTION_REPOSITORY']:
-        update = optionDict['DO_UPDATE_PRODUCTION_REPOSITORY']
-        if update.lower() in ['yes', 'true', '1']:
-            update_production_repo = True
-    batch_process_installer_bld.handle_repo_build(optionDict, 'release', arch, update_staging_repo, update_production_repo)
-    # (3) trigger rta cases
-    rta_descr_output_dir = os.path.join(SCRIPT_ROOT_DIR, pkg_constants.RTA_DESCRIPTION_FILE_DIR_NAME)
-    trigger_rta(optionDict, rta_descr_output_dir)
 
 
 ###############################
@@ -1758,9 +1623,6 @@ if __name__ == '__main__':
     bld_qtcreator_plugins                   = 'build_qtcreator_plugins'
     bld_qtc_sdktool                         = 'build_sdktool'
     bld_gammaray                            = 'build_gammaray'
-    create_online_repository                = 'repo_build'
-    create_offline_installer                = 'offline_installer'
-    create_online_installer                 = 'online_installer'
     bld_icu_init                            = 'init_icu_bld'
     bld_icu                                 = 'icu_bld'
     bld_licheck                             = 'licheck_bld'
@@ -1768,7 +1630,6 @@ if __name__ == '__main__':
     execute_extra_module_build_cycle_src    = 'build_qt5_app_src'
     archive_repository                      = 'archive_repo'
     CMD_LIST =  (bld_ifw, bld_qtcreator, bld_qtcreator_plugins, bld_qtc_sdktool, bld_gammaray, bld_icu_init, bld_icu, bld_licheck)
-    CMD_LIST += (create_online_installer, create_online_repository, create_offline_installer)
     CMD_LIST += (init_extra_module_build_cycle_src, execute_extra_module_build_cycle_src, archive_repository)
 
     parser = argparse.ArgumentParser(prog="Build Wrapper", description="Manage all packaging related build steps.")
@@ -1809,13 +1670,6 @@ if __name__ == '__main__':
     # Qt Installer-Framework specific
     elif args.command == bld_ifw:
         handle_ifw_build(optionDict)
-    # Installer build specific
-    elif args.command == create_online_repository:
-        handle_online_repository_build(optionDict)
-    elif args.command == create_offline_installer:
-        handle_offline_installer_build(optionDict)
-    elif args.command == create_online_installer:
-        handle_online_installer_build(optionDict)
     elif args.command == bld_icu_init:
         initialize_icu_build(optionDict)
     elif args.command == bld_icu:
