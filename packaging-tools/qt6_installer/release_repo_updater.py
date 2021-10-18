@@ -59,7 +59,6 @@ _parentdir = os.path.dirname(_currentdir)
 sys.path.insert(0, _parentdir)
 from read_remote_config import get_pkg_value
 import sign_installer
-from sign_windows_installer import sign_executable
 
 log = init_logger(__name__, debug_mode=False)
 timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d--%H:%M:%S')
@@ -618,6 +617,7 @@ def upload_offline_to_remote(installerPath: str, remoteUploadPath: str, stagingS
 def sign_offline_installer(installer_path: str, installer_name: str) -> None:
     if platform.system() == "Windows":
         log.info("Sign Windows installer")
+        from sign_windows_installer import sign_executable
         sign_executable(os.path.join(installer_path, installer_name) + '.exe')
     elif platform.system() == "Darwin":
         log.info("Sign macOS .app bundle")
