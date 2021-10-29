@@ -51,9 +51,7 @@ import bld_ifw_tools
 from bld_ifw_tools import IfwOptions
 import bld_utils
 import bldinstallercommon
-import bld_icu_tools
 import pkg_constants
-from pkg_constants import ICU_BUILD_OUTPUT_DIR
 from threadedwork import ThreadedWork, Task
 import bld_sdktool
 from read_remote_config import get_pkg_value
@@ -1368,51 +1366,6 @@ def create_remote_dirs(optionDict, server, dir_path):
     cmd_args = [optionDict['SSH_COMMAND'], '-t', '-t', server, 'mkdir -p', dir_path]
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
 
-
-###############################
-# ICU build init
-###############################
-def initialize_icu_build(optionDict):
-    # sanity check icu args in optionDict
-    if not optionDict['ICU_VERSION']:
-        raise RuntimeError('*** ICU build is missing: icu_version')
-    if not optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR']:
-        raise RuntimeError('*** ICU build is missing: path')
-    if not optionDict['BUILD_NUMBER']:
-        raise RuntimeError('*** ICU build is missing: build_number')
-    remote_snaphot_dir_base = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + 'icu' + '/' + optionDict['ICU_VERSION']
-    remote_snaphot_dir = remote_snaphot_dir_base + '/' + optionDict['BUILD_NUMBER']
-    remote_latest_dir = remote_snaphot_dir_base + '/' + 'latest'
-    # create remote snapshot dir
-    create_remote_dirs(optionDict, optionDict['PACKAGE_STORAGE_SERVER_ADDR'], remote_snaphot_dir)
-    # update latest symlink
-    update_latest_link(optionDict, remote_snaphot_dir, remote_latest_dir)
-
-
-###############################
-# Handle ICU builds
-###############################
-def handle_icu_build(optionDict):
-    # sanity check icu args in optionDict
-    if not optionDict['ICU_VERSION']:
-        raise RuntimeError('*** ICU build is missing: ICU_VERSION')
-    if not optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR']:
-        raise RuntimeError('*** ICU build is missing: PACKAGE_STORAGE_SERVER_BASE_DIR')
-    if not optionDict['ICU_SRC_PKG_URL']:
-        raise RuntimeError('*** ICU build is missing: ICU_SRC_PKG_URL')
-    bld_icu_tools.init_build_icu(optionDict['ICU_SRC_PKG_URL'], optionDict['ICU_VERSION'], True)
-    # define remote dir where to upload
-    remote_snaphot_dir = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + 'icu' + '/' + optionDict['ICU_VERSION'] + '/' + 'latest'
-    srv_and_remote_dir = optionDict['PACKAGE_STORAGE_SERVER_ADDR'] + ':' + remote_snaphot_dir
-    # check the build artifacts
-    local_archives_dir = bldinstallercommon.locate_directory(SCRIPT_ROOT_DIR, ICU_BUILD_OUTPUT_DIR)
-    dir_list = os.listdir(local_archives_dir)
-    for file_name in dir_list:
-        if file_name.endswith('.7z'):
-            cmd_args = [optionDict['SCP_COMMAND'], file_name, srv_and_remote_dir + '/']
-            bldinstallercommon.do_execute_sub_process(cmd_args, local_archives_dir)
-
-
 ###############################
 # initialize_extra_module_build
 ###############################
@@ -1623,13 +1576,11 @@ if __name__ == '__main__':
     bld_qtcreator_plugins                   = 'build_qtcreator_plugins'
     bld_qtc_sdktool                         = 'build_sdktool'
     bld_gammaray                            = 'build_gammaray'
-    bld_icu_init                            = 'init_icu_bld'
-    bld_icu                                 = 'icu_bld'
     bld_licheck                             = 'licheck_bld'
     init_extra_module_build_cycle_src       = 'init_app_src'
     execute_extra_module_build_cycle_src    = 'build_qt5_app_src'
     archive_repository                      = 'archive_repo'
-    CMD_LIST =  (bld_ifw, bld_qtcreator, bld_qtcreator_plugins, bld_qtc_sdktool, bld_gammaray, bld_icu_init, bld_icu, bld_licheck)
+    CMD_LIST =  (bld_ifw, bld_qtcreator, bld_qtcreator_plugins, bld_qtc_sdktool, bld_gammaray, bld_licheck)
     CMD_LIST += (init_extra_module_build_cycle_src, execute_extra_module_build_cycle_src, archive_repository)
 
     parser = argparse.ArgumentParser(prog="Build Wrapper", description="Manage all packaging related build steps.")
@@ -1670,10 +1621,6 @@ if __name__ == '__main__':
     # Qt Installer-Framework specific
     elif args.command == bld_ifw:
         handle_ifw_build(optionDict)
-    elif args.command == bld_icu_init:
-        initialize_icu_build(optionDict)
-    elif args.command == bld_icu:
-        handle_icu_build(optionDict)
     elif args.command == bld_licheck:
         handle_qt_licheck_build(optionDict)
     elif args.command == init_extra_module_build_cycle_src:
