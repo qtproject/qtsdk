@@ -64,7 +64,29 @@ release() {
     do
         filepath="${i%/*}/"
         cd "$filepath"
+        locale="$(basename $i .ts)"
+        if [ $locale == "ko" -o  $locale == "zh" -o $locale == "untranslated" ]; then
+            continue
+        fi
         "$lrelease" "$i"
+        if grep -q ${locale}.qm package.xml; then
+            echo "Translation file ${locale}.qm already defined in package.xml"
+        else
+            if grep -q Translations package.xml; then
+                sed -i '0,/<\/Package>/{//d}' package.xml
+                sed -i '0,/<\/Translations>/{//d}' package.xml
+            else
+                sed -i '0,/<\/Package>/{//d}' package.xml
+                cat <<EOT >> package.xml
+  <Translations>
+EOT
+            fi
+            cat <<EOT >> package.xml
+    <Translation>${locale}.qm</Translation>
+  </Translations>
+</Package>
+EOT
+        fi
     done
     echo "Done"
 }
