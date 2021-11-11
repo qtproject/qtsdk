@@ -600,7 +600,7 @@ def create_qtcreator_source_package(source_path, plugin_name, version, edition, 
     file_base = 'qt-creator-' + edition + namepart + '-src-' + version
     target_base = os.path.join(target_path, file_base)
     create_tar = bldinstallercommon.is_linux_platform()
-    create_zip = bldinstallercommon.is_win_platform() and '64' not in optionDict['TARGET_ENV']
+    create_zip = bldinstallercommon.is_win_platform() and '32' not in optionDict['TARGET_ENV']
     if create_tar or create_zip:
         if not os.path.exists(target_base):
             os.makedirs(target_base)
