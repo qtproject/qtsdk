@@ -718,7 +718,7 @@ def get_component_data(sdk_component, archive, install_dir, data_dir_dest, compr
     if not archive.package_strip_dirs:
         archive.package_strip_dirs = '0'
 
-    if package_raw_name.endswith('.7z') \
+    if package_raw_name.endswith(('.7z', '.tar.xz')) \
        and archive.package_strip_dirs == '0' \
        and not archive.package_finalize_items \
        and not archive.archive_action \
