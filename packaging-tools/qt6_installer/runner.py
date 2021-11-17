@@ -45,14 +45,16 @@ if sys.platform == 'win32':
     asyncio.set_event_loop(loop)
 
 
-def exec_cmd(cmd: List[str], timeout=60) -> str:
+def exec_cmd(cmd: List[str], timeout=60, env: Dict[str, str]=None) -> str:
+    env = env if env else os.environ.copy()
     log.info("Calling: %s", ' '.join(cmd))
-    output = subprocess.check_output(' '.join(cmd), shell=True, timeout=timeout).decode("utf-8").strip()
+    output = subprocess.check_output(' '.join(cmd), shell=True, env=env, timeout=timeout).decode("utf-8").strip()
     print(output)
     return output
 
 
-async def async_exec_cmd(cmd: List[str], timeout: int=60 * 60, env: Dict[str, str]=os.environ.copy()) -> None:
+async def async_exec_cmd(cmd: List[str], timeout: int=60 * 60, env: Dict[str, str]=None) -> None:
+    env = env if env else os.environ.copy()
     p = await asyncio.create_subprocess_exec(*cmd, stdout=None, stderr=subprocess.STDOUT, env=env)
     try:
         log.info("Calling: %s", ' '.join(cmd))

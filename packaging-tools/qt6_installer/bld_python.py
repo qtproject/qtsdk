@@ -98,7 +98,7 @@ async def _build_python_win(srcDir: str) -> str:
     buildBat = os.path.join(srcDir, 'PCbuild', 'build.bat')
     assert os.path.isfile(buildBat), "The 'build.bat' batch file did not exist: {0}".format(buildBat)
     await async_exec_cmd([buildBat])
-    destDir = os.path.join(srcDir, 'PCbuild', 'win32')
+    destDir = os.path.join(srcDir, 'PCbuild', 'amd64')
     assert os.path.isdir(destDir), "The build destination directory did not exist: {0}".format(destDir)
     await create_symlink(destDir)
     log.info("Python built successfully and installed to: %s", destDir)
@@ -124,12 +124,23 @@ async def _build_python(srcDir: str, bldDir: str, prefix: str) -> str:
         opensslQueryCmd = ['brew', '--prefix', 'openssl']
         opensslPath = exec_cmd(opensslQueryCmd)
         if not os.path.exists(opensslPath):
-            raise BldPythonError("Could not find OpenSSL path. Please check that the required brew formula is installed.")
-        configureCmd = [os.path.join(srcDir, 'configure'), '--enable-shared', '--with-openssl=' + opensslPath, '--prefix=' + prefix]
+            raise BldPythonError(
+                "Could not find OpenSSL path. Please check that the required brew formula is installed."
+            )
+        configureCmd = [
+            os.path.join(srcDir, 'configure'),
+            '--enable-framework',
+            '--with-openssl=' + opensslPath,
+            '--prefix=' + prefix
+        ]
         makeCmd = ['make', '-j' + cpuCount]
         makeInstallCmd = ['make', 'install']
     else:
-        configureCmd = [os.path.join(srcDir, 'configure'), '--enable-shared', '--prefix=' + prefix]
+        configureCmd = [
+            os.path.join(srcDir, 'configure'),
+            '--enable-shared',
+            '--prefix=' + prefix
+        ]
         makeCmd = ['make', '-j' + cpuCount]
         makeInstallCmd = ['make', 'install']
 
