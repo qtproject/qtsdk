@@ -49,7 +49,7 @@ def qt_static_platform_configure_options():
     if bldinstallercommon.is_win_platform():
         return ['-static-runtime', '-no-icu', '-mp']
     elif bldinstallercommon.is_linux_platform():
-        return ['-no-icu', '-no-glib', '-qt-zlib', '-qt-pcre']
+        return ['-no-icu', '-no-glib', '-qt-zlib', '-qt-pcre', '-qt-doubleconversion']
     return []
 
 def qt_src_path(qt_build_base):
