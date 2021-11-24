@@ -1240,6 +1240,7 @@ def handle_sdktool_build(optionDict):
     sdktool_qtbase_src = optionDict['SDKTOOL_QTBASESRC_BASE'] + optionDict['SDKTOOL_QTBASESRC_EXT']
     # build
     qtcreator_src = os.path.join(work_dir, 'qt-creator')
+    download_temp = os.path.join(work_dir, 'downloads')
     sdktool_build_path = os.path.join(work_dir, 'sdktool_build')
     sdktool_target_path = os.path.join(sdktool_build_path, 'target')
     bld_sdktool.build_sdktool(sdktool_qtbase_src, os.path.join(sdktool_build_path, 'qt'),
@@ -1250,11 +1251,23 @@ def handle_sdktool_build(optionDict):
     bld_sdktool.zip_sdktool(sdktool_target_path, os.path.join(work_dir, 'sdktool.7z'))
     file_upload_list = [('sdktool.7z', target_env_dir + '/sdktool.7z')]
     if bldinstallercommon.is_win_platform(): # wininterrupt & qtcreatorcdbext
-        check_call_log(['python', '-u', os.path.join(qtcreator_src, 'scripts', 'build.py'),
-                        '--src', qtcreator_src,
-                        '--build', os.path.join(work_dir, 'build'),
-                        '--no-qtcreator'],
-                       work_dir)
+        cmd_args = ['python', '-u', os.path.join(qtcreator_src, 'scripts', 'build.py'),
+                    '--src', qtcreator_src,
+                    '--build', os.path.join(work_dir, 'build'),
+                    '--no-qtcreator']
+
+        download_packages_work = ThreadedWork('Get and extract all needed packages')
+        python_path = None
+        python_url = optionDict.get('PYTHON_URL')
+        if python_url:
+            python_path = os.path.join(download_temp, 'python')
+            download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
+                python_url, python_path, download_temp, None))
+            cmd_args.extend(['--python-path', python_path])
+
+        download_packages_work.run()
+
+        check_call_log(cmd_args, work_dir)
         file_upload_list += [('build/wininterrupt.7z', target_env_dir + '/wininterrupt.7z'),
                              ('build/qtcreatorcdbext.7z', target_env_dir + '/qtcreatorcdbext.7z')]
     # upload
