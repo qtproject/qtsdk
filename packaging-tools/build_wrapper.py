@@ -1126,7 +1126,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                     'opensource', work_dir, log_filepath)
     # Create enterprise source package
     if installer_patch:
-        check_call_log(['git', 'apply', '-3', installer_patch],
+        check_call_log(['git', 'apply', installer_patch],
                        os.path.join(work_dir, 'qt-creator'), log_filepath=log_filepath)
         create_qtcreator_source_package(os.path.join(work_dir, 'qt-creator'), None, qtcreator_version,
                                         'enterprise', work_dir, log_filepath)
