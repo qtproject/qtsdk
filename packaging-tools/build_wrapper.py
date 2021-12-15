@@ -1165,6 +1165,11 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         file_upload_list.append(('qt-creator_build/qt-creator.dmg', dmg_filename))
         snapshot_upload_list.append((dmg_filename, dmg_filename))
 
+    # macOS signed zip
+    if bldinstallercommon.is_mac_platform() and get_pkg_value('SIGNING_IDENTITY'):
+        file_upload_list.append(('qt-creator_build/qtcreator-signed.7z', target_env_dir + '/qtcreator-signed.7z'))
+        snapshot_upload_list.append((target_env_dir + '/qtcreator-signed.7z', target_env_dir + '/qtcreator-signed.7z'))
+
     # source packages
     source_package_list = glob(os.path.join(work_dir, 'qt-creator-*-src-' + qtcreator_version + '.*'))
     file_upload_list.extend([(os.path.basename(fn), '') for fn in source_package_list])
