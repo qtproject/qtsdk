@@ -653,6 +653,9 @@ def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url
                 if module not in modules:
                     modules.append(module)
         cmd_arguments.extend(plugin.additional_arguments)
+        ide_branding_path = optionDict.get('IDE_BRANDING_PATH')  # optional
+        if ide_branding_path:
+            cmd_arguments.extend(['--add-module-path', os.path.abspath(ide_branding_path)])
 
         # install qt
         qt_install_args = ['python', '-u', os.path.join(SCRIPT_ROOT_DIR, 'install_qt.py'),
