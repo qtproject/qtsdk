@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #############################################################################
 ##
-## Copyright (C) 2020 The Qt Company Ltd.
+## Copyright (C) 2021 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -966,6 +966,11 @@ def create_target_components(target_config):
     print '= Creating SDK components'
     print '================================================================='
     print ''
+    # download and extract lrelease binary for creating translation binaries
+    if CREATE_REPOSITORY and os.environ.get("LRELEASE_TOOL"):
+        if not os.path.isfile(os.path.join(SCRIPT_ROOT_DIR, "lrelease")):
+            bld_utils.download(os.environ.get("LRELEASE_TOOL"), SCRIPT_ROOT_DIR)
+            bldinstallercommon.extract_file(os.path.basename(os.environ.get("LRELEASE_TOOL")), SCRIPT_ROOT_DIR)
     getComponentDataWork = ThreadedWork("get components data")
     for sdk_component in SDK_COMPONENT_LIST:
         # check first for top level component
@@ -985,6 +990,9 @@ def create_target_components(target_config):
         # Copy Meta data
         metadata_content_source_root = os.path.normpath(sdk_component.pkg_template_dir + os.sep + 'meta')
         bldinstallercommon.copy_tree(metadata_content_source_root, meta_dir_dest)
+        if os.path.isfile(os.path.join(SCRIPT_ROOT_DIR, "lrelease")):
+            # create translation binaries, files are created if translation source files exist for component
+            subprocess.check_call([os.path.join(SCRIPT_ROOT_DIR, "update_component_translations.sh"), "-r", os.path.join(SCRIPT_ROOT_DIR, "lrelease"), dest_base])
         # add files into tag substitution
         GENERAL_TAG_SUBST_LIST.append(meta_dir_dest)
         # handle archives

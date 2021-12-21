@@ -48,27 +48,25 @@ usage() {
 }
 
 update() {
-    readarray -d '' files < <(find "$pkgroot" -name "*.ts" -print0)
-    for i in "${files[@]}"
+    find "$pkgroot" -name "*.ts" | while read fname;
     do
-        filepath="${i%/*}/"
+        filepath="${fname%/*}/"
         cd "$filepath"
-        "$lupdate" -locations none -no-ui-lines -no-sort -no-obsolete "$filepath" -ts "$i"
+        "$lupdate" -locations none -no-ui-lines -no-sort -no-obsolete "$filepath" -ts "$fname"
     done
     echo "Done"
 }
 
 release() {
-    readarray -d '' files < <(find "$pkgroot" -name "*.ts" -print0)
-    for i in "${files[@]}"
+    find "$pkgroot" -name "*.ts" | while read fname;
     do
-        filepath="${i%/*}/"
+        filepath="${fname%/*}/"
         cd "$filepath"
-        locale="$(basename $i .ts)"
+        locale="$(basename $fname .ts)"
         if [ $locale == "ko" -o  $locale == "zh" -o $locale == "untranslated" ]; then
             continue
         fi
-        "$lrelease" "$i"
+        "$lrelease" "$fname"
         if grep -q ${locale}.qm package.xml; then
             echo "Translation file ${locale}.qm already defined in package.xml"
         else
