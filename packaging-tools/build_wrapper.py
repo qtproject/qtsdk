@@ -1001,7 +1001,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                   'qtimageformats', 'qtlocation', 'qtmacextras',
                   'qtquick3d', 'qtquickcontrols', 'qtquickcontrols2', 'qtquicktimeline',
                   'qtscript', 'qtserialport', 'qtshadertools', 'qtsvg', 'qttools',
-                  'qttranslations', 'qtx11extras', 'qtxmlpatterns']
+                  'qttranslations', 'qtwayland', 'qtx11extras', 'qtxmlpatterns']
     qt_module_urls = module_urls(qt_modules)
     qt_module_urls.append(documentation_local_url)
     if qt_extra_module_url:
