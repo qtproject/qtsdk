@@ -550,15 +550,26 @@ def parseQtCreatorPlugins(pkgConfFile):
         pluginList.extend([plugin])
     return pluginList
 
-QtcPlugin = collections.namedtuple('QtcPlugin', ['name', 'path', 'version', 'dependencies', 'modules',
-                                                 'additional_arguments', 'build'])
+
+QtcPlugin = collections.namedtuple('QtcPlugin', ['name',
+                                                 'path',
+                                                 'version',
+                                                 'dependencies',
+                                                 'modules',
+                                                 'additional_arguments',
+                                                 'build',
+                                                 'package_commercial'])
+
+
 def make_QtcPlugin(name, path, version, dependencies=None, modules=None,
-                   additional_arguments=None, build=True):
+                   additional_arguments=None, build=True,
+                   package_commercial=False):
     return QtcPlugin(name=name, path=path, version=version,
                      dependencies=dependencies or [],
                      modules=modules or [],
                      additional_arguments=additional_arguments or [],
-                     build=build)
+                     build=build,
+                     package_commercial=package_commercial)
 
 class BuildLog:
     def __init__(self, log_filepath, log_overwrite=False):
@@ -696,7 +707,8 @@ def make_QtcPlugin_from_json(plugin_json):
                      dependencies=plugin_json.get('Dependencies') or [],
                      modules=plugin_json.get('Modules') or [],
                      additional_arguments=plugin_json.get('AdditionalArguments') or [],
-                     build=plugin_json.get('Build') or True)
+                     build=plugin_json.get('Build') or True,
+                     package_commercial=plugin_json.get('PackageCommercial') or False)
 
 def parse_qt_creator_plugin_conf(plugin_conf_file_path, optionDict):
     data = {}
@@ -849,6 +861,55 @@ def handle_qt_creator_plugins_build(optionDict, plugin_conf_file_path):
     upload_path = upload_base_path + '/' + qtcreator_version
     upload_files(upload_base_path + '/' + qtcreator_version, file_upload_list, optionDict)
     update_job_link(upload_base_path, upload_path, optionDict)
+
+
+def repackage_and_sign_qtcreator(qtcreator_path, work_dir, result_package,
+                                 qtcreator_package, sdktool_package,
+                                 additional_plugins=None,
+                                 extra_env=None, log_filepath=None):
+    extract_path = os.path.join(work_dir, 'temp_repackaged_qtc')
+    if not os.path.exists(extract_path):
+        os.makedirs(extract_path)
+    # extract Qt Creator
+    check_call_log(['7z', 'x', '-y',
+                    os.path.join(work_dir, qtcreator_package),
+                    '-o' + extract_path],
+                   work_dir, log_filepath=log_filepath)
+    # find app name
+    apps = [d for d in os.listdir(extract_path) if d.endswith('.app')]
+    app = apps[0]
+    # extract sdktool
+    check_call_log(['7z', 'x', '-y',
+                    os.path.join(work_dir, sdktool_package),
+                    '-o' + os.path.join(extract_path, app,
+                                        'Contents', 'Resources', 'libexec')],
+                   work_dir, log_filepath=log_filepath)
+    # extract plugins (if applicable)
+    if additional_plugins:
+        for plugin in additional_plugins:
+            if not plugin.package_commercial:
+                continue
+            plugin_package = plugin.name + '.7z'
+            if os.path.isfile(os.path.join(work_dir, plugin_package)):
+                check_call_log(['7z', 'x', '-y',
+                                os.path.join(work_dir, plugin_package),
+                                '-o' + extract_path],
+                               work_dir, log_filepath=log_filepath)
+    # sign
+    unlock_keychain()
+    import_path = os.path.join(qtcreator_path, 'scripts')
+    check_call_log(['python', '-u', '-c', "import common; common.codesign('" +
+                    os.path.join(extract_path, app) +
+                    "')"],
+                   import_path, extra_env=extra_env, log_filepath=log_filepath)
+    # repackage
+    result_filepath = os.path.join(work_dir, result_package)
+    if os.path.exists(result_filepath):
+        os.remove(result_filepath)
+    check_call_log(['7z', 'a', '-mmt2', result_filepath, app],
+                   extract_path, log_filepath=log_filepath)
+    shutil.rmtree(extract_path)
+
 
 ###############################
 # handle_qt_creator_build
@@ -1080,12 +1141,15 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         add_args = ['--add-path', os.path.join(work_dir, 'license-managing')]
         additional_plugins.extend([make_QtcPlugin('licensechecker', 'licensechecker', qtcreator_version,
                                                   modules=qt_module_local_urls,
-                                                  additional_arguments=add_args)])
+                                                  additional_arguments=add_args,
+                                                  package_commercial=True)])
         plugin_dependencies = ['licensechecker']
     additional_plugins.extend([make_QtcPlugin('vxworks-qtcreator-plugin', 'vxworks-qtcreator-plugin', qtcreator_version,
-                                              modules=qt_module_local_urls, dependencies=plugin_dependencies)])
+                                              modules=qt_module_local_urls, dependencies=plugin_dependencies,
+                                              package_commercial=True)])
     additional_plugins.extend([make_QtcPlugin('isoiconbrowser', 'qtquickdesigner', qtcreator_version,
-                                              modules=qt_module_local_urls, dependencies=plugin_dependencies)])
+                                              modules=qt_module_local_urls, dependencies=plugin_dependencies,
+                                              package_commercial=True)])
     additional_plugins.extend([make_QtcPlugin('gammarayintegration', 'gammarayintegration', qtcreator_version,
                                               modules=qt_module_local_urls + [kdsme_url, gammaray_url] + module_urls(['qt3d', 'qtgamepad']),
                                               dependencies=plugin_dependencies,
@@ -1152,6 +1216,21 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
             bld_sdktool.zip_sdktool(sdktool_target_path, os.path.join(work_dir, 'sdktool.7z'),
                                     redirect_output=f)
 
+    # repackage and sign opensource and enterprise packages on macOS
+    # these are then for direct packaging in the offline installers
+    if bldinstallercommon.is_mac_platform() and get_pkg_value('SIGNING_IDENTITY'):
+        # use build_environment for SIGNING_IDENTITY
+        repackage_and_sign_qtcreator(src_path, work_dir,
+                                     'qtcreator-signed.7z',
+                                     os.path.join(build_path, 'qtcreator.7z'), 'sdktool.7z',
+                                     extra_env=build_environment)
+        # packages plugins with package_commercial=True
+        repackage_and_sign_qtcreator(src_path, work_dir,
+                                     'qtcreator-commercial-signed.7z',
+                                     os.path.join(build_path, 'qtcreator.7z'), 'sdktool.7z',
+                                     extra_env=build_environment,
+                                     additional_plugins=additional_plugins)
+
     # notarize
     if bldinstallercommon.is_mac_platform() and notarize:
         notarizeDmg(os.path.join(work_dir, 'qt-creator_build', 'qt-creator.dmg'), 'Qt Creator')
@@ -1171,8 +1250,9 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
 
     # macOS signed zip
     if bldinstallercommon.is_mac_platform() and get_pkg_value('SIGNING_IDENTITY'):
-        file_upload_list.append(('qt-creator_build/qtcreator-signed.7z', target_env_dir + '/qtcreator-signed.7z'))
+        file_upload_list.append(('qtcreator-signed.7z', target_env_dir + '/qtcreator-signed.7z'))
         snapshot_upload_list.append((target_env_dir + '/qtcreator-signed.7z', target_env_dir + '/qtcreator-signed.7z'))
+        file_upload_list.append(('qtcreator-commercial-signed.7z', target_env_dir + '/qtcreator-commercial-signed.7z'))
 
     # source packages
     source_package_list = glob(os.path.join(work_dir, 'qt-creator-*-src-' + qtcreator_version + '.*'))
@@ -1212,6 +1292,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
             snapshot_upload_list.append((target_env_dir + '/wininterrupt.7z', target_env_dir + '/wininterrupt.7z'))
     if sdktool_qtbase_src:
         file_upload_list.append(('sdktool.7z', target_env_dir + '/sdktool.7z'))
+        snapshot_upload_list.append((target_env_dir + '/sdktool.7z', target_env_dir + '/sdktool.7z'))
     # upload files
     upload_files(base_path, file_upload_list, optionDict)
     remote_path = base_path + '/latest'
