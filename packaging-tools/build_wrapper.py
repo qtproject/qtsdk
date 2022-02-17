@@ -625,8 +625,9 @@ def qtcreator_build_plugin_script(qtcreator_dev_path):
         path = os.path.join(qtcreator_dev_path, 'share', 'qtcreator', 'scripts', 'build_plugin.py')
     return path if os.path.exists(path) else os.path.join(qtcreator_dev_path, 'scripts', 'build_plugin.py')
 
+
 def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url=None,
-                            openssl_url=None, log_filepath=None):
+                            openssl_url=None, additional_config=None, log_filepath=None):
     work_dir = optionDict['WORK_DIR']
     for plugin in plugins:
         plugin_path = os.path.join(work_dir, plugin.path)
@@ -656,6 +657,8 @@ def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url
         ide_branding_path = optionDict.get('IDE_BRANDING_PATH')  # optional
         if ide_branding_path:
             cmd_arguments.extend(['--add-module-path', os.path.abspath(ide_branding_path)])
+        if additional_config:
+            cmd_arguments += ['--add-config=' + value for value in additional_config]
 
         # install qt
         qt_install_args = ['python', '-u', os.path.join(SCRIPT_ROOT_DIR, 'install_qt.py'),
@@ -1108,7 +1111,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     check_call_log(['7z', 'x', '-y', os.path.join(work_dir, 'qt-creator_build', 'qtcreator_dev.7z'), '-o' + qtcreator_path],
                    work_dir, log_filepath=log_filepath)
     build_qtcreator_plugins(additional_plugins, qtcreator_path, qtcreator_path, icu_url=icu_local_url,
-                            openssl_url=openssl_local_url, log_filepath=log_filepath)
+                            openssl_url=openssl_local_url, additional_config=qtc_additional_config,
+                            log_filepath=log_filepath)
 
     qtcreator_sha = bld_utils.get_commit_SHA(qtcreator_source)
     with open(os.path.join(work_dir, 'QTC_SHA1'), 'w') as f:
