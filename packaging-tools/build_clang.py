@@ -139,13 +139,13 @@ def build_environment(toolchain, bitness):
 def training_qt_version():
     qt_ver = os.environ.get('TRAINING_QT_VERSION')
     if not qt_ver:
-        qt_ver = '5.10'
+        qt_ver = '6.2'
     return qt_ver
 
 def training_qt_long_version():
     qt_ver = os.environ.get('TRAINING_QT_LONG_VERSION')
     if not qt_ver:
-        qt_ver = '5.10.0-final-released'
+        qt_ver = '6.2.3'
     return qt_ver
 
 def training_qtcreator_version():
@@ -178,20 +178,14 @@ def mingw_training(base_path, qtcreator_path, environment, bitness):
     pkg_server = get_pkg_value("PACKAGE_STORAGE_SERVER")
 
     # Install Qt
-    qt_modules = ['qtbase', 'qtdeclarative', 'qtgraphicaleffects',
-                 'qtimageformats', 'qtlocation',
-                 'qtquickcontrols', 'qtquickcontrols2', 'qtscript', 'qtsvg', 'qttools',
-                 'qttranslations', 'qtxmlpatterns']
+    qt_modules = ['qtbase', 'qtdeclarative', 'qtimageformats', 'qt5compat', 'qtshadertools', 'qtsvg', 'qttools']
 
     qt_base_url = 'http://' + pkg_server + '/packages/jenkins/archive/qt/' \
-        + training_qt_version() + '/' + training_qt_long_version() + '/latest'
+        + training_qt_version() + '/' + training_qt_long_version() + '-final-released/Qt' + training_qt_long_version()
     msvc_year_ver = msvc_year_version()
     if bitness == 64:
       qt_mingw_postfix = '-Windows-Windows_10-Mingw-Windows-Windows_10-X86_64.7z'
       qt_postfix = '-Windows-Windows_10-' + msvc_year_ver + '-Windows-Windows_10-X86_64.7z'
-    else:
-      qt_mingw_postfix = '-Windows-Windows_7-Mingw-Windows-Windows_7-X86.7z'
-      qt_postfix = '-Windows-Windows_10-' + msvc_year_ver + '-Windows-Windows_10-X86.7z'
 
     qt_module_urls = [qt_base_url + '/' + module + '/' + module + qt_postfix for module in qt_modules]
     qt_mingw_module_urls = [qt_base_url + '/' + module + '/' + module + qt_mingw_postfix for module in qt_modules]
@@ -233,19 +227,20 @@ def mingw_training(base_path, qtcreator_path, environment, bitness):
                '-DBUILD_PLUGIN_CORE=ON',
                '-DBUILD_PLUGIN_TEXTEDITOR=ON',
                '-DBUILD_PLUGIN_PROJECTEXPLORER=ON',
-               '-DBUILD_PLUGIN_CPPTOOLS=ON',
                '-DBUILD_PLUGIN_CPPEDITOR=ON',
                '-DBUILD_PLUGIN_QMAKEPROJECTMANAGER=ON',
                '-DBUILD_PLUGIN_CLANGCODEMODEL=ON',
                '-DBUILD_PLUGIN_CLANGTOOLS=ON',
                '-DBUILD_PLUGIN_DEBUGGER=ON',
                '-DBUILD_PLUGIN_DESIGNER=ON',
+               '-DBUILD_PLUGIN_LANGUAGECLIENT=ON',
                '-DBUILD_PLUGIN_QTSUPPORT=ON',
                '-DBUILD_PLUGIN_RESOURCEEDITOR=ON',
 
                '-DBUILD_EXECUTABLE_QTCREATOR=ON',
                '-DBUILD_EXECUTABLE_ECHO=ON',
                '-DBUILD_EXECUTABLE_CLANGBACKEND=ON',
+               '-DBUILD_EXECUTABLE_QTCREATOR_PROCESSLAUNCHER=ON',
 
                '-DCMAKE_PREFIX_PATH=' + qt_mingw_dir + ';' + os.path.join(base_path, 'libclang'),
                '-S' + qtcreator_path,
@@ -287,12 +282,20 @@ def profile_data_flags(toolchain, profile_data_path, first_run):
         profile_flag = '-fprofile-generate' if first_run else '-fprofile-correction -Wno-error=coverage-mismatch -fprofile-use'
         compiler_flags = profile_flag + '=' + profile_data_path
         linker_flags = compiler_flags + ' -static-libgcc -static-libstdc++ -static'
-        return [
+
+        cmake_flags = [
             '-DCMAKE_C_FLAGS=' + compiler_flags,
             '-DCMAKE_CXX_FLAGS=' + compiler_flags,
             '-DCMAKE_SHARED_LINKER_FLAGS=' + linker_flags,
             '-DCMAKE_EXE_LINKER_FLAGS=' + linker_flags,
         ]
+        if first_run:
+            stage1path = os.path.join(profile_data_path, '../build/bin')
+            cmake_flags.append('-DCLANG_TABLEGEN=' + os.path.join(stage1path, "clang-tblgen.exe"))
+            cmake_flags.append('-DLLVM_TABLEGEN=' + os.path.join(stage1path, "llvm-tblgen.exe"))
+            cmake_flags.append('-DLLVM_BUILD_RUNTIME=No')
+
+        return cmake_flags
     if is_mingw_toolchain(toolchain):
         linker_flags = '-static-libgcc -static-libstdc++ -static'
         return ['-DCMAKE_SHARED_LINKER_FLAGS=' + linker_flags,
@@ -333,6 +336,10 @@ def build_and_install(toolchain, build_path, environment, build_targets, install
     bldinstallercommon.do_execute_sub_process(install_cmd + install_targets, build_path, extra_env=environment)
 
 def cmake_command(toolchain, src_path, build_path, install_path, profile_data_path, first_run, bitness, build_type):
+    enabled_projects = 'clang;clang-tools-extra'
+    if profile_data_path and first_run:
+        enabled_projects = 'clang'
+
     command = ['cmake',
                '-DCMAKE_INSTALL_PREFIX=' + install_path,
                '-G',
@@ -343,7 +350,7 @@ def cmake_command(toolchain, src_path, build_path, install_path, profile_data_pa
                '-DLLVM_ENABLE_ZLIB=OFF',
                '-DLLVM_ENABLE_TERMINFO=OFF',
                '-DLLVM_TARGETS_TO_BUILD=X86',
-               '-DLLVM_ENABLE_PROJECTS=clang;clang-tools-extra',
+               '-DLLVM_ENABLE_PROJECTS=' + enabled_projects,
                "-DLLVM_LIT_ARGS='-v'"]
     if is_msvc_toolchain(toolchain):
         command.append('-DLLVM_EXPORT_SYMBOLS_FOR_PLUGINS=1')
@@ -361,10 +368,18 @@ def build_clang(toolchain, src_path, build_path, install_path, profile_data_path
     cmake_cmd = cmake_command(toolchain, src_path, build_path, install_path, profile_data_path, first_run, bitness, build_type)
 
     bldinstallercommon.do_execute_sub_process(cmake_cmd, build_path, extra_env=environment)
-    build_targets = ['install/strip']
+
+    build_targets = ['libclang', 'clang', 'llvm-config']
+    install_targets = ['install/strip']
+
     if is_msvc_toolchain(toolchain):
-        build_targets = ['install'] # There is no 'install/strip' for nmake.
-    build_and_install(toolchain, build_path, environment, ['libclang', 'clang', 'llvm-config'], build_targets)
+        install_targets = ['install'] # There is no 'install/strip' for nmake.
+
+    if profile_data_path and first_run:
+        build_targets = ['libclang']
+        install_targets = ['tools/clang/tools/libclang/install/strip'] # we only want to build / install libclang
+
+    build_and_install(toolchain, build_path, environment, build_targets, install_targets)
 
 def build_clazy(toolchain, src_path, build_path, install_path, bitness=64, environment=None):
     if build_path and not os.path.lexists(build_path):
@@ -399,7 +414,7 @@ def check_clang(toolchain, build_path, environment):
             environment[path_key] += ';' + tools_path
 
     build_cmd = build_command(toolchain)
-    bldinstallercommon.do_execute_sub_process(build_cmd + ['check-clang'], build_path, extra_env=environment)
+    bldinstallercommon.do_execute_sub_process(build_cmd + ['check-clang'], build_path, abort_on_fail=False, extra_env=environment)
 
 def package_clang(install_path, result_file_path):
     (basepath, dirname) = os.path.split(install_path)
