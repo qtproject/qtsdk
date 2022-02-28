@@ -41,6 +41,7 @@ def qt_static_configure_options():
             '-no-gui',
             '-no-openssl',
             '-no-feature-sql',
+            '-qt-zlib',
             '-nomake', 'examples',
             '-nomake', 'tests',
             '-static'] + qt_static_platform_configure_options()
