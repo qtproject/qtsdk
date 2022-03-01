@@ -879,11 +879,12 @@ def repackage_and_sign_qtcreator(qtcreator_path, work_dir, result_package,
     apps = [d for d in os.listdir(extract_path) if d.endswith('.app')]
     app = apps[0]
     # extract sdktool
-    check_call_log(['7z', 'x', '-y',
-                    os.path.join(work_dir, sdktool_package),
-                    '-o' + os.path.join(extract_path, app,
-                                        'Contents', 'Resources', 'libexec')],
-                   work_dir, log_filepath=log_filepath)
+    if os.path.isfile(os.path.join(work_dir, sdktool_package)):
+        check_call_log(['7z', 'x', '-y',
+                        os.path.join(work_dir, sdktool_package),
+                        '-o' + os.path.join(extract_path, app,
+                                            'Contents', 'Resources', 'libexec')],
+                       work_dir, log_filepath=log_filepath)
     # extract plugins (if applicable)
     if additional_plugins:
         for plugin in additional_plugins:
