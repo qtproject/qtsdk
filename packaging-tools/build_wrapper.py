@@ -1022,7 +1022,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         if use_optimized_libclang:
             opt_clang_url = (pkg_base_path + '/' + optionDict['CLANG_FILEBASE'] + '-windows-mingw_64' + clang_suffix + '.7z')
             opt_clang_path = os.path.join(download_temp, 'opt_libclang')
-            opt_clang_to_copy = [os.path.join('libclang', 'bin', file) for file
+            opt_clang_to_copy = [os.path.join('bin', file) for file
                                  in ['libclang.dll', 'clangd.exe', 'clang-tidy.exe']]
             add_download_extract(opt_clang_url, opt_clang_path)
 
@@ -1058,7 +1058,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     # copy optimized clang package
     if use_optimized_libclang:
         for file in opt_clang_to_copy:
-            source = os.path.join(opt_clang_path, file)
+            source = os.path.join(opt_clang_path, 'libclang', file)
             target = os.path.join(llvm_install_dir, file)
             shutil.copyfile(source, target)
 
