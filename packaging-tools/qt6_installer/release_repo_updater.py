@@ -3,7 +3,7 @@
 
 #############################################################################
 ##
-## Copyright (C) 2021 The Qt Company Ltd.
+## Copyright (C) 2022 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -376,7 +376,7 @@ async def sync_production_repositories_to_ext(server: str, ext: str, updatedProd
         tipPrefix = repo.replace("/", "-") + "-"
 
         await ensure_ext_repo_paths(server, extServer, extRepoPath)  # rsync can not create missing nested directories
-        cmd = ["rsync", "-r", "--omit-dir-times", "--delete", "--progress", remoteProductionRepoFullPath + "/", extServer + ":" + extRepoPath]
+        cmd = ["rsync", "-r", "--omit-dir-times", "--delete-delay", "--progress", remoteProductionRepoFullPath + "/", extServer + ":" + extRepoPath]
         spawn_remote_background_task(server, remoteRootPath, cmd, remoteLogFile, tip=tipPrefix + "ext")
 
 
