@@ -1,40 +1,29 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #############################################################################
 ##
-## Copyright (C) 2014 Digia Plc and/or its subsidiary(-ies).
-## Contact: http://www.qt-project.org/legal
+## Copyright (C) 2022 The Qt Company Ltd.
+## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
 ##
-## $QT_BEGIN_LICENSE:LGPL$
+## $QT_BEGIN_LICENSE:GPL-EXCEPT$
 ## Commercial License Usage
 ## Licensees holding valid commercial Qt licenses may use this file in
 ## accordance with the commercial license agreement provided with the
 ## Software or, alternatively, in accordance with the terms contained in
-## a written agreement between you and Digia.  For licensing terms and
-## conditions see http://qt.digia.com/licensing.  For further information
-## use the contact form at http://qt.digia.com/contact-us.
-##
-## GNU Lesser General Public License Usage
-## Alternatively, this file may be used under the terms of the GNU Lesser
-## General Public License version 2.1 as published by the Free Software
-## Foundation and appearing in the file LICENSE.LGPL included in the
-## packaging of this file.  Please review the following information to
-## ensure the GNU Lesser General Public License version 2.1 requirements
-## will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
-##
-## In addition, as a special exception, Digia gives you certain additional
-## rights.  These rights are described in the Digia Qt LGPL Exception
-## version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
+## a written agreement between you and The Qt Company. For licensing terms
+## and conditions see https://www.qt.io/terms-conditions. For further
+## information use the contact form at https://www.qt.io/contact-us.
 ##
 ## GNU General Public License Usage
 ## Alternatively, this file may be used under the terms of the GNU
-## General Public License version 3.0 as published by the Free Software
-## Foundation and appearing in the file LICENSE.GPL included in the
-## packaging of this file.  Please review the following information to
-## ensure the GNU General Public License version 3.0 requirements will be
-## met: http://www.gnu.org/copyleft/gpl.html.
-##
+## General Public License version 3 as published by the Free Software
+## Foundation with exceptions as appearing in the file LICENSE.GPL3-EXCEPT
+## included in the packaging of this file. Please review the following
+## information to ensure the GNU General Public License requirements will
+## be met: https://www.gnu.org/licenses/gpl-3.0.html.
 ##
 ## $QT_END_LICENSE$
 ##
@@ -53,12 +42,11 @@ import sys
 import stat
 import tempfile
 import traceback
-import urllib
-import urllib2
+import urllib.request
+import urllib.error
+import urllib.parse
 import string
 import fileinput
-from urlparse import urlparse
-
 from bld_utils import runCommand, download
 from threadedwork import Task, ThreadedWork
 
@@ -122,7 +110,7 @@ init_common_module(os.path.dirname(os.path.realpath(__file__)))
 ###############################
 # function
 ###############################
-class head_request(urllib2.Request):
+class head_request(urllib.request.Request):
     def get_method(self):
         return 'HEAD'
 
@@ -133,9 +121,9 @@ def is_content_url_valid(url):
     # throws error if url does not point to valid object
     result = False
     try:
-        response = urllib2.urlopen(url)
-        total_size = response.info().getheader('Content-Length').strip()
-        return total_size > 0
+        response = urllib.request.urlopen(url)
+        total_size = response.info().get('Content-Length').strip()
+        return int(total_size) > 0
     except Exception:
         pass
     return False
@@ -155,7 +143,7 @@ def dlProgress(count, blockSize, totalSize):
         sys.stdout.flush()
     if count*blockSize >= totalSize:
         CURRENT_DOWNLOAD_PERCENT = 0
-        print '\n'
+        print('\n')
 
 
 ###############################
@@ -164,12 +152,12 @@ def dlProgress(count, blockSize, totalSize):
 def retrieve_url(url, savefile):
     try:
         savefile_tmp = savefile + '.tmp'
-        urllib.urlcleanup()
-        urllib.urlretrieve(url, savefile_tmp, reporthook=dlProgress)
+        urllib.request.urlcleanup()
+        urllib.request.urlretrieve(url, savefile_tmp, reporthook=dlProgress)
         shutil.move(savefile_tmp, savefile)
     except:
         exc = sys.exc_info()[0]
-        print exc
+        print(exc)
         try:
             os.remove(savefile_tmp)
         except: #swallow, do not shadow actual error
@@ -407,10 +395,10 @@ def replace_in_files(filelist, regexp, replacement_string):
 # function
 ###############################
 def replace_in_text_files(root_directory, match_string, replacement_string, file_type_ignore_list):
-    print '------------ replace_in_text_files ----------------'
-    print '  root_directory:     ' + root_directory
-    print '  match_string:       ' + match_string
-    print '  replacement_string: ' + replacement_string
+    print('------------ replace_in_text_files ----------------')
+    print('  root_directory:     ' + root_directory)
+    print('  match_string:       ' + match_string)
+    print('  replacement_string: ' + replacement_string)
     pattern = re.compile(match_string)
     for root, dirs, files in os.walk(root_directory):
         for name in files:
@@ -419,42 +407,42 @@ def replace_in_text_files(root_directory, match_string, replacement_string, file
                 if not any(name.endswith(item) for item in file_type_ignore_list):
                     readlines = open(path, 'r').read()
                     if pattern.search(readlines):
-                        print '---> Regexp match: ' + path
+                        print('---> Regexp match: ' + path)
                         if is_text_file(path):
-                            print '---> Replacing build path in: ' + path
-                            print '--->         String to match: ' + match_string
-                            print '--->             Replacement: ' + replacement_string
+                            print('---> Replacing build path in: ' + path)
+                            print('--->         String to match: ' + match_string)
+                            print('--->             Replacement: ' + replacement_string)
                             for line in fileinput.FileInput(path, inplace=1):
                                 output1 = line.replace(match_string, replacement_string)
                                 if line != output1:
                                     # we had a match
-                                    print output1.rstrip('\n')
+                                    print(output1.rstrip('\n'))
                                 else:
                                     # no match so write original line back to file
-                                    print line.rstrip('\n')
-    print '--------------------------------------------------------------------'
+                                    print(line.rstrip('\n'))
+    print('--------------------------------------------------------------------')
 
 
 ###############################
 # function
 ###############################
 def ensure_text_file_endings(filename):
-    print '------------ ensure_text_file_endings ----------------'
+    print('------------ ensure_text_file_endings ----------------')
     if os.path.isdir(filename):
-        print '*** Warning, given file is directory? Did nothing for: ' + filename
+        print('*** Warning, given file is directory? Did nothing for: ' + filename)
         return
     data = open(filename, "rb").read()
     if '\0' in data:
-        print '*** Warning, given file is binary? Did nothing for: ' + filename
+        print('*** Warning, given file is binary? Did nothing for: ' + filename)
         return
     if IS_WIN_PLATFORM:
         newdata = re.sub("\r?\n", "\r\n", data)
         if newdata != data:
-            print 'File endings changed for: ' + filename
+            print('File endings changed for: ' + filename)
             f = open(filename, "wb")
             f.write(newdata)
             f.close()
-    print '--------------------------------------------------------------------'
+    print('--------------------------------------------------------------------')
 
 
 ###############################
@@ -490,14 +478,14 @@ def config_section_map(conf, section):
 ###############################
 def dump_config(conf, name):
     # dump entire config file
-    print '------------------------------'
-    print '- Config: ' + name
-    print '------------------------------'
+    print('------------------------------')
+    print('- Config: ' + name)
+    print('------------------------------')
     for section in conf.sections():
-        print '[' + section + ']'
+        print('[' + section + ']')
         for option in conf.options(section):
-            print ' ', option, '=', conf.get(section, option)
-    print '------------------------------'
+            print(' ', option, '=', conf.get(section, option))
+    print('------------------------------')
 
 
 ###############################
@@ -518,7 +506,7 @@ def locate_executable(directory, file_name):
     match = locate_file(directory, file_name)
     if match and is_executable(match):
         return match
-    print '*** Warning! Unable to locate executable: [' + file_name + '] from:' + directory
+    print('*** Warning! Unable to locate executable: [' + file_name + '] from:' + directory)
     return ''
 
 
@@ -532,7 +520,7 @@ def locate_file(directory, file_name):
                 filename = os.path.join(root, basename)
                 # return the first match
                 return filename
-    print '*** Warning! Unable to locate: [' + file_name + '] from:' + directory
+    print('*** Warning! Unable to locate: [' + file_name + '] from:' + directory)
     return ''
 
 
@@ -546,7 +534,7 @@ def locate_directory(base_dir, dir_name):
                 fulldirname = os.path.join(root, basename)
                 # return the first match
                 return fulldirname
-    print '*** Warning! Unable to locate: [' + dir_name + '] from:' + base_dir
+    print('*** Warning! Unable to locate: [' + dir_name + '] from:' + base_dir)
     return ''
 
 
@@ -559,18 +547,18 @@ def is_executable(path):
             return True
     elif IS_LINUX_PLATFORM:
         return (re.search(r':.* ELF',
-                          subprocess.Popen(['file', '-L', path],
-                                           stdout=subprocess.PIPE).stdout.read())
+                          str(subprocess.Popen(['file', '-L', path],
+                                           stdout=subprocess.PIPE).stdout.read()))
                 is not None)
     elif IS_SOLARIS_PLATFORM:
         return (re.search(r':.* ELF',
-                          subprocess.Popen(['file', '-dh', path],
-                                           stdout=subprocess.PIPE).stdout.read())
+                          str(subprocess.Popen(['file', '-dh', path],
+                                           stdout=subprocess.PIPE).stdout.read()))
                 is not None)
     elif IS_MAC_PLATFORM:
         return (re.search(r'executable',
-                          subprocess.Popen(['file', path],
-                                           stdout=subprocess.PIPE).stdout.read())
+                          str(subprocess.Popen(['file', path],
+                                           stdout=subprocess.PIPE).stdout.read()))
                 is not None)
     else:
         raise RuntimeError('*** Error, is_executable not implemented yet!')
@@ -583,8 +571,8 @@ def is_executable(path):
 ###############################
 # original snippet: http://code.activestate.com/recipes/173220-test-if-a-file-or-string-is-text-or-binary/
 
-text_characters = "".join(map(chr, range(32, 127)) + list("\n\r\t\b"))
-_null_trans     = string.maketrans("", "")
+text_characters = "".join(list(map(chr, range(32, 127))) + list("\n\r\t\b"))
+_null_trans     = str.maketrans("", "")
 
 def is_text(s):
     if "\0" in s:
@@ -614,8 +602,8 @@ def requires_rpath(file_path):
         if not is_executable(file_path):
             return False
         return (re.search(r':*.R.*PATH=',
-            subprocess.Popen(['chrpath', '-l', file_path],
-                stdout=subprocess.PIPE).stdout.read()) is not None)
+            str(subprocess.Popen(['chrpath', '-l', file_path],
+                stdout=subprocess.PIPE).stdout.read())) is not None)
     return False
 
 
@@ -626,18 +614,18 @@ def sanity_check_rpath_max_length(file_path, new_rpath):
     if IS_LINUX_PLATFORM or IS_SOLARIS_PLATFORM:
         if not is_executable(file_path):
             return False
-        result = re.search(r':*.R.*PATH=.*', subprocess.Popen(['chrpath', '-l', file_path], stdout=subprocess.PIPE).stdout.read())
+        result = re.search(r':*.R.*PATH=.*', str(subprocess.Popen(['chrpath', '-l', file_path], stdout=subprocess.PIPE).stdout.read()))
         if not result:
-            print '*** No RPath found from given file: ' + file_path
+            print('*** No RPath found from given file: ' + file_path)
         else:
             rpath = result.group()
             index = rpath.index('=')
             rpath = rpath[index+1:]
             space_for_new_rpath = len(rpath)
             if len(new_rpath) > space_for_new_rpath:
-                print '*** Warning - Not able to process RPath for file: ' + file_path
-                print '*** Required length for new RPath [' + new_rpath + '] is: ' + str(len(new_rpath))
-                print '*** Space available for new RPath inside the binary is: ' + str(space_for_new_rpath)
+                print('*** Warning - Not able to process RPath for file: ' + file_path)
+                print('*** Required length for new RPath [' + new_rpath + '] is: ' + str(len(new_rpath)))
+                print('*** Space available for new RPath inside the binary is: ' + str(space_for_new_rpath))
                 raise IOError()
     return True
 
@@ -689,10 +677,10 @@ def calculate_rpath(file_full_path, destination_lib_path):
         full_rpath = '$ORIGIN' + os.sep + rp
 
     if DEBUG_RPATH:
-        print '        ----------------------------------------'
-        print '         RPath target folder: ' + path_to_lib
-        print '         Bin file:            ' + file_full_path
-        print '         Calculated RPath:    ' + full_rpath
+        print('        ----------------------------------------')
+        print('         RPath target folder: ' + path_to_lib)
+        print('         Bin file:            ' + file_full_path)
+        print('         Calculated RPath:    ' + full_rpath)
 
     return full_rpath
 
@@ -701,11 +689,11 @@ def calculate_rpath(file_full_path, destination_lib_path):
 # Handle the RPath in the given component files
 ##############################################################
 def handle_component_rpath(component_root_path, destination_lib_paths):
-    print '        @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
-    print '        Handle RPath'
-    print ''
-    print '        Component root path:  ' + component_root_path
-    print '        Destination lib path: ' + destination_lib_paths
+    print('        @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+    print('        Handle RPath')
+    print('')
+    print('        Component root path:  ' + component_root_path)
+    print('        Destination lib path: ' + destination_lib_paths)
 
     # loop on all files
     for root, dirs, files in os.walk(component_root_path):
@@ -721,8 +709,8 @@ def handle_component_rpath(component_root_path, destination_lib_paths):
 
                     # look for existing $ORIGIN path in the binary
                     origin_rpath = re.search(r'\$ORIGIN[^:\n]*',
-                        subprocess.Popen(['chrpath', '-l', file_full_path],
-                        stdout=subprocess.PIPE).stdout.read())
+                        str(subprocess.Popen(['chrpath', '-l', file_full_path],
+                        stdout=subprocess.PIPE).stdout.read()))
 
                     if origin_rpath and origin_rpath.group() not in rpaths:
                         rpaths.append(origin_rpath.group())
@@ -741,10 +729,10 @@ def handle_component_rpath(component_root_path, destination_lib_paths):
 def do_execute_sub_process(args, execution_path, abort_on_fail=True, get_output=False,
                            extra_env=dict(os.environ), redirect_output=None, args_log=None):
     _args_log = args_log or list_as_string(args)
-    print '      --------------------------------------------------------------------'
-    print '      Executing:      [' + _args_log + ']'
-    print '      Execution path: [' + execution_path + ']'
-    print '      Abort on fail:  [' + str(abort_on_fail) + ']'
+    print('      --------------------------------------------------------------------')
+    print('      Executing:      [' + _args_log + ']')
+    print('      Execution path: [' + execution_path + ']')
+    print('      Abort on fail:  [' + str(abort_on_fail) + ']')
     sys.stdout.flush()
     theproc = None
     return_code = -1
@@ -777,12 +765,12 @@ def do_execute_sub_process(args, execution_path, abort_on_fail=True, get_output=
             return_code = theproc.returncode
             if output:
                 output = output[len(output) - MAX_DEBUG_PRINT_LENGTH:] if len(output) > MAX_DEBUG_PRINT_LENGTH else output
-                print output
+                print(output)
             else:
-                print 'Note, no output from the sub process!'
+                print('Note, no output from the sub process!')
                 sys.stdout.flush()
             raise Exception('*** Execution failed with code: {0}'.format(theproc.returncode))
-        print '      --------------------------------------------------------------------'
+        print('      --------------------------------------------------------------------')
         sys.stdout.flush()
     except Exception:
         sys.stderr.write('      ERROR - ERROR - ERROR - ERROR - ERROR - ERROR !!!' + os.linesep)
@@ -796,18 +784,18 @@ def do_execute_sub_process(args, execution_path, abort_on_fail=True, get_output=
         else:
             pass
 
-    return return_code, output
+    return return_code, str(output)
 
 
 ###############################
 # function
 ###############################
 def clone_repository(repo_url, repo_branch_or_tag, destination_folder, full_clone = False, init_subrepos = False):
-    print '--------------------------------------------------------------------'
-    print 'Cloning repository: ' + repo_url
-    print '        branch/tag: ' + repo_branch_or_tag
-    print 'Dest:               ' + destination_folder
-    print '--------------------------------------------------------------------'
+    print('--------------------------------------------------------------------')
+    print('Cloning repository: ' + repo_url)
+    print('        branch/tag: ' + repo_branch_or_tag)
+    print('Dest:               ' + destination_folder)
+    print('--------------------------------------------------------------------')
 
     if full_clone:
         cmd_args = ['git', 'clone', repo_url, destination_folder, '-b', repo_branch_or_tag]
@@ -895,7 +883,7 @@ def extract_file(path, to_directory='.'):
     elif path.endswith('.7z') or path.endswith('.zip'):
         cmd_args = ['7z', 'x', path]
     else:
-        print 'Did not extract the file! Not archived or no appropriate extractor was found: ' + path
+        print('Did not extract the file! Not archived or no appropriate extractor was found: ' + path)
         return False
 
     ret = runCommand(cmd_args, currentWorkingDirectory=to_directory, onlyErrorCaseOutput=True)
@@ -908,7 +896,7 @@ def extract_file(path, to_directory='.'):
 # function
 ###############################
 def list_as_string(argument_list):
-    output = ' '.join(argument_list)
+    output = ' '.join([str(i) for i in argument_list])
     return output
 
 
@@ -941,14 +929,14 @@ def create_mac_disk_image(execution_path, file_directory, file_base_name, image_
 # function
 ###############################
 def rename_android_soname_files(qt5_base_path):
-    print '---------- Renaming .so name files in ' + qt5_base_path + ' ----------------'
+    print ('---------- Renaming .so name files in ' + qt5_base_path + ' ----------------')
     ## QTBUG-33793
     # temporary solution for Android on Windows compilations
     ## rename the .so files for Android on Windows
     # find the lib directory under the install directory for essentials
-    print 'Trying to locate /lib from: ' + qt5_base_path
+    print ('Trying to locate /lib from: ' + qt5_base_path)
     lib_dir = locate_directory(qt5_base_path, 'lib')
-    print 'Match found: ' + lib_dir
+    print ('Match found: ' + lib_dir)
     # regex for Qt version, eg. 5.2.0
     # assuming that Qt version will always have one digit, eg, 5.2.0
     p = re.compile(r'\d\.\d\.\d')
@@ -964,10 +952,10 @@ def rename_android_soname_files(qt5_base_path):
                 old_filepath = os.path.join(lib_dir, name)
                 new_filepath = os.path.join(lib_dir, filename + '.so')
                 shutil.move(old_filepath, new_filepath)
-                print '---> Old file name : ' + old_filepath
-                print '---> New file name : ' + new_filepath
+                print ('---> Old file name : ' + old_filepath)
+                print ('---> New file name : ' + new_filepath)
             else:
-                print '*** Warning! The file : ' + filename + ' does not match the pattern'
+                print ('*** Warning! The file : ' + filename + ' does not match the pattern')
     else:
         print('*** No .so files found to be renamed. Skipping.')
         return
@@ -998,7 +986,7 @@ def create_extract_function(file_path, target_path, caller_arguments = None):
 # function
 ###############################
 def create_download_and_extract_tasks(url, target_path, temp_path, caller_arguments):
-    filename = os.path.basename(urlparse(url).path)
+    filename = os.path.basename(urllib.parse.urlparse(url).path)
     sevenzip_file = os.path.join(temp_path, filename)
     download_task = Task('download "{0}" to "{1}"'.format(url, sevenzip_file))
     download_task.addFunction(download, url, sevenzip_file)
@@ -1010,7 +998,7 @@ def create_download_and_extract_tasks(url, target_path, temp_path, caller_argume
 # function
 ###############################
 def create_download_task(url, target_path):
-    filename = os.path.basename(urlparse(url).path)
+    filename = os.path.basename(urllib.parse.urlparse(url).path)
     target_file = os.path.join(target_path, filename)
     download_task = Task("download {0} to {1}".format(url, target_file))
     download_task.addFunction(download, url, target_file)
@@ -1020,7 +1008,7 @@ def create_download_task(url, target_path):
 # function
 ###############################
 def create_download_extract_task(url, target_path, temp_path, caller_arguments):
-    filename = os.path.basename(urlparse(url).path)
+    filename = os.path.basename(urllib.parse.urlparse(url).path)
     sevenzip_file = os.path.join(temp_path, filename)
     download_extract_task = Task("download {0} to {1} and extract it to {2}".format(url, sevenzip_file, target_path))
     download_extract_task.addFunction(download, url, sevenzip_file)

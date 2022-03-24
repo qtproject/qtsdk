@@ -1,8 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 #############################################################################
 ##
-## Copyright (C) 2020 The Qt Company Ltd.
+## Copyright (C) 2022 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -28,8 +29,6 @@
 ##
 #############################################################################
 
-# import the print function which is used in python 3.x
-from __future__ import print_function
 import sys
 import os
 import re
@@ -40,9 +39,7 @@ import bldinstallercommon
 import pkg_constants
 import shutil
 import shlex
-import traceback
 import subprocess
-from multiprocessing.connection import Listener
 from read_remote_config import get_pkg_value
 
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -611,7 +608,7 @@ def create_installer_package(options):
     current_dir = os.getcwd()
     os.chdir(package_dir)
     shutil.copytree(os.path.join(options.installer_framework_build_dir, 'bin'), os.path.join(package_dir, 'bin'), ignore = shutil.ignore_patterns("*.exe.manifest","*.exp","*.lib"))
-    if sys.platform == 'linux2':
+    if sys.platform == 'linux':
         bldinstallercommon.do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/archivegen')), execution_path=package_dir)
         bldinstallercommon.do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/binarycreator')), execution_path=package_dir)
         bldinstallercommon.do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/devtool')), execution_path=package_dir)
