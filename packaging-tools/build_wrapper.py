@@ -1,4 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #############################################################################
 ##
 ## Copyright (C) 2022 The Qt Company Ltd.
@@ -30,9 +32,7 @@
 
 """Scripts to generate SDK installer based on open source InstallerFramework"""
 
-# import the print function which is used in python 3.x
-from __future__ import print_function
-import ConfigParser
+from configparser import ConfigParser
 import optionparser
 import argparse
 import collections
@@ -43,8 +43,8 @@ import sys
 import re
 import shutil
 import platform
-import urlparse
-from urllib2 import urlopen
+from urllib.parse import urlparse
+from urllib.request import urlopen
 from time import gmtime, strftime
 import bld_utils
 import bldinstallercommon
@@ -62,6 +62,12 @@ LOCAL_INSTALLER_DIR         = os.getenv('LOCAL_INSTALLER_DIR', os.path.join(WORK
 if LOCAL_MODE:
     assert os.path.exists(LOCAL_INSTALLER_DIR), "Local installer destination directory does not exist: %s" % LOCAL_INSTALLER_DIR
     print("Installer files will be copied to local directory: %s" % LOCAL_INSTALLER_DIR)
+
+
+def get_python3_exec():
+    if platform.system() == "Windows":
+        return os.path.join(os.getenv("PYTHON3_PATH"), "python.exe")
+    return "python3"
 
 
 ###############################
@@ -132,7 +138,7 @@ def move_files_to_parent_dir(source):
 def create_download_documentation_task(base_url, download_path):
     doc_base_url = base_url + "/doc"
 
-    useLocal = urlparse.urlparse(doc_base_url).scheme == "file"
+    useLocal = urlparse(doc_base_url).scheme == "file"
     print("doc_base_url: {} useLocal: {}".format(doc_base_url, useLocal))
     if useLocal:
         file_list = os.listdir(doc_base_url[len("file:///"):])
@@ -328,7 +334,7 @@ def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url
         if not plugin.build or not os.path.isdir(plugin_path):
             continue
         modules = plugin.modules
-        cmd_arguments = ['python', '-u']
+        cmd_arguments = [get_python3_exec(), '-u']
         build_path = os.path.join(work_dir, plugin.name + '-build')
         qt_path = os.path.join(build_path, 'qt')
         cmd_arguments += [qtcreator_build_plugin_script(qtcreator_dev_path),
@@ -355,7 +361,7 @@ def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url
             cmd_arguments += ['--add-config=' + value for value in additional_config]
 
         # install qt
-        qt_install_args = ['python', '-u', os.path.join(SCRIPT_ROOT_DIR, 'install_qt.py'),
+        qt_install_args = [get_python3_exec(), '-u', os.path.join(SCRIPT_ROOT_DIR, 'install_qt.py'),
                            '--qt-path', qt_path, '--temp-path', os.path.join(build_path, 'temp')]
         for module in modules:
             qt_install_args.extend(['--qt-module', module])
@@ -481,7 +487,7 @@ def repackage_and_sign_qtcreator(qtcreator_path, work_dir, result_package,
     # sign
     unlock_keychain()
     import_path = os.path.join(qtcreator_path, 'scripts')
-    check_call_log(['python', '-u', '-c', "import common; common.codesign('" +
+    check_call_log([get_python3_exec(), '-u', '-c', "import common; common.codesign('" +
                     os.path.join(extract_path, app) +
                     "')"],
                    import_path, extra_env=extra_env, log_filepath=log_filepath)
@@ -526,7 +532,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     qtcreator_version = get_qtcreator_version(qtcreator_source, optionDict)
     pkg_base_path = optionDict['PACKAGE_STORAGE_SERVER_PATH_HTTP']
     # Check if the archives reside on network disk (http) or on local file system
-    scheme = "" if urlparse.urlparse(pkg_base_path).scheme != "" else "file://"
+    scheme = "" if urlparse(pkg_base_path).scheme != "" else "file://"
     pkg_base_path = scheme + pkg_base_path
     pkg_storage_server = optionDict['PACKAGE_STORAGE_SERVER_ADDR']
     qtcreator_edition_name = optionDict.get('QT_CREATOR_EDITION_NAME') # optional
@@ -662,7 +668,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     qt_path = os.path.join(work_dir, 'qt_install_dir')
     src_path = os.path.join(work_dir, 'qt-creator')
     build_path = os.path.join(work_dir, 'qt-creator_build')
-    qt_install_args = ['python', '-u', os.path.join(SCRIPT_ROOT_DIR, 'install_qt.py'),
+    qt_install_args = [get_python3_exec(), '-u', os.path.join(SCRIPT_ROOT_DIR, 'install_qt.py'),
                        '--qt-path', qt_path, '--temp-path', qt_temp]
     for module_url in qt_module_urls:
         qt_install_args.extend(['--qt-module', module_url])
@@ -678,7 +684,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     check_call_log(qt_install_args,
                    work_dir)
     # Define Qt Creator build script arguments
-    cmd_args = ['python', '-u']
+    cmd_args = [get_python3_exec(), '-u']
     cmd_args += [os.path.join(src_path, 'scripts', 'build.py'),
                  '--src', src_path,
                  '--build', build_path,
@@ -929,7 +935,7 @@ def handle_sdktool_build(optionDict):
     bld_sdktool.zip_sdktool(sdktool_target_path, os.path.join(work_dir, 'sdktool.7z'))
     file_upload_list = [('sdktool.7z', target_env_dir + '/sdktool.7z')]
     if bldinstallercommon.is_win_platform(): # wininterrupt & qtcreatorcdbext
-        cmd_args = ['python', '-u', os.path.join(qtcreator_src, 'scripts', 'build.py'),
+        cmd_args = [get_python3_exec(), '-u', os.path.join(qtcreator_src, 'scripts', 'build.py'),
                     '--src', qtcreator_src,
                     '--build', os.path.join(work_dir, 'build'),
                     '--no-qtcreator']
@@ -958,7 +964,7 @@ def notarizeDmg(dmgPath, installer_name_base):
     # bundle-id is just a unique identifier without any special meaning, used to track the notarization progress
     bundleId = installer_name_base + "-" + strftime('%Y-%m-%d', gmtime())
     bundleId = bundleId.replace('_', '-').replace(' ', '')  # replace illegal characters for bundleId
-    args = ['python3', 'notarize.py', '--dmg=' + dmgPath, '--bundle-id=' + bundleId]
+    args = [get_python3_exec(), 'notarize.py', '--dmg=' + dmgPath, '--bundle-id=' + bundleId]
     bldinstallercommon.do_execute_sub_process(args, SCRIPT_ROOT_DIR)
 
 
@@ -1081,7 +1087,7 @@ def initPkgOptions(args):
         confBaseDir = confBaseDir if (os.path.isabs(confBaseDir) and os.path.isdir(confBaseDir)) else os.path.join(optionDict['WORK_DIR'], confBaseDir)
         optionDict['CONFIGURATIONS_FILE_BASE_DIR'] = confBaseDir
 
-        parser = ConfigParser.ConfigParser()
+        parser = ConfigParser()
         parser.read(path)
         for s in parser.sections():
             if s == 'release.global':

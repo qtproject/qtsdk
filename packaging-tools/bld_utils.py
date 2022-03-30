@@ -322,12 +322,14 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None, init_en
         while not stdout.eof() or not stderr.eof():
             # Show what we received from standard output.
             for line in stdout.readlines():
+                line = line.decode()
                 lastStdOutLines.append(line)
                 if threading.currentThread().name != "MainThread":
                     sys.stdout.write(line)
 
             # Show what we received from standard error.
             for line in stderr.readlines():
+                line = line.decode()
                 lastStdErrLines.append(line)
                 if threading.currentThread().name != "MainThread":
                     sys.stdout.write(line)
@@ -430,4 +432,4 @@ def isGitDirectory(repository_path):
     return os.path.lexists(gitConfigDir)
 
 def file_url(file_path):
-    return urllib.parse.urljoin('file:', urllib.pathname2url(file_path))
+    return urllib.parse.urljoin('file:', urllib.request.pathname2url(file_path))

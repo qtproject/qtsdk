@@ -547,18 +547,18 @@ def is_executable(path):
             return True
     elif IS_LINUX_PLATFORM:
         return (re.search(r':.* ELF',
-                          str(subprocess.Popen(['file', '-L', path],
-                                           stdout=subprocess.PIPE).stdout.read()))
+                          subprocess.Popen(['file', '-L', path],
+                                           stdout=subprocess.PIPE).stdout.read().decode())
                 is not None)
     elif IS_SOLARIS_PLATFORM:
         return (re.search(r':.* ELF',
-                          str(subprocess.Popen(['file', '-dh', path],
-                                           stdout=subprocess.PIPE).stdout.read()))
+                          subprocess.Popen(['file', '-dh', path],
+                                           stdout=subprocess.PIPE).stdout.read().decode())
                 is not None)
     elif IS_MAC_PLATFORM:
         return (re.search(r'executable',
-                          str(subprocess.Popen(['file', path],
-                                           stdout=subprocess.PIPE).stdout.read()))
+                          subprocess.Popen(['file', path],
+                                           stdout=subprocess.PIPE).stdout.read().decode())
                 is not None)
     else:
         raise RuntimeError('*** Error, is_executable not implemented yet!')
@@ -602,8 +602,8 @@ def requires_rpath(file_path):
         if not is_executable(file_path):
             return False
         return (re.search(r':*.R.*PATH=',
-            str(subprocess.Popen(['chrpath', '-l', file_path],
-                stdout=subprocess.PIPE).stdout.read())) is not None)
+            subprocess.Popen(['chrpath', '-l', file_path],
+                stdout=subprocess.PIPE).stdout.read().decode()) is not None)
     return False
 
 
@@ -614,7 +614,7 @@ def sanity_check_rpath_max_length(file_path, new_rpath):
     if IS_LINUX_PLATFORM or IS_SOLARIS_PLATFORM:
         if not is_executable(file_path):
             return False
-        result = re.search(r':*.R.*PATH=.*', str(subprocess.Popen(['chrpath', '-l', file_path], stdout=subprocess.PIPE).stdout.read()))
+        result = re.search(r':*.R.*PATH=.*', subprocess.Popen(['chrpath', '-l', file_path], stdout=subprocess.PIPE).stdout.read().decode())
         if not result:
             print('*** No RPath found from given file: ' + file_path)
         else:
@@ -709,8 +709,8 @@ def handle_component_rpath(component_root_path, destination_lib_paths):
 
                     # look for existing $ORIGIN path in the binary
                     origin_rpath = re.search(r'\$ORIGIN[^:\n]*',
-                        str(subprocess.Popen(['chrpath', '-l', file_full_path],
-                        stdout=subprocess.PIPE).stdout.read()))
+                        subprocess.Popen(['chrpath', '-l', file_full_path],
+                        stdout=subprocess.PIPE).stdout.read().decode())
 
                     if origin_rpath and origin_rpath.group() not in rpaths:
                         rpaths.append(origin_rpath.group())

@@ -1,7 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #############################################################################
 ##
-## Copyright (C) 2016 The Qt Company Ltd.
+## Copyright (C) 2022 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -26,7 +28,7 @@
 ## $QT_END_LICENSE$
 ##
 #############################################################################
-import ConfigParser
+from configparser import ConfigParser
 import argparse
 import os
 import sys
