@@ -3,7 +3,7 @@
 
 #############################################################################
 ##
-## Copyright (C) 2021 The Qt Company Ltd.
+## Copyright (C) 2022 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -419,6 +419,14 @@ async def update_repository(stagingServer: str, repoLayout: QtRepositoryLayout, 
         trigger_rta(rta, task)
 
 
+def get_python_path():
+    # temporary function will be removed later during refactoring
+    import platform
+    if platform.system() == "Windows":
+        return os.path.join(os.getenv("PYTHON3_PATH"), "python.exe")
+    return "python3"
+
+
 async def build_online_repositories(tasks: List[ReleaseTask], license: str, installerConfigBaseDir: str, artifactShareBaseUrl: str,
                                     ifwTools: str, buildRepositories: bool) -> List[str]:
     log.info("Building online repositories: %i", len(tasks))
@@ -450,7 +458,7 @@ async def build_online_repositories(tasks: List[ReleaseTask], license: str, inst
             raise PackagingError("Invalid 'config_file' path: {0}".format(installerConfigFile))
 
         # TODO: license
-        cmd = ["python", scriptPath, "-c", installerConfigBaseDir, "-f", installerConfigFile]
+        cmd = [get_python_path(), scriptPath, "-c", installerConfigBaseDir, "-f", installerConfigFile]
         cmd += ["--create-repo", "-l", license, "--license-type", license, "-u", artifactShareBaseUrl, "--ifw-tools", ifwTools]
         cmd += ["--force-version-number-increase"]
         for substitution in task.get_installer_string_replacement_list():
@@ -668,10 +676,7 @@ async def _build_offline_tasks(stagingServer: str, stagingServerRoot: str, tasks
         if not os.path.isfile(installerConfigFile):
             raise PackagingError(f"Invalid 'config_file' path: {installerConfigFile}")
 
-        python_cmd = "python"
-        if os.environ.get('PYTHON2_32_PATH'):
-            python_cmd = os.path.join(os.environ.get('PYTHON2_32_PATH'), "python.exe")
-        cmd = [python_cmd, scriptPath, "-c", installerConfigBaseDir, "-f", installerConfigFile]
+        cmd = [get_python_path(), scriptPath, "-c", installerConfigBaseDir, "-f", installerConfigFile]
         cmd += ["--offline", "-l", license, "--license-type", license, "-u", artifactShareBaseUrl, "--ifw-tools", ifwTools]
         cmd += ["--preferred-installer-name", task.get_installer_name()]
         cmd.extend(["--add-substitution=" + s for s in task.get_installer_string_replacement_list()])
