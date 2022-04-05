@@ -209,99 +209,6 @@ def create_download_openssl_task(url, download_path):
     repackage_task.addFunction(repackage)
     return (download_task, repackage_task, bld_utils.file_url(target_filepath))
 
-###############################
-# handle_gammaray_build
-###############################
-def handle_gammaray_build(optionDict):
-    work_dir = optionDict['WORK_DIR']
-
-    def cloneGammarayRepo(gitUrl, gitBranchOrTag, checkoutDir):
-        srcPath = os.path.join(work_dir, checkoutDir)
-        if os.path.exists(srcPath):
-            shutil.rmtree(srcPath)
-        os.makedirs(srcPath)
-        bldinstallercommon.clone_repository(gitUrl, gitBranchOrTag, srcPath, init_subrepos=True)
-
-    # Get gammaray sources if not present yet
-    if 'GAMMARAY_INTEGRATION_GIT_URL' in optionDict:
-        cloneGammarayRepo(optionDict['GAMMARAY_INTEGRATION_GIT_URL'], optionDict['GAMMARAY_INTEGRATION_GIT_BRANCH_OR_TAG'], 'src')
-    if 'GAMMARAY_INTEGRATION_OVERRIDE_GAMMARAY_SHA' in optionDict:
-        bldinstallercommon.do_execute_sub_process(['git', 'checkout',
-                                                   optionDict['GAMMARAY_INTEGRATION_OVERRIDE_GAMMARAY_SHA']],
-                                                  os.path.join(work_dir, 'src', 'external', 'gammaray'))
-
-    gammaray_version = optionDict['GAMMARAY_VERSION']
-    icu_libs = optionDict.get('ICU_LIBS') # optional
-    qt_base_path = optionDict['QT_BASE_PATH']
-    qt_module_urls = []
-
-    # qtgamepad is currently needed by Qt3DInput which is currently needed for 3D support in GammaRay
-    qt_modules = ['qtbase', 'qtdeclarative', 'qtscript', 'qttools', 'qtxmlpatterns', 'qt3d', 'qtgamepad']
-    pkg_base_path = optionDict['PACKAGE_STORAGE_SERVER_PATH_HTTP']
-    # Check if the archives reside on network disk (http) or on local file system
-    scheme = "" if urlparse.urlparse(pkg_base_path).scheme != "" else "file://"
-    qt_base_url = scheme + pkg_base_path + '/' + qt_base_path
-    qt_postfix = os.environ['QT_POSTFIX']
-    qt_module_urls = [qt_base_url + '/' + module + '/' + module + '-' + qt_postfix + '.7z'
-                      for module in qt_modules]
-
-    build_environment = dict(os.environ)
-    if bldinstallercommon.is_win_platform() and ('WINDOWS_UNIX_TOOLS_PATH' in optionDict):
-        # for awk/gawk, sed, bison, and flex, for internal graphviz build
-        path_key = 'Path' if 'Path' in build_environment else 'PATH'
-        build_environment[path_key] = ';'.join(['C:\\Windows\\System32', optionDict['WINDOWS_UNIX_TOOLS_PATH'],
-                                                build_environment[path_key]])
-
-    def common_gammaray_args():
-        cmd_args = ['python', '-u', os.path.join(SCRIPT_ROOT_DIR, 'bld_module.py'),
-                    '--clean',
-                    '--use-cmake']
-        for module_url in qt_module_urls:
-            cmd_args.extend(['--qt5_module_url', module_url])
-        if bldinstallercommon.is_linux_platform():
-            cmd_args.extend(['--icu7z', icu_libs])
-        if bldinstallercommon.is_win_platform():
-            cmd_args.extend(['--add-config-arg=-G', '--add-config-arg=NMake Makefiles',
-                             '--buildcommand', 'nmake',
-                             '--installcommand', 'nmake'])
-        return cmd_args
-
-    # build kdstatemachineeditor
-    cmd_args = common_gammaray_args()
-    cmd_args.extend(['--module_dir', os.path.join(work_dir, 'src', 'external', 'kdstatemachineeditor'),
-                     '--module-name', 'kdsme',
-                     '--qt5path', os.path.join(work_dir, 'kdsme_qt5_install'),
-                     '--add-config-arg=-DBUILD_EXAMPLES=OFF',
-                     '--add-config-arg=-DBUILD_TESTING=OFF',
-                     '--add-config-arg=-DWITH_INTERNAL_GRAPHVIZ=ON'])
-    bldinstallercommon.do_execute_sub_process(cmd_args, work_dir, extra_env=build_environment)
-
-    # build gammaray
-    cmd_args = common_gammaray_args()
-    cmd_args.extend(['--module_dir', os.path.join(work_dir, 'src', 'external', 'gammaray'),
-                     '--module-name', 'gammaray',
-                     '--qt5path', os.path.join(work_dir, 'gammaray_qt5_install'),
-                     '--add-config-arg=-DGAMMARAY_INSTALL_QT_LAYOUT=ON',
-                     '--add-config-arg=-DCMAKE_SKIP_BUILD_RPATH=OFF',
-                     '--add-config-arg=-DCMAKE_BUILD_WITH_INSTALL_RPATH=OFF',
-                     '--add-config-arg=-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=FALSE',
-                     '--add-config-arg=-DGAMMARAY_MULTI_BUILD=OFF',
-                     '--add-config-arg=-DBUILD_TESTING=OFF',
-                     '--qt5_module_url', bld_utils.file_url(os.path.join(SCRIPT_ROOT_DIR, 'module_archives', 'qt5_kdsme.7z'))])
-    bldinstallercommon.do_execute_sub_process(cmd_args, work_dir)
-
-    # upload
-    base_path = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/gammaray/' + gammaray_version
-    base_upload_path = base_path + '/' + optionDict['BUILD_NUMBER']
-    upload_path = base_upload_path + '/' + optionDict['QTC_PLATFORM']
-    latest_path = base_path + '/latest'
-    create_remote_dirs(optionDict, optionDict['PACKAGE_STORAGE_SERVER_ADDR'], upload_path)
-    update_latest_link(optionDict, base_upload_path, latest_path)
-    for module in ['kdsme', 'gammaray']:
-        cmd_args = [optionDict['SCP_COMMAND'], 'qt5_{0}.7z'.format(module),
-                    optionDict['PACKAGE_STORAGE_SERVER_ADDR'] + ':' + upload_path + '/']
-        bldinstallercommon.do_execute_sub_process(cmd_args, os.path.join(SCRIPT_ROOT_DIR, 'module_archives'))
-
 
 PluginConf = collections.namedtuple('PluginConf', ['git_url', 'branch_or_tag', 'checkout_dir'])
 
@@ -1292,10 +1199,9 @@ if __name__ == '__main__':
     bld_qtcreator                           = 'build_creator'
     bld_qtcreator_plugins                   = 'build_qtcreator_plugins'
     bld_qtc_sdktool                         = 'build_sdktool'
-    bld_gammaray                            = 'build_gammaray'
     bld_licheck                             = 'licheck_bld'
     archive_repository                      = 'archive_repo'
-    CMD_LIST =  (bld_qtcreator, bld_qtcreator_plugins, bld_qtc_sdktool, bld_gammaray, bld_licheck, archive_repository)
+    CMD_LIST =  (bld_qtcreator, bld_qtcreator_plugins, bld_qtc_sdktool, bld_licheck, archive_repository)
 
     parser = argparse.ArgumentParser(prog="Build Wrapper", description="Manage all packaging related build steps.")
     parser.add_argument("-c", "--command", dest="command", required=True, choices=CMD_LIST, help=CMD_LIST)
@@ -1329,9 +1235,6 @@ if __name__ == '__main__':
     # sdktool
     elif args.command == bld_qtc_sdktool:
         handle_sdktool_build(optionDict)
-    # GammaRay Qt module
-    elif args.command == bld_gammaray:
-        handle_gammaray_build(optionDict)
     # Qt Installer-Framework specific
     elif args.command == bld_licheck:
         handle_qt_licheck_build(optionDict)
