@@ -444,107 +444,6 @@ def update_job_link(remote_path_base, remote_target_path, optionDict):
     remote_link = remote_path_base + '/' + optionDict['PULSE_PROJECT']
     update_latest_link(optionDict, remote_target_path, remote_link)
 
-def handle_qt_creator_plugins_build(optionDict, plugin_conf_file_path):
-    target_env_dir = optionDict['QTC_PLATFORM']
-    work_dir = optionDict['WORK_DIR']
-    optionDict['TARGET_ENV_DIR'] = target_env_dir # inject for plugin configs
-    download_temp = os.path.join(work_dir, 'downloads')
-    upload_base_path = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + optionDict['UPLOAD_BASE_DIR']
-
-    plugins = parse_qt_creator_plugin_conf(plugin_conf_file_path, optionDict)
-    print('Building plugins:')
-    for plugin in plugins:
-        print(plugin)
-
-    # fixup module urls for qt modules which are only specified by name
-    def module_url(module):
-        if '/' not in module and '.7z' not in module: # qt module name
-            return optionDict['QT_BASE_URL'] + '/' + module + '/' + module + '-' + optionDict['QT_POSTFIX'] + '.7z'
-        return module
-
-    def fixup_plugin(plugin):
-        return plugin._replace(modules = [module_url(module) for module in plugin.modules])
-    plugins = [fixup_plugin(plugin) for plugin in plugins]
-
-    # download
-    ## TODO download Qt modules once and use local url for plugin build
-    download_packages_work = ThreadedWork('Get and extract all needed packages')
-
-    ## base Qt Creator
-    qtcreator_base_url = optionDict['QTC_BASE_URL'] + '/' + target_env_dir + '/'
-    qtcreator_path = os.path.join(work_dir, 'downloads', 'qtc_build')
-    qtcreator_dev_path = os.path.join(work_dir, 'downloads', 'qtc_dev')
-    download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
-        qtcreator_base_url + 'qtcreator.7z', qtcreator_path, download_temp, None))
-    download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
-        qtcreator_base_url + 'qtcreator_dev.7z', qtcreator_dev_path, download_temp, None))
-
-    ## plugins that are not part of the actual build
-    for plugin in [plugin for plugin in plugins if not plugin.build]:
-        download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
-            qtcreator_base_url + plugin.name + '.7z',
-            os.path.join(work_dir, plugin.path + '-target'),
-            download_temp, None))
-        download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
-            qtcreator_base_url + plugin.name + '_dev.7z',
-            os.path.join(work_dir, plugin.path),
-            download_temp, None))
-
-    icu_libs = optionDict.get('ICU_LIBS') # optional
-    icu_path = os.path.join(download_temp, os.path.basename(icu_libs)) if icu_libs else None
-    if icu_libs:
-        download_packages_work.addTaskObject(bldinstallercommon.create_download_task(
-            icu_libs, download_temp))
-    icu_local_url = bld_utils.file_url(icu_path) if icu_libs else None
-
-    openssl_libs = optionDict.get('OPENSSL_LIBS') # optional
-    openssl_path = os.path.join(download_temp, os.path.basename(openssl_libs)) if openssl_libs else None
-    if openssl_libs:
-        download_packages_work.addTaskObject(bldinstallercommon.create_download_task(
-            openssl_libs, download_temp))
-    openssl_local_url = bld_utils.file_url(openssl_path) if openssl_libs else None
-
-    download_packages_work.run()
-
-    # final fixup
-    qtcreator_version = get_qtcreator_version(qtcreator_dev_path, optionDict)
-    print('Qt Creator version: ' + qtcreator_version)
-
-    def fixup_version(plugin):
-        plugin = plugin._replace(version = plugin.version if plugin.version else qtcreator_version)
-        return plugin
-    plugins = [fixup_version(plugin) for plugin in plugins]
-
-    # build
-    build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path,
-                            icu_local_url, openssl_local_url)
-
-    if bldinstallercommon.is_linux_platform():
-        # summary of git SHA1s
-        sha1s = collect_qt_creator_plugin_sha1s(plugins)
-        with open(os.path.join(work_dir, 'SHA1'), 'w') as f:
-            f.writelines([sha + '\n' for sha in sha1s])
-
-    # upload lists
-    file_upload_list = []
-    for plugin in [plugin for plugin in plugins if plugin.build]:
-        plugin_name = plugin.name + '.7z'
-        plugin_dev_name = plugin.name + '_dev.7z'
-        if os.path.isfile(os.path.join(work_dir, plugin_name)):
-            file_upload_list.append((plugin_name, target_env_dir + '/' + plugin_name))
-        if os.path.isfile(os.path.join(work_dir, plugin_dev_name)):
-            file_upload_list.append((plugin_dev_name, target_env_dir + '/' + plugin_dev_name))
-    if bldinstallercommon.is_linux_platform():
-        ## source packages
-        source_package_list = glob(os.path.join(work_dir, 'qt-creator-*-src-' + qtcreator_version + '.*'))
-        file_upload_list.extend([(fn, '') for fn in source_package_list])
-        # summary of git SHA1s
-        file_upload_list.append(('SHA1', ''))
-
-    upload_path = upload_base_path + '/' + qtcreator_version
-    upload_files(upload_base_path + '/' + qtcreator_version, file_upload_list, optionDict)
-    update_job_link(upload_base_path, upload_path, optionDict)
-
 
 def repackage_and_sign_qtcreator(qtcreator_path, work_dir, result_package,
                                  qtcreator_package, sdktool_package,
@@ -1197,11 +1096,10 @@ def initPkgOptions(args):
 if __name__ == '__main__':
     # Define supported build steps
     bld_qtcreator                           = 'build_creator'
-    bld_qtcreator_plugins                   = 'build_qtcreator_plugins'
     bld_qtc_sdktool                         = 'build_sdktool'
     bld_licheck                             = 'licheck_bld'
     archive_repository                      = 'archive_repo'
-    CMD_LIST =  (bld_qtcreator, bld_qtcreator_plugins, bld_qtc_sdktool, bld_licheck, archive_repository)
+    CMD_LIST =  (bld_qtcreator, bld_qtc_sdktool, bld_licheck, archive_repository)
 
     parser = argparse.ArgumentParser(prog="Build Wrapper", description="Manage all packaging related build steps.")
     parser.add_argument("-c", "--command", dest="command", required=True, choices=CMD_LIST, help=CMD_LIST)
@@ -1229,9 +1127,6 @@ if __name__ == '__main__':
     # QtCreator specific
     if args.command == bld_qtcreator:
         handle_qt_creator_build(optionDict, parseQtCreatorPlugins(args.pkg_conf_file))
-    # Qt Creator 3rdparty plugins
-    elif args.command == bld_qtcreator_plugins:
-        handle_qt_creator_plugins_build(optionDict, args.qtcreator_plugin_config)
     # sdktool
     elif args.command == bld_qtc_sdktool:
         handle_sdktool_build(optionDict)
