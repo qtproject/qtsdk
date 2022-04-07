@@ -192,10 +192,6 @@ def download(url, target, read_block_size = 1048576):
             pass
 
 def setValueOnEnvironmentDict(environment, key, value):
-    # convert PATH to Path to avoid duplicates
-    if os.name == 'nt' and key == 'PATH':
-        key = 'Path'
-
     if key in environment:
         # if the data already contains the value stop here
         if value in environment[key].split(os.pathsep):
@@ -209,7 +205,7 @@ def getEnvironment(init_environment = None, callerArguments = None):
     if init_environment is None:
         init_environment = {}
     # first take the one from the system and use the plain dictionary data for that
-    environment = os.environ.__dict__["_data"]
+    environment = dict(os.environ)
 
     if hasattr(callerArguments, 'environment_batch') and callerArguments.environment_batch:
         environment = environmentfrombatchfile.get(
@@ -280,7 +276,7 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None, init_en
         os.path.isfile(os.path.abspath(os.path.join(currentWorkingDirectory, commandAsList[0]))):
         commandAsList[0] = os.path.abspath(os.path.join(currentWorkingDirectory, commandAsList[0]))
 
-    pathEnvironment = environment[b'PATH'] if os.supports_bytes_environ else environment['PATH']
+    pathEnvironment = environment['PATH']
     # if we can not find the command, check the environment
     if not os.path.lexists(commandAsList[0]) and find_executable(str(commandAsList[0]), str(pathEnvironment)):
         commandAsList[0] = find_executable(str(commandAsList[0]), str(pathEnvironment))
