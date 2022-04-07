@@ -92,6 +92,25 @@ def lock_keychain():
     bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, abort_on_fail=False)
 
 
+###########################################
+# init snapshot build dir and upload files
+###########################################
+def init_snapshot_dir_and_upload_files(optionDict, project_name, project_version_or_branch, build_number, file_upload_list, subdir = ''):
+    if subdir is not "" and subdir[0] is not "/":
+        subdir = "/" + subdir
+    remote_path_base                        = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + project_name + '/' + project_version_or_branch
+    remote_path_snapshot_dir                = remote_path_base + '/' + build_number
+    remote_path_latest_link                 = remote_path_base + '/' + 'latest'
+    # ensure remote directory exists
+    create_remote_dirs(optionDict, optionDict['PACKAGE_STORAGE_SERVER_ADDR'], remote_path_snapshot_dir + subdir)
+    # upload files
+    for item in file_upload_list:
+        cmd_args = [optionDict['SCP_COMMAND'], item, optionDict['PACKAGE_STORAGE_SERVER_ADDR'] + ':' + remote_path_snapshot_dir + subdir]
+        bldinstallercommon.do_execute_sub_process(cmd_args, optionDict['WORK_DIR'])
+    # update 'latest' symlink
+    update_latest_link(optionDict, remote_path_snapshot_dir, remote_path_latest_link)
+
+
 ###############################
 # handle_qt_licheck_build
 ###############################
