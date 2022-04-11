@@ -370,7 +370,7 @@ def replace_in_files(filelist, regexp, replacement_string):
     regexp_compiled = re.compile(regexp)
     for xfile in filelist:
         replaceflag = 0
-        readlines = open(xfile,'r').readlines()
+        readlines = open(xfile, 'r', encoding="utf-8").readlines()
         listindex = -1
         for currentline in readlines:
             listindex = listindex + 1
@@ -383,7 +383,7 @@ def replace_in_files(filelist, regexp, replacement_string):
         # if some text was replaced overwrite the original file
         if replaceflag == 1:
             # open the file for writting
-            write_file = open(xfile,'w')
+            write_file = open(xfile, 'w', encoding="utf-8")
             # overwrite the file
             for line in readlines:
                 write_file.write(line)
@@ -432,11 +432,11 @@ def ensure_text_file_endings(filename):
         print('*** Warning, given file is directory? Did nothing for: ' + filename)
         return
     data = open(filename, "rb").read()
-    if '\0' in data:
+    if b'\0' in data:
         print('*** Warning, given file is binary? Did nothing for: ' + filename)
         return
     if IS_WIN_PLATFORM:
-        newdata = re.sub("\r?\n", "\r\n", data)
+        newdata = re.sub(b"\r?\n", b"\r\n", data)
         if newdata != data:
             print('File endings changed for: ' + filename)
             f = open(filename, "wb")
@@ -571,17 +571,21 @@ def is_executable(path):
 ###############################
 # original snippet: http://code.activestate.com/recipes/173220-test-if-a-file-or-string-is-text-or-binary/
 
-text_characters = "".join(list(map(chr, range(32, 127))) + list("\n\r\t\b"))
-_null_trans     = str.maketrans("", "")
+text_characters = "".join(list(map(chr, list(range(32, 127)))) + list("\n\r\t\b"))
+trans_table      = str.maketrans("", "", text_characters)
 
 def is_text(s):
-    if "\0" in s:
-        return 0
+    try:
+        if "\0" in s:
+            return 0
+    except TypeError:
+        if b"\0" in s:
+            return 0
     if not s:  # Empty files are considered text
         return 1
     # Get the non-text characters (maps a character to itself then
     # use the 'remove' option to get rid of the text characters.)
-    t = s.translate(_null_trans, text_characters)
+    t = s.translate(trans_table)
     # If more than 30% non-text characters, then
     # this is considered a binary file
     if len(t)/len(s) > 0.30:
@@ -589,7 +593,10 @@ def is_text(s):
     return 1
 
 def is_text_file(filename, blocksize = 512):
-    return is_text(open(filename).read(blocksize))
+    try:
+        return is_text(open(filename).read(blocksize))
+    except UnicodeDecodeError:
+        return is_text(open(filename, 'rb').read(blocksize))
 
 
 ###############################
