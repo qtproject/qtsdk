@@ -1,0 +1,30 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pip = {version = ">=18.0"}
+sh = {version = "*", os_name = "!= 'nt'"}
+typed-ast = "*"
+rainbow_logging_handler = "*"
+gitpython = "*"
+colorlog = "*"
+pexpect = "*"
+wget = "*"
+beautifulsoup4 = "*"
+pysftp = "*"
+pywin32 = {version = "*", os_name = "== 'nt'"}
+configparser = "*"
+
+[dev-packages]
+ddt = "*"
+pylint = "*"
+autopep8 = "*"
+mypy = "*"
+flake8 = "*"
+black = "*"
+stestr = "*"
+
+[requires]
+python_version = "3"
