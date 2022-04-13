@@ -1,7 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #############################################################################
 ##
-## Copyright (C) 2020 The Qt Company Ltd.
+## Copyright (C) 2022 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -26,9 +28,6 @@
 ## $QT_END_LICENSE$
 ##
 #############################################################################
-
-# import the print function which is used in python 3.x
-from __future__ import print_function
 
 import argparse
 import os

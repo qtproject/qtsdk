@@ -1,66 +1,48 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #############################################################################
 ##
-## Copyright (C) 2013 Digia Plc and/or its subsidiary(-ies).
-## Contact: http://www.qt-project.org/legal
+## Copyright (C) 2022 The Qt Company Ltd.
+## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
 ##
-## $QT_BEGIN_LICENSE:LGPL$
+## $QT_BEGIN_LICENSE:GPL-EXCEPT$
 ## Commercial License Usage
 ## Licensees holding valid commercial Qt licenses may use this file in
 ## accordance with the commercial license agreement provided with the
 ## Software or, alternatively, in accordance with the terms contained in
-## a written agreement between you and Digia.  For licensing terms and
-## conditions see http://qt.digia.com/licensing.  For further information
-## use the contact form at http://qt.digia.com/contact-us.
-##
-## GNU Lesser General Public License Usage
-## Alternatively, this file may be used under the terms of the GNU Lesser
-## General Public License version 2.1 as published by the Free Software
-## Foundation and appearing in the file LICENSE.LGPL included in the
-## packaging of this file.  Please review the following information to
-## ensure the GNU Lesser General Public License version 2.1 requirements
-## will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
-##
-## In addition, as a special exception, Digia gives you certain additional
-## rights.  These rights are described in the Digia Qt LGPL Exception
-## version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
+## a written agreement between you and The Qt Company. For licensing terms
+## and conditions see https://www.qt.io/terms-conditions. For further
+## information use the contact form at https://www.qt.io/contact-us.
 ##
 ## GNU General Public License Usage
 ## Alternatively, this file may be used under the terms of the GNU
-## General Public License version 3.0 as published by the Free Software
-## Foundation and appearing in the file LICENSE.GPL included in the
-## packaging of this file.  Please review the following information to
-## ensure the GNU General Public License version 3.0 requirements will be
-## met: http://www.gnu.org/copyleft/gpl.html.
-##
+## General Public License version 3 as published by the Free Software
+## Foundation with exceptions as appearing in the file LICENSE.GPL3-EXCEPT
+## included in the packaging of this file. Please review the following
+## information to ensure the GNU General Public License requirements will
+## be met: https://www.gnu.org/licenses/gpl-3.0.html.
 ##
 ## $QT_END_LICENSE$
 ##
 #############################################################################
-
-# import the print function which is used in python 3.x
-from __future__ import print_function
 
 # built in imports
 from distutils.spawn import find_executable # runCommand method
 import os
 import sys
 import time
-import urllib2
 import shutil
 import subprocess
 import threading
 import collections
-import urlparse
-import urllib
+import urllib.parse
+import urllib.request
+import urllib.error
 import copy
-
-#fix that there was var with name "type" in a calling test for runCommand when trying
-#to use __builtin__.type()
-import __builtin__
-
+import builtins
 # 3rd party module to read process output in a convenient way
 from asynchronousfilereader import AsynchronousFileReader
 
@@ -136,7 +118,7 @@ def urllib2_response_read(response, file_path, block_size, total_size):
 def download(url, target, read_block_size = 1048576):
     try:
         if os.path.isdir(os.path.abspath(target)):
-            filename = os.path.basename(urlparse.urlparse(url).path)
+            filename = os.path.basename(urllib.parse.urlparse(url).path)
             target = os.path.join(os.path.abspath(target), filename)
         if os.path.lexists(target):
             raise Exception("Can not download '{0}' to '{1}' as target. The file already exists.".format(url, target))
@@ -171,14 +153,14 @@ def download(url, target, read_block_size = 1048576):
 
         try:
             # use urlopen which raise an error if that file is not existing
-            response = urllib2.urlopen(url)
-            total_size = response.info().getheader('Content-Length').strip()
+            response = urllib.request.urlopen(url)
+            total_size = response.info().get('Content-Length').strip()
             print("Downloading file from '{0}' with size {1} bytes to {2}".format(url, total_size, target))
             # run the download
             received_size = urllib2_response_read(response, savefile_tmp, read_block_size, total_size)
             if received_size != int(total_size):
                 raise Exception("Broken download, got a wrong size after download from '{0}'(total size: {1}, but {2} received).".format(url, total_size, received_size))
-        except urllib2.HTTPError, error:
+        except urllib.error.HTTPError as error:
             raise Exception("Can not download '{0}' to '{1}' as target(error code: '{2}').".format(url, target, error.code))
 
         renamed = False
@@ -195,7 +177,7 @@ def download(url, target, read_block_size = 1048576):
                     renamed = True
                     # make sure that another output starts in a new line
                     sys.stdout.write(os.linesep)
-            except WindowsError as e:
+            except builtins.WindowsError as e:
                 # if it still exists just try that after a microsleep and stop this after 720 tries
                 if os.path.lexists(savefile_tmp) and tryRenameCounter < 720:
                     time.sleep(2)
@@ -210,10 +192,6 @@ def download(url, target, read_block_size = 1048576):
             pass
 
 def setValueOnEnvironmentDict(environment, key, value):
-    # convert PATH to Path to avoid duplicates
-    if os.name == 'nt' and key == 'PATH':
-        key = 'Path'
-
     if key in environment:
         # if the data already contains the value stop here
         if value in environment[key].split(os.pathsep):
@@ -227,7 +205,7 @@ def getEnvironment(init_environment = None, callerArguments = None):
     if init_environment is None:
         init_environment = {}
     # first take the one from the system and use the plain dictionary data for that
-    environment = os.environ.__dict__["data"]
+    environment = dict(os.environ)
 
     if hasattr(callerArguments, 'environment_batch') and callerArguments.environment_batch:
         environment = environmentfrombatchfile.get(
@@ -255,7 +233,7 @@ def getEnvironment(init_environment = None, callerArguments = None):
 
     # if we have an init_environment we merge the environment dicts
     merged_environment = {}
-    for key in init_environment.viewkeys():
+    for key in init_environment.keys():
         keyUpper = key.upper()
         if any((keyUpper == 'PATH', keyUpper == 'INCLUDE', keyUpper == 'LIB')):
             # use save setValueOnEnvironmentDict in case there are PATH and Path
@@ -263,7 +241,7 @@ def getEnvironment(init_environment = None, callerArguments = None):
         else:
             merged_environment[key] = init_environment[key]
     # now add the ones from the system environment
-    for key in environment.viewkeys():
+    for key in environment.keys():
         keyUpper = key.upper()
         if any((keyUpper == 'PATH', keyUpper == 'INCLUDE', keyUpper == 'LIB')):
             setValueOnEnvironmentDict(merged_environment, key, environment[key])
@@ -273,12 +251,12 @@ def getEnvironment(init_environment = None, callerArguments = None):
 
 @deep_copy_arguments
 def runCommand(command, currentWorkingDirectory, callerArguments = None, init_environment = None, onlyErrorCaseOutput=False, expectedExitCodes=[0]):
-    if __builtin__.type(expectedExitCodes) is not list:
-        raise TypeError("{}({}) is not {}".format("expectedExitCodes", __builtin__.type(expectedExitCodes), list))
-    if __builtin__.type(onlyErrorCaseOutput) is not bool:
-        raise TypeError("{}({}) is not {}".format("onlyErrorCaseOutput", __builtin__.type(onlyErrorCaseOutput), bool))
+    if builtins.type(expectedExitCodes) is not list:
+        raise TypeError("{}({}) is not {}".format("expectedExitCodes", builtins.type(expectedExitCodes), list))
+    if builtins.type(onlyErrorCaseOutput) is not bool:
+        raise TypeError("{}({}) is not {}".format("onlyErrorCaseOutput", builtins.type(onlyErrorCaseOutput), bool))
 
-    if __builtin__.type(command) is list:
+    if builtins.type(command) is list:
         commandAsList = command
     else:
         commandAsList = command[:].split(' ')
@@ -298,13 +276,10 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None, init_en
         os.path.isfile(os.path.abspath(os.path.join(currentWorkingDirectory, commandAsList[0]))):
         commandAsList[0] = os.path.abspath(os.path.join(currentWorkingDirectory, commandAsList[0]))
 
-    if 'Path' in environment:
-        pathEnvironment = environment['Path']
-    elif 'PATH' in environment:
-        pathEnvironment = environment['PATH']
+    pathEnvironment = environment['PATH']
     # if we can not find the command, check the environment
-    if not os.path.lexists(commandAsList[0]) and find_executable(commandAsList[0], pathEnvironment):
-        commandAsList[0] = find_executable(commandAsList[0], pathEnvironment)
+    if not os.path.lexists(commandAsList[0]) and find_executable(str(commandAsList[0]), str(pathEnvironment)):
+        commandAsList[0] = find_executable(str(commandAsList[0]), str(pathEnvironment))
 
     if currentWorkingDirectory and not os.path.lexists(currentWorkingDirectory):
         os.makedirs(currentWorkingDirectory)
@@ -343,12 +318,14 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None, init_en
         while not stdout.eof() or not stderr.eof():
             # Show what we received from standard output.
             for line in stdout.readlines():
+                line = line.decode()
                 lastStdOutLines.append(line)
                 if threading.currentThread().name != "MainThread":
                     sys.stdout.write(line)
 
             # Show what we received from standard error.
             for line in stderr.readlines():
+                line = line.decode()
                 lastStdErrLines.append(line)
                 if threading.currentThread().name != "MainThread":
                     sys.stdout.write(line)
@@ -376,10 +353,10 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None, init_en
         type = ""
         if threading.currentThread().name != "MainThread" or onlyErrorCaseOutput:
             if len(lastStdErrLines) != 0:
-                lastOutput += "".join(lastStdErrLines)
+                lastOutput += "".join(str(lastStdErrLines))
                 type = "error "
             elif len(lastStdOutLines) != 0:
-                lastOutput += "".join(lastStdOutLines)
+                lastOutput += "".join(str(lastStdOutLines))
         prettyLastOutput = os.linesep + '======================= error =======================' + os.linesep
         prettyLastOutput += "Working Directory: " + currentWorkingDirectory + os.linesep
         prettyLastOutput += "Last command:      " + ' '.join(commandAsList) + os.linesep
@@ -403,7 +380,7 @@ def runInstallCommand(arguments = ['install'], currentWorkingDirectory = None, c
             init_environment["MAKEFLAGS"] = "-j1"
 
     if arguments:
-        installcommand.extend(arguments if __builtin__.type(arguments) is list else arguments.split())
+        installcommand.extend(arguments if builtins.type(arguments) is list else arguments.split())
     return runCommand(installcommand, currentWorkingDirectory, callerArguments, init_environment = init_environment, onlyErrorCaseOutput = onlyErrorCaseOutput)
 
 @deep_copy_arguments
@@ -415,7 +392,7 @@ def runBuildCommand(arguments = None, currentWorkingDirectory = None, callerArgu
         buildcommand = callerArguments.buildcommand.split()
 
     if arguments:
-        buildcommand.extend(arguments if __builtin__.type(arguments) is list else arguments.split())
+        buildcommand.extend(arguments if builtins.type(arguments) is list else arguments.split())
     return runCommand(buildcommand, currentWorkingDirectory, callerArguments, init_environment = init_environment, onlyErrorCaseOutput = onlyErrorCaseOutput, expectedExitCodes = expectedExitCodes)
 
 @deep_copy_arguments
@@ -451,4 +428,4 @@ def isGitDirectory(repository_path):
     return os.path.lexists(gitConfigDir)
 
 def file_url(file_path):
-    return urlparse.urljoin('file:', urllib.pathname2url(file_path))
+    return urllib.parse.urljoin('file:', urllib.request.pathname2url(file_path))

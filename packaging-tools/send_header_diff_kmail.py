@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 #****************************************************************************
 #*
-#* Copyright (C) 2016 The Qt Company Ltd.
+#* Copyright (C) 2022 The Qt Company Ltd.
 #* Contact: https://www.qt.io/licensing/
 #*
 #* This file is part of the qtqa module of the Qt Toolkit.
