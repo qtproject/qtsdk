@@ -440,7 +440,7 @@ async def build_online_repositories(tasks: List[ReleaseTask], license: str, inst
     assert artifactShareBaseUrl, "The 'artifactShareBaseUrl' must be defined!"
     assert ifwTools, "The 'ifwTools' must be defined!"
     # locate the repo build script
-    scriptPath = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "create_installer.py"))
+    scriptPath = os.path.abspath(os.path.join(os.path.dirname(__file__), "create_installer.py"))
     assert os.path.isfile(scriptPath), "Not a valid script path: {0}".format(scriptPath)
 
     # build online repositories first
@@ -470,7 +470,7 @@ async def build_online_repositories(tasks: List[ReleaseTask], license: str, inst
             log.error(str(e))
             raise
 
-        onlineRepositoryPath = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "online_repository"))
+        onlineRepositoryPath = os.path.abspath(os.path.join(os.path.dirname(__file__), "online_repository"))
         assert os.path.isdir(onlineRepositoryPath), "Not a valid path: {0}".format(onlineRepositoryPath)
         shutil.move(onlineRepositoryPath, task.source_online_repository_path)
         log.info("Repository created at: %s", task.source_online_repository_path)
@@ -639,7 +639,7 @@ def sign_offline_installer(installer_path: str, installer_name: str) -> None:
 
 
 def notarize_dmg(dmgPath, installerBasename) -> None:
-    script_path = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "notarize.py"))
+    script_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "notarize.py"))
     # bundle-id is just a unique identifier without any special meaning, used to track the notarization progress
     bundleId = installerBasename + "-" + strftime('%Y-%m-%d-%H-%M', gmtime())
     bundleId = bundleId.replace('_', '-').replace(' ', '')  # replace illegal characters for bundleId
@@ -665,9 +665,9 @@ async def _build_offline_tasks(stagingServer: str, stagingServerRoot: str, tasks
     assert artifactShareBaseUrl, "The 'artifactShareBaseUrl' must be defined!"
     assert ifwTools, "The 'ifwTools' must be defined!"
 
-    scriptPath = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "create_installer.py"))
+    scriptPath = os.path.abspath(os.path.join(os.path.dirname(__file__), "create_installer.py"))
     assert os.path.isfile(scriptPath), "Not a valid script path: {0}".format(scriptPath)
-    installer_output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, "installer_output"))
+    installer_output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "installer_output"))
 
     # build installers
     for task in tasks:

@@ -39,7 +39,6 @@ import datetime
 import subprocess
 import configparser
 from cryptography.fernet import Fernet
-sys.path.insert(1, "qt6_installer")
 from installer_utils import PackagingError
 from logging_util import init_logger
 log = init_logger(__name__, debug_mode=False)

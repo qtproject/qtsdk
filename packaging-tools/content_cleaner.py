@@ -35,7 +35,7 @@ import argparse
 from pathlib import Path
 from contextlib import contextmanager
 from typing import List, Generator
-from qt6_installer.logging_util import init_logger
+from logging_util import init_logger
 
 log = init_logger(__name__, debug_mode=False)
 
