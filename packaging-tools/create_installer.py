@@ -991,7 +991,7 @@ class QtInstallerTask:
             if value:
                 substitution_list.append([key, value])
             else:
-                raise CreateInstallerError("Invalid substition string given: '{0}'".format(item))
+                log.warning("Invalid substition string given: '{0}'".format(item))
 
         substitution_list.append(['%LICENSE%', args.license_type])
         return substitution_list
