@@ -158,6 +158,8 @@ def substitute_global_tags(task):
     for directory in task.directories_for_substitutions:
         for root, _, files in os.walk(directory):
             for name in files:
+                if not name.endswith((".qs", ".xml", ".ui")):
+                    continue
                 path = os.path.join(root, name)
                 fileslist.append(path)
 
@@ -181,6 +183,8 @@ def substitute_component_tags(tag_pair_list, meta_dir_dest):
 
     for root, _, files in os.walk(meta_dir_dest):
         for name in files:
+            if not name.endswith((".qs", ".xml", ".ui")):
+                continue
             path = os.path.join(root, name)
             fileslist.append(path)
 
