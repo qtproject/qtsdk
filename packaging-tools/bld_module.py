@@ -298,7 +298,7 @@ else: # --> qmake
     generateCommand.append(qtModuleProFile)
 
 runCommand(generateCommand, currentWorkingDirectory = qtModuleBuildDirectory,
-           callerArguments = callerArguments, init_environment = environment)
+           callerArguments = callerArguments, extra_environment = environment)
 
 ret = runBuildCommand(currentWorkingDirectory = qtModuleBuildDirectory, callerArguments = callerArguments)
 if ret:
@@ -306,7 +306,7 @@ if ret:
 
 ret = runInstallCommand(['install', 'INSTALL_ROOT=' + qtModuleInstallDirectory],
                  currentWorkingDirectory = qtModuleBuildDirectory,
-                 callerArguments = callerArguments, init_environment = environment)
+                 callerArguments = callerArguments, extra_environment = environment)
 if ret:
     raise RuntimeError('Failure running the last command: %i' % ret)
 
@@ -327,13 +327,13 @@ if callerArguments.makeDocs:
     # build docs first
     ret = runInstallCommand('docs',
                      currentWorkingDirectory = qtModuleBuildDirectory,
-                     callerArguments = callerArguments, init_environment = environment)
+                     callerArguments = callerArguments, extra_environment = environment)
     if ret:
         raise RuntimeError('Failure running the last command: %i' % ret)
     # then make install those
     ret = runInstallCommand(['install_docs', 'INSTALL_ROOT=' + qtModuleInstallDirectory],
                      currentWorkingDirectory = qtModuleBuildDirectory,
-                     callerArguments = callerArguments, init_environment = environment)
+                     callerArguments = callerArguments, extra_environment = environment)
     if ret:
         raise RuntimeError('Failure running the last command: %i' % ret)
     # make separate "doc.7z" for later use if needed

@@ -94,7 +94,7 @@ class TestRunCommand(unittest.TestCase):
             crashedExitCode = useRunCommand("--printLines 10 --crash", os.getcwd(),
             #callerArguments=
             None,
-            #init_environment=
+            #extra_environment=
             None,
             #onlyErrorCaseOutput=
             True,
@@ -113,7 +113,7 @@ class TestRunCommand(unittest.TestCase):
         self.assertEqual(useRunCommand("--printLines 10 --exitCode 5", os.getcwd(),
             #callerArguments=
             None,
-            #init_environment=
+            #extra_environment=
             None,
             #onlyErrorCaseOutput=
             True,

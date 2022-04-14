@@ -201,35 +201,23 @@ def setValueOnEnvironmentDict(environment, key, value):
         environment[key] = value
 
 @deep_copy_arguments
-def getEnvironment(init_environment = None, callerArguments = None):
-    if init_environment is None:
-        init_environment = {}
+def getEnvironment(extra_environment = None, callerArguments = None):
     # first take the one from the system and use the plain dictionary data for that
     environment = dict(os.environ)
 
-    if not init_environment:
+    if not extra_environment:
         return environment
 
-    # if we have an init_environment we merge the environment dicts
-    merged_environment = {}
-    for key in init_environment.keys():
+    for key in extra_environment.keys():
         keyUpper = key.upper()
         if any((keyUpper == 'PATH', keyUpper == 'INCLUDE', keyUpper == 'LIB')):
-            # use save setValueOnEnvironmentDict in case there are PATH and Path
-            setValueOnEnvironmentDict(merged_environment, key, init_environment[key])
+            setValueOnEnvironmentDict(environment, key, extra_environment[key])
         else:
-            merged_environment[key] = init_environment[key]
-    # now add the ones from the system environment
-    for key in environment.keys():
-        keyUpper = key.upper()
-        if any((keyUpper == 'PATH', keyUpper == 'INCLUDE', keyUpper == 'LIB')):
-            setValueOnEnvironmentDict(merged_environment, key, environment[key])
-        else:
-            merged_environment[key] = environment[key]
-    return merged_environment
+            environment[key] = extra_environment[key]
+    return environment
 
 @deep_copy_arguments
-def runCommand(command, currentWorkingDirectory, callerArguments = None, init_environment = None, onlyErrorCaseOutput=False, expectedExitCodes=[0]):
+def runCommand(command, currentWorkingDirectory, callerArguments = None, extra_environment = None, onlyErrorCaseOutput=False, expectedExitCodes=[0]):
     if builtins.type(expectedExitCodes) is not list:
         raise TypeError("{}({}) is not {}".format("expectedExitCodes", builtins.type(expectedExitCodes), list))
     if builtins.type(onlyErrorCaseOutput) is not bool:
@@ -240,7 +228,7 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None, init_en
     else:
         commandAsList = command[:].split(' ')
 
-    environment = getEnvironment(init_environment, callerArguments)
+    environment = getEnvironment(extra_environment, callerArguments)
 
     # if we can not find the command, just check the current working dir
     if not os.path.lexists(commandAsList[0]) and currentWorkingDirectory and \
@@ -339,40 +327,36 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None, init_en
     return exitCode
 
 @deep_copy_arguments
-def runInstallCommand(arguments = ['install'], currentWorkingDirectory = None, callerArguments = None, init_environment = None, onlyErrorCaseOutput = False):
-    if init_environment is None:
-        init_environment = {}
+def runInstallCommand(arguments = ['install'], currentWorkingDirectory = None, callerArguments = None, extra_environment = None, onlyErrorCaseOutput = False):
     if hasattr(callerArguments, 'installcommand') and callerArguments.installcommand:
         installcommand = callerArguments.installcommand.split()
     else:
         installcommand = ['make', '-j1']
         # had the case that the -j1 on the make command was ignored if there is a MAKEFLAGS variable
         if os.name != 'nt':
-            init_environment["MAKEFLAGS"] = "-j1"
+            if extra_environment is None:
+                extra_environment = {}
+            extra_environment["MAKEFLAGS"] = "-j1"
 
     if arguments:
         installcommand.extend(arguments if builtins.type(arguments) is list else arguments.split())
-    return runCommand(installcommand, currentWorkingDirectory, callerArguments, init_environment = init_environment, onlyErrorCaseOutput = onlyErrorCaseOutput)
+    return runCommand(installcommand, currentWorkingDirectory, callerArguments, extra_environment = extra_environment, onlyErrorCaseOutput = onlyErrorCaseOutput)
 
 @deep_copy_arguments
-def runBuildCommand(arguments = None, currentWorkingDirectory = None, callerArguments = None, init_environment = None, onlyErrorCaseOutput = False, expectedExitCodes=[0]):
-    if init_environment is None:
-        init_environment = {}
+def runBuildCommand(arguments = None, currentWorkingDirectory = None, callerArguments = None, extra_environment = None, onlyErrorCaseOutput = False, expectedExitCodes=[0]):
     buildcommand = ['make']
     if hasattr(callerArguments, 'buildcommand') and callerArguments.buildcommand:
         buildcommand = callerArguments.buildcommand.split()
 
     if arguments:
         buildcommand.extend(arguments if builtins.type(arguments) is list else arguments.split())
-    return runCommand(buildcommand, currentWorkingDirectory, callerArguments, init_environment = init_environment, onlyErrorCaseOutput = onlyErrorCaseOutput, expectedExitCodes = expectedExitCodes)
+    return runCommand(buildcommand, currentWorkingDirectory, callerArguments, extra_environment = extra_environment, onlyErrorCaseOutput = onlyErrorCaseOutput, expectedExitCodes = expectedExitCodes)
 
 @deep_copy_arguments
-def getReturnValue(command, currentWorkingDirectory = None, init_environment = None, callerArguments = None):
-    if init_environment is None:
-        init_environment = {}
+def getReturnValue(command, currentWorkingDirectory = None, extra_environment = None, callerArguments = None):
     commandAsList = command[:].split(' ')
     return subprocess.Popen(commandAsList, stdout=subprocess.PIPE, stderr = subprocess.STDOUT,
-        cwd = currentWorkingDirectory, env = getEnvironment(init_environment, callerArguments)).communicate()[0].strip()
+        cwd = currentWorkingDirectory, env = getEnvironment(extra_environment, callerArguments)).communicate()[0].strip()
 
 def gitSHA(path, callerArguments = None):
     gitBinary = "git"
