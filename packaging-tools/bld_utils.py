@@ -207,27 +207,6 @@ def getEnvironment(init_environment = None, callerArguments = None):
     # first take the one from the system and use the plain dictionary data for that
     environment = dict(os.environ)
 
-    if hasattr(callerArguments, 'environment_batch') and callerArguments.environment_batch:
-        environment = environmentfrombatchfile.get(
-            callerArguments.environment_batch, arguments = callerArguments.environment_batch_argument)
-
-    if (hasattr(callerArguments, 'gnuwin32binpath') and callerArguments.gnuwin32binpath and
-        os.path.lexists(callerArguments.gnuwin32binpath)):
-        setValueOnEnvironmentDict(environment, 'PATH', callerArguments.gnuwin32binpath)
-
-    if hasattr(callerArguments, 'pythonpath') and callerArguments.pythonpath:
-        setValueOnEnvironmentDict(environment, 'PATH', callerArguments.pythonpath)
-    if hasattr(callerArguments, 'perlpath') and callerArguments.perlpath:
-        setValueOnEnvironmentDict(environment, 'PATH', callerArguments.perlpath)
-    if hasattr(callerArguments, 'icupath') and callerArguments.icupath:
-        setValueOnEnvironmentDict(environment, 'PATH', os.path.join(callerArguments.icupath, 'bin'))
-        setValueOnEnvironmentDict(environment, 'INCLUDE', os.path.join(callerArguments.icupath, 'include'))
-        setValueOnEnvironmentDict(environment, 'LIB', os.path.join(callerArguments.icupath, 'lib'))
-    if hasattr(callerArguments, 'opensslpath') and callerArguments.opensslpath:
-        setValueOnEnvironmentDict(environment, 'PATH', os.path.join(callerArguments.opensslpath, 'bin'))
-        setValueOnEnvironmentDict(environment, 'INCLUDE', os.path.join(callerArguments.opensslpath, 'include'))
-        setValueOnEnvironmentDict(environment, 'LIB', os.path.join(callerArguments.opensslpath, 'lib'))
-
     if not init_environment:
         return environment
 
@@ -262,14 +241,6 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None, init_en
         commandAsList = command[:].split(' ')
 
     environment = getEnvironment(init_environment, callerArguments)
-
-    # add some necessary paths
-    if hasattr(callerArguments, 'gitpath') and callerArguments.gitpath and commandAsList[0] == 'git':
-        commandAsList[0] = os.path.abspath(os.path.join(callerArguments.gitpath, 'git'))
-    if hasattr(callerArguments, 'perlpath') and callerArguments.perlpath and commandAsList[0] == 'perl':
-        commandAsList[0] = os.path.abspath(os.path.join(callerArguments.perlpath, 'perl'))
-    if hasattr(callerArguments, 'sevenzippath') and callerArguments.sevenzippath and commandAsList[0] == '7z':
-        commandAsList[0] = os.path.abspath(os.path.join(callerArguments.sevenzippath, '7z'))
 
     # if we can not find the command, just check the current working dir
     if not os.path.lexists(commandAsList[0]) and currentWorkingDirectory and \
@@ -405,8 +376,6 @@ def getReturnValue(command, currentWorkingDirectory = None, init_environment = N
 
 def gitSHA(path, callerArguments = None):
     gitBinary = "git"
-    if hasattr(callerArguments, 'gitpath') and callerArguments.gitpath:
-        gitBinary = os.path.abspath(os.path.join(callerArguments.gitpath, 'git'))
     if isGitDirectory(path):
         return getReturnValue(gitBinary + " rev-list -n1 HEAD", currentWorkingDirectory = path, callerArguments = callerArguments).strip()
     return ''
