@@ -419,14 +419,6 @@ async def update_repository(stagingServer: str, repoLayout: QtRepositoryLayout, 
         trigger_rta(rta, task)
 
 
-def get_python_path():
-    # temporary function will be removed later during refactoring
-    import platform
-    if platform.system() == "Windows":
-        return os.path.join(os.getenv("PYTHON3_PATH"), "python.exe")
-    return "python3"
-
-
 async def build_online_repositories(tasks: List[ReleaseTask], license: str, installerConfigBaseDir: str, artifactShareBaseUrl: str,
                                     ifwTools: str, buildRepositories: bool) -> List[str]:
     log.info("Building online repositories: %i", len(tasks))
@@ -458,7 +450,7 @@ async def build_online_repositories(tasks: List[ReleaseTask], license: str, inst
             raise PackagingError("Invalid 'config_file' path: {0}".format(installerConfigFile))
 
         # TODO: license
-        cmd = [get_python_path(), scriptPath, "-c", installerConfigBaseDir, "-f", installerConfigFile]
+        cmd = [sys.executable, scriptPath, "-c", installerConfigBaseDir, "-f", installerConfigFile]
         cmd += ["--create-repo", "-l", license, "--license-type", license, "-u", artifactShareBaseUrl, "--ifw-tools", ifwTools]
         cmd += ["--force-version-number-increase"]
         for substitution in task.get_installer_string_replacement_list():
@@ -643,7 +635,7 @@ def notarize_dmg(dmgPath, installerBasename) -> None:
     # bundle-id is just a unique identifier without any special meaning, used to track the notarization progress
     bundleId = installerBasename + "-" + strftime('%Y-%m-%d-%H-%M', gmtime())
     bundleId = bundleId.replace('_', '-').replace(' ', '')  # replace illegal characters for bundleId
-    cmd = ['python3', script_path, '--dmg=' + dmgPath, '--bundle-id=' + bundleId]
+    cmd = [sys.executable, script_path, '--dmg=' + dmgPath, '--bundle-id=' + bundleId]
     exec_cmd(cmd, timeout=60*60*3)
 
 
@@ -676,7 +668,7 @@ async def _build_offline_tasks(stagingServer: str, stagingServerRoot: str, tasks
         if not os.path.isfile(installerConfigFile):
             raise PackagingError(f"Invalid 'config_file' path: {installerConfigFile}")
 
-        cmd = [get_python_path(), scriptPath, "-c", installerConfigBaseDir, "-f", installerConfigFile]
+        cmd = [sys.executable, scriptPath, "-c", installerConfigBaseDir, "-f", installerConfigFile]
         cmd += ["--offline", "-l", license, "--license-type", license, "-u", artifactShareBaseUrl, "--ifw-tools", ifwTools]
         cmd += ["--preferred-installer-name", task.get_installer_name()]
         cmd += ["--force-version-number-increase"]

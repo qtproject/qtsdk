@@ -64,12 +64,6 @@ if LOCAL_MODE:
     print("Installer files will be copied to local directory: %s" % LOCAL_INSTALLER_DIR)
 
 
-def get_python3_exec():
-    if platform.system() == "Windows":
-        return os.path.join(os.getenv("PYTHON3_PATH"), "python.exe")
-    return "python3"
-
-
 ###############################
 # Unlock keychain script
 ###############################
@@ -353,7 +347,7 @@ def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url
         if not plugin.build or not os.path.isdir(plugin_path):
             continue
         modules = plugin.modules
-        cmd_arguments = [get_python3_exec(), '-u']
+        cmd_arguments = [sys.executable, '-u']
         build_path = os.path.join(work_dir, plugin.name + '-build')
         qt_path = os.path.join(build_path, 'qt')
         cmd_arguments += [qtcreator_build_plugin_script(qtcreator_dev_path),
@@ -380,7 +374,7 @@ def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url
             cmd_arguments += ['--add-config=' + value for value in additional_config]
 
         # install qt
-        qt_install_args = [get_python3_exec(), '-u', os.path.join(SCRIPT_ROOT_DIR, 'install_qt.py'),
+        qt_install_args = [sys.executable, '-u', os.path.join(SCRIPT_ROOT_DIR, 'install_qt.py'),
                            '--qt-path', qt_path, '--temp-path', os.path.join(build_path, 'temp')]
         for module in modules:
             qt_install_args.extend(['--qt-module', module])
@@ -506,7 +500,7 @@ def repackage_and_sign_qtcreator(qtcreator_path, work_dir, result_package,
     # sign
     unlock_keychain()
     import_path = os.path.join(qtcreator_path, 'scripts')
-    check_call_log([get_python3_exec(), '-u', '-c', "import common; common.codesign('" +
+    check_call_log([sys.executable, '-u', '-c', "import common; common.codesign('" +
                     os.path.join(extract_path, app) +
                     "')"],
                    import_path, extra_env=extra_env, log_filepath=log_filepath)
@@ -687,7 +681,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     qt_path = os.path.join(work_dir, 'qt_install_dir')
     src_path = os.path.join(work_dir, 'qt-creator')
     build_path = os.path.join(work_dir, 'qt-creator_build')
-    qt_install_args = [get_python3_exec(), '-u', os.path.join(SCRIPT_ROOT_DIR, 'install_qt.py'),
+    qt_install_args = [sys.executable, '-u', os.path.join(SCRIPT_ROOT_DIR, 'install_qt.py'),
                        '--qt-path', qt_path, '--temp-path', qt_temp]
     for module_url in qt_module_urls:
         qt_install_args.extend(['--qt-module', module_url])
@@ -703,7 +697,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     check_call_log(qt_install_args,
                    work_dir)
     # Define Qt Creator build script arguments
-    cmd_args = [get_python3_exec(), '-u']
+    cmd_args = [sys.executable, '-u']
     cmd_args += [os.path.join(src_path, 'scripts', 'build.py'),
                  '--src', src_path,
                  '--build', build_path,
@@ -958,7 +952,7 @@ def handle_sdktool_build(optionDict):
     bld_sdktool.zip_sdktool(sdktool_target_path, os.path.join(work_dir, 'sdktool.7z'))
     file_upload_list = [('sdktool.7z', target_env_dir + '/sdktool.7z')]
     if bldinstallercommon.is_win_platform(): # wininterrupt & qtcreatorcdbext
-        cmd_args = [get_python3_exec(), '-u', os.path.join(qtcreator_src, 'scripts', 'build.py'),
+        cmd_args = [sys.executable, '-u', os.path.join(qtcreator_src, 'scripts', 'build.py'),
                     '--src', qtcreator_src,
                     '--build', os.path.join(work_dir, 'build'),
                     '--no-qtcreator']
@@ -986,7 +980,7 @@ def notarizeDmg(dmgPath, installer_name_base):
     # bundle-id is just a unique identifier without any special meaning, used to track the notarization progress
     bundleId = installer_name_base + "-" + strftime('%Y-%m-%d', gmtime())
     bundleId = bundleId.replace('_', '-').replace(' ', '')  # replace illegal characters for bundleId
-    args = [get_python3_exec(), 'notarize.py', '--dmg=' + dmgPath, '--bundle-id=' + bundleId]
+    args = [sys.executable, 'notarize.py', '--dmg=' + dmgPath, '--bundle-id=' + bundleId]
     bldinstallercommon.do_execute_sub_process(args, SCRIPT_ROOT_DIR)
 
 
