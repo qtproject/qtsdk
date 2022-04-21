@@ -5,26 +5,26 @@ name = "pypi"
 
 [packages]
 pip = {version = ">=18.0"}
-sh = {version = "*", os_name = "!= 'nt'"}
-typed-ast = "*"
-rainbow_logging_handler = "*"
-gitpython = "*"
-colorlog = "*"
-pexpect = "*"
-wget = "*"
-beautifulsoup4 = "*"
-pysftp = "*"
-pywin32 = {version = "*", os_name = "== 'nt'"}
-configparser = "*"
+sh = {version = "==1.14.2", os_name = "!= 'nt'"}
+typed-ast = "==1.5.3"
+rainbow_logging_handler = "==2.2.2"
+gitpython = "==3.1.18"
+colorlog = "==6.6.0"
+pexpect = "==4.8.0"
+wget = "==3.2"
+beautifulsoup4 = "==4.11.1"
+pysftp = "==0.2.9"
+pywin32 = {version = "==303", os_name = "== 'nt'"}
+configparser = "==5.2.0"
 
 [dev-packages]
-ddt = "*"
-pylint = "*"
-autopep8 = "*"
-mypy = "*"
-flake8 = "*"
-black = "*"
-stestr = "*"
+ddt = "==1.4.4"
+pylint = "==2.12.0"
+autopep8 = "==1.6.0"
+mypy = "==0.942"
+flake8 = "==4.0.1"
+black = ">=20.8b1"
+stestr = "==3.2.1"
 
 [requires]
 python_version = "3"
