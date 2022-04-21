@@ -255,28 +255,16 @@ def remove_tree(path):
 ###############################
 # substitute all matches in files with replacement_string
 def replace_in_files(filelist, regexp, replacement_string):
-    regexp_compiled = re.compile(regexp)
+    regexp_obj = re.compile(regexp)
     for xfile in filelist:
-        replaceflag = 0
-        readlines = open(xfile, 'r', encoding="utf-8").readlines()
-        listindex = -1
-        for currentline in readlines:
-            listindex = listindex + 1
-            if regexp_compiled.search(currentline):
-                # substitute
-                f = re.sub(regexp, replacement_string, currentline)
-                # update the whole file variable ('readlines')
-                readlines[listindex] = f
-                replaceflag = 1
-        # if some text was replaced overwrite the original file
-        if replaceflag == 1:
-            # open the file for writting
-            write_file = open(xfile, 'w', encoding="utf-8")
-            # overwrite the file
-            for line in readlines:
-                write_file.write(line)
-            # close the file
-            write_file.close()
+        with open(xfile, 'r+', encoding="utf-8") as f:
+            old_contents = f.read()
+            new_contents = re.sub(regexp_obj, replacement_string, old_contents)
+            if old_contents != new_contents:
+                print(f"Replacement '{replacement_string}' applied into: {xfile}")
+            f.seek(0)
+            f.write(new_contents)
+            f.truncate()
 
 
 ###############################
