@@ -36,7 +36,7 @@ import shutil
 import fileinput
 from patch_qt import patchAbsoluteLibPathsFromLine, patchQmakePrlBuildDirFromLine, patchQConfigPriFromLine, patchQtEdition
 from create_installer import parsePackageFinalizeItems
-
+import bldinstallercommon
 
 class TestPackaging(unittest.TestCase):
 
@@ -136,7 +136,7 @@ class TestPackaging(unittest.TestCase):
                 self.assertEqual(line.strip(), expectedData[idx], "Received data: [{0}] differs from expected data: [{1}]".format(line, expectedData[idx]))
                 idx += 1
         finally:
-            shutil.rmtree(tempDir)
+            shutil.rmtree(tempDir, onerror=bldinstallercommon.handle_remove_error)
 
     def test_getBuildIdFromArtifactsBaseUrl(self):
         from qt_prepare_artifacts import getBuildIdFromArtifactsBaseUrl

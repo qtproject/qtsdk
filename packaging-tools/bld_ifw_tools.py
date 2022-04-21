@@ -337,8 +337,7 @@ def build_ifw(options, create_installer=False, build_ifw_examples=False):
         else:
             configure_options = get_dynamic_qt_configure_options() + '-prefix ' + options.qt_build_dir_dynamic + os.sep + 'qtbase'
             # Although we have a shadow build qt sources are still taminated. Unpack sources again.
-            if os.path.exists(options.qt_source_dir):
-                bldinstallercommon.remove_tree(options.qt_source_dir)
+            shutil.rmtree(options.qt_source_dir, onerror=bldinstallercommon.handle_remove_error)
             prepare_qt_sources(options)
             build_qt(options, options.qt_build_dir_dynamic, configure_options, options.qt_build_modules_docs)
         build_ifw_docs(options)
@@ -388,7 +387,7 @@ def prepare_compressed_package(src_pkg_uri, src_pkg_saveas, destination_dir):
         dir_name = l[0]
         full_dir_name = destination_dir + os.sep + dir_name
         bldinstallercommon.move_tree(full_dir_name, destination_dir)
-        bldinstallercommon.remove_tree(full_dir_name)
+        shutil.rmtree(full_dir_name, onerror=bldinstallercommon.handle_remove_error)
     else:
         print('*** Invalid dir structure encountered?!')
         sys.exit(-1)
@@ -658,8 +657,7 @@ def build_and_archive_qt(options):
     print('Build shared Qt')
     configure_options = get_dynamic_qt_configure_options() + '-prefix ' + options.qt_build_dir_dynamic + os.sep + 'qtbase'
     # Although we have a shadow build qt sources are still contaminated. Unpack sources again.
-    if os.path.exists(options.qt_source_dir):
-        bldinstallercommon.remove_tree(options.qt_source_dir)
+    shutil.rmtree(options.qt_source_dir, onerror=bldinstallercommon.handle_remove_error)
     prepare_qt_sources(options)
     build_qt(options, options.qt_build_dir_dynamic, configure_options, options.qt_build_modules_docs)
 
@@ -669,42 +667,43 @@ def build_and_archive_qt(options):
     bldinstallercommon.do_execute_sub_process(cmd_args_archive, ROOT_DIR)
 
 
+def rm_path(path):
+    if os.path.isfile(path) or os.path.islink(path):
+        os.remove(path)
+    else:
+        shutil.rmtree(path, onerror=bldinstallercommon.handle_remove_error)
+
+
 ###############################
 # function
 ###############################
 def clean_build_environment(options):
-    if os.path.isfile(options.installer_framework_archive_name):
-        os.remove(options.installer_framework_archive_name)
-    if os.path.isfile(options.installer_framework_with_squish_archive_name):
-        os.remove(options.installer_framework_with_squish_archive_name)
-    if os.path.isfile(options.installer_framework_payload_arch):
-        os.remove(options.installer_framework_payload_arch)
-    if os.path.exists(options.build_artifacts_dir):
-        bldinstallercommon.remove_tree(options.build_artifacts_dir)
+    rm_paths = [
+        options.installer_framework_archive_name,
+        options.installer_framework_with_squish_archive_name,
+        options.installer_framework_payload_arch,
+        options.build_artifacts_dir,
+        options.installer_framework_build_dir,
+        options.installer_framework_build_dir_squish,
+        options.installer_framework_pkg_dir,
+        options.installer_framework_build_dir_squish,
+        options.installer_framework_pkg_dir,
+        options.installer_framework_target_dir,
+    ]
+    for path in rm_paths:
+        rm_path(path)
     bldinstallercommon.create_dirs(options.build_artifacts_dir)
-    if os.path.exists(options.installer_framework_build_dir):
-        bldinstallercommon.remove_tree(options.installer_framework_build_dir)
-    if os.path.exists(options.installer_framework_build_dir_squish):
-        bldinstallercommon.remove_tree(options.installer_framework_build_dir_squish)
-
-    if os.path.exists(options.installer_framework_pkg_dir):
-        shutil.rmtree(options.installer_framework_pkg_dir)
-    if os.path.exists(options.installer_framework_target_dir):
-        shutil.rmtree(options.installer_framework_target_dir)
-
     if options.incremental_mode:
         return
-
-    if os.path.exists(options.installer_framework_source_dir):
-        bldinstallercommon.remove_tree(options.installer_framework_source_dir)
-    if os.path.exists(options.qt_source_dir):
-        bldinstallercommon.remove_tree(options.qt_source_dir)
-    if os.path.exists(options.qt_build_dir):
-        bldinstallercommon.remove_tree(options.qt_source_dir)
-    if os.path.isfile(options.qt_source_package_uri_saveas):
-        os.remove(options.qt_source_package_uri_saveas)
-    if os.path.isfile(options.qt_installer_framework_uri_saveas):
-        os.remove(options.qt_installer_framework_uri_saveas)
+    rm_paths = [
+        options.qt_source_package_uri_saveas,
+        options.qt_installer_framework_uri_saveas,
+        options.installer_framework_source_dir,
+        options.qt_source_dir,
+        options.qt_build_dir,
+    ]
+    for path in rm_paths:
+        rm_path(path)
 
 
 ###############################
@@ -807,7 +806,7 @@ def sign_windows_installerbase(file_name, working_dir, abort_on_fail, options):
     log_entry[6] = "****"
     print("Calling: {0}".format(' '.join(log_entry)))
     subprocess.check_call(cmd_args, stderr=subprocess.STDOUT)  # check_call() will consume output
-    shutil.rmtree(signToolsTempDir)
+    shutil.rmtree(signToolsTempDir, onerror=bldinstallercommon.handle_remove_error)
     print("Successfully signed: {0}".format(file_name))
 
 

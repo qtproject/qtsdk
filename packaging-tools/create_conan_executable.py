@@ -3,7 +3,7 @@
 
 #############################################################################
 ##
-## Copyright (C) 2021 The Qt Company Ltd.
+## Copyright (C) 2022 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -41,7 +41,7 @@ from typing import Dict, List
 from runner import async_exec_cmd
 from python_env import create_venv
 from installer_utils import is_valid_url_path, cd
-
+import bldinstallercommon
 
 log = init_logger(__name__, debug_mode=False)
 
@@ -129,8 +129,7 @@ async def run(
     getPipFile: str,
 ) -> str:
     work_dir = Path().home() / "_tmp_work_dir_"
-    if work_dir.exists():
-        shutil.rmtree(work_dir)
+    shutil.rmtree(work_dir, onerror=bldinstallercommon.handle_remove_error)
     work_dir.mkdir(parents=True)
 
     with cd(work_dir):

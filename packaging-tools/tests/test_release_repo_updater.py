@@ -3,7 +3,7 @@
 
 #############################################################################
 ##
-## Copyright (C) 2020 The Qt Company Ltd.
+## Copyright (C) 2022 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -43,7 +43,7 @@ from release_repo_updater import is_safe_repo_directory, upload_ifw_to_remote, u
                                     remote_file_exists, build_online_repositories, \
                                     ensure_ext_repo_paths, parse_ext, check_repogen_output, append_to_task_filters, \
                                     format_task_filters, has_connection_error
-
+import bldinstallercommon
 
 def _write_dummy_file(path: str) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -127,7 +127,7 @@ class TestReleaseRepoUpdater(unittest.TestCase):
             repogen = await _get_repogen()
         finally:
             self.assertTrue(os.path.isfile(repogen))
-            shutil.rmtree(os.path.dirname(repogen))
+            shutil.rmtree(os.path.dirname(repogen), onerror=bldinstallercommon.handle_remove_error)
 
     @testhelpers.asyncio_test
     async def test_upload_pending_repository_content(self) -> None:

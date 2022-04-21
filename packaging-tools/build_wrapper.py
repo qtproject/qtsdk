@@ -510,7 +510,7 @@ def repackage_and_sign_qtcreator(qtcreator_path, work_dir, result_package,
         os.remove(result_filepath)
     check_call_log(['7z', 'a', '-mmt2', result_filepath, app],
                    extract_path, log_filepath=log_filepath)
-    shutil.rmtree(extract_path)
+    shutil.rmtree(extract_path, onerror=bldinstallercommon.handle_remove_error)
 
 
 ###############################
@@ -526,8 +526,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     # Get Qt Creator sources if not present yet
     if 'QT_CREATOR_GIT_URL' in optionDict:
         qtCreatorSourceDirectory = os.path.join(work_dir, 'qt-creator')
-        if os.path.exists(qtCreatorSourceDirectory):
-            shutil.rmtree(qtCreatorSourceDirectory)
+        shutil.rmtree(qtCreatorSourceDirectory, onerror=bldinstallercommon.handle_remove_error)
         os.makedirs(qtCreatorSourceDirectory)
         bldinstallercommon.clone_repository(optionDict['QT_CREATOR_GIT_URL'], optionDict['QT_CREATOR_GIT_BRANCH'],
                                             qtCreatorSourceDirectory, full_clone=True, init_subrepos=True)
@@ -535,8 +534,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     for pluginConf in qtCreatorPlugins:
         checkoutDir = os.path.join(work_dir, pluginConf.checkout_dir)
         if pluginConf.git_url:
-            if os.path.exists(checkoutDir):
-                shutil.rmtree(checkoutDir)
+            shutil.rmtree(checkoutDir, onerror=bldinstallercommon.handle_remove_error)
             os.makedirs(checkoutDir)
             bldinstallercommon.clone_repository(pluginConf.git_url, pluginConf.branch_or_tag, checkoutDir, full_clone=True)
 

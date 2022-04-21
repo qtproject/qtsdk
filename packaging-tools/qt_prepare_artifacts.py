@@ -1,7 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #############################################################################
 ##
-## Copyright (C) 2020 The Qt Company Ltd.
+## Copyright (C) 2022 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -43,6 +45,7 @@ from urllib2 import Request, urlopen
 from bs4 import BeautifulSoup
 from remote_uploader import RemoteUploader
 from read_remote_config import get_pkg_value
+import bldinstallercommon
 
 qtLocationDir = "qtlocation"
 qtPositioningDir = "qtpositioning"
@@ -151,9 +154,9 @@ def handleCleanup(regExp, pkgLocation):
         for root, dirs, files in os.walk(pkgLocation):
             for dirName in dirs:
                 if regExp.findall(dirName):
-                    shutil.rmtree(os.path.join(root, dirName))
+                    shutil.rmtree(os.path.join(root, dirName), onerror=bldinstallercommon.handle_remove_error)
                 if geoservicesDir in dirName and qtPositioningDir in pkgLocation:
-                    shutil.rmtree(os.path.join(root, dirName))
+                    shutil.rmtree(os.path.join(root, dirName), onerror=bldinstallercommon.handle_remove_error)
             for fileName in files:
                 if regExp.findall(fileName):
                     if os.path.islink(os.path.join(root, fileName)):
@@ -238,7 +241,7 @@ def collectDebugSymbolFiles(inputDir, outputDir, configurationName, projectName,
             raise
     finalArchiveName = projectName + "-" + configurationName + '-debug-symbols' + ".7z"
     archiveAndUploadToRemote(debugFileArchiveDir, finalArchiveName, remoteUploader.remoteTargetDir + '/debug_information')
-    shutil.rmtree(debugFileArchiveDir)
+    shutil.rmtree(debugFileArchiveDir, onerror=bldinstallercommon.handle_remove_error)
 
 
 def archiveAndUploadToRemote(workDir, archiveName, projectName):

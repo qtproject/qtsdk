@@ -482,8 +482,7 @@ def main():
         # Second time a PGO build, which would be trained with Qt Creator itself
         # Third time will use the training data collected and produce the optimized output
 
-        if os.path.exists(profile_data_path):
-            shutil.rmtree(profile_data_path)
+        shutil.rmtree(profile_data_path, onerror=bldinstallercommon.handle_remove_error)
         os.makedirs(profile_data_path)
 
         # Update the regular build, so that we can see the differences
