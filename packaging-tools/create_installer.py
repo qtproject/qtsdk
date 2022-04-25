@@ -987,12 +987,13 @@ class QtInstallerTask:
     def parse_substitutions(self, args):
         substitution_list = []
         for item in args.substitution_list:
-            key, value = item.split("=")
-            if value:
-                substitution_list.append([key, value])
-            else:
-                log.warning("Invalid substition string given: '{0}'".format(item))
-
+            key, value = item.split("=", maxsplit=1)
+            if not value:
+                log.warning(
+                    "Empty value for substitution string given, substituting anyway:"
+                    f" '{item}'"
+                )
+            substitution_list.append([key, value])
         substitution_list.append(['%LICENSE%', args.license_type])
         return substitution_list
 
