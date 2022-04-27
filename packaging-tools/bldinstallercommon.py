@@ -110,10 +110,6 @@ init_common_module(os.path.dirname(os.path.realpath(__file__)))
 ###############################
 # function
 ###############################
-class head_request(urllib.request.Request):
-    def get_method(self):
-        return 'HEAD'
-
 def is_content_url_valid(url):
     # check first if the url points to file on local file system
     if os.path.isfile(url):
@@ -186,9 +182,6 @@ def get_architecture():
 ###############################
 # function
 ###############################
-def is_unix_platform():
-    return IS_UNIX_PLATFORM
-
 def is_linux_platform():
     return IS_LINUX_PLATFORM
 
@@ -254,19 +247,6 @@ def delete_files_by_type_recursive(directory, rgxp):
     file_list = make_files_list(directory, rgxp)
     for item in file_list:
         os.remove(item)
-
-###############################
-# function
-###############################
-def findInSubdirectory(filename, subdirectory=''):
-    if subdirectory:
-        path = subdirectory
-    else:
-        path = os.getcwd()
-    for root, dirs, names in os.walk(path):
-        if filename in names:
-            return os.path.join(root, filename)
-    raise '*** Error! File not found!'
 
 
 ###############################
@@ -394,38 +374,6 @@ def replace_in_files(filelist, regexp, replacement_string):
 ###############################
 # function
 ###############################
-def replace_in_text_files(root_directory, match_string, replacement_string, file_type_ignore_list):
-    print('------------ replace_in_text_files ----------------')
-    print('  root_directory:     ' + root_directory)
-    print('  match_string:       ' + match_string)
-    print('  replacement_string: ' + replacement_string)
-    pattern = re.compile(match_string)
-    for root, dirs, files in os.walk(root_directory):
-        for name in files:
-            path = os.path.join(root, name)
-            if not os.path.isdir(path) and not os.path.islink(path):
-                if not any(name.endswith(item) for item in file_type_ignore_list):
-                    readlines = open(path, 'r').read()
-                    if pattern.search(readlines):
-                        print('---> Regexp match: ' + path)
-                        if is_text_file(path):
-                            print('---> Replacing build path in: ' + path)
-                            print('--->         String to match: ' + match_string)
-                            print('--->             Replacement: ' + replacement_string)
-                            for line in fileinput.FileInput(path, inplace=1):
-                                output1 = line.replace(match_string, replacement_string)
-                                if line != output1:
-                                    # we had a match
-                                    print(output1.rstrip('\n'))
-                                else:
-                                    # no match so write original line back to file
-                                    print(line.rstrip('\n'))
-    print('--------------------------------------------------------------------')
-
-
-###############################
-# function
-###############################
 def ensure_text_file_endings(filename):
     print('------------ ensure_text_file_endings ----------------')
     if os.path.isdir(filename):
@@ -471,21 +419,6 @@ def config_section_map(conf, section):
             print('exception on %s!' % option)
             dict1[option] = ''
     return dict1
-
-
-###############################
-# function
-###############################
-def dump_config(conf, name):
-    # dump entire config file
-    print('------------------------------')
-    print('- Config: ' + name)
-    print('------------------------------')
-    for section in conf.sections():
-        print('[' + section + ']')
-        for option in conf.options(section):
-            print(' ', option, '=', conf.get(section, option))
-    print('------------------------------')
 
 
 ###############################
@@ -971,17 +904,6 @@ def rename_android_soname_files(qt5_base_path):
 ###############################
 # function
 ###############################
-def remove_directories_by_type(base_path, search_pattern):
-    while True:
-        tmp_path = locate_directory(base_path, search_pattern)
-        if tmp_path:
-            shutil.rmtree(tmp_path)
-        else:
-            break
-
-###############################
-# function
-###############################
 def create_extract_function(file_path, target_path, caller_arguments = None):
     create_dirs(target_path)
     working_dir = os.path.dirname(file_path)
@@ -1001,15 +923,6 @@ def create_download_and_extract_tasks(url, target_path, temp_path, caller_argume
     extract_task.addFunction(create_extract_function(sevenzip_file, target_path, caller_arguments))
     return (download_task, extract_task)
 
-###############################
-# function
-###############################
-def create_download_task(url, target_path):
-    filename = os.path.basename(urllib.parse.urlparse(url).path)
-    target_file = os.path.join(target_path, filename)
-    download_task = Task("download {0} to {1}".format(url, target_file))
-    download_task.addFunction(download, url, target_file)
-    return download_task
 
 ###############################
 # function
