@@ -679,6 +679,7 @@ async def _build_offline_tasks(stagingServer: str, stagingServerRoot: str, tasks
         cmd = [get_python_path(), scriptPath, "-c", installerConfigBaseDir, "-f", installerConfigFile]
         cmd += ["--offline", "-l", license, "--license-type", license, "-u", artifactShareBaseUrl, "--ifw-tools", ifwTools]
         cmd += ["--preferred-installer-name", task.get_installer_name()]
+        cmd += ["--force-version-number-increase"]
         cmd.extend(["--add-substitution=" + s for s in task.get_installer_string_replacement_list()])
         try:
             await async_exec_cmd(cmd, timeout=60*60*3)  # 3h
