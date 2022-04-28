@@ -59,13 +59,6 @@ if platform.system().lower().startswith('darwin'):
 
 
 ##################################################################
-# Get default Qt configure arguments. Platform is detected.
-##################################################################
-def get_default_qt_configure_options(openssl_dir):
-    return get_static_qt_configure_options(openssl_dir)
-
-
-##################################################################
 # Get static Qt configure arguments. Platform is detected.
 ##################################################################
 def get_static_qt_configure_options(openssl_dir):
@@ -728,38 +721,6 @@ def sign_windows_installerbase(file_name, working_dir, abort_on_fail, options):
     shutil.rmtree(signToolsTempDir)
     print("Successfully signed: {0}".format(file_name))
 
-
-###############################
-# function
-###############################
-def archive_nib(options):
-    print('--------------------------------------------------------------------')
-    print('Archive qt_menu.nib')
-    content_parent_path = options.qt_source_dir + os.sep + 'src/gui/mac'
-    content_root_path = content_parent_path + os.sep + 'qt_menu.nib'
-    content_parent_path = os.path.normpath(content_parent_path)
-    content_root_path = os.path.normpath(content_root_path)
-    cmd_args = [ARCHIVE_PROGRAM, 'a', options.mac_qt_menu_nib_archive_name, content_root_path]
-    bldinstallercommon.do_execute_sub_process(cmd_args, ROOT_DIR)
-    if not os.path.isfile(options.mac_qt_menu_nib_archive_name):
-        print('*** Failed to generate archive: {0}'.format(options.mac_qt_menu_nib_archive_name))
-        sys.exit(-1)
-    shutil.move(options.mac_qt_menu_nib_archive_name, options.build_artifacts_dir)
-
-
-###############################
-# function
-###############################
-def archive_macdeployqt(options):
-    print('--------------------------------------------------------------------')
-    print('Archive macdeployqt')
-    content_path = options.qt_build_dir + os.sep + 'tools/macdeployqt/macchangeqt/macchangeqt'
-    cmd_args_archive = [ARCHIVE_PROGRAM, 'a', options.mac_deploy_qt_archive_name, content_path]
-    bldinstallercommon.do_execute_sub_process(cmd_args_archive, ROOT_DIR)
-    if not os.path.isfile(options.mac_deploy_qt_archive_name):
-        print('*** Failed to generate archive: {0}'.format( options.mac_deploy_qt_archive_name))
-        sys.exit(-1)
-    shutil.move(options.mac_deploy_qt_archive_name, options.build_artifacts_dir)
 
 ###############################
 # Replace all dict keys with values in file
