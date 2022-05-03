@@ -336,7 +336,7 @@ def cmake_command(toolchain, src_path, build_path, install_path, profile_data_pa
                '-DLLVM_ENABLE_LIBXML2=OFF',
                '-DLLVM_ENABLE_ZLIB=OFF',
                '-DLLVM_ENABLE_TERMINFO=OFF',
-               '-DLLVM_TARGETS_TO_BUILD=X86',
+               '-DLLVM_TARGETS_TO_BUILD=X86;AArch64',
                '-DLLVM_ENABLE_PROJECTS=' + enabled_projects,
                "-DLLVM_LIT_ARGS='-v'"]
     if is_msvc_toolchain(toolchain):
