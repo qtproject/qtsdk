@@ -86,7 +86,7 @@ def get(env_cmd, initial = None, arguments = None):
     cmd = 'cmd.exe /s /c "\"{env_cmd}\" {arguments}&& echo "{tag}" && set"'.format(**vars())
 
     # launch the process
-    proc = subprocess.Popen(cmd, stdout = subprocess.PIPE, env = initial)
+    proc = subprocess.Popen(cmd, stdout = subprocess.PIPE, env = initial, universal_newlines = True)
     # parse the output sent to stdout
     lines = proc.stdout
     # consume whatever output occurs until the tag is reached
