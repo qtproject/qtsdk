@@ -938,8 +938,10 @@ def handle_sdktool_build(optionDict):
     target_env_dir = optionDict['QTC_PLATFORM']
     work_dir = optionDict['WORK_DIR']
     qtcreator_version = get_qtcreator_version(os.path.join(work_dir, 'qt-creator'), optionDict)
+    qtcreator_base_dir = optionDict['QTC_BASE_DIR']
     qtcreator_edition_name = optionDict.get('QT_CREATOR_EDITION_NAME') # optional
-    base_path = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/qtcreator/snapshots/' + qtcreator_version
+    base_path = (optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/'
+                 + qtcreator_base_dir + '/' + qtcreator_version)
     sdktool_qtbase_src = optionDict['SDKTOOL_QTBASESRC_BASE'] + optionDict['SDKTOOL_QTBASESRC_EXT']
     # build
     qtcreator_src = os.path.join(work_dir, 'qt-creator')
