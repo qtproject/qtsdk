@@ -1,0 +1,19 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  - repo: local
+    hooks:
+      - id: pipenv
+        name: Install pipenv
+        entry: bash -c 'pipenv install --skip-lock --dev'
+        language: system
+        pass_filenames: false
+        always_run: true
+        fail_fast: true
+      - id: unittest
+        name: Run unit tests (unittest)
+        entry: bash -c 'cd packaging-tools && pipenv run python3 -m unittest'
+        language: system
+        pass_filenames: false
+        always_run: true
+        fail_fast: true
