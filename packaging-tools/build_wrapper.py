@@ -938,10 +938,12 @@ def handle_sdktool_build(optionDict):
     target_env_dir = optionDict['QTC_PLATFORM']
     work_dir = optionDict['WORK_DIR']
     qtcreator_version = get_qtcreator_version(os.path.join(work_dir, 'qt-creator'), optionDict)
-    qtcreator_base_dir = optionDict['QTC_BASE_DIR']
     qtcreator_edition_name = optionDict.get('QT_CREATOR_EDITION_NAME') # optional
-    base_path = (optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/'
-                 + qtcreator_base_dir + '/' + qtcreator_version)
+    unversioned_base_path = (optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR']
+                             + '/' + optionDict['QTC_BASE_DIR'])
+    base_path = unversioned_base_path + '/' + qtcreator_version
+    if qtcreator_edition_name:
+        base_path += '_' + qtcreator_edition_name
     sdktool_qtbase_src = optionDict['SDKTOOL_QTBASESRC_BASE'] + optionDict['SDKTOOL_QTBASESRC_EXT']
     # build
     qtcreator_src = os.path.join(work_dir, 'qt-creator')
@@ -976,9 +978,8 @@ def handle_sdktool_build(optionDict):
         file_upload_list += [('build/wininterrupt.7z', target_env_dir + '/wininterrupt.7z'),
                              ('build/qtcreatorcdbext.7z', target_env_dir + '/qtcreatorcdbext.7z')]
     # upload
-    if qtcreator_edition_name:
-        base_path += '_' + qtcreator_edition_name
     upload_files(base_path, file_upload_list, optionDict)
+    update_job_link(unversioned_base_path, base_path, optionDict)
 
 
 def notarizeDmg(dmgPath, installer_name_base):
