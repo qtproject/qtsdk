@@ -29,7 +29,7 @@
 ##
 #############################################################################
 
-import testhelpers
+from tests import testhelpers
 import os
 import unittest
 from ddt import ddt
@@ -38,11 +38,12 @@ import shutil
 import configparser
 from installer_utils import PackagingError
 from release_task_reader import parse_data
-from release_repo_updater import is_safe_repo_directory, upload_ifw_to_remote, upload_pending_repository_content, \
-                                    remote_repository_exists, reset_new_remote_repository, create_remote_repository_backup, \
-                                    remote_file_exists, build_online_repositories, \
-                                    ensure_ext_repo_paths, parse_ext, check_repogen_output, append_to_task_filters, \
-                                    format_task_filters, has_connection_error
+from release_repo_updater import upload_ifw_to_remote, upload_pending_repository_content, \
+    reset_new_remote_repository, create_remote_repository_backup, \
+    remote_file_exists, build_online_repositories, \
+    ensure_ext_repo_paths, parse_ext, check_repogen_output, append_to_task_filters, \
+    format_task_filters, has_connection_error
+from read_remote_config import get_pkg_value
 
 
 def _write_dummy_file(path: str) -> None:
@@ -85,7 +86,11 @@ def _write_updates_xml(path: str, version: str, releaseDate: str) -> None:
 
 
 async def _get_repogen() -> str:
-    ifwTools = "http://ci-files02-hki.intra.qt.io/packages/jenkins/enterprise/ifw/unifiedqt/installer-framework-build-tqtc_3.2-linux-x64.7z"
+    pkgsrv = get_pkg_value("PACKAGE_STORAGE_SERVER_PATH_HTTP")
+    ifwTools = (
+        f"{pkgsrv}/archive/ifw/enterprise/unifiedqt/4.3.0/tqtc-installer-framework-Linux-RHEL_7_6-"
+        "GCC-Linux-RHEL_7_6-X86_64.7z"
+    )
     server = "127.0.0.1"
     serverHome = os.path.expanduser("~")
     return await upload_ifw_to_remote(ifwTools, server, serverHome)
@@ -98,22 +103,6 @@ class TestReleaseRepoUpdater(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.server = "127.0.0.1"
-
-    @testhelpers.asyncio_test_parallel_data(os.path.expanduser("~"), "/", "/home", "/bin", "/boot", "/sys", "/sbin", "/lib",
-                                            "/home/foo/..", os.path.join(os.path.expanduser("~"), "foo", "bar", "..", ".."),
-                                            unpack=False)
-    async def test_is_not_safe_repo_directory(self, path: str) -> None:
-        with self.assertRaises(PackagingError, msg="Should have raised Exception for path: {0}".format(path)):
-            is_safe_repo_directory([path])
-
-    @testhelpers.asyncio_test_parallel_data(os.path.join(os.path.expanduser("~"), "foo"), "/etc/foo", "/data/bar", unpack=False)
-    async def test_is_safe_repo_directory(self, path: str) -> None:
-        is_safe_repo_directory([path])
-
-    @testhelpers.asyncio_test
-    async def test_remote_repository_exists(self):
-        self.assertTrue(remote_repository_exists(self.server, os.getcwd()))
-        self.assertFalse(remote_repository_exists(self.server, "/some/bogus/directory/foo"))
 
     @testhelpers.asyncio_test
     async def test_remote_file_exists(self):

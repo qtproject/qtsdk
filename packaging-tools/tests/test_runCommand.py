@@ -1,41 +1,33 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #############################################################################
 ##
-## Copyright (C) 2015 The Qt Company Ltd.
-## Contact: http://www.qt.io/licensing/
+## Copyright (C) 2022 The Qt Company Ltd.
+## Contact: https://www.qt.io/licensing/
 ##
-## This file is part of the QtCore module of the Qt Toolkit.
+## This file is part of the release tools of the Qt Toolkit.
 ##
-## $QT_BEGIN_LICENSE:LGPL21$
+## $QT_BEGIN_LICENSE:GPL-EXCEPT$
 ## Commercial License Usage
 ## Licensees holding valid commercial Qt licenses may use this file in
 ## accordance with the commercial license agreement provided with the
 ## Software or, alternatively, in accordance with the terms contained in
 ## a written agreement between you and The Qt Company. For licensing terms
-## and conditions see http://www.qt.io/terms-conditions. For further
-## information use the contact form at http://www.qt.io/contact-us.
+## and conditions see https://www.qt.io/terms-conditions. For further
+## information use the contact form at https://www.qt.io/contact-us.
 ##
-## GNU Lesser General Public License Usage
-## Alternatively, this file may be used under the terms of the GNU Lesser
-## General Public License version 2.1 or version 3 as published by the Free
-## Software Foundation and appearing in the file LICENSE.LGPLv21 and
-## LICENSE.LGPLv3 included in the packaging of this file. Please review the
-## following information to ensure the GNU Lesser General Public License
-## requirements will be met: https://www.gnu.org/licenses/lgpl.html and
-## http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
-##
-## As a special exception, The Qt Company gives you certain additional
-## rights. These rights are described in The Qt Company LGPL Exception
-## version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
+## GNU General Public License Usage
+## Alternatively, this file may be used under the terms of the GNU
+## General Public License version 3 as published by the Free Software
+## Foundation with exceptions as appearing in the file LICENSE.GPL3-EXCEPT
+## included in the packaging of this file. Please review the following
+## information to ensure the GNU General Public License requirements will
+## be met: https://www.gnu.org/licenses/gpl-3.0.html.
 ##
 ## $QT_END_LICENSE$
 ##
 #############################################################################
-# import the print function which is used in python 3.x
-from __future__ import print_function
-
-from bld_utils import runCommand
-from threadedwork import Task, ThreadedWork
-
 import ctypes
 import time
 import sys
@@ -60,11 +52,11 @@ def crash():
         '''\
         crash the Python interpreter...
         '''
-        i = ctypes.c_char('a')
+        i = ctypes.c_char(b'a')
         j = ctypes.pointer(i)
         c = 0
         while True:
-                j[c] = 'a'
+                j[c] = b'a'
                 c += 1
         j
 
@@ -73,6 +65,7 @@ def printLines(count):
         print("{0} printed line".format(lineNumber))
 
 def useRunCommand(testArguments, *arguments):
+    from bld_utils import runCommand
     return runCommand("{0} {1}".format(baseCommand(), testArguments), *arguments)
 
 class TestRunCommand(unittest.TestCase):
@@ -86,12 +79,12 @@ class TestRunCommand(unittest.TestCase):
         self.assertIsNotNone(contextManager)
         self.assertIsNotNone(contextManager.exception)
         expectedMessageStart = "Different exit code then expected"
-        messageStart = contextManager.exception.message[:len(expectedMessageStart)]
+        messageStart = str(contextManager.exception)[:len(expectedMessageStart)]
         self.assertEqual(expectedMessageStart, messageStart)
 
     def test_Crash_onlyErrorCaseOutput(self):
         with self.assertRaises(Exception) as contextManager:
-            crashedExitCode = useRunCommand("--printLines 10 --crash", os.getcwd(),
+            useRunCommand("--printLines 10 --crash", os.getcwd(),
             #callerArguments=
             None,
             #extra_environment=
@@ -103,11 +96,11 @@ class TestRunCommand(unittest.TestCase):
         self.assertIsNotNone(contextManager)
         self.assertIsNotNone(contextManager.exception)
         expectedMessageStart = "Different exit code then expected"
-        messageStart = contextManager.exception.message[:len(expectedMessageStart)]
+        messageStart = str(contextManager.exception)[:len(expectedMessageStart)]
         self.assertEqual(expectedMessageStart, messageStart)
         expectedMessageEnd = "9 printed line"
-        messageEnd = contextManager.exception.message.splitlines()[-1]
-        self.assertEqual(expectedMessageEnd, messageEnd)
+        messageEnd = str(contextManager.exception).splitlines()[-1]
+        self.assertTrue(messageEnd.__contains__(expectedMessageEnd))
 
     def test_differentExitCode_onlyErrorCaseOutput(self):
         self.assertEqual(useRunCommand("--printLines 10 --exitCode 5", os.getcwd(),
@@ -122,6 +115,7 @@ class TestRunCommand(unittest.TestCase):
 
     def test_withThreadedWork(self):
         currentMethodName = sys._getframe().f_code.co_name
+        from threadedwork import ThreadedWork
         testWork = ThreadedWork("{} - run some command threaded".format(currentMethodName))
         taskStringList = []
         taskStringList.append("--sleep 1 --printLines 10")
@@ -134,6 +128,7 @@ class TestRunCommand(unittest.TestCase):
         testWork.run()
     def test_withThreadedWork_unexpected_exitCode(self):
         currentMethodName = sys._getframe().f_code.co_name
+        from threadedwork import ThreadedWork
         testWork = ThreadedWork("{} - run some command threaded".format(currentMethodName))
         # this exchange the current os._exit(-1) implementation only for this testing case
         separatorLine = "{0}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>{0}".format(os.linesep)
@@ -150,6 +145,7 @@ class TestRunCommand(unittest.TestCase):
         testWork.run()
     def test_withThreadedWork_crash(self):
         currentMethodName = sys._getframe().f_code.co_name
+        from threadedwork import ThreadedWork
         testWork = ThreadedWork("{} - run some command threaded".format(currentMethodName))
         # this exchange the current os._exit(-1) implementation only for this testing case
         separatorLine = "{0}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>{0}".format(os.linesep)

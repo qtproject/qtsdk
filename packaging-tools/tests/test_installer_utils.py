@@ -3,7 +3,7 @@
 
 #############################################################################
 ##
-## Copyright (C) 2020 The Qt Company Ltd.
+## Copyright (C) 2022 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -29,13 +29,14 @@
 ##
 #############################################################################
 
-import testhelpers
+from tests import testhelpers
 import os
 import io
 import unittest
 import tempfile
 import tarfile
 from installer_utils import cd, PackagingError, get_extract_cmd, extract_archive, download_archive, is_valid_url_path
+from read_remote_config import get_pkg_value
 
 
 class TestInstallerUtils(unittest.TestCase):
@@ -98,11 +99,14 @@ class TestInstallerUtils(unittest.TestCase):
             await extract_archive(tarArchivePath, destDir)
             self.assertTrue(os.path.isfile(os.path.join(destDir, tempPath, "foobar.txt")))
 
-    @unittest.skipUnless(testhelpers.isInternalFileServerReachable(), "Skipping because file server is not accessible")
+    @unittest.skipUnless(testhelpers.isInternalFileServerReachable(),
+                         "Skipping because file server is not accessible")
     @testhelpers.asyncio_test
     async def test_download_archive(self) -> None:
         with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmpBaseDir:
-            downloadedFile = download_archive("http://{0}/packages/jenkins/python/src/Python-3.8.1.tgz".format(packageServer), tmpBaseDir)
+            pkg_srv = get_pkg_value("PACKAGE_STORAGE_SERVER_PATH_HTTP")
+            test_file_url = pkg_srv + "/archive/packaging/qtsdk_testing.txt"
+            downloadedFile = download_archive(test_file_url, tmpBaseDir)
             self.assertTrue(os.path.isfile(downloadedFile))
 
 

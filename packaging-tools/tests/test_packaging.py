@@ -30,6 +30,7 @@
 #############################################################################
 
 import os
+import sys
 import unittest
 import tempfile
 import shutil
@@ -138,70 +139,6 @@ class TestPackaging(unittest.TestCase):
         finally:
             shutil.rmtree(tempDir)
 
-    def test_getBuildIdFromArtifactsBaseUrl(self):
-        from qt_prepare_artifacts import getBuildIdFromArtifactsBaseUrl
-        testUrl = "http://server.addr.com/packages/jenkins/qt/5.12.3/latest"
-        self.assertEqual("latest", getBuildIdFromArtifactsBaseUrl(testUrl))
-        testUrl = "http://server.addr.com/packages/jenkins/foo/bar/qt/5.12.3/67374856/"
-        self.assertEqual("67374856", getBuildIdFromArtifactsBaseUrl(testUrl))
-
-    def test_getProjectBranchFromArtifactsBaseUrl(self):
-        from qt_prepare_artifacts import getProjectBranchFromArtifactsBaseUrl
-        testUrl = "http://server.addr.com/packages/jenkins/qt/5.12.3/latest"
-        self.assertEqual("5.12.3", getProjectBranchFromArtifactsBaseUrl(testUrl))
-        testUrl = "http://server.addr.com/packages/jenkins/foo/bar/qt/master/67374856/"
-        self.assertEqual("master", getProjectBranchFromArtifactsBaseUrl(testUrl))
-
-    def test_getProjectNameFromArtifactsBaseUrl(self):
-        from qt_prepare_artifacts import getProjectNameFromArtifactsBaseUrl
-        testUrl = "http://server.addr.com/packages/jenkins/qt/5.12.3/latest"
-        self.assertEqual("qt", getProjectNameFromArtifactsBaseUrl(testUrl))
-        testUrl = "http://server.addr.com/packages/jenkins/foo/bar/qt/5.12.3/67374856/"
-        self.assertEqual("qt", getProjectNameFromArtifactsBaseUrl(testUrl))
-
-    def test_getConfigurationNameFromArtifactName(self):
-        from qt_prepare_artifacts import getConfigurationNameFromArtifactName
-        testStr = "qtgamepad-Linux-RHEL_7_4-GCC-QNX-QNX_700-ARMv8.7z"
-        self.assertEqual("Linux-RHEL_7_4-GCC-QNX-QNX_700-ARMv8", getConfigurationNameFromArtifactName(testStr))
-
-    def test_getPlatformFromArtifactName(self):
-        from qt_prepare_artifacts import getPlatformFromArtifactName
-        testStr = "qtgamepad-Linux-RHEL_7_4-GCC-QNX-QNX_700-ARMv8.7z"
-        self.assertEqual("linux", getPlatformFromArtifactName(testStr))
-        testStr = "qtbase-Windows-Windows_10-MSVC2017-WinRT-WinRT_10-ARMv7.7z"
-        self.assertEqual("windows", getPlatformFromArtifactName(testStr))
-        testStr = "qtbase-MacOS-MacOS_10_13-Clang-IOS-IOS_ANY-Multi.7z"
-        self.assertEqual("macos", getPlatformFromArtifactName(testStr))
-
-    @unittest.skipUnless(os.environ.get("PKG_TEST_QT_ARTIFACTS_URL"), "Skipping because 'PKG_TEST_QT_ARTIFACTS_URL' is not set")
-    def test_readArtifactsFromUrlRecursive(self):
-        from qt_prepare_artifacts import readArtifactsFromUrlRecursive
-        artifactsList = []
-        testUrl = os.environ.get("PKG_TEST_QT_ARTIFACTS_URL") + "/archive/qt/5.13/5.13.1-final-released/latest/"
-        readArtifactsFromUrlRecursive(testUrl, artifactsList)
-        for item in artifactsList:
-            self.assertTrue(item.endswith((".tar.gz", ".7z")))
-
-    def test_pysideSplitRequired(self):
-        from qt_prepare_artifacts import pysideSplitRequired
-        testStr = "http://server.addr.com/packages/jenkins/pyside/5.12.1/latest/"
-        self.assertEqual(True, pysideSplitRequired(testStr))
-        testStr = "http://server.addr.com/packages/jenkins/foo/bar/qt/5.12.3/67374856/"
-        self.assertEqual(False, pysideSplitRequired(testStr))
-
-    def test_qtLocationSplitRequired(self):
-        from qt_prepare_artifacts import qtLocationSplitRequired
-        testStr = "http://server.addr.com/packages/jenkins/qt/5.6.1/latest/qtlocation/qtlocation-MacOS-MacOS_10_12-Clang-IOS-IOS_ANY-Multi.7z"
-        self.assertEqual(True, qtLocationSplitRequired(testStr))
-        testStr = "http://server.addr.com/packages/jenkins/qt/5.9.1/latest/qtlocation/qtlocation-MacOS-MacOS_10_12-Clang-IOS-IOS_ANY-Multi.7z"
-        self.assertEqual(False, qtLocationSplitRequired(testStr))
-        testStr = "http://server.addr.com/packages/jenkins/qt/5.6.1/latest/qtbase/qtbase-MacOS-MacOS_10_12-Clang-IOS-IOS_ANY-Multi.7z"
-        self.assertEqual(False, qtLocationSplitRequired(testStr))
-
-    def test_getProjectNameFromArtifactName(self):
-        from qt_prepare_artifacts import getProjectNameFromArtifactName
-        testStr = "qtgamepad-Linux-RHEL_7_4-GCC-QNX-QNX_700-ARMv8.7z"
-        self.assertEqual("qtgamepad", getProjectNameFromArtifactName(testStr))
 
     @unittest.skipUnless(os.environ.get("PKG_TEST_QT_CONFIG_BASE_PATH"), "Skipping because 'PKG_TEST_QT_CONFIG_BASE_PATH' is not set")
     @unittest.skipUnless(os.environ.get("PKG_TEST_QT_ARTIFACTS_URL"), "Skipping because 'PKG_TEST_QT_CONFIG_BASE_PATH' is not set")
@@ -214,7 +151,7 @@ class TestPackaging(unittest.TestCase):
         path = os.path.join(os.environ.get("PKG_TEST_QT_CONFIG_BASE_PATH"), "offline_installer_jobs", "5.9.3")
         offlineJobs = os.listdir(path)
         for offlineJob in offlineJobs:
-            cmd_args = ['python', '-u', os.path.join(testsDir, 'create_installer.py')]
+            cmd_args = [sys.executable, '-u', os.path.join(testsDir, 'create_installer.py')]
             cmd_args = cmd_args + ['-c', os.environ.get("PKG_TEST_QT_CONFIG_BASE_PATH")]
             cmd_args = cmd_args + ['-f', os.path.join(path, offlineJob)]
             cmd_args = cmd_args + ['--offline']

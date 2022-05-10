@@ -3,7 +3,7 @@
 
 #############################################################################
 ##
-## Copyright (C) 2020 The Qt Company Ltd.
+## Copyright (C) 2022 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -29,8 +29,7 @@
 ##
 #############################################################################
 
-import testhelpers
-import os
+from tests import testhelpers
 import unittest
 from ddt import ddt
 from typing import List

@@ -29,16 +29,11 @@
 ##
 #############################################################################
 
-import os
 import sh
-import sys
-import inspect
 import asyncio
 import typing
 import subprocess
-current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parent_dir = os.path.dirname(current_dir)
-sys.path.insert(0, parent_dir)
+from read_remote_config import get_pkg_value
 
 
 _asyncio_test_loop = asyncio.get_event_loop()
@@ -63,12 +58,13 @@ def asyncio_test_parallel_data(*data_args, unpack=True):
         return wrapped
     return decorator
 
+
 def isInternalFileServerReachable() -> bool:
-        packageServer = "ci-files02-hki.intra.qt.io"
+    try:
+        packageServer = get_pkg_value("PACKAGE_STORAGE_SERVER")
         ping = sh.which("ping")
-        try:
-            ret = subprocess.run([ping, "-c", "1", packageServer], timeout=5, capture_output=True)
-            return ret.returncode == 0
-        except subprocess.TimeoutExpired:
-            pass
-        return False
+        ret = subprocess.run([ping, "-c", "1", packageServer], timeout=5, capture_output=True)
+        return ret.returncode == 0
+    except Exception:
+        pass
+    return False
