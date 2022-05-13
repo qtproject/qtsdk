@@ -1,8 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 ############################################################################
 #
-# Copyright (C) 2017 The Qt Company Ltd.
+# Copyright (C) 2022 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of Qt Creator.
@@ -65,16 +66,16 @@ import mergeCsvFiles
 
 def verboseStart(args):
     if Config.Verbose:
-        print "info: starting", args
+        print("info: starting", args)
 
 def checkExistenceOrDie(filePath):
     if not os.path.exists(filePath):
-        print >> sys.stderr, "error: file path does not exist:", filePath
+        print("error: file path does not exist:", filePath, file=sys.stderr)
         sys.exit(1)
 
 def checkExitCodeOrDie(exitCode, args):
     if exitCode != 0:
-        print >> sys.stderr, "error: exit code is,", exitCode, "for", ' '.join(args)
+        print("error: exit code is,", exitCode, "for", ' '.join(args), file=sys.stderr)
         sys.exit(1)
 
 class Config:
@@ -113,18 +114,18 @@ class Config:
 
     @staticmethod
     def dump():
-        print "log dir:"
-        print "  ", Config.LogDir
-        print "qt creator settings dir:"
-        print "  ", Config.QtCreatorSettingsDir
-        print "target libclang:"
-        print "  ", Config.TargetLibClangDll
-        print "libclangs:"
+        print("log dir:")
+        print("  ", Config.LogDir)
+        print("qt creator settings dir:")
+        print("  ", Config.QtCreatorSettingsDir)
+        print("target libclang:")
+        print("  ", Config.TargetLibClangDll)
+        print("libclangs:")
         for l in Config.LibClangDlls:
-            print "  ", l
-        print "batch files:"
+            print("  ", l)
+        print("batch files:")
         for b in Config.BatchFiles:
-            print "  ", b
+            print("  ", b)
 
 class RunRecord:
     def __init__(self, libClangId, batchFilePath):
@@ -148,7 +149,7 @@ class DebugView:
     def stop(self):
         if self.proc:
             if Config.Verbose:
-                print "info: stopping", self.executable
+                print("info: stopping", self.executable)
             self.proc.terminate()
             self.proc.wait()
 
@@ -221,24 +222,24 @@ def logFileFromId(logFileId):
 def createDir(dirPath):
     if not os.path.exists(dirPath):
         if Config.Verbose:
-            print "info: creating not existent", dirPath
+            print("info: creating not existent", dirPath)
         os.makedirs(dirPath)
 
 def createBackupFile(filePath):
     if os.path.exists(filePath):
         backupPath = filePath[:-4] + ".backup_" + str(time.time()) + ".log"
         if Config.Verbose:
-            print 'info: creating backup of already existing "%s"' %(filePath)
+            print('info: creating backup of already existing "%s"' %(filePath))
         shutil.copyfile(filePath, backupPath)
 
 def printDuration(s):
     hours, remainder = divmod(s, 3600)
     minutes, seconds = divmod(remainder, 60)
-    print '...needed %d:%02d:%02d' %(hours, minutes, seconds)
+    print('...needed %d:%02d:%02d' %(hours, minutes, seconds))
 
 def processBatchFileTimed(libClangId, batchFilePath):
     timeStarted = time.time()
-    print "processing", batchFilePath,
+    print("processing", batchFilePath, end=' ')
 
     runRecord = processBatchFile(libClangId, batchFilePath)
 
@@ -267,11 +268,11 @@ def getLibClangId(libClangDll):
     return identifier
 
 def switchLibClang(libClangDll):
-    print 'copying "%s" -> "%s"' %(libClangDll, Config.TargetLibClangDll)
+    print('copying "%s" -> "%s"' %(libClangDll, Config.TargetLibClangDll))
     shutil.copyfile(libClangDll, Config.TargetLibClangDll)
 
 def runQtCreatorWithLibClang(libClangDll):
-    print
+    print("")
     switchLibClang(libClangDll)
 
     runRecords = []
@@ -292,7 +293,7 @@ def mergeGeneratedCsvFiles(runRecords):
     batchFileId2RunRecord = {}
     for rr in runRecords:
         newValue = [rr]
-        if batchFileId2RunRecord.has_key(rr.batchFileId):
+        if rr.batchFileId in batchFileId2RunRecord:
             newValue = batchFileId2RunRecord[rr.batchFileId]
             newValue.append(rr)
         batchFileId2RunRecord[rr.batchFileId] = newValue
@@ -302,7 +303,7 @@ def mergeGeneratedCsvFiles(runRecords):
         mergeFilePath = os.path.join(Config.LogDir, batchFileId + ".csv")
 
         mergeCsvFiles.mergeFiles(mergeFilePath, csvFilePaths)
-        print "generated:", mergeFilePath
+        print("generated:", mergeFilePath)
 
 def main():
     Config.initializeFromEnvironment()

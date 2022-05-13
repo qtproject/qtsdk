@@ -1,8 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 ############################################################################
 #
-# Copyright (C) 2017 The Qt Company Ltd.
+# Copyright (C) 2022 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of Qt Creator.
@@ -46,7 +47,7 @@ class FileWithValues:
 
 def readCsv(filePath, delimiter):
     lines = []
-    with open(filePath, 'rb') as f:
+    with open(filePath, 'rt') as f:
         lines = f.readlines()
 
     records = []
@@ -62,7 +63,7 @@ def readCsvFiles(filePaths):
     files = []
 
     for filePath in filePaths:
-        f = open(filePath, 'rb')
+        f = open(filePath, 'rt')
         reader = csv.reader(f, delimiter=Global.Delimiter, quoting=csv.QUOTE_NONE)
 
         values = []
@@ -85,20 +86,20 @@ def checkConsistency(files):
     # Ensure same size of records
     for f in files:
         if not len(f.values) == referenceEntrySize:
-            print >> sys.stderr, 'error: number of entries mismatch between "%s" and "%s".' %(referenceEntry.filePath, f.filePath)
+            print('error: number of entries mismatch between "%s" and "%s".' %(referenceEntry.filePath, f.filePath), file=sys.stderr)
             sys.exit(1)
 
     # Ensure same identifier on the left
     for f in files:
         identifiers = [v[0] for v in f.values]
         if not identifiers == referenceEntryIdentifiers:
-            print >> sys.stderr, 'error: mismatch between identifers in first column between "%s" and "%s".' %(referenceEntry.filePath, f.filePath)
+            print('error: mismatch between identifers in first column between "%s" and "%s".' %(referenceEntry.filePath, f.filePath), file=sys.stderr)
             sys.exit(1)
 
     return referenceEntryIdentifiers
 
 def mergeFilesHelper(outputFilePath, referenceIdentifiers, files):
-    with open(outputFilePath, 'wb') as csvfile:
+    with open(outputFilePath, 'wt') as csvfile:
         writer = csv.writer(csvfile, delimiter=Global.Delimiter, quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
         # Write header row
@@ -107,7 +108,7 @@ def mergeFilesHelper(outputFilePath, referenceIdentifiers, files):
 
         # Write values
         columns = [[v[1] for v in f.values] for f in files]
-        rows = zip(referenceIdentifiers, *columns)
+        rows = list(zip(referenceIdentifiers, *columns))
         for row in rows:
             writer.writerow(row)
 
@@ -117,15 +118,15 @@ def mergeFiles(outputFilePath, filesToMerge):
     mergeFilesHelper(outputFilePath, referenceIdentifiers, files)
 
 def printHelpAndExit():
-    print __doc__
+    print(__doc__)
     sys.exit(0)
 
 def main():
     try:
         opts, args = getopt.getopt(sys.argv[1:], "h", ["help"])
-    except getopt.error, msg:
-        print msg
-        print "for help use --help"
+    except getopt.error as msg:
+        print(msg)
+        print("for help use --help")
         sys.exit(2)
 
     for o, a in opts:

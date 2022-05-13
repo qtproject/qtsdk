@@ -1,8 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 ############################################################################
 #
-# Copyright (C) 2017 The Qt Company Ltd.
+# Copyright (C) 2022 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of Qt Creator.
@@ -81,7 +82,7 @@ def extractRecords(fileContent):
             timeNeededInMs = previousRecord[1]
 
         if not timeNeededInMs:
-            timeMatch = timeNeededMatcher.finditer(fileContent, recordStartMatch.end()).next()
+            timeMatch = next(timeNeededMatcher.finditer(fileContent, recordStartMatch.end()))
             previousTimeMatchEnd = timeMatch.end()
             timeNeededInMs = timeMatch.group(2)
 
@@ -109,16 +110,16 @@ def convert(inputFile, columnLabel = None):
     return recordsToString(records)
 
 def printUsageAndExit():
-    print __doc__
+    print(__doc__)
     sys.exit(0)
 
 def main():
     # parse command line options
     try:
         opts, args = getopt.getopt(sys.argv[1:], "h", ["help"])
-    except getopt.error, msg:
-        print msg
-        print "for help use --help"
+    except getopt.error as msg:
+        print(msg)
+        print("for help use --help")
         sys.exit(2)
 
     # process options
@@ -130,7 +131,7 @@ def main():
     if not args:
         printUsageAndExit()
     for arg in args:
-        print convert(arg)
+        print(convert(arg))
 
 if __name__ == "__main__":
     main()
