@@ -172,12 +172,8 @@ class IfwOptions:
                  signserver,
                  signpwd,
                  incremental_build = False,
-                 squish_dir = "",
-                 squish_src = "",
                  archive_qt = False
                  ):
-        self.squish_dir                                 = squish_dir
-        self.squish_src                                 = squish_src
         self.signserver                                 = signserver
         self.signpwd                                    = signpwd
         self.incremental_mode                           = incremental_build
@@ -186,7 +182,6 @@ class IfwOptions:
         self.qt_build_dir_dynamic                       = os.path.join(ROOT_DIR, 'qt-bld-dynamic')
         self.installer_framework_source_dir             = os.path.join(ROOT_DIR, 'ifw-src')
         self.installer_framework_build_dir              = os.path.join(ROOT_DIR, 'ifw-bld')
-        self.installer_framework_build_dir_squish       = os.path.join(ROOT_DIR, 'ifw-bld_squish')
         self.installer_framework_pkg_dir                = os.path.join(ROOT_DIR, 'ifw-pkg')
         self.installer_framework_target_dir             = os.path.join(ROOT_DIR, 'ifw-target')
         self.qt_installer_framework_uri                 = qt_installer_framework_uri
@@ -235,7 +230,6 @@ class IfwOptions:
             self.architecture = bldinstallercommon.get_architecture()
         self.plat_suffix                                = bldinstallercommon.get_platform_suffix()
         self.installer_framework_archive_name           = 'installer-framework-build-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
-        self.installer_framework_with_squish_archive_name = 'installer-framework-build-squish-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
         self.installer_base_archive_name                = 'installerbase-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
         self.binarycreator_archive_name                 = 'binarycreator-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
         self.installer_framework_payload_arch           = 'installer-framework-build-stripped-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
@@ -290,7 +284,6 @@ class IfwOptions:
         print('installer_framework_source_dir:          {0}'.format(self.installer_framework_source_dir))
         print('installer_framework_build_dir:           {0}'.format(self.installer_framework_build_dir))
         print('installer_framework_archive_name:        {0}'.format(self.installer_framework_archive_name))
-        print('installer_framework_with_squish_archive_name: {0}'.format(self.installer_framework_with_squish_archive_name))
         print('installer_base_archive_name:             {0}'.format(self.installer_base_archive_name))
         print('binarycreator_archive_name:              {0}'.format(self.binarycreator_archive_name))
         print('installer_framework_pkg_dir:             {0}'.format(self.installer_framework_pkg_dir))
@@ -299,8 +292,6 @@ class IfwOptions:
         print('product_key_checker:                     {0}'.format(self.product_key_checker_pri))
         print('qt_binaries_static:                      {0}'.format(self.qt_binaries_static))
         print('qt_binaries_dynamic:                     {0}'.format(self.qt_binaries_dynamic))
-        print('squish_dir:                              {0}'.format(self.squish_dir))
-        print('squish_src:                              {0}'.format(self.squish_src))
         print('-----------------------------------------')
 
 
@@ -321,12 +312,9 @@ def build_ifw(options, create_installer=False, build_ifw_examples=False):
     else:
         prepare_qt_sources(options)
         build_qt(options, options.qt_build_dir, options.qt_configure_options, options.qt_build_modules)
-
-    if(options.squish_src):
-        build_squish(options)
     # build installer framework
     build_installer_framework(options)
-    if build_ifw_examples or options.squish_dir:
+    if build_ifw_examples:
         build_installer_framework_examples(options)
     # steps when creating ifw installer
     if create_installer:
@@ -346,8 +334,6 @@ def build_ifw(options, create_installer=False, build_ifw_examples=False):
     archive_installerbase(options)
     archive_installer_framework(options.installer_framework_build_dir, options.installer_framework_archive_name, options, True)
     archive_binarycreator(options)
-    if (options.squish_dir):
-        archive_installer_framework(options.installer_framework_build_dir_squish, options.installer_framework_with_squish_archive_name, options, False)
     return os.path.basename(options.installer_framework_build_dir)
 
 
@@ -429,36 +415,6 @@ def build_qt(options, qt_build_dir, qt_configure_options, qt_modules):
 ###############################
 # function
 ###############################
-def build_squish(options):
-
-    print('--------------------------------------------------------------------')
-    print('Configuring Squish')
-    qmake_bin = os.path.join(options.qt_build_dir, 'qtbase', 'bin', options.qt_qmake_bin)
-    print ('qmake path ' + qmake_bin)
-
-    if bldinstallercommon.is_win_platform():
-        cmd_args = "configure --with-qmake=" + qmake_bin + " --enable-qmake-config --disable-all --enable-idl --enable-qt"
-        print("command args " + cmd_args)
-        bldinstallercommon.do_execute_sub_process(cmd_args, options.squish_src)
-    else:
-        cmd_args = os.path.join(options.squish_src, "configure") + " --with-qmake=" + qmake_bin + " --enable-qmake-config --disable-all --enable-idl --enable-qt"
-        print("command args " + cmd_args)
-        bldinstallercommon.do_execute_sub_process(shlex.split(cmd_args), options.squish_src)
-
-    print('--------------------------------------------------------------------')
-    print("building form source " + options.squish_src)
-    print('Building Squish')
-
-    if bldinstallercommon.is_win_platform():
-        bldinstallercommon.do_execute_sub_process('build', options.squish_src)
-        bldinstallercommon.do_execute_sub_process('build install DESTDIR=' + options.squish_dir, options.squish_src)
-    else:
-        bldinstallercommon.do_execute_sub_process(shlex.split(os.path.join(options.squish_src, 'build')), options.squish_src)
-        bldinstallercommon.do_execute_sub_process(shlex.split(os.path.join(options.squish_src,'build install DESTDIR=') + options.squish_dir), options.squish_src)
-
-###############################
-# function
-###############################
 def prepare_installer_framework(options):
     if options.incremental_mode and os.path.exists(options.installer_framework_source_dir):
         return
@@ -466,8 +422,6 @@ def prepare_installer_framework(options):
     print('Prepare Installer Framework source')
     #create dirs
     bldinstallercommon.create_dirs(options.installer_framework_build_dir)
-    if (options.squish_dir):
-        bldinstallercommon.create_dirs(options.installer_framework_build_dir_squish)
     if options.qt_installer_framework_uri.endswith('.git'):
         # clone repos
         bldinstallercommon.clone_repository(options.qt_installer_framework_uri, options.qt_installer_framework_branch, options.installer_framework_source_dir, True)
@@ -508,24 +462,11 @@ def build_installer_framework(options):
     cmd_args += options.qt_installer_framework_qmake_args
     cmd_args += [options.installer_framework_source_dir]
     start_IFW_build(options, cmd_args, options.installer_framework_build_dir)
-    if options.squish_dir:
-        print('--------------------------------------------------------------------')
-        print('Build Installer Framework with squish support')
-        if not os.path.exists(options.installer_framework_build_dir_squish):
-            bldinstallercommon.create_dirs(options.installer_framework_build_dir_squish)
-        cmd_args = [qmake_bin]
-        cmd_args += options.qt_installer_framework_qmake_args
-        cmd_args += ['SQUISH_PATH=' + options.squish_dir]
-        cmd_args += [options.installer_framework_source_dir]
-        start_IFW_build(options, cmd_args, options.installer_framework_build_dir_squish)
 
 def build_installer_framework_examples(options):
     print('--------------------------------------------------------------------')
     print('Building Installer Framework Examples')
-    if options.squish_dir:
-        file_binarycreator = os.path.join(options.installer_framework_build_dir_squish, 'bin', 'binarycreator')
-    else:
-        file_binarycreator = os.path.join(options.installer_framework_build_dir, 'bin', 'binarycreator')
+    file_binarycreator = os.path.join(options.installer_framework_build_dir, 'bin', 'binarycreator')
     if bldinstallercommon.is_win_platform():
         file_binarycreator += '.exe'
     if not os.path.exists(file_binarycreator):
@@ -551,26 +492,7 @@ def build_installer_framework_examples(options):
             ifw_example_binaries.append(target_filename)
         #Breaking here as we don't want to go through sub directories
         break
-    file_squishDir = options.squish_dir
-    if os.path.exists(file_squishDir):
-        print('--------------------------------------------------------------------')
-        print('Running squish tests')
-        # Windows
-        if sys.platform.startswith('win'):
-            squishserver_handle = subprocess.Popen(os.path.join(file_squishDir, 'bin', 'squishserver.exe'))
-            bldinstallercommon.do_execute_sub_process(args=('squishrunner.exe --testsuite ' + os.path.join(os.getcwd(), 'squish_suites', 'suite_IFW_examples')), execution_path=os.path.join(file_squishDir, 'bin'))
-            squishserver_handle.kill() # this will not kill squishserver most likely
-            subprocess.Popen("TASKKILL /IM _squishserver.exe /F") #this should kill squish server
-        # Unix
-        else:
-            squishserver_handle = subprocess.Popen(shlex.split(os.path.join(file_squishDir, "bin", "squishserver")), shell=False)
-            bldinstallercommon.do_execute_sub_process(args=shlex.split(os.path.join(file_squishDir, "bin", "squishrunner") + ' --testsuite ' +os.path.join(os.getcwd(), "squish_suites", "suite_IFW_examples")), execution_path=os.path.join(file_squishDir, "bin"))
-            squishserver_handle.kill() #kills squish server
 
-        # Delete the example executables we have created for Squish
-        for example in ifw_example_binaries:
-            print("Removing " + example)
-            os.remove(example)
 
 ###############################
 # function
@@ -680,13 +602,10 @@ def rm_path(path):
 def clean_build_environment(options):
     rm_paths = [
         options.installer_framework_archive_name,
-        options.installer_framework_with_squish_archive_name,
         options.installer_framework_payload_arch,
         options.build_artifacts_dir,
         options.installer_framework_build_dir,
-        options.installer_framework_build_dir_squish,
         options.installer_framework_pkg_dir,
-        options.installer_framework_build_dir_squish,
         options.installer_framework_pkg_dir,
         options.installer_framework_target_dir,
     ]
@@ -893,8 +812,6 @@ def setup_argument_parser():
     parser.add_argument('--qt_binaries_dynamic', help="Use prebuilt Qt package instead of building from scratch", required=False)
     parser.add_argument('--sign_server', help="Signing server address", required=False)
     parser.add_argument('--sign_server_pwd', help="Signing server parssword", required=False)
-    parser.add_argument('--squish_dir', help="Path to Squish. If set, runs squish tests to IFW examples", required=False, default='')
-    parser.add_argument('--squish_src', help="Path to Squish sources. If set, Squish is built", required=False, default='')
     parser.add_argument('--archive_qt', help="Build and archive both static and shared Qt binaries for IFW", action='store_true', required=False, default=False)
     return parser
 
@@ -931,8 +848,6 @@ if __name__ == "__main__":
                          signserver,
                          signpwd,
                          CARGS.incremental,
-                         CARGS.squish_dir,
-                         CARGS.squish_src,
                          CARGS.archive_qt
                         )
     # build ifw tools
