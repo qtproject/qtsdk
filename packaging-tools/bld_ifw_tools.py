@@ -32,7 +32,6 @@
 import sys
 import os
 import re
-import platform
 import argparse
 import multiprocessing
 import bldinstallercommon
@@ -41,15 +40,16 @@ import shutil
 import shlex
 import subprocess
 from read_remote_config import get_pkg_value
+from bld_utils import is_windows, is_macos, is_linux
 
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
-ARCH_EXT = '.zip' if platform.system().lower().startswith('win') else '.tar.xz'
+ARCH_EXT = '.zip' if is_windows() else '.tar.xz'
 QT_VERSION = '5.12'
 QT_VERSION_MINOR = '5.12.7'
 
 
 ARCHIVE_PROGRAM = '7z'
-if platform.system().lower().startswith('darwin'):
+if is_macos():
     try:
         print("Trying to use 7z from")
         subprocess.call(['where', '7z'])
@@ -63,12 +63,12 @@ if platform.system().lower().startswith('darwin'):
 ##################################################################
 def get_static_qt_configure_options(openssl_dir):
     options = get_common_qt_configure_options() + '-static -no-sql-sqlite '
-    if bldinstallercommon.is_mac_platform():
+    if is_macos():
         options += '-no-securetransport '
     options += '-openssl-linked '
-    if (bldinstallercommon.is_linux_platform() or bldinstallercommon.is_mac_platform()) and openssl_dir:
+    if (is_linux() or is_macos()) and openssl_dir:
         options += '-I {0}/include -L {0}/lib '.format(openssl_dir)
-    if platform.system().lower().startswith('win'):
+    if is_windows():
         options += '-static-runtime '
         if openssl_dir:
             options += 'OPENSSL_LIBS="-llibssl -llibcrypto -lUser32 -lWs2_32 -lAdvapi32 -lCrypt32" '
@@ -98,23 +98,22 @@ def get_common_unix_qt_configure_options():
 # Get default Qt configure arguments. Platform is detected.
 ##################################################################
 def get_common_qt_configure_options():
-    plat = platform.system().lower()
     # common
     options = get_common_allos_qt_configure_options()
     options += '-no-qml-debug '
     # Windows
-    if plat.startswith('win'):
+    if is_windows():
         options += '-no-icu -mp '
     # Unix
     else:
         # OSX and Linux
         options += get_common_unix_qt_configure_options()
         # Linux
-        if plat.startswith('linux'):
+        if is_linux():
             options += '-qt-xcb -no-opengl -no-icu -no-libudev '
             options += '-qt-pcre -no-glib -no-egl '
             options += '-no-sm -qt-harfbuzz '
-        if bldinstallercommon.is_mac_platform():
+        if is_macos():
             options += '-no-freetype '
     return options
 
@@ -134,9 +133,9 @@ def get_dynamic_qt_configure_options():
 ##################################################################
 def get_build_env(openssl_dir):
     tmp = dict(os.environ)
-    if bldinstallercommon.is_mac_platform() and os.path.isdir(openssl_dir):
+    if is_macos() and os.path.isdir(openssl_dir):
         tmp['OPENSSL_LIBS'] = "-L{0}/lib -lssl -lcrypto".format(openssl_dir)
-    if bldinstallercommon.is_linux_platform() and os.path.isdir(openssl_dir):
+    if is_linux() and os.path.isdir(openssl_dir):
         tmp['OPENSSL_LIBS'] = "-I{0}/include -L{0}/lib -ldl -lssl -lcrypto -lpthread".format(openssl_dir)
 
     return tmp
@@ -191,7 +190,7 @@ class IfwOptions:
             self.qt_binaries_dynamic_saveas             = os.path.join(ROOT_DIR, os.path.basename(self.qt_binaries_dynamic))
         self.qt_build_modules                           = ["qtbase", "qtdeclarative", "qttools", "qttranslations"]
         self.qt_build_modules_docs                      = ["qtbase", "qttools"]
-        if bldinstallercommon.is_win_platform():
+        if is_windows():
             self.qt_build_modules.append("qtwinextras")
             self.make_cmd                               = 'jom.exe'
             self.make_doc_cmd                           = 'jom.exe'
@@ -209,19 +208,8 @@ class IfwOptions:
         self.mac_deploy_qt_archive_name                 = 'macdeployqt.7z'
         self.mac_qt_menu_nib_archive_name               = 'qt_menu.nib.7z'
         # determine filenames used later on
-        self.architecture = ''
-        # if this is cross-compilation attempt to parse the target architecture from the given -platform
-        if '-platform' in qt_configure_options:
-            temp = qt_configure_options.split(' ')
-            plat = temp[temp.index('-platform') + 1]
-            bits = ''.join(re.findall(r'\d+', plat))
-            if bits == '32':
-                self.architecture = 'x86'
-            else:
-                self.architecture = 'x64'
-        if not self.architecture:
-            self.architecture = bldinstallercommon.get_architecture()
-        self.plat_suffix                                = bldinstallercommon.get_platform_suffix()
+        self.architecture = 'x64'
+        self.plat_suffix                                = get_platform_suffix()
         self.installer_framework_archive_name           = 'installer-framework-build-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
         self.installer_base_archive_name                = 'installerbase-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
         self.binarycreator_archive_name                 = 'binarycreator-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
@@ -237,7 +225,7 @@ class IfwOptions:
             if os.path.isfile(product_key_checker_pri):
                 self.qt_installer_framework_qmake_args += ['PRODUCTKEYCHECK_PRI_FILE=' + self.product_key_checker_pri]
         # macOS specific
-        if bldinstallercommon.is_mac_platform():
+        if is_macos():
             self.qt_installer_framework_qmake_args     += ['"LIBS+=-framework IOKit"']
         self.archive_qt                                 = archive_qt
         self.qt_static_binary_name                      = 'qt-bin-' + QT_VERSION + '-' + self.plat_suffix + '_static.7z'
@@ -313,7 +301,7 @@ def build_ifw(options, create_installer=False, build_ifw_examples=False):
     if create_installer:
         if options.qt_binaries_dynamic:
             prepare_compressed_package(options.qt_binaries_dynamic, options.qt_binaries_dynamic_saveas, options.qt_build_dir_dynamic)
-            if bldinstallercommon.is_win_platform():
+            if is_windows():
                 patch_win32_mkspecs(os.path.join(options.qt_build_dir_dynamic, "qtbase", "mkspecs"))
         else:
             configure_options = get_dynamic_qt_configure_options() + '-prefix ' + options.qt_build_dir_dynamic + os.sep + 'qtbase'
@@ -341,7 +329,7 @@ def prepare_qt_sources(options):
     print('Prepare Qt src package: {0}'.format(options.qt_source_package_uri))
     prepare_compressed_package(options.qt_source_package_uri, options.qt_source_package_uri_saveas, options.qt_source_dir)
 
-    if bldinstallercommon.is_win_platform():
+    if is_windows():
         patch_win32_mkspecs(os.path.join(options.qt_source_dir, "qtbase", "mkspecs"))
 
 
@@ -438,7 +426,7 @@ def start_IFW_build(options, cmd_args, installer_framework_build_dir):
 def build_installer_framework(options):
     if options.incremental_mode:
         file_to_check = os.path.join(options.installer_framework_build_dir, 'bin', 'installerbase')
-        if bldinstallercommon.is_win_platform():
+        if is_windows():
             file_to_check += '.exe'
         if os.path.exists(file_to_check):
             return
@@ -461,7 +449,7 @@ def build_installer_framework_examples(options):
     print('--------------------------------------------------------------------')
     print('Building Installer Framework Examples')
     file_binarycreator = os.path.join(options.installer_framework_build_dir, 'bin', 'binarycreator')
-    if bldinstallercommon.is_win_platform():
+    if is_windows():
         file_binarycreator += '.exe'
     if not os.path.exists(file_binarycreator):
         print('*** Unable to find binarycreator: {0}, aborting!'.format(file_binarycreator))
@@ -481,7 +469,7 @@ def build_installer_framework_examples(options):
             package_dir = os.path.join(root, directory, 'packages')
             target_filename = os.path.join(root, directory, 'installer')
             bldinstallercommon.do_execute_sub_process(args=(file_binarycreator, '--offline-only', '-c', config_file, '-p', package_dir, target_filename), execution_path=package_dir)
-            if bldinstallercommon.is_win_platform:
+            if is_windows():
                 target_filename += '.exe'
             ifw_example_binaries.append(target_filename)
         #Breaking here as we don't want to go through sub directories
@@ -523,7 +511,7 @@ def create_installer_package(options):
     current_dir = os.getcwd()
     os.chdir(package_dir)
     shutil.copytree(os.path.join(options.installer_framework_build_dir, 'bin'), os.path.join(package_dir, 'bin'), ignore = shutil.ignore_patterns("*.exe.manifest","*.exp","*.lib"))
-    if sys.platform == 'linux':
+    if is_linux():
         bldinstallercommon.do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/archivegen')), execution_path=package_dir)
         bldinstallercommon.do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/binarycreator')), execution_path=package_dir)
         bldinstallercommon.do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/devtool')), execution_path=package_dir)
@@ -550,7 +538,7 @@ def create_installer_package(options):
     artifacts = os.listdir(options.installer_framework_target_dir)
     for artifact in artifacts:
         destFileName = os.path.join(options.build_artifacts_dir, artifact)
-        if bldinstallercommon.is_linux_platform():
+        if is_linux():
             destFileName += '.run'
         shutil.move(os.path.join(options.installer_framework_target_dir, artifact), destFileName)
     os.chdir(current_dir)
@@ -652,13 +640,13 @@ def archive_installerbase(options):
     cmd_args_archive = []
     cmd_args_clean = []
     bin_temp = ''
-    if bldinstallercommon.is_linux_platform() or bldinstallercommon.is_mac_platform():
+    if is_linux() or is_macos():
         bin_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, 'installerbase')
         bin_temp = ROOT_DIR + os.sep + '.tempSDKMaintenanceTool'
         shutil.copy(bin_path, bin_temp)
         cmd_args_archive = [ARCHIVE_PROGRAM, 'a', options.installer_base_archive_name, bin_temp]
         cmd_args_clean = ['rm', bin_temp]
-    if bldinstallercommon.is_win_platform():
+    if is_windows():
         bin_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, 'installerbase.exe')
         bin_temp = ROOT_DIR + os.sep + 'tempSDKMaintenanceToolBase.exe'
         shutil.copy(bin_path, bin_temp)
@@ -680,10 +668,10 @@ def archive_binarycreator(options):
     print('--------------------------------------------------------------------')
     print('Archive Installerbase and Binarycreator')
     cmd_args_archive = []
-    if bldinstallercommon.is_linux_platform() or bldinstallercommon.is_mac_platform():
+    if is_linux() or is_macos():
         bin_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, 'installerbase')
         binarycreator_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, 'binarycreator')
-    elif bldinstallercommon.is_win_platform():
+    elif is_windows():
         bin_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, 'installerbase.exe')
         binarycreator_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, 'binarycreator.exe')
     else:
@@ -748,6 +736,18 @@ def patch_win32_mkspecs(mkspecsdir):
             if "win32" in root and file == "qmake.conf":
                 patch(os.path.join(root, file), {"-MD" : "-MT", "embed_manifest_dll" : "", "embed_manifest_exe" : "" })
 
+
+def get_platform_suffix():
+    if is_windows():
+        return 'win'
+    elif is_linux():
+        return 'linux'
+    elif is_macos():
+        return 'mac'
+    else:
+        raise EnvironmentError('*** Unsupported platform, abort!')
+
+
 ###############################
 # Setup argument parser
 ###############################
@@ -781,7 +781,6 @@ def setup_argument_parser():
 ###############################
 if __name__ == "__main__":
     # init things
-    bldinstallercommon.init_common_module(ROOT_DIR)
     PARSER = setup_argument_parser()
     # parse args
     CARGS = PARSER.parse_args()

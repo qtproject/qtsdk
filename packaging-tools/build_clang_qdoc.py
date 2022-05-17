@@ -38,6 +38,7 @@ import bldinstallercommon
 import environmentfrombatchfile
 import threadedwork
 import multiprocessing
+from bld_utils import is_windows, is_linux
 from read_remote_config import get_pkg_value
 
 def git_clone_and_checkout(base_path, remote_repository_url, directory, revision):
@@ -100,7 +101,7 @@ def paths_with_sh_exe_removed(path_value):
     return os.pathsep.join(items)
 
 def build_environment(toolchain, bitness):
-    if bldinstallercommon.is_win_platform():
+    if is_windows():
         if is_mingw_toolchain(toolchain):
             environment = dict(os.environ)
             # cmake says "For MinGW make to work correctly sh.exe must NOT be in your path."
@@ -126,7 +127,7 @@ def is_gcc_toolchain(toolchain):
     return 'g++' in toolchain
 
 def cmake_generator(toolchain):
-    if bldinstallercommon.is_win_platform():
+    if is_windows():
         return 'Ninja'
     else:
         return 'Unix Makefiles'
@@ -140,7 +141,7 @@ def static_flags(toolchain):
     return []
 
 def bitness_flags(bitness):
-    if bitness == 32 and bldinstallercommon.is_linux_platform():
+    if bitness == 32 and is_linux():
         return ['-DLLVM_BUILD_32_BITS=ON']
     return []
 
@@ -150,14 +151,14 @@ def rtti_flags(toolchain):
     return ['-DLLVM_ENABLE_RTTI:BOOL=ON']
 
 def build_command(toolchain):
-    if bldinstallercommon.is_win_platform():
+    if is_windows():
         command = ['ninja']
     else:
         command = ['make']
     return command
 
 def install_command(toolchain):
-    if bldinstallercommon.is_win_platform():
+    if is_windows():
         command = ['ninja']
     else:
         command = ['make', '-j1']
@@ -224,7 +225,7 @@ def package_clang(install_path, result_file_path):
 
 def upload_clang(file_path, remote_path):
     (path, filename) = os.path.split(file_path)
-    scp_bin = '%SCP%' if bldinstallercommon.is_win_platform() else 'scp'
+    scp_bin = '%SCP%' if is_windows() else 'scp'
     scp_command = [scp_bin, filename, remote_path]
     bld_utils.runCommand(scp_command, path)
 
@@ -260,7 +261,6 @@ def main():
     # LLVM_REVISION
     # Git revision, branch or tag for LLVM/Clang check out
 
-    bldinstallercommon.init_common_module(os.path.dirname(os.path.realpath(__file__)))
     base_path = os.path.join(os.environ['PKG_NODE_ROOT'])
     branch = os.environ['CLANG_BRANCH']
     src_path = os.path.join(base_path, 'llvm/llvm')

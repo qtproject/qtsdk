@@ -42,11 +42,11 @@ import os
 import sys
 import re
 import shutil
-import platform
 from urllib.parse import urlparse
 from urllib.request import urlopen
 from time import gmtime, strftime
 import bld_utils
+from bld_utils import is_windows, is_macos, is_linux
 import bldinstallercommon
 from threadedwork import ThreadedWork, Task
 import bld_sdktool
@@ -312,8 +312,8 @@ def create_qtcreator_source_package(source_path, plugin_name, version, edition, 
     namepart = '-' + plugin_name if plugin_name else ''
     file_base = 'qt-creator-' + edition + namepart + '-src-' + version
     target_base = os.path.join(target_path, file_base)
-    create_tar = bldinstallercommon.is_linux_platform()
-    create_zip = bldinstallercommon.is_win_platform() and '32' not in optionDict['TARGET_ENV']
+    create_tar = is_linux()
+    create_zip = is_windows() and '32' not in optionDict['TARGET_ENV']
     if create_tar or create_zip:
         if not os.path.exists(target_base):
             os.makedirs(target_base)
@@ -328,7 +328,7 @@ def create_qtcreator_source_package(source_path, plugin_name, version, edition, 
                            target_path, log_filepath=log_filepath)
 
 def qtcreator_build_plugin_script(qtcreator_dev_path):
-    if bldinstallercommon.is_mac_platform():
+    if is_macos():
         # scripts can be within the app bundle
         apps = glob(os.path.join(qtcreator_dev_path, '*.app'))
         app = apps[0] if apps else os.path.join(qtcreator_dev_path, 'Qt Creator.app')
@@ -378,7 +378,7 @@ def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url
                            '--qt-path', qt_path, '--temp-path', os.path.join(build_path, 'temp')]
         for module in modules:
             qt_install_args.extend(['--qt-module', module])
-        if bldinstallercommon.is_linux_platform() and icu_url:
+        if is_linux() and icu_url:
             qt_install_args.extend(['--icu7z', icu_url])
         if openssl_url:
             qt_install_args.extend(['--openssl7z', openssl_url])
@@ -417,9 +417,9 @@ def parse_qt_creator_plugin_conf(plugin_conf_file_path, optionDict):
     with open(plugin_conf_file_path, 'r') as f:
         data = json.load(f)
     plugins_json = data['Plugins']
-    if bldinstallercommon.is_linux_platform():
+    if is_linux():
         platform_name = 'linux'
-    elif bldinstallercommon.is_win_platform():
+    elif is_windows():
         platform_name = 'windows'
     else:
         platform_name = 'mac'
@@ -619,7 +619,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         clang_suffix = clang_suffix if clang_suffix is not None else ''
         clang_url = (pkg_base_path + '/' + optionDict['CLANG_FILEBASE'] + '-' + clang_platform + clang_suffix + '.7z')
         add_download_extract(clang_url, clang_extract_path)
-        use_optimized_libclang = bldinstallercommon.is_win_platform()
+        use_optimized_libclang = is_windows()
         if use_optimized_libclang:
             opt_clang_url = (pkg_base_path + '/' + optionDict['CLANG_FILEBASE'] + '-windows-mingw_64' + clang_suffix + '.7z')
             opt_clang_path = os.path.join(download_temp, 'opt_libclang')
@@ -634,7 +634,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
 
     python_path = None
     python_url = optionDict.get('PYTHON_URL')
-    if bldinstallercommon.is_win_platform() and python_url:
+    if is_windows() and python_url:
         python_path = os.path.join(download_temp, 'python')
         add_download_extract(python_url, python_path)
 
@@ -685,9 +685,9 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                        '--qt-path', qt_path, '--temp-path', qt_temp]
     for module_url in qt_module_urls:
         qt_install_args.extend(['--qt-module', module_url])
-    if bldinstallercommon.is_linux_platform() and icu_libs:
+    if is_linux() and icu_libs:
         qt_install_args.extend(['--icu7z', icu_libs])
-    if bldinstallercommon.is_win_platform():
+    if is_windows():
         d3d_url = optionDict['D3D_URL']
         opengl_url = optionDict['OPENGLSW_URL']
         qt_install_args.extend(['--d3dcompiler7z', d3d_url,
@@ -723,7 +723,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         except Exception:
             pass
 
-    if bldinstallercommon.is_mac_platform():
+    if is_macos():
         if has_unlock_keychain_script:
             cmd_args.extend(['--keychain-unlock-script', unlock_keychain_script()])
     if python_path:
@@ -734,7 +734,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         cmd_args.append('--no-cdb')
     check_call_log(cmd_args, work_dir, extra_env=build_environment, log_filepath=log_filepath, log_overwrite=True)
 
-    if bldinstallercommon.is_mac_platform() and has_unlock_keychain_script:
+    if is_macos() and has_unlock_keychain_script:
         lock_keychain()
 
     # Qt Creator plugins
@@ -771,7 +771,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                               additional_arguments=plugin_telemetry_args)]),
 
     # Build Qt Creator plugins
-    icu_local_url = bld_utils.file_url(os.path.join(qt_temp, os.path.basename(icu_libs))) if bldinstallercommon.is_linux_platform() else None
+    icu_local_url = bld_utils.file_url(os.path.join(qt_temp, os.path.basename(icu_libs))) if is_linux() else None
     ## extract qtcreator bin and dev packages
     qtcreator_path = os.path.join(work_dir, 'qtc_build')
     check_call_log(['7z', 'x', '-y', os.path.join(work_dir, 'qt-creator_build', 'qtcreator.7z'), '-o' + qtcreator_path],
@@ -786,7 +786,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     with open(os.path.join(work_dir, 'QTC_SHA1'), 'w') as f:
         f.write(qtcreator_sha + '\n')
 
-    if bldinstallercommon.is_linux_platform():
+    if is_linux():
         # summary of git SHA1s
         sha1s = collect_qt_creator_plugin_sha1s(additional_plugins)
         licensemanaging_source = os.path.join(work_dir, 'license-managing')
@@ -815,14 +815,14 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                       os.path.join(work_dir, 'qt-creator', 'src', 'tools', 'sdktool'),
                                       os.path.join(sdktool_build_path, 'src', 'tools', 'sdktool'),
                                       sdktool_target_path,
-                                      'nmake' if bldinstallercommon.is_win_platform() else 'make',
+                                      'nmake' if is_windows() else 'make',
                                       redirect_output=f)
             bld_sdktool.zip_sdktool(sdktool_target_path, os.path.join(work_dir, 'sdktool.7z'),
                                     redirect_output=f)
 
     # repackage and sign opensource and enterprise packages on macOS
     # these are then for direct packaging in the offline installers
-    if bldinstallercommon.is_mac_platform() and get_pkg_value('SIGNING_IDENTITY'):
+    if is_macos() and get_pkg_value('SIGNING_IDENTITY'):
         # use build_environment for SIGNING_IDENTITY
         repackage_and_sign_qtcreator(src_path, work_dir,
                                      'qtcreator-signed.7z',
@@ -836,7 +836,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                      additional_plugins=additional_plugins)
 
     # notarize
-    if bldinstallercommon.is_mac_platform() and notarize:
+    if is_macos() and notarize:
         notarizeDmg(os.path.join(work_dir, 'qt-creator_build', 'qt-creator.dmg'), 'Qt Creator')
 
     # Upload
@@ -847,13 +847,13 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     file_upload_list.append((log_filepath, target_env_dir + '/build_log.txt'))
 
     # macOS opensource dmg
-    if bldinstallercommon.is_mac_platform() and not skip_dmg:
+    if is_macos() and not skip_dmg:
         dmg_filename = 'qt-creator-opensource-mac-x86_64-' + qtcreator_version + '.dmg'
         file_upload_list.append(('qt-creator_build/qt-creator.dmg', dmg_filename))
         snapshot_upload_list.append((dmg_filename, dmg_filename))
 
     # macOS signed zip
-    if bldinstallercommon.is_mac_platform() and get_pkg_value('SIGNING_IDENTITY'):
+    if is_macos() and get_pkg_value('SIGNING_IDENTITY'):
         file_upload_list.append(('qtcreator-signed.7z', target_env_dir + '/qtcreator-signed.7z'))
         snapshot_upload_list.append((target_env_dir + '/qtcreator-signed.7z', target_env_dir + '/qtcreator-signed.7z'))
         file_upload_list.append(('qtcreator-commercial-signed.7z', target_env_dir + '/qtcreator-commercial-signed.7z'))
@@ -865,7 +865,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                            glob(os.path.join(work_dir, 'qt-creator-opensource-src-' + qtcreator_version + '.*'))]
     snapshot_upload_list.extend([(fn, fn) for fn in qtc_source_packages])
 
-    if bldinstallercommon.is_linux_platform():
+    if is_linux():
         # summary of git SHA1s
         file_upload_list.append(('SHA1', ''))
     file_upload_list.append(('QTC_SHA1', target_env_dir + '/QTC_SHA1'))
@@ -888,7 +888,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
             file_upload_list.append((plugin_dev_name, target_env_dir + '/' + plugin_dev_name))
         if os.path.isfile(os.path.join(work_dir, plugin_debug_name)):
             file_upload_list.append((plugin_debug_name, target_env_dir + '/' + plugin_debug_name))
-    if bldinstallercommon.is_win_platform():
+    if is_windows():
         if not skip_cdb:
             file_upload_list.append(('qt-creator_build/qtcreatorcdbext.7z', target_env_dir + '/qtcreatorcdbext.7z'))
             snapshot_upload_list.append((target_env_dir + '/qtcreatorcdbext.7z', target_env_dir + '/qtcreatorcdbext.7z'))
@@ -948,10 +948,10 @@ def handle_sdktool_build(optionDict):
                               os.path.join(work_dir, 'qt-creator', 'src', 'tools', 'sdktool'),
                               os.path.join(sdktool_build_path, 'src', 'tools', 'sdktool'),
                               sdktool_target_path,
-                              'nmake' if bldinstallercommon.is_win_platform() else 'make')
+                              'nmake' if is_windows() else 'make')
     bld_sdktool.zip_sdktool(sdktool_target_path, os.path.join(work_dir, 'sdktool.7z'))
     file_upload_list = [('sdktool.7z', target_env_dir + '/sdktool.7z')]
-    if bldinstallercommon.is_win_platform(): # wininterrupt & qtcreatorcdbext
+    if is_windows(): # wininterrupt & qtcreatorcdbext
         cmd_args = [sys.executable, '-u', os.path.join(qtcreator_src, 'scripts', 'build.py'),
                     '--src', qtcreator_src,
                     '--build', os.path.join(work_dir, 'build'),
@@ -1026,12 +1026,11 @@ def initPkgOptions(args):
 
     def getDefaultTargetEnv():
         """For local builds define default build target"""
-        plat = platform.system().lower()
-        if plat.startswith('win'):
+        if is_windows():
             return "win-msvc2015-Windows10-x64"
-        elif plat.startswith('linux'):
+        elif is_linux():
             return "linux-g++-Rhel6.6-x64"
-        elif plat.startswith('darwin'):
+        elif is_macos():
             return "mac-clang-10.11-x64"
         else:
             raise RuntimeError("Unsupported host platform")
@@ -1079,17 +1078,17 @@ def initPkgOptions(args):
             optionDict['SNAPSHOT_SERVER'] = optionDict['PACKAGE_STORAGE_SERVER_ADDR']
             optionDict['SNAPSHOT_SERVER_PATH'] = LOCAL_INSTALLER_DIR
 
-    if bldinstallercommon.is_linux_platform():
+    if is_linux():
         optionDict['HOST_PLATFORM'] = 'linux'
-    elif bldinstallercommon.is_mac_platform():
+    elif is_macos():
         optionDict['HOST_PLATFORM'] = 'mac'
     else:
         optionDict['HOST_PLATFORM'] = 'windows'
 
-    optionDict['CURL_COMMAND'] = '%CURL%' if bldinstallercommon.is_win_platform() else 'curl'
-    optionDict['RM_COMMAND'] = '%RM%' if bldinstallercommon.is_win_platform() else 'rm'
-    optionDict['SSH_COMMAND'] = '%SSH%' if bldinstallercommon.is_win_platform() else 'ssh'
-    optionDict['SCP_COMMAND'] = '%SCP%' if bldinstallercommon.is_win_platform() else 'scp'
+    optionDict['CURL_COMMAND'] = '%CURL%' if is_windows() else 'curl'
+    optionDict['RM_COMMAND'] = '%RM%' if is_windows() else 'rm'
+    optionDict['SSH_COMMAND'] = '%SSH%' if is_windows() else 'ssh'
+    optionDict['SCP_COMMAND'] = '%SCP%' if is_windows() else 'scp'
     optionDict['WORK_DIR'] = WORK_DIR
 
     # Parse version number info if this build utilizes release description file

@@ -33,6 +33,7 @@
 from distutils.spawn import find_executable # runCommand method
 import os
 import sys
+from sys import platform
 import time
 import shutil
 import subprocess
@@ -52,6 +53,22 @@ import environmentfrombatchfile
 # make a timeout for download jobs
 import socket
 socket.setdefaulttimeout(30)
+
+
+def is_windows() -> bool:
+    """Return True if the current platform is Windows. False otherwise."""
+    return platform == "win32"
+
+
+def is_macos() -> bool:
+    """Return True if the current platform is Darwin. False otherwise."""
+    return platform == "darwin"
+
+
+def is_linux() -> bool:
+    """Return True if the current platform is Linux. False otherwise."""
+    return platform == "linux"
+
 
 # make sure any argument is deep copied, for example the install command changes the makeflags,
 # but should not do that on the further used environment dict

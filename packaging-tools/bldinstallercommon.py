@@ -32,7 +32,6 @@
 import errno
 import fnmatch
 import os
-import platform
 import re
 import shutil
 import subprocess
@@ -47,64 +46,17 @@ import urllib.error
 import urllib.parse
 import string
 import fileinput
-from bld_utils import runCommand, download
+from bld_utils import runCommand, download, is_windows, is_macos, is_linux
 from threadedwork import Task, ThreadedWork
+
 
 # need to include this for win platforms as long path names
 # cause problems
-if platform.system().lower().startswith('win'):
+if is_windows():
     import win32api
 
-SCRIPT_ROOT_DIR         = ''
-PLATFORM_SUFFIX         = 'unknown'
-IS_UNIX_PLATFORM        = False
-IS_LINUX_PLATFORM       = False
-IS_SOLARIS_PLATFORM     = False
-IS_MAC_PLATFORM         = False
-IS_WIN_PLATFORM         = False
 DEBUG_RPATH             = False
 MAX_DEBUG_PRINT_LENGTH  = 10000
-
-###############################
-# function
-###############################
-def set_platform_specific_data():
-    global PLATFORM_SUFFIX
-    global IS_UNIX_PLATFORM
-    global IS_LINUX_PLATFORM
-    global IS_SOLARIS_PLATFORM
-    global IS_MAC_PLATFORM
-    global IS_WIN_PLATFORM
-    plat = platform.system().lower()
-    if plat.startswith('win'):
-        PLATFORM_SUFFIX = 'win'
-        IS_WIN_PLATFORM = True
-    elif plat.startswith('linux'):
-        PLATFORM_SUFFIX = 'linux'
-        IS_UNIX_PLATFORM = True
-        IS_LINUX_PLATFORM = True
-    elif plat.startswith('sun'):
-        PLATFORM_SUFFIX = 'solaris'
-        IS_UNIX_PLATFORM = True
-        IS_SOLARIS_PLATFORM = True
-    elif plat.startswith('darwin'):
-        PLATFORM_SUFFIX = 'mac'
-        IS_UNIX_PLATFORM = True
-        IS_MAC_PLATFORM = True
-    else:
-        raise EnvironmentError('*** Unsupported platform, abort!')
-
-
-###############################
-# function
-###############################
-def init_common_module(root_path):
-    global SCRIPT_ROOT_DIR
-    SCRIPT_ROOT_DIR = root_path
-    set_platform_specific_data()
-
-
-init_common_module(os.path.dirname(os.path.realpath(__file__)))
 
 
 ###############################
@@ -160,50 +112,6 @@ def retrieve_url(url, savefile):
             pass
         raise exc
 
-###############################
-# function
-###############################
-def get_platform_suffix():
-    return PLATFORM_SUFFIX
-
-
-###############################
-# function
-###############################
-def get_architecture():
-    temp = platform.architecture()
-    if temp[0] and '32' in temp[0]:
-        return 'x86'
-    if temp[0] and '64' in temp[0]:
-        return 'x64'
-    return ''
-
-
-###############################
-# function
-###############################
-def is_linux_platform():
-    return IS_LINUX_PLATFORM
-
-def is_solaris_platform():
-    return IS_SOLARIS_PLATFORM
-
-def is_mac_platform():
-    return IS_MAC_PLATFORM
-
-def is_win_platform():
-    return IS_WIN_PLATFORM
-
-
-###############################
-# function
-###############################
-def get_executable_suffix():
-    if IS_WIN_PLATFORM:
-        return '.exe'
-    else:
-        return ''
-
 
 ###############################
 # function
@@ -254,7 +162,7 @@ def delete_files_by_type_recursive(directory, rgxp):
 ###############################
 def move_tree(srcdir, dstdir, pattern=None):
     # windows has length limit for path names so try to truncate them as much as possible
-    if IS_WIN_PLATFORM:
+    if is_windows():
         srcdir = win32api.GetShortPathName(srcdir)
         dstdir = win32api.GetShortPathName(dstdir)
     # dstdir must exist first
@@ -283,7 +191,7 @@ def move_tree(srcdir, dstdir, pattern=None):
 ###############################
 def copy_tree(source_dir, dest_dir):
     # windows has length limit for path names so try to truncate them as much as possible
-    if IS_WIN_PLATFORM:
+    if is_windows():
         source_dir = win32api.GetShortPathName(source_dir)
         dest_dir = win32api.GetShortPathName(dest_dir)
     src_files = os.listdir(source_dir)
@@ -291,7 +199,7 @@ def copy_tree(source_dir, dest_dir):
         full_file_name = os.path.join(source_dir, file_name)
         if not full_file_name:
             raise IOError('*** Fatal error! Unable to create source file path, too long path name!')
-        if is_win_platform():
+        if is_windows():
             if len(full_file_name) > 255:
                 raise IOError('given full_file_name length [%s] too long for Windows: %s' % (len(full_file_name), full_file_name))
         if os.path.isdir(full_file_name):
@@ -328,17 +236,17 @@ def handle_remove_readonly(func, path, exc):
 
 def remove_tree(path):
     if os.path.isdir(path) and os.path.exists(path):
-        if IS_WIN_PLATFORM:
+        if is_windows():
             path = win32api.GetShortPathName(path.replace('/', '\\'))
             #a funny thing is that rmdir does not set an exitcode it is just using the last set one
             try:
-                runCommand(['rmdir', path, '/S', '/Q'], SCRIPT_ROOT_DIR, onlyErrorCaseOutput=True)
+                runCommand(['rmdir', path, '/S', '/Q'], os.getcwd(), onlyErrorCaseOutput=True)
             except:
                 traceback.print_exc()
                 pass
         else:
             #shutil.rmtree(path)
-            runCommand(['rm', '-rf', path], SCRIPT_ROOT_DIR, onlyErrorCaseOutput=True)
+            runCommand(['rm', '-rf', path], os.getcwd(), onlyErrorCaseOutput=True)
     return not os.path.exists(path)
 
 
@@ -383,7 +291,7 @@ def ensure_text_file_endings(filename):
     if b'\0' in data:
         print('*** Warning, given file is binary? Did nothing for: ' + filename)
         return
-    if IS_WIN_PLATFORM:
+    if is_windows():
         newdata = re.sub(b"\r?\n", b"\r\n", data)
         if newdata != data:
             print('File endings changed for: ' + filename)
@@ -475,20 +383,15 @@ def locate_directory(base_dir, dir_name):
 # Function
 ###############################
 def is_executable(path):
-    if IS_WIN_PLATFORM:
+    if is_windows():
         if path.endswith('.exe') or path.endswith('.com'):
             return True
-    elif IS_LINUX_PLATFORM:
+    elif is_linux():
         return (re.search(r':.* ELF',
                           subprocess.Popen(['file', '-L', path],
                                            stdout=subprocess.PIPE).stdout.read().decode())
                 is not None)
-    elif IS_SOLARIS_PLATFORM:
-        return (re.search(r':.* ELF',
-                          subprocess.Popen(['file', '-dh', path],
-                                           stdout=subprocess.PIPE).stdout.read().decode())
-                is not None)
-    elif IS_MAC_PLATFORM:
+    elif is_macos():
         return (re.search(r'executable',
                           subprocess.Popen(['file', path],
                                            stdout=subprocess.PIPE).stdout.read().decode())
@@ -536,9 +439,7 @@ def is_text_file(filename, blocksize = 512):
 # Function
 ###############################
 def requires_rpath(file_path):
-    if IS_WIN_PLATFORM or IS_MAC_PLATFORM:
-        return False
-    if IS_LINUX_PLATFORM or IS_SOLARIS_PLATFORM:
+    if is_linux():
         if not is_executable(file_path):
             return False
         return (re.search(r':*.R.*PATH=',
@@ -551,7 +452,7 @@ def requires_rpath(file_path):
 # Function
 ###############################
 def sanity_check_rpath_max_length(file_path, new_rpath):
-    if IS_LINUX_PLATFORM or IS_SOLARIS_PLATFORM:
+    if is_linux():
         if not is_executable(file_path):
             return False
         result = re.search(r':*.R.*PATH=.*', subprocess.Popen(['chrpath', '-l', file_path], stdout=subprocess.PIPE).stdout.read().decode())
@@ -660,7 +561,8 @@ def handle_component_rpath(component_root_path, destination_lib_paths):
                         #print '        RPath value: [' + rp + '] for file: [' + file_full_path + ']'
                         cmd_args = ['chrpath', '-r', rp, file_full_path]
                         #force silent operation
-                        do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
+                        work_dir = os.path.dirname(os.path.realpath(__file__))
+                        do_execute_sub_process(cmd_args, work_dir)
 
 
 ###############################
@@ -679,7 +581,7 @@ def do_execute_sub_process(args, execution_path, abort_on_fail=True, get_output=
     output      = ''
 
     try:
-        if IS_WIN_PLATFORM:
+        if is_windows():
             if get_output:
                 theproc = subprocess.Popen(args, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=False, env=extra_env, cwd=execution_path )
                 output = theproc.communicate()[0]
@@ -737,12 +639,13 @@ def clone_repository(repo_url, repo_branch_or_tag, destination_folder, full_clon
     print('Dest:               ' + destination_folder)
     print('--------------------------------------------------------------------')
 
+    work_dir = os.path.dirname(os.path.realpath(__file__))
     if full_clone:
         cmd_args = ['git', 'clone', repo_url, destination_folder, '-b', repo_branch_or_tag]
-        do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
+        do_execute_sub_process(cmd_args, work_dir)
     else:
         cmd_args = ['git', 'init', destination_folder]
-        do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
+        do_execute_sub_process(cmd_args, work_dir)
 
         cmd_args = ['git', 'fetch', repo_url, repo_branch_or_tag]
         do_execute_sub_process(cmd_args, destination_folder)
@@ -789,9 +692,10 @@ def git_archive_repo(repo_and_ref):
     (repository, ref) = repo_and_ref.split("#")
     project_name = repository.split("/")[-1].split(".")[0]
     file_extension = ".tar.gz"
-    if is_win_platform():
+    if is_windows():
         file_extension = ".zip"
-    archive_name = os.path.join(SCRIPT_ROOT_DIR, project_name + "-" + ref.replace("/", "-") + file_extension)
+    work_dir = os.path.dirname(os.path.realpath(__file__))
+    archive_name = os.path.join(work_dir, project_name + "-" + ref.replace("/", "-") + file_extension)
     if os.path.isfile(archive_name):
         os.remove(archive_name)
     # create temp directory
@@ -846,7 +750,7 @@ def list_as_string(argument_list):
 def remote_path_exists(remote_addr, path_to_check, ssh_command = 'ssh'):
     text_to_print = 'REMOTE_PATH_EXISTS'
     cmd_args = [ssh_command, remote_addr, 'bash', '-c', '\"if [ -e ' + path_to_check + ' ] ; then echo ' + text_to_print + ' ; fi\"']
-    output = do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, get_output=True)
+    output = do_execute_sub_process(cmd_args, os.getcwd(), get_output=True)
     check = output[1].rstrip()
     return check == text_to_print
 
@@ -952,13 +856,13 @@ def create_qt_download_task(module_urls, target_qt5_path, temp_path, caller_argu
         else:
             print('warning: could not find "{0}" for download'.format(module_url))
     # add icu, d3dcompiler, opengl32, openssl
-    target_path = os.path.join(target_qt5_path, 'bin' if is_win_platform() else 'lib')
-    if not is_mac_platform() and hasattr(caller_arguments, 'icu7z') and caller_arguments.icu7z:
+    target_path = os.path.join(target_qt5_path, 'bin' if is_windows() else 'lib')
+    if not is_macos() and hasattr(caller_arguments, 'icu7z') and caller_arguments.icu7z:
         (download_task, extract_task) = create_download_and_extract_tasks(caller_arguments.icu7z,
                                                 target_path, temp_path, caller_arguments)
         download_work.addTaskObject(download_task)
         unzip_task.addFunction(extract_task.do)
-    if is_win_platform():
+    if is_windows():
         if hasattr(caller_arguments, 'd3dcompiler7z') and caller_arguments.d3dcompiler7z:
             (download_task, extract_task) = create_download_and_extract_tasks(caller_arguments.d3dcompiler7z,
                                                     target_path, temp_path, caller_arguments)
@@ -987,7 +891,7 @@ def patch_qt(qt5_path):
     qtConfFile.write("Prefix=.." + os.linesep)
     qtConfFile.close()
     # fix rpaths
-    if is_linux_platform():
+    if is_linux():
         handle_component_rpath(qt5_path, 'lib')
     print("##### {0} ##### ... done".format("patch Qt"))
     runCommand(qmake_binary + " -query", qt5_path)

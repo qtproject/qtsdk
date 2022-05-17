@@ -35,7 +35,6 @@ import argparse
 import logging
 import urllib.request
 import tarfile
-import platform
 import shutil
 import glob
 import subprocess
@@ -46,6 +45,8 @@ from urllib.parse import urlparse
 from shutil import which
 from remote_uploader import RemoteUploader
 from read_remote_config import get_pkg_value
+from bld_utils import is_windows
+
 
 LOG_FMT_CI = "%(asctime)s %(levelname)s:%(filename)s:%(lineno)d(%(process)d): %(message)s"
 log = logging.getLogger("Bld")
@@ -121,7 +122,7 @@ def extractArchive(saveAs: str, currentDir: str) -> str:
 
 
 def build(qtDestDir: str, currentDir: str) -> str:
-    if platform.system().lower() == "windows":
+    if is_windows():
         qmakeToolName = "qmake.exe"
         makeToolName = "nmake"
     else:
@@ -154,7 +155,7 @@ def build(qtDestDir: str, currentDir: str) -> str:
         subprocess.check_call([qmakeTool, proFile])
         subprocess.check_call([makeToolName])
         # on windows chhop out the drive letter (e.g. 'C:'"
-        installRoot = installRootDir[2:] if platform.system().lower() == "windows" else installRootDir
+        installRoot = installRootDir[2:] if is_windows() else installRootDir
         subprocess.check_call([makeToolName, 'install', 'INSTALL_ROOT=' + installRoot])
     except subprocess.CalledProcessError as buildError:
         log.error("Failed to build the project: %s", str(buildError))
@@ -170,7 +171,7 @@ def build(qtDestDir: str, currentDir: str) -> str:
 
 def archive(args: argparse.Namespace, installRootDir: str, currentDir: str) -> str:
     # strip out drive letter on Windows e.g. 'C:'
-    srcPath = args.src_path[2:] if platform.system().lower() == "windows" else args.src_path
+    srcPath = args.src_path[2:] if is_windows() else args.src_path
     archivePath = os.path.join(installRootDir, srcPath.lstrip(os.path.sep))
     log.info("Archiving from: %s", archivePath)
 
@@ -178,9 +179,10 @@ def archive(args: argparse.Namespace, installRootDir: str, currentDir: str) -> s
     for lib in libs:
         shutil.copy2(lib, archivePath)
 
-    plat = platform.system().lower()
+    # import as plat to not shadow the "import platform"
+    import platform as plat
     arch = "x86_64" if sys.maxsize > 2**32 else "x86"
-    artifactsFileName = "artifacts-" + plat + "-" + arch + ".7z"
+    artifactsFileName = "artifacts-" + plat.system().lower() + "-" + arch + ".7z"
     artifactsFilePath = os.path.join(currentDir, artifactsFileName)
     try:
         os.chdir(archivePath)

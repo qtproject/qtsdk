@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #############################################################################
 ##
-## Copyright (C) 2015 The Qt Company Ltd.
+## Copyright (C) 2022 The Qt Company Ltd.
 ## Contact: http://www.qt-project.org/legal
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -86,7 +86,6 @@ if __name__ == '__main__':
 
     check_environment()
 
-    bldinstallercommon.init_common_module(ROOT_DIR)
     parser = setup_argument_parser()
     args = parser.parse_args()
 

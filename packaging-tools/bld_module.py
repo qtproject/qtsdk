@@ -41,13 +41,12 @@ from functools import reduce
 
 # own imports
 from threadedwork import Task, ThreadedWork
-from bld_utils import runCommand, runBuildCommand, runInstallCommand, stripVars
+from bld_utils import runCommand, runBuildCommand, runInstallCommand, stripVars, is_windows, is_linux, is_macos
 import bldinstallercommon
 
 SCRIPT_ROOT_DIR             = os.path.dirname(os.path.realpath(__file__))
 MODULE_SRC_DIR_NAME         = 'module_src'
 MODULE_SRC_DIR              = os.path.join(SCRIPT_ROOT_DIR, MODULE_SRC_DIR_NAME)
-bldinstallercommon.init_common_module(os.getcwd())
 
 ###############################
 # function
@@ -116,7 +115,7 @@ def locate_pro(directory):
 # install an argument parser
 parser = argparse.ArgumentParser(prog = os.path.basename(sys.argv[0]),
     add_help=True, description="build Qt 5 based Qt Module", formatter_class=argparse.RawTextHelpFormatter)
-if bldinstallercommon.is_win_platform():
+if is_windows():
     parser.epilog = "example on windows: " + os.linesep + "\tpython {0} --clean " \
         "--buildcommand C:\\bin\\ibjom.cmd" \
         "--qt5_module_url <uri to qt5_essentials.7z> " \
@@ -126,7 +125,7 @@ if bldinstallercommon.is_win_platform():
         "--module_branch <module branch>" \
         "--module_dir <Local copy of module>" \
         "".format(os.path.basename(sys.argv[0]))
-elif bldinstallercommon.is_mac_platform():
+elif is_macos():
     parser.epilog = "example: " + os.linesep + "\tpython {0} --clean " \
         "--qt5_module_url <uri to qt5_essentials.7z> " \
         "--qt5_module_url <uri to qt5_addons.7z> " \
@@ -164,10 +163,10 @@ parser.add_argument('--makeDocs', help="Should the docs be built for this compon
 parser.add_argument('--collectDocs', help="Should the docs be collected for this component?", required=False, action='store_true', default=False)
 
 
-if not bldinstallercommon.is_mac_platform():
+if not is_macos():
     parser.add_argument('--icu7z', help="a file or url where it get icu libs as 7z", required=False, default='')
 
-if bldinstallercommon.is_win_platform():
+if is_windows():
     parser.add_argument('--environment_batch', help="batch file that sets up environment")
     parser.add_argument('--environment_batch_argument', help="if the batch file needs an argument just add it with this argument")
 
@@ -187,7 +186,6 @@ tempPath = os.path.abspath(os.path.join(os.path.dirname(__file__), 'temp'))
 
 # clone module repo
 if callerArguments.module_url != '':
-    bldinstallercommon.init_common_module(os.getcwd())
     bldinstallercommon.create_dirs(MODULE_SRC_DIR)
     bldinstallercommon.clone_repository(callerArguments.module_url, callerArguments.module_branch, os.path.join(os.path.dirname(__file__), MODULE_SRC_DIR_NAME))
     qtModuleSourceDirectory = MODULE_SRC_DIR
@@ -203,7 +201,7 @@ else:
 
 # install directory
 qtModuleInstallDirectory = qtModuleSourceDirectory + '_install'
-if bldinstallercommon.is_win_platform():
+if is_windows():
     # rip out drive letter from path on Windows
     qtModuleInstallDirectory = qtModuleInstallDirectory[2:]
     # check whether this is a QNX build
@@ -252,15 +250,15 @@ pathKeyList.append(pythonExecutablePath)
 
 environment = {'PATH': os.pathsep.join(pathKeyList)}
 
-if bldinstallercommon.is_linux_platform():
+if is_linux():
     environment["LD_LIBRARY_PATH"] = os.pathsep.join([os.path.join(callerArguments.qt5path, 'lib')]
 + os.environ.get("LD_LIBRARY_PATH", "").split(os.pathsep))
     environment["QMAKESPEC"] = "linux-g++"
 
-if bldinstallercommon.is_mac_platform():
+if is_macos():
     environment["DYLD_FRAMEWORK_PATH"] = os.path.join(callerArguments.qt5path, 'lib')
 
-if not bldinstallercommon.is_win_platform():
+if not is_windows():
     environment["MAKEFLAGS"] = "-j" + str(multiprocessing.cpu_count() + 1)
 
 if callerArguments.debug:
@@ -288,7 +286,7 @@ if callerArguments.use_cmake:
     generateCommand.append(qtModuleSourceDirectory)
 else: # --> qmake
     qtModuleProFile = locate_pro(qtModuleSourceDirectory)
-    if bldinstallercommon.is_win_platform():
+    if is_windows():
         # do not shadow-build with qmake on Windows
         qtModuleBuildDirectory = os.path.dirname(qtModuleProFile)
     generateCommand = [qmakeBinary]
@@ -311,7 +309,7 @@ if ret:
     raise RuntimeError('Failure running the last command: %i' % ret)
 
 # patch .so filenames on Windows/Android
-if bldinstallercommon.is_win_platform() and os.environ.get('DO_PATCH_ANDROID_SONAME_FILES'):
+if is_windows() and os.environ.get('DO_PATCH_ANDROID_SONAME_FILES'):
     bldinstallercommon.rename_android_soname_files(qtModuleInstallDirectory)
 
 #doc collection

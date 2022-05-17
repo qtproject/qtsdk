@@ -32,6 +32,7 @@
 import os
 
 import bldinstallercommon
+from bld_utils import is_windows, is_linux
 import collections
 
 BuildParams = collections.namedtuple('BuildParams',
@@ -49,9 +50,9 @@ def qt_static_configure_options():
             '-static'] + qt_static_platform_configure_options()
 
 def qt_static_platform_configure_options():
-    if bldinstallercommon.is_win_platform():
+    if is_windows():
         return ['-static-runtime', '-no-icu', '-mp']
-    elif bldinstallercommon.is_linux_platform():
+    elif is_linux():
         return ['-no-icu', '-no-glib', '-qt-zlib', '-qt-pcre', '-qt-doubleconversion']
     return []
 
@@ -98,7 +99,7 @@ def build_sdktool_impl(params, qt_build_path):
     # force MSVC on Windows, because it looks for GCC in the PATH first,
     # even if MSVC is first mentioned in the PATH...
     # TODO would be nicer if we only did this if cl.exe is indeed first in the PATH
-    if bldinstallercommon.is_win_platform():
+    if is_windows():
         cmake_args += ['-DCMAKE_C_COMPILER=cl', '-DCMAKE_CXX_COMPILER=cl']
 
     bldinstallercommon.do_execute_sub_process(cmake_args +
@@ -128,6 +129,6 @@ def build_sdktool(qt_src_url, qt_build_base, sdktool_src_path, sdktool_build_pat
     build_sdktool_impl(params, qt_build)
 
 def zip_sdktool(sdktool_target_path, out_7zip, redirect_output=None):
-    glob = "*.exe" if bldinstallercommon.is_win_platform() else "*"
+    glob = "*.exe" if is_windows() else "*"
     bldinstallercommon.do_execute_sub_process(['7z', 'a', out_7zip, glob],
                                               sdktool_target_path, redirect_output=redirect_output)

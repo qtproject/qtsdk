@@ -39,8 +39,8 @@ import subprocess
 from time import gmtime, strftime
 import argparse
 import multiprocessing # to get the cpu core count
-import platform
-if platform.system().lower().startswith('win'):
+from bld_utils import is_windows, is_macos, is_linux
+if is_windows():
     import win32api
 
 from threadedwork import ThreadedWork
@@ -400,7 +400,7 @@ def get_component_data(task, sdk_component, archive, install_dir, data_dir_dest,
     if archive.rpath_target:
         if not archive.rpath_target.startswith(os.sep):
             archive.rpath_target = os.sep + archive.rpath_target
-        if bldinstallercommon.is_linux_platform() or bldinstallercommon.is_solaris_platform():
+        if is_linux():
             bldinstallercommon.handle_component_rpath(install_dir, archive.rpath_target)
 
     if archive.component_sha1_file:
@@ -463,11 +463,11 @@ def substitute_package_name(task, package_name):
 ##############################################################
 def remove_all_debug_information_files(install_dir):
     """Remove debug information files according to host machine."""
-    if bldinstallercommon.is_win_platform():
+    if is_windows():
         debug_information_file_ending = 'pdb'
-    elif bldinstallercommon.is_linux_platform():
+    elif is_linux():
         debug_information_file_ending = 'debug'
-    elif bldinstallercommon.is_mac_platform():
+    elif is_macos():
         debug_information_file_ending = 'dSYM'
     else:
         raise CreateInstallerError('Host is not identified as Windows, Linux or macOS')
@@ -509,7 +509,7 @@ def remove_all_debug_libraries(install_dir):
     # on Windows we trust debug library filenames to follow *d.dll | *d.lib industry standard naming convention
     # but we must consider that library filenames can end with letter 'd' in release build
     # and exclude those from removable items
-    if bldinstallercommon.is_win_platform():
+    if is_windows():
         for directory in ('bin', 'lib', 'qml', 'plugins'):
             windows_debug_library_dir = bldinstallercommon.locate_directory(install_dir, directory)
             log.info("Removing Windows debug libraries from: {0}".format(windows_debug_library_dir))
@@ -538,7 +538,7 @@ def remove_all_debug_libraries(install_dir):
                         if os.path.exists(windows_debug_library_dir):
                             bldinstallercommon.delete_files_by_type_recursive(windows_debug_library_dir, '\S*d\.' + debug_library_file_type) # pylint: disable=W1401
     # remove macOS debug libraries
-    elif bldinstallercommon.is_mac_platform():
+    elif is_macos():
         for directory in ('bin', 'lib', 'qml', 'plugins'):
             macOS_debug_library_dir = bldinstallercommon.locate_directory(install_dir, directory)
             log.info("Removing macOS debug libraries from: {0}".format(macOS_debug_library_dir))
@@ -598,7 +598,7 @@ def create_target_components(task):
                     # Create needed data dirs before the threads start to work
                     bldinstallercommon.create_dirs(install_dir)
                     bldinstallercommon.create_dirs(data_dir_dest)
-                    if platform.system().lower().startswith('win'):
+                    if is_windows():
                         install_dir = win32api.GetShortPathName(install_dir)
                         data_dir_dest = win32api.GetShortPathName(data_dir_dest)
                     getComponentDataWork.addTask("adding {0} to {1}".format(archive.archive_name, sdk_component.package_name),
@@ -710,7 +710,7 @@ def create_installer_binary(task):
     #    platform is win, linux, mac, etc.
     platform        = task.config.get('PlatformIdentifier', 'identifier')
     installer_type  = 'offline' if task.offline_installer else 'online'
-    extension       = '.run' if bldinstallercommon.is_linux_platform() else ''
+    extension       = '.run' if is_linux() else ''
 
     if not task.installer_name:
         task.installer_name = task.installer_name + '-' + platform + '-' + task.license_type
@@ -750,10 +750,10 @@ def create_installer_binary(task):
     bldinstallercommon.create_dirs(output_dir)
     file_name = os.path.join(task.script_root_dir, task.installer_name)
     old_existing_file_name = os.path.join(output_dir, task.installer_name)
-    if bldinstallercommon.is_mac_platform():
+    if is_macos():
         file_name = file_name + '.app'
         old_existing_file_name = old_existing_file_name + '.app'
-    if bldinstallercommon.is_win_platform():
+    if is_windows():
         file_name = file_name + '.exe'
         old_existing_file_name = old_existing_file_name + '.exe'
     # remove old if exists
@@ -866,8 +866,6 @@ def create_mac_disk_image(task):
 def create_installer(task):
     """Installer creation main steps."""
     log.info("Creating Qt Installer Framework based installer/online repository")
-    # init
-    bldinstallercommon.init_common_module(task.script_root_dir)
     # check required tools
     check_required_tools()
     # clean env before starting
@@ -888,7 +886,7 @@ def create_installer(task):
     if task.online_installer or task.offline_installer:
         create_installer_binary(task)
         # for mac we need some extra work
-        if bldinstallercommon.is_mac_platform():
+        if is_macos():
             create_mac_disk_image(task)
     if task.create_repository:
         create_online_repository(task)
@@ -1037,7 +1035,7 @@ class QtInstallerTask:
     # Install Installer-Framework tools
     ##############################################################
     def set_ifw_tools(self):
-        executable_suffix = bldinstallercommon.get_executable_suffix()
+        executable_suffix = ".exe" if is_windows() else ""
         self.archivegen_tool = bldinstallercommon.locate_executable(self.ifw_tools_dir, 'archivegen' + executable_suffix)
         self.binarycreator_tool = bldinstallercommon.locate_executable(self.ifw_tools_dir, 'binarycreator' + executable_suffix)
         self.installerbase_tool = bldinstallercommon.locate_executable(self.ifw_tools_dir, 'installerbase' + executable_suffix)
