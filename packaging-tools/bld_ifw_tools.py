@@ -41,6 +41,7 @@ import shlex
 import subprocess
 from read_remote_config import get_pkg_value
 from bld_utils import is_windows, is_macos, is_linux
+from pathlib import Path
 
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 ARCH_EXT = '.zip' if is_windows() else '.tar.xz'
@@ -347,7 +348,7 @@ def prepare_compressed_package(src_pkg_uri, src_pkg_saveas, destination_dir):
         print('Found old local package, using that: {0}'.format(src_pkg_saveas))
     print('Done')
     print('--------------------------------------------------------------------')
-    bldinstallercommon.create_dirs(destination_dir)
+    Path(destination_dir).mkdir(parents=True, exist_ok=True)
     bldinstallercommon.extract_file(src_pkg_saveas, destination_dir)
     l = os.listdir(destination_dir)
     items = len(l)
@@ -371,7 +372,7 @@ def build_qt(options, qt_build_dir, qt_configure_options, qt_modules):
         if os.path.isfile(qmake_bin) and os.path.isdir(qt_lib_dir):
             return
 
-    bldinstallercommon.create_dirs(qt_build_dir)
+    Path(qt_build_dir).mkdir(parents=True, exist_ok=True)
     # configure first
     print('--------------------------------------------------------------------')
     print('Configuring Qt')
@@ -403,7 +404,7 @@ def prepare_installer_framework(options):
     print('--------------------------------------------------------------------')
     print('Prepare Installer Framework source')
     #create dirs
-    bldinstallercommon.create_dirs(options.installer_framework_build_dir)
+    Path(options.installer_framework_build_dir).mkdir(parents=True, exist_ok=True)
     if options.qt_installer_framework_uri.endswith('.git'):
         # clone repos
         bldinstallercommon.clone_repository(options.qt_installer_framework_uri, options.qt_installer_framework_branch, options.installer_framework_source_dir, True)
@@ -438,8 +439,7 @@ def build_installer_framework(options):
         print('*** Unable to find qmake, aborting!')
         print('qmake: {0}'.format(qmake_bin))
         sys.exit(-1)
-    if not os.path.exists(options.installer_framework_build_dir):
-        bldinstallercommon.create_dirs(options.installer_framework_build_dir)
+    Path(options.installer_framework_build_dir).mkdir(parents=True, exist_ok=True)
     cmd_args = [qmake_bin]
     cmd_args += options.qt_installer_framework_qmake_args
     cmd_args += [options.installer_framework_source_dir]
@@ -582,7 +582,7 @@ def clean_build_environment(options):
         os.remove(options.installer_framework_payload_arch)
     if os.path.exists(options.build_artifacts_dir):
         bldinstallercommon.remove_tree(options.build_artifacts_dir)
-    bldinstallercommon.create_dirs(options.build_artifacts_dir)
+    Path(options.build_artifacts_dir).mkdir(parents=True, exist_ok=True)
     if os.path.exists(options.installer_framework_build_dir):
         bldinstallercommon.remove_tree(options.installer_framework_build_dir)
 

@@ -46,6 +46,8 @@ import urllib.error
 import urllib.parse
 import string
 import fileinput
+from pathlib import Path
+
 from bld_utils import runCommand, download, is_windows, is_macos, is_linux
 from threadedwork import Task, ThreadedWork
 
@@ -203,7 +205,7 @@ def copy_tree(source_dir, dest_dir):
             if len(full_file_name) > 255:
                 raise IOError('given full_file_name length [%s] too long for Windows: %s' % (len(full_file_name), full_file_name))
         if os.path.isdir(full_file_name):
-            create_dirs(dest_dir + os.sep + file_name)
+            Path(dest_dir + os.sep + file_name).mkdir(parents=True, exist_ok=True)
             copy_tree(full_file_name, dest_dir + os.sep + file_name)
         if os.path.isfile(full_file_name):
             shutil.copy(full_file_name, dest_dir)
@@ -315,17 +317,6 @@ def config_section_map(conf, section):
             print('exception on %s!' % option)
             dict1[option] = ''
     return dict1
-
-
-###############################
-# function
-###############################
-def create_dirs(path_to_be_created):
-    if not os.path.exists(path_to_be_created):
-        try:
-            os.makedirs(path_to_be_created)
-        except:
-            raise IOError('*** Failed to create dir: %s' % path_to_be_created)
 
 
 ###############################
@@ -784,7 +775,7 @@ def rename_android_soname_files(qt5_base_path):
 # function
 ###############################
 def create_extract_function(file_path, target_path, caller_arguments = None):
-    create_dirs(target_path)
+    Path(target_path).mkdir(parents=True, exist_ok=True)
     working_dir = os.path.dirname(file_path)
     if file_path.endswith('.tar.gz'):
         return lambda: runCommand(['tar', 'zxf', file_path, '-C', target_path], working_dir, caller_arguments)

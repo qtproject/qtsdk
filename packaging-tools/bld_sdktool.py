@@ -30,6 +30,7 @@
 #############################################################################
 
 import os
+from pathlib import Path
 
 import bldinstallercommon
 from bld_utils import is_windows, is_linux
@@ -74,16 +75,16 @@ def package_extension(url):
         return ext
 
 def get_and_extract_qt_src(url, temp, path):
-    bldinstallercommon.create_dirs(temp)
+    Path(temp).mkdir(parents=True, exist_ok=True)
     ext = package_extension(url)
     file_path = os.path.join(temp, 'qtsrc' + ext)
     bldinstallercommon.retrieve_url(url, file_path)
-    bldinstallercommon.create_dirs(path)
+    Path(path).mkdir(parents=True, exist_ok=True)
     bldinstallercommon.extract_file(file_path, path)
     bldinstallercommon.remove_one_tree_level(path)
 
 def configure_qt(params, src, build):
-    bldinstallercommon.create_dirs(build)
+    Path(build).mkdir(parents=True, exist_ok=True)
     configure = os.path.join(src, 'configure')
     bldinstallercommon.do_execute_sub_process([configure, '-prefix', build] + qt_static_configure_options(),
                                               build, redirect_output=params.redirect_output)
@@ -92,7 +93,7 @@ def build_qt(params, build):
     bldinstallercommon.do_execute_sub_process([params.make_command], build, redirect_output=params.redirect_output)
 
 def build_sdktool_impl(params, qt_build_path):
-    bldinstallercommon.create_dirs(params.build_path)
+    Path(params.build_path).mkdir(parents=True, exist_ok=True)
     cmake_args = ['cmake',
                   '-DCMAKE_PREFIX_PATH=' + qt_build_path,
                   '-DCMAKE_BUILD_TYPE=Release']

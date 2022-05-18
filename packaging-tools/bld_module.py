@@ -38,6 +38,7 @@ import fnmatch
 import shutil
 import fileinput
 from functools import reduce
+from pathlib import Path
 
 # own imports
 from threadedwork import Task, ThreadedWork
@@ -186,11 +187,11 @@ tempPath = os.path.abspath(os.path.join(os.path.dirname(__file__), 'temp'))
 
 # clone module repo
 if callerArguments.module_url != '':
-    bldinstallercommon.create_dirs(MODULE_SRC_DIR)
+    Path(MODULE_SRC_DIR).mkdir(parents=True, exist_ok=True)
     bldinstallercommon.clone_repository(callerArguments.module_url, callerArguments.module_branch, os.path.join(os.path.dirname(__file__), MODULE_SRC_DIR_NAME))
     qtModuleSourceDirectory = MODULE_SRC_DIR
 elif callerArguments.module7z != '':
-    bldinstallercommon.create_dirs(MODULE_SRC_DIR)
+    Path(MODULE_SRC_DIR).mkdir(parents=True, exist_ok=True)
     myGetQtModule = ThreadedWork("get and extract module src")
     myGetQtModule.addTaskObject(bldinstallercommon.create_download_extract_task(callerArguments.module7z, MODULE_SRC_DIR, tempPath, callerArguments))
     myGetQtModule.run()
@@ -316,7 +317,7 @@ if is_windows() and os.environ.get('DO_PATCH_ANDROID_SONAME_FILES'):
 if callerArguments.collectDocs:
     doc_list = bldinstallercommon.make_files_list(qtModuleSourceDirectory, '\\.qch')
     doc_install_dir = os.path.join(qtModuleInstallDirectory, 'doc')
-    bldinstallercommon.create_dirs(doc_install_dir)
+    Path(doc_install_dir).mkdir(parents=True, exist_ok=True)
     for item in doc_list:
         shutil.copy(item, doc_install_dir)
 

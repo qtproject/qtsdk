@@ -42,6 +42,7 @@ import multiprocessing # to get the cpu core count
 from bld_utils import is_windows, is_macos, is_linux
 if is_windows():
     import win32api
+from pathlib import Path
 
 from threadedwork import ThreadedWork
 import bld_utils
@@ -103,7 +104,7 @@ def set_config_directory(task):
     if not os.path.exists(config_template_src):
         raise CreateInstallerError("No such 'config' template directory: '{0}'".format(config_template_src))
 
-    bldinstallercommon.create_dirs(task.config_dir_dst)
+    Path(task.config_dir_dst).mkdir(parents=True, exist_ok=True)
     bldinstallercommon.copy_tree(config_template_src, task.config_dir_dst)
     log.info("Copied: '{0}' into: {1}".format(config_template_src, task.config_dir_dst))
 
@@ -128,7 +129,7 @@ def set_config_xml(task):
     if os.path.exists(config_template_dest):
         os.remove(config_template_dest)
         log.debug("Deleted old existing config.xml: {0}".format(config_template_dest))
-    bldinstallercommon.create_dirs(config_template_dest_dir)
+    Path(config_template_dest_dir).mkdir(parents=True, exist_ok=True)
     shutil.copy(config_template_source, config_template_dest)
     log.info("Copied '{0}' into: '{1}'".format(config_template_source, config_template_dest))
 
@@ -554,7 +555,7 @@ def remove_all_debug_libraries(install_dir):
 ##############################################################
 def create_target_components(task):
     """Create target components."""
-    bldinstallercommon.create_dirs(task.packages_full_path_dst)
+    Path(task.packages_full_path_dst).mkdir(parents=True, exist_ok=True)
 
     log.info("Creating SDK components")
     # download and extract lrelease binary for creating translation binaries
@@ -574,7 +575,7 @@ def create_target_components(task):
         # save path for later substitute_component_tags call
         sdk_component.meta_dir_dest = meta_dir_dest
         # create meta destination folder
-        bldinstallercommon.create_dirs(meta_dir_dest)
+        Path(meta_dir_dest).mkdir(parents=True, exist_ok=True)
         # Copy Meta data
         metadata_content_source_root = os.path.normpath(sdk_component.pkg_template_dir + os.sep + 'meta')
         bldinstallercommon.copy_tree(metadata_content_source_root, meta_dir_dest)
@@ -596,8 +597,8 @@ def create_target_components(task):
                     install_dir = os.path.normpath(compress_content_dir + archive.get_archive_installation_directory())
                     # adding get_component_data task to our work queue
                     # Create needed data dirs before the threads start to work
-                    bldinstallercommon.create_dirs(install_dir)
-                    bldinstallercommon.create_dirs(data_dir_dest)
+                    Path(install_dir).mkdir(parents=True, exist_ok=True)
+                    Path(data_dir_dest).mkdir(parents=True, exist_ok=True)
                     if is_windows():
                         install_dir = win32api.GetShortPathName(install_dir)
                         data_dir_dest = win32api.GetShortPathName(data_dir_dest)
@@ -612,7 +613,7 @@ def create_target_components(task):
         # maybe there is some static data
         data_content_source_root = os.path.normpath(sdk_component.pkg_template_dir + os.sep + 'data')
         if os.path.exists(data_content_source_root):
-            bldinstallercommon.create_dirs(data_dir_dest)
+            Path(data_dir_dest).mkdir(parents=True, exist_ok=True)
             bldinstallercommon.copy_tree(data_content_source_root, data_dir_dest)
 
     if not task.dry_run:
@@ -747,7 +748,7 @@ def create_installer_binary(task):
 
     # move results to dedicated directory
     output_dir = os.path.join(task.script_root_dir, pkg_constants.INSTALLER_OUTPUT_DIR_NAME)
-    bldinstallercommon.create_dirs(output_dir)
+    Path(output_dir).mkdir(parents=True, exist_ok=True)
     file_name = os.path.join(task.script_root_dir, task.installer_name)
     old_existing_file_name = os.path.join(output_dir, task.installer_name)
     if is_macos():
@@ -824,7 +825,7 @@ def inject_update_rcc_to_archive(archive_file_path, file_to_be_injected):
     archive_file_name = os.path.basename(archive_file_path)
     # copy to tmp location
     tmp_dir = os.path.join(os.path.dirname(archive_file_path), '_tmp')
-    bldinstallercommon.create_dirs(tmp_dir)
+    Path(tmp_dir).mkdir(parents=True, exist_ok=True)
     shutil.copy(archive_file_path, tmp_dir)
     # extract
     copied_archive_file = os.path.join(tmp_dir, archive_file_name)
@@ -1057,7 +1058,7 @@ class QtInstallerTask:
         # download ifw archive if not present on disk
         if not os.path.exists(package_save_as_temp):
             # create needed dirs
-            bldinstallercommon.create_dirs(self.ifw_tools_dir)
+            Path(self.ifw_tools_dir).mkdir(parents=True, exist_ok=True)
             log.info("Downloading: {0}".format(self.ifw_tools_uri))
             if not bldinstallercommon.is_content_url_valid(self.ifw_tools_uri):
                 raise CreateInstallerError("Package URL is invalid: {0}".format(self.ifw_tools_uri))
