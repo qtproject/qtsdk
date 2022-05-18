@@ -372,22 +372,9 @@ def locate_directory(base_dir, dir_name):
 ###############################
 def is_executable(path):
     if is_windows():
-        if path.endswith('.exe') or path.endswith('.com'):
-            return True
-    elif is_linux():
-        return (re.search(r':.* ELF',
-                          subprocess.Popen(['file', '-L', path],
-                                           stdout=subprocess.PIPE).stdout.read().decode())
-                is not None)
-    elif is_macos():
-        return (re.search(r'executable',
-                          subprocess.Popen(['file', path],
-                                           stdout=subprocess.PIPE).stdout.read().decode())
-                is not None)
+        return path.endswith(('.exe', '.com'))
     else:
-        raise RuntimeError('*** Error, is_executable not implemented yet!')
-
-    return False
+        return os.access(path, os.X_OK)
 
 
 ###############################
