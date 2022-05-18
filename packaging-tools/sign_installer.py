@@ -36,7 +36,6 @@ import argparse
 import subprocess
 import logging
 from read_remote_config import get_pkg_value
-import bldinstallercommon
 
 log = logging.getLogger("Sign-utility")
 logging.basicConfig(level=logging.INFO, format='%(message)s')
@@ -78,7 +77,7 @@ def sign_windows_executable(file_path: str):
     log_entry[6] = "****"
     log.info("Calling: {0}".format(' '.join(log_entry)))
     subprocess.check_call(cmd_args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    shutil.rmtree(signToolsTempDir, onerror=bldinstallercommon.handle_remove_error)
+    shutil.rmtree(signToolsTempDir)
     log.info(f"Successfully signed: {file_path}")
 
 

@@ -331,25 +331,35 @@ def remove_one_tree_level(directory):
         tempdir = os.path.join(tempdir_base, 'a') # dummy name
         shutil.move(full_dir_name, tempdir)
         move_tree(tempdir, directory)
-        shutil.rmtree(tempdir_base, onerror=handle_remove_error)
+        remove_tree(tempdir_base)
     else:
         raise IOError('Cannot remove one level of directory structure of "%s", it has %s subdirectories' % (dir, items))
-
 
 ###############################
 # function
 ###############################
-def handle_remove_error(func, path, exc):
-    if exc[0] == FileNotFoundError:  # Do not raise exception if path doesn't exist
-        pass
-    elif exc[0] == PermissionError:  # Try to fix permissions and remove again
-        if is_win_platform():
-            os.chmod(path, stat.S_IWRITE)  # write access
-        else:
-            os.chmod(path, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)  # 0777
+def handle_remove_readonly(func, path, exc):
+    excvalue = exc[1]
+    if func in (os.rmdir, os.remove) and excvalue.errno == errno.EACCES:
+        os.chmod(path, stat.S_IRWXU| stat.S_IRWXG| stat.S_IRWXO) # 0777
         func(path)
     else:
         raise
+
+def remove_tree(path):
+    if os.path.isdir(path) and os.path.exists(path):
+        if IS_WIN_PLATFORM:
+            path = win32api.GetShortPathName(path.replace('/', '\\'))
+            #a funny thing is that rmdir does not set an exitcode it is just using the last set one
+            try:
+                runCommand(['rmdir', path, '/S', '/Q'], SCRIPT_ROOT_DIR, onlyErrorCaseOutput=True)
+            except:
+                traceback.print_exc()
+                pass
+        else:
+            #shutil.rmtree(path)
+            runCommand(['rm', '-rf', path], SCRIPT_ROOT_DIR, onlyErrorCaseOutput=True)
+    return not os.path.exists(path)
 
 
 ###############################
@@ -964,9 +974,10 @@ def rename_android_soname_files(qt5_base_path):
 def remove_directories_by_type(base_path, search_pattern):
     while True:
         tmp_path = locate_directory(base_path, search_pattern)
-        if not tmp_path:
+        if tmp_path:
+            shutil.rmtree(tmp_path)
+        else:
             break
-        shutil.rmtree(tmp_path, onerror=handle_remove_error)
 
 ###############################
 # function

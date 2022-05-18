@@ -87,8 +87,9 @@ def clean_work_dirs(task):
     """Clean working directories."""
     log.info("Cleaning work environment")
     for item in [task.packages_full_path_dst, task.repo_output_dir, task.config_dir_dst]:
-        shutil.rmtree(item, onerror=bldinstallercommon.handle_remove_error)
-        log.debug("Deleted directory: {0}".format(item))
+        if os.path.exists(item):
+            bldinstallercommon.remove_tree(item)
+            log.debug("Deleted directory: {0}".format(item))
 
 
 ##############################################################
@@ -368,8 +369,9 @@ def get_component_data(task, sdk_component, archive, install_dir, data_dir_dest,
         # perform package finalization tasks for the given archive
         if 'delete_doc_directory' in archive.package_finalize_items:
             doc_dir = bldinstallercommon.locate_directory(install_dir, 'doc')
-            log.info("Erasing doc: {0}".format(doc_dir))
-            shutil.rmtree(doc_dir, onerror=bldinstallercommon.handle_remove_error)
+            if os.path.exists(doc_dir):
+                log.info("Erasing doc: {0}".format(doc_dir))
+                shutil.rmtree(doc_dir)
         if 'cleanup_doc_directory' in archive.package_finalize_items:
             cleanup_docs(install_dir)
         if 'qml_examples_only' in archive.package_finalize_items:
@@ -492,7 +494,7 @@ def remove_debug_information_files_by_file_type(install_dir, debug_information_f
                         if d.endswith('dSYM'):
                             list_of_debug_information_files.append(os.path.join(root, d))
                 for debug_information in list_of_debug_information_files:
-                    shutil.rmtree(debug_information, onerror=bldinstallercommon.handle_remove_error)
+                    bldinstallercommon.remove_tree(debug_information)
             else:
                # This will only take the text connected to the debug information file by grabbing all non-space characters (\S)
                bldinstallercommon.delete_files_by_type_recursive(debug_information_dir, '\S*\.' + debug_information_file_ending) # pylint: disable=W1401
@@ -622,7 +624,8 @@ def create_target_components(task):
         substitute_component_tags(create_metadata_map(sdk_component), sdk_component.meta_dir_dest)
         if hasattr(sdk_component, 'temp_data_dir') and os.path.exists(sdk_component.temp_data_dir):
             # lastly remove temp dir after all data is prepared
-            shutil.rmtree(sdk_component.temp_data_dir, onerror=bldinstallercommon.handle_remove_error)
+            if not bldinstallercommon.remove_tree(sdk_component.temp_data_dir):
+                raise CreateInstallerError("Unable to remove directory: {0}".format(sdk_component.temp_data_dir))
             # substitute downloadable archive names in installscript.qs
             substitute_component_tags(sdk_component.generate_downloadable_archive_list(), sdk_component.meta_dir_dest)
 
@@ -659,7 +662,7 @@ def qml_examples_only(examples_dir):
         else:
             delete_dir = os.path.join(root_dir, submodule)
             log.info("Delete non qml examples directory: {0}".format(delete_dir))
-            shutil.rmtree(delete_dir, onerror=bldinstallercommon.handle_remove_error)
+            shutil.rmtree(delete_dir)
 
 
 ##############################################################
@@ -837,7 +840,7 @@ def inject_update_rcc_to_archive(archive_file_path, file_to_be_injected):
     # copy re-compressed package to correct location
     shutil.copy(os.path.join(tmp_dir, archive_file_name), os.path.dirname(archive_file_path))
     # delete tmp location
-    shutil.rmtree(tmp_dir, onerror=bldinstallercommon.handle_remove_error)
+    bldinstallercommon.shutil.rmtree(tmp_dir)
 
 
 ##############################################################

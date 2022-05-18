@@ -36,7 +36,7 @@ import unittest
 import shutil
 from ddt import ddt, data, unpack  # type: ignore
 from build_wrapper import init_snapshot_dir_and_upload_files
-import bldinstallercommon
+
 
 @ddt
 class TestBuildWrapper(unittest.TestCase):
@@ -75,7 +75,7 @@ class TestBuildWrapper(unittest.TestCase):
         uploadedFiles = [os.path.basename(x) for x in glob.glob(searchDir)]
         self.assertListEqual(sorted(filesToUpload), sorted(uploadedFiles))
 
-        shutil.rmtree(remote_path_base, onerror=bldinstallercommon.handle_remove_error)
+        shutil.rmtree(remote_path_base)
 
 if __name__ == '__main__':
     unittest.main()

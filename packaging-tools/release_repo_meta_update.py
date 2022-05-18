@@ -3,7 +3,7 @@
 
 #############################################################################
 ##
-## Copyright (C) 2022 The Qt Company Ltd.
+## Copyright (C) 2020 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the release tools of the Qt Toolkit.
@@ -144,7 +144,8 @@ def swap_repositories(repositories_to_swap: Dict[str, str]) -> Tuple[Dict[str, T
             # and we want to ensure the data portion stays the same, so:
             # Remove all subdirs from converted repo
             for item in os.listdir(converted_repo):
-                shutil.rmtree(os.path.join(converted_repo, item), onerror=bldinstallercommon.handle_remove_error)
+                if os.path.isdir(os.path.join(converted_repo, item)):
+                    shutil.rmtree(os.path.join(converted_repo, item))
             # Copy subdirs & content from orig repo to converted repo i.e. data portion
             for item in os.listdir(orig_repo):
                 if os.path.isdir(os.path.join(orig_repo, item)):

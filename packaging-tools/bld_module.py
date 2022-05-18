@@ -215,9 +215,9 @@ if bldinstallercommon.is_win_platform():
 ### clean step
 if callerArguments.clean:
     print("##### {0} #####".format("clean old builds"))
-    shutil.rmtree(callerArguments.qt5path, onerror=bldinstallercommon.handle_remove_error)
-    shutil.rmtree(qtModuleInstallDirectory, onerror=bldinstallercommon.handle_remove_error)
-    shutil.rmtree(tempPath, onerror=bldinstallercommon.handle_remove_error)
+    bldinstallercommon.remove_tree(callerArguments.qt5path)
+    bldinstallercommon.remove_tree(qtModuleInstallDirectory)
+    bldinstallercommon.remove_tree(tempPath)
 
 if not os.path.lexists(callerArguments.qt5path) and not callerArguments.qt5_module_urls:
     parser.print_help()
