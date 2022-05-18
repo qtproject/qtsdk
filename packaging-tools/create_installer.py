@@ -47,11 +47,13 @@ from pathlib import Path
 from threadedwork import ThreadedWork
 import bld_utils
 import bldinstallercommon
+from bldinstallercommon import locate_path, locate_paths
 import pkg_constants
 from archiveresolver import ArchiveLocationResolver
 from sdkcomponent import SdkComponent
 from patch_qt import patchFiles, patchQtEdition
 import logging
+from installer_utils import PackagingError
 
 log = logging.getLogger("create_installer")
 log.setLevel("INFO")
@@ -205,13 +207,12 @@ def parse_component_data(task, configuration_file, configurations_base_path):
     """Parse SDK component data"""
     file_full_path = configuration_file
     if not os.path.isfile(file_full_path):
-        file_full_path = bldinstallercommon.locate_file(configurations_base_path, configuration_file)
-    if not file_full_path:
-        # check the 'all-os' directory
-        allos_conf_file_dir = os.path.normpath(task.configurations_dir + os.sep + 'all-os')
-        file_full_path = bldinstallercommon.locate_file(allos_conf_file_dir, configuration_file)
-    if not file_full_path:
-        raise CreateInstallerError('*** Aborting, unable to locate the specified file. Check the configuration files for possible error(s).')
+        try:
+            file_full_path = locate_path(configurations_base_path, [configuration_file], filters=[os.path.isfile])
+        except PackagingError:
+            # check the 'all-os' directory
+            allos_conf_file_dir = os.path.normpath(task.configurations_dir + os.sep + 'all-os')
+            file_full_path = locate_path(allos_conf_file_dir, [configuration_file], filters=[os.path.isfile])
     log.info("Reading target configuration file: {0}".format(file_full_path))
     configuration = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
     configuration.readfp(open(file_full_path))
@@ -369,15 +370,20 @@ def get_component_data(task, sdk_component, archive, install_dir, data_dir_dest,
             bldinstallercommon.remove_one_tree_level(install_dir)
         # perform package finalization tasks for the given archive
         if 'delete_doc_directory' in archive.package_finalize_items:
-            doc_dir = bldinstallercommon.locate_directory(install_dir, 'doc')
-            if os.path.exists(doc_dir):
+            try:
+                doc_dir = locate_path(install_dir, ["doc"], filters=[os.path.isdir])
                 log.info("Erasing doc: {0}".format(doc_dir))
                 shutil.rmtree(doc_dir)
+            except PackagingError:
+                pass
         if 'cleanup_doc_directory' in archive.package_finalize_items:
             cleanup_docs(install_dir)
         if 'qml_examples_only' in archive.package_finalize_items:
-            examples_dir = bldinstallercommon.locate_directory(install_dir, 'examples')
-            qml_examples_only(examples_dir)
+            try:
+                examples_dir = locate_path(install_dir, ["examples"], filters=[os.path.isdir])
+                qml_examples_only(examples_dir)
+            except PackagingError:
+                pass
         if 'patch_qt' in archive.package_finalize_items:
             patchFiles(install_dir, product='qt_framework')
         if 'set_executable' in archive.package_finalize_items:
@@ -479,26 +485,19 @@ def remove_all_debug_information_files(install_dir):
 ##############################################################
 # Remove debug information files by file type
 ##############################################################
-def remove_debug_information_files_by_file_type(install_dir, debug_information_file_ending):
+def remove_debug_information_files_by_file_type(install_dir, dbg_file_suffix):
     """Remove debug information files by file type"""
-    for directory in ('bin', 'lib', 'qml', 'plugins'):
-        debug_information_dir = bldinstallercommon.locate_directory(install_dir, directory)
-        if os.path.exists(debug_information_dir):
-            log.info("Removing debug information files from: {0}".format(debug_information_dir))
-            if debug_information_file_ending == 'dSYM':
-                # On macOS, debug symbols are in folder bundles instead of files. os.walk used by bldinstallercommon.py
-                # helper functions doesn't directly support wildchars on path names so alternative approach for removing
-                # dSYM folders is required compared to Linux and Windows debug information files.
-                list_of_debug_information_files = []
-                for root, dirs, files in os.walk(debug_information_dir): # pylint: disable=W0612
-                    for d in dirs:
-                        if d.endswith('dSYM'):
-                            list_of_debug_information_files.append(os.path.join(root, d))
-                for debug_information in list_of_debug_information_files:
-                    bldinstallercommon.remove_tree(debug_information)
-            else:
-               # This will only take the text connected to the debug information file by grabbing all non-space characters (\S)
-               bldinstallercommon.delete_files_by_type_recursive(debug_information_dir, '\S*\.' + debug_information_file_ending) # pylint: disable=W1401
+    dirs = locate_paths(install_dir, ['bin', 'lib', 'qml', 'plugins'], filters=[os.path.isdir])
+    for dbg_info_dir in dirs:
+        log.info("Removing debug information files from: {0}".format(dbg_info_dir))
+        if dbg_file_suffix == 'dSYM':
+            # On macOS, debug symbols are in dSYM folder bundles instead of files.
+            dbg_file_list = locate_paths(dbg_info_dir, ["*dSYM"], [os.path.isdir])
+            for debug_information in dbg_file_list:
+                bldinstallercommon.remove_tree(debug_information)
+        else:
+            for path in locate_paths(dbg_info_dir, ["*." + dbg_file_suffix], [os.path.isfile]):
+                Path(path).unlink()
 
 
 ##############################################################
@@ -512,40 +511,34 @@ def remove_all_debug_libraries(install_dir):
     # and exclude those from removable items
     if is_windows():
         for directory in ('bin', 'lib', 'qml', 'plugins'):
-            windows_debug_library_dir = bldinstallercommon.locate_directory(install_dir, directory)
+            windows_debug_library_dir = locate_path(install_dir, [directory], filters=[os.path.isdir])
             log.info("Removing Windows debug libraries from: {0}".format(windows_debug_library_dir))
             # go through all library types and related qmake files
             debug_library_file_endings = ['dll', 'lib', 'prl']
             for debug_library_file_type in debug_library_file_endings:
-                if os.path.exists(windows_debug_library_dir):
-                    # make list of all debug library names
-                    all_debug_files_list = bldinstallercommon.make_files_list(windows_debug_library_dir, '\S*d\.' + debug_library_file_type) # pylint: disable=W1401
-                    # in case library name ends with 'd' we need to keep that and remove only library with double d at the end of file name
-                    double_d_debug_files_list = bldinstallercommon.make_files_list(windows_debug_library_dir, '\S*dd\.' + debug_library_file_type) # pylint: disable=W1401
-                    if double_d_debug_files_list:
-                        # check intersection of all debug libraries and library names ending with letter 'd'
-                        debug_files_list_intersection = set(all_debug_files_list).intersection(double_d_debug_files_list)
-                        for debug_library_name in set(debug_files_list_intersection):
-                            # remove one 'd' from library names ending letter 'd' also in release builds
-                            # and exclude from removed libraries
-                            altered_library_name = debug_library_name[:-5] + debug_library_name[-5+1:]
-                            all_debug_files_list.remove(altered_library_name)
-                            for item in all_debug_files_list:
-                                if os.path.exists(item):
-                                    os.remove(item)
-                    else:
-                        # there are no library names ending letter 'd' in this package
-                        # we can remove all debug libraries with filenames ending *d.dll | *d.lib
-                        if os.path.exists(windows_debug_library_dir):
-                            bldinstallercommon.delete_files_by_type_recursive(windows_debug_library_dir, '\S*d\.' + debug_library_file_type) # pylint: disable=W1401
+                # make list of all debug library names
+                all_debug_files_list = locate_paths(windows_debug_library_dir, ['*d.' + debug_library_file_type], filters=[os.path.isfile])
+                # in case library name ends with 'd' we need to keep that and remove only library with double d at the end of file name
+                double_d_debug_files_list = locate_paths(windows_debug_library_dir, ['*dd.' + debug_library_file_type], filters=[os.path.isfile])
+                if double_d_debug_files_list:
+                    # check intersection of all debug libraries and library names ending with letter 'd'
+                    debug_files_list_intersection = set(all_debug_files_list).intersection(double_d_debug_files_list)
+                    for debug_library_name in set(debug_files_list_intersection):
+                        # remove one 'd' from library names ending letter 'd' also in release builds
+                        # and exclude from removed libraries
+                        altered_library_name = debug_library_name[:-5] + debug_library_name[-5+1:]
+                        all_debug_files_list.remove(altered_library_name)
+                # remove all debug libraries with filenames ending *d.dll | *d.lib
+                for item in all_debug_files_list:
+                    Path(item).unlink()
     # remove macOS debug libraries
     elif is_macos():
-        for directory in ('bin', 'lib', 'qml', 'plugins'):
-            macOS_debug_library_dir = bldinstallercommon.locate_directory(install_dir, directory)
+        for macOS_debug_library_dir in locate_paths(install_dir, ['bin', 'lib', 'qml', 'plugins'], filters=[os.path.isdir]):
             log.info("Removing macOS debug libraries from: {0}".format(macOS_debug_library_dir))
-            debug_library_file_ending = '_debug\.*' # pylint: disable=W1401
+            debug_library_file_ending = '_debug.*'  # pylint: disable=W1401
             if os.path.exists(macOS_debug_library_dir):
-                bldinstallercommon.delete_files_by_type_recursive(macOS_debug_library_dir, '\S*' + debug_library_file_ending) # pylint: disable=W1401
+                for item in locate_paths(macOS_debug_library_dir, ['*' + debug_library_file_ending]):
+                    Path(item).unlink()
     else:
         log.info("Host was not Windows or macOS. For Linux and others we don\'t do anything at the moment")
 
@@ -804,13 +797,14 @@ def create_maintenance_tool_resource_file(task):
     bldinstallercommon.do_execute_sub_process(cmd_args, task.script_root_dir)
     # archive
     resource_file = os.path.join(task.script_root_dir, 'update.rcc')
-    installer_base_archive = bldinstallercommon.locate_file(task.packages_full_path_dst, '*installer-framework*')
-    if not os.path.isfile(installer_base_archive):
+    try:
+        installer_base_archive = locate_path(task.packages_full_path_dst, ["*installer-framework*"], filters=[os.path.isfile])
+        # inject the resource file to the same archive where installerbase is
+        inject_update_rcc_to_archive(installer_base_archive, resource_file)
+    except PackagingError:
         log.error("Unable to locate installerbase archive from: {0}".format(task.packages_full_path_dst))
         log.error("The update.rcc will not be included in the MaintenanceTool repository!")
-        return
-    # inject the resource file to the same archive where installerbase is
-    inject_update_rcc_to_archive(installer_base_archive, resource_file)
+        pass
 
 
 ###############################
@@ -1037,10 +1031,10 @@ class QtInstallerTask:
     ##############################################################
     def set_ifw_tools(self):
         executable_suffix = ".exe" if is_windows() else ""
-        self.archivegen_tool = bldinstallercommon.locate_executable(self.ifw_tools_dir, 'archivegen' + executable_suffix)
-        self.binarycreator_tool = bldinstallercommon.locate_executable(self.ifw_tools_dir, 'binarycreator' + executable_suffix)
-        self.installerbase_tool = bldinstallercommon.locate_executable(self.ifw_tools_dir, 'installerbase' + executable_suffix)
-        self.repogen_tool = bldinstallercommon.locate_executable(self.ifw_tools_dir, 'repogen' + executable_suffix)
+        self.archivegen_tool = bldinstallercommon.locate_executable(self.ifw_tools_dir, ['archivegen' + executable_suffix])
+        self.binarycreator_tool = bldinstallercommon.locate_executable(self.ifw_tools_dir, ['binarycreator' + executable_suffix])
+        self.installerbase_tool = bldinstallercommon.locate_executable(self.ifw_tools_dir, ['installerbase' + executable_suffix])
+        self.repogen_tool = bldinstallercommon.locate_executable(self.ifw_tools_dir, ['repogen' + executable_suffix])
         # check
         assert os.path.isfile(self.archivegen_tool), "Archivegen tool not found: {0}".format(self.archivegen_tool)
         assert os.path.isfile(self.binarycreator_tool), "Binary creator tool not found: {0}".format(self.binarycreator_tool)

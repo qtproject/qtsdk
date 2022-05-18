@@ -93,10 +93,3 @@ async def extract_archive(artifact: str, destinationDir: str) -> None:
     except Exception:
         log.exception("Could not extact a file %s to %s", artifact, destinationDir)
         raise
-
-
-def locate_file(fileName: str, searchDir: str) -> str:
-    for root, dirs, files in os.walk(searchDir):
-        if fileName in files and os.path.isfile(os.path.join(root, fileName)):
-            return root
-    raise PackagingError("Could not find file '{0}' from: {1}".format(fileName, searchDir))

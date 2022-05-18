@@ -52,6 +52,7 @@ from release_task_reader import ReleaseTask
 from installer_utils import PackagingError
 from runner import exec_cmd, async_exec_cmd
 from logging_util import init_logger
+from bldinstallercommon import locate_path
 from read_remote_config import get_pkg_value
 import sign_installer
 
@@ -197,7 +198,7 @@ def execute_remote_script(server: str, remoteScriptPath: str, timeout=60*60) -> 
 
 
 async def upload_ifw_to_remote(ifwTools: str, remoteServer: str, remoteServerHome: str) -> str:
-    from installer_utils import is_valid_url_path, download_archive, extract_archive, locate_file
+    from installer_utils import is_valid_url_path, download_archive, extract_archive
     assert is_valid_url_path(ifwTools)
     log.info("Preparing ifw tools: %s", ifwTools)
     # fetch the tool first
@@ -207,7 +208,7 @@ async def upload_ifw_to_remote(ifwTools: str, remoteServer: str, remoteServerHom
         os.makedirs(ifwToolsDir)
         destFile = download_archive(ifwTools, ifwToolsDir)
         await extract_archive(destFile, ifwToolsDir)
-    repogen = locate_file("repogen", ifwToolsDir)
+    repogen = locate_path(ifwToolsDir, ["repogen"], filters=[os.path.isfile])
     repogenDir = os.path.dirname(repogen)
     # upload to server
     remoteTmpDir = os.path.join(remoteServerHome, "ifw_tools", timestamp)

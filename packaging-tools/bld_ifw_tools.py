@@ -42,6 +42,8 @@ import subprocess
 from read_remote_config import get_pkg_value
 from bld_utils import is_windows, is_macos, is_linux
 from pathlib import Path
+from bldinstallercommon import locate_path
+from installer_utils import PackagingError
 
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 ARCH_EXT = '.zip' if is_windows() else '.tar.xz'
@@ -367,11 +369,13 @@ def prepare_compressed_package(src_pkg_uri, src_pkg_saveas, destination_dir):
 ###############################
 def build_qt(options, qt_build_dir, qt_configure_options, qt_modules):
     if options.incremental_mode:
-        qmake_bin = os.path.join(options.qt_build_dir, 'qtbase', 'bin', options.qt_qmake_bin)
-        qt_lib_dir = bldinstallercommon.locate_directory(qt_build_dir, 'lib')
-        if os.path.isfile(qmake_bin) and os.path.isdir(qt_lib_dir):
-            return
-
+        try:
+            locate_path(qt_build_dir, ["lib"], filters=[os.path.isdir])
+            qmake_bin = os.path.join(options.qt_build_dir, 'qtbase', 'bin', options.qt_qmake_bin)
+            if os.path.isfile(qmake_bin):
+                return
+        except PackagingError:
+            pass
     Path(qt_build_dir).mkdir(parents=True, exist_ok=True)
     # configure first
     print('--------------------------------------------------------------------')
@@ -641,13 +645,13 @@ def archive_installerbase(options):
     cmd_args_clean = []
     bin_temp = ''
     if is_linux() or is_macos():
-        bin_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, 'installerbase')
+        bin_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, ['installerbase'])
         bin_temp = ROOT_DIR + os.sep + '.tempSDKMaintenanceTool'
         shutil.copy(bin_path, bin_temp)
         cmd_args_archive = [ARCHIVE_PROGRAM, 'a', options.installer_base_archive_name, bin_temp]
         cmd_args_clean = ['rm', bin_temp]
     if is_windows():
-        bin_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, 'installerbase.exe')
+        bin_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, ['installerbase.exe'])
         bin_temp = ROOT_DIR + os.sep + 'tempSDKMaintenanceToolBase.exe'
         shutil.copy(bin_path, bin_temp)
         if options.signserver and options.signpwd:
@@ -669,11 +673,11 @@ def archive_binarycreator(options):
     print('Archive Installerbase and Binarycreator')
     cmd_args_archive = []
     if is_linux() or is_macos():
-        bin_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, 'installerbase')
-        binarycreator_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, 'binarycreator')
+        bin_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, ['installerbase'])
+        binarycreator_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, ['binarycreator'])
     elif is_windows():
-        bin_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, 'installerbase.exe')
-        binarycreator_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, 'binarycreator.exe')
+        bin_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, ['installerbase.exe'])
+        binarycreator_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, ['binarycreator.exe'])
     else:
         raise Exception("Not a supported platform")
     cmd_args_archive = ['7z', 'a', options.binarycreator_archive_name, bin_path, binarycreator_path]

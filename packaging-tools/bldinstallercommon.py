@@ -50,6 +50,8 @@ from pathlib import Path
 
 from bld_utils import runCommand, download, is_windows, is_macos, is_linux
 from threadedwork import Task, ThreadedWork
+from typing import Callable, Union, List
+from installer_utils import PackagingError
 
 
 # need to include this for win platforms as long path names
@@ -118,45 +120,17 @@ def retrieve_url(url, savefile):
 ###############################
 # function
 ###############################
-def search_for_files(search_path, file_extension_list, rgx_pattern):
-    pattern = re.compile(rgx_pattern)
-    file_list = []
-    for root, dirnames, filenames in os.walk(search_path):
-        for extension in file_extension_list:
-            for filename in fnmatch.filter(filenames, extension):
-                path = os.path.join(root, filename)
-                readlines = open(path,'r').read()
-                if pattern.search(readlines):
-                    file_list.append(path)
-    return file_list
+def search_for_files(
+    search_path: Union[str, Path], suffixes: List[str], rgx_pattern: str
+) -> List[str]:
+    pattern = re.compile(rgx_pattern, flags=re.MULTILINE)
 
-
-###############################
-# function
-###############################
-def make_files_list(directory, rgxp):
-    """Populate and return 'fileslist[]' with all files inside 'directory' matching 'regx'"""
-    # if 'directory' is not a directory, exit with error
-    if not os.path.isdir(directory):
-        raise IOError('*** Error, Given path is not valid: %s' % directory)
-    regex = re.compile(rgxp)
-    filelist = []
-    for root, dirs, files in os.walk(directory):
-        for name in files:
-            if regex.search(name):
-                path = os.path.normpath(os.path.join(root, name))
-                filelist.append(path)
-
-    return filelist[:]
-
-
-###############################
-# function
-###############################
-def delete_files_by_type_recursive(directory, rgxp):
-    file_list = make_files_list(directory, rgxp)
-    for item in file_list:
-        os.remove(item)
+    def _matches_rgx(path: Path):
+        if rgx_pattern:
+            with open(path, 'r') as f:
+                return bool(pattern.search(f.read()))
+        return True
+    return locate_paths(search_path, suffixes, filters=[os.path.isfile, _matches_rgx])
 
 
 ###############################
@@ -319,54 +293,32 @@ def config_section_map(conf, section):
     return dict1
 
 
-###############################
-# Function
-###############################
-def locate_executable(directory, file_name):
-    match = locate_file(directory, file_name)
-    if match and is_executable(match):
-        return match
-    print('*** Warning! Unable to locate executable: [' + file_name + '] from:' + directory)
-    return ''
+def locate_executable(search_dir: Union[str, Path], patterns: List[str]) -> str:
+    def _is_executable(path: Path):
+        return bool(path.stat().st_mode & stat.S_IEXEC)
+    return locate_path(search_dir, patterns, filters=[os.path.isfile, _is_executable])
 
 
 ###############################
 # Function
 ###############################
-def locate_file(directory, file_name):
-    for root, dirs, files in os.walk(directory):
-        for basename in files:
-            if fnmatch.fnmatch(basename, file_name):
-                filename = os.path.join(root, basename)
-                # return the first match
-                return filename
-    print('*** Warning! Unable to locate: [' + file_name + '] from:' + directory)
-    return ''
+def locate_path(search_dir: Union[str, Path], patterns: List[str],
+                filters: List[Callable[[Path], bool]] = []) -> str:
+    matches = locate_paths(search_dir, patterns, filters)
+    if len(matches) != 1:
+        raise PackagingError(f"Expected one result in '{search_dir}' matching '{patterns}'"
+                             f" and filters. Got '{matches}'")
+    return matches.pop()
 
 
 ###############################
 # Function
 ###############################
-def locate_directory(base_dir, dir_name):
-    for root, dirs, files in os.walk(base_dir):
-        for basename in dirs:
-            if fnmatch.fnmatch(basename, dir_name):
-                fulldirname = os.path.join(root, basename)
-                # return the first match
-                return fulldirname
-    print('*** Warning! Unable to locate: [' + dir_name + '] from:' + base_dir)
-    return ''
-
-
-###############################
-# Function
-###############################
-def is_executable(path):
-    if is_windows():
-        return path.endswith(('.exe', '.com'))
-    else:
-        return os.access(path, os.X_OK)
-
+def locate_paths(search_dir: Union[str, Path], patterns: List[str],
+                 filters: List[Callable[[Path], bool]] = []) -> List[str]:
+    patterns = patterns if patterns else ["*"]
+    paths = [p for p in Path(search_dir).rglob("*") if any(p.match(ptn) for ptn in patterns)]
+    return [str(p) for p in paths if all(f(p) for f in filters)]
 
 ###############################
 # Function
@@ -406,7 +358,7 @@ def is_text_file(filename, blocksize = 512):
 ###############################
 def requires_rpath(file_path):
     if is_linux():
-        if not is_executable(file_path):
+        if not os.access(file_path, os.X_OK):
             return False
         return (re.search(r':*.R.*PATH=',
             subprocess.Popen(['chrpath', '-l', file_path],
@@ -419,7 +371,7 @@ def requires_rpath(file_path):
 ###############################
 def sanity_check_rpath_max_length(file_path, new_rpath):
     if is_linux():
-        if not is_executable(file_path):
+        if not os.access(file_path, os.X_OK):
             return False
         result = re.search(r':*.R.*PATH=.*', subprocess.Popen(['chrpath', '-l', file_path], stdout=subprocess.PIPE).stdout.read().decode())
         if not result:
@@ -744,13 +696,13 @@ def rename_android_soname_files(qt5_base_path):
     # temporary solution for Android on Windows compilations
     ## rename the .so files for Android on Windows
     # find the lib directory under the install directory for essentials
-    print ('Trying to locate /lib from: ' + qt5_base_path)
-    lib_dir = locate_directory(qt5_base_path, 'lib')
-    print ('Match found: ' + lib_dir)
-    # regex for Qt version, eg. 5.2.0
-    # assuming that Qt version will always have one digit, eg, 5.2.0
-    p = re.compile(r'\d\.\d\.\d')
-    if os.path.exists(lib_dir):
+    try:
+        print ('Trying to locate /lib from: ' + qt5_base_path)
+        lib_dir = locate_path(qt5_base_path, ["lib"], filters=[os.path.isdir])
+        print ('Match found: ' + lib_dir)
+        # regex for Qt version, eg. 5.2.0
+        # assuming that Qt version will always have one digit, eg, 5.2.0
+        p = re.compile(r'\d\.\d\.\d')
         # just list the files with a pattern like 'libQt5Core.so.5.2.0'
         files = [f for f in os.listdir(lib_dir) if re.match(r'lib.*\.so\..*', f)]
         for name in files:
@@ -766,9 +718,8 @@ def rename_android_soname_files(qt5_base_path):
                 print ('---> New file name : ' + new_filepath)
             else:
                 print ('*** Warning! The file : ' + filename + ' does not match the pattern')
-    else:
-        print('*** No .so files found to be renamed. Skipping.')
-        return
+    except PackagingError:
+        print('*** No .so files found to be renamed as /lib was not found. Skipping.')
 
 
 ###############################

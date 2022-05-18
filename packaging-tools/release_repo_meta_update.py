@@ -40,7 +40,8 @@ from pathlib import Path
 from runner import exec_cmd
 from typing import List, Dict, Tuple
 from logging_util import init_logger
-from installer_utils import is_valid_url_path, download_archive, extract_archive, locate_file
+from installer_utils import is_valid_url_path, download_archive, extract_archive
+from bldinstallercommon import locate_path
 
 log = init_logger(__name__, debug_mode=False)
 session_timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d--%H:%M:%S')
@@ -63,7 +64,7 @@ async def fetch_repogen(ifw_tools_url: str) -> str:
         destFile = download_archive(ifw_tools_url, ifw_tools_dir)
         await extract_archive(destFile, ifw_tools_dir)
     tool_name = "repogen"
-    return os.path.join(locate_file(tool_name, ifw_tools_dir), tool_name)
+    return locate_path(ifw_tools_dir, [tool_name])
 
 
 def check_repos_which_can_be_updated(repositories_to_migrate: List[str]) -> Tuple[Dict[str, str], Dict[str, str]]:

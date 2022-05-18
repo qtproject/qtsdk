@@ -44,6 +44,8 @@ from pathlib import Path
 from threadedwork import Task, ThreadedWork
 from bld_utils import runCommand, runBuildCommand, runInstallCommand, stripVars, is_windows, is_linux, is_macos
 import bldinstallercommon
+from bldinstallercommon import locate_path, locate_paths
+from installer_utils import PackagingError
 
 SCRIPT_ROOT_DIR             = os.path.dirname(os.path.realpath(__file__))
 MODULE_SRC_DIR_NAME         = 'module_src'
@@ -70,7 +72,7 @@ def get_qt_install_prefix(qt_path):
 def erase_qmake_prl_build_dir(search_path):
     print('--- Fix .prl files ---')
     # fetch all .prl files
-    file_list = bldinstallercommon.make_files_list(search_path, '\\.prl')
+    file_list = locate_paths(search_path, ['*.prl'], filters=[os.path.isfile])
     # erase lines starting with 'QMAKE_PRL_BUILD_DIR' from .prl files
     for item in file_list:
         found = False
@@ -99,19 +101,6 @@ def patch_build_time_paths(search_path, search_strings, qt_install_prefix):
                                   line)
             print(patched_line.rstrip('\n'))
 
-###############################
-# function
-###############################
-def locate_pro(directory):
-    print('Trying to locate module .pro file file from: {0}'.format(directory))
-    for root, dummy, files in os.walk(directory):
-        for basename in files:
-            if fnmatch.fnmatch(basename, '*.pro'):
-                filename = os.path.join(root, basename)
-                print('-> .pro file found: {0}'.format(filename))
-                return filename
-    print('*** Warning! Unable to locate any .pro file from: {0}'.format(directory))
-    return ''
 
 # install an argument parser
 parser = argparse.ArgumentParser(prog = os.path.basename(sys.argv[0]),
@@ -285,8 +274,8 @@ if callerArguments.use_cmake:
     generateCommand.append('-DCMAKE_PREFIX_PATH=' + ';'.join(cmake_prefix_path))
     # for now assume that qtModuleSourceDirectory contains CMakeLists.txt directly
     generateCommand.append(qtModuleSourceDirectory)
-else: # --> qmake
-    qtModuleProFile = locate_pro(qtModuleSourceDirectory)
+else:  # --> qmake
+    qtModuleProFile = locate_path(qtModuleSourceDirectory, ["*.pro"], filters=[os.path.isfile])
     if is_windows():
         # do not shadow-build with qmake on Windows
         qtModuleBuildDirectory = os.path.dirname(qtModuleProFile)
@@ -313,9 +302,9 @@ if ret:
 if is_windows() and os.environ.get('DO_PATCH_ANDROID_SONAME_FILES'):
     bldinstallercommon.rename_android_soname_files(qtModuleInstallDirectory)
 
-#doc collection
+# doc collection
 if callerArguments.collectDocs:
-    doc_list = bldinstallercommon.make_files_list(qtModuleSourceDirectory, '\\.qch')
+    doc_list = locate_paths(qtModuleSourceDirectory, ['*.qch'], filters=[os.path.isfile])
     doc_install_dir = os.path.join(qtModuleInstallDirectory, 'doc')
     Path(doc_install_dir).mkdir(parents=True, exist_ok=True)
     for item in doc_list:
@@ -336,13 +325,12 @@ if callerArguments.makeDocs:
     if ret:
         raise RuntimeError('Failure running the last command: %i' % ret)
     # make separate "doc.7z" for later use if needed
-    doc_dir = bldinstallercommon.locate_directory(qtModuleInstallDirectory, 'doc')
-    if doc_dir:
-        archive_name = callerArguments.module_name + '-' + os.environ['LICENSE'] + '-doc-' + os.environ['MODULE_VERSION'] + '.7z'
-        ret = runCommand(['7z', 'a', os.path.join('doc_archives', archive_name), doc_dir],
-                         currentWorkingDirectory = os.path.dirname(os.path.realpath(__file__)))
-        if ret:
-            raise RuntimeError('Failure running the last command: %i' % ret)
+    doc_dir = locate_path(qtModuleInstallDirectory, ["doc"], filters=[os.path.isdir])
+    archive_name = callerArguments.module_name + '-' + os.environ['LICENSE'] + '-doc-' + os.environ['MODULE_VERSION'] + '.7z'
+    ret = runCommand(['7z', 'a', os.path.join('doc_archives', archive_name), doc_dir],
+                        currentWorkingDirectory = os.path.dirname(os.path.realpath(__file__)))
+    if ret:
+        raise RuntimeError('Failure running the last command: %i' % ret)
 
 # try to figure out where the actual exported content is
 qt5_install_basename = os.path.basename(callerArguments.qt5path)
@@ -350,12 +338,14 @@ qt5_install_basename = os.path.basename(callerArguments.qt5path)
 if callerArguments.use_cmake:
     dir_to_archive = qtModuleInstallDirectory
 else:
-    dir_to_archive = bldinstallercommon.locate_directory(qtModuleInstallDirectory, qt5_install_basename)
+    dir_to_archive = locate_path(qtModuleInstallDirectory, [qt5_install_basename], filters=[os.path.isdir])
 
 # if .tag file exists in the source package (sha1) then copy it into the binary archive
-tag_file = bldinstallercommon.locate_file(qtModuleSourceDirectory, '.tag')
-if tag_file:
+try:
+    tag_file = locate_path(qtModuleSourceDirectory, [".tag"], filters=[os.path.isfile])
     shutil.copy2(tag_file, dir_to_archive)
+except PackagingError:
+    pass
 
 # Pre-patch the package for IFW to patch it correctly during installation
 patch_archive(dir_to_archive, [callerArguments.qt5path, dir_to_archive], qt_install_prefix)

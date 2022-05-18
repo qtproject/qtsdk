@@ -48,6 +48,7 @@ from time import gmtime, strftime
 import bld_utils
 from bld_utils import is_windows, is_macos, is_linux
 import bldinstallercommon
+from bldinstallercommon import locate_paths
 from threadedwork import ThreadedWork, Task
 import bld_sdktool
 from read_remote_config import get_pkg_value
