@@ -29,250 +29,441 @@
 #
 #############################################################################
 
-import ntpath
 import os
 from configparser import ConfigParser
-from typing import Any, List
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
+from urllib.parse import urlparse
 
-from archiveresolver import ArchiveLocationResolver
-from bldinstallercommon import config_section_map, is_content_url_valid, safe_config_key_fetch
 from logging_util import init_logger
 
 log = init_logger(__name__, debug_mode=False)
 
-ONLINE_ARCHIVE_LIST_TAG = '<!--ONLINE_ARCHIVE_LIST-->'
+
+class IfwSdkError(Exception):
+    """Exception class for IfwSdkComponent errors"""
 
 
-class SdkComponent:
-    """SdkComponent class contains all required info for one installable SDK component"""
-    class DownloadableArchive:
-        """DownloadableArchive subclass contains all required info about data packages for one SDK component"""
-        def __init__(
-            self,
-            archive: str,
-            package_name: str,
-            parent_target_install_base: str,
-            archive_server_name: str,
-            target_config: ConfigParser,
-            archive_location_resolver: ArchiveLocationResolver,
-            key_value_substitution_list: List[str],
-        ) -> None:
-            self.archive_uri = config_section_map(target_config, archive)['archive_uri']
-            self.archive_action = safe_config_key_fetch(target_config, archive, 'archive_action')
-            self.extract_archive = safe_config_key_fetch(target_config, archive, 'extract_archive')
-            self.package_strip_dirs = safe_config_key_fetch(target_config, archive, 'package_strip_dirs')
-            self.package_finalize_items = safe_config_key_fetch(target_config, archive, 'package_finalize_items')
-            # parent's 'target_install_base'
-            self.parent_target_install_base = parent_target_install_base
-            # in case the individual archive needs to be installed outside the root dir specified by the parent component
-            self.target_install_base: str = safe_config_key_fetch(target_config, archive, 'target_install_base')
-            # this is relative to 1) current archive's 'target_install_base' 2) parent components 'target_install_base'. (1) takes priority
-            self.target_install_dir: str = safe_config_key_fetch(target_config, archive, 'target_install_dir').lstrip(os.path.sep)
-            self.rpath_target = safe_config_key_fetch(target_config, archive, 'rpath_target')
-            self.component_sha1_file = safe_config_key_fetch(target_config, archive, 'component_sha1_file')
-            self.nomalize_archive_uri(package_name, archive_server_name, archive_location_resolver)
-            self.archive_name = safe_config_key_fetch(target_config, archive, 'archive_name')
-            if not self.archive_name:
-                self.archive_name = self.path_leaf(self.archive_uri)
-                # Parse unnecessary extensions away from filename (QTBUG-39219)
-                known_archive_types = ['.tar.gz', '.tar', '.zip', '.tar.xz', '.tar.bz2']
-                for item in known_archive_types:
-                    if self.archive_name.endswith(item):
-                        self.archive_name = self.archive_name.replace(item, '')
-                if not self.archive_name.endswith('.7z'):
-                    self.archive_name += '.7z'
-            # substitute key-value pairs if any
-            for item in key_value_substitution_list:
-                self.target_install_base = self.target_install_base.replace(item[0], item[1])
-                self.target_install_dir = self.target_install_dir.replace(item[0], item[1])
-                self.archive_name = self.archive_name.replace(item[0], item[1])
+@dataclass
+class IfwPayloadItem:
+    """Payload item class for IfwSdkComponent's archives"""
 
-        def nomalize_archive_uri(
-            self, package_name: str, archive_server_name: str, archive_location_resolver: ArchiveLocationResolver
-        ) -> None:
-            self.archive_uri = archive_location_resolver.resolve_full_uri(package_name, archive_server_name, self.archive_uri)
+    package_name: str
+    archive_uri: str
+    archive_action: Optional[Tuple[Path, str]]
+    extract_archive: bool
+    package_strip_dirs: int
+    package_finalize_items: str
+    parent_target_install_base: str
+    arch_target_install_base: str
+    arch_target_install_dir: str
+    rpath_target: str
+    component_sha1: str
+    arch_name: str
+    errors: List[str] = field(default_factory=list)
+    # List of archive formats supported by Installer Framework:
+    ifw_arch_formats: Tuple[str, ...] = (".7z", ".tar", ".gz", ".zip", ".xz", ".bz2")
+    # List of payload archive formats supported by scripts for extraction:
+    supported_arch_formats: Tuple[str, ...] = (".7z", ".tar", ".gz", ".zip", ".xz", ".bz2")
+    _requires_extraction: Optional[bool] = None
+    _requires_patching: Optional[bool] = None
 
-        def check_archive_data(self) -> Any:
-            if self.archive_uri.startswith('http'):
-                res = is_content_url_valid(self.archive_uri)
-                if not res:
-                    return '*** Archive check fail! ***\n*** Unable to locate archive: ' + self.archive_uri
-            elif not os.path.isfile(self.archive_uri):
-                return '*** Archive check fail! ***\n*** Unable to locate archive: ' + self.archive_uri
-            return None
+    def __post_init__(self) -> None:
+        """Post init: run sanity checks"""
+        assert self.package_name, "The 'package_name' was not set?"
+        self.arch_name = self._ensure_ifw_arch_name()
+        self._sanity_check()
 
-        def path_leaf(self, path: str) -> str:
-            head, tail = ntpath.split(path)
-            return tail or ntpath.basename(head)
-
-        def get_archive_installation_directory(self) -> str:
-            if self.target_install_base:
-                return self.target_install_base + os.path.sep + self.target_install_dir
-            return self.parent_target_install_base + os.path.sep + self.target_install_dir
-
-    def __init__(
-        self,
-        section_name: str,
-        target_config: ConfigParser,
-        packages_full_path_list: List[str],
-        archive_location_resolver: ArchiveLocationResolver,
-        key_value_substitution_list: List[str],
-    ):
-        self.static_component = safe_config_key_fetch(target_config, section_name, 'static_component')
-        self.root_component = safe_config_key_fetch(target_config, section_name, 'root_component')
-        self.package_name = section_name
-        self.package_subst_name = section_name
-        self.packages_full_path_list = packages_full_path_list
-        self.archives = safe_config_key_fetch(target_config, section_name, 'archives')
-        self.archives = self.archives.replace(' ', '').replace('\n', '')
-        self.archives_extract_dir = safe_config_key_fetch(target_config, section_name, 'archives_extract_dir')
-        self.archive_server_name = safe_config_key_fetch(target_config, section_name, 'archive_server_name')
-        self.downloadable_archive_list: List[SdkComponent.DownloadableArchive] = []  # pylint: disable=E0601
-        self.target_install_base = safe_config_key_fetch(target_config, section_name, 'target_install_base')
-        self.version = safe_config_key_fetch(target_config, section_name, 'version')
-        self.version_tag = safe_config_key_fetch(target_config, section_name, 'version_tag')
-        self.package_default = safe_config_key_fetch(target_config, section_name, 'package_default')
-        self.install_priority = safe_config_key_fetch(target_config, section_name, 'install_priority')
-        self.sorting_priority = safe_config_key_fetch(target_config, section_name, 'sorting_priority')
-        self.component_sha1 = ""
-        self.component_sha1_uri = safe_config_key_fetch(target_config, section_name, 'component_sha1_uri')
-        if self.component_sha1_uri:
-            self.component_sha1_uri = archive_location_resolver.resolve_full_uri(self.package_name, self.archive_server_name, self.component_sha1_uri)
-        self.key_value_substitution_list = key_value_substitution_list
-        self.archive_skip = False
-        self.include_filter = safe_config_key_fetch(target_config, section_name, 'include_filter')
-        self.downloadable_arch_list_qs: List[Any] = []
-        self.pkg_template_dir = ''
-        self.sanity_check_error_msg = ''
-        self.target_config = target_config
-        self.archive_location_resolver = archive_location_resolver
-        self.meta_dir_dest: str = ""
-        self.temp_data_dir: str = ""
-        # substitute key-value pairs if any
-        for item in self.key_value_substitution_list:
-            self.target_install_base = self.target_install_base.replace(item[0], item[1])
-            self.version = self.version.replace(item[0], item[1])
-
-    def is_root_component(self) -> bool:
-        if self.root_component in ('yes', 'true'):
-            return True
-        return False
-
-    def set_archive_skip(self, do_skip: bool) -> None:
-        self.archive_skip = do_skip
+    def _sanity_check(self) -> None:
+        """Perform a sanity check on the payload archive configuration and append the errors"""
+        if self.archive_action:
+            script_path, _ = self.archive_action
+            if not script_path.exists() and script_path.is_file():
+                self.errors += [f"Unable to locate custom archive action script: {script_path}"]
+        if not self.archive_uri:
+            self.errors += [f"[{self.package_name}] is missing 'archive_uri'"]
+        if self.package_strip_dirs is None:
+            self.errors += [f"[{self.package_name}] is missing 'package_strip_dirs'"]
+        if not self.get_archive_install_dir():
+            self.errors += [f"[{self.package_name}] is missing payload installation directory"]
+        if not self.extract_archive and self.requires_patching:
+            self.errors += [f"[{self.package_name}] patching specified with extract_archive=no"]
+        if not self.archive_uri.endswith(self.supported_arch_formats) and self.requires_patching:
+            if self.package_strip_dirs != 0:
+                self.errors += [f"[{self.package_name}] package_strip_dirs!=0 for a non-archive"]
+            if self.package_finalize_items:
+                self.errors += [f"[{self.package_name}] package_finalize_items for a non-archive"]
 
     def validate(self) -> None:
-        # look up correct package template directory from list
-        found = False
-        for item in self.key_value_substitution_list:
-            self.package_name = self.package_name.replace(item[0], item[1])
-        for item in self.packages_full_path_list:
-            template_full_path = os.path.normpath(item + os.sep + self.package_subst_name)
-            if os.path.exists(template_full_path):
-                if not found:
-                    # take the first match
-                    self.pkg_template_dir = template_full_path
-                    found = True
-                else:
-                    # sanity check, duplicate template should not exist to avoid
-                    # problems!
-                    log.warning("Found duplicate template for: %s", self.package_name)
-                    log.warning("Ignoring: %s", template_full_path)
-                    log.warning("Using:    %s", self.pkg_template_dir)
-        self.parse_archives(self.target_config, self.archive_location_resolver)
-        self.check_component_data()
+        """
+        Validate IfwPayloadItem, log the errors
 
-    def check_component_data(self) -> None:
-        if self.static_component:
-            if not os.path.isfile(self.static_component):
-                self.sanity_check_fail(self.package_name, 'Unable to locate given static package: ' + self.static_component)
-                return
-            # no more checks needed for static component
-            return
-        if not self.package_name:
-            self.sanity_check_fail(self.package_name, 'Undefined package name?')
-            return
-        if self.archives and not self.target_install_base:
-            self.sanity_check_fail(self.package_name, 'Undefined target_install_base?')
-            return
-        if self.version and not self.version_tag:
-            self.sanity_check_fail(self.package_name, 'Undefined version_tag?')
-            return
-        if self.version_tag and not self.version:
-            self.sanity_check_fail(self.package_name, 'Undefined version?')
-            return
-        if self.package_default not in ['true', 'false', 'script']:
-            self.package_default = 'false'
-        # check that package template exists
-        if not os.path.exists(self.pkg_template_dir):
-            self.sanity_check_fail(self.package_name, 'Package template dir does not exist: ' + self.pkg_template_dir)
-            return
-        if not self.archive_skip:
-            # next check that archive locations exist
-            for archive in self.downloadable_archive_list:
-                error_msg = archive.check_archive_data()
-                if error_msg:
-                    self.sanity_check_fail(self.package_name, error_msg)
-                    return
+        Raises:
+            IfwSdkError: If there are errors in the payload item
+        """
+        log.info("[[%s]] - %s", self.package_name, "NOK" if self.errors else "OK")
+        if self.errors:
+            for err in self.errors:
+                log.error(err)
+            log.debug(self)  # Log also the details of the payload item with errors
+            raise IfwSdkError(
+                f"[[{self.package_name}]] Invalid payload configuration - check your configs!"
+            )
 
-    def sanity_check_fail(self, component_name: str, message: str) -> None:
-        self.sanity_check_error_msg = '*** Sanity check fail! ***\n*** Component: [' + component_name + ']\n*** ' + message
+    def _ensure_ifw_arch_name(self) -> str:
+        """
+        Get the archive name by splitting from its uri if a name doesn't already exist
 
-    def is_valid(self) -> bool:
-        if self.sanity_check_error_msg:
-            return False
-        return True
+        Returns:
+            Name for the payload item
+        """
+        arch_name: str = self.arch_name or Path(self.archive_uri).name
+        return arch_name
 
-    def error_msg(self) -> str:
-        return self.sanity_check_error_msg
+    def get_archive_install_dir(self) -> str:
+        """
+        Resolve archive install directory based on config
 
-    def parse_archives(self, target_config: ConfigParser, archive_location_resolver: ArchiveLocationResolver) -> None:
-        if self.archives:
-            archives_list = self.archives.split(',')
-            for archive in archives_list:
-                if not archive:
-                    log.warning("[%s]: Archive list in config has ',' issues", self.package_name)
-                    continue
-                # check that archive template exists
-                if not target_config.has_section(archive):
-                    raise RuntimeError(f'*** Error! Given archive section does not exist in configuration file: {archive}')
-                archive_obj = SdkComponent.DownloadableArchive(archive, self.package_name, self.target_install_base, self.archive_server_name,
-                                                               target_config, archive_location_resolver,
-                                                               self.key_value_substitution_list)
-                self.downloadable_archive_list.append(archive_obj)
+        Returns:
+            Resolved install directory for the archive
+        """
+        ret = os.path.join(
+            self.arch_target_install_base or self.parent_target_install_base,
+            self.arch_target_install_dir.lstrip(os.path.sep),
+        )
+        return ret.rstrip(os.path.sep) or ret
+
+    @property
+    def requires_patching(self) -> bool:
+        """
+        A property to determine whether the payload content needs to be patched.
+        The value is calculated once and saved to _requires_patching.
+
+        Returns:
+            A boolean for whether patching the payload is needed.
+        """
+        if self._requires_patching is None:
+            self._requires_patching = not (
+                self.package_strip_dirs == 0
+                and not self.package_finalize_items
+                and not self.archive_action
+                and not self.rpath_target
+                and self.parent_target_install_base == "/"
+                and not self.arch_target_install_dir
+            )
+        return self._requires_patching
+
+    @property
+    def requires_extraction(self) -> bool:
+        """
+        A property to determine whether the archive needs to be extracted.
+        The value is calculated once and saved to _requires_extraction.
+
+        Returns:
+            A boolean for whether extracting the payload is needed.
+        """
+        if self._requires_extraction is None:
+            if self.archive_uri.endswith(self.ifw_arch_formats):
+                # Extract IFW supported archives if patching required or archive has a sha1 file
+                # Otherwise, use the raw CI artifact
+                self._requires_extraction = bool(self.component_sha1) or self.requires_patching
+                # It is also possible to disable the extraction in config (extract_archive=False)
+                if not self.extract_archive:
+                    self._requires_extraction = False
+            elif self.archive_uri.endswith(self.supported_arch_formats):
+                # Repack supported archives to IFW friendly archive format
+                self._requires_extraction = True
+            else:
+                # Payload not a supported archive type, use as-is
+                self._requires_extraction = False
+        return self._requires_extraction
+
+    def __str__(self) -> str:
+        return f"""
+- Downloadable payload name: {self.arch_name}
+  Payload URI: {self.archive_uri}
+  Extract archive: {self.requires_extraction}
+  Patch payload: {self.requires_patching}""" + (
+            f""", config:
+    Strip package dirs: {self.package_strip_dirs}
+    Finalize items: {self.package_finalize_items}
+    Action script: {self.archive_action}
+    RPath target: {self.rpath_target}
+    Target install dir: {self.get_archive_install_dir()}"""
+            if self.requires_patching else ""
+        )
+
+
+class ArchiveResolver:
+    """Resolver class for archive payload uris"""
+
+    def __init__(self, file_share_base_url: str, pkg_template_folder: str) -> None:
+        self.file_share_base_url = file_share_base_url
+        self.pkg_template_folder = pkg_template_folder
+
+    def resolve_payload_uri(self, unresolved_archive_uri: str) -> str:
+        """
+        Resolves the given archive URI and resolves it based on the type of URI given
+        Available URI types:
+            - file system string paths, file system URIs
+            - network locations e.g. HTTP URLs
+            - file system string paths relative to data folder under package template root
+
+        Args:
+            unresolved_archive_uri: Original URI to resolve
+
+        Returns:
+            A resolved URI location for the payload
+        """
+        # is it a file system path or an absolute URL which can be downloaded
+        if os.path.exists(unresolved_archive_uri) or urlparse(unresolved_archive_uri).netloc:
+            return unresolved_archive_uri
+        # is it relative to pkg template root dir, under the 'data' directory
+        pkg_data_dir = os.path.join(self.pkg_template_folder, "data", unresolved_archive_uri)
+        if os.path.exists(pkg_data_dir):
+            return pkg_data_dir
+        # ok, we assume this is a URL which can be downloaded
+        return self.file_share_base_url.rstrip("/") + "/" + unresolved_archive_uri.lstrip("/")
+
+
+@dataclass
+class IfwSdkComponent:
+    """Installer framework sdk component class"""
+
+    ifw_sdk_comp_name: str
+    pkg_template_folder: str
+    archive_resolver: ArchiveResolver
+    downloadable_archives: List[IfwPayloadItem]
+    archives_extract_dir: str
+    target_install_base: str
+    version: str
+    version_tag: str
+    package_default: str
+    comp_sha1_uri: str
+    include_filter: str
+    component_sha1: Optional[str] = None
+    temp_data_dir: Optional[Path] = None
+    meta_dir_dest: Optional[Path] = None
+    archive_skip: bool = False
+
+    def __post_init__(self) -> None:
+        """Post init: convert component sha1 uri to resolved uri if it exists"""
+        if self.comp_sha1_uri:
+            self.comp_sha1_uri = self.archive_resolver.resolve_payload_uri(self.comp_sha1_uri)
+
+    def validate(self) -> None:
+        """
+        Perform validation on IfwSdkComponent, raise error if component not valid
+
+        Raises:
+            AssertionError: When the component's package name doesn't exist
+            IfwSdkError: When component with payload doesn't have target install base configured
+        """
+        assert self.ifw_sdk_comp_name, "Undefined package name?"
+        if self.downloadable_archives and not self.target_install_base:
+            raise IfwSdkError(f"[{self.ifw_sdk_comp_name}] is missing 'target_install_base'")
 
     def generate_downloadable_archive_list(self) -> List[List[str]]:
-        """Generate list that is embedded into package.xml"""
-        output = ''
-        for item in self.downloadable_archive_list:
-            if not output:
-                output = item.archive_name
-            else:
-                output = output + ', ' + item.archive_name
+        """
+        Generate list that is embedded into package.xml
 
-        temp_list = []
-        temp_list.append([ONLINE_ARCHIVE_LIST_TAG, output])
-        return temp_list
+        Returns:
+            Generated downloaded archive list
+        """
+        archive_list: List[str] = [a.arch_name for a in self.downloadable_archives]
+        return [["<!--ONLINE_ARCHIVE_LIST-->", ", ".join(archive_list)]]
 
-    def print_component_data(self) -> None:
-        log.info("=============================================================")
-        log.info("[%s]", self.package_name)
-        if self.static_component:
-            log.info("Static component: %s", self.static_component)
-            return
-        if self.root_component:
-            log.info("Root component: %s", self.root_component)
-        log.info("Include filter: %s", self.include_filter)
-        log.info("Target install base: %s", self.target_install_base)
-        log.info("Version: %s", self.version)
-        log.info("Version tag: %s", self.version_tag)
-        log.info("Package default: %s", self.package_default)
-        if self.downloadable_archive_list:
-            log.info(" Archives:")
-            for archive in self.downloadable_archive_list:
-                log.info("---------------------------------------------------------------")
-                log.info("Downloadable archive name: %s", archive.archive_name)
-                log.info("Strip dirs: %s", archive.package_strip_dirs)
-                log.info("Target install dir: %s", archive.get_archive_installation_directory())
-                log.info("RPath target: %s", archive.rpath_target)
-                log.info("URI: %s", archive.archive_uri)
+    def __str__(self) -> str:
+        print_data = f"""
+[{self.ifw_sdk_comp_name}]
+Include filter:      {self.include_filter}
+Target install base: {self.target_install_base}
+Version:             {self.version}
+Version tag:         {self.version_tag}
+Package default:     {self.package_default}
+Archives:"""
+        for archive in self.downloadable_archives:
+            print_data += str(archive)
+        return print_data
+
+
+class ConfigSubst:
+    """Configuration file key substitutor and resolver"""
+
+    def __init__(self, config: ConfigParser, section: str, substitutions: Dict[str, str]) -> None:
+        if not config.has_section(section):
+            raise IfwSdkError(f"Missing section in configuration file: {section}")
+        self.config = config
+        self.section = section
+        self.substitutions: Dict[str, str] = substitutions
+        self.resolved: Dict[str, str] = {}
+
+    def get(self, key: str, default: str = "") -> str:
+        """
+        Perform substitutions for the given key and return resolved key value.
+        The values are saved to self.resolved for future lookups.
+
+        Args:
+            key: The key to look up from already resolved dict or to resolve
+            default: This value is used when key not found from config section
+
+        Returns:
+            A string value for the key or the given default (default=empty string)
+
+        Raises:
+            KeyError: When value for given key doesn't exist yet, handled
+        """
+        try:
+            return self.resolved[key]
+        except KeyError:
+            tmp = self.config[self.section].get(key, default)
+            for subst_key, subst_value in self.substitutions.items():
+                tmp = tmp.replace(subst_key, subst_value)
+                self.resolved[key] = tmp
+        return self.resolved[key]
+
+
+def locate_pkg_templ_dir(search_dirs: List[str], component_name: str) -> str:
+    """
+    Return one result for given component name from given search directories or fail
+
+    Args:
+        search_dirs: The list of string file system paths for the directories to look from
+        component_name: The component's directory name to match for
+
+    Returns:
+        A matching file system string path to a component's template folder
+
+    Raises:
+        IfwSdkError: When there are more than one matches
+    """
+    # look up correct package template directory from list
+    log.info("Searching pkg template '%s' folder from: %s", component_name, search_dirs)
+    matches: List[str] = []
+    for item in search_dirs:
+        matches.extend([str(p) for p in Path(item).resolve(strict=True).rglob(component_name)])
+    if len(matches) < 1:
+        raise IfwSdkError(f"Expected to find one result for '{component_name}' from {search_dirs}")
+    return matches.pop()
+
+
+def parse_ifw_sdk_comp(
+    config: ConfigParser,
+    section: str,
+    pkg_template_search_dirs: List[str],
+    substitutions: Dict[str, str],
+    file_share_base_url: str,
+) -> IfwSdkComponent:
+    """
+    Parse IfwSdkComponent from the given config
+
+    Args:
+        config: The given config to parse via ConfigParser
+        section: The section name for the component
+        pkg_template_search_dirs: Paths that should contain the template folder for the component
+        substitutions: String substitutions to apply for the config/template while parsing
+        file_share_base_url: URL to the file share server containing the payload content
+
+    Returns:
+        An instance of the parsed IfwSdkComponent
+    """
+    log.info("Parsing section: %s", section)
+    config_subst = ConfigSubst(config, section, substitutions)
+    pkg_template_folder = locate_pkg_templ_dir(pkg_template_search_dirs, component_name=section)
+    archive_resolver = ArchiveResolver(file_share_base_url, pkg_template_folder)
+    archives = config[section].get("archives", "")
+    archive_sections = [s.strip() for s in archives.split(",") if s.strip() != ""]
+    archives_extract_dir = config_subst.get("archives_extract_dir")
+    target_install_base = config_subst.get("target_install_base")
+    version = config_subst.get("version")
+    version_tag = config_subst.get("version_tag")
+    package_default = config_subst.get("package_default", "false")
+    comp_sha1_uri = config_subst.get("component_sha1_uri", "")
+    include_filter = config_subst.get("include_filter")
+    parsed_archives = parse_ifw_sdk_archives(
+        config=config,
+        archive_sections=archive_sections,
+        archive_resolver=archive_resolver,
+        parent_target_install_base=target_install_base,
+        substitutions=substitutions,
+    )
+    return IfwSdkComponent(
+        ifw_sdk_comp_name=section,
+        pkg_template_folder=pkg_template_folder,
+        archive_resolver=archive_resolver,
+        downloadable_archives=parsed_archives,
+        archives_extract_dir=archives_extract_dir,
+        target_install_base=target_install_base,
+        version=version,
+        version_tag=version_tag,
+        package_default=package_default,
+        comp_sha1_uri=comp_sha1_uri,
+        include_filter=include_filter,
+    )
+
+
+def parse_ifw_sdk_archives(
+    config: ConfigParser,
+    archive_sections: List[str],
+    archive_resolver: ArchiveResolver,
+    parent_target_install_base: str,
+    substitutions: Dict[str, str],
+) -> List[IfwPayloadItem]:
+    """
+    Parsed IfwPayloadItems for the given payload sections in config
+
+    Args:
+        config: The config containing the payload sections via ConfigParser
+        archive_sections: The payload sections for the component
+        archive_resolver: The resolver to use for payload URIs
+        parent_target_install_base: The parent component's root install folder
+        substitutions: The string substitutions to apply while parsing config/templates
+
+    Returns:
+        A list of parsed IfwPayloadItems for the component
+    """
+    parsed_archives = []
+    for arch_section_name in archive_sections:
+        config_subst = ConfigSubst(config, arch_section_name, substitutions)
+        unresolved_archive_uri = config_subst.get("archive_uri")
+        resolved_archive_uri = archive_resolver.resolve_payload_uri(unresolved_archive_uri)
+        archive_action_string = config_subst.get("archive_action", "")
+        archive_action: Optional[Tuple[Path, str]] = None
+        if archive_action_string:
+            script_path, script_args = archive_action_string.split(",")
+            archive_action = Path(__file__).parent / script_path, script_args.strip() or ""
+        extract_archive = bool(
+            config_subst.get("extract_archive", "yes").lower() in ["yes", "true", "1"]
+        )
+        package_strip_dirs = int(config_subst.get("package_strip_dirs") or 0)
+        package_finalize_items = config_subst.get("package_finalize_items")
+        # in case the individual archive needs to be installed outside the root dir specified by
+        # the parent component
+        target_install_base = config_subst.get("target_install_base", "")
+        # this is relative to:
+        # 1) current archive's 'target_install_base'
+        # 2) parent components 'target_install_base'. (1) takes priority
+        target_install_dir = config_subst.get("target_install_dir")
+        rpath_target = config_subst.get("rpath_target")
+        if rpath_target and not rpath_target.startswith(os.sep):
+            rpath_target = os.sep + rpath_target
+        component_sha1_file = config_subst.get("component_sha1_file")
+        archive_name = config_subst.get("archive_name")
+        payload = IfwPayloadItem(
+            package_name=arch_section_name,
+            archive_uri=resolved_archive_uri,
+            archive_action=archive_action,
+            extract_archive=extract_archive,
+            package_strip_dirs=package_strip_dirs,
+            package_finalize_items=package_finalize_items,
+            parent_target_install_base=parent_target_install_base,
+            arch_target_install_base=target_install_base,
+            arch_target_install_dir=target_install_dir,
+            rpath_target=rpath_target,
+            component_sha1=component_sha1_file,
+            arch_name=archive_name,
+        )
+        payload.validate()
+        parsed_archives.append(payload)
+    return parsed_archives

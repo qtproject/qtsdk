@@ -40,10 +40,8 @@ from dataclasses import dataclass, field
 from multiprocessing import cpu_count
 from pathlib import Path
 from time import gmtime, strftime
-from typing import Any, Generator, List, Optional
+from typing import Any, Dict, Generator, List, Optional
 
-import pkg_constants
-from archiveresolver import ArchiveLocationResolver
 from bld_utils import download, is_linux, is_macos, is_windows
 from bldinstallercommon import (
     copy_tree,
@@ -62,9 +60,9 @@ from bldinstallercommon import (
 from installer_utils import PackagingError
 from logging_util import init_logger
 from patch_qt import patch_files, patch_qt_edition
-from pkg_constants import INSTALLER_OUTPUT_DIR_NAME
+from pkg_constants import INSTALLER_OUTPUT_DIR_NAME, PKG_TEMPLATE_BASE_DIR_NAME
 from runner import run_cmd
-from sdkcomponent import SdkComponent
+from sdkcomponent import IfwPayloadItem, IfwSdkComponent, IfwSdkError, parse_ifw_sdk_comp
 from threadedwork import ThreadedWork
 
 if is_windows():
@@ -154,8 +152,8 @@ def set_config_xml(task: Any) -> Any:
     fileslist = [config_template_dest]
     replace_in_files(fileslist, UPDATE_REPOSITORY_URL_TAG, update_repository_url)
     # substitute values also from global substitution list
-    for item in task.substitutions:
-        replace_in_files(fileslist, item[0], item[1])
+    for key, value in task.substitutions.items():
+        replace_in_files(fileslist, key, value)
     return config_template_dest
 
 
@@ -167,8 +165,8 @@ def substitute_global_tags(task: Any) -> None:
     log.info("Substituting global tags:")
     log.info("%%PACKAGE_CREATION_DATE%% = %s", task.build_timestamp)
     log.info("%%VERSION_NUMBER_AUTO_INCREASE%% = %s", task.version_number_auto_increase_value)
-    for item in task.substitutions:
-        log.info("%s = %s", item[0], item[1])
+    for key, value in task.substitutions.items():
+        log.info("%s = %s", key, value)
 
     # initialize the file list
     fileslist = []
@@ -183,8 +181,8 @@ def substitute_global_tags(task: Any) -> None:
     replace_in_files(fileslist, PACKAGE_CREATION_DATE_TAG, task.build_timestamp)
     if task.force_version_number_increase:
         replace_in_files(fileslist, VERSION_NUMBER_AUTO_INCREASE_TAG, task.version_number_auto_increase_value)
-    for item in task.substitutions:
-        replace_in_files(fileslist, item[0], item[1])
+    for key, value in task.substitutions.items():
+        replace_in_files(fileslist, key, value)
 
 
 ##############################################################
@@ -245,30 +243,36 @@ def parse_component_data(task: Any, configuration_file: str, configurations_base
         section_namespace = section.split(".")[0]
         if section_namespace in task.package_namespace:
             if section not in task.sdk_component_ignore_list:
-                sdk_component = SdkComponent(
-                    section_name=section,
-                    target_config=configuration,
-                    packages_full_path_list=task.packages_dir_name_list,
-                    archive_location_resolver=task.archive_location_resolver,
-                    key_value_substitution_list=task.substitutions,
+                sdk_comp = parse_ifw_sdk_comp(
+                    config=configuration,
+                    section=section,
+                    pkg_template_search_dirs=task.packages_dir_name_list,
+                    substitutions=task.substitutions,
+                    file_share_base_url=task.archive_base_url,
                 )
-                if task.dry_run:
-                    sdk_component.set_archive_skip(True)
-                # validate component
-                sdk_component.validate()
-                if sdk_component.is_valid():
-                    # if include filter defined for component it is included only if LICENSE_TYPE matches to include_filter
-                    # same configuration file can contain components that are included only to either edition
-                    if sdk_component.include_filter and sdk_component.include_filter in task.license_type:
-                        task.sdk_component_list.append(sdk_component)
-                    # components without include_filter definition are added by default
-                    elif not sdk_component.include_filter:
-                        task.sdk_component_list.append(sdk_component)
-                else:
-                    if task.strict_mode:
-                        raise CreateInstallerError(f"{sdk_component.error_msg()}")
-                    log.warning("Ignore invalid component (missing payload/metadata?): %s", section)
-                    task.sdk_component_list_skipped.append(sdk_component)
+                try:
+                    # Validate component
+                    sdk_comp.validate()
+                    # Skip archive download if dry run
+                    if task.dry_run:
+                        sdk_comp.archive_skip = True
+                except IfwSdkError as err:
+                    if not task.strict_mode:
+                        raise CreateInstallerError from err
+                    log.warning(
+                        "Skip invalid component (missing payload/metadata?): [%s]",
+                        sdk_comp.ifw_sdk_comp_name
+                    )
+                    sdk_comp.archive_skip = True
+                # if include filter defined for component it is included only if LICENSE_TYPE
+                # matches to include_filter
+                # same configuration file can contain components that are included only to
+                # either edition
+                if sdk_comp.include_filter and sdk_comp.include_filter in task.license_type:
+                    task.sdk_component_list.append(sdk_comp)
+                # components without include_filter definition are added by default
+                elif not sdk_comp.include_filter:
+                    task.sdk_component_list.append(sdk_comp)
     # check for extra configuration files if defined
     extra_conf_list = safe_config_key_fetch(configuration, 'PackageConfigurationFiles', 'file_list')
     if extra_conf_list:
@@ -291,7 +295,7 @@ def parse_components(task: Any) -> None:
     parse_component_data(task, main_conf_file, conf_base_path)
 
 
-def create_metadata_map(sdk_component: SdkComponent) -> List[List[str]]:
+def create_metadata_map(sdk_component: IfwSdkComponent) -> List[List[str]]:
     """create lists for component specific tag substitutions"""
     component_metadata_tag_pair_list = []
     # version tag substitution if exists
@@ -300,12 +304,6 @@ def create_metadata_map(sdk_component: SdkComponent) -> List[List[str]]:
     # default package info substitution if exists
     if sdk_component.package_default:
         component_metadata_tag_pair_list.append([PACKAGE_DEFAULT_TAG, sdk_component.package_default])
-    # install priority info substitution if exists
-    if sdk_component.install_priority:
-        component_metadata_tag_pair_list.append([INSTALL_PRIORITY_TAG, sdk_component.install_priority])
-    # install priority info substitution if exists
-    if sdk_component.sorting_priority:
-        component_metadata_tag_pair_list.append([SORTING_PRIORITY_TAG, sdk_component.sorting_priority])
     # target install dir substitution
     if sdk_component.target_install_base:
         component_metadata_tag_pair_list.append([TARGET_INSTALL_DIR_NAME_TAG, sdk_component.target_install_base])
@@ -319,9 +317,9 @@ def create_metadata_map(sdk_component: SdkComponent) -> List[List[str]]:
     return component_metadata_tag_pair_list
 
 
-def get_component_sha1_file(sdk_component: SdkComponent, sha1_file_dest: str) -> None:
+def get_component_sha1_file(sdk_component: IfwSdkComponent, sha1_file_dest: str) -> None:
     """download component sha1 file"""
-    download(sdk_component.component_sha1_uri, sha1_file_dest)
+    download(sdk_component.comp_sha1_uri, sha1_file_dest)
 
     # read sha1 from the file
     with open(sha1_file_dest, "r", encoding="utf-8") as sha1_file:
@@ -330,61 +328,45 @@ def get_component_sha1_file(sdk_component: SdkComponent, sha1_file_dest: str) ->
 
 def get_component_data(
     task: Any,
-    sdk_component: SdkComponent,
-    archive: SdkComponent.DownloadableArchive,
+    sdk_component: IfwSdkComponent,
+    archive: IfwPayloadItem,
     install_dir: str,
     data_dir_dest: str,
     compress_content_dir: str,
 ) -> None:
-    """download and create data for a component"""
-    package_raw_name = os.path.basename(archive.archive_uri)
-
-    # if no data to be installed, then just continue
-    if not package_raw_name:
+    """Download and create data for a component"""
+    # Continue if payload item has no data
+    if not os.path.basename(archive.archive_uri):
         return
-    if not archive.package_strip_dirs:
-        archive.package_strip_dirs = '0'
-
-    if package_raw_name.endswith(('.7z', '.tar.xz')) \
-       and archive.package_strip_dirs == '0' \
-       and not archive.package_finalize_items \
-       and not archive.archive_action \
-       and not archive.rpath_target \
-       and sdk_component.target_install_base == '/' \
-       and not archive.target_install_dir:
-        log.info("No repackaging actions required for the package, just download it directly to data directory")
-        downloaded_archive = os.path.normpath(data_dir_dest + os.sep + archive.archive_name)
-        # start download
-        download(archive.archive_uri, downloaded_archive)
+    # Download payload to data_dir_dest
+    downloaded_file = Path(data_dir_dest, archive.arch_name)
+    download(archive.archive_uri, str(downloaded_file))
+    # For non-archive payload, move to install_dir for packing
+    if not archive.archive_uri.endswith(archive.supported_arch_formats):
+        shutil.move(str(downloaded_file), install_dir)
+    # For payload already in IFW compatible format, use the raw artifact and continue
+    elif not archive.requires_extraction and archive.archive_uri.endswith(archive.ifw_arch_formats):
         return
-
-    downloaded_archive = os.path.normpath(install_dir + os.sep + package_raw_name)
-    # start download
-    download(archive.archive_uri, downloaded_archive)
-
-    # repackage content so that correct dir structure will get into the package
-
-    if not archive.extract_archive:
-        archive.extract_archive = 'yes'
-
-    # extract contents
-    if archive.extract_archive == 'yes':
-        extracted = extract_file(downloaded_archive, install_dir)
-        # remove old package if extraction was successful, else keep it
-        if extracted:
-            os.remove(downloaded_archive)
-
+    # Extract payload archive if it requires to be patched or recompressed to a compatible format
+    else:
+        if not extract_file(str(downloaded_file), install_dir):
+            # Raise error on unsuccessful extraction
+            raise CreateInstallerError(f"Couldn't extract archive: {downloaded_file}")
+        # Remove original archive after extraction complete
+        os.remove(downloaded_file)
+    # If patching items are specified, execute them here
+    if archive.requires_patching:
         # perform custom action script for the extracted archive
         if archive.archive_action:
-            script_file, script_args = archive.archive_action.split(",")
+            script_file, script_args = archive.archive_action
             script_args = script_args or ""
-            script_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), script_file)
-            if not os.path.exists(script_path):
+            script_path = Path(__file__).parent.resolve() / script_file
+            if not script_path.exists():
                 raise CreateInstallerError(f"Custom archive action script missing: {script_path}")
-            cmd = [script_path, "--input-dir=" + install_dir, script_args.strip()]
-            if script_path.endswith(".py"):
+            cmd = [str(script_path), "--input-dir=" + install_dir, script_args.strip()]
+            if script_path.suffix == ".py":
                 cmd.insert(0, sys.executable)
-            run_cmd(cmd)
+            run_cmd(cmd=cmd)
 
         # strip out unnecessary folder structure based on the configuration
         count = 0
@@ -409,47 +391,51 @@ def get_component_data(
             except PackagingError:
                 pass
         if 'patch_qt' in archive.package_finalize_items:
-            patch_files(install_dir, product='qt_framework')
+            patch_files(install_dir, product="qt_framework")
         if 'set_executable' in archive.package_finalize_items:
             handle_set_executable(install_dir, archive.package_finalize_items)
         if 'set_licheck' in archive.package_finalize_items:
             handle_set_licheck(task, install_dir, archive.package_finalize_items)
 
-    # remove debug information files when explicitly defined so
-    if not task.remove_pdb_files or not task.remove_debug_information_files:
-        # don't remove debug information files from debug information archives
-        if not archive.archive_name.endswith('debug-symbols.7z'):
-            # Check if debug information file types are defined
-            if task.remove_pdb_files or task.remove_debug_information_files:
-                # Remove debug information files according to host platform defaults
-                remove_all_debug_information_files(install_dir)
+        # remove debug information files when explicitly defined so
+        if not task.remove_pdb_files or not task.remove_debug_information_files:
+            # don't remove debug information files from debug information archives
+            if not archive.arch_name.endswith("debug-symbols.7z"):
+                # Check if debug information file types are defined
+                if task.remove_pdb_files or task.remove_debug_information_files:
+                    # Remove debug information files according to host platform defaults
+                    remove_all_debug_information_files(install_dir)
 
-    # remove debug libraries
-    if task.remove_debug_libraries:
-        remove_all_debug_libraries(install_dir)
+        # remove debug libraries
+        if task.remove_debug_libraries:
+            remove_all_debug_libraries(install_dir)
 
-    if archive.rpath_target:
-        if not archive.rpath_target.startswith(os.sep):
-            archive.rpath_target = os.sep + archive.rpath_target
-        if is_linux():
-            handle_component_rpath(install_dir, archive.rpath_target)
+        if archive.rpath_target:
+            if not archive.rpath_target.startswith(os.sep):
+                archive.rpath_target = os.sep + archive.rpath_target
+            if is_linux():
+                handle_component_rpath(install_dir, archive.rpath_target)
 
-    if archive.component_sha1_file:
+    if archive.component_sha1:
         # read sha1 from the file
-        sha1_file_path = install_dir + os.sep + archive.component_sha1_file
+        sha1_file_path = install_dir + os.sep + archive.component_sha1
         if os.path.exists(sha1_file_path):
             with open(sha1_file_path, "r", encoding="utf-8") as sha1_file:
                 sdk_component.component_sha1 = sha1_file.read().strip()
         else:
-            raise CreateInstallerError(f"Component SHA1 file '{archive.component_sha1_file}' not found")
-
-    # lastly compress the component back to .7z archive
+            raise CreateInstallerError(
+                f"Component SHA1 file '{archive.component_sha1}' not found"
+            )
+    # Lastly, compress the component back to a 7z archive
+    if not archive.arch_name.endswith(".7z"):  # Remove old archive suffix
+        while Path(archive.arch_name).suffix in archive.supported_arch_formats:
+            archive.arch_name = Path(archive.arch_name).stem
+        archive.arch_name = Path(archive.arch_name + ".7z").name
     content_list = os.listdir(compress_content_dir)
-    # adding compress_content_dir in front of every item
+    # Add compress_content_dir in front of every item
     content_list = [(compress_content_dir + os.sep + x) for x in content_list]
-
-    saveas = os.path.normpath(data_dir_dest + os.sep + archive.archive_name)
-    run_cmd(cmd=[task.archivegen_tool, saveas] + content_list, cwd=data_dir_dest)
+    save_as = os.path.normpath(os.path.join(data_dir_dest, archive.arch_name))
+    run_cmd(cmd=[task.archivegen_tool, save_as] + content_list, cwd=data_dir_dest)
 
 
 def handle_set_executable(base_dir: str, package_finalize_items: str) -> None:
@@ -483,8 +469,8 @@ def parse_package_finalize_items(package_finalize_items: str, item_category: str
 # Substitute pkg template directory names
 ##############################################################
 def substitute_package_name(task: Any, package_name: str) -> str:
-    for item in task.substitutions:
-        package_name = package_name.replace(item[0], item[1])
+    for key, value in task.substitutions.items():
+        package_name = package_name.replace(key, value)
 
     return package_name
 
@@ -579,22 +565,27 @@ def create_target_components(task: Any) -> None:
     if task.create_repository and os.environ.get("LRELEASE_TOOL"):
         if not os.path.isfile(os.path.join(task.script_root_dir, "lrelease")):
             download(os.environ.get("LRELEASE_TOOL", ""), task.script_root_dir)
-            extract_file(os.path.basename(os.environ.get("LRELEASE_TOOL", "")), task.script_root_dir)
+            extract_file(
+                os.path.basename(os.environ.get("LRELEASE_TOOL", "")), task.script_root_dir
+            )
     get_component_data_work = ThreadedWork("get components data")
-    for sdk_component in task.sdk_component_list:
-        sdk_component.print_component_data()
+    for sdk_comp in task.sdk_component_list:
+        log.info(sdk_comp)
+        if sdk_comp.archive_skip:
+            break
         # substitute pkg_template dir names and package_name
-        package_name = substitute_package_name(task, sdk_component.package_name)
+        package_name = substitute_package_name(task, sdk_comp.ifw_sdk_comp_name)
+        sdk_comp.ifw_sdk_comp_name = package_name
         dest_base = task.packages_full_path_dst + os.sep + package_name + os.sep
         meta_dir_dest = os.path.normpath(dest_base + 'meta')
         data_dir_dest = os.path.normpath(dest_base + 'data')
         temp_data_dir = os.path.normpath(dest_base + 'tmp')
         # save path for later substitute_component_tags call
-        sdk_component.meta_dir_dest = meta_dir_dest
+        sdk_comp.meta_dir_dest = Path(meta_dir_dest)
         # create meta destination folder
-        Path(meta_dir_dest).mkdir(parents=True, exist_ok=True)
+        sdk_comp.meta_dir_dest.mkdir(parents=True, exist_ok=True)
         # Copy Meta data
-        metadata_content_source_root = os.path.normpath(sdk_component.pkg_template_dir + os.sep + 'meta')
+        metadata_content_source_root = os.path.join(sdk_comp.pkg_template_folder, "meta")
         copy_tree(metadata_content_source_root, meta_dir_dest)
         if os.path.isfile(os.path.join(task.script_root_dir, "lrelease")):
             # create translation binaries if translation source files exist for component
@@ -604,16 +595,21 @@ def create_target_components(task: Any) -> None:
         # add files into tag substitution
         task.directories_for_substitutions.append(meta_dir_dest)
         # handle archives
-        if sdk_component.downloadable_archive_list:
+        if sdk_comp.downloadable_archives:
             # save path for later substitute_component_tags call
-            sdk_component.temp_data_dir = temp_data_dir
+            sdk_comp.temp_data_dir = Path(temp_data_dir)
             # Copy archives into temporary build directory if exists
-            for archive in sdk_component.downloadable_archive_list:
-                # fetch packages only if offline installer or repo creation, for online installer just handle the metadata
+            for archive in sdk_comp.downloadable_archives:
+                # fetch packages only if offline installer or repo creation,
+                # for online installer just handle the metadata
                 if task.offline_installer or task.create_repository:
                     # Create needed data dirs
-                    compress_content_dir = os.path.normpath(temp_data_dir + os.sep + archive.archive_name)
-                    install_dir = os.path.normpath(compress_content_dir + archive.get_archive_installation_directory())
+                    compress_content_dir = os.path.normpath(
+                        temp_data_dir + os.sep + archive.arch_name
+                    )
+                    install_dir = os.path.normpath(
+                        compress_content_dir + archive.get_archive_install_dir()
+                    )
                     # adding get_component_data task to our work queue
                     # Create needed data dirs before the threads start to work
                     Path(install_dir).mkdir(parents=True, exist_ok=True)
@@ -621,16 +617,28 @@ def create_target_components(task: Any) -> None:
                     if is_windows():
                         install_dir = win32api.GetShortPathName(install_dir)
                         data_dir_dest = win32api.GetShortPathName(data_dir_dest)
-                    get_component_data_work.add_task(f"adding {archive.archive_name} to {sdk_component.package_name}",
-                                                     get_component_data, task, sdk_component, archive, install_dir, data_dir_dest, compress_content_dir)
+                    get_component_data_work.add_task(
+                        f"adding {archive.arch_name} to {sdk_comp.ifw_sdk_comp_name}",
+                        get_component_data,
+                        task,
+                        sdk_comp,
+                        archive,
+                        install_dir,
+                        data_dir_dest,
+                        compress_content_dir,
+                    )
         # handle component sha1 uri
-        if sdk_component.component_sha1_uri:
+        if sdk_comp.comp_sha1_uri:
             sha1_file_dest = os.path.normpath(dest_base + 'SHA1')
-            get_component_data_work.add_task(f"getting component sha1 file for {sdk_component.package_name}",
-                                             get_component_sha1_file, sdk_component, sha1_file_dest)
+            get_component_data_work.add_task(
+                f"getting component sha1 file for {sdk_comp.ifw_sdk_comp_name}",
+                get_component_sha1_file,
+                sdk_comp,
+                sha1_file_dest,
+            )
 
         # maybe there is some static data
-        data_content_source_root = os.path.normpath(sdk_component.pkg_template_dir + os.sep + 'data')
+        data_content_source_root = os.path.normpath(sdk_comp.pkg_template_folder + os.sep + "data")
         if os.path.exists(data_content_source_root):
             Path(data_dir_dest).mkdir(parents=True, exist_ok=True)
             copy_tree(data_content_source_root, data_dir_dest)
@@ -642,9 +650,9 @@ def create_target_components(task: Any) -> None:
     for sdk_component in task.sdk_component_list:
         # substitute tags
         substitute_component_tags(create_metadata_map(sdk_component), sdk_component.meta_dir_dest)
-        if hasattr(sdk_component, 'temp_data_dir') and os.path.exists(sdk_component.temp_data_dir):
+        if sdk_component.temp_data_dir and os.path.exists(sdk_component.temp_data_dir):
             # lastly remove temp dir after all data is prepared
-            if not remove_tree(sdk_component.temp_data_dir):
+            if not remove_tree(str(sdk_component.temp_data_dir)):
                 raise CreateInstallerError(f"Unable to remove directory: {sdk_component.temp_data_dir}")
             # substitute downloadable archive names in installscript.qs
             substitute_component_tags(sdk_component.generate_downloadable_archive_list(), sdk_component.meta_dir_dest)
@@ -941,12 +949,11 @@ class QtInstallerTask:
     platform_identifier: str = ""
     installer_name: str = ""
     packages_dir_name_list: List[str] = field(default_factory=list)
-    substitutions: List[List[str]] = field(default_factory=list)
+    substitutions: Dict[str, str] = field(default_factory=dict)
     directories_for_substitutions: List[str] = field(default_factory=list)
-    sdk_component_list: List[SdkComponent] = field(default_factory=list)
-    sdk_component_list_skipped: List[SdkComponent] = field(default_factory=list)
+    sdk_component_list: List[IfwSdkComponent] = field(default_factory=list)
+    sdk_component_list_skipped: List[IfwSdkComponent] = field(default_factory=list)
     sdk_component_ignore_list: List[str] = field(default_factory=list)
-    archive_location_resolver: Optional[ArchiveLocationResolver] = None
     archive_base_url: str = ""
     remove_debug_information_files: bool = False
     remove_debug_libraries: bool = False
@@ -977,10 +984,6 @@ class QtInstallerTask:
             self.config.get("PackageTemplates", "template_dirs"), self.configurations_dir
         )
         self._parse_substitutions()
-        if self.archive_location_resolver is None:
-            self.archive_location_resolver = ArchiveLocationResolver(
-                self.config, self.archive_base_url, self.configurations_dir, self.substitutions
-            )
 
     def __str__(self) -> str:
         return f"""Installer task:
@@ -1014,8 +1017,8 @@ class QtInstallerTask:
             key, value = item.split("=", maxsplit=1)
             if not value:
                 log.warning("Empty value for substitution string given, substituting anyway: %s", item)
-            self.substitutions.append([key, value])  # pylint: disable=no-member
-        self.substitutions.append(['%LICENSE%', self.license_type])  # pylint: disable=no-member
+            self.substitutions[key] = value  # pylint: disable=unsupported-assignment-operation
+        self.substitutions["%LICENSE%"] = self.license_type  # pylint: disable=E1137
 
     def parse_ifw_pkg_template_dirs(self, template_list: str, configurations_dir: str) -> List[str]:
         ret = []
@@ -1029,7 +1032,7 @@ class QtInstallerTask:
                 ret.append(package_template_dir)
             else:
                 # first check if the pkg templates are under assumed "/configurations/pkg_templates" directory
-                pkg_template_dir = os.path.join(configurations_dir, pkg_constants.PKG_TEMPLATE_BASE_DIR_NAME,
+                pkg_template_dir = os.path.join(configurations_dir, PKG_TEMPLATE_BASE_DIR_NAME,
                                                 package_template_dir)
                 if os.path.exists(pkg_template_dir):
                     ret.append(pkg_template_dir)
