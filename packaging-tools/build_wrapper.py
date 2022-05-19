@@ -52,7 +52,7 @@ from bldinstallercommon import locate_paths
 from threadedwork import ThreadedWork, Task
 import bld_sdktool
 from read_remote_config import get_pkg_value
-
+from runner import do_execute_sub_process
 
 # ----------------------------------------------------------------------
 SCRIPT_ROOT_DIR             = os.path.dirname(os.path.realpath(__file__))
@@ -76,7 +76,7 @@ def unlock_keychain_script():
 ###############################
 def unlock_keychain():
     cmd_args = [unlock_keychain_script()]
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
+    do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
 
 
 ###############################
@@ -84,7 +84,7 @@ def unlock_keychain():
 ###############################
 def lock_keychain():
     cmd_args = ['/Users/qt/lock-keychain.sh']
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, abort_on_fail=False)
+    do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, abort_on_fail=False)
 
 
 ###########################################
@@ -101,7 +101,7 @@ def init_snapshot_dir_and_upload_files(optionDict, project_name, project_version
     # upload files
     for item in file_upload_list:
         cmd_args = [optionDict['SCP_COMMAND'], item, optionDict['PACKAGE_STORAGE_SERVER_ADDR'] + ':' + remote_path_snapshot_dir + subdir]
-        bldinstallercommon.do_execute_sub_process(cmd_args, optionDict['WORK_DIR'])
+        do_execute_sub_process(cmd_args, optionDict['WORK_DIR'])
     # update 'latest' symlink
     update_latest_link(optionDict, remote_path_snapshot_dir, remote_path_latest_link)
 
@@ -116,20 +116,20 @@ def handle_qt_licheck_build(optionDict):
         upload_path = optionDict['PACKAGE_STORAGE_SERVER_ADDR'] + ':' + optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + optionDict['LICENSE'] + '/licheck/'
         if optionDict['TARGET_ENV'].lower().startswith("win"):
             cmd_args = [r'c:\Utils\jom\jom.exe', '-f', 'Makefile_win']
-            bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
+            do_execute_sub_process(cmd_args, exe_dir, True)
             cmd_args = [optionDict['SCP_COMMAND'], 'licheck.exe', upload_path]
-            bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
+            do_execute_sub_process(cmd_args, exe_dir, True)
         elif optionDict['TARGET_ENV'].lower().startswith("linux"):
             cmd_args = ['make', '-j6', '-f', 'Makefile_unix']
-            bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
+            do_execute_sub_process(cmd_args, exe_dir, True)
             licheck = 'licheck64' if optionDict['TARGET_ENV'].find("x64") >= 1 else 'licheck32'
             cmd_args = ['rsync', '-r', licheck, upload_path + licheck]
-            bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
+            do_execute_sub_process(cmd_args, exe_dir, True)
         else:
             cmd_args = ['make', '-j6', '-f', 'Makefile_macos']
-            bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
+            do_execute_sub_process(cmd_args, exe_dir, True)
             cmd_args = ['rsync', '-r', 'licheck_mac', upload_path +'licheck_mac']
-            bldinstallercommon.do_execute_sub_process(cmd_args, exe_dir, True)
+            do_execute_sub_process(cmd_args, exe_dir, True)
     else:
         #opensource, do nothing
         print('*** opensource build, nothing to build ...')
@@ -301,11 +301,11 @@ class BuildLog:
 def check_call_log(args, execution_path, extra_env=dict(os.environ),
                    log_filepath=None, log_overwrite=False):
     if not log_filepath:
-        bldinstallercommon.do_execute_sub_process(args, execution_path,
+        do_execute_sub_process(args, execution_path,
                                                   extra_env=extra_env)
     else:
         with BuildLog(log_filepath, log_overwrite) as f:
-            bldinstallercommon.do_execute_sub_process(args, execution_path,
+            do_execute_sub_process(args, execution_path,
                                                       extra_env=extra_env,
                                                       redirect_output=f)
 
@@ -458,7 +458,7 @@ def upload_files(remote_path, file_upload_list, optionDict):
     # upload files
     for source, destination in file_upload_list:
         cmd_args = [optionDict['SCP_COMMAND'], source, pkg_storage_server + ':' + dir_path + '/' + destination]
-        bldinstallercommon.do_execute_sub_process(cmd_args, optionDict['WORK_DIR'])
+        do_execute_sub_process(cmd_args, optionDict['WORK_DIR'])
 
 def update_job_link(remote_path_base, remote_target_path, optionDict):
     remote_link = remote_path_base + '/' + optionDict['PULSE_PROJECT']
@@ -906,12 +906,12 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         qtcreator_shortversion = re.match(r'\d+[.]\d+', qtcreator_version).group()
         snapshot_base = snapshot_path + '/' + qtcreator_shortversion + '/' + qtcreator_version + '/installer_source/'
         snapshot_target = snapshot_base + build_id + '/'
-        bldinstallercommon.do_execute_sub_process(
+        do_execute_sub_process(
             [optionDict['SSH_COMMAND'], pkg_storage_server,
              "ssh", snapshot_server,
              'mkdir', '-p', snapshot_target + target_env_dir],
             work_dir, True)
-        bldinstallercommon.do_execute_sub_process(
+        do_execute_sub_process(
             [optionDict['SSH_COMMAND'], pkg_storage_server,
              "ssh", snapshot_server,
              'ln', '-sfn', snapshot_target, snapshot_base + 'latest'],
@@ -921,7 +921,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
             cmd_args = [optionDict['SSH_COMMAND'], pkg_storage_server, "scp",
                         remote_path + '/' + source,
                         snapshot_server + ':' + snapshot_target + '/' + destination]
-            bldinstallercommon.do_execute_sub_process(cmd_args, work_dir)
+            do_execute_sub_process(cmd_args, work_dir)
     # create link from job name to display name
     update_job_link(unversioned_base_path, base_path, optionDict)
 
@@ -982,7 +982,7 @@ def notarizeDmg(dmgPath, installer_name_base):
     bundleId = installer_name_base + "-" + strftime('%Y-%m-%d', gmtime())
     bundleId = bundleId.replace('_', '-').replace(' ', '')  # replace illegal characters for bundleId
     args = [sys.executable, 'notarize.py', '--dmg=' + dmgPath, '--bundle-id=' + bundleId]
-    bldinstallercommon.do_execute_sub_process(args, SCRIPT_ROOT_DIR)
+    do_execute_sub_process(args, SCRIPT_ROOT_DIR)
 
 
 ###############################
@@ -990,7 +990,7 @@ def notarizeDmg(dmgPath, installer_name_base):
 ###############################
 def update_latest_link(optionDict, remote_dest_dir, latest_dir):
     cmd_args = [optionDict['SSH_COMMAND'], optionDict['PACKAGE_STORAGE_SERVER_ADDR'], 'ln -sfn', remote_dest_dir, latest_dir]
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
+    do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
 
 
 ###############################
@@ -998,7 +998,7 @@ def update_latest_link(optionDict, remote_dest_dir, latest_dir):
 ###############################
 def create_remote_dirs(optionDict, server, dir_path):
     cmd_args = [optionDict['SSH_COMMAND'], '-t', '-t', server, 'mkdir -p', dir_path]
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
+    do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
 
 
 ###############################
@@ -1015,7 +1015,7 @@ def git_archive_repo(optionDict, repo_and_ref):
     # upload archive to network disk
     dest_dir = optionDict['PACKAGE_STORAGE_SERVER_USER'] + '@' + optionDict['PACKAGE_STORAGE_SERVER'] + ':' + remote_dest_dir
     cmd_args = ['scp', archive_name, remote_dest_dir]
-    bldinstallercommon.do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
+    do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
 
 
 def initPkgOptions(args):

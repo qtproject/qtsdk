@@ -41,21 +41,23 @@ import platform
 import subprocess
 import sys
 
+from runner import do_execute_sub_process
+
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 def build(src_dir, install_dir, toolset):
-    bldinstallercommon.do_execute_sub_process(['perl', 'Configure', toolset, '--openssldir=' + install_dir], src_dir, True)
+    do_execute_sub_process(['perl', 'Configure', toolset, '--openssldir=' + install_dir], src_dir, True)
     if toolset == 'VC-WIN32':
-        bldinstallercommon.do_execute_sub_process(['ms\do_nasm.bat'], src_dir, True)
+        do_execute_sub_process(['ms\do_nasm.bat'], src_dir, True)
     else:
-        bldinstallercommon.do_execute_sub_process(['ms\do_win64a'], src_dir, True)
-    bldinstallercommon.do_execute_sub_process(['nmake', '-f', 'ms\\ntdll.mak'], src_dir, True)
-    bldinstallercommon.do_execute_sub_process(['nmake', '-f', 'ms\\ntdll.mak', 'install'], src_dir, True)
+        do_execute_sub_process(['ms\do_win64a'], src_dir, True)
+    do_execute_sub_process(['nmake', '-f', 'ms\\ntdll.mak'], src_dir, True)
+    do_execute_sub_process(['nmake', '-f', 'ms\\ntdll.mak', 'install'], src_dir, True)
 
 def archive(install_dir, archive_prefix):
     (dir, name) = os.path.split(install_dir)
-    bldinstallercommon.do_execute_sub_process(['7z', 'a', archive_prefix + '.7z', name], dir, True)
-    bldinstallercommon.do_execute_sub_process(['7z', 'a', archive_prefix + '-runtime.7z', '*.dll'], os.path.join(install_dir, 'bin'), True)
+    do_execute_sub_process(['7z', 'a', archive_prefix + '.7z', name], dir, True)
+    do_execute_sub_process(['7z', 'a', archive_prefix + '-runtime.7z', '*.dll'], os.path.join(install_dir, 'bin'), True)
 
 def check_environment():
     FNULL = open(os.devnull, 'w')

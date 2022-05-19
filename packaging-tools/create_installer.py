@@ -54,6 +54,7 @@ from sdkcomponent import SdkComponent
 from patch_qt import patchFiles, patchQtEdition
 import logging
 from installer_utils import PackagingError
+from runner import do_execute_sub_process
 
 log = logging.getLogger("create_installer")
 log.setLevel("INFO")
@@ -426,7 +427,7 @@ def get_component_data(task, sdk_component, archive, install_dir, data_dir_dest,
 
     saveas = os.path.normpath(data_dir_dest + os.sep + archive.archive_name)
     cmd_args = [ task.archivegen_tool, saveas] + content_list
-    bldinstallercommon.do_execute_sub_process(cmd_args, data_dir_dest)
+    do_execute_sub_process(cmd_args, data_dir_dest)
 
 
 def handle_set_executable(baseDir, packageFinalizeItems):
@@ -737,7 +738,7 @@ def create_installer_binary(task):
         cmd_args = cmd_args + ['-r', license_resource_file]
 
     # create installer binary
-    bldinstallercommon.do_execute_sub_process(cmd_args, task.script_root_dir)
+    do_execute_sub_process(cmd_args, task.script_root_dir)
 
     # move results to dedicated directory
     output_dir = os.path.join(task.script_root_dir, pkg_constants.INSTALLER_OUTPUT_DIR_NAME)
@@ -780,7 +781,7 @@ def create_online_repository(task):
             repogen_args += ['--unite-metadata']
         repogen_args += ['-p', task.packages_full_path_dst, task.repo_output_dir]
         # create repository
-        bldinstallercommon.do_execute_sub_process(repogen_args, task.script_root_dir)
+        do_execute_sub_process(repogen_args, task.script_root_dir)
         if not os.path.exists(task.repo_output_dir):
             raise CreateInstallerError("Unable to create repository directory: {0}".format(task.repo_output_dir))
 
@@ -794,7 +795,7 @@ def create_maintenance_tool_resource_file(task):
     set_config_directory(task)
     config_xml = set_config_xml(task)
     cmd_args = [task.binarycreator_tool, '--online-only', '-p', task.packages_full_path_dst, '-c', config_xml, '-rcc']
-    bldinstallercommon.do_execute_sub_process(cmd_args, task.script_root_dir)
+    do_execute_sub_process(cmd_args, task.script_root_dir)
     # archive
     resource_file = os.path.join(task.script_root_dir, 'update.rcc')
     try:
@@ -829,7 +830,7 @@ def inject_update_rcc_to_archive(archive_file_path, file_to_be_injected):
     shutil.copy(file_to_be_injected, tmp_dir)
     # re-compress
     cmd_args_archive = ['7z', 'a', archive_file_name, '*']
-    bldinstallercommon.do_execute_sub_process(cmd_args_archive, tmp_dir)
+    do_execute_sub_process(cmd_args_archive, tmp_dir)
     # delete original
     os.remove(archive_file_path)
     # copy re-compressed package to correct location
@@ -852,7 +853,7 @@ def create_mac_disk_image(task):
                 '-format', 'UDBZ', \
                 os.path.join(task.script_root_dir, pkg_constants.INSTALLER_OUTPUT_DIR_NAME, task.installer_name + '.dmg'), \
                 '-ov', '-scrub', '-size', '4g']
-    bldinstallercommon.do_execute_sub_process(cmd_args, task.script_root_dir)
+    do_execute_sub_process(cmd_args, task.script_root_dir)
 
 
 ##############################################################

@@ -144,7 +144,7 @@ class TestPackaging(unittest.TestCase):
     @unittest.skipUnless(os.environ.get("PKG_TEST_QT_ARTIFACTS_URL"), "Skipping because 'PKG_TEST_QT_CONFIG_BASE_PATH' is not set")
     @unittest.skipUnless(os.environ.get("PKG_TEST_QT_IFW_TOOL_URL"), "Skipping because 'PKG_TEST_QT_IFW_TOOL_URL' is not set")
     def test_createInstaller(self):
-        from bldinstallercommon import do_execute_sub_process
+        from runner import do_execute_sub_process
         import platform
         extension = '.run' if platform.system().lower().startswith('linux') else ''
         testsDir = os.path.dirname(os.path.abspath(__file__))

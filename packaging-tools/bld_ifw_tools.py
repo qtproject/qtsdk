@@ -44,6 +44,7 @@ from bld_utils import is_windows, is_macos, is_linux
 from pathlib import Path
 from bldinstallercommon import locate_path
 from installer_utils import PackagingError
+from runner import do_execute_sub_process
 
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 ARCH_EXT = '.zip' if is_windows() else '.tar.xz'
@@ -384,19 +385,19 @@ def build_qt(options, qt_build_dir, qt_configure_options, qt_modules):
     cmd_args = options.qt_configure_bin + ' ' + configure_options
     # shlex does not like backslashes
     cmd_args = cmd_args.replace('\\', '/')
-    bldinstallercommon.do_execute_sub_process(shlex.split(cmd_args), options.qt_source_dir, True, False, get_build_env(options.openssl_dir))
+    do_execute_sub_process(shlex.split(cmd_args), options.qt_source_dir, True, False, get_build_env(options.openssl_dir))
     print('--------------------------------------------------------------------')
     print('Building Qt')
     cmd_args = options.make_cmd
     for module in qt_modules:
         cmd_args += " module-"+module
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), options.qt_source_dir, True, False, get_build_env(options.openssl_dir))
+    do_execute_sub_process(cmd_args.split(' '), options.qt_source_dir, True, False, get_build_env(options.openssl_dir))
     print('--------------------------------------------------------------------')
     print('Installing Qt')
     cmd_args = options.make_install_cmd
     for module in qt_modules:
         moduleDir = os.path.join(options.qt_source_dir, module)
-        bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), moduleDir)
+        do_execute_sub_process(cmd_args.split(' '), moduleDir)
 
 
 ###############################
@@ -420,10 +421,10 @@ def prepare_installer_framework(options):
 
 def start_IFW_build(options, cmd_args, installer_framework_build_dir):
     print("cmd_args: " + bldinstallercommon.list_as_string(cmd_args))
-    bldinstallercommon.do_execute_sub_process(cmd_args, installer_framework_build_dir)
+    do_execute_sub_process(cmd_args, installer_framework_build_dir)
     cmd_args = options.make_cmd
     print("cmd_args: " + bldinstallercommon.list_as_string(cmd_args))
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), installer_framework_build_dir)
+    do_execute_sub_process(cmd_args.split(' '), installer_framework_build_dir)
 
 ###############################
 # function
@@ -472,7 +473,7 @@ def build_installer_framework_examples(options):
             config_file =  os.path.join(root, directory, 'config', 'config.xml')
             package_dir = os.path.join(root, directory, 'packages')
             target_filename = os.path.join(root, directory, 'installer')
-            bldinstallercommon.do_execute_sub_process(args=(file_binarycreator, '--offline-only', '-c', config_file, '-p', package_dir, target_filename), execution_path=package_dir)
+            do_execute_sub_process(args=(file_binarycreator, '--offline-only', '-c', config_file, '-p', package_dir, target_filename), execution_path=package_dir)
             if is_windows():
                 target_filename += '.exe'
             ifw_example_binaries.append(target_filename)
@@ -491,11 +492,11 @@ def build_ifw_docs(options):
         print('*** Aborting doc build, unable to find qmake from: {0}'.format(options.qt_build_dir_dynamic))
         sys.exit(-1)
     cmd_args = qmake_bin + ' -r ' + options.installer_framework_source_dir
-    bldinstallercommon.do_execute_sub_process(cmd_args.split(' '), options.installer_framework_build_dir)
+    do_execute_sub_process(cmd_args.split(' '), options.installer_framework_build_dir)
     cmd_args = options.make_doc_cmd + ' docs'
     env = dict(os.environ)
     env['LD_LIBRARY_PATH'] = os.path.normpath(os.path.join(os.path.dirname(qmake_bin), '..', 'lib'))
-    bldinstallercommon.do_execute_sub_process(args=cmd_args.split(' '), execution_path=options.installer_framework_build_dir,
+    do_execute_sub_process(args=cmd_args.split(' '), execution_path=options.installer_framework_build_dir,
                                               abort_on_fail=True, get_output=False, extra_env=env)
 
 
@@ -516,28 +517,28 @@ def create_installer_package(options):
     os.chdir(package_dir)
     shutil.copytree(os.path.join(options.installer_framework_build_dir, 'bin'), os.path.join(package_dir, 'bin'), ignore = shutil.ignore_patterns("*.exe.manifest","*.exp","*.lib"))
     if is_linux():
-        bldinstallercommon.do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/archivegen')), execution_path=package_dir)
-        bldinstallercommon.do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/binarycreator')), execution_path=package_dir)
-        bldinstallercommon.do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/devtool')), execution_path=package_dir)
-        bldinstallercommon.do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/installerbase')), execution_path=package_dir)
-        bldinstallercommon.do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/repogen')), execution_path=package_dir)
+        do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/archivegen')), execution_path=package_dir)
+        do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/binarycreator')), execution_path=package_dir)
+        do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/devtool')), execution_path=package_dir)
+        do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/installerbase')), execution_path=package_dir)
+        do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/repogen')), execution_path=package_dir)
     shutil.copytree(os.path.join(options.installer_framework_build_dir, 'doc'), os.path.join(package_dir, 'doc'))
     shutil.copytree(os.path.join(options.installer_framework_source_dir, 'examples'), os.path.join(package_dir, 'examples'))
     shutil.copy(os.path.join(options.installer_framework_source_dir, 'README'), package_dir)
     # pack payload into separate .7z archive for later usage
     cmd_args = [ARCHIVE_PROGRAM, 'a', options.installer_framework_payload_arch, package_dir]
-    bldinstallercommon.do_execute_sub_process(cmd_args, ROOT_DIR)
+    do_execute_sub_process(cmd_args, ROOT_DIR)
     shutil.move(os.path.join(ROOT_DIR, options.installer_framework_payload_arch), options.build_artifacts_dir)
     # create 7z
     archive_file = os.path.join(options.installer_framework_source_dir, 'dist', 'packages', 'org.qtproject.ifw.binaries', 'data', 'data.7z')
     if not os.path.exists(os.path.dirname(archive_file)):
         os.makedirs(os.path.dirname(archive_file))
-    bldinstallercommon.do_execute_sub_process(args=(os.path.join(package_dir, 'bin', 'archivegen'), archive_file, '*'), execution_path=package_dir)
+    do_execute_sub_process(args=(os.path.join(package_dir, 'bin', 'archivegen'), archive_file, '*'), execution_path=package_dir)
     # run installer
     binary_creator = os.path.join(options.installer_framework_build_dir, 'bin', 'binarycreator')
     config_file = os.path.join(options.installer_framework_source_dir, 'dist', 'config', 'config.xml')
     package_dir = os.path.join(options.installer_framework_source_dir, 'dist', 'packages')
-    bldinstallercommon.do_execute_sub_process(args=(binary_creator, '--offline-only', '-c', config_file, '-p', package_dir, target_dir), execution_path=package_dir)
+    do_execute_sub_process(args=(binary_creator, '--offline-only', '-c', config_file, '-p', package_dir, target_dir), execution_path=package_dir)
     print('Installer package is at: {0}'.format(target_dir))
     artifacts = os.listdir(options.installer_framework_target_dir)
     for artifact in artifacts:
@@ -559,7 +560,7 @@ def build_and_archive_qt(options):
     print('--------------------------------------------------------------------')
     print('Archive static Qt binaries')
     cmd_args_archive = [ARCHIVE_PROGRAM, 'a', options.qt_static_binary_name, options.qt_build_dir]
-    bldinstallercommon.do_execute_sub_process(cmd_args_archive, ROOT_DIR)
+    do_execute_sub_process(cmd_args_archive, ROOT_DIR)
 
     print('--------------------------------------------------------------------')
     print('Build shared Qt')
@@ -573,7 +574,7 @@ def build_and_archive_qt(options):
     print('--------------------------------------------------------------------')
     print('Archive shared Qt binaries')
     cmd_args_archive = [ARCHIVE_PROGRAM, 'a', options.qt_shared_binary_name, options.qt_build_dir_dynamic]
-    bldinstallercommon.do_execute_sub_process(cmd_args_archive, ROOT_DIR)
+    do_execute_sub_process(cmd_args_archive, ROOT_DIR)
 
 
 ###############################
@@ -622,7 +623,7 @@ def archive_installer_framework(installer_framework_build_dir, installer_framewo
             if filename.endswith(('.moc', 'Makefile', '.cpp', '.h', '.o')) or filename == 'Makefile':
                 os.remove(os.path.join(root, filename))
     cmd_args = [ARCHIVE_PROGRAM, 'a', installer_framework_archive_name, os.path.basename(installer_framework_build_dir)]
-    bldinstallercommon.do_execute_sub_process(cmd_args, ROOT_DIR)
+    do_execute_sub_process(cmd_args, ROOT_DIR)
     shutil.move(installer_framework_archive_name, options.build_artifacts_dir)
     # Check if installer framework is created from branch. If so, check if the branch is tagged and
     # create a package with a tagged name.
@@ -658,8 +659,8 @@ def archive_installerbase(options):
             sign_windows_installerbase('tempSDKMaintenanceToolBase.exe', ROOT_DIR + os.sep, True, options)
         cmd_args_archive = [ARCHIVE_PROGRAM, 'a', options.installer_base_archive_name, bin_temp]
         cmd_args_clean = ['del', bin_temp]
-    bldinstallercommon.do_execute_sub_process(cmd_args_archive, ROOT_DIR)
-    bldinstallercommon.do_execute_sub_process(cmd_args_clean, ROOT_DIR)
+    do_execute_sub_process(cmd_args_archive, ROOT_DIR)
+    do_execute_sub_process(cmd_args_clean, ROOT_DIR)
     if not os.path.isfile(options.installer_base_archive_name):
         print('*** Failed to generate archive: {0}'.format(options.installer_base_archive_name))
         sys.exit(-1)
@@ -681,7 +682,7 @@ def archive_binarycreator(options):
     else:
         raise Exception("Not a supported platform")
     cmd_args_archive = ['7z', 'a', options.binarycreator_archive_name, bin_path, binarycreator_path]
-    bldinstallercommon.do_execute_sub_process(cmd_args_archive, ROOT_DIR)
+    do_execute_sub_process(cmd_args_archive, ROOT_DIR)
     if not os.path.isfile(options.binarycreator_archive_name):
         raise Exception("*** Failed to generate archive: {0}".format(options.binarycreator_archive_name))
     shutil.move(options.binarycreator_archive_name, options.build_artifacts_dir)

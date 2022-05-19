@@ -35,6 +35,7 @@ from pathlib import Path
 import bldinstallercommon
 from bld_utils import is_windows, is_linux
 import collections
+from runner import do_execute_sub_process
 
 BuildParams = collections.namedtuple('BuildParams',
                                      ['src_path', 'build_path', 'target_path',
@@ -86,11 +87,11 @@ def get_and_extract_qt_src(url, temp, path):
 def configure_qt(params, src, build):
     Path(build).mkdir(parents=True, exist_ok=True)
     configure = os.path.join(src, 'configure')
-    bldinstallercommon.do_execute_sub_process([configure, '-prefix', build] + qt_static_configure_options(),
+    do_execute_sub_process([configure, '-prefix', build] + qt_static_configure_options(),
                                               build, redirect_output=params.redirect_output)
 
 def build_qt(params, build):
-    bldinstallercommon.do_execute_sub_process([params.make_command], build, redirect_output=params.redirect_output)
+    do_execute_sub_process([params.make_command], build, redirect_output=params.redirect_output)
 
 def build_sdktool_impl(params, qt_build_path):
     Path(params.build_path).mkdir(parents=True, exist_ok=True)
@@ -103,13 +104,13 @@ def build_sdktool_impl(params, qt_build_path):
     if is_windows():
         cmake_args += ['-DCMAKE_C_COMPILER=cl', '-DCMAKE_CXX_COMPILER=cl']
 
-    bldinstallercommon.do_execute_sub_process(cmake_args +
+    do_execute_sub_process(cmake_args +
                                               ['-G', 'Ninja', params.src_path],
                                               params.build_path,
                                               redirect_output=params.redirect_output)
-    bldinstallercommon.do_execute_sub_process(['cmake', '--build', '.'], params.build_path,
+    do_execute_sub_process(['cmake', '--build', '.'], params.build_path,
                                               redirect_output=params.redirect_output)
-    bldinstallercommon.do_execute_sub_process(['cmake',
+    do_execute_sub_process(['cmake',
                                                '--install', '.',
                                                '--prefix', params.target_path],
                                               params.build_path,
@@ -131,5 +132,5 @@ def build_sdktool(qt_src_url, qt_build_base, sdktool_src_path, sdktool_build_pat
 
 def zip_sdktool(sdktool_target_path, out_7zip, redirect_output=None):
     glob = "*.exe" if is_windows() else "*"
-    bldinstallercommon.do_execute_sub_process(['7z', 'a', out_7zip, glob],
+    do_execute_sub_process(['7z', 'a', out_7zip, glob],
                                               sdktool_target_path, redirect_output=redirect_output)

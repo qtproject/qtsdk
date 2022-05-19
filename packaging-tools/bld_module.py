@@ -46,6 +46,7 @@ from bld_utils import runCommand, runBuildCommand, runInstallCommand, stripVars,
 import bldinstallercommon
 from bldinstallercommon import locate_path, locate_paths
 from installer_utils import PackagingError
+from runner import do_execute_sub_process
 
 SCRIPT_ROOT_DIR             = os.path.dirname(os.path.realpath(__file__))
 MODULE_SRC_DIR_NAME         = 'module_src'
@@ -63,7 +64,7 @@ def patch_archive(base_dir, search_strings, qt_install_prefix):
 ###############################
 def get_qt_install_prefix(qt_path):
     cmd_args = [os.path.join(qt_path, 'bin', 'qmake'), '-query', 'QT_INSTALL_PREFIX']
-    ret, qt_install_prefix = bldinstallercommon.do_execute_sub_process(cmd_args, qt_path, get_output=True)
+    ret, qt_install_prefix = do_execute_sub_process(cmd_args, qt_path, get_output=True)
     return qt_install_prefix.strip()
 
 ###############################

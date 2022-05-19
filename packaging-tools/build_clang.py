@@ -40,6 +40,7 @@ import threadedwork
 import multiprocessing
 from read_remote_config import get_pkg_value
 from bld_utils import is_windows, is_macos, is_linux
+from runner import do_execute_sub_process
 
 def git_clone_and_checkout(base_path, remote_repository_url, directory, revision):
     bld_utils.runCommand(['git', 'clone',
@@ -319,9 +320,9 @@ def install_command(toolchain):
 # requires the llvm installation to properly build
 def build_and_install(toolchain, build_path, environment, build_targets, install_targets):
     build_cmd = build_command(toolchain)
-    bldinstallercommon.do_execute_sub_process(build_cmd + build_targets, build_path, extra_env=environment)
+    do_execute_sub_process(build_cmd + build_targets, build_path, extra_env=environment)
     install_cmd = install_command(toolchain)
-    bldinstallercommon.do_execute_sub_process(install_cmd + install_targets, build_path, extra_env=environment)
+    do_execute_sub_process(install_cmd + install_targets, build_path, extra_env=environment)
 
 def cmake_command(toolchain, src_path, build_path, install_path, profile_data_path, first_run, bitness, build_type):
     enabled_projects = 'clang;clang-tools-extra'
@@ -355,7 +356,7 @@ def build_clang(toolchain, src_path, build_path, install_path, profile_data_path
 
     cmake_cmd = cmake_command(toolchain, src_path, build_path, install_path, profile_data_path, first_run, bitness, build_type)
 
-    bldinstallercommon.do_execute_sub_process(cmake_cmd, build_path, extra_env=environment)
+    do_execute_sub_process(cmake_cmd, build_path, extra_env=environment)
 
     build_targets = ['libclang', 'clang', 'llvm-config']
     install_targets = ['install/strip']
@@ -388,7 +389,7 @@ def build_clazy(toolchain, src_path, build_path, install_path, bitness=64, envir
 
     cmake_cmd.extend(bitness_flags(bitness))
     cmake_cmd.append(src_path)
-    bldinstallercommon.do_execute_sub_process(cmake_cmd, build_path, extra_env=environment)
+    do_execute_sub_process(cmake_cmd, build_path, extra_env=environment)
 
     install_targets = ['install/strip']
     if is_msvc_toolchain(toolchain):
@@ -403,7 +404,7 @@ def check_clang(toolchain, build_path, environment):
             environment[path_key] += ';' + tools_path
 
     build_cmd = build_command(toolchain)
-    bldinstallercommon.do_execute_sub_process(build_cmd + ['check-clang'], build_path, abort_on_fail=False, extra_env=environment)
+    do_execute_sub_process(build_cmd + ['check-clang'], build_path, abort_on_fail=False, extra_env=environment)
 
 def package_clang(install_path, result_file_path):
     (basepath, dirname) = os.path.split(install_path)
