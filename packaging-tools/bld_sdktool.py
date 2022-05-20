@@ -38,7 +38,7 @@ from typing import List, Optional
 
 from bld_utils import is_linux, is_windows
 from bldinstallercommon import extract_file, remove_one_tree_level, retrieve_url
-from runner import do_execute_sub_process
+from runner import run_cmd
 
 BuildParams = namedtuple('BuildParams',
                          ['src_path', 'build_path', 'target_path',
@@ -95,15 +95,13 @@ def get_and_extract_qt_src(url: str, temp: str, path: str) -> None:
 
 def configure_qt(params: BuildParams, src: str, build: str) -> None:
     Path(build).mkdir(parents=True, exist_ok=True)
-    configure = os.path.join(src, 'configure')
-    do_execute_sub_process(
-        [configure, '-prefix', build] + qt_static_configure_options(),
-        build, redirect_output=params.redirect_output
-    )
+    configure = os.path.join(src, "configure")
+    cmd = [configure, "-prefix", build] + qt_static_configure_options()
+    run_cmd(cmd=cmd, cwd=build, redirect=params.redirect_output)
 
 
 def build_qt(params: BuildParams, build: str) -> None:
-    do_execute_sub_process([params.make_command], build, redirect_output=params.redirect_output)
+    run_cmd(cmd=[params.make_command], cwd=build, redirect=params.redirect_output)
 
 
 def build_sdktool_impl(params: BuildParams, qt_build_path: str) -> None:
@@ -117,17 +115,11 @@ def build_sdktool_impl(params: BuildParams, qt_build_path: str) -> None:
     if is_windows():
         cmake_args += ['-DCMAKE_C_COMPILER=cl', '-DCMAKE_CXX_COMPILER=cl']
 
-    do_execute_sub_process(
-        cmake_args + ['-G', 'Ninja', params.src_path],
-        params.build_path, redirect_output=params.redirect_output
-    )
-    do_execute_sub_process(
-        ['cmake', '--build', '.'], params.build_path, redirect_output=params.redirect_output
-    )
-    do_execute_sub_process(
-        ['cmake', '--install', '.', '--prefix', params.target_path],
-        params.build_path, redirect_output=params.redirect_output
-    )
+    cmd = cmake_args + ['-G', 'Ninja', params.src_path]
+    run_cmd(cmd=cmd, cwd=params.build_path, redirect=params.redirect_output)
+    run_cmd(cmd=['cmake', '--build', '.'], cwd=params.build_path, redirect=params.redirect_output)
+    cmd = ['cmake', '--install', '.', '--prefix', params.target_path]
+    run_cmd(cmd=cmd, cwd=params.build_path, redirect=params.redirect_output)
 
 
 def build_sdktool(qt_src_url: str, qt_build_base: str, sdktool_src_path: str, sdktool_build_path: str, sdktool_target_path: str,
@@ -147,9 +139,7 @@ def build_sdktool(qt_src_url: str, qt_build_base: str, sdktool_src_path: str, sd
 
 def zip_sdktool(sdktool_target_path: str, out_7zip: str, redirect_output: Optional[TextIOWrapper] = None) -> None:
     glob = "*.exe" if is_windows() else "*"
-    do_execute_sub_process(
-        ['7z', 'a', out_7zip, glob], sdktool_target_path, redirect_output=redirect_output
-    )
+    run_cmd(cmd=["7z", "a", out_7zip, glob], cwd=sdktool_target_path, redirect=redirect_output)
 
 
 def get_arguments() -> argparse.Namespace:

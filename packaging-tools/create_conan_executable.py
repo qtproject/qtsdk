@@ -40,7 +40,7 @@ from typing import Dict, List
 from installer_utils import ch_dir, is_valid_url_path
 from logging_util import init_logger
 from python_env import create_venv
-from runner import async_exec_cmd
+from runner import run_cmd_async
 
 if sys.version_info < (3, 7):
     import asyncio_backport as asyncio
@@ -62,13 +62,13 @@ async def clone_repo(url: str, destination_dir: str, env: Dict[str, str]) -> Non
     os.makedirs(os.path.dirname(destination_dir), exist_ok=True)
     log.info("Cloning repo: %s -> %s", url, destination_dir)
     cmd = ["git", "clone", url, destination_dir]
-    await async_exec_cmd(cmd=cmd, timeout=60 * 15, env=env)  # give it 15 mins
+    await run_cmd_async(cmd=cmd, env=env, timeout=60 * 15)  # give it 15 mins
 
 
 async def pip_install_from_checkout(pipenv: str, checkout_dir: str, env: Dict[str, str]) -> None:
     log.info("Installing pip package from git checkout: %s", checkout_dir)
     cmd = [pipenv, "run", "pip", "install", "-e", checkout_dir]
-    await async_exec_cmd(cmd=cmd, timeout=60 * 60, env=env)  # give it 60 mins
+    await run_cmd_async(cmd=cmd, env=env, timeout=60 * 60)  # give it 60 mins
 
 
 async def pip_install_url(pipenv: str, pip_packages: List[str], env: Dict[str, str]) -> None:
@@ -89,7 +89,7 @@ async def pip_install_url(pipenv: str, pip_packages: List[str], env: Dict[str, s
 async def pip_install_pkg(pipenv: str, pip_packages: List[str], env: Dict[str, str]) -> None:
     for pkg in pip_packages:
         cmd = [pipenv, "install", pkg]
-        await async_exec_cmd(cmd=cmd, timeout=60 * 15, env=env)  # give it 15 mins
+        await run_cmd_async(cmd=cmd, env=env, timeout=60 * 15)  # give it 15 mins
 
 
 async def generate_executable(
@@ -113,7 +113,7 @@ async def generate_executable(
         " ".join([f"--hidden-import={s}" for s in hidden_imports]),
     ]
     # give it 15 mins
-    await async_exec_cmd(cmd=cmd, timeout=60 * 15, env=env)
+    await run_cmd_async(cmd=cmd, env=env, timeout=60 * 15)
 
     dest_path = os.path.join(os.getcwd(), "dist")
     generated_files = [os.path.join(dest_path, x) for x in os.listdir(dest_path)]

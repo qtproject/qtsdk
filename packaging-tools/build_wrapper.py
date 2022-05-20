@@ -40,6 +40,7 @@ import shutil
 import sys
 from collections import namedtuple
 from configparser import ConfigParser
+from contextlib import suppress
 from getpass import getuser
 from glob import glob
 from io import TextIOWrapper
@@ -70,7 +71,7 @@ from bldinstallercommon import (
 from logging_util import init_logger
 from optionparser import get_pkg_options
 from read_remote_config import get_pkg_value
-from runner import do_execute_sub_process
+from runner import run_cmd
 from threadedwork import Task, ThreadedWork
 
 log = init_logger(__name__, debug_mode=False)
@@ -96,16 +97,15 @@ def unlock_keychain_script() -> str:
 # Unlock keychain
 ###############################
 def unlock_keychain() -> None:
-    cmd_args = [unlock_keychain_script()]
-    do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
+    run_cmd(cmd=unlock_keychain_script(), cwd=SCRIPT_ROOT_DIR)
 
 
 ###############################
 # Lock keychain
 ###############################
 def lock_keychain() -> None:
-    cmd_args = ['/Users/qt/lock-keychain.sh']
-    do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, abort_on_fail=False)
+    with suppress(Exception):
+        run_cmd(cmd="/Users/qt/lock-keychain.sh", cwd=SCRIPT_ROOT_DIR)
 
 
 ###########################################
@@ -127,9 +127,9 @@ def init_snapshot_dir_and_upload_files(
     # ensure remote directory exists
     create_remote_dirs(option_dict, option_dict['PACKAGE_STORAGE_SERVER_ADDR'], remote_path_snapshot_dir + subdir)
     # upload files
+    target = option_dict['PACKAGE_STORAGE_SERVER_ADDR'] + ':' + remote_path_snapshot_dir + subdir
     for item in file_upload_list:
-        cmd_args = [option_dict['SCP_COMMAND'], item, option_dict['PACKAGE_STORAGE_SERVER_ADDR'] + ':' + remote_path_snapshot_dir + subdir]
-        do_execute_sub_process(cmd_args, option_dict['WORK_DIR'])
+        run_cmd(cmd=[option_dict['SCP_COMMAND'], item, target], cwd=option_dict["WORK_DIR"])
     # update 'latest' symlink
     update_latest_link(option_dict, remote_path_snapshot_dir, remote_path_latest_link)
 
@@ -144,20 +144,20 @@ def handle_qt_licheck_build(option_dict: Dict[str, str]) -> None:
         upload_path = option_dict['PACKAGE_STORAGE_SERVER_ADDR'] + ':' + option_dict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + option_dict['LICENSE'] + '/licheck/'
         if option_dict['TARGET_ENV'].lower().startswith("win"):
             cmd_args = [r'c:\Utils\jom\jom.exe', '-f', 'Makefile_win']
-            do_execute_sub_process(cmd_args, exe_dir, True)
+            run_cmd(cmd=cmd_args, cwd=exe_dir)
             cmd_args = [option_dict['SCP_COMMAND'], 'licheck.exe', upload_path]
-            do_execute_sub_process(cmd_args, exe_dir, True)
+            run_cmd(cmd=cmd_args, cwd=exe_dir)
         elif option_dict['TARGET_ENV'].lower().startswith("linux"):
             cmd_args = ['make', '-j6', '-f', 'Makefile_unix']
-            do_execute_sub_process(cmd_args, exe_dir, True)
+            run_cmd(cmd=cmd_args, cwd=exe_dir)
             licheck = 'licheck64' if option_dict['TARGET_ENV'].find("x64") >= 1 else 'licheck32'
             cmd_args = ['rsync', '-r', licheck, upload_path + licheck]
-            do_execute_sub_process(cmd_args, exe_dir, True)
+            run_cmd(cmd=cmd_args, cwd=exe_dir)
         else:
             cmd_args = ['make', '-j6', '-f', 'Makefile_macos']
-            do_execute_sub_process(cmd_args, exe_dir, True)
+            run_cmd(cmd=cmd_args, cwd=exe_dir)
             cmd_args = ['rsync', '-r', 'licheck_mac', upload_path + 'licheck_mac']
-            do_execute_sub_process(cmd_args, exe_dir, True)
+            run_cmd(cmd=cmd_args, cwd=exe_dir)
     else:
         # opensource, do nothing
         log.info("Opensource build, nothing to build...")
@@ -353,12 +353,10 @@ def check_call_log(
 ) -> None:
     extra_env = extra_env or os.environ.copy()
     if not log_filepath:
-        do_execute_sub_process(args, execution_path, extra_env=extra_env)
+        run_cmd(cmd=args, cwd=execution_path, env=extra_env)
     else:
         with BuildLog(log_filepath, log_overwrite) as handle:
-            do_execute_sub_process(
-                args, execution_path, extra_env=extra_env, redirect_output=handle
-            )
+            run_cmd(cmd=args, cwd=execution_path, env=extra_env, redirect=handle)
 
 
 def create_qtcreator_source_package(option_dict: Dict[str, str], source_path: str, plugin_name: Optional[str], version: str, edition: str, target_path: str, log_filepath: str) -> None:
@@ -527,8 +525,9 @@ def upload_files(remote_path: str, file_upload_list: List[Tuple[str, str]], opti
     update_latest_link(option_dict, dir_path, latest_path)
     # upload files
     for source, destination in file_upload_list:
-        cmd_args = [option_dict['SCP_COMMAND'], source, pkg_storage_server + ':' + dir_path + '/' + destination]
-        do_execute_sub_process(cmd_args, option_dict['WORK_DIR'])
+        target = pkg_storage_server + ':' + dir_path + '/' + destination
+        cmd_args = [option_dict['SCP_COMMAND'], source, target]
+        run_cmd(cmd=cmd_args, cwd=option_dict["WORK_DIR"])
 
 
 def update_job_link(
@@ -1005,24 +1004,19 @@ def handle_qt_creator_build(option_dict: Dict[str, str], qtcreator_plugins: List
         snapshot_base = snapshot_path + '/' + qtcreator_shortversion + '/' + qtcreator_version + '/installer_source/'
         snapshot_target = snapshot_base + build_id + '/'
         # create destination paths
+        ssh_cmd = [option_dict['SSH_COMMAND'], pkg_storage_server, "ssh", snapshot_server]
         directories = [os.path.dirname(dest) for (_, dest) in snapshot_upload_list]
         for destdir in set(directories):
-            do_execute_sub_process(
-                [option_dict['SSH_COMMAND'], pkg_storage_server,
-                 "ssh", snapshot_server,
-                 'mkdir', '-p', snapshot_target + destdir],
-                work_dir, True)
-        do_execute_sub_process(
-            [option_dict['SSH_COMMAND'], pkg_storage_server,
-             "ssh", snapshot_server,
-             'ln', '-sfn', snapshot_target, snapshot_base + 'latest'],
-            work_dir, True)
+            cmd = ssh_cmd + ['mkdir', '-p', snapshot_target + destdir]
+            run_cmd(cmd=cmd, cwd=work_dir)
+        cmd = ssh_cmd + ['ln', '-sfn', snapshot_target, snapshot_base + 'latest']
+        run_cmd(cmd=cmd, cwd=work_dir)
 
+        base_scp_cmd = [option_dict['SSH_COMMAND'], pkg_storage_server, "scp"]
         for source, destination in snapshot_upload_list:
-            cmd_args = [option_dict['SSH_COMMAND'], pkg_storage_server, "scp",
-                        remote_path + '/' + source,
-                        snapshot_server + ':' + snapshot_target + '/' + destination]
-            do_execute_sub_process(cmd_args, work_dir)
+            source = remote_path + '/' + source
+            target = snapshot_server + ':' + snapshot_target + '/' + destination
+            run_cmd(cmd=base_scp_cmd + [source, target], cwd=work_dir)
     # create link from job name to display name
     update_job_link(unversioned_base_path, base_path, option_dict)
 
@@ -1080,19 +1074,20 @@ def handle_sdktool_build(option_dict: Dict[str, str]) -> None:
 
 
 def notarize_dmg(dmg_path: str, installer_name_base: str) -> None:
-    # bundle-id is just a unique identifier without any special meaning, used to track the notarization progress
+    # this is just a unique id without any special meaning, used to track the notarization progress
     bundle_id = installer_name_base + "-" + strftime('%Y-%m-%d', gmtime())
-    bundle_id = bundle_id.replace('_', '-').replace(' ', '')  # replace illegal characters for bundle_id
+    bundle_id = bundle_id.replace('_', '-').replace(' ', '')  # replace illegal chars for bundle_id
     args = [sys.executable, 'notarize.py', '--dmg=' + dmg_path, '--bundle-id=' + bundle_id]
-    do_execute_sub_process(args, SCRIPT_ROOT_DIR)
+    run_cmd(cmd=args, cwd=SCRIPT_ROOT_DIR)
 
 
 ###############################
 # Update latest link
 ###############################
 def update_latest_link(option_dict: Dict[str, str], remote_dest_dir: str, latest_dir: str) -> None:
-    cmd_args = [option_dict['SSH_COMMAND'], option_dict['PACKAGE_STORAGE_SERVER_ADDR'], 'ln -sfn', remote_dest_dir, latest_dir]
-    do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
+    package_server = option_dict['PACKAGE_STORAGE_SERVER_ADDR']
+    cmd_args = [option_dict['SSH_COMMAND'], package_server, 'ln -sfn', remote_dest_dir, latest_dir]
+    run_cmd(cmd=cmd_args, cwd=SCRIPT_ROOT_DIR)
 
 
 ###############################
@@ -1100,7 +1095,7 @@ def update_latest_link(option_dict: Dict[str, str], remote_dest_dir: str, latest
 ###############################
 def create_remote_dirs(option_dict: Dict[str, str], server: str, dir_path: str) -> None:
     cmd_args = [option_dict['SSH_COMMAND'], '-t', '-t', server, 'mkdir -p', dir_path]
-    do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
+    run_cmd(cmd=cmd_args, cwd=SCRIPT_ROOT_DIR)
 
 
 ###############################
@@ -1118,7 +1113,7 @@ def do_git_archive_repo(option_dict: Dict[str, str], repo_and_ref: str) -> None:
     update_latest_link(option_dict, remote_dest_dir, remote_dest_dir_latest)
     # upload archive to network disk
     cmd_args = ['scp', archive_name, remote_dest_dir]
-    do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
+    run_cmd(cmd=cmd_args, cwd=SCRIPT_ROOT_DIR)
 
 
 def init_pkg_options(args: argparse.Namespace) -> Dict[str, str]:

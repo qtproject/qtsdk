@@ -46,7 +46,6 @@ from bldinstallercommon import (
     extract_file,
     get_tag_from_branch,
     is_content_url_valid,
-    list_as_string,
     locate_executable,
     locate_path,
     move_tree,
@@ -57,7 +56,7 @@ from installer_utils import PackagingError, ch_dir
 from logging_util import init_logger
 from pkg_constants import IFW_BUILD_ARTIFACTS_DIR
 from read_remote_config import get_pkg_value
-from runner import do_execute_sub_process
+from runner import run_cmd
 
 log = init_logger(__name__, debug_mode=False)
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -394,20 +393,21 @@ def build_qt(options: IfwOptions, qt_build_dir: str, qt_configure_options: str, 
     configure_options = re.sub(' +', ' ', qt_configure_options)
     cmd_args = options.qt_configure_bin + ' ' + configure_options
     # shlex does not like backslashes
-    cmd_args = cmd_args.replace('\\', '/')
-    do_execute_sub_process(shlex.split(cmd_args), options.qt_source_dir, True, False, get_build_env(options.openssl_dir))
+    cmd_args = cmd_args.replace("\\", "/")
+    extra_env = get_build_env(options.openssl_dir)
+    run_cmd(cmd=shlex.split(cmd_args), cwd=options.qt_source_dir, env=extra_env)
     log.info("--------------------------------------------------------------------")
     log.info("Building Qt")
     cmd_args = options.make_cmd
     for module in qt_modules:
         cmd_args += " module-" + module
-    do_execute_sub_process(cmd_args.split(' '), options.qt_source_dir, True, False, get_build_env(options.openssl_dir))
+    run_cmd(cmd=cmd_args, cwd=options.qt_source_dir, env=extra_env)
     log.info("--------------------------------------------------------------------")
     log.info("Installing Qt")
     cmd_args = options.make_install_cmd
     for module in qt_modules:
         module_dir = os.path.join(options.qt_source_dir, module)
-        do_execute_sub_process(cmd_args.split(' '), module_dir)
+        run_cmd(cmd=cmd_args, cwd=module_dir)
 
 
 ###############################
@@ -430,11 +430,9 @@ def prepare_installer_framework(options: IfwOptions) -> None:
 
 
 def start_ifw_build(options: IfwOptions, cmd_args: List[str], installer_framework_build_dir: str) -> None:
-    log.info("cmd_args: %s", list_as_string(cmd_args))
-    do_execute_sub_process(cmd_args, installer_framework_build_dir)
-    cmd_args = options.make_cmd.split(' ')
-    log.info("cmd_args: %s", list_as_string(cmd_args))
-    do_execute_sub_process(cmd_args, installer_framework_build_dir)
+    run_cmd(cmd=cmd_args, cwd=installer_framework_build_dir)
+    cmd_args = options.make_cmd.split(" ")
+    run_cmd(cmd=cmd_args, cwd=installer_framework_build_dir)
 
 
 ###############################
@@ -482,7 +480,8 @@ def build_installer_framework_examples(options: IfwOptions) -> None:
             config_file = os.path.join(root, directory, 'config', 'config.xml')
             package_dir = os.path.join(root, directory, 'packages')
             target_filename = os.path.join(root, directory, 'installer')
-            do_execute_sub_process(args=[file_binarycreator, '--offline-only', '-c', config_file, '-p', package_dir, target_filename], execution_path=package_dir)
+            args = ["--offline-only", "-c", config_file, "-p", package_dir, target_filename]
+            run_cmd(cmd=[file_binarycreator] + args, cwd=package_dir)
             if is_windows():
                 target_filename += '.exe'
             ifw_example_binaries.append(target_filename)
@@ -500,14 +499,11 @@ def build_ifw_docs(options: IfwOptions) -> None:
     if not os.path.isfile(qmake_bin):
         raise SystemExit(f"Aborting doc build, qmake not found in: {options.qt_build_dir_dynamic}")
     cmd_args = qmake_bin + ' -r ' + options.installer_framework_source_dir
-    do_execute_sub_process(cmd_args.split(' '), options.installer_framework_build_dir)
+    run_cmd(cmd=cmd_args, cwd=options.installer_framework_build_dir)
     cmd_args = options.make_doc_cmd + ' docs'
     env = dict(os.environ)
     env['LD_LIBRARY_PATH'] = os.path.normpath(os.path.join(os.path.dirname(qmake_bin), '..', 'lib'))
-    do_execute_sub_process(
-        args=cmd_args.split(' '), execution_path=options.installer_framework_build_dir,
-        abort_on_fail=True, get_output=False, extra_env=env
-    )
+    run_cmd(cmd=cmd_args, cwd=options.installer_framework_build_dir, env=env)
 
 
 ################################################################
@@ -525,28 +521,30 @@ def create_installer_package(options: IfwOptions) -> None:
     with ch_dir(package_dir):
         shutil.copytree(os.path.join(options.installer_framework_build_dir, 'bin'), os.path.join(package_dir, 'bin'), ignore=shutil.ignore_patterns("*.exe.manifest", "*.exp", "*.lib"))
         if is_linux():
-            do_execute_sub_process(args=['strip', os.path.join(package_dir, 'bin/archivegen')], execution_path=package_dir)
-            do_execute_sub_process(args=['strip', os.path.join(package_dir, 'bin/binarycreator')], execution_path=package_dir)
-            do_execute_sub_process(args=['strip', os.path.join(package_dir, 'bin/devtool')], execution_path=package_dir)
-            do_execute_sub_process(args=['strip', os.path.join(package_dir, 'bin/installerbase')], execution_path=package_dir)
-            do_execute_sub_process(args=['strip', os.path.join(package_dir, 'bin/repogen')], execution_path=package_dir)
+            run_cmd(cmd=['strip', os.path.join(package_dir, 'bin/archivegen')], cwd=package_dir)
+            run_cmd(cmd=['strip', os.path.join(package_dir, 'bin/binarycreator')], cwd=package_dir)
+            run_cmd(cmd=['strip', os.path.join(package_dir, 'bin/devtool')], cwd=package_dir)
+            run_cmd(cmd=['strip', os.path.join(package_dir, 'bin/installerbase')], cwd=package_dir)
+            run_cmd(cmd=['strip', os.path.join(package_dir, 'bin/repogen')], cwd=package_dir)
         shutil.copytree(os.path.join(options.installer_framework_build_dir, 'doc'), os.path.join(package_dir, 'doc'))
         shutil.copytree(os.path.join(options.installer_framework_source_dir, 'examples'), os.path.join(package_dir, 'examples'))
         shutil.copy(os.path.join(options.installer_framework_source_dir, 'README'), package_dir)
         # pack payload into separate .7z archive for later usage
         cmd_args = [ARCHIVE_PROGRAM, 'a', options.installer_framework_payload_arch, package_dir]
-        do_execute_sub_process(cmd_args, ROOT_DIR)
+        run_cmd(cmd=cmd_args, cwd=ROOT_DIR)
         shutil.move(os.path.join(ROOT_DIR, options.installer_framework_payload_arch), options.build_artifacts_dir)
         # create 7z
         archive_file = os.path.join(options.installer_framework_source_dir, 'dist', 'packages', 'org.qtproject.ifw.binaries', 'data', 'data.7z')
         if not os.path.exists(os.path.dirname(archive_file)):
             os.makedirs(os.path.dirname(archive_file))
-        do_execute_sub_process(args=[os.path.join(package_dir, 'bin', 'archivegen'), archive_file, '*'], execution_path=package_dir)
+        archivegen = os.path.join(package_dir, 'bin', 'archivegen')
+        run_cmd(cmd=[archivegen, archive_file, '*'], cwd=package_dir)
         # run installer
         binary_creator = os.path.join(options.installer_framework_build_dir, 'bin', 'binarycreator')
         config_file = os.path.join(options.installer_framework_source_dir, 'dist', 'config', 'config.xml')
         package_dir = os.path.join(options.installer_framework_source_dir, 'dist', 'packages')
-        do_execute_sub_process(args=[binary_creator, '--offline-only', '-c', config_file, '-p', package_dir, target_dir], execution_path=package_dir)
+        args = ['--offline-only', '-c', config_file, '-p', package_dir, target_dir]
+        run_cmd(cmd=[binary_creator] + args, cwd=package_dir)
         log.info("Installer package is at: %s", target_dir)
         artifacts = os.listdir(options.installer_framework_target_dir)
         for artifact in artifacts:
@@ -568,7 +566,7 @@ def build_and_archive_qt(options: IfwOptions) -> None:
     log.info("--------------------------------------------------------------------")
     log.info("Archive static Qt binaries")
     cmd_args_archive = [ARCHIVE_PROGRAM, 'a', options.qt_static_binary_name, options.qt_build_dir]
-    do_execute_sub_process(cmd_args_archive, ROOT_DIR)
+    run_cmd(cmd=cmd_args_archive, cwd=ROOT_DIR)
 
     log.info("--------------------------------------------------------------------")
     log.info("Build shared Qt")
@@ -581,8 +579,8 @@ def build_and_archive_qt(options: IfwOptions) -> None:
 
     log.info("--------------------------------------------------------------------")
     log.info("Archive shared Qt binaries")
-    cmd_args_archive = [ARCHIVE_PROGRAM, 'a', options.qt_shared_binary_name, options.qt_build_dir_dynamic]
-    do_execute_sub_process(cmd_args_archive, ROOT_DIR)
+    cmd_args = [ARCHIVE_PROGRAM, 'a', options.qt_shared_binary_name, options.qt_build_dir_dynamic]
+    run_cmd(cmd=cmd_args, cwd=ROOT_DIR)
 
 
 ###############################
@@ -631,7 +629,7 @@ def archive_installer_framework(installer_framework_build_dir: str, installer_fr
             if filename.endswith(('.moc', 'Makefile', '.cpp', '.h', '.o')) or filename == 'Makefile':
                 os.remove(os.path.join(root, filename))
     cmd_args = [ARCHIVE_PROGRAM, 'a', installer_framework_archive_name, os.path.basename(installer_framework_build_dir)]
-    do_execute_sub_process(cmd_args, ROOT_DIR)
+    run_cmd(cmd=cmd_args, cwd=ROOT_DIR)
     shutil.move(installer_framework_archive_name, options.build_artifacts_dir)
     # Check if installer framework is created from branch. If so, check if the branch is tagged and
     # create a package with a tagged name.
@@ -668,8 +666,8 @@ def archive_installerbase(options: IfwOptions) -> None:
             sign_windows_installerbase('tempSDKMaintenanceToolBase.exe')
         cmd_args_archive = [ARCHIVE_PROGRAM, 'a', options.installer_base_archive_name, bin_temp]
         cmd_args_clean = ['del', bin_temp]
-    do_execute_sub_process(cmd_args_archive, ROOT_DIR)
-    do_execute_sub_process(cmd_args_clean, ROOT_DIR)
+    run_cmd(cmd=cmd_args_archive, cwd=ROOT_DIR)
+    run_cmd(cmd=cmd_args_clean, cwd=ROOT_DIR)
     if not os.path.isfile(options.installer_base_archive_name):
         raise SystemExit(f"Failed to generate archive: {options.installer_base_archive_name}")
     shutil.move(options.installer_base_archive_name, options.build_artifacts_dir)
@@ -691,7 +689,7 @@ def archive_binarycreator(options: IfwOptions) -> None:
     else:
         raise Exception("Not a supported platform")
     cmd_args_archive = ['7z', 'a', options.binarycreator_archive_name, bin_path, binarycreator_path]
-    do_execute_sub_process(cmd_args_archive, ROOT_DIR)
+    run_cmd(cmd=cmd_args_archive, cwd=ROOT_DIR)
     if not os.path.isfile(options.binarycreator_archive_name):
         raise Exception(f"*** Failed to generate archive: {options.binarycreator_archive_name}")
     shutil.move(options.binarycreator_archive_name, options.build_artifacts_dir)
@@ -706,9 +704,9 @@ def sign_windows_installerbase(file_name: str) -> None:
     sign_tools_temp_dir = r'C:\Utils\sign_tools_temp'
     for item in ["signtool32.exe", "keys.pfx", "capicom.dll"]:
         dst = os.path.join(sign_tools_temp_dir, item)
-        curl_cmd_args = ['curl', "--fail", "-L", "--retry", "5", "--retry-delay", "30", "-o", dst,
-                         '--create-dirs', get_pkg_value("SIGN_TOOLS_ADDR") + item]
-        subprocess.check_call(curl_cmd_args)
+        curl_cmd_args = ['curl', "--fail", "-L", "--retry", "5", "--retry-delay", "30", "-o", dst]
+        curl_cmd_args += ['--create-dirs', get_pkg_value("SIGN_TOOLS_ADDR") + item]
+        run_cmd(cmd=curl_cmd_args)
 
     signing_server = get_pkg_value("SIGNING_SERVER")
     signing_pass = get_pkg_value("SIGNING_PASSWORD")
@@ -720,7 +718,7 @@ def sign_windows_installerbase(file_name: str) -> None:
     log_entry[4] = "****"
     log_entry[6] = "****"
     log.info("Calling: %s", " ".join(log_entry))
-    subprocess.check_call(cmd_args, stderr=subprocess.STDOUT)  # check_call() will consume output
+    run_cmd(cmd=cmd_args)
     shutil.rmtree(sign_tools_temp_dir)
     log.info("Successfully signed: %s", file_name)
 

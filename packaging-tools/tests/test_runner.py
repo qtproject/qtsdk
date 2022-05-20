@@ -31,16 +31,16 @@
 
 import asyncio
 import os
-import sys
 import unittest
 from pathlib import Path
+from subprocess import TimeoutExpired
 from tempfile import TemporaryDirectory
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, Tuple
 
 from ddt import data, ddt  # type: ignore
 
 from bld_utils import is_windows
-from runner import async_exec_cmd, do_execute_sub_process, exec_cmd
+from runner import run_cmd, run_cmd_async
 from tests.testhelpers import asyncio_test
 
 
@@ -50,31 +50,17 @@ class TestRunner(unittest.TestCase):
     @unittest.skipIf(is_windows(), "Windows not supported for this test yet")
     @asyncio_test
     async def test_async_exec_cmd(self) -> None:
-        await async_exec_cmd(['echo', "TEST"])
+        await run_cmd_async(cmd=["echo", "TEST"])
+        await run_cmd_async(cmd="echo TEST")
 
         cmd = ['sleep', '2']
         with self.assertRaises(asyncio.TimeoutError):
-            await async_exec_cmd(cmd, timeout=1)
+            await run_cmd_async(cmd=cmd, timeout=1)
 
-    @unittest.skipIf(is_windows(), "Windows not supported for this test yet")
-    @asyncio_test
-    async def test_exec_cmd(self) -> None:
-        output = exec_cmd(['echo', "TEST"])
-        self.assertEqual(output, "TEST")
-
-        cmd = ['sleep', '2']
-        with self.assertRaises(asyncio.TimeoutError):
-            await async_exec_cmd(cmd, timeout=1)
-
-    @data(  # type: ignore
-        (["echo", "TEST"], "TEST", True),
-        (["echo", "TEST"], '', False),
-    )
-    def test_do_execute_sub_process_get_output(self, test_data: Tuple[List[str], str, bool]) -> None:
-        # Test get_output
-        args, expected_output, get_output = test_data
-        _, output = do_execute_sub_process(args, os.getcwd(), get_output=get_output)
-        self.assertEqual(output.strip(), expected_output)
+    def test_exec_cmd_timeout(self) -> None:
+        cmd = ["sleep", "2"]
+        with self.assertRaises(TimeoutExpired):
+            run_cmd(cmd, timeout=1)
 
     @data(  # type: ignore
         (["echo TEST"], Exception if is_windows() else FileNotFoundError),
@@ -82,49 +68,41 @@ class TestRunner(unittest.TestCase):
         (None, TypeError),
         (1234, TypeError)
     )
-    def test_do_execute_sub_process_invalid_args(self, test_data: Tuple[Any, Any]) -> None:
+    def test_exec_cmd_invalid_args(self, test_data: Tuple[Any, Any]) -> None:
         # Test with invalid args
         test_args, expected_exception = test_data
         with self.assertRaises(expected_exception):
-            do_execute_sub_process(test_args, os.getcwd())
+            run_cmd(cmd=test_args, cwd=os.getcwd())
 
-    def test_do_execute_sub_process_execution_path(self) -> None:
-        args = ["cd"] if is_windows() else ["pwd"]
+    def test_exec_cmd_execution_path(self) -> None:
+        check_work_dir_args = ["cd"] if is_windows() else ["pwd"]
         # Test execution_path
         with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
-            _, output = do_execute_sub_process(args, tmp_base_dir, get_output=True)
-            self.assertEqual(output.strip(), tmp_base_dir)
+            output = run_cmd(cmd=check_work_dir_args, cwd=tmp_base_dir)
+            self.assertEqual(output, tmp_base_dir + "\n")
 
-    def test_do_execute_sub_process_abort_on_fail(self) -> None:
-        # Throw exception in subprocess with error code 1
-        args = [sys.executable, "-c", "exit(1)"]
-        # abort_on_fail=True should throw an exception (default)
-        with self.assertRaises(Exception):
-            do_execute_sub_process(args, os.getcwd())
-        # abort_on_fail=False should not throw an exception and continue
-        return_code, _ = do_execute_sub_process(args, os.getcwd(), abort_on_fail=False)
-        self.assertEqual(return_code, 1)
-
-    def test_do_execute_sub_process_redirect_output(self) -> None:
-        # Test redirect_output
+    def test_exec_cmd_log_to_file(self) -> None:
+        # Test log_to_file
         with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
             log_file = Path(tmp_base_dir) / "log"
             log_file.touch()
-            with open(log_file, 'w', encoding="utf-8") as handle:
-                do_execute_sub_process(["echo", "TEST"], tmp_base_dir, redirect_output=handle)
-            with open(log_file, 'r', encoding="utf-8") as handle:
+            run_cmd(cmd=["echo", "TEST"], cwd=tmp_base_dir, redirect=str(log_file))
+            with open(str(log_file), "r", encoding="utf-8") as handle:
                 self.assertEqual(handle.read().strip(), "TEST")
 
     @data(  # type: ignore
-        ({"EXTRA": "ENV"}, "ENV"),
-        ({}, "%EXTRA%" if is_windows() else ""),
+        ({"EXTRA": "ENV"}, "ENV\n"),
+        ({}, "%EXTRA%\n" if is_windows() else ""),
     )
-    def test_do_execute_sub_process_extra_env(self, test_data: Tuple[Dict[str, str], str]) -> None:
+    def test_exec_cmd_env(self, test_data: Tuple[Dict[str, str], str]) -> None:
         args = ["echo", "%EXTRA%"] if is_windows() else ["printenv", "EXTRA"]
         # Test extra_env
         extra_env, expected_value = test_data
-        _, output = do_execute_sub_process(args, os.getcwd(), False, True, extra_env)
-        self.assertEqual(output.strip(), expected_value)
+        try:
+            output = run_cmd(cmd=args, cwd=os.getcwd(), env=extra_env)
+        except Exception:
+            output = ""
+        self.assertEqual(output, expected_value)
 
 
 if __name__ == '__main__':

@@ -30,14 +30,16 @@
 #############################################################################
 
 import os
+from contextlib import suppress
 from shutil import rmtree
+from subprocess import CalledProcessError
 from typing import Dict, List, Optional
 
 import environmentfrombatchfile
 from bld_utils import is_linux, is_macos, is_windows, run_command
 from bldinstallercommon import create_download_extract_task, create_qt_download_task
 from read_remote_config import get_pkg_value
-from runner import do_execute_sub_process
+from runner import run_cmd
 from threadedwork import ThreadedWork
 
 
@@ -349,10 +351,8 @@ def build_and_install(
     build_targets: List[str],
     install_targets: List[str],
 ) -> None:
-    build_cmd = build_command()
-    do_execute_sub_process(build_cmd + build_targets, build_path, extra_env=environment)
-    install_cmd = install_command()
-    do_execute_sub_process(install_cmd + install_targets, build_path, extra_env=environment)
+    run_cmd(cmd=build_command() + build_targets, cwd=build_path, env=environment)
+    run_cmd(cmd=install_command() + install_targets, cwd=build_path, env=environment)
 
 
 def get_cmake_command(
@@ -404,9 +404,11 @@ def build_clang(
     if build_path and not os.path.lexists(build_path):
         os.makedirs(build_path)
 
-    cmake_cmd = get_cmake_command(toolchain, src_path, install_path, profile_data_path, first_run, bitness, build_type)
+    cmake_cmd = get_cmake_command(
+        toolchain, src_path, install_path, profile_data_path, first_run, bitness, build_type
+    )
 
-    do_execute_sub_process(cmake_cmd, build_path, extra_env=environment)
+    run_cmd(cmd=cmake_cmd, cwd=build_path, env=environment)
 
     build_targets = ['libclang', 'clang', 'llvm-config']
     install_targets = ['install/strip']
@@ -447,7 +449,7 @@ def build_clazy(
 
     cmake_cmd.extend(bitness_flags(bitness))
     cmake_cmd.append(src_path)
-    do_execute_sub_process(cmake_cmd, build_path, extra_env=environment)
+    run_cmd(cmd=cmake_cmd, cwd=build_path, env=environment)
 
     install_targets = ['install/strip']
     if is_msvc_toolchain(toolchain):
@@ -463,8 +465,8 @@ def check_clang(toolchain: str, build_path: str, env: Optional[Dict[str, str]]) 
             path_key = 'Path' if 'Path' in env else 'PATH'
             env[path_key] += ';' + tools_path
 
-    build_cmd = build_command()
-    do_execute_sub_process(build_cmd + ['check-clang'], build_path, abort_on_fail=False, extra_env=env)
+    with suppress(CalledProcessError):
+        run_cmd(cmd=build_command() + ["check-clang"], cwd=build_path, env=env)
 
 
 def package_clang(install_path: str, result_file_path: str) -> None:

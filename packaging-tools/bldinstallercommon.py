@@ -37,9 +37,10 @@ import stat
 import sys
 from argparse import Namespace
 from configparser import ConfigParser
+from contextlib import suppress
 from fnmatch import fnmatch
 from pathlib import Path
-from subprocess import PIPE, STDOUT, Popen, check_call
+from subprocess import CalledProcessError
 from tempfile import mkdtemp
 from traceback import print_exc
 from types import TracebackType
@@ -50,7 +51,7 @@ from urllib.request import urlcleanup, urlopen, urlretrieve
 from bld_utils import download, is_linux, is_macos, is_windows, run_command
 from installer_utils import PackagingError
 from logging_util import init_logger
-from runner import do_execute_sub_process
+from runner import run_cmd
 from threadedwork import Task, ThreadedWork
 
 # need to include this for win platforms as long path names cause problems
@@ -310,9 +311,10 @@ def requires_rpath(file_path: str) -> bool:
     if is_linux():
         if not os.access(file_path, os.X_OK):
             return False
-        with Popen(["chrpath", "-l", file_path], stdout=PIPE) as proc:
-            if proc.stdout is not None:
-                return re.search(r":*.R.*PATH=", proc.stdout.read().decode()) is not None
+        with suppress(CalledProcessError):
+            output = run_cmd(cmd=["chrpath", "-l", file_path])
+            if output:
+                return re.search(r":*.R.*PATH=", output) is not None
     return False
 
 
@@ -323,22 +325,22 @@ def sanity_check_rpath_max_length(file_path: str, new_rpath: str) -> bool:
     if is_linux():
         if not os.access(file_path, os.X_OK):
             return False
-        with Popen(["chrpath", "-l", file_path], stdout=PIPE) as proc:
-            result = None
-            if proc.stdout is not None:
-                result = re.search(r":*.R.*PATH=.*", proc.stdout.read().decode())
-            if result is None:
-                log.info("No RPath found from given file: %s", file_path)
-            else:
-                rpath = result.group()
-                index = rpath.index('=')
-                rpath = rpath[index + 1:]
-                space_for_new_rpath = len(rpath)
-                if len(new_rpath) > space_for_new_rpath:
-                    log.warning("Warning - Not able to process RPath for file: %s", file_path)
-                    log.warning("New RPath [%s] length: %s", new_rpath, str(len(new_rpath)))
-                    log.warning("Space available inside the binary: %s", str(space_for_new_rpath))
-                    raise IOError()
+        result = None
+        with suppress(CalledProcessError):
+            output = run_cmd(cmd=["chrpath", "-l", file_path])
+            result = re.search(r":*.R.*PATH=.*", output)
+        if result is None:
+            log.info("No RPath found from given file: %s", file_path)
+        else:
+            rpath = result.group()
+            index = rpath.index('=')
+            rpath = rpath[index + 1:]
+            space_for_new_rpath = len(rpath)
+            if len(new_rpath) > space_for_new_rpath:
+                log.warning("Warning - Not able to process RPath for file: %s", file_path)
+                log.warning("New RPath [%s] length: %s", new_rpath, str(len(new_rpath)))
+                log.warning("Space available inside the binary: %s", str(space_for_new_rpath))
+                raise IOError()
     return True
 
 
@@ -423,14 +425,13 @@ def handle_component_rpath(component_root_path: str, destination_lib_paths: str)
                         rpaths.append(rpath)
 
                     # look for existing $ORIGIN path in the binary
-                    with Popen(["chrpath", "-l", file_full_path], stdout=PIPE) as proc:
-                        if proc.stdout is not None:
-                            origin_rpath = re.search(
-                                r'\$ORIGIN[^:\n]*',
-                                proc.stdout.read().decode()
-                            )
+                    origin_rpath = None
+                    with suppress(CalledProcessError):
+                        output = run_cmd(cmd=["chrpath", "-l", file_full_path])
+                        origin_rpath = re.search(r"\$ORIGIN[^:\n]*", output)
 
-                        if origin_rpath and origin_rpath.group() not in rpaths:
+                    if origin_rpath is not None:
+                        if origin_rpath.group() not in rpaths:
                             rpaths.append(origin_rpath.group())
 
                     rpath = ':'.join(rpaths)
@@ -439,7 +440,7 @@ def handle_component_rpath(component_root_path: str, destination_lib_paths: str)
                         cmd_args = ['chrpath', '-r', rpath, file_full_path]
                         # force silent operation
                         work_dir = os.path.dirname(os.path.realpath(__file__))
-                        do_execute_sub_process(cmd_args, work_dir)
+                        run_cmd(cmd=cmd_args, cwd=work_dir)
 
 
 ###############################
@@ -460,20 +461,20 @@ def clone_repository(
 
     work_dir = os.path.dirname(os.path.realpath(__file__))
     if full_clone:
-        cmd_args = ['git', 'clone', repo_url, destination_folder, '-b', repo_branch_or_tag]
-        do_execute_sub_process(cmd_args, work_dir)
+        cmd_args = ["git", "clone", repo_url, destination_folder, "-b", repo_branch_or_tag]
+        run_cmd(cmd=cmd_args, cwd=work_dir)
     else:
-        cmd_args = ['git', 'init', destination_folder]
-        do_execute_sub_process(cmd_args, work_dir)
+        cmd_args = ["git", "init", destination_folder]
+        run_cmd(cmd=cmd_args, cwd=work_dir)
 
-        cmd_args = ['git', 'fetch', repo_url, repo_branch_or_tag]
-        do_execute_sub_process(cmd_args, destination_folder)
+        cmd_args = ["git", "fetch", repo_url, repo_branch_or_tag]
+        run_cmd(cmd=cmd_args, cwd=destination_folder)
 
-        cmd_args = ['git', 'checkout', 'FETCH_HEAD']
-        do_execute_sub_process(cmd_args, destination_folder)
+        cmd_args = ["git", "checkout", "FETCH_HEAD"]
+        run_cmd(cmd=cmd_args, cwd=destination_folder)
     if init_subrepos:
-        cmd_args = ['git', 'submodule', 'update', '--init']
-        do_execute_sub_process(cmd_args, destination_folder)
+        cmd_args = ["git", "submodule", "update", "--init"]
+        run_cmd(cmd=cmd_args, cwd=destination_folder)
 
 
 def get_tag_from_branch(directory: str) -> str:
@@ -482,27 +483,22 @@ def get_tag_from_branch(directory: str) -> str:
     Return a tag if the current branch of the given directory is tagged but tag not checked out.
     Otherwise, return an empty string.
     """
-    tag = ""
-    # Check if we already have checked out a tag
-    cmd_args = ['git', 'symbolic-ref', 'HEAD']
-    return_code, tag = do_execute_sub_process(cmd_args, directory, False, True)
-    if return_code != -1:
+    try:
+        # Check if we already have checked out a tag
+        run_cmd(cmd=["git", "symbolic-ref", "HEAD"], cwd=directory)
+    except CalledProcessError:
         log.info("Already checked out a tag. THIS IS OKAY, PLEASE IGNORE THE ABOVE ERROR.")
-        tag = ""
-    else:
+        return ""
+    try:
         # Check what sha1 we have checked out
-        cmd_args = ['git', 'rev-parse', '--short', 'HEAD']
-        return_code, sha1 = do_execute_sub_process(cmd_args, directory, False, True)
-        if return_code == -1:
-            # Check if the sha1 matches to any tag
-            sha1 = sha1.strip('\n')
-            cmd_args = ['git', 'describe', '--exact-match', sha1]
-            return_code, tag = do_execute_sub_process(cmd_args, directory, False, True)
-            tag = tag.strip('\n')
-            if return_code != -1:
-                log.info("No tag found for branch. THIS IS OKAY, PLEASE IGNORE THE ABOVE ERROR.")
-                tag = ""
-    return tag
+        cmd_args = ["git", "rev-parse", "--short", "HEAD"]
+        sha1 = run_cmd(cmd=cmd_args, cwd=directory).strip("\n")
+        # Check if the sha1 matches to any tag
+        cmd_args = ["git", "describe", "--exact-match", sha1]
+        return run_cmd(cmd=cmd_args, cwd=directory).strip("\n")
+    except CalledProcessError:
+        log.info("No tag for branch. THIS IS OKAY, PLEASE IGNORE THE ABOVE ERROR.")
+        return ""
 
 
 ###############################
@@ -524,8 +520,7 @@ def git_archive_repo(repo_and_ref: str) -> str:
     # clone given repo to temp
     clone_repository(repository, ref, checkout_dir, full_clone=True, init_subrepos=True)
     # git archive repo with given name
-    with open(archive_name, "w", encoding="utf-8") as archive_file:
-        check_call(f"git --no-pager archive {ref}", stdout=archive_file, stderr=STDOUT, shell=True, cwd=checkout_dir)
+    run_cmd(cmd=["git", "--no-pager", "archive", ref, "-o", archive_name], cwd=checkout_dir)
     log.info("Created archive: %s", archive_name)
     shutil.rmtree(checkout_dir, ignore_errors=True)
     return archive_name
@@ -569,9 +564,10 @@ def list_as_string(argument_list: List[Any]) -> str:
 ###############################
 def remote_path_exists(remote_addr: str, path_to_check: str, ssh_command: str = 'ssh') -> bool:
     text_to_print = 'REMOTE_PATH_EXISTS'
-    cmd_args = [ssh_command, remote_addr, 'bash', '-c', '\"if [ -e ' + path_to_check + ' ] ; then echo ' + text_to_print + ' ; fi\"']
-    output = do_execute_sub_process(cmd_args, os.getcwd(), get_output=True)
-    check = output[1].rstrip()
+    cmd_args = [ssh_command, remote_addr, "bash", "-c"]
+    cmd_args += ['"if [ -e ' + path_to_check + " ] ; then echo " + text_to_print + ' ; fi"']
+    output = run_cmd(cmd=cmd_args, cwd=os.getcwd())
+    check = output.rstrip()
     return bool(check == text_to_print)
 
 
@@ -580,13 +576,11 @@ def remote_path_exists(remote_addr: str, path_to_check: str, ssh_command: str = 
 ###############################
 def create_mac_disk_image(execution_path: str, file_directory: str, file_base_name: str, image_size: str = '4g') -> None:
     # create disk image
-    cmd_args = ['hdiutil', 'create', '-srcfolder',
-                os.path.join(file_directory, file_base_name + '.app'),
-                '-volname', file_base_name,
-                '-format', 'UDBZ',
-                os.path.join(file_directory, file_base_name + '.dmg'),
-                '-ov', '-scrub', '-size', image_size]
-    do_execute_sub_process(cmd_args, execution_path)
+    src_folder = os.path.join(file_directory, file_base_name + '.app')
+    dmg_path = os.path.join(file_directory, file_base_name + '.dmg')
+    cmd_args = ['hdiutil', 'create', '-srcfolder', src_folder, '-volname', file_base_name]
+    cmd_args += ['-format', 'UDBZ', dmg_path, '-ov', '-scrub', '-size', image_size]
+    run_cmd(cmd=cmd_args, cwd=execution_path)
 
 
 ###############################

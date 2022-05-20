@@ -60,7 +60,7 @@ from bldinstallercommon import (
 )
 from installer_utils import PackagingError
 from logging_util import init_logger
-from runner import do_execute_sub_process
+from runner import run_cmd
 from threadedwork import ThreadedWork
 
 log = init_logger(__name__, debug_mode=False)
@@ -83,8 +83,7 @@ def patch_archive(base_dir: str, search_strings: List[str], qt_install_prefix: s
 ###############################
 def get_qt_install_prefix(qt_path: str) -> str:
     cmd_args = [os.path.join(qt_path, 'bin', 'qmake'), '-query', 'QT_INSTALL_PREFIX']
-    _, qt_install_prefix = do_execute_sub_process(cmd_args, qt_path, get_output=True)
-    return qt_install_prefix.strip()
+    return run_cmd(cmd=cmd_args, cwd=qt_path).strip()
 
 
 ###############################

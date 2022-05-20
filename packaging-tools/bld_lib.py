@@ -39,17 +39,17 @@ import tarfile
 from glob import glob
 from pathlib import Path
 from shutil import which
-from subprocess import CalledProcessError, check_call
+from subprocess import CalledProcessError
 from time import gmtime, strftime
 from typing import List, Tuple
 from urllib.parse import urlparse
 from urllib.request import urlretrieve
 
 from bld_utils import is_windows
-from installer_utils import ch_dir
 from logging_util import init_logger
 from read_remote_config import get_pkg_value
 from remote_uploader import RemoteUploader
+from runner import run_cmd
 
 log = init_logger(__name__, debug_mode=False)
 
@@ -103,9 +103,8 @@ def extract_archive(save_as: str, current_dir: str) -> str:
                 tar.extractall(qt_dest_dir)
         elif save_as.endswith(".7z"):
             try:
-                with ch_dir(qt_dest_dir):
-                    check_call(["7z", "x", save_as])
-            except Exception as error:
+                run_cmd(cmd=["7z", "x", save_as], cwd=qt_dest_dir)
+            except CalledProcessError as error:
                 log.error("Extracting 7z file failed: %s", str(error))
                 raise
     return qt_dest_dir
@@ -141,12 +140,11 @@ def build(args: argparse.Namespace, qt_dest_dir: str, current_dir: str) -> str:
     os.makedirs(bld_dir)
 
     try:
-        with ch_dir(bld_dir):
-            check_call([qmake_tool, pro_file])
-            check_call([make_tool_name])
-            # on Windows chop out the drive letter (e.g. 'C:')
-            install_root = install_root_dir[2:] if is_windows() else install_root_dir
-            check_call([make_tool_name, 'install', 'INSTALL_ROOT=' + install_root])
+        run_cmd(cmd=[qmake_tool, pro_file], cwd=bld_dir)
+        run_cmd(cmd=[make_tool_name], cwd=bld_dir)
+        # on Windows chop out the drive letter (e.g. 'C:')
+        install_root = install_root_dir[2:] if is_windows() else install_root_dir
+        run_cmd(cmd=[make_tool_name, "install", "INSTALL_ROOT=" + install_root], cwd=bld_dir)
     except CalledProcessError as build_error:
         log.error("Failed to build the project: %s", str(build_error))
         raise
@@ -171,9 +169,8 @@ def archive(args: argparse.Namespace, install_root_dir: str, current_dir: str) -
     artifacts_file_name = "artifacts-" + plat.system().lower() + "-" + arch + ".7z"
     artifacts_file_path = os.path.join(current_dir, artifacts_file_name)
     try:
-        with ch_dir(archive_path):
-            check_call(['7z', 'a', '-m0=lzma2', '-mmt=16', artifacts_file_path, '*'])
-    except Exception as error:
+        run_cmd(["7z", "a", "-m0=lzma2", "-mmt=16", artifacts_file_path, "*"], cwd=archive_path)
+    except CalledProcessError as error:
         log.error(str(error))
         raise
 

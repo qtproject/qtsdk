@@ -38,7 +38,6 @@ from argparse import ArgumentParser, ArgumentTypeError, Namespace
 from configparser import ConfigParser, ExtendedInterpolation
 from multiprocessing import cpu_count
 from pathlib import Path
-from subprocess import check_call
 from time import gmtime, strftime
 from typing import Any, Generator, List
 
@@ -63,7 +62,7 @@ from installer_utils import PackagingError
 from logging_util import init_logger
 from patch_qt import patch_files, patch_qt_edition
 from pkg_constants import INSTALLER_OUTPUT_DIR_NAME
-from runner import do_execute_sub_process
+from runner import run_cmd
 from sdkcomponent import SdkComponent
 from threadedwork import ThreadedWork
 
@@ -380,8 +379,8 @@ def get_component_data(
             script_args = script_args or ""
             script_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), script_file)
             if not os.path.exists(script_path):
-                raise CreateInstallerError(f"Unable to locate custom archive action script: {script_path}")
-            check_call([script_path, '--input-dir=' + install_dir, script_args.strip()])
+                raise CreateInstallerError(f"Custom archive action script missing: {script_path}")
+            run_cmd(cmd=[script_path, "--input-dir=" + install_dir, script_args.strip()])
 
         # strip out unnecessary folder structure based on the configuration
         count = 0
@@ -446,8 +445,7 @@ def get_component_data(
     content_list = [(compress_content_dir + os.sep + x) for x in content_list]
 
     saveas = os.path.normpath(data_dir_dest + os.sep + archive.archive_name)
-    cmd_args = [task.archivegen_tool, saveas] + content_list
-    do_execute_sub_process(cmd_args, data_dir_dest)
+    run_cmd(cmd=[task.archivegen_tool, saveas] + content_list, cwd=data_dir_dest)
 
 
 def handle_set_executable(base_dir: str, package_finalize_items: str) -> None:
@@ -595,8 +593,10 @@ def create_target_components(task: Any) -> None:
         metadata_content_source_root = os.path.normpath(sdk_component.pkg_template_dir + os.sep + 'meta')
         copy_tree(metadata_content_source_root, meta_dir_dest)
         if os.path.isfile(os.path.join(task.script_root_dir, "lrelease")):
-            # create translation binaries, files are created if translation source files exist for component
-            check_call([os.path.join(task.script_root_dir, "update_component_translations.sh"), "-r", os.path.join(task.script_root_dir, "lrelease"), dest_base])
+            # create translation binaries if translation source files exist for component
+            update_script = os.path.join(task.script_root_dir, "update_component_translations.sh")
+            lrelease_tool = os.path.join(task.script_root_dir, "lrelease")
+            run_cmd(cmd=[update_script, "-r", lrelease_tool, dest_base])
         # add files into tag substitution
         task.directories_for_substitutions.append(meta_dir_dest)
         # handle archives
@@ -759,7 +759,7 @@ def create_installer_binary(task: Any) -> None:
         cmd_args = cmd_args + ['-r', license_resource_file]
 
     # create installer binary
-    do_execute_sub_process(cmd_args, task.script_root_dir)
+    run_cmd(cmd=cmd_args, cwd=task.script_root_dir)
 
     # move results to dedicated directory
     output_dir = os.path.join(task.script_root_dir, INSTALLER_OUTPUT_DIR_NAME)
@@ -802,7 +802,7 @@ def create_online_repository(task: Any) -> None:
             repogen_args += ['--unite-metadata']
         repogen_args += ['-p', task.packages_full_path_dst, task.repo_output_dir]
         # create repository
-        do_execute_sub_process(repogen_args, task.script_root_dir)
+        run_cmd(cmd=repogen_args, cwd=task.script_root_dir)
         if not os.path.exists(task.repo_output_dir):
             raise CreateInstallerError(f"Unable to create repository directory: {task.repo_output_dir}")
 
@@ -815,8 +815,9 @@ def create_maintenance_tool_resource_file(task: Any) -> None:
     log.info("Create MaintenanceTool resource file")
     set_config_directory(task)
     config_xml = set_config_xml(task)
-    cmd_args = [task.binarycreator_tool, '--online-only', '-p', task.packages_full_path_dst, '-c', config_xml, '-rcc']
-    do_execute_sub_process(cmd_args, task.script_root_dir)
+    pkg_dir = task.packages_full_path_dst
+    cmd_args = [task.binarycreator_tool, '--online-only', '-p', pkg_dir, '-c', config_xml, '-rcc']
+    run_cmd(cmd=cmd_args, cwd=task.script_root_dir)
     # archive
     resource_file = os.path.join(task.script_root_dir, 'update.rcc')
     try:
@@ -849,8 +850,8 @@ def inject_update_rcc_to_archive(archive_file_path: str, file_to_be_injected: st
     # add file
     shutil.copy(file_to_be_injected, tmp_dir)
     # re-compress
-    cmd_args_archive = ['7z', 'a', archive_file_name, '*']
-    do_execute_sub_process(cmd_args_archive, tmp_dir)
+    cmd_args_archive = ["7z", "a", archive_file_name, "*"]
+    run_cmd(cmd=cmd_args_archive, cwd=tmp_dir)
     # delete original
     os.remove(archive_file_path)
     # copy re-compressed package to correct location
@@ -865,15 +866,12 @@ def inject_update_rcc_to_archive(archive_file_path: str, file_to_be_injected: st
 def create_mac_disk_image(task: Any) -> None:
     """Create Apple disk image."""
     log.info("Create Apple disk image")
-
-    # create disk image
-    cmd_args = ['hdiutil', 'create', '-srcfolder',
-                os.path.join(task.script_root_dir, pkg_constants.INSTALLER_OUTPUT_DIR_NAME, task.installer_name + '.app'),
-                '-volname', task.installer_name,
-                '-format', 'UDBZ',
-                os.path.join(task.script_root_dir, pkg_constants.INSTALLER_OUTPUT_DIR_NAME, task.installer_name + '.dmg'),
-                '-ov', '-scrub', '-size', '4g']
-    do_execute_sub_process(cmd_args, task.script_root_dir)
+    output_dir = INSTALLER_OUTPUT_DIR_NAME
+    source_dir = os.path.join(task.script_root_dir, output_dir, task.installer_name + '.app')
+    dmg_path = os.path.join(task.script_root_dir, output_dir, task.installer_name + '.dmg')
+    cmd_args = ['hdiutil', 'create', '-srcfolder', source_dir, '-volname', task.installer_name]
+    cmd_args += ['-format', 'UDBZ', dmg_path, '-ov', '-scrub', '-size', '4g']
+    run_cmd(cmd=cmd_args, cwd=task.script_root_dir)
 
 
 ##############################################################

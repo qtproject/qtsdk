@@ -34,9 +34,10 @@ import os
 import platform
 import sys
 from shutil import which
-from subprocess import CalledProcessError, check_call
+from subprocess import CalledProcessError
 
 from logging_util import init_logger
+from runner import run_cmd
 
 log = init_logger(__name__, debug_mode=False)
 
@@ -85,10 +86,9 @@ class RemoteUploader:
     def ensure_remote_dir(self, remote_dir: str) -> None:
         assert self.init_finished, "RemoteUploader not initialized!"
         log.info("Creating remote directory: %s", remote_dir)
-        cmd = self.ssh_cmd + ['mkdir', '-p', remote_dir]
-        log.info("Executing: %s", " ".join(cmd))
+        cmd = self.ssh_cmd + ["mkdir", "-p", remote_dir]
         if not self.dry_run:
-            check_call(cmd, timeout=60)  # give it 60s
+            run_cmd(cmd=cmd, timeout=60)  # give it 60s
 
     def _copy_to_remote(self, file_name: str, dest_dir_name: str) -> None:
         """Copy the given file to dest_dir_name which is relative to remote_base_path."""
@@ -100,9 +100,8 @@ class RemoteUploader:
                 self.ensure_remote_dir(self.remote_target_dir + '/' + dest_dir_name + '/')
         log.info("Copying [%s] to [%s]", file_name, remote_destination)
         cmd = self.copy_cmd + [file_name, remote_destination]
-        log.info("Executing: %s", " ".join(cmd))
         if not self.dry_run:
-            check_call(cmd, timeout=60 * 10)  # give it 10 mins
+            run_cmd(cmd=cmd, timeout=60 * 10)  # give it 10 minutes
 
     def copy_to_remote(self, path: str, dest_dir_name: str = "") -> None:
         items = [path] if os.path.isfile(path) else [os.path.join(path, x) for x in os.listdir(path)]
@@ -114,10 +113,10 @@ class RemoteUploader:
         log.info("Create remote symlink: %s -> %s", self.remote_latest_link, self.remote_target_dir)
         options = ["-sfn"] if force_update else ["-sn"]
         try:
-            cmd = self.ssh_cmd + ['ln'] + options + [self.remote_target_dir, self.remote_latest_link]
-            log.info("Executing: %s", " ".join(cmd))
+            args = ['ln'] + options + [self.remote_target_dir, self.remote_latest_link]
+            cmd = self.ssh_cmd + args
             if not self.dry_run:
-                check_call(cmd, timeout=60)  # give it 60s
+                run_cmd(cmd=cmd, timeout=60)  # give it 60s
         except CalledProcessError as error:
             log.exception("Failed to execute: %s", " ".join(cmd), exc_info=error)
             raise

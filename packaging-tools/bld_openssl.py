@@ -35,12 +35,11 @@
 import argparse
 import os
 import platform
-import subprocess
 import sys
-from typing import List
+from pathlib import Path
 
 from logging_util import init_logger
-from runner import do_execute_sub_process
+from runner import run_cmd
 
 log = init_logger(__name__, debug_mode=False)
 
@@ -48,30 +47,27 @@ ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 def build(src_dir: str, install_dir: str, toolset: str) -> None:
-    do_execute_sub_process(['perl', 'Configure', toolset, '--openssldir=' + install_dir], src_dir, True)
+    run_cmd(cmd=["perl", "Configure", toolset, "--openssldir=" + install_dir], cwd=src_dir)
     if toolset == 'VC-WIN32':
-        do_execute_sub_process([r'ms\do_nasm.bat'], src_dir, True)
+        run_cmd(cmd=[r"ms\do_nasm.bat"], cwd=src_dir)
     else:
-        do_execute_sub_process([r'ms\do_win64a'], src_dir, True)
-    do_execute_sub_process(['nmake', '-f', 'ms\\ntdll.mak'], src_dir, True)
-    do_execute_sub_process(['nmake', '-f', 'ms\\ntdll.mak', 'install'], src_dir, True)
+        run_cmd(cmd=[r"ms\do_win64a"], cwd=src_dir)
+    run_cmd(cmd=["nmake", "-f", "ms\\ntdll.mak"], cwd=src_dir)
+    run_cmd(cmd=["nmake", "-f", "ms\\ntdll.mak", "install"], cwd=src_dir)
 
 
 def archive(install_dir: str, archive_prefix: str) -> None:
     (directory, name) = os.path.split(install_dir)
-    do_execute_sub_process(['7z', 'a', archive_prefix + '.7z', name], directory, True)
-    do_execute_sub_process(['7z', 'a', archive_prefix + '-runtime.7z', '*.dll'], os.path.join(install_dir, 'bin'), True)
+    run_cmd(cmd=["7z", "a", archive_prefix + ".7z", name], cwd=directory)
+    run_cmd(cmd=["7z", "a", archive_prefix + "-runtime.7z", "*.dll"], cwd=Path(install_dir, "bin"))
 
 
 def check_environment() -> None:
-    with open(os.devnull, 'w', encoding="utf-8") as fnull:
-
-        def check_cmd(cmd: List[str]) -> None:
-            if subprocess.call(cmd, stdout=fnull, stderr=fnull) != 0:
-                raise SystemExit(f"Check environment fail: {cmd[0]}")
-        check_cmd(['nasm', '-h'])
-        check_cmd(['nmake', '/?'])
-        check_cmd(['7z'])
+    try:
+        for cmd in (["nasm", "-h"], ["nmake", "/?"], ["7z"]):
+            run_cmd(cmd=cmd)
+    except Exception as err:
+        raise SystemExit(f"Check environment fail: {cmd[0]}") from err
 
 
 def setup_argument_parser() -> argparse.ArgumentParser:

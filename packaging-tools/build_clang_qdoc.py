@@ -30,12 +30,14 @@
 #############################################################################
 
 import os
+from contextlib import suppress
+from subprocess import CalledProcessError
 from typing import Dict, List, Optional
 
 import environmentfrombatchfile
 from bld_utils import is_linux, is_windows, run_command
 from read_remote_config import get_pkg_value
-from runner import do_execute_sub_process
+from runner import run_cmd
 
 
 def git_clone_and_checkout(base_path: str, remote_repository_url: str, directory: str, revision: str) -> None:
@@ -185,10 +187,8 @@ def build_and_install(
     build_targets: List[str],
     install_targets: List[str],
 ) -> None:
-    build_cmd = build_command()
-    do_execute_sub_process(build_cmd + build_targets, build_path, extra_env=environment)
-    install_cmd = install_command()
-    do_execute_sub_process(install_cmd + install_targets, build_path, extra_env=environment)
+    run_cmd(cmd=build_command() + build_targets, cwd=build_path, env=environment)
+    run_cmd(cmd=install_command() + install_targets, cwd=build_path, env=environment)
 
 
 def cmake_command(
@@ -232,8 +232,8 @@ def build_clang(
 
     cmake_cmd = cmake_command(toolchain, src_path, install_path, bitness, build_type)
 
-    do_execute_sub_process(cmake_cmd, build_path, extra_env=environment)
-    build_targets = ['install/strip']
+    run_cmd(cmd=cmake_cmd, cwd=build_path, env=environment)
+    build_targets = ["install/strip"]
     if is_msvc_toolchain(toolchain):
         build_targets = ['install']  # There is no 'install/strip' for nmake.
     build_and_install(build_path, environment, ['libclang', 'clang', 'llvm-config'], build_targets)
@@ -246,9 +246,8 @@ def check_clang(toolchain: str, build_path: str, environment: Optional[Dict[str,
         if tools_path:
             path_key = 'Path' if 'Path' in environment else 'PATH'
             environment[path_key] += ';' + tools_path
-
-    build_cmd = build_command()
-    do_execute_sub_process(build_cmd + ['check-clang'], build_path, abort_on_fail=False, extra_env=environment)
+    with suppress(CalledProcessError):
+        run_cmd(cmd=build_command() + ["check-clang"], cwd=build_path, env=environment)
 
 
 def package_clang(install_path: str, result_file_path: str) -> None:

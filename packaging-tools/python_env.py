@@ -39,7 +39,7 @@ from typing import Dict, Tuple
 from bld_python import build_python
 from installer_utils import download_archive, is_valid_url_path
 from logging_util import init_logger
-from runner import async_exec_cmd, exec_cmd
+from runner import run_cmd, run_cmd_async
 
 if sys.version_info < (3, 7):
     import asyncio_backport as asyncio
@@ -75,7 +75,7 @@ def get_env(python_installation: str) -> Dict[str, str]:
 
 
 def locate_venv(pipenv: str, env: Dict[str, str]) -> str:
-    output = exec_cmd([pipenv, "--venv"], timeout=60, env=env)
+    output = run_cmd(cmd=[pipenv, "--venv"], env=env, timeout=60)
     return output.splitlines()[0].strip()
 
 
@@ -92,7 +92,7 @@ async def install_pip(get_pip_file: str, python_installation: str) -> str:
     python_exe = os.path.join(python_installation, "PCBuild", "amd64", "python.exe")
     assert os.path.isfile(python_exe), f"The 'python' executable did not exist: {python_exe}"
     install_pip_cmd = [python_exe, get_pip_file]
-    await async_exec_cmd(install_pip_cmd)
+    await run_cmd_async(cmd=install_pip_cmd)
     return os.path.join(python_installation, "Scripts", "pip3.exe")
 
 
@@ -109,7 +109,7 @@ async def create_venv(python_src: str, get_pip_file: str) -> Tuple[str, str, Dic
     assert os.path.isfile(pip3), f"The 'pip3' executable did not exist: {pip3}"
     log.info("Installing pipenv using: %s", pip3)
     cmd = [pip3, "install", "pipenv"]
-    await async_exec_cmd(cmd=cmd, timeout=60 * 15, env=env)  # give it 15 mins
+    await run_cmd_async(cmd=cmd, env=env, timeout=60 * 15)  # give it 15 mins
     if "windows" in system:
         pipenv = os.path.join(prefix, "Scripts", "pipenv.exe")
     else:
@@ -117,7 +117,7 @@ async def create_venv(python_src: str, get_pip_file: str) -> Tuple[str, str, Dic
     assert os.path.isfile(pipenv), f"The 'pipenv' executable did not exist: {pipenv}"
     cmd = [pipenv, "install"]
     log.info("Installing pipenv requirements into: %s", prefix)
-    await async_exec_cmd(cmd=cmd, timeout=60 * 30, env=env)  # give it 30 mins
+    await run_cmd_async(cmd=cmd, env=env, timeout=60 * 30)  # give it 30 mins
     venv_folder = locate_venv(pipenv, env)
     log.info("The pipenv virtualenv is created located in: %s", venv_folder)
     return (venv_folder, pipenv, env)

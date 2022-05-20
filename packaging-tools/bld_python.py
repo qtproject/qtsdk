@@ -40,7 +40,7 @@ from subprocess import check_output
 
 from installer_utils import ch_dir, download_archive, extract_archive, is_valid_url_path
 from logging_util import init_logger
-from runner import async_exec_cmd, exec_cmd
+from runner import run_cmd, run_cmd_async
 
 if sys.version_info < (3, 7):
     import asyncio_backport as asyncio
@@ -101,7 +101,7 @@ async def _build_python_win(src_dir: str) -> str:
     log.info("Source dir: %s", src_dir)
     build_bat = os.path.join(src_dir, 'PCbuild', 'build.bat')
     assert os.path.isfile(build_bat), f"The 'build.bat' batch file did not exist: {build_bat}"
-    await async_exec_cmd([build_bat])
+    await run_cmd_async(cmd=[build_bat])
     dest_dir = os.path.join(src_dir, 'PCbuild', 'amd64')
     assert os.path.isdir(dest_dir), f"The build destination directory did not exist: {dest_dir}"
     await create_symlink(dest_dir)
@@ -125,8 +125,8 @@ async def _build_python(src_dir: str, bld_dir: str, prefix: str) -> str:
     system = platform.system().lower()
     thread_count = str(cpu_count())
     if "darwin" in system:
-        openssl_query_cmd = ['brew', '--prefix', 'openssl']
-        openssl_path = exec_cmd(openssl_query_cmd)
+        openssl_query_cmd = ["brew", "--prefix", "openssl"]
+        openssl_path = run_cmd(cmd=openssl_query_cmd)
         if not os.path.exists(openssl_path):
             raise BldPythonError(
                 "Could not find OpenSSL path. Please check that the required brew formula is installed."
@@ -152,9 +152,9 @@ async def _build_python(src_dir: str, bld_dir: str, prefix: str) -> str:
     os.makedirs(bld_dir)
 
     with ch_dir(bld_dir):
-        await async_exec_cmd(configure_cmd)
-        await async_exec_cmd(make_cmd)
-        await async_exec_cmd(make_install_cmd)
+        await run_cmd_async(cmd=configure_cmd)
+        await run_cmd_async(cmd=make_cmd)
+        await run_cmd_async(cmd=make_install_cmd)
     log.info("Python built successfully and installed to: %s", prefix)
     return prefix
 

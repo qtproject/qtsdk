@@ -38,7 +38,7 @@ from urllib.parse import urlparse
 import wget  # type: ignore
 
 from logging_util import init_logger
-from runner import async_exec_cmd
+from runner import run_cmd
 
 log = init_logger(__name__, debug_mode=False)
 
@@ -90,7 +90,7 @@ async def extract_archive(artifact: str, destination_dir: str) -> None:
     try:
         os.makedirs(destination_dir, exist_ok=True)
         with ch_dir(destination_dir):
-            await async_exec_cmd(extract_cmd)
+            run_cmd(cmd=extract_cmd)
     except Exception:
         log.exception("Could not extact a file %s to %s", artifact, destination_dir)
         raise

@@ -41,7 +41,7 @@ from typing import Dict, List, Tuple
 from bldinstallercommon import locate_path
 from installer_utils import download_archive, extract_archive, is_valid_url_path
 from logging_util import init_logger
-from runner import exec_cmd
+from runner import run_cmd
 
 if sys.version_info < (3, 7):
     import asyncio_backport as asyncio
@@ -112,7 +112,7 @@ async def create_converted_repositories(repogen: str, repositories_to_migrate: L
             cmd.insert(0, "echo")
         try:
             # perform the update
-            exec_cmd(cmd, timeout=60 * 15)
+            run_cmd(cmd=cmd, timeout=60 * 15)
             successful_conversions[repo] = repo_output_path
         except Exception as error:
             log.error("Failed to update metadata for repository: %s - reason: %s", repo, str(error))

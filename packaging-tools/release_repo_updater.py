@@ -55,7 +55,7 @@ from installer_utils import PackagingError, download_archive, extract_archive, i
 from logging_util import init_logger
 from read_remote_config import get_pkg_value
 from release_task_reader import ReleaseTask, parse_config
-from runner import async_exec_cmd, exec_cmd
+from runner import run_cmd, run_cmd_async
 from sign_installer import create_mac_dmg, sign_mac_app
 from sign_windows_installer import sign_executable
 
@@ -248,7 +248,7 @@ def create_remote_script(server: str, cmd: List[str], remote_script_path: str, s
         os.chmod(temp_file_path, 0o755)
         create_remote_paths(server, [remote_script_path])
         cmd = ['rsync', '-avzh', temp_file_path, server + ":" + remote_script_path]
-        exec_cmd(cmd, timeout=60 * 60)
+        run_cmd(cmd=cmd, timeout=60 * 60)
         return os.path.join(remote_script_path, script_file_name)
 
 
@@ -258,7 +258,8 @@ def execute_remote_script(server: str, remote_script_path: str, timeout: int = 6
     delay = float(60)
     while retry_count:
         retry_count -= 1
-        if not has_connection_error(exec_cmd(cmd, timeout=timeout)):
+        output = run_cmd(cmd=cmd, timeout=timeout)
+        if not has_connection_error(output):
             break
         if retry_count:
             log.warning("Trying again after %ss", delay)
@@ -286,7 +287,7 @@ async def upload_ifw_to_remote(ifw_tools: str, remote_server: str, remote_server
     create_remote_paths(remote_server, [remote_tmp_dir])
     # upload content
     cmd = ['rsync', '-avzh', repogen_dir + "/", remote_server + ":" + remote_tmp_dir]
-    exec_cmd(cmd, timeout=60 * 60)
+    run_cmd(cmd=cmd, timeout=60 * 60)
     # return path on remote poiting to repogen
     return os.path.join(remote_tmp_dir, "repogen")
 
@@ -329,7 +330,7 @@ async def ensure_ext_repo_paths(server: str, ext: str, repo: str) -> None:
     log.info("Ensure repository paths on ext: %s:%s", ext, repo)
     login = get_remote_login_cmd(server) + get_remote_login_cmd(ext)
     cmd = login + ["mkdir", "-p", repo]
-    await async_exec_cmd(cmd, timeout=60 * 60 * 10)
+    await run_cmd_async(cmd=cmd, timeout=60 * 60 * 10)
 
 
 def is_safe_directory(paths: List[str]) -> None:
@@ -347,13 +348,13 @@ def is_safe_directory(paths: List[str]) -> None:
 def create_remote_paths(server: str, paths: List[str]) -> None:
     is_safe_directory(paths)
     cmd = get_remote_login_cmd(server) + ['mkdir -p', ' '.join(paths)]
-    exec_cmd(cmd, timeout=60 * 2)
+    run_cmd(cmd=cmd, timeout=60 * 2)
 
 
 def delete_remote_paths(server: str, paths: List[str]) -> None:
     is_safe_directory(paths)
     cmd = get_remote_login_cmd(server) + ['rm -rf', ' '.join(paths)]
-    exec_cmd(cmd, timeout=60 * 2)
+    run_cmd(cmd=cmd, timeout=60 * 2)
 
 
 def upload_pending_repository_content(server: str, source_path: str, remote_destination_path: str) -> None:
@@ -364,7 +365,7 @@ def upload_pending_repository_content(server: str, source_path: str, remote_dest
     create_remote_paths(server, [remote_destination_path])
     # upload content
     cmd = ['rsync', '-avzh', source_path + "/", server + ":" + remote_destination_path]
-    exec_cmd(cmd, timeout=60 * 60)  # give it 60 mins
+    run_cmd(cmd=cmd, timeout=60 * 60)  # give it 60 mins
 
 
 def reset_new_remote_repository(server: str, remote_source_repo_path: str, remote_target_repo_path: str) -> None:
@@ -376,8 +377,8 @@ def reset_new_remote_repository(server: str, remote_source_repo_path: str, remot
 
     log.info("Reset new remote repository: source: [%s] target: [%s]", remote_source_repo_path, remote_target_repo_path)
     create_remote_paths(server, [remote_target_repo_path])
-    cmd = get_remote_login_cmd(server) + ['cp', '-Rv', remote_source_repo_path + '/*', remote_target_repo_path]
-    exec_cmd(cmd, timeout=60 * 60)  # give it 60 mins
+    args = ['cp', '-Rv', remote_source_repo_path + '/*', remote_target_repo_path]
+    run_cmd(cmd=get_remote_login_cmd(server) + args, timeout=60 * 60)  # give it 60 mins
 
 
 def create_remote_repository_backup(server: str, remote_repo_path: str) -> str:
@@ -387,9 +388,9 @@ def create_remote_repository_backup(server: str, remote_repo_path: str) -> str:
         log.info("Deleting old backup repo: %s", backup_path)
         delete_remote_paths(server, [backup_path])
     # move the repo as backup
-    cmd = get_remote_login_cmd(server) + ['mv', '-v', remote_repo_path, backup_path]
-    exec_cmd(cmd, timeout=60 * 60)  # give it 60 mins
-    log.info("Moved remote repository as backup: %s:%s -> %s", server, remote_repo_path, backup_path)
+    args = ["mv", "-v", remote_repo_path, backup_path]
+    run_cmd(cmd=get_remote_login_cmd(server) + args, timeout=60 * 60)  # give it 60 mins
+    log.info("Moved remote repo as backup: %s:%s -> %s", server, remote_repo_path, backup_path)
     return backup_path
 
 
@@ -525,7 +526,7 @@ async def build_online_repositories(tasks: List[ReleaseTask], license_: str, ins
             cmd += ["--add-substitution=" + substitution]
 
         try:
-            await async_exec_cmd(cmd, timeout=60 * 60 * 3)  # 3h for one repo build
+            await run_cmd_async(cmd=cmd, timeout=60 * 60 * 3)  # 3h for one repo build
         except Exception as error:
             log.error(str(error))
             raise
@@ -649,12 +650,12 @@ def update_remote_latest_available_dir(new_installer: str, remote_upload_path: s
     try:
         cmd_rm = get_remote_login_cmd(staging_server_root) + ['rm', previous_installer_path.split(':')[1]]
         log.info("Running remove cmd: %s", cmd_rm)
-        exec_cmd(cmd_rm, timeout=60 * 60)  # 1h
+        run_cmd(cmd=cmd_rm, timeout=60 * 60)  # 1h
     except Exception:
         log.info("Running cmd failed - this happens only if latest_available is empty")
     cmd_cp = get_remote_login_cmd(staging_server_root) + ['cp', remote_upload_path.split(':')[1] + name + '*', latest_available_path.split(':')[1]]
     log.info("Running copy cmd: %s", cmd_cp)
-    exec_cmd(cmd_cp, timeout=60 * 60)  # 1h
+    run_cmd(cmd=cmd_cp, timeout=60 * 60)  # 1h
 
 
 def upload_offline_to_remote(installer_path: str, remote_upload_path: str, staging_server: str, task: ReleaseTask,
@@ -669,7 +670,7 @@ def upload_offline_to_remote(installer_path: str, remote_upload_path: str, stagi
         remote_destination = staging_server + ":" + remote_upload_path
         cmd = ['scp', installer, remote_destination]
         log.info("Uploading offline installer: %s to: %s", installer, remote_destination)
-        exec_cmd(cmd, timeout=60 * 60)  # 1h
+        run_cmd(cmd=cmd, timeout=60 * 60)  # 1h
         update_remote_latest_available_dir(installer, remote_destination, task, staging_server, installer_build_id)
         if enable_oss_snapshots and license_ == "opensource":
             upload_snapshots_to_remote(staging_server, remote_upload_path, task, installer_build_id, file_name_final)
@@ -692,11 +693,11 @@ def sign_offline_installer(installer_path: str, installer_name: str) -> None:
 
 def notarize_dmg(dmg_path: str, installer_basename: str) -> None:
     script_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "notarize.py"))
-    # bundle-id is just a unique identifier without any special meaning, used to track the notarization progress
+    # this is just a unique id without any special meaning, used to track the notarization progress
     bundle_id = installer_basename + "-" + strftime('%Y-%m-%d-%H-%M', gmtime())
-    bundle_id = bundle_id.replace('_', '-').replace(' ', '')  # replace illegal characters for bundle_id
+    bundle_id = bundle_id.replace('_', '-').replace(' ', '')  # replace illegal chars for bundle_id
     cmd = [sys.executable, script_path, '--dmg=' + dmg_path, '--bundle-id=' + bundle_id]
-    exec_cmd(cmd, timeout=60 * 60 * 3)
+    run_cmd(cmd=cmd, timeout=60 * 60 * 3)
 
 
 async def build_offline_tasks(staging_server: str, staging_server_root: str, tasks: List[ReleaseTask], license_: str,
@@ -734,7 +735,7 @@ async def _build_offline_tasks(staging_server: str, staging_server_root: str, ta
         cmd += ["--force-version-number-increase"]
         cmd.extend(["--add-substitution=" + s for s in task.get_installer_string_replacement_list()])
         try:
-            await async_exec_cmd(cmd, timeout=60 * 60 * 3)  # 3h
+            await run_cmd_async(cmd=cmd, timeout=60 * 60 * 3)  # 3h
         except Exception as error:
             log.error(str(error))
             raise
@@ -764,13 +765,14 @@ def upload_snapshots_to_remote(staging_server: str, remote_upload_path: str, tas
         # commands are run in Linux, adjust the upload paths
         snapshot_upload_path = snapshot_upload_path.replace("\\", "/")
         remote_installer_path = remote_installer_path.replace("\\", "/")
-    login = get_remote_login_cmd(staging_server) + get_remote_login_cmd(get_pkg_value("SNAPSHOT_SERVER"))
+    snapshot_srv = get_pkg_value("SNAPSHOT_SERVER")
+    login = get_remote_login_cmd(staging_server) + get_remote_login_cmd(snapshot_srv)
     cmd_mkdir = login + ["mkdir", "-p", snapshot_upload_path]
     log.info("Creating offline snapshot directory: %s", cmd_mkdir)
-    exec_cmd(cmd_mkdir, timeout=60 * 60)
-    cmd_scp_installer = get_remote_login_cmd(staging_server) + ["scp", "-r", remote_installer_path] + [get_pkg_value("SNAPSHOT_SERVER") + ":" + snapshot_upload_path + "/"]
-    log.info("Uploading offline snapshot: %s", cmd_scp_installer)
-    exec_cmd(cmd_scp_installer, timeout=60 * 60 * 2)
+    run_cmd(cmd=cmd_mkdir, timeout=60 * 60)
+    args = ["scp", "-r", remote_installer_path] + [snapshot_srv + ":" + snapshot_upload_path + "/"]
+    log.info("Uploading offline snapshot: %s", args)
+    run_cmd(cmd=get_remote_login_cmd(staging_server) + args, timeout=60 * 60 * 2)
 
 
 def load_export_summary_data(config_file: Path) -> Dict[str, str]:

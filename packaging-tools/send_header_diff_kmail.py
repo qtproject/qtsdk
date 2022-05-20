@@ -54,9 +54,9 @@
 import argparse
 import os
 import sys
-from subprocess import check_call
 
 from logging_util import init_logger
+from runner import run_cmd
 
 log = init_logger(__name__, debug_mode=False)
 
@@ -76,7 +76,7 @@ def send_headers(version: str, message_id: str, simulate: bool) -> None:
             if simulate:
                 log.info("Simulate: %s", " ".join(args))
             else:
-                check_call(args)
+                run_cmd(cmd=args)
 
 
 def main() -> None:

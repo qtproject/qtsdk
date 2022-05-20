@@ -33,10 +33,10 @@ import argparse
 import os
 import sys
 from shutil import rmtree
-from subprocess import DEVNULL, check_call
 
 from logging_util import init_logger
 from read_remote_config import get_pkg_value
+from runner import run_cmd, run_cmd_silent
 
 log = init_logger(__name__, debug_mode=False)
 
@@ -45,10 +45,11 @@ def sign_mac_app(app_path: str, signing_identity: str) -> None:
     assert app_path.endswith(".app"), f"Not a valid path to .app bundle: {app_path}"
     # we need to unlock the keychain first
     unlock_script = "/Users/qt/unlock-keychain.sh"
-    check_call([unlock_script])
+    run_cmd(cmd=[unlock_script])
     # "-o runtime" is required for notarization
-    cmd_args = ['codesign', '-o', 'runtime', '--verbose=3', '-r', get_pkg_value("SIGNING_FLAGS"), '-s', signing_identity, app_path]
-    check_call(cmd_args)
+    cmd_args = ['codesign', '-o', 'runtime', '--verbose=3', '-r', get_pkg_value("SIGNING_FLAGS")]
+    cmd_args += ['-s', signing_identity, app_path]
+    run_cmd(cmd=cmd_args)
     log.info("Successfully signed: %s", app_path)
 
 
@@ -58,7 +59,7 @@ def create_mac_dmg(app_path: str) -> None:
     destination_dmg_path = app_path.split(".app")[0] + '.dmg'
     cmd_args = ['hdiutil', 'create', '-srcfolder', app_path, '-volname', installer_name_base]
     cmd_args += ['-format', 'UDBZ', destination_dmg_path, '-ov', '-scrub', '-size', '4g']
-    check_call(cmd_args)
+    run_cmd(cmd=cmd_args)
     log.info("Successfully created: %s", destination_dmg_path)
 
 
@@ -66,19 +67,28 @@ def sign_windows_executable(file_path: str) -> None:
     sign_tools = ["signtool32.exe", "keys.pfx", "capicom.dll"]
     sign_tools_temp_dir = r'C:\Utils\sign_tools_temp'
     for item in sign_tools:
-        dst = os.path.join(sign_tools_temp_dir, item)
-        curl_cmd_args = ['curl', "--fail", "-L", "--retry", "5", "--retry-delay", "30", "-o", dst,
-                         '--create-dirs', get_pkg_value("SIGN_TOOLS_ADDR") + item]
-        check_call(curl_cmd_args)
-    cmd_args = [os.path.join(sign_tools_temp_dir, 'signtool32.exe'), 'sign', '/v', '/du', get_pkg_value("SIGNING_SERVER"), '/p', get_pkg_value("SIGNING_PASSWORD")]
-    cmd_args += ['/tr', get_pkg_value("TIMESTAMP_SERVER"), '/f', os.path.join(sign_tools_temp_dir, 'keys.pfx'), '/td', "sha256", '/fd', "sha256", file_path]
-    log_entry = cmd_args[:]
+        dest = os.path.join(sign_tools_temp_dir, item)
+        curl_cmd = ['curl', "--fail", "-L", "--retry", "5", "--retry-delay", "30", "-o", dest]
+        curl_cmd += ['--create-dirs', get_pkg_value("SIGN_TOOLS_ADDR") + item]
+        run_cmd(cmd=curl_cmd)
+    sign_tool_executable = os.path.join(sign_tools_temp_dir, 'signtool32.exe')
+    keys_path = os.path.join(sign_tools_temp_dir, 'keys.pfx')
+    signing_server = get_pkg_value("SIGNING_SERVER")
+    timestamp_server = get_pkg_value("TIMESTAMP_SERVER")
+    signing_password = get_pkg_value("SIGNING_PASSWORD")
+    cmd = [sign_tool_executable, 'sign', '/v', '/du', signing_server, '/p', signing_password]
+    cmd += ['/tr', timestamp_server, '/f', keys_path, '/td', "sha256", '/fd', "sha256", file_path]
+    # redact sensitive data from logging
+    log_entry = cmd[:]
     log_entry[4] = "****"
     log_entry[6] = "****"
     log.info("Calling: %s", " ".join(log_entry))
-    check_call(cmd_args, stdout=DEVNULL, stderr=DEVNULL)
+    sign_success = run_cmd_silent(cmd=cmd)
     rmtree(sign_tools_temp_dir)
-    log.info("Successfully signed: %s", file_path)
+    if sign_success:
+        log.info("Successfully signed: %s", file_path)
+    else:
+        log.info("Error signing: %s", file_path)
 
 
 def main() -> None:

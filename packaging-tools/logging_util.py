@@ -29,8 +29,10 @@
 #
 #############################################################################
 
+import functools
 import logging
 import os
+from typing import Any, Callable
 
 import colorlog
 
@@ -70,3 +72,14 @@ def init_logger(dunder_name: str, debug_mode: bool) -> logging.Logger:
     logger.addHandler(file_handler)
 
     return logger
+
+
+def with_no_logging(function: Callable[[Any], Any]) -> Any:
+    @functools.wraps(function)
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
+        logging.disable(logging.FATAL)
+        try:
+            return function(*args, **kwargs)
+        finally:
+            logging.disable(logging.NOTSET)
+    return wrapper

@@ -31,18 +31,19 @@
 
 import asyncio
 import os
+import shlex
+import subprocess
 import sys
+from asyncio import create_subprocess_exec, wait_for
+from asyncio.subprocess import PIPE
 from io import TextIOWrapper
-from subprocess import PIPE, STDOUT, CalledProcessError, Popen, TimeoutExpired, check_output
-from traceback import print_exc
-from typing import Any, Dict, List, Optional, Tuple
+from pathlib import Path
+from typing import Dict, List, Optional, Union
 
 from bld_utils import is_windows
-from logging_util import init_logger
+from logging_util import init_logger, with_no_logging
 
 log = init_logger(__name__, debug_mode=False)
-
-MAX_DEBUG_PRINT_LENGTH = 10000
 
 
 if is_windows():
@@ -59,100 +60,97 @@ if is_windows():
         asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 
 
-def exec_cmd(
-    cmd: List[str], timeout: float = 60.0, env: Optional[Dict[str, str]] = None
-) -> str:
-    env = env if env else os.environ.copy()
-    args = " ".join(cmd)
-    log.info("Calling: %s", args)
-    output = check_output(args, shell=True, env=env, timeout=timeout).decode("utf-8").strip()
-    log.info(output)
+def redirect_output(output: str, target: TextIOWrapper) -> None:
+    """Write the given text to an instance of TextIOWrapper"""
+    target.write(output or "")
+
+
+def log_to_file(text: str, target: Union[str, Path]) -> None:
+    """Log the given text to a file"""
+    with open(target, "a" if Path(target).exists() else "w", encoding="utf-8") as file:
+        file.write(text)
+
+
+def handle_output(output: str, redirect: Optional[Union[str, Path, TextIOWrapper]] = None) -> str:
+    """Log and return the given text, optionally redirect it to a file or a TextIOWrapper"""
+    if not output.strip():
+        log.info("No output from subprocess")
+        return ""
+    log.info("Output from subprocess:")
+    log.info(output.strip())
+    if isinstance(redirect, (str, Path)):
+        log_to_file(output, redirect)
+    if isinstance(redirect, TextIOWrapper):
+        redirect_output(output, redirect)
     return output
 
 
-async def async_exec_cmd(
-    cmd: List[str], timeout: int = 60 * 60, env: Optional[Dict[str, str]] = None
-) -> None:
-    env = env if env else os.environ.copy()
-    proc = await asyncio.create_subprocess_exec(*cmd, stdout=None, stderr=STDOUT, env=env)
+def run_cmd(
+    cmd: Union[List[str], str],
+    cwd: Optional[Union[str, Path]] = None,
+    env: Optional[Dict[str, str]] = None,
+    timeout: Optional[int] = None,
+    redirect: Optional[Union[str, Path, TextIOWrapper]] = None,
+) -> str:
+    """Execute a command with the given options and return its output"""
+    if isinstance(cmd, str):
+        args = shlex.split(cmd)
+    else:
+        args = cmd
+    cwd = cwd or os.getcwd()
+    env = env or os.environ.copy()
+    log.info("Calling: %s", " ".join(args))
+    output = subprocess.run(
+        args,
+        shell=is_windows(),
+        cwd=cwd,
+        env=env,
+        timeout=timeout,
+        universal_newlines=True,
+        check=True,
+        stdout=PIPE,
+        stderr=PIPE,
+    ).stdout
+    return handle_output(output, redirect)
+
+
+async def run_cmd_async(
+    cmd: Union[List[str], str],
+    cwd: Optional[Union[str, Path]] = None,
+    env: Optional[Dict[str, str]] = None,
+    timeout: Optional[int] = None,
+    redirect: Optional[Union[str, Path, TextIOWrapper]] = None,
+) -> str:
+    """Execute a command asynchronously with the given options and return its output"""
+    if isinstance(cmd, str):
+        args = shlex.split(cmd)
+    else:
+        args = cmd
+    cwd = cwd or os.getcwd()
+    env = env or os.environ.copy()
+    log.info("Calling asynchronously: %s", " ".join(args))
+    proc = await create_subprocess_exec(
+        *args,
+        stdout=PIPE,
+        stderr=PIPE,
+        cwd=cwd,
+        env=env,
+    )
+    stdout, _ = await wait_for(proc.communicate(), timeout=timeout)
+    await proc.wait()
+    return handle_output(stdout.decode("utf-8"), redirect)
+
+
+@with_no_logging
+def run_cmd_silent(
+    cmd: Union[List[str], str],
+    cwd: Optional[Union[str, Path]] = None,
+    env: Optional[Dict[str, str]] = None,
+    timeout: Optional[int] = None,
+) -> bool:
+    """Execute a command silently with the given options and return whether it succeeded or not"""
     try:
-        log.info("Calling: %s", ' '.join(cmd))
-        await asyncio.wait_for(proc.communicate(), timeout=timeout)
-    except (asyncio.TimeoutError, TimeoutExpired):
-        log.error("Timeout (%ss) for: %s", str(timeout), cmd)
-        raise
-    except CalledProcessError as command_err:
-        log.error("Failed to run command: %s", str(command_err))
-        raise
-    except Exception as error:
-        log.error("Something failed: %s", str(error))
-        raise
-
-
-def do_execute_sub_process(
-    args: List[str],
-    execution_path: str,
-    abort_on_fail: bool = True,
-    get_output: bool = False,
-    extra_env: Optional[Dict[str, str]] = None,
-    redirect_output: Optional[TextIOWrapper] = None,
-    args_log: Optional[str] = None,
-) -> Tuple[int, str]:
-    extra_env = extra_env or os.environ.copy()
-    _args_log = args_log or " ".join([str(i) for i in args])
-    log.info("--------------------------------------------------------------------")
-    log.info("Executing:      [%s]", _args_log)
-    log.info("Execution path: [%s]", execution_path)
-    log.info("Abort on fail:  [%s]", str(abort_on_fail))
-    sys.stdout.flush()
-    theproc: Any
-    return_code = -1
-    output = ''
-
-    try:
-        if is_windows():
-            if get_output:
-                theproc = Popen(args, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=False, env=extra_env, cwd=execution_path, universal_newlines=True)
-                output = theproc.communicate()[0]
-            elif redirect_output:
-                theproc = Popen(args, shell=True, stdout=redirect_output, stderr=STDOUT, close_fds=False, env=extra_env, cwd=execution_path, universal_newlines=True)
-                theproc.communicate()
-            else:
-                theproc = Popen(args, shell=True, close_fds=False, env=extra_env, cwd=execution_path, universal_newlines=True)
-                theproc.communicate()
-
-        else:
-            if get_output:
-                theproc = Popen(args, shell=False, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True, env=extra_env, cwd=execution_path, universal_newlines=True)
-                output = theproc.communicate()[0]
-            elif redirect_output:
-                theproc = Popen(args, shell=False, stdout=redirect_output, stderr=STDOUT, close_fds=False, env=extra_env, cwd=execution_path, universal_newlines=True)
-                theproc.communicate()
-            else:
-                theproc = Popen(  # pylint: disable=R1732
-                    args, env=extra_env, cwd=execution_path, universal_newlines=True
-                )
-                theproc.communicate()
-
-        if theproc.returncode:
-            return_code = theproc.returncode
-            if output:
-                output = output[len(output) - MAX_DEBUG_PRINT_LENGTH:] if len(output) > MAX_DEBUG_PRINT_LENGTH else output
-                log.info(output)
-            else:
-                log.info("Note, no output from the sub process!")
-                sys.stdout.flush()
-            raise Exception(f"*** Execution failed with code: {theproc.returncode}")
-        log.info("--------------------------------------------------------------------")
-        sys.stdout.flush()
-    except Exception:
-        sys.stderr.write('      ERROR - ERROR - ERROR - ERROR - ERROR - ERROR !!!' + os.linesep)
-        sys.stderr.write('      Executing:      [' + _args_log + ']' + os.linesep)
-        sys.stderr.write('      Execution path: [' + execution_path + ']' + os.linesep)
-        print_exc()
-        sys.stderr.flush()
-        sys.stdout.flush()
-        if abort_on_fail:
-            raise
-
-    return return_code, output
+        run_cmd(cmd=cmd, cwd=cwd, env=env, timeout=timeout, redirect=None)
+        return True
+    except Exception:  # Do not raise here to prevent leaking sensitive data such as the cmd args
+        return False

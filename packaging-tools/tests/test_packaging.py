@@ -44,7 +44,7 @@ from patch_qt import (
     patch_qmake_prl_build_dir_from_line,
     patch_qt_edition,
 )
-from runner import do_execute_sub_process
+from runner import run_cmd
 
 
 class TestPackaging(unittest.TestCase):
@@ -166,7 +166,7 @@ class TestPackaging(unittest.TestCase):
             cmd_args = cmd_args + ['--preferred-installer-name=' + offline_job]
             cmd_args = cmd_args + ['--dry-run']
             try:
-                do_execute_sub_process(cmd_args, os.getcwd())
+                run_cmd(cmd=cmd_args, cwd=os.getcwd())
             except Exception as error:
                 self.fail(f"Failed to execute: [{' '.join(cmd_args)}] -> {str(error)}")
             self.assertTrue(os.path.exists(os.path.join(tests_dir, 'installer_output', offline_job + extension)), "No installers generated")
