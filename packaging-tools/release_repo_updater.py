@@ -52,11 +52,6 @@ from release_task_reader import ReleaseTask
 from installer_utils import PackagingError
 from runner import exec_cmd, async_exec_cmd
 from logging_util import init_logger
-
-import inspect
-_currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-_parentdir = os.path.dirname(_currentdir)
-sys.path.insert(0, _parentdir)
 from read_remote_config import get_pkg_value
 import sign_installer
 
