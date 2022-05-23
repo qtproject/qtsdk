@@ -92,24 +92,24 @@ def do_execute_sub_process(args, execution_path, abort_on_fail=True, get_output=
     try:
         if is_windows():
             if get_output:
-                theproc = Popen(args, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=False, env=extra_env, cwd=execution_path )
+                theproc = Popen(args, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=False, env=extra_env, cwd=execution_path, universal_newlines=True)
                 output = theproc.communicate()[0]
             elif redirect_output:
-                theproc = Popen(args, shell=True, stdout=redirect_output, stderr=STDOUT, close_fds=False, env=extra_env, cwd=execution_path )
+                theproc = Popen(args, shell=True, stdout=redirect_output, stderr=STDOUT, close_fds=False, env=extra_env, cwd=execution_path, universal_newlines=True)
                 theproc.communicate()
             else:
-                theproc = Popen(args, shell=True, close_fds=False, env=extra_env, cwd=execution_path)
+                theproc = Popen(args, shell=True, close_fds=False, env=extra_env, cwd=execution_path, universal_newlines=True)
                 theproc.communicate()
 
         else:
             if get_output:
-                theproc = Popen(args, shell=False, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True, env=extra_env, cwd=execution_path)
+                theproc = Popen(args, shell=False, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True, env=extra_env, cwd=execution_path, universal_newlines=True)
                 output = theproc.communicate()[0]
             elif redirect_output:
-                theproc = Popen(args, shell=False, stdout=redirect_output, stderr=STDOUT, close_fds=False, env=extra_env, cwd=execution_path )
+                theproc = Popen(args, shell=False, stdout=redirect_output, stderr=STDOUT, close_fds=False, env=extra_env, cwd=execution_path, universal_newlines=True)
                 theproc.communicate()
             else:
-                theproc = Popen(args, env=extra_env, cwd=execution_path)
+                theproc = Popen(args, env=extra_env, cwd=execution_path, universal_newlines=True)
                 theproc.communicate()
 
         if theproc.returncode:
@@ -135,4 +135,4 @@ def do_execute_sub_process(args, execution_path, abort_on_fail=True, get_output=
         else:
             pass
 
-    return return_code, str(output)
+    return return_code, output
