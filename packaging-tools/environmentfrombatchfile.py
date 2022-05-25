@@ -29,9 +29,9 @@
 #
 #############################################################################
 
-import itertools
-import subprocess
 import os
+from itertools import takewhile
+from subprocess import PIPE, Popen
 
 # http://stackoverflow.com/questions/1214496/how-to-get-environment-from-a-subprocess-in-python
 # def validate_pair(ob):
@@ -80,7 +80,7 @@ def get(env_cmd, initial=None, arguments=None):
     # if not isinstance(env_cmd, (list, tuple)):
     #     env_cmd = [env_cmd]
     # construct the command that will alter the environment
-    # env_cmd = subprocess.list2cmdline(env_cmd)
+    # env_cmd = list2cmdline(env_cmd)
 
     # create a tag so we can tell in the output when the proc is done
     tag = 'Done running command'
@@ -88,11 +88,11 @@ def get(env_cmd, initial=None, arguments=None):
     cmd = 'cmd.exe /s /c "\"{env_cmd}\" {arguments}&& echo "{tag}" && set"'.format(**vars())
 
     # launch the process
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, env=initial, universal_newlines=True)
+    proc = Popen(cmd, stdout=PIPE, env=initial, universal_newlines=True)
     # parse the output sent to stdout
     lines = proc.stdout
     # consume whatever output occurs until the tag is reached
-    consume(itertools.takewhile(lambda line: tag not in line, lines))
+    consume(takewhile(lambda line: tag not in line, lines))
     # parse key/values into pairs
     pairs = (line.rstrip().split('=', 1) for line in lines)
     # make sure the pairs are valid

@@ -30,11 +30,13 @@
 #############################################################################
 
 import os
-import getpass
-import glob
 import unittest
-import shutil
-from ddt import ddt, data, unpack  # type: ignore
+from getpass import getuser
+from glob import glob
+from shutil import rmtree
+
+from ddt import data, ddt, unpack  # type: ignore
+
 from build_wrapper import init_snapshot_dir_and_upload_files
 
 
@@ -54,10 +56,10 @@ class TestBuildWrapper(unittest.TestCase):
         optionDict['WORK_DIR'] = os.getcwd()
         optionDict['SSH_COMMAND'] = 'ssh'
         optionDict['SCP_COMMAND'] = 'scp'
-        user = getpass.getuser()
+        user = getuser()
         optionDict['PACKAGE_STORAGE_SERVER_ADDR'] = user + '@127.0.0.1'
         optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] = temp_dir
-        filesToUpload = [os.path.basename(x) for x in glob.glob('./*.sh')]
+        filesToUpload = [os.path.basename(x) for x in glob('./*.sh')]
         if subdir:
             init_snapshot_dir_and_upload_files(optionDict, projectName, versioOrBranch, buildNumber, filesToUpload, subdir)
         else:
@@ -72,10 +74,10 @@ class TestBuildWrapper(unittest.TestCase):
         self.assertTrue(os.path.islink(remote_path_latest_link))
 
         searchDir = os.path.join(remote_path_latest_link, subdir, '*.sh')
-        uploadedFiles = [os.path.basename(x) for x in glob.glob(searchDir)]
+        uploadedFiles = [os.path.basename(x) for x in glob(searchDir)]
         self.assertListEqual(sorted(filesToUpload), sorted(uploadedFiles))
 
-        shutil.rmtree(remote_path_base)
+        rmtree(remote_path_base)
 
 
 if __name__ == '__main__':

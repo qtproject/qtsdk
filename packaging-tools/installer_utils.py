@@ -30,11 +30,13 @@
 #############################################################################
 
 import os
-import wget
-import fnmatch
 from contextlib import contextmanager
-from urllib.parse import urlparse
+from fnmatch import fnmatch
 from typing import Generator, List
+from urllib.parse import urlparse
+
+import wget
+
 from logging_util import init_logger
 from runner import async_exec_cmd
 
@@ -77,7 +79,7 @@ def download_archive(url: str, destDir: str) -> str:
 def get_extract_cmd(artifact: str) -> List[str]:
     if artifact.endswith(".7z") or artifact.endswith(".zip"):
         return ['7z', 'x', artifact]
-    elif any(fnmatch.fnmatch(artifact, p) for p in ["*.tar*", "*.tgz"]):
+    elif any(fnmatch(artifact, p) for p in ["*.tar*", "*.tgz"]):
         return ['tar', '-xf', artifact]
     else:
         raise PackagingError("Could not find suitable extractor for: {0}".format(artifact))

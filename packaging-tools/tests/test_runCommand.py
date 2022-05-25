@@ -28,12 +28,16 @@
 # $QT_END_LICENSE$
 #
 #############################################################################
+
+import argparse
 import ctypes
-import time
+import os
 import sys
 import unittest
-import argparse  # commandline argument parser
-import os
+from time import sleep
+
+from bld_utils import runCommand
+from threadedwork import ThreadedWork
 
 if sys.platform.startswith("win"):
     # Don't display the Windows GPF dialog if the invoked program dies.
@@ -69,7 +73,6 @@ def printLines(count):
 
 
 def useRunCommand(testArguments, *arguments):
-    from bld_utils import runCommand
     return runCommand("{0} {1}".format(baseCommand(), testArguments), *arguments)
 
 
@@ -126,7 +129,6 @@ class TestRunCommand(unittest.TestCase):
 
     def test_withThreadedWork(self):
         currentMethodName = sys._getframe().f_code.co_name
-        from threadedwork import ThreadedWork
         testWork = ThreadedWork("{} - run some command threaded".format(currentMethodName))
         taskStringList = []
         taskStringList.append("--sleep 1 --printLines 10")
@@ -140,7 +142,6 @@ class TestRunCommand(unittest.TestCase):
 
     def test_withThreadedWork_unexpected_exitCode(self):
         currentMethodName = sys._getframe().f_code.co_name
-        from threadedwork import ThreadedWork
         testWork = ThreadedWork("{} - run some command threaded".format(currentMethodName))
         # this exchange the current os._exit(-1) implementation only for this testing case
         separatorLine = "{0}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>{0}".format(os.linesep)
@@ -158,7 +159,6 @@ class TestRunCommand(unittest.TestCase):
 
     def test_withThreadedWork_crash(self):
         currentMethodName = sys._getframe().f_code.co_name
-        from threadedwork import ThreadedWork
         testWork = ThreadedWork("{} - run some command threaded".format(currentMethodName))
         # this exchange the current os._exit(-1) implementation only for this testing case
         separatorLine = "{0}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>{0}".format(os.linesep)
@@ -188,7 +188,7 @@ if __name__ == '__main__':
         parser.add_argument('--testMethod')
         callerArguments = parser.parse_args()
         if callerArguments.sleep:
-            time.sleep(callerArguments.sleep)
+            sleep(callerArguments.sleep)
         if callerArguments.printLines:
             printLines(callerArguments.printLines)
         if callerArguments.crash:

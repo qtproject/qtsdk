@@ -29,12 +29,13 @@
 #
 #############################################################################
 
+import argparse
 import os
 import re
 import sys
-import argparse
-from typing import List, Dict
 from configparser import ConfigParser, ExtendedInterpolation
+from typing import Dict, List
+
 from logging_util import init_logger
 
 log = init_logger(__name__, debug_mode=False)

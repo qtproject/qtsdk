@@ -30,33 +30,49 @@
 
 """Scripts to generate SDK installer based on open source InstallerFramework"""
 
-import configparser
+import argparse
 import os
+import re
 import shutil
 import sys
-import re
-import subprocess
-from time import gmtime, strftime
-import argparse
-import multiprocessing  # to get the cpu core count
-from bld_utils import is_windows, is_macos, is_linux
-if is_windows():
-    import win32api
+from configparser import ConfigParser, ExtendedInterpolation
+from distutils.spawn import find_executable
+from logging import getLogger
+from multiprocessing import cpu_count
 from pathlib import Path
+from subprocess import check_call
+from time import gmtime, strftime
 
-from threadedwork import ThreadedWork
-import bld_utils
-import bldinstallercommon
-from bldinstallercommon import locate_path, locate_paths
 import pkg_constants
 from archiveresolver import ArchiveLocationResolver
-from sdkcomponent import SdkComponent
-from patch_qt import patchFiles, patchQtEdition
-import logging
+from bld_utils import download, is_linux, is_macos, is_windows
+from bldinstallercommon import (
+    copy_tree,
+    ensure_text_file_endings,
+    extract_file,
+    handle_component_rpath,
+    is_content_url_valid,
+    is_text_file,
+    locate_executable,
+    locate_path,
+    locate_paths,
+    remove_one_tree_level,
+    remove_tree,
+    replace_in_files,
+    retrieve_url,
+    safe_config_key_fetch,
+)
 from installer_utils import PackagingError
+from patch_qt import patchFiles, patchQtEdition
+from pkg_constants import INSTALLER_OUTPUT_DIR_NAME
 from runner import do_execute_sub_process
+from sdkcomponent import SdkComponent
+from threadedwork import ThreadedWork
 
-log = logging.getLogger("create_installer")
+if is_windows():
+    import win32api
+
+log = getLogger("create_installer")
 log.setLevel("INFO")
 
 # ----------------------------------------------------------------------
@@ -80,7 +96,6 @@ class CreateInstallerError(Exception):
 ##############################################################
 def check_required_tools():
     """Check that valid tools are present in the build environment."""
-    from distutils.spawn import find_executable
     if not find_executable('7z'):
         raise CreateInstallerError("7z tool not found in the PATH")
 
@@ -93,7 +108,7 @@ def clean_work_dirs(task):
     log.info("Cleaning work environment")
     for item in [task.packages_full_path_dst, task.repo_output_dir, task.config_dir_dst]:
         if os.path.exists(item):
-            bldinstallercommon.remove_tree(item)
+            remove_tree(item)
             log.debug("Deleted directory: {0}".format(item))
 
 
@@ -109,7 +124,7 @@ def set_config_directory(task):
         raise CreateInstallerError("No such 'config' template directory: '{0}'".format(config_template_src))
 
     Path(task.config_dir_dst).mkdir(parents=True, exist_ok=True)
-    bldinstallercommon.copy_tree(config_template_src, task.config_dir_dst)
+    copy_tree(config_template_src, task.config_dir_dst)
     log.info("Copied: '{0}' into: {1}".format(config_template_src, task.config_dir_dst))
 
 
@@ -137,13 +152,13 @@ def set_config_xml(task):
     shutil.copy(config_template_source, config_template_dest)
     log.info("Copied '{0}' into: '{1}'".format(config_template_source, config_template_dest))
 
-    update_repository_url = bldinstallercommon.safe_config_key_fetch(task.config, 'SdkUpdateRepository', 'repository_url_release')
+    update_repository_url = safe_config_key_fetch(task.config, 'SdkUpdateRepository', 'repository_url_release')
 
     fileslist = [config_template_dest]
-    bldinstallercommon.replace_in_files(fileslist, UPDATE_REPOSITORY_URL_TAG, update_repository_url)
+    replace_in_files(fileslist, UPDATE_REPOSITORY_URL_TAG, update_repository_url)
     # substitute values also from global substitution list
     for item in task.substitution_list:
-        bldinstallercommon.replace_in_files(fileslist, item[0], item[1])
+        replace_in_files(fileslist, item[0], item[1])
     return config_template_dest
 
 
@@ -168,11 +183,11 @@ def substitute_global_tags(task):
                 path = os.path.join(root, name)
                 fileslist.append(path)
 
-    bldinstallercommon.replace_in_files(fileslist, PACKAGE_CREATION_DATE_TAG, task.build_timestamp)
+    replace_in_files(fileslist, PACKAGE_CREATION_DATE_TAG, task.build_timestamp)
     if task.force_version_number_increase:
-        bldinstallercommon.replace_in_files(fileslist, VERSION_NUMBER_AUTO_INCREASE_TAG, task.version_number_auto_increase_value)
+        replace_in_files(fileslist, VERSION_NUMBER_AUTO_INCREASE_TAG, task.version_number_auto_increase_value)
     for item in task.substitution_list:
-        bldinstallercommon.replace_in_files(fileslist, item[0], item[1])
+        replace_in_files(fileslist, item[0], item[1])
 
 
 ##############################################################
@@ -198,7 +213,7 @@ def substitute_component_tags(tag_pair_list, meta_dir_dest):
         value = pair[1]
         if tag and value:
             log.info("Matching '{0}' and '{1}' in files list".format(tag, value))
-            bldinstallercommon.replace_in_files(fileslist, tag, value)
+            replace_in_files(fileslist, tag, value)
         else:
             log.warning("Ignoring incomplete tag pair: {0} = {1}".format(tag, value))
 
@@ -217,11 +232,11 @@ def parse_component_data(task, configuration_file, configurations_base_path):
             allos_conf_file_dir = os.path.normpath(task.configurations_dir + os.sep + 'all-os')
             file_full_path = locate_path(allos_conf_file_dir, [configuration_file], filters=[os.path.isfile])
     log.info("Reading target configuration file: {0}".format(file_full_path))
-    configuration = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
-    configuration.readfp(open(file_full_path))
+    configuration = ConfigParser(interpolation=ExtendedInterpolation())
+    configuration.read_file(open(file_full_path))
 
     # parse package ignore list first
-    sdk_component_exclude_list = bldinstallercommon.safe_config_key_fetch(configuration, 'PackageIgnoreList', 'packages')
+    sdk_component_exclude_list = safe_config_key_fetch(configuration, 'PackageIgnoreList', 'packages')
     if sdk_component_exclude_list:
         sdk_component_exclude_list = sdk_component_exclude_list.replace(' ', '')
         pkg_list = sdk_component_exclude_list.split(',')
@@ -256,7 +271,7 @@ def parse_component_data(task, configuration_file, configurations_base_path):
                             log.warning("Ignored component in non-strict mode (missing archive data or metadata?): {0}".format(section))
                             task.sdk_component_list_skipped.append(sdk_component)
     # check for extra configuration files if defined
-    extra_conf_list = bldinstallercommon.safe_config_key_fetch(configuration, 'PackageConfigurationFiles', 'file_list')
+    extra_conf_list = safe_config_key_fetch(configuration, 'PackageConfigurationFiles', 'file_list')
     if extra_conf_list:
         extra_conf_list = extra_conf_list.rstrip(',\n')
         file_list = extra_conf_list.split(',')
@@ -308,7 +323,7 @@ def create_metadata_map(sdk_component):
 
 def get_component_sha1_file(sdk_component, sha1_file_dest):
     """download component sha1 file"""
-    bld_utils.download(sdk_component.component_sha1_uri, sha1_file_dest)
+    download(sdk_component.component_sha1_uri, sha1_file_dest)
 
     # read sha1 from the file
     with open(sha1_file_dest, "r") as sha1_file:
@@ -335,12 +350,12 @@ def get_component_data(task, sdk_component, archive, install_dir, data_dir_dest,
         log.info("No repackaging actions required for the package, just download it directly to data directory")
         downloadedArchive = os.path.normpath(data_dir_dest + os.sep + archive.archive_name)
         # start download
-        bld_utils.download(archive.archive_uri, downloadedArchive)
+        download(archive.archive_uri, downloadedArchive)
         return
 
     downloadedArchive = os.path.normpath(install_dir + os.sep + package_raw_name)
     # start download
-    bld_utils.download(archive.archive_uri, downloadedArchive)
+    download(archive.archive_uri, downloadedArchive)
 
     # repackage content so that correct dir structure will get into the package
 
@@ -349,15 +364,15 @@ def get_component_data(task, sdk_component, archive, install_dir, data_dir_dest,
 
     # extract contents
     if archive.extract_archive == 'yes':
-        extracted = bldinstallercommon.extract_file(downloadedArchive, install_dir)
+        extracted = extract_file(downloadedArchive, install_dir)
         # remove old package
         if extracted:
             os.remove(downloadedArchive)
         else:
             # ok we could not extract the file, so propably not even archived file,
             # check the case if we downloaded a text file, must ensure proper file endings
-            if bldinstallercommon.is_text_file(downloadedArchive):
-                bldinstallercommon.ensure_text_file_endings(downloadedArchive)
+            if is_text_file(downloadedArchive):
+                ensure_text_file_endings(downloadedArchive)
 
         # perform custom action script for the extracted archive
         if archive.archive_action:
@@ -366,14 +381,14 @@ def get_component_data(task, sdk_component, archive, install_dir, data_dir_dest,
             script_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), script_file)
             if not os.path.exists(script_path):
                 raise CreateInstallerError("Unable to locate custom archive action script: {0}".format(script_path))
-            subprocess.check_call([script_path, '--input-dir=' + install_dir, script_args.strip()])
+            check_call([script_path, '--input-dir=' + install_dir, script_args.strip()])
 
         # strip out unnecessary folder structure based on the configuration
         count = 0
         iterations = int(archive.package_strip_dirs)
         while(count < iterations):
             count = count + 1
-            bldinstallercommon.remove_one_tree_level(install_dir)
+            remove_one_tree_level(install_dir)
         # perform package finalization tasks for the given archive
         if 'delete_doc_directory' in archive.package_finalize_items:
             try:
@@ -414,7 +429,7 @@ def get_component_data(task, sdk_component, archive, install_dir, data_dir_dest,
         if not archive.rpath_target.startswith(os.sep):
             archive.rpath_target = os.sep + archive.rpath_target
         if is_linux():
-            bldinstallercommon.handle_component_rpath(install_dir, archive.rpath_target)
+            handle_component_rpath(install_dir, archive.rpath_target)
 
     if archive.component_sha1_file:
         # read sha1 from the file
@@ -501,7 +516,7 @@ def remove_debug_information_files_by_file_type(install_dir, dbg_file_suffix):
             # On macOS, debug symbols are in dSYM folder bundles instead of files.
             dbg_file_list = locate_paths(dbg_info_dir, ["*dSYM"], [os.path.isdir])
             for debug_information in dbg_file_list:
-                bldinstallercommon.remove_tree(debug_information)
+                remove_tree(debug_information)
         else:
             for path in locate_paths(dbg_info_dir, ["*." + dbg_file_suffix], [os.path.isfile]):
                 Path(path).unlink()
@@ -561,8 +576,8 @@ def create_target_components(task):
     # download and extract lrelease binary for creating translation binaries
     if task.create_repository and os.environ.get("LRELEASE_TOOL"):
         if not os.path.isfile(os.path.join(task.script_root_dir, "lrelease")):
-            bld_utils.download(os.environ.get("LRELEASE_TOOL"), task.script_root_dir)
-            bldinstallercommon.extract_file(os.path.basename(os.environ.get("LRELEASE_TOOL")), task.script_root_dir)
+            download(os.environ.get("LRELEASE_TOOL"), task.script_root_dir)
+            extract_file(os.path.basename(os.environ.get("LRELEASE_TOOL")), task.script_root_dir)
     getComponentDataWork = ThreadedWork("get components data")
     for sdk_component in task.sdk_component_list:
         sdk_component.print_component_data()
@@ -578,10 +593,10 @@ def create_target_components(task):
         Path(meta_dir_dest).mkdir(parents=True, exist_ok=True)
         # Copy Meta data
         metadata_content_source_root = os.path.normpath(sdk_component.pkg_template_dir + os.sep + 'meta')
-        bldinstallercommon.copy_tree(metadata_content_source_root, meta_dir_dest)
+        copy_tree(metadata_content_source_root, meta_dir_dest)
         if os.path.isfile(os.path.join(task.script_root_dir, "lrelease")):
             # create translation binaries, files are created if translation source files exist for component
-            subprocess.check_call([os.path.join(task.script_root_dir, "update_component_translations.sh"), "-r", os.path.join(task.script_root_dir, "lrelease"), dest_base])
+            check_call([os.path.join(task.script_root_dir, "update_component_translations.sh"), "-r", os.path.join(task.script_root_dir, "lrelease"), dest_base])
         # add files into tag substitution
         task.directories_for_substitutions.append(meta_dir_dest)
         # handle archives
@@ -614,18 +629,18 @@ def create_target_components(task):
         data_content_source_root = os.path.normpath(sdk_component.pkg_template_dir + os.sep + 'data')
         if os.path.exists(data_content_source_root):
             Path(data_dir_dest).mkdir(parents=True, exist_ok=True)
-            bldinstallercommon.copy_tree(data_content_source_root, data_dir_dest)
+            copy_tree(data_content_source_root, data_dir_dest)
 
     if not task.dry_run:
         # start the work threaded, more than 8 parallel downloads are not so useful
-        getComponentDataWork.run(min([task.max_cpu_count, multiprocessing.cpu_count()]))
+        getComponentDataWork.run(min([task.max_cpu_count, cpu_count()]))
 
     for sdk_component in task.sdk_component_list:
         # substitute tags
         substitute_component_tags(create_metadata_map(sdk_component), sdk_component.meta_dir_dest)
         if hasattr(sdk_component, 'temp_data_dir') and os.path.exists(sdk_component.temp_data_dir):
             # lastly remove temp dir after all data is prepared
-            if not bldinstallercommon.remove_tree(sdk_component.temp_data_dir):
+            if not remove_tree(sdk_component.temp_data_dir):
                 raise CreateInstallerError("Unable to remove directory: {0}".format(sdk_component.temp_data_dir))
             # substitute downloadable archive names in installscript.qs
             substitute_component_tags(sdk_component.generate_downloadable_archive_list(), sdk_component.meta_dir_dest)
@@ -747,7 +762,7 @@ def create_installer_binary(task):
     do_execute_sub_process(cmd_args, task.script_root_dir)
 
     # move results to dedicated directory
-    output_dir = os.path.join(task.script_root_dir, pkg_constants.INSTALLER_OUTPUT_DIR_NAME)
+    output_dir = os.path.join(task.script_root_dir, INSTALLER_OUTPUT_DIR_NAME)
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     file_name = os.path.join(task.script_root_dir, task.installer_name)
     old_existing_file_name = os.path.join(output_dir, task.installer_name)
@@ -830,7 +845,7 @@ def inject_update_rcc_to_archive(archive_file_path, file_to_be_injected):
     shutil.copy(archive_file_path, tmp_dir)
     # extract
     copied_archive_file = os.path.join(tmp_dir, archive_file_name)
-    bldinstallercommon.extract_file(copied_archive_file, tmp_dir)
+    extract_file(copied_archive_file, tmp_dir)
     os.remove(copied_archive_file)
     # add file
     shutil.copy(file_to_be_injected, tmp_dir)
@@ -842,7 +857,7 @@ def inject_update_rcc_to_archive(archive_file_path, file_to_be_injected):
     # copy re-compressed package to correct location
     shutil.copy(os.path.join(tmp_dir, archive_file_name), os.path.dirname(archive_file_path))
     # delete tmp location
-    bldinstallercommon.shutil.rmtree(tmp_dir)
+    shutil.rmtree(tmp_dir)
 
 
 ##############################################################
@@ -909,8 +924,8 @@ class QtInstallerTask:
 
     def __init__(self, args):
         log.info("Parsing: {0}".format(args.configuration_file))
-        self.config = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
-        self.config.readfp(open(args.configuration_file))
+        self.config = ConfigParser(interpolation=ExtendedInterpolation())
+        self.config.read_file(open(args.configuration_file))
         self.configurations_dir = args.configurations_dir
         self.configuration_file = args.configuration_file
 
@@ -1038,10 +1053,10 @@ class QtInstallerTask:
     ##############################################################
     def set_ifw_tools(self):
         executable_suffix = ".exe" if is_windows() else ""
-        self.archivegen_tool = bldinstallercommon.locate_executable(self.ifw_tools_dir, ['archivegen' + executable_suffix])
-        self.binarycreator_tool = bldinstallercommon.locate_executable(self.ifw_tools_dir, ['binarycreator' + executable_suffix])
-        self.installerbase_tool = bldinstallercommon.locate_executable(self.ifw_tools_dir, ['installerbase' + executable_suffix])
-        self.repogen_tool = bldinstallercommon.locate_executable(self.ifw_tools_dir, ['repogen' + executable_suffix])
+        self.archivegen_tool = locate_executable(self.ifw_tools_dir, ['archivegen' + executable_suffix])
+        self.binarycreator_tool = locate_executable(self.ifw_tools_dir, ['binarycreator' + executable_suffix])
+        self.installerbase_tool = locate_executable(self.ifw_tools_dir, ['installerbase' + executable_suffix])
+        self.repogen_tool = locate_executable(self.ifw_tools_dir, ['repogen' + executable_suffix])
         # check
         assert os.path.isfile(self.archivegen_tool), "Archivegen tool not found: {0}".format(self.archivegen_tool)
         assert os.path.isfile(self.binarycreator_tool), "Binary creator tool not found: {0}".format(self.binarycreator_tool)
@@ -1060,13 +1075,13 @@ class QtInstallerTask:
             # create needed dirs
             Path(self.ifw_tools_dir).mkdir(parents=True, exist_ok=True)
             log.info("Downloading: {0}".format(self.ifw_tools_uri))
-            if not bldinstallercommon.is_content_url_valid(self.ifw_tools_uri):
+            if not is_content_url_valid(self.ifw_tools_uri):
                 raise CreateInstallerError("Package URL is invalid: {0}".format(self.ifw_tools_uri))
-            bldinstallercommon.retrieve_url(self.ifw_tools_uri, package_save_as_temp)
+            retrieve_url(self.ifw_tools_uri, package_save_as_temp)
             if not (os.path.isfile(package_save_as_temp)):
                 raise CreateInstallerError("Downloading failed! Aborting!")
         # extract ifw archive
-        bldinstallercommon.extract_file(package_save_as_temp, self.ifw_tools_dir)
+        extract_file(package_save_as_temp, self.ifw_tools_dir)
         log.info("IFW tools extracted into: {0}".format(self.ifw_tools_dir))
 
 

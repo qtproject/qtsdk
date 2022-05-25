@@ -29,14 +29,16 @@
 #
 #############################################################################
 
-from ddt import ddt, data
 import os
 import unittest
-from tempfile import TemporaryDirectory
 from pathlib import Path
-from create_installer import remove_all_debug_libraries
+from tempfile import TemporaryDirectory
+
+from ddt import data, ddt
+
+from bld_utils import is_macos, is_windows
 from bldinstallercommon import locate_paths
-from bld_utils import is_windows, is_macos
+from create_installer import remove_all_debug_libraries
 
 
 @ddt

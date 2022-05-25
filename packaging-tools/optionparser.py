@@ -28,10 +28,10 @@
 # $QT_END_LICENSE$
 #
 #############################################################################
-from configparser import ConfigParser
 import argparse
 import os
 import sys
+from configparser import ConfigParser
 
 
 class PackagingOptions:
@@ -39,7 +39,7 @@ class PackagingOptions:
     def __init__(self, confFile):
         if not os.path.isfile(confFile):
             raise IOError("Not a valid file: {0}".format(confFile))
-        self.config = ConfigParser.ConfigParser(os.environ)
+        self.config = ConfigParser(os.environ)
         self.config.optionxform = str
         self.config.read(confFile)
 

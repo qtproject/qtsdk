@@ -30,13 +30,21 @@
 #############################################################################
 
 import os
+import platform
 import sys
 import unittest
-import tempfile
-import shutil
-import fileinput
-from patch_qt import patchAbsoluteLibPathsFromLine, patchQmakePrlBuildDirFromLine, patchQConfigPriFromLine, patchQtEdition
+from fileinput import FileInput
+from shutil import rmtree
+from tempfile import mkdtemp
+
 from create_installer import parsePackageFinalizeItems
+from patch_qt import (
+    patchAbsoluteLibPathsFromLine,
+    patchQConfigPriFromLine,
+    patchQmakePrlBuildDirFromLine,
+    patchQtEdition,
+)
+from runner import do_execute_sub_process
 
 
 class TestPackaging(unittest.TestCase):
@@ -111,7 +119,7 @@ class TestPackaging(unittest.TestCase):
             self.assertEqual(matchCount, len(data[2]))
 
     def test_patchQtEdition(self):
-        tempDir = tempfile.mkdtemp(dir=os.getcwd())
+        tempDir = mkdtemp(dir=os.getcwd())
         tempFile = os.path.join(tempDir, "qconfig.pri")
 
         try:
@@ -132,19 +140,17 @@ class TestPackaging(unittest.TestCase):
             expectedData.append("nonsense")
 
             idx = 0
-            for line in fileinput.FileInput(tempFile, inplace=False):
+            for line in FileInput(tempFile, inplace=False):
                 print("Received data: [{0}] expected data: [{1}]".format(line.strip(), expectedData[idx]))
                 self.assertEqual(line.strip(), expectedData[idx], "Received data: [{0}] differs from expected data: [{1}]".format(line, expectedData[idx]))
                 idx += 1
         finally:
-            shutil.rmtree(tempDir)
+            rmtree(tempDir)
 
     @unittest.skipUnless(os.environ.get("PKG_TEST_QT_CONFIG_BASE_PATH"), "Skipping because 'PKG_TEST_QT_CONFIG_BASE_PATH' is not set")
     @unittest.skipUnless(os.environ.get("PKG_TEST_QT_ARTIFACTS_URL"), "Skipping because 'PKG_TEST_QT_CONFIG_BASE_PATH' is not set")
     @unittest.skipUnless(os.environ.get("PKG_TEST_QT_IFW_TOOL_URL"), "Skipping because 'PKG_TEST_QT_IFW_TOOL_URL' is not set")
     def test_createInstaller(self):
-        from runner import do_execute_sub_process
-        import platform
         extension = '.run' if platform.system().lower().startswith('linux') else ''
         testsDir = os.path.dirname(os.path.abspath(__file__))
         path = os.path.join(os.environ.get("PKG_TEST_QT_CONFIG_BASE_PATH"), "offline_installer_jobs", "5.9.3")

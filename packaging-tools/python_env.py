@@ -29,18 +29,18 @@
 #
 #############################################################################
 
-import os
-import sys
-import asyncio
 import argparse
+import os
 import platform
+import sys
+from asyncio import get_event_loop
 from shutil import rmtree
 from typing import Dict, Tuple
+
 from bld_python import build_python
+from installer_utils import download_archive, is_valid_url_path
 from logging_util import init_logger
 from runner import async_exec_cmd, exec_cmd
-from installer_utils import download_archive, is_valid_url_path
-
 
 log = init_logger(__name__, debug_mode=False)
 
@@ -140,5 +140,5 @@ if __name__ == "__main__":
         help="Path to get-pip.py needed for installing pip on Windows",
     )
     args = parser.parse_args(sys.argv[1:])
-    loop = asyncio.get_event_loop()
+    loop = get_event_loop()
     loop.run_until_complete(create_venv(args.python_src, args.get_pip_file))

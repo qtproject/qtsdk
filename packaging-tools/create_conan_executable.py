@@ -29,19 +29,19 @@
 #
 #############################################################################
 
-import os
-import sys
-import asyncio
 import argparse
+import os
 import platform
-import shutil
+import sys
+from asyncio import get_event_loop
 from pathlib import Path
-from logging_util import init_logger
+from shutil import rmtree
 from typing import Dict, List
-from runner import async_exec_cmd
-from python_env import create_venv
-from installer_utils import is_valid_url_path, cd
 
+from installer_utils import cd, is_valid_url_path
+from logging_util import init_logger
+from python_env import create_venv
+from runner import async_exec_cmd
 
 log = init_logger(__name__, debug_mode=False)
 
@@ -74,7 +74,7 @@ async def pip_install_url(pipenv: str, pip_packages: List[str], env: Dict[str, s
     for pkg in pip_packages or []:
         if is_valid_url_path(pkg):
             destinationDir = os.path.join(os.getcwd(), "_git_tmp", pkg.split("/")[-1])
-            shutil.rmtree(destinationDir, ignore_errors=True)
+            rmtree(destinationDir, ignore_errors=True)
             await clone_repo(pkg, destinationDir, env)
             chekout_folders.append(destinationDir)
         else:
@@ -130,7 +130,7 @@ async def run(
 ) -> str:
     work_dir = Path().home() / "_tmp_work_dir_"
     if work_dir.exists():
-        shutil.rmtree(work_dir)
+        rmtree(work_dir)
     work_dir.mkdir(parents=True)
 
     with cd(work_dir):
@@ -212,7 +212,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args(sys.argv[1:])
     hidden_imports = get_known_hidden_imports() + args.hidden_imports
-    loop = asyncio.get_event_loop()
+    loop = get_event_loop()
     loop.run_until_complete(
         run(
             args.python_src,

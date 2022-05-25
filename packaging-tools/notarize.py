@@ -29,14 +29,14 @@
 #
 #############################################################################
 
-import sys
-import time
 import argparse
 import asyncio
-import subprocess
 import logging
+import sys
 from shutil import which
-from time import gmtime, strftime
+from subprocess import STDOUT, CalledProcessError, TimeoutExpired
+from time import gmtime, sleep, strftime
+
 from read_remote_config import get_pkg_value
 
 LOG_FMT_CI = "%(asctime)s %(levelname)s:%(filename)s:%(lineno)d(%(process)d): %(message)s"
@@ -66,20 +66,20 @@ def parseValueFromData(key, data):
 
 
 async def requestCmd(args, cmd):
-    p = await asyncio.create_subprocess_exec(*cmd, stdout=asyncio.subprocess.PIPE, stderr=subprocess.STDOUT)
+    p = await asyncio.create_subprocess_exec(*cmd, stdout=asyncio.subprocess.PIPE, stderr=STDOUT)
     attempts = 3
 
     while attempts:
         try:
             data = await asyncio.wait_for(p.communicate(), timeout=args.timeout)
             break
-        except (asyncio.TimeoutError, subprocess.TimeoutExpired):
+        except (asyncio.TimeoutError, TimeoutExpired):
             log.warning("Timeout (%ss)", str(args.timeout))
             attempts -= 1
             if attempts:
                 log.info("Waiting a bit before next attempt..")
                 await asyncio.sleep(60)
-        except subprocess.CalledProcessError as commandErr:
+        except CalledProcessError as commandErr:
             log.critical("Failed to run command: %s", str(commandErr))
             raise
         except Exception as e:
@@ -147,7 +147,7 @@ async def embedNotarization(args):
 
         if retry_count:
             log.warning(f"Trying again after {delay}s")
-            time.sleep(delay)
+            sleep(delay)
             delay = delay + delay / 2  # 60, 90, 135, 202, 303
         else:
             log.critical("Execution of the remote script probably failed!")

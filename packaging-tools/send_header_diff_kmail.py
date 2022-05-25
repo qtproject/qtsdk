@@ -53,8 +53,8 @@
 
 import argparse
 import os
-import subprocess
 import sys
+from subprocess import check_call
 
 
 def send_headers(version, message_id, simulate):
@@ -72,7 +72,7 @@ def send_headers(version, message_id, simulate):
             if simulate:
                 print("Simulate:", " ".join(args))
             else:
-                subprocess.check_call(args)
+                check_call(args)
 
 
 if __name__ == "__main__":

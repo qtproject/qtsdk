@@ -29,20 +29,24 @@
 #
 #############################################################################
 
-import os
-import sys
-import time
-import pysftp
-import paramiko
 import argparse
-import datetime
+import os
 import subprocess
-import configparser
+import sys
+from configparser import ConfigParser
+from datetime import datetime
+from subprocess import DEVNULL
+from time import time
+
+import pysftp
 from cryptography.fernet import Fernet
+from paramiko import SSHException
+
 from installer_utils import PackagingError
 from logging_util import init_logger
+
 log = init_logger(__name__, debug_mode=False)
-timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d--%H:%M:%S')
+timestamp = datetime.fromtimestamp(time()).strftime('%Y-%m-%d--%H:%M:%S')
 
 
 def _get_home_dir() -> str:
@@ -69,7 +73,7 @@ def _get_decrypt_key() -> bytes:
 
 
 def _handle_signing(file_path: str):
-    config = configparser.ConfigParser()
+    config = ConfigParser()
     config.read(os.path.basename(os.getenv("WINDOWS_SIGNKEYS_PATH")))
     section = config.sections()[0]
     if section in config:
@@ -86,12 +90,12 @@ def _handle_signing(file_path: str):
     log_entry[9] = "****"
     log_entry[11] = "****"
     log.info(f"Calling: {' '.join(log_entry)}")
-    sign_result = subprocess.run(cmd_args_sign, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    sign_result = subprocess.run(cmd_args_sign, stdout=DEVNULL, stderr=DEVNULL)
     if sign_result.returncode != 0:
         raise PackagingError(f"Package {file_path} signing  with error {sign_result.returncode}")
     log.info(f"Successfully signed: {file_path}")
     cmd_args_verify = [os.path.basename(os.getenv("WINDOWS_SIGNTOOL_X64_PATH")), "verify", "-pa", file_path]
-    verify_result = subprocess.run(cmd_args_verify, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    verify_result = subprocess.run(cmd_args_verify, stdout=DEVNULL, stderr=DEVNULL)
     if verify_result.returncode != 0:
         raise PackagingError(f"Failed to verify {file_path} with error {verify_result.returncode}")
     log.info(f"Successfully verified: {file_path}")
@@ -116,7 +120,7 @@ def download_signing_tools(path_to_key: str):
         with pysftp.Connection(os.getenv("SFTP_ADDRESS"), username=os.getenv("SFTP_USER"), private_key=path_to_key, cnopts=cnopts) as sftp:
             sftp.get(os.getenv("WINDOWS_SIGNKEYS_PATH"))
             sftp.get(os.getenv("WINDOWS_SIGNTOOL_X64_PATH"))
-    except paramiko.SSHException:
+    except SSHException:
         raise PackagingError("FTP authentication failed!") from None
 
 

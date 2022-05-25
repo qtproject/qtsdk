@@ -29,27 +29,27 @@
 #
 #############################################################################
 
-# built in imports
-from distutils.spawn import find_executable  # runCommand method
 import os
-import sys
-from sys import platform
-import time
 import shutil
-import subprocess
-import threading
-import collections
-import urllib.parse
-import urllib.request
-import urllib.error
-import copy
-import builtins
+import sys
+from builtins import OSError
+from collections import deque
+from copy import deepcopy
+from distutils.spawn import find_executable  # runCommand method
+from socket import setdefaulttimeout
+from subprocess import PIPE, STDOUT, Popen
+from sys import platform
+from threading import currentThread
+from time import sleep
+from urllib.error import HTTPError
+from urllib.parse import urljoin, urlparse
+from urllib.request import pathname2url, urlopen
+
 # 3rd party module to read process output in a convenient way
 from asynchronousfilereader import AsynchronousFileReader
 
 # make a timeout for download jobs
-import socket
-socket.setdefaulttimeout(30)
+setdefaulttimeout(30)
 
 
 def is_windows() -> bool:
@@ -71,8 +71,8 @@ def is_linux() -> bool:
 # but should not do that on the further used environment dict
 def deep_copy_arguments(to_call):
     def f(*args, **kwargs):
-        return to_call(*(copy.deepcopy(x) for x in args),
-                       **{k: copy.deepcopy(v) for k, v in kwargs.items()})
+        return to_call(*(deepcopy(x) for x in args),
+                       **{k: deepcopy(v) for k, v in kwargs.items()})
     return f
 
 
@@ -139,7 +139,7 @@ def urllib2_response_read(response, file_path, block_size, total_size):
 def download(url, target, read_block_size=1048576):
     try:
         if os.path.isdir(os.path.abspath(target)):
-            filename = os.path.basename(urllib.parse.urlparse(url).path)
+            filename = os.path.basename(urlparse(url).path)
             target = os.path.join(os.path.abspath(target), filename)
         if os.path.lexists(target):
             raise Exception("Can not download '{0}' to '{1}' as target. The file already exists.".format(url, target))
@@ -175,14 +175,14 @@ def download(url, target, read_block_size=1048576):
 
         try:
             # use urlopen which raise an error if that file is not existing
-            response = urllib.request.urlopen(url)
+            response = urlopen(url)
             total_size = response.info().get('Content-Length').strip()
             print("Downloading file from '{0}' with size {1} bytes to {2}".format(url, total_size, target))
             # run the download
             received_size = urllib2_response_read(response, savefile_tmp, read_block_size, total_size)
             if received_size != int(total_size):
                 raise Exception("Broken download, got a wrong size after download from '{0}'(total size: {1}, but {2} received).".format(url, total_size, received_size))
-        except urllib.error.HTTPError as error:
+        except HTTPError as error:
             raise Exception("Can not download '{0}' to '{1}' as target(error code: '{2}').".format(url, target, error.code))
 
         renamed = False
@@ -199,10 +199,10 @@ def download(url, target, read_block_size=1048576):
                     renamed = True
                     # make sure that another output starts in a new line
                     sys.stdout.write(os.linesep)
-            except builtins.WindowsError as e:
+            except OSError as e:
                 # if it still exists just try that after a microsleep and stop this after 720 tries
                 if os.path.lexists(savefile_tmp) and tryRenameCounter < 720:
-                    time.sleep(2)
+                    sleep(2)
                     continue
                 else:
                     if not os.path.lexists(target):
@@ -243,12 +243,12 @@ def getEnvironment(extra_environment=None, callerArguments=None):
 
 @deep_copy_arguments
 def runCommand(command, currentWorkingDirectory, callerArguments=None, extra_environment=None, onlyErrorCaseOutput=False, expectedExitCodes=[0]):
-    if builtins.type(expectedExitCodes) is not list:
-        raise TypeError("{}({}) is not {}".format("expectedExitCodes", builtins.type(expectedExitCodes), list))
-    if builtins.type(onlyErrorCaseOutput) is not bool:
-        raise TypeError("{}({}) is not {}".format("onlyErrorCaseOutput", builtins.type(onlyErrorCaseOutput), bool))
+    if type(expectedExitCodes) is not list:
+        raise TypeError("{}({}) is not {}".format("expectedExitCodes", type(expectedExitCodes), list))
+    if type(onlyErrorCaseOutput) is not bool:
+        raise TypeError("{}({}) is not {}".format("onlyErrorCaseOutput", type(onlyErrorCaseOutput), bool))
 
-    if builtins.type(command) is list:
+    if type(command) is list:
         commandAsList = command
     else:
         commandAsList = command[:].split(' ')
@@ -282,21 +282,21 @@ def runCommand(command, currentWorkingDirectory, callerArguments=None, extra_env
     useShell = True if sys.platform.startswith('win') else False
     lastStdOutLines = []
     lastStdErrLines = []
-    if threading.currentThread().name == "MainThread" and not onlyErrorCaseOutput:
-        process = subprocess.Popen(
+    if currentThread().name == "MainThread" and not onlyErrorCaseOutput:
+        process = Popen(
             commandAsList, shell=useShell,
             cwd=currentWorkingDirectory, bufsize=-1, env=environment
         )
     else:
-        process = subprocess.Popen(
+        process = Popen(
             commandAsList, shell=useShell,
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            stdout=PIPE, stderr=PIPE,
             cwd=currentWorkingDirectory, bufsize=-1, env=environment
         )
 
         maxSavedLineNumbers = 1000
-        lastStdOutLines = collections.deque(maxlen=maxSavedLineNumbers)
-        lastStdErrLines = collections.deque(maxlen=maxSavedLineNumbers)
+        lastStdOutLines = deque(maxlen=maxSavedLineNumbers)
+        lastStdErrLines = deque(maxlen=maxSavedLineNumbers)
 
         # Launch the asynchronous readers of the process' stdout and stderr.
         stdout = AsynchronousFileReader(process.stdout)
@@ -308,18 +308,18 @@ def runCommand(command, currentWorkingDirectory, callerArguments=None, extra_env
             for line in stdout.readlines():
                 line = line.decode()
                 lastStdOutLines.append(line)
-                if threading.currentThread().name != "MainThread":
+                if currentThread().name != "MainThread":
                     sys.stdout.write(line)
 
             # Show what we received from standard error.
             for line in stderr.readlines():
                 line = line.decode()
                 lastStdErrLines.append(line)
-                if threading.currentThread().name != "MainThread":
+                if currentThread().name != "MainThread":
                     sys.stdout.write(line)
 
             # Sleep a bit before polling the readers again.
-            time.sleep(1)
+            sleep(1)
 
         # Let's be tidy and join the threads we've started.
         stdout.join()
@@ -338,18 +338,18 @@ def runCommand(command, currentWorkingDirectory, callerArguments=None, extra_env
     #         sys.stderr.write("set " + key + "=" + environment[key] + os.linesep)
     if exitCode not in expectedExitCodes:
         lastOutput = ""
-        type = ""
-        if threading.currentThread().name != "MainThread" or onlyErrorCaseOutput:
+        exit_type = ""
+        if currentThread().name != "MainThread" or onlyErrorCaseOutput:
             if len(lastStdErrLines) != 0:
                 lastOutput += "".join(str(lastStdErrLines))
-                type = "error "
+                exit_type = "error "
             elif len(lastStdOutLines) != 0:
                 lastOutput += "".join(str(lastStdOutLines))
         prettyLastOutput = os.linesep + '======================= error =======================' + os.linesep
         prettyLastOutput += "Working Directory: " + currentWorkingDirectory + os.linesep
         prettyLastOutput += "Last command:      " + ' '.join(commandAsList) + os.linesep
         if lastOutput:
-            prettyLastOutput += "last {0}output:{1}{2}".format(type, os.linesep, lastOutput)
+            prettyLastOutput += "last {0}output:{1}{2}".format(exit_type, os.linesep, lastOutput)
         else:
             prettyLastOutput += " - no process output caught - "
         raise Exception("Different exit code then expected({0}): {1}{2}".format(expectedExitCodes, exitCode, prettyLastOutput))
@@ -369,7 +369,7 @@ def runInstallCommand(arguments=['install'], currentWorkingDirectory=None, calle
             extra_environment["MAKEFLAGS"] = "-j1"
 
     if arguments:
-        installcommand.extend(arguments if builtins.type(arguments) is list else arguments.split())
+        installcommand.extend(arguments if type(arguments) is list else arguments.split())
     return runCommand(installcommand, currentWorkingDirectory, callerArguments, extra_environment=extra_environment, onlyErrorCaseOutput=onlyErrorCaseOutput)
 
 
@@ -380,15 +380,15 @@ def runBuildCommand(arguments=None, currentWorkingDirectory=None, callerArgument
         buildcommand = callerArguments.buildcommand.split()
 
     if arguments:
-        buildcommand.extend(arguments if builtins.type(arguments) is list else arguments.split())
+        buildcommand.extend(arguments if type(arguments) is list else arguments.split())
     return runCommand(buildcommand, currentWorkingDirectory, callerArguments, extra_environment=extra_environment, onlyErrorCaseOutput=onlyErrorCaseOutput, expectedExitCodes=expectedExitCodes)
 
 
 @deep_copy_arguments
 def getReturnValue(command, currentWorkingDirectory=None, extra_environment=None, callerArguments=None):
     commandAsList = command[:].split(' ')
-    return subprocess.Popen(
-        commandAsList, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+    return Popen(
+        commandAsList, stdout=PIPE, stderr=STDOUT,
         cwd=currentWorkingDirectory, env=getEnvironment(extra_environment, callerArguments)
     ).communicate()[0].strip()
 
@@ -419,4 +419,4 @@ def isGitDirectory(repository_path):
 
 
 def file_url(file_path):
-    return urllib.parse.urljoin('file:', urllib.request.pathname2url(file_path))
+    return urljoin('file:', pathname2url(file_path))

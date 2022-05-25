@@ -29,34 +29,33 @@
 #
 #############################################################################
 
-import os
-import sys
 import argparse
 import logging
-import urllib.request
-import tarfile
-import shutil
-import glob
-import subprocess
+import os
+import platform as plat  # import as plat to not shadow the "import platform"
 import re
+import shutil
+import sys
+import tarfile
+from glob import glob
+from shutil import which
+from subprocess import CalledProcessError, check_call
 from time import gmtime, strftime
 from typing import List, Tuple
 from urllib.parse import urlparse
-from shutil import which
-from remote_uploader import RemoteUploader
-from read_remote_config import get_pkg_value
-from bld_utils import is_windows
+from urllib.request import urlretrieve
 
+from rainbow_logging_handler import RainbowLoggingHandler
+
+from bld_utils import is_windows
+from read_remote_config import get_pkg_value
+from remote_uploader import RemoteUploader
 
 LOG_FMT_CI = "%(asctime)s %(levelname)s:%(filename)s:%(lineno)d(%(process)d): %(message)s"
 log = logging.getLogger("Bld")
 log.setLevel(logging.INFO)
 # Unify format of all messages
-try:
-    from rainbow_logging_handler import RainbowLoggingHandler
-    handler = RainbowLoggingHandler(sys.stderr, color_asctime=(None, None, False))
-except ImportError:
-    handler = logging.StreamHandler()
+handler = RainbowLoggingHandler(sys.stderr, color_asctime=(None, None, False))
 
 formatter = logging.Formatter(LOG_FMT_CI)
 handler.setFormatter(formatter)
@@ -97,7 +96,7 @@ def downloadQtPkg(args: argparse.Namespace, currentDir: str) -> Tuple[str, str]:
         log.info("Using existing: %s", saveAs)
     else:
         log.info("Downloading: %s into: %s", args.qtpkg, saveAs)
-        urllib.request.urlretrieve(args.qtpkg, saveAs)
+        urlretrieve(args.qtpkg, saveAs)
 
     return saveAs, qtVersion
 
@@ -113,7 +112,7 @@ def extractArchive(saveAs: str, currentDir: str) -> str:
         elif saveAs.endswith(".7z"):
             try:
                 os.chdir(qtDestDir)
-                subprocess.check_call(['7z', 'x', saveAs])
+                check_call(['7z', 'x', saveAs])
             except Exception as e:
                 log.error("Extracting 7z file failed: %s", str(e))
                 raise
@@ -138,7 +137,7 @@ def build(qtDestDir: str, currentDir: str) -> str:
         f.write("[Paths]\n")
         f.write("Prefix=..\n")
 
-    proFile = glob.glob(os.path.join(args.src_path, "*.pro"))
+    proFile = glob(os.path.join(args.src_path, "*.pro"))
     assert proFile, "Could not find .pro file(s) from: {0}".format(args.src_path)
     proFile = proFile[0]
     log.info("Using .pro file: %s", proFile)
@@ -153,12 +152,12 @@ def build(qtDestDir: str, currentDir: str) -> str:
 
     try:
         os.chdir(bldDir)
-        subprocess.check_call([qmakeTool, proFile])
-        subprocess.check_call([makeToolName])
+        check_call([qmakeTool, proFile])
+        check_call([makeToolName])
         # on windows chhop out the drive letter (e.g. 'C:'"
         installRoot = installRootDir[2:] if is_windows() else installRootDir
-        subprocess.check_call([makeToolName, 'install', 'INSTALL_ROOT=' + installRoot])
-    except subprocess.CalledProcessError as buildError:
+        check_call([makeToolName, 'install', 'INSTALL_ROOT=' + installRoot])
+    except CalledProcessError as buildError:
         log.error("Failed to build the project: %s", str(buildError))
         raise
     except Exception as e:
@@ -180,14 +179,12 @@ def archive(args: argparse.Namespace, installRootDir: str, currentDir: str) -> s
     for lib in libs:
         shutil.copy2(lib, archivePath)
 
-    # import as plat to not shadow the "import platform"
-    import platform as plat
     arch = "x86_64" if sys.maxsize > 2**32 else "x86"
     artifactsFileName = "artifacts-" + plat.system().lower() + "-" + arch + ".7z"
     artifactsFilePath = os.path.join(currentDir, artifactsFileName)
     try:
         os.chdir(archivePath)
-        subprocess.check_call(['7z', 'a', '-m0=lzma2', '-mmt=16', artifactsFilePath, '*'])
+        check_call(['7z', 'a', '-m0=lzma2', '-mmt=16', artifactsFilePath, '*'])
     except Exception as e:
         print(e)
         raise

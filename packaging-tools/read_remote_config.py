@@ -29,24 +29,12 @@
 #
 #############################################################################
 
+import argparse
 import os
 import sys
-import argparse
-
-try:
-    import urllib.request as request
-except ImportError:
-    # Python 2.x
-    import urllib2 as request
-
-try:
-    from configparser import ConfigParser
-    from io import StringIO
-except ImportError:
-    # Python 2.x
-    from ConfigParser import ConfigParser
-    from StringIO import StringIO
-
+from configparser import ConfigParser
+from io import StringIO
+from urllib.request import urlopen
 
 _pkg_remote_settings = None
 
@@ -56,18 +44,14 @@ class RemotePkgConfigError(Exception):
 
 
 def read_packaging_keys_config_url(url):
-    return request.urlopen(url).read().decode('utf-8').strip()
+    return urlopen(url).read().decode('utf-8').strip()
 
 
 def parse_packaging_keys_config(config):
     buf = StringIO(config)
     settings = ConfigParser()
 
-    try:
-        settings.read_file(buf)
-    except Exception:
-        # Python 2.x
-        settings.readfp(buf)
+    settings.read_file(buf)
     return settings
 
 

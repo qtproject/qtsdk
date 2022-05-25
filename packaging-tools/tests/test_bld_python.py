@@ -29,18 +29,19 @@
 #
 #############################################################################
 
-from tests import testhelpers
 import os
 import unittest
-import tempfile
+from tempfile import TemporaryDirectory
+
 from bld_python import BldPythonError, locate_source_root
+from tests.testhelpers import asyncio_test
 
 
 class TestBldPython(unittest.TestCase):
 
-    @testhelpers.asyncio_test
+    @asyncio_test
     async def test_locate_source_root(self) -> None:
-        with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmpBaseDir:
+        with TemporaryDirectory(dir=os.getcwd()) as tmpBaseDir:
             tempDir = os.path.join(tmpBaseDir, "foo", "bar", "test", "dir")
             os.makedirs(tempDir)
             tempFilePath = os.path.join(tempDir, "configure")

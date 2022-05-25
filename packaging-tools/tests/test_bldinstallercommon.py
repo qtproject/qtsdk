@@ -29,15 +29,21 @@
 #
 #############################################################################
 
-from ddt import ddt, data
 import os
 import unittest
-from tempfile import TemporaryDirectory
-from bldinstallercommon import (
-    replace_in_files, search_for_files, locate_executable, locate_path, locate_paths
-)
 from pathlib import Path
+from tempfile import TemporaryDirectory
+
+from ddt import data, ddt
+
 from bld_utils import is_windows
+from bldinstallercommon import (
+    locate_executable,
+    locate_path,
+    locate_paths,
+    replace_in_files,
+    search_for_files,
+)
 from installer_utils import PackagingError
 
 

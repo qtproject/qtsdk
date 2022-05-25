@@ -30,30 +30,26 @@
 #############################################################################
 
 import errno
-import fnmatch
 import os
 import re
 import shutil
-import subprocess
-from subprocess import STDOUT
-import tempfile
-import sys
 import stat
-import traceback
-import urllib.request
-import urllib.error
-import urllib.parse
+import sys
+from fnmatch import fnmatch
 from pathlib import Path
+from subprocess import PIPE, STDOUT, Popen, check_call
+from tempfile import mkdtemp
+from traceback import print_exc
+from typing import Callable, List, Union
+from urllib.parse import urlparse
+from urllib.request import urlcleanup, urlopen, urlretrieve
 
-from bld_utils import runCommand, download, is_windows, is_macos, is_linux
-from threadedwork import Task, ThreadedWork
-from typing import Callable, Union, List
+from bld_utils import download, is_linux, is_macos, is_windows, runCommand
 from installer_utils import PackagingError
 from runner import do_execute_sub_process
+from threadedwork import Task, ThreadedWork
 
-
-# need to include this for win platforms as long path names
-# cause problems
+# need to include this for win platforms as long path names cause problems
 if is_windows():
     import win32api
 
@@ -70,7 +66,7 @@ def is_content_url_valid(url):
         return True
     # throws error if url does not point to valid object
     try:
-        response = urllib.request.urlopen(url)
+        response = urlopen(url)
         total_size = response.info().get('Content-Length').strip()
         return int(total_size) > 0
     except Exception:
@@ -103,8 +99,8 @@ def dlProgress(count, blockSize, totalSize):
 def retrieve_url(url, savefile):
     try:
         savefile_tmp = savefile + '.tmp'
-        urllib.request.urlcleanup()
-        urllib.request.urlretrieve(url, savefile_tmp, reporthook=dlProgress)
+        urlcleanup()
+        urlretrieve(url, savefile_tmp, reporthook=dlProgress)
         shutil.move(savefile_tmp, savefile)
     except Exception:
         exc = sys.exc_info()[0]
@@ -152,7 +148,7 @@ def move_tree(srcdir, dstdir, pattern=None):
         if os.path.isdir(srcfname) and not os.path.islink(srcfname):
             os.mkdir(dstfname)
             move_tree(srcfname, dstfname)
-        elif pattern is None or fnmatch.fnmatch(name, pattern):
+        elif pattern is None or fnmatch(name, pattern):
             if os.path.islink(srcfname):  # shutil.move fails moving directory symlinks over file system bounds...
                 linkto = os.readlink(srcfname)
                 os.symlink(linkto, dstfname)
@@ -191,7 +187,7 @@ def remove_one_tree_level(directory):
         dir_name = dircontents[0]
         full_dir_name = os.path.join(directory, dir_name)
         # avoid directory name collision by first moving to temporary dir
-        tempdir_base = tempfile.mkdtemp()
+        tempdir_base = mkdtemp()
         tempdir = os.path.join(tempdir_base, 'a')  # dummy name
         shutil.move(full_dir_name, tempdir)
         move_tree(tempdir, directory)
@@ -220,7 +216,7 @@ def remove_tree(path):
             try:
                 runCommand(['rmdir', path, '/S', '/Q'], os.getcwd(), onlyErrorCaseOutput=True)
             except Exception:
-                traceback.print_exc()
+                print_exc()
                 pass
         else:
             # shutil.rmtree(path)
@@ -365,8 +361,8 @@ def requires_rpath(file_path):
         if not os.access(file_path, os.X_OK):
             return False
         return (
-            re.search(r':*.R.*PATH=', subprocess.Popen(
-                ['chrpath', '-l', file_path], stdout=subprocess.PIPE
+            re.search(r':*.R.*PATH=', Popen(
+                ['chrpath', '-l', file_path], stdout=PIPE
             ).stdout.read().decode()) is not None
         )
     return False
@@ -379,7 +375,7 @@ def sanity_check_rpath_max_length(file_path, new_rpath):
     if is_linux():
         if not os.access(file_path, os.X_OK):
             return False
-        result = re.search(r':*.R.*PATH=.*', subprocess.Popen(['chrpath', '-l', file_path], stdout=subprocess.PIPE).stdout.read().decode())
+        result = re.search(r':*.R.*PATH=.*', Popen(['chrpath', '-l', file_path], stdout=PIPE).stdout.read().decode())
         if not result:
             print('*** No RPath found from given file: ' + file_path)
         else:
@@ -477,8 +473,8 @@ def handle_component_rpath(component_root_path, destination_lib_paths):
                     # look for existing $ORIGIN path in the binary
                     origin_rpath = re.search(
                         r'\$ORIGIN[^:\n]*',
-                        subprocess.Popen(
-                            ['chrpath', '-l', file_full_path], stdout=subprocess.PIPE
+                        Popen(
+                            ['chrpath', '-l', file_full_path], stdout=PIPE
                         ).stdout.read().decode()
                     )
 
@@ -565,12 +561,12 @@ def git_archive_repo(repo_and_ref):
     if os.path.isfile(archive_name):
         os.remove(archive_name)
     # create temp directory
-    checkout_dir = tempfile.mkdtemp()
+    checkout_dir = mkdtemp()
     # clone given repo to temp
     clone_repository(repository, ref, checkout_dir, full_clone=True, init_subrepos=True)
     # git archive repo with given name
     archive_file = open(archive_name, 'w')
-    subprocess.check_call("git --no-pager archive %s" % (ref), stdout=archive_file, stderr=STDOUT, shell=True, cwd=checkout_dir)
+    check_call("git --no-pager archive %s" % (ref), stdout=archive_file, stderr=STDOUT, shell=True, cwd=checkout_dir)
     archive_file.close()
     print('Created archive: {0}'.format(archive_name))
     shutil.rmtree(checkout_dir, ignore_errors=True)
@@ -685,7 +681,7 @@ def create_extract_function(file_path, target_path, caller_arguments=None):
 # function
 ###############################
 def create_download_and_extract_tasks(url, target_path, temp_path, caller_arguments):
-    filename = os.path.basename(urllib.parse.urlparse(url).path)
+    filename = os.path.basename(urlparse(url).path)
     sevenzip_file = os.path.join(temp_path, filename)
     download_task = Task('download "{0}" to "{1}"'.format(url, sevenzip_file))
     download_task.addFunction(download, url, sevenzip_file)
@@ -698,7 +694,7 @@ def create_download_and_extract_tasks(url, target_path, temp_path, caller_argume
 # function
 ###############################
 def create_download_extract_task(url, target_path, temp_path, caller_arguments):
-    filename = os.path.basename(urllib.parse.urlparse(url).path)
+    filename = os.path.basename(urlparse(url).path)
     sevenzip_file = os.path.join(temp_path, filename)
     download_extract_task = Task("download {0} to {1} and extract it to {2}".format(url, sevenzip_file, target_path))
     download_extract_task.addFunction(download, url, sevenzip_file)

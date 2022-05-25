@@ -29,19 +29,19 @@
 #
 #############################################################################
 
-import os
-import sys
-import re
-import asyncio
 import argparse
+import os
 import platform
-import multiprocessing
-import subprocess
-from shutil import which, rmtree, copytree
+import re
+import sys
+from asyncio import get_event_loop
+from multiprocessing import cpu_count
+from shutil import copytree, rmtree, which
+from subprocess import check_output
+
+from installer_utils import cd, download_archive, extract_archive, is_valid_url_path
 from logging_util import init_logger
 from runner import async_exec_cmd, exec_cmd
-from installer_utils import cd, is_valid_url_path, extract_archive, download_archive
-
 
 log = init_logger(__name__, debug_mode=False)
 
@@ -82,7 +82,7 @@ async def create_symlink(pythonDir: str):
     pythonExe = os.path.join(pythonDir, 'python.exe')
     assert os.path.isfile(pythonExe), "The 'python' executable did not exist: {0}".format(pythonExe)
     versionCmd = [pythonExe, '--version']
-    versionOutput = subprocess.check_output(versionCmd, shell=True).decode("utf-8")
+    versionOutput = check_output(versionCmd, shell=True).decode("utf-8")
     match = re.search(r'(\d+)\.(\d+)\.(\d+)', versionOutput)
     if match:
         destination = os.path.join(pythonDir, 'python' + match.group(1) + match.group(2) + '.exe')
@@ -119,7 +119,7 @@ async def _build_python(srcDir: str, bldDir: str, prefix: str) -> str:
     log.info("  Build dir: %s", bldDir)
     log.info("  Prefix: %s", prefix)
     system = platform.system().lower()
-    cpuCount = str(multiprocessing.cpu_count())
+    cpuCount = str(cpu_count())
     if "darwin" in system:
         opensslQueryCmd = ['brew', '--prefix', 'openssl']
         opensslPath = exec_cmd(opensslQueryCmd)
@@ -180,5 +180,5 @@ if __name__ == "__main__":
             log.error("Could not find '{0}' from the system. This tool is needed. Aborting..".format(requiredTool))
             sys.exit(1)
 
-    loop = asyncio.get_event_loop()
+    loop = get_event_loop()
     loop.run_until_complete(build_python(args.src, args.prefix))

@@ -29,12 +29,15 @@
 #
 #############################################################################
 
-import sh
 import asyncio
-import typing
 import subprocess
+from typing import Any, Callable
+
+from bld_utils import is_windows
 from read_remote_config import get_pkg_value
 
+if not is_windows():
+    import sh
 
 _asyncio_test_loop = asyncio.get_event_loop()
 
@@ -49,7 +52,7 @@ def asyncio_test_parallel_data(*data_args, unpack=True):
         # then double pack so we can unpack anyway
         data_args = ((d,) for d in data_args)
 
-    def decorator(f: typing.Callable[..., typing.Any]):
+    def decorator(f: Callable[..., Any]):
         assert asyncio.iscoroutinefunction(f)
 
         def wrapped(*args, **kwargs):

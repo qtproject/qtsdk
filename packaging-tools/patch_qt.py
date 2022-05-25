@@ -31,7 +31,7 @@
 
 import os
 import re
-import fileinput
+from fileinput import FileInput
 
 
 def _fileIterator(artifactsDir):
@@ -66,7 +66,7 @@ def patchQtEdition(artifactsDir, licheckFileName, releaseDate):
 
 
 def _patchQtEdition(filePath, licheckFileName, releaseDate):
-    for line in fileinput.FileInput(filePath, inplace=True):
+    for line in FileInput(filePath, inplace=True):
         if 'QT_EDITION' in line:
             edition_line = 'QT_EDITION = Enterprise'
             licheck_line = 'QT_LICHECK = ' + licheckFileName
@@ -79,7 +79,7 @@ def _patchQtEdition(filePath, licheckFileName, releaseDate):
 
 
 def patchQConfigPri(filePath):
-    for line in fileinput.FileInput(filePath, inplace=True):
+    for line in FileInput(filePath, inplace=True):
         patchedLine = patchQConfigPriFromLine(line)
         print(patchedLine.rstrip('\n'))
 
@@ -95,7 +95,7 @@ def patchQConfigPriFromLine(line):
 
 def eraseQmakePrlBuildDir(filePath):
     # Erase lines starting with 'QMAKE_PRL_BUILD_DIR' from .prl files
-    for line in fileinput.FileInput(filePath, inplace=True):
+    for line in FileInput(filePath, inplace=True):
         patchedLine = patchQmakePrlBuildDirFromLine(line)
         print(patchedLine.rstrip('\n'))
 
@@ -105,7 +105,7 @@ def patchQmakePrlBuildDirFromLine(line):
 
 
 def patchAbsoluteLibPathsFromFile(filePath):
-    for line in fileinput.FileInput(filePath, inplace=True):
+    for line in FileInput(filePath, inplace=True):
         patchedLine = patchAbsoluteLibPathsFromLine(line, filePath.split(".")[-1])
         print(patchedLine.rstrip('\n'))
 

@@ -30,16 +30,16 @@
 #############################################################################
 
 import os
+from collections import namedtuple
 from pathlib import Path
 
-import bldinstallercommon
-from bld_utils import is_windows, is_linux
-import collections
+from bld_utils import is_linux, is_windows
+from bldinstallercommon import extract_file, remove_one_tree_level, retrieve_url
 from runner import do_execute_sub_process
 
-BuildParams = collections.namedtuple('BuildParams',
-                                     ['src_path', 'build_path', 'target_path',
-                                      'make_command', 'redirect_output'])
+BuildParams = namedtuple('BuildParams',
+                         ['src_path', 'build_path', 'target_path',
+                          'make_command', 'redirect_output'])
 
 
 def qt_static_configure_options():
@@ -85,10 +85,10 @@ def get_and_extract_qt_src(url, temp, path):
     Path(temp).mkdir(parents=True, exist_ok=True)
     ext = package_extension(url)
     file_path = os.path.join(temp, 'qtsrc' + ext)
-    bldinstallercommon.retrieve_url(url, file_path)
+    retrieve_url(url, file_path)
     Path(path).mkdir(parents=True, exist_ok=True)
-    bldinstallercommon.extract_file(file_path, path)
-    bldinstallercommon.remove_one_tree_level(path)
+    extract_file(file_path, path)
+    remove_one_tree_level(path)
 
 
 def configure_qt(params, src, build):

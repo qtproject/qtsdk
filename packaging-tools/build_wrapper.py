@@ -32,26 +32,43 @@
 
 """Scripts to generate SDK installer based on open source InstallerFramework"""
 
-from configparser import ConfigParser
-import optionparser
 import argparse
-import collections
-from glob import glob
 import json
 import os
-import sys
 import re
 import shutil
+import sys
+from collections import namedtuple
+from configparser import ConfigParser
+from getpass import getuser
+from glob import glob
+from time import gmtime, strftime
 from urllib.parse import urlparse
 from urllib.request import urlopen
-from time import gmtime, strftime
-import bld_utils
-from bld_utils import is_windows, is_macos, is_linux
-import bldinstallercommon
-from threadedwork import ThreadedWork, Task
-import bld_sdktool
+
+from bld_sdktool import build_sdktool, zip_sdktool
+from bld_utils import (
+    download,
+    file_url,
+    get_commit_SHA,
+    is_linux,
+    is_macos,
+    is_windows,
+    runCommand,
+)
+from bldinstallercommon import (
+    clone_repository,
+    copy_tree,
+    create_download_and_extract_tasks,
+    create_download_extract_task,
+    create_extract_function,
+    git_archive_repo,
+    safe_config_key_fetch,
+)
+from optionparser import getPkgOptions
 from read_remote_config import get_pkg_value
 from runner import do_execute_sub_process
+from threadedwork import Task, ThreadedWork
 
 # ----------------------------------------------------------------------
 SCRIPT_ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -180,20 +197,20 @@ def create_download_documentation_task(base_url, download_path):
         dest_doc_path = os.path.join(download_path, 'doc')
         os.rename(source_path, dest_doc_path)
         # limit compression to 2 cores to limit memory footprint for 32bit Windows
-        bld_utils.runCommand(['7z', 'a', '-mx1', '-mmt2', '-md32m', '-ms=1g', target_filepath, dest_doc_path],
-                             dest_doc_path, None)
+        runCommand(['7z', 'a', '-mx1', '-mmt2', '-md32m', '-ms=1g', target_filepath, dest_doc_path],
+                   dest_doc_path, None)
 
     download_task = Task("downloading documentation from {0}".format(base_url))
     for item in file_list:
         url = base_url + '/doc/' + item
         download_filepath = os.path.join(download_path, item)
-        download_task.addFunction(bld_utils.download, url, download_filepath)
-        download_task.addFunction(bldinstallercommon.create_extract_function(download_filepath, extract_path, None))
+        download_task.addFunction(download, url, download_filepath)
+        download_task.addFunction(create_extract_function(download_filepath, extract_path, None))
         download_task.addFunction(create_remove_one_dir_level_function(os.path.join(extract_path, item.rstrip(".zip"))))
 
     repackage_task = Task("repackaging documentation as {0}".format(target_filepath))
     repackage_task.addFunction(repackage)
-    return (download_task, repackage_task, bld_utils.file_url(target_filepath))
+    return (download_task, repackage_task, file_url(target_filepath))
 
 
 def create_download_openssl_task(url, download_path):
@@ -220,18 +237,18 @@ def create_download_openssl_task(url, download_path):
         else:
             source_path = linuxdir
             pattern = '*.so*'
-        bld_utils.runCommand(['7z', 'a', '-mmt2', target_filepath, pattern],
-                             source_path, None)
+        runCommand(['7z', 'a', '-mmt2', target_filepath, pattern],
+                   source_path, None)
 
     download_task = Task('downloading openssl from {0}'.format(url))
-    download_task.addFunction(bld_utils.download, url, download_filepath)
+    download_task.addFunction(download, url, download_filepath)
     repackage_task = Task("repackaging openssl as {0}".format(target_filepath))
-    repackage_task.addFunction(bldinstallercommon.create_extract_function(download_filepath, extract_path, None))
+    repackage_task.addFunction(create_extract_function(download_filepath, extract_path, None))
     repackage_task.addFunction(repackage)
-    return (download_task, repackage_task, bld_utils.file_url(target_filepath))
+    return (download_task, repackage_task, file_url(target_filepath))
 
 
-PluginConf = collections.namedtuple('PluginConf', ['git_url', 'branch_or_tag', 'checkout_dir'])
+PluginConf = namedtuple('PluginConf', ['git_url', 'branch_or_tag', 'checkout_dir'])
 
 
 def parseQtCreatorPlugins(pkgConfFile):
@@ -239,7 +256,7 @@ def parseQtCreatorPlugins(pkgConfFile):
     pluginList = []
     if not pkgConfFile:
         return pluginList
-    pluginOptions = optionparser.getPkgOptions(pkgConfFile)
+    pluginOptions = getPkgOptions(pkgConfFile)
     sectionName = "QtCreator.Build.Plugin"
     keyName = "plugins"
     if not pluginOptions.optionExists(sectionName, keyName):
@@ -255,14 +272,14 @@ def parseQtCreatorPlugins(pkgConfFile):
     return pluginList
 
 
-QtcPlugin = collections.namedtuple('QtcPlugin', ['name',
-                                                 'path',
-                                                 'version',
-                                                 'dependencies',
-                                                 'modules',
-                                                 'additional_arguments',
-                                                 'build',
-                                                 'package_commercial'])
+QtcPlugin = namedtuple('QtcPlugin', ['name',
+                                     'path',
+                                     'version',
+                                     'dependencies',
+                                     'modules',
+                                     'additional_arguments',
+                                     'build',
+                                     'package_commercial'])
 
 
 def make_QtcPlugin(name, path, version, dependencies=None, modules=None,
@@ -321,7 +338,7 @@ def create_qtcreator_source_package(source_path, plugin_name, version, edition, 
     if create_tar or create_zip:
         if not os.path.exists(target_base):
             os.makedirs(target_base)
-        bldinstallercommon.copy_tree(source_path, target_base)
+        copy_tree(source_path, target_base)
         if create_tar:
             check_call_log(['tar', 'czf', file_base + '.tar.gz', '--exclude', '.git', file_base],
                            target_path, log_filepath=log_filepath)
@@ -539,8 +556,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         if os.path.exists(qtCreatorSourceDirectory):
             shutil.rmtree(qtCreatorSourceDirectory)
         os.makedirs(qtCreatorSourceDirectory)
-        bldinstallercommon.clone_repository(optionDict['QT_CREATOR_GIT_URL'], optionDict['QT_CREATOR_GIT_BRANCH'],
-                                            qtCreatorSourceDirectory, full_clone=True, init_subrepos=True)
+        clone_repository(optionDict['QT_CREATOR_GIT_URL'], optionDict['QT_CREATOR_GIT_BRANCH'],
+                         qtCreatorSourceDirectory, full_clone=True, init_subrepos=True)
     # Get Qt Creator plugin sources if not present yet
     for pluginConf in qtCreatorPlugins:
         checkoutDir = os.path.join(work_dir, pluginConf.checkout_dir)
@@ -548,7 +565,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
             if os.path.exists(checkoutDir):
                 shutil.rmtree(checkoutDir)
             os.makedirs(checkoutDir)
-            bldinstallercommon.clone_repository(pluginConf.git_url, pluginConf.branch_or_tag, checkoutDir, full_clone=True)
+            clone_repository(pluginConf.git_url, pluginConf.branch_or_tag, checkoutDir, full_clone=True)
 
     # Build time variables
     qtcreator_source = os.path.join(work_dir, 'qt-creator')
@@ -612,7 +629,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     extract_work = Task('Extract packages')
 
     def add_download_extract(url, target_path):
-        (download, extract) = bldinstallercommon.create_download_and_extract_tasks(
+        (download, extract) = create_download_and_extract_tasks(
             url, target_path, download_temp, None)
         download_work.addTaskObject(download)
         extract_work.addFunction(extract.do)
@@ -684,7 +701,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     qt_module_urls.append(documentation_local_url)
     if qt_extra_module_url:
         qt_module_urls.append(qt_extra_module_url)
-    qt_module_local_urls = [bld_utils.file_url(os.path.join(qt_temp, os.path.basename(url)))
+    qt_module_local_urls = [file_url(os.path.join(qt_temp, os.path.basename(url)))
                             for url in qt_module_urls]
 
     # download and install qt
@@ -781,7 +798,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                                               additional_arguments=plugin_telemetry_args)]),
 
     # Build Qt Creator plugins
-    icu_local_url = bld_utils.file_url(os.path.join(qt_temp, os.path.basename(icu_libs))) if is_linux() else None
+    icu_local_url = file_url(os.path.join(qt_temp, os.path.basename(icu_libs))) if is_linux() else None
     # extract qtcreator bin and dev packages
     qtcreator_path = os.path.join(work_dir, 'qtc_build')
     check_call_log(['7z', 'x', '-y', os.path.join(work_dir, 'qt-creator_build', 'qtcreator.7z'), '-o' + qtcreator_path],
@@ -792,7 +809,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                             openssl_url=openssl_local_url, additional_config=qtc_additional_config,
                             log_filepath=log_filepath)
 
-    qtcreator_sha = bld_utils.get_commit_SHA(qtcreator_source)
+    qtcreator_sha = get_commit_SHA(qtcreator_source)
     with open(os.path.join(work_dir, 'QTC_SHA1'), 'w') as f:
         f.write(qtcreator_sha + '\n')
 
@@ -801,7 +818,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         sha1s = collect_qt_creator_plugin_sha1s(additional_plugins)
         licensemanaging_source = os.path.join(work_dir, 'license-managing')
         if os.path.exists(licensemanaging_source):
-            sha1s.append('license-managing: ' + bld_utils.get_commit_SHA(licensemanaging_source))
+            sha1s.append('license-managing: ' + get_commit_SHA(licensemanaging_source))
         sha1s.append('qt-creator: ' + qtcreator_sha)
         with open(os.path.join(work_dir, 'SHA1'), 'w') as f:
             f.writelines([sha + '\n' for sha in sha1s])
@@ -821,14 +838,14 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         sdktool_build_path = os.path.join(work_dir, 'sdktool_build')
         sdktool_target_path = os.path.join(sdktool_build_path, 'target')
         with BuildLog(log_filepath) as f:
-            bld_sdktool.build_sdktool(sdktool_qtbase_src, os.path.join(sdktool_build_path, 'qt'),
-                                      os.path.join(work_dir, 'qt-creator', 'src', 'tools', 'sdktool'),
-                                      os.path.join(sdktool_build_path, 'src', 'tools', 'sdktool'),
-                                      sdktool_target_path,
-                                      'nmake' if is_windows() else 'make',
-                                      redirect_output=f)
-            bld_sdktool.zip_sdktool(sdktool_target_path, os.path.join(work_dir, 'sdktool.7z'),
-                                    redirect_output=f)
+            build_sdktool(sdktool_qtbase_src, os.path.join(sdktool_build_path, 'qt'),
+                          os.path.join(work_dir, 'qt-creator', 'src', 'tools', 'sdktool'),
+                          os.path.join(sdktool_build_path, 'src', 'tools', 'sdktool'),
+                          sdktool_target_path,
+                          'nmake' if is_windows() else 'make',
+                          redirect_output=f)
+            zip_sdktool(sdktool_target_path, os.path.join(work_dir, 'sdktool.7z'),
+                        redirect_output=f)
 
     # repackage and sign opensource and enterprise packages on macOS
     # these are then for direct packaging in the offline installers
@@ -955,12 +972,12 @@ def handle_sdktool_build(optionDict):
     download_temp = os.path.join(work_dir, 'downloads')
     sdktool_build_path = os.path.join(work_dir, 'sdktool_build')
     sdktool_target_path = os.path.join(sdktool_build_path, 'target')
-    bld_sdktool.build_sdktool(sdktool_qtbase_src, os.path.join(sdktool_build_path, 'qt'),
-                              os.path.join(work_dir, 'qt-creator', 'src', 'tools', 'sdktool'),
-                              os.path.join(sdktool_build_path, 'src', 'tools', 'sdktool'),
-                              sdktool_target_path,
-                              'nmake' if is_windows() else 'make')
-    bld_sdktool.zip_sdktool(sdktool_target_path, os.path.join(work_dir, 'sdktool.7z'))
+    build_sdktool(sdktool_qtbase_src, os.path.join(sdktool_build_path, 'qt'),
+                  os.path.join(work_dir, 'qt-creator', 'src', 'tools', 'sdktool'),
+                  os.path.join(sdktool_build_path, 'src', 'tools', 'sdktool'),
+                  sdktool_target_path,
+                  'nmake' if is_windows() else 'make')
+    zip_sdktool(sdktool_target_path, os.path.join(work_dir, 'sdktool.7z'))
     file_upload_list = [('sdktool.7z', target_env_dir + '/sdktool.7z')]
     if is_windows():  # wininterrupt & qtcreatorcdbext
         cmd_args = [sys.executable, '-u', os.path.join(qtcreator_src, 'scripts', 'build.py'),
@@ -973,7 +990,7 @@ def handle_sdktool_build(optionDict):
         python_url = optionDict.get('PYTHON_URL')
         if python_url:
             python_path = os.path.join(download_temp, 'python')
-            download_packages_work.addTaskObject(bldinstallercommon.create_download_extract_task(
+            download_packages_work.addTaskObject(create_download_extract_task(
                 python_url, python_path, download_temp, None))
             cmd_args.extend(['--python-path', python_path])
 
@@ -1014,8 +1031,8 @@ def create_remote_dirs(optionDict, server, dir_path):
 ###############################
 # git archive given repository
 ###############################
-def git_archive_repo(optionDict, repo_and_ref):
-    archive_name = bldinstallercommon.git_archive_repo(repo_and_ref)
+def do_git_archive_repo(optionDict, repo_and_ref):
+    archive_name = git_archive_repo(repo_and_ref)
     (repository, ref) = repo_and_ref.split("#")
     project_name = repository.split("/")[-1].split(".")[0]
     # Create remote dest directories
@@ -1050,7 +1067,7 @@ def initPkgOptions(args):
     optionDict = {}
     # Are we using local conf file for pkg options?
     if args.pkg_conf_file:
-        options = optionparser.getPkgOptions(args.pkg_conf_file)
+        options = getPkgOptions(args.pkg_conf_file)
         optionDict = mergeTwoDicts(optionDict, options.configMap())
         optionDict['TARGET_ENV'] = args.target_env if args.target_env else getDefaultTargetEnv()
         optionDict['BUILD_NUMBER'] = str(strftime('%Y%m%d%H%M%S', gmtime()))
@@ -1082,7 +1099,6 @@ def initPkgOptions(args):
         optionDict['PROD_ADDR'] = get_pkg_value("PROD_ADDR")
 
         if LOCAL_MODE:
-            from getpass import getuser
             optionDict['PACKAGE_STORAGE_SERVER_USER'] = getuser()  # current user
             optionDict['PACKAGE_STORAGE_SERVER'] = "127.0.0.1"
             optionDict['PACKAGE_STORAGE_SERVER_ADDR'] = optionDict['PACKAGE_STORAGE_SERVER_USER'] + "@" + optionDict['PACKAGE_STORAGE_SERVER']
@@ -1118,8 +1134,8 @@ def initPkgOptions(args):
         parser.read(path)
         for s in parser.sections():
             if s == 'release.global':
-                version = bldinstallercommon.safe_config_key_fetch(parser, s, 'version')
-                version_tag = bldinstallercommon.safe_config_key_fetch(parser, s, 'version_tag')
+                version = safe_config_key_fetch(parser, s, 'version')
+                version_tag = safe_config_key_fetch(parser, s, 'version_tag')
                 optionDict['VERSION'] = version
                 optionDict['VERSION_TAG'] = version_tag
                 optionDict['VERSION_FULL'] = version if not version_tag else version + '-' + version_tag
@@ -1167,6 +1183,6 @@ if __name__ == '__main__':
     elif args.command == bld_licheck:
         handle_qt_licheck_build(optionDict)
     elif args.command == archive_repository:
-        git_archive_repo(optionDict, args.archive_repo)
+        do_git_archive_repo(optionDict, args.archive_repo)
     else:
         print('Unsupported command')

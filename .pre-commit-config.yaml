@@ -12,7 +12,9 @@ repos:
         fail_fast: true
       - id: unittest
         name: Run unit tests (unittest)
-        entry: bash -c 'cd packaging-tools && pipenv run python3 -m unittest'
+        # Imports in unit tests failing as packaging-tools is not a valid Python package name
+        # Change dir to packaging-tools and append to PYTHONPATH environment variable as a workaround
+        entry: bash -c 'cd packaging-tools && export PYTHONPATH=$(pwd) && pipenv run python3 -m unittest'
         language: system
         pass_filenames: false
         always_run: true
@@ -22,6 +24,12 @@ repos:
         # Disable E203 for compatibility with blackformatter, and W503 as it goes against PEP8
         # Disable checks that are not relevant to this patch, they will be introduced later
         entry: bash -c 'pipenv run python3 -m flake8 --max-line-length=99 --ignore=E203,E501,W503 "$@"'
+        language: system
+        types: [python]
+        fail_fast: true
+      - id: isort
+        name: Sort imports (isort)
+        entry: bash -c 'for x in "$@"; do pipenv run python3 -m isort --line-length 99 --profile black --src packaging-tools "$x"; done'
         language: system
         types: [python]
         fail_fast: true

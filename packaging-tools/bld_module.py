@@ -29,23 +29,38 @@
 #
 #############################################################################
 
-# built in imports
-import argparse  # commandline argument parser
-import multiprocessing
+import argparse
 import os
-import sys
 import shutil
-import fileinput
+import sys
+from fileinput import FileInput
 from functools import reduce
+from multiprocessing import cpu_count
 from pathlib import Path
 
-# own imports
-from threadedwork import ThreadedWork
-from bld_utils import runCommand, runBuildCommand, runInstallCommand, stripVars, is_windows, is_linux, is_macos
-import bldinstallercommon
-from bldinstallercommon import locate_path, locate_paths
+from bld_utils import (
+    is_linux,
+    is_macos,
+    is_windows,
+    runBuildCommand,
+    runCommand,
+    runInstallCommand,
+    stripVars,
+)
+from bldinstallercommon import (
+    clone_repository,
+    create_download_and_extract_tasks,
+    create_qt_download_task,
+    locate_path,
+    locate_paths,
+    patch_qt,
+    remove_tree,
+    rename_android_soname_files,
+    search_for_files,
+)
 from installer_utils import PackagingError
 from runner import do_execute_sub_process
+from threadedwork import ThreadedWork
 
 SCRIPT_ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 MODULE_SRC_DIR_NAME = 'module_src'
@@ -79,7 +94,7 @@ def erase_qmake_prl_build_dir(search_path):
     # erase lines starting with 'QMAKE_PRL_BUILD_DIR' from .prl files
     for item in file_list:
         found = False
-        for line in fileinput.FileInput(item, inplace=1):
+        for line in FileInput(item, inplace=1):
             if line.startswith('QMAKE_PRL_BUILD_DIR'):
                 found = True
                 print(''.rstrip('\n'))
@@ -95,11 +110,11 @@ def erase_qmake_prl_build_dir(search_path):
 def patch_build_time_paths(search_path, search_strings, qt_install_prefix):
     extension_list = ['*.prl', '*.pri', '*.pc', '*.la']
     search_regexp = '|'.join(search_strings)
-    file_list = bldinstallercommon.search_for_files(search_path, extension_list, search_regexp)
+    file_list = search_for_files(search_path, extension_list, search_regexp)
 
     for item in file_list:
         print('Replacing {0} paths from file: {1}'.format(search_strings, item))
-        for line in fileinput.FileInput(item, inplace=1):
+        for line in FileInput(item, inplace=1):
             patched_line = reduce(lambda accum, value: accum.replace(value, qt_install_prefix),
                                   search_strings,
                                   line)
@@ -184,12 +199,12 @@ tempPath = os.path.abspath(os.path.join(os.path.dirname(__file__), 'temp'))
 # clone module repo
 if callerArguments.module_url != '':
     Path(MODULE_SRC_DIR).mkdir(parents=True, exist_ok=True)
-    bldinstallercommon.clone_repository(callerArguments.module_url, callerArguments.module_branch, os.path.join(os.path.dirname(__file__), MODULE_SRC_DIR_NAME))
+    clone_repository(callerArguments.module_url, callerArguments.module_branch, os.path.join(os.path.dirname(__file__), MODULE_SRC_DIR_NAME))
     qtModuleSourceDirectory = MODULE_SRC_DIR
 elif callerArguments.module7z != '':
     Path(MODULE_SRC_DIR).mkdir(parents=True, exist_ok=True)
     myGetQtModule = ThreadedWork("get and extract module src")
-    myGetQtModule.addTaskObject(bldinstallercommon.create_download_extract_task(callerArguments.module7z, MODULE_SRC_DIR, tempPath, callerArguments))
+    myGetQtModule.addTaskObject(create_download_and_extract_tasks(callerArguments.module7z, MODULE_SRC_DIR, tempPath, callerArguments))
     myGetQtModule.run()
     qtModuleSourceDirectory = MODULE_SRC_DIR
 else:
@@ -210,9 +225,9 @@ if is_windows():
 # clean step
 if callerArguments.clean:
     print("##### {0} #####".format("clean old builds"))
-    bldinstallercommon.remove_tree(callerArguments.qt5path)
-    bldinstallercommon.remove_tree(qtModuleInstallDirectory)
-    bldinstallercommon.remove_tree(tempPath)
+    remove_tree(callerArguments.qt5path)
+    remove_tree(qtModuleInstallDirectory)
+    remove_tree(tempPath)
 
 if not os.path.lexists(callerArguments.qt5path) and not callerArguments.qt5_module_urls:
     parser.print_help()
@@ -226,7 +241,7 @@ if not os.path.lexists(callerArguments.qt5path):
     # get Qt
     myGetQtBinaryWork = ThreadedWork("get and extract Qt 5 binary")
     myGetQtBinaryWork.addTaskObject(
-        bldinstallercommon.create_qt_download_task(
+        create_qt_download_task(
             callerArguments.qt5_module_urls,
             callerArguments.qt5path, tempPath, callerArguments
         )
@@ -237,7 +252,7 @@ if not os.path.lexists(callerArguments.qt5path):
     qt_install_prefix = get_qt_install_prefix(callerArguments.qt5path)
 
     # "install" Qt
-    bldinstallercommon.patch_qt(callerArguments.qt5path)
+    patch_qt(callerArguments.qt5path)
 
 # lets start building
 
@@ -262,7 +277,7 @@ if is_macos():
     environment["DYLD_FRAMEWORK_PATH"] = os.path.join(callerArguments.qt5path, 'lib')
 
 if not is_windows():
-    environment["MAKEFLAGS"] = "-j" + str(multiprocessing.cpu_count() + 1)
+    environment["MAKEFLAGS"] = "-j" + str(cpu_count() + 1)
 
 if callerArguments.debug:
     buildType = 'debug'
@@ -315,7 +330,7 @@ if ret:
 
 # patch .so filenames on Windows/Android
 if is_windows() and os.environ.get('DO_PATCH_ANDROID_SONAME_FILES'):
-    bldinstallercommon.rename_android_soname_files(qtModuleInstallDirectory)
+    rename_android_soname_files(qtModuleInstallDirectory)
 
 # doc collection
 if callerArguments.collectDocs:

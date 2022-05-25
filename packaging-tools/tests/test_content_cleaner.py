@@ -32,9 +32,11 @@
 
 import os
 import unittest
-import tempfile
+from tempfile import TemporaryDirectory
 from typing import List
-from ddt import ddt, data, unpack
+
+from ddt import data, ddt, unpack
+
 from content_cleaner import preserve_content, remove_content, remove_empty_directories
 
 
@@ -102,7 +104,7 @@ class TestContentCleaner(unittest.TestCase):
         expected_result: List[str],
         preserve_rules: List[str],
     ) -> None:
-        with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
+        with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
             test_base_dir = os.path.join(tmp_base_dir, "test-base-dir")
             self.generate_test_content(test_base_dir, test_content)
             preserve_content(test_base_dir, preserve_rules)
@@ -145,7 +147,7 @@ class TestContentCleaner(unittest.TestCase):
         verify_removed_files: List[str],
     ) -> None:
         try:
-            with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
+            with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
                 test_base_dir = os.path.join(tmp_base_dir, "test-base-dir")
                 self.generate_test_content(test_base_dir, test_content)
                 remove_content(test_base_dir, remove_rules)
@@ -165,7 +167,7 @@ class TestContentCleaner(unittest.TestCase):
     @unpack
     def test_remove_empty_directories(self, test_content: str, remove_dir: bool) -> None:
         try:
-            with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
+            with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
                 test_base_dir = os.path.join(tmp_base_dir, "test-base-dir")
                 self.generate_test_content(test_base_dir, test_content)
                 remove_empty_directories(test_base_dir)

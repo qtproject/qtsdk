@@ -29,12 +29,13 @@
 #
 #############################################################################
 
+import argparse
 import os
 import sys
-import argparse
-from pathlib import Path
 from contextlib import contextmanager
-from typing import List, Generator
+from pathlib import Path
+from typing import Generator, List
+
 from logging_util import init_logger
 
 log = init_logger(__name__, debug_mode=False)

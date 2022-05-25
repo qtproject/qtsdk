@@ -29,21 +29,37 @@
 #
 #############################################################################
 
-from tests import testhelpers
 import os
 import unittest
+from configparser import ConfigParser
+from shutil import rmtree
+from tempfile import TemporaryDirectory
+
 from ddt import ddt
-import tempfile
-import shutil
-import configparser
+
 from installer_utils import PackagingError
-from release_task_reader import parse_data
-from release_repo_updater import upload_ifw_to_remote, upload_pending_repository_content, \
-    reset_new_remote_repository, create_remote_repository_backup, \
-    remote_file_exists, build_online_repositories, \
-    ensure_ext_repo_paths, parse_ext, check_repogen_output, append_to_task_filters, \
-    format_task_filters, has_connection_error
 from read_remote_config import get_pkg_value
+from release_repo_updater import (
+    append_to_task_filters,
+    build_online_repositories,
+    check_repogen_output,
+    create_remote_repository_backup,
+    ensure_ext_repo_paths,
+    format_task_filters,
+    has_connection_error,
+    parse_ext,
+    remote_file_exists,
+    reset_new_remote_repository,
+    string_to_bool,
+    upload_ifw_to_remote,
+    upload_pending_repository_content,
+)
+from release_task_reader import parse_data
+from tests.testhelpers import (
+    asyncio_test,
+    asyncio_test_parallel_data,
+    isInternalFileServerReachable,
+)
 
 
 def _write_dummy_file(path: str) -> None:
@@ -104,23 +120,23 @@ class TestReleaseRepoUpdater(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.server = "127.0.0.1"
 
-    @testhelpers.asyncio_test
+    @asyncio_test
     async def test_remote_file_exists(self):
         self.assertTrue(remote_file_exists(self.server, os.path.abspath(__file__)))
         self.assertFalse(remote_file_exists(self.server, "/some/bogus/directory/foo.txt"))
 
-    @unittest.skipUnless(testhelpers.isInternalFileServerReachable(), "Skipping because file server is not accessible")
-    @testhelpers.asyncio_test
+    @unittest.skipUnless(isInternalFileServerReachable(), "Skipping because file server is not accessible")
+    @asyncio_test
     async def test_upload_ifw_to_remote(self) -> None:
         try:
             repogen = await _get_repogen()
         finally:
             self.assertTrue(os.path.isfile(repogen))
-            shutil.rmtree(os.path.dirname(repogen))
+            rmtree(os.path.dirname(repogen))
 
-    @testhelpers.asyncio_test
+    @asyncio_test
     async def test_upload_pending_repository_content(self) -> None:
-        with tempfile.TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
+        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
             sourceRepo = os.path.join(tmpBaseDir, "repository")
             destinationRepo = os.path.join(tmpBaseDir, "destination_online_repository")
 
@@ -131,9 +147,9 @@ class TestReleaseRepoUpdater(unittest.TestCase):
             upload_pending_repository_content(self.server, sourceRepo, destinationRepo)
             self.assertListEqual(sorted(os.listdir(sourceRepo)), sorted(os.listdir(destinationRepo)))
 
-    @testhelpers.asyncio_test
+    @asyncio_test
     async def test_reset_new_remote_repository(self) -> None:
-        with tempfile.TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
+        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
             remoteSourceRepoPath = os.path.join(tmpBaseDir, "repository")
             remoteTargetRepoPath = os.path.join(tmpBaseDir, "destination_online_repository")
 
@@ -150,9 +166,9 @@ class TestReleaseRepoUpdater(unittest.TestCase):
             reset_new_remote_repository(self.server, remoteSourceRepoPath, remoteTargetRepoPath)
             self.assertTrue(os.path.exists(remoteTargetRepoPath + "____snapshot_backup"))
 
-    @testhelpers.asyncio_test
+    @asyncio_test
     async def test_create_remote_repository_backup(self) -> None:
-        with tempfile.TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
+        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
             remoteSourceRepoPath = os.path.join(tmpBaseDir, "repository")
 
             _write_dummy_file(os.path.join(remoteSourceRepoPath, "qt.foo.bar1", "meta", "package.xml"))
@@ -163,20 +179,19 @@ class TestReleaseRepoUpdater(unittest.TestCase):
             self.assertFalse(os.path.exists(remoteSourceRepoPath))
             self.assertListEqual(sorted(["Updates.xml", "qt.foo.bar1", "qt.foo.bar2"]), sorted(os.listdir(remoteRepoBackupPath)))
 
-    @testhelpers.asyncio_test_parallel_data((True, True), (False, False), ("yes", True), ("1", True), ("y", True),
-                                            ("false", False), ("n", False), ("0", False), ("no", False))
+    @asyncio_test_parallel_data((True, True), (False, False), ("yes", True), ("1", True), ("y", True),
+                                ("false", False), ("n", False), ("0", False), ("no", False))
     async def test_string_to_bool(self, value: str, expectedResult: bool) -> None:
-        from release_repo_updater import string_to_bool
         self.assertEqual(string_to_bool(value), expectedResult)
 
-    @testhelpers.asyncio_test
+    @asyncio_test
     async def test_build_online_repositories_dryrun(self) -> None:
         sample_config = """
             [task.repository.linux.x86_64.repo1]
             config_file: foobar_config_file
             repo_path: foo/bar/path_1
         """
-        config = configparser.ConfigParser()
+        config = ConfigParser()
         config.read_string(sample_config)
 
         # parse all tasks i.e. no filters
@@ -186,14 +201,14 @@ class TestReleaseRepoUpdater(unittest.TestCase):
         task = tasks.pop()
         self.assertTrue(task.source_online_repository_path.endswith("foo/bar/path_1/online_repository"))
 
-    @testhelpers.asyncio_test
+    @asyncio_test
     async def test_ensure_ext_repo_paths(self) -> None:
-        with tempfile.TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
+        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
             expectedRepo = os.path.join(tmpBaseDir, "some", "test", "path")
             await ensure_ext_repo_paths(self.server, self.server, expectedRepo)
             self.assertTrue(os.path.isdir(expectedRepo))
 
-    @testhelpers.asyncio_test_parallel_data(
+    @asyncio_test_parallel_data(
         ("user@server.com:/foo/bar"),
         ("server.com:/foo/bar"),
         ("user@server.com:/"), unpack=False
@@ -201,7 +216,7 @@ class TestReleaseRepoUpdater(unittest.TestCase):
     async def test_parse_ext_valid(self, ext) -> None:
         parse_ext(ext)
 
-    @testhelpers.asyncio_test_parallel_data(
+    @asyncio_test_parallel_data(
         ("user@server.com"),
         ("server.com:/foo/bar:"),
         ("user@server.com:some/path"), unpack=False
@@ -210,7 +225,7 @@ class TestReleaseRepoUpdater(unittest.TestCase):
         with self.assertRaises(PackagingError):
             parse_ext(ext)
 
-    @testhelpers.asyncio_test_parallel_data(
+    @asyncio_test_parallel_data(
         ("Error: Repository parameter missing argument"),
         ("Invalid content in ..."),
         ("Repository target directory /foobar/bar/foo already exists."), unpack=False
@@ -219,7 +234,7 @@ class TestReleaseRepoUpdater(unittest.TestCase):
         with self.assertRaises(PackagingError):
             check_repogen_output(repogen_output)
 
-    @testhelpers.asyncio_test_parallel_data(
+    @asyncio_test_parallel_data(
         ("Update component a.b.c.d"),
         ("Cannot find new components to update"), unpack=False
     )
@@ -227,7 +242,7 @@ class TestReleaseRepoUpdater(unittest.TestCase):
         # should not throw exception
         check_repogen_output(repogen_output)
 
-    @testhelpers.asyncio_test_parallel_data(
+    @asyncio_test_parallel_data(
         ([], ["repository"]),
         (["linux,common"], ["repository,linux,common"]),
         (["", "linux,common"], ["repository", "repository,linux,common"])
@@ -235,7 +250,7 @@ class TestReleaseRepoUpdater(unittest.TestCase):
     async def test_append_to_task_filters(self, task_filters: str, expected_result: bool) -> None:
         self.assertEqual(append_to_task_filters(task_filters, "repository"), expected_result)
 
-    @testhelpers.asyncio_test_parallel_data(
+    @asyncio_test_parallel_data(
         (["task.repository.linux.x64.feature1"], ["task,repository,linux,x64,feature1"]),
         (["task.repository.linux.x64.feature1", "windows.x64,feature2"],
          ["task,repository,linux,x64,feature1", "windows,x64,feature2"]),
@@ -247,7 +262,7 @@ class TestReleaseRepoUpdater(unittest.TestCase):
         print("test")
         self.assertEqual(format_task_filters(task_filters), expected_result)
 
-    @testhelpers.asyncio_test_parallel_data(
+    @asyncio_test_parallel_data(
         ("qtsdkrepository/windows_x86/desktop/tools_maintenance/log-s3-2020-12-03--10:18:11-xml.t"
          "xt:fatal error: Could not connect to the endpoint URL: 'https://qt-cdn.s3.eu-west-1.ama"
          "zonaws.com/?list-type=2&prefix=qtsdkrepository%2Fwindows_x86%2Fdesktop%2Ftools_maintena"

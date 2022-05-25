@@ -30,20 +30,20 @@
 #############################################################################
 
 import os
-import bld_utils
+
 import environmentfrombatchfile
-from bld_utils import is_windows, is_linux
+from bld_utils import is_linux, is_windows, runCommand
 from read_remote_config import get_pkg_value
 from runner import do_execute_sub_process
 
 
 def git_clone_and_checkout(base_path, remote_repository_url, directory, revision):
-    bld_utils.runCommand(['git', 'clone',
-                          '--config', 'core.eol=lf',
-                          '--config', 'core.autocrlf=input',
-                          '--branch', revision,
-                          '--recursive',
-                          remote_repository_url, directory], base_path)
+    runCommand(['git', 'clone',
+                '--config', 'core.eol=lf',
+                '--config', 'core.autocrlf=input',
+                '--branch', revision,
+                '--recursive',
+                remote_repository_url, directory], base_path)
 
 
 def get_clang(base_path, llvm_revision):
@@ -240,14 +240,14 @@ def check_clang(toolchain, build_path, environment):
 def package_clang(install_path, result_file_path):
     (basepath, dirname) = os.path.split(install_path)
     zip_command = ['cmake', '-E', 'tar', 'cvf', result_file_path, '--format=7zip', dirname]
-    bld_utils.runCommand(zip_command, basepath)
+    runCommand(zip_command, basepath)
 
 
 def upload_clang(file_path, remote_path):
     (path, filename) = os.path.split(file_path)
     scp_bin = '%SCP%' if is_windows() else 'scp'
     scp_command = [scp_bin, filename, remote_path]
-    bld_utils.runCommand(scp_command, path)
+    runCommand(scp_command, path)
 
 
 def main():

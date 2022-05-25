@@ -28,16 +28,15 @@
 # $QT_END_LICENSE$
 #
 #############################################################################
-import itertools
-# to get the cpu number
-import multiprocessing
-import os
-import threading
-import traceback
-import time
-import sys
-import queue
 import builtins as __builtin__
+import itertools
+import os
+import sys
+import threading
+from multiprocessing import cpu_count
+from queue import Queue
+from time import sleep
+from traceback import format_exc
 
 # we are using RLock, because threadedPrint is using the same lock
 outputLock = threading.RLock()
@@ -98,7 +97,7 @@ __builtin__.org_stdout = sys.stdout
 __builtin__.org_sterr = sys.stderr
 
 
-def enableThreadedPrint(enable=True, threadCount=multiprocessing.cpu_count()):
+def enableThreadedPrint(enable=True, threadCount=cpu_count()):
     if enable:
         global outputStates
         global outputFormatString
@@ -161,7 +160,7 @@ class Task():
                 sys.__stdout__.flush()
                 sys.__stderr__.write(format(taskFunction))
                 sys.__stderr__.write(os.linesep)
-                sys.__stderr__.write(traceback.format_exc())
+                sys.__stderr__.write(format_exc())
                 sys.__stderr__.flush()
                 self.exitFunction(*(self.exitFunctionArguments))
         print("Done")
@@ -171,7 +170,7 @@ class ThreadedWork():
 
     def __init__(self, description):
         self.description = os.linesep + "##### {} #####".format(description)
-        self.queue = queue.Queue()
+        self.queue = Queue()
         self.legend = []
         self.taskNumber = 0
         self.exitFunction = None
@@ -194,7 +193,7 @@ class ThreadedWork():
 
     def run(self, maxThreads=None):
         if not maxThreads:
-            maxThreads = min(multiprocessing.cpu_count(), self.taskNumber)
+            maxThreads = min(cpu_count(), self.taskNumber)
         print(self.description)
         print(os.linesep.join(self.legend))
 
@@ -214,7 +213,7 @@ class ThreadedWork():
             while consumer.is_alive():
                 try:
                     # wait 1 second, then go back and ask if thread is still alive
-                    time.sleep(1)
+                    sleep(1)
                 except KeyboardInterrupt:  # if ctrl-C is pressed within that second,
                     # catch the KeyboardInterrupt exception
                     sys.exit(0)

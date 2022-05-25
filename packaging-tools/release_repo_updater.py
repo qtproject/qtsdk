@@ -29,35 +29,39 @@
 #
 #############################################################################
 
-import os
-import re
-import sys
-import json
-import time
-import shutil
-import asyncio
-import tempfile
-import platform
-import datetime
 import argparse
-from configparser import ConfigParser, ExtendedInterpolation
-from typing import List, Dict, Tuple
-from time import gmtime, strftime
-from pathlib import Path
+import json
+import os
+import platform
+import re
+import shutil
 import subprocess
-import release_task_reader
-from urllib.request import urlretrieve, urlopen
+import sys
+from asyncio import get_event_loop
+from configparser import ConfigParser, ExtendedInterpolation
+from datetime import datetime
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from time import gmtime, sleep, strftime, time
+from typing import Dict, List, Tuple
 from urllib.error import HTTPError, URLError
-from release_task_reader import ReleaseTask
-from installer_utils import PackagingError
-from runner import exec_cmd, async_exec_cmd
-from logging_util import init_logger
+from urllib.request import urlopen, urlretrieve
+
+from bld_utils import is_linux
 from bldinstallercommon import locate_path
+from installer_utils import PackagingError, download_archive, extract_archive, is_valid_url_path
+from logging_util import init_logger
 from read_remote_config import get_pkg_value
-import sign_installer
+from release_task_reader import ReleaseTask, parse_config
+from runner import async_exec_cmd, exec_cmd
+from sign_installer import create_mac_dmg, sign_mac_app
+from sign_windows_installer import sign_executable
+
+if is_linux():
+    import sh
 
 log = init_logger(__name__, debug_mode=False)
-timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d--%H:%M:%S')
+timestamp = datetime.fromtimestamp(time()).strftime('%Y-%m-%d--%H:%M:%S')
 
 
 class event_register(object):
@@ -73,7 +77,6 @@ class event_register(object):
     def initialize(cls, event_injector_path: str):
         if not cls.python_path:
             if platform.system() == "Linux":
-                import sh
                 cls.python_path = sh.which("python3")
             if platform.system() == "Windows":
                 cls.python_path = os.path.join(os.getenv("PYTHON3_PATH"), "python.exe")
@@ -169,7 +172,7 @@ def execute_remote_cmd(remoteServer: str, remoteServerHome: str, cmd: List[str],
 
 
 def create_remote_script(server: str, cmd: List[str], remoteScriptPath: str, scriptFileName: str) -> str:
-    with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmpBaseDir:
+    with TemporaryDirectory(dir=os.getcwd()) as tmpBaseDir:
         tempFilePath = os.path.join(tmpBaseDir, scriptFileName)
         with open(tempFilePath, 'w+') as f:
             f.write("#!/usr/bin/env bash\n")
@@ -191,14 +194,13 @@ def execute_remote_script(server: str, remoteScriptPath: str, timeout=60 * 60) -
             break
         if retry_count:
             log.warning(f"Trying again after {delay}s")
-            time.sleep(delay)
+            sleep(delay)
             delay = delay + delay / 2  # 60, 90, 135, 202, 303
         else:
             log.critical(f"Execution of the remote script probably failed: {cmd}")
 
 
 async def upload_ifw_to_remote(ifwTools: str, remoteServer: str, remoteServerHome: str) -> str:
-    from installer_utils import is_valid_url_path, download_archive, extract_archive
     assert is_valid_url_path(ifwTools)
     log.info("Preparing ifw tools: %s", ifwTools)
     # fetch the tool first
@@ -613,13 +615,12 @@ def upload_offline_to_remote(installerPath: str, remoteUploadPath: str, stagingS
 def sign_offline_installer(installer_path: str, installer_name: str) -> None:
     if platform.system() == "Windows":
         log.info("Sign Windows installer")
-        from sign_windows_installer import sign_executable
         sign_executable(os.path.join(installer_path, installer_name) + '.exe')
     elif platform.system() == "Darwin":
         log.info("Sign macOS .app bundle")
-        sign_installer.sign_mac_app(os.path.join(installer_path, installer_name + '.app'), get_pkg_value("SIGNING_IDENTITY"))
+        sign_mac_app(os.path.join(installer_path, installer_name + '.app'), get_pkg_value("SIGNING_IDENTITY"))
         log.info("Create macOS dmg file")
-        sign_installer.create_mac_dmg(os.path.join(installer_path, installer_name) + '.app')
+        create_mac_dmg(os.path.join(installer_path, installer_name) + '.app')
         log.info("Notarize macOS installer")
         notarize_dmg(os.path.join(installer_path, installer_name + '.dmg'), installer_name)
     else:
@@ -830,10 +831,10 @@ if __name__ == "__main__":
 
     export_data = load_export_summary_data(Path(args.config)) if args.event_injector else None
 
-    loop = asyncio.get_event_loop()
+    loop = get_event_loop()
     if args.build_offline:
         # get offline tasks
-        tasks = release_task_reader.parse_config(args.config, task_filters=append_to_task_filters(args.task_filters, "offline"))
+        tasks = parse_config(args.config, task_filters=append_to_task_filters(args.task_filters, "offline"))
         loop.run_until_complete(build_offline_tasks(args.staging_server, args.staging_server_root, tasks, args.license,
                                                     installerConfigBaseDir, args.artifact_share_url, args.ifw_tools,
                                                     args.offline_installer_id, args.update_staging,
@@ -841,7 +842,7 @@ if __name__ == "__main__":
 
     else:  # this is either repository build or repository sync build
         # get repository tasks
-        tasks = release_task_reader.parse_config(args.config, task_filters=append_to_task_filters(args.task_filters, "repository"))
+        tasks = parse_config(args.config, task_filters=append_to_task_filters(args.task_filters, "repository"))
         ret = loop.run_until_complete(handle_update(args.staging_server, args.staging_server_root, args.license, tasks,
                                       args.repo_domain, installerConfigBaseDir, args.artifact_share_url,
                                       args.update_staging, args.update_production, args.sync_s3, args.sync_ext,

@@ -30,9 +30,10 @@
 #############################################################################
 
 import os
-import bldinstallercommon
-import pkg_constants
 from urllib.parse import urlparse
+
+from bldinstallercommon import config_section_map, is_content_url_valid, safe_config_key_fetch
+from pkg_constants import PKG_TEMPLATE_BASE_DIR_NAME
 
 SERVER_NAMESPACE = 'ArchiveRemoteLocation'
 PACKAGE_REMOTE_LOCATION_RELEASE = 'release'
@@ -73,7 +74,7 @@ class ArchiveLocationResolver:
         self.configurations_root_dir = configurations_root_dir
         self.key_substitution_list = key_substitution_list
         # get packages tempalates src dir first
-        pkg_templates_dir = os.path.normpath(bldinstallercommon.config_section_map(target_config, 'PackageTemplates')['template_dirs'])
+        pkg_templates_dir = os.path.normpath(config_section_map(target_config, 'PackageTemplates')['template_dirs'])
         self.pkg_templates_dir_list = pkg_templates_dir.replace(' ', '').rstrip(',\n').split(',')
         # next read server list
         if server_base_url_override:
@@ -83,8 +84,8 @@ class ArchiveLocationResolver:
             for section in target_config.sections():
                 if section.startswith(SERVER_NAMESPACE):
                     server_name = section.split('.')[-1]
-                    base_url = bldinstallercommon.safe_config_key_fetch(target_config, section, 'base_url')
-                    base_path = bldinstallercommon.safe_config_key_fetch(target_config, section, 'base_path')
+                    base_url = safe_config_key_fetch(target_config, section, 'base_url')
+                    base_path = safe_config_key_fetch(target_config, section, 'base_path')
                     base_path.replace(' ', '')
                     # if base path is defined, then the following logic applies:
                     # if script is used in testclient mode fetch the packages from "RnD" location
@@ -126,19 +127,19 @@ class ArchiveLocationResolver:
             if temp != archive_uri:
                 archive_uri = temp
         # 1. check if given archive_uri denotes a package under package templates directory
-        base_path = os.path.join(self.configurations_root_dir, pkg_constants.PKG_TEMPLATE_BASE_DIR_NAME)
+        base_path = os.path.join(self.configurations_root_dir, PKG_TEMPLATE_BASE_DIR_NAME)
         package_path = package_name + os.sep + 'data' + os.sep + archive_uri
         # find the correct template subdirectory
         for subdir in self.pkg_templates_dir_list:
             path_temp = os.path.join(base_path, subdir)
             if not os.path.isdir(path_temp):
-                path_temp = path_temp.replace(os.sep + pkg_constants.PKG_TEMPLATE_BASE_DIR_NAME, '')
+                path_temp = path_temp.replace(os.sep + PKG_TEMPLATE_BASE_DIR_NAME, '')
             if os.path.isdir(path_temp):
                 temp = os.path.join(path_temp, package_path)
                 if os.path.isfile(temp):
                     return temp
         # 2. check if given URI is valid full URL
-        res = bldinstallercommon.is_content_url_valid(archive_uri)
+        res = is_content_url_valid(archive_uri)
         if res:
             return archive_uri
         else:

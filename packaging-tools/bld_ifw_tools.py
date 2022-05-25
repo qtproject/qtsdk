@@ -29,21 +29,32 @@
 #
 #############################################################################
 
-import sys
+import argparse
 import os
 import re
-import argparse
-import multiprocessing
-import bldinstallercommon
-import pkg_constants
-import shutil
 import shlex
+import shutil
 import subprocess
-from read_remote_config import get_pkg_value
-from bld_utils import is_windows, is_macos, is_linux
+import sys
+from multiprocessing import cpu_count
 from pathlib import Path
-from bldinstallercommon import locate_path
+
+from bld_utils import is_linux, is_macos, is_windows
+from bldinstallercommon import (
+    clone_repository,
+    extract_file,
+    get_tag_from_branch,
+    is_content_url_valid,
+    list_as_string,
+    locate_executable,
+    locate_path,
+    move_tree,
+    remove_tree,
+    retrieve_url,
+)
 from installer_utils import PackagingError
+from pkg_constants import IFW_BUILD_ARTIFACTS_DIR
+from read_remote_config import get_pkg_value
 from runner import do_execute_sub_process
 
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -202,13 +213,13 @@ class IfwOptions:
             self.qt_qmake_bin = 'qmake.exe'
             self.qt_configure_bin = self.qt_source_dir + os.sep + 'configure.bat'
         else:
-            self.make_cmd = 'make -j' + str(multiprocessing.cpu_count() + 1)
+            self.make_cmd = 'make -j' + str(cpu_count() + 1)
             self.make_doc_cmd = 'make'
             self.make_install_cmd = 'make install'
             self.qt_qmake_bin = 'qmake'
             self.qt_configure_bin = self.qt_source_dir + os.sep + 'configure'
 
-        self.build_artifacts_dir = os.path.join(ROOT_DIR, pkg_constants.IFW_BUILD_ARTIFACTS_DIR)
+        self.build_artifacts_dir = os.path.join(ROOT_DIR, IFW_BUILD_ARTIFACTS_DIR)
         self.mac_deploy_qt_archive_name = 'macdeployqt.7z'
         self.mac_qt_menu_nib_archive_name = 'qt_menu.nib.7z'
         # determine filenames used later on
@@ -239,7 +250,7 @@ class IfwOptions:
 
     def sanity_check(self):
         # check qt src package url
-        res = bldinstallercommon.is_content_url_valid(self.qt_source_package_uri)
+        res = is_content_url_valid(self.qt_source_package_uri)
         if not(res):
             print('*** Qt src package uri is invalid: {0}'.format(self.qt_source_package_uri))
             sys.exit(-1)
@@ -310,7 +321,7 @@ def build_ifw(options, create_installer=False, build_ifw_examples=False):
             configure_options = get_dynamic_qt_configure_options() + '-prefix ' + options.qt_build_dir_dynamic + os.sep + 'qtbase'
             # Although we have a shadow build qt sources are still taminated. Unpack sources again.
             if os.path.exists(options.qt_source_dir):
-                bldinstallercommon.remove_tree(options.qt_source_dir)
+                remove_tree(options.qt_source_dir)
             prepare_qt_sources(options)
             build_qt(options, options.qt_build_dir_dynamic, configure_options, options.qt_build_modules_docs)
         build_ifw_docs(options)
@@ -342,23 +353,23 @@ def prepare_qt_sources(options):
 def prepare_compressed_package(src_pkg_uri, src_pkg_saveas, destination_dir):
     print('Fetching package from: {0}'.format(src_pkg_uri))
     if not os.path.isfile(src_pkg_saveas):
-        if not bldinstallercommon.is_content_url_valid(src_pkg_uri):
+        if not is_content_url_valid(src_pkg_uri):
             print('*** Src package uri is invalid! Abort!')
             sys.exit(-1)
-        bldinstallercommon.retrieve_url(src_pkg_uri, src_pkg_saveas)
+        retrieve_url(src_pkg_uri, src_pkg_saveas)
     else:
         print('Found old local package, using that: {0}'.format(src_pkg_saveas))
     print('Done')
     print('--------------------------------------------------------------------')
     Path(destination_dir).mkdir(parents=True, exist_ok=True)
-    bldinstallercommon.extract_file(src_pkg_saveas, destination_dir)
+    extract_file(src_pkg_saveas, destination_dir)
     dir_contents = os.listdir(destination_dir)
     items = len(dir_contents)
     if items == 1:
         dir_name = dir_contents[0]
         full_dir_name = destination_dir + os.sep + dir_name
-        bldinstallercommon.move_tree(full_dir_name, destination_dir)
-        bldinstallercommon.remove_tree(full_dir_name)
+        move_tree(full_dir_name, destination_dir)
+        remove_tree(full_dir_name)
     else:
         print('*** Invalid dir structure encountered?!')
         sys.exit(-1)
@@ -411,7 +422,7 @@ def prepare_installer_framework(options):
     Path(options.installer_framework_build_dir).mkdir(parents=True, exist_ok=True)
     if options.qt_installer_framework_uri.endswith('.git'):
         # clone repos
-        bldinstallercommon.clone_repository(options.qt_installer_framework_uri, options.qt_installer_framework_branch, options.installer_framework_source_dir, True)
+        clone_repository(options.qt_installer_framework_uri, options.qt_installer_framework_branch, options.installer_framework_source_dir, True)
 
     else:
         # fetch src package
@@ -419,10 +430,10 @@ def prepare_installer_framework(options):
 
 
 def start_IFW_build(options, cmd_args, installer_framework_build_dir):
-    print("cmd_args: " + bldinstallercommon.list_as_string(cmd_args))
+    print("cmd_args: " + list_as_string(cmd_args))
     do_execute_sub_process(cmd_args, installer_framework_build_dir)
     cmd_args = options.make_cmd
-    print("cmd_args: " + bldinstallercommon.list_as_string(cmd_args))
+    print("cmd_args: " + list_as_string(cmd_args))
     do_execute_sub_process(cmd_args.split(' '), installer_framework_build_dir)
 
 
@@ -571,7 +582,7 @@ def build_and_archive_qt(options):
     configure_options = get_dynamic_qt_configure_options() + '-prefix ' + options.qt_build_dir_dynamic + os.sep + 'qtbase'
     # Although we have a shadow build qt sources are still contaminated. Unpack sources again.
     if os.path.exists(options.qt_source_dir):
-        bldinstallercommon.remove_tree(options.qt_source_dir)
+        remove_tree(options.qt_source_dir)
     prepare_qt_sources(options)
     build_qt(options, options.qt_build_dir_dynamic, configure_options, options.qt_build_modules_docs)
 
@@ -590,10 +601,10 @@ def clean_build_environment(options):
     if os.path.isfile(options.installer_framework_payload_arch):
         os.remove(options.installer_framework_payload_arch)
     if os.path.exists(options.build_artifacts_dir):
-        bldinstallercommon.remove_tree(options.build_artifacts_dir)
+        remove_tree(options.build_artifacts_dir)
     Path(options.build_artifacts_dir).mkdir(parents=True, exist_ok=True)
     if os.path.exists(options.installer_framework_build_dir):
-        bldinstallercommon.remove_tree(options.installer_framework_build_dir)
+        remove_tree(options.installer_framework_build_dir)
 
     if os.path.exists(options.installer_framework_pkg_dir):
         shutil.rmtree(options.installer_framework_pkg_dir)
@@ -604,11 +615,11 @@ def clean_build_environment(options):
         return
 
     if os.path.exists(options.installer_framework_source_dir):
-        bldinstallercommon.remove_tree(options.installer_framework_source_dir)
+        remove_tree(options.installer_framework_source_dir)
     if os.path.exists(options.qt_source_dir):
-        bldinstallercommon.remove_tree(options.qt_source_dir)
+        remove_tree(options.qt_source_dir)
     if os.path.exists(options.qt_build_dir):
-        bldinstallercommon.remove_tree(options.qt_source_dir)
+        remove_tree(options.qt_source_dir)
     if os.path.isfile(options.qt_source_package_uri_saveas):
         os.remove(options.qt_source_package_uri_saveas)
     if os.path.isfile(options.qt_installer_framework_uri_saveas):
@@ -633,7 +644,7 @@ def archive_installer_framework(installer_framework_build_dir, installer_framewo
     # create a package with a tagged name.
     # Package with the tagged name is needed for creating e.g. offline installers from stable builds
     if options.qt_installer_framework_uri.endswith('.git') and create_tagged_package:
-        tag = bldinstallercommon.get_tag_from_branch(options.installer_framework_source_dir, options.qt_installer_framework_branch)
+        tag = get_tag_from_branch(options.installer_framework_source_dir, options.qt_installer_framework_branch)
         if tag:
             print('Create archive from tag {0}'.format(tag))
             installer_framework_tagged_archive = 'installer-framework-build-' + tag + "-" + options.plat_suffix + '-' + options.architecture + '.7z'
@@ -651,13 +662,13 @@ def archive_installerbase(options):
     cmd_args_clean = []
     bin_temp = ''
     if is_linux() or is_macos():
-        bin_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, ['installerbase'])
+        bin_path = locate_executable(options.installer_framework_build_dir, ['installerbase'])
         bin_temp = ROOT_DIR + os.sep + '.tempSDKMaintenanceTool'
         shutil.copy(bin_path, bin_temp)
         cmd_args_archive = [ARCHIVE_PROGRAM, 'a', options.installer_base_archive_name, bin_temp]
         cmd_args_clean = ['rm', bin_temp]
     if is_windows():
-        bin_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, ['installerbase.exe'])
+        bin_path = locate_executable(options.installer_framework_build_dir, ['installerbase.exe'])
         bin_temp = ROOT_DIR + os.sep + 'tempSDKMaintenanceToolBase.exe'
         shutil.copy(bin_path, bin_temp)
         if options.signserver and options.signpwd:
@@ -680,11 +691,11 @@ def archive_binarycreator(options):
     print('Archive Installerbase and Binarycreator')
     cmd_args_archive = []
     if is_linux() or is_macos():
-        bin_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, ['installerbase'])
-        binarycreator_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, ['binarycreator'])
+        bin_path = locate_executable(options.installer_framework_build_dir, ['installerbase'])
+        binarycreator_path = locate_executable(options.installer_framework_build_dir, ['binarycreator'])
     elif is_windows():
-        bin_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, ['installerbase.exe'])
-        binarycreator_path = bldinstallercommon.locate_executable(options.installer_framework_build_dir, ['binarycreator.exe'])
+        bin_path = locate_executable(options.installer_framework_build_dir, ['installerbase.exe'])
+        binarycreator_path = locate_executable(options.installer_framework_build_dir, ['binarycreator.exe'])
     else:
         raise Exception("Not a supported platform")
     cmd_args_archive = ['7z', 'a', options.binarycreator_archive_name, bin_path, binarycreator_path]

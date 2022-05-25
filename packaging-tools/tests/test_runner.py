@@ -29,38 +29,40 @@
 #
 #############################################################################
 
-import asyncio
 import os
 import sys
 import unittest
+from asyncio import TimeoutError
 from pathlib import Path
 from tempfile import TemporaryDirectory
+
 from ddt import data, ddt
+
 from bld_utils import is_windows
 from runner import async_exec_cmd, do_execute_sub_process, exec_cmd
-from tests import testhelpers
+from tests.testhelpers import asyncio_test
 
 
 @ddt
 class TestRunner(unittest.TestCase):
 
     @unittest.skipIf(is_windows(), "Windows not supported for this test yet")
-    @testhelpers.asyncio_test
+    @asyncio_test
     async def test_async_exec_cmd(self) -> None:
         await async_exec_cmd(['echo', "TEST"])
 
         cmd = ['sleep', '2']
-        with self.assertRaises(asyncio.TimeoutError):
+        with self.assertRaises(TimeoutError):
             await async_exec_cmd(cmd, timeout=1)
 
     @unittest.skipIf(is_windows(), "Windows not supported for this test yet")
-    @testhelpers.asyncio_test
+    @asyncio_test
     async def test_exec_cmd(self) -> None:
         output = exec_cmd(['echo', "TEST"])
         self.assertEqual(output, "TEST")
 
         cmd = ['sleep', '2']
-        with self.assertRaises(asyncio.TimeoutError):
+        with self.assertRaises(TimeoutError):
             await async_exec_cmd(cmd, timeout=1)
 
     @data(

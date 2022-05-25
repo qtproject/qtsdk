@@ -29,12 +29,12 @@
 #
 #############################################################################
 
-import os
-import sys
 import argparse
+import os
 import platform
-import subprocess
+import sys
 from shutil import which
+from subprocess import CalledProcessError, check_call
 
 
 class RemoteUploaderError(Exception):
@@ -82,7 +82,7 @@ class RemoteUploader:
         cmd = self.ssh_cmd + ['mkdir', '-p', remoteDir]
         print("Executing: ", ' '.join(cmd))
         if not self.dryRun:
-            subprocess.check_call(cmd, timeout=60)  # give it 60s
+            check_call(cmd, timeout=60)  # give it 60s
 
     def _copyToRemote(self, fileName, destDirName):
         assert self.init_finished, "RemoteUploader not initialized!"
@@ -96,7 +96,7 @@ class RemoteUploader:
         cmd = self.copy_cmd + [fileName, remoteDestination]
         print("Executing: ", ' '.join(cmd))
         if not self.dryRun:
-            subprocess.check_call(cmd, timeout=60 * 10)  # give it 10 mins
+            check_call(cmd, timeout=60 * 10)  # give it 10 mins
 
     def copyToRemote(self, path: str, destDirName=""):
         items = [path] if os.path.isfile(path) else [os.path.join(path, x) for x in os.listdir(path)]
@@ -111,8 +111,8 @@ class RemoteUploader:
             cmd = self.ssh_cmd + ['ln'] + options + [self.remoteTargetDir, self.remoteLatestLink]
             print("Executing: ", ' '.join(cmd))
             if not self.dryRun:
-                subprocess.check_call(cmd, timeout=60)  # give it 60s
-        except subprocess.CalledProcessError:
+                check_call(cmd, timeout=60)  # give it 60s
+        except CalledProcessError:
             print("Failed to execute: ", ' '.join(cmd))
             raise
 

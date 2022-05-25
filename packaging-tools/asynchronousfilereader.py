@@ -31,16 +31,11 @@ SOFTWARE.
 
 __version__ = '0.2.1'
 
-import threading
-try:
-    # Python 2
-    from Queue import Queue
-except ImportError:
-    # Python 3
-    from queue import Queue
+from queue import Queue
+from threading import Thread
 
 
-class AsynchronousFileReader(threading.Thread):
+class AsynchronousFileReader(Thread):
     """
     Helper class to implement asynchronous reading of a file
     in a separate thread. Pushes read lines on a queue to
@@ -53,7 +48,7 @@ class AsynchronousFileReader(threading.Thread):
             queue = Queue()
         self.queue = queue
 
-        threading.Thread.__init__(self)
+        Thread.__init__(self)
 
         if autostart:
             self.start()

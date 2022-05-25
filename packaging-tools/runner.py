@@ -29,16 +29,15 @@
 #
 #############################################################################
 
+import asyncio
 import os
 import sys
-import asyncio
-import subprocess
-from subprocess import PIPE, STDOUT, Popen
+from subprocess import PIPE, STDOUT, CalledProcessError, Popen, TimeoutExpired, check_output
 from traceback import print_exc
-from typing import List, Dict
+from typing import Dict, List
 
+from bld_utils import is_windows
 from logging_util import init_logger
-
 
 log = init_logger(__name__, debug_mode=False)
 
@@ -52,7 +51,7 @@ if sys.platform == 'win32':
 def exec_cmd(cmd: List[str], timeout=60, env: Dict[str, str] = None) -> str:
     env = env if env else os.environ.copy()
     log.info("Calling: %s", ' '.join(cmd))
-    output = subprocess.check_output(' '.join(cmd), shell=True, env=env, timeout=timeout).decode("utf-8").strip()
+    output = check_output(' '.join(cmd), shell=True, env=env, timeout=timeout).decode("utf-8").strip()
     print(output)
     return output
 
@@ -63,10 +62,10 @@ async def async_exec_cmd(cmd: List[str], timeout: int = 60 * 60, env: Dict[str, 
     try:
         log.info("Calling: %s", ' '.join(cmd))
         await asyncio.wait_for(p.communicate(), timeout=timeout)
-    except (asyncio.TimeoutError, subprocess.TimeoutExpired):
+    except (asyncio.TimeoutError, TimeoutExpired):
         log.error("Timeout (%ss) for: %s", str(timeout), cmd)
         raise
-    except subprocess.CalledProcessError as commandErr:
+    except CalledProcessError as commandErr:
         log.error("Failed to run command: %s", str(commandErr))
         raise
     except Exception as e:
@@ -76,10 +75,7 @@ async def async_exec_cmd(cmd: List[str], timeout: int = 60 * 60, env: Dict[str, 
 
 def do_execute_sub_process(args, execution_path, abort_on_fail=True, get_output=False,
                            extra_env=dict(os.environ), redirect_output=None, args_log=None):
-    # Temporarily adding imports here, to prevent circular import
-    from bld_utils import is_windows
-    from bldinstallercommon import list_as_string
-    _args_log = args_log or list_as_string(args)
+    _args_log = args_log or ' '.join([str(i) for i in args])
     print('      --------------------------------------------------------------------')
     print('      Executing:      [' + _args_log + ']')
     print('      Execution path: [' + execution_path + ']')
@@ -125,7 +121,7 @@ def do_execute_sub_process(args, execution_path, abort_on_fail=True, get_output=
         sys.stdout.flush()
     except Exception:
         sys.stderr.write('      ERROR - ERROR - ERROR - ERROR - ERROR - ERROR !!!' + os.linesep)
-        sys.stderr.write('      Executing:      [' + list_as_string(args) + ']' + os.linesep)
+        sys.stderr.write('      Executing:      [' + _args_log + ']' + os.linesep)
         sys.stderr.write('      Execution path: [' + execution_path + ']' + os.linesep)
         print_exc()
         sys.stderr.flush()

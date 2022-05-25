@@ -29,27 +29,39 @@
 #
 #############################################################################
 
-from tests import testhelpers
-import os
 import io
-import unittest
-import tempfile
+import os
 import tarfile
-from installer_utils import cd, PackagingError, get_extract_cmd, extract_archive, download_archive, is_valid_url_path
+import unittest
+from tempfile import TemporaryDirectory
+
+from installer_utils import (
+    PackagingError,
+    cd,
+    download_archive,
+    extract_archive,
+    get_extract_cmd,
+    is_valid_url_path,
+)
 from read_remote_config import get_pkg_value
+from tests.testhelpers import (
+    asyncio_test,
+    asyncio_test_parallel_data,
+    isInternalFileServerReachable,
+)
 
 
 class TestInstallerUtils(unittest.TestCase):
 
-    @testhelpers.asyncio_test
+    @asyncio_test
     async def test_cd(self) -> None:
         cwd = os.getcwd()
-        with tempfile.TemporaryDirectory(dir=cwd) as tmpBaseDir:
+        with TemporaryDirectory(dir=cwd) as tmpBaseDir:
             with cd(tmpBaseDir):
                 self.assertEqual(tmpBaseDir, os.getcwd())
         self.assertEqual(cwd, os.getcwd())
 
-    @testhelpers.asyncio_test_parallel_data(
+    @asyncio_test_parallel_data(
         ("https://www.qt.io", False),
         ("https://", False),
         (None, False),
@@ -59,7 +71,7 @@ class TestInstallerUtils(unittest.TestCase):
         self.assertEqual(is_valid_url_path(url), expectedResult,
                          "URL: {0} - expected result: {1} - result was: {2}".format(url, expectedResult, not expectedResult))
 
-    @testhelpers.asyncio_test_parallel_data(
+    @asyncio_test_parallel_data(
         ("https://www.qt.io/some/file.zip", "7z"),
         ("https://www.qt.io/some/file.tar.gz", "tar"),
         ("https://www.qt.io/some/file.7z", "7z"),
@@ -69,14 +81,14 @@ class TestInstallerUtils(unittest.TestCase):
         extractCmd = get_extract_cmd(archive)
         self.assertEqual(extractCmd[0], expectedExtractor, "Not a valid extractor Callable obtained for: {0}".format(archive))
 
-    @testhelpers.asyncio_test
+    @asyncio_test
     async def test_invalid_extractor(self) -> None:
         with self.assertRaises(PackagingError):
             get_extract_cmd("https://www.qt.io/some/file.foo.bar")
 
-    @testhelpers.asyncio_test
+    @asyncio_test
     async def test_extract_archive(self) -> None:
-        with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmpBaseDir:
+        with TemporaryDirectory(dir=os.getcwd()) as tmpBaseDir:
             # create some test paths
             tempPath = os.path.join("foo", "bar")
             absoluteTempPath = os.path.join(tmpBaseDir, tempPath)
@@ -99,11 +111,11 @@ class TestInstallerUtils(unittest.TestCase):
             await extract_archive(tarArchivePath, destDir)
             self.assertTrue(os.path.isfile(os.path.join(destDir, tempPath, "foobar.txt")))
 
-    @unittest.skipUnless(testhelpers.isInternalFileServerReachable(),
+    @unittest.skipUnless(isInternalFileServerReachable(),
                          "Skipping because file server is not accessible")
-    @testhelpers.asyncio_test
+    @asyncio_test
     async def test_download_archive(self) -> None:
-        with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmpBaseDir:
+        with TemporaryDirectory(dir=os.getcwd()) as tmpBaseDir:
             pkg_srv = get_pkg_value("PACKAGE_STORAGE_SERVER_PATH_HTTP")
             test_file_url = pkg_srv + "/archive/packaging/qtsdk_testing.txt"
             downloadedFile = download_archive(test_file_url, tmpBaseDir)

@@ -29,16 +29,23 @@
 #
 #############################################################################
 
-from tests import testhelpers
 import os
 import unittest
-import tempfile
-from ddt import ddt
+from tempfile import TemporaryDirectory
 from typing import List
+
+from ddt import ddt
+
 from release_repo_meta_update import (
-    IfwRepoUpdateError, scan_repositories, swap_repositories, create_converted_repositories,
-    check_repos_which_can_be_updated, convert_suffix, backup_suffix
+    IfwRepoUpdateError,
+    backup_suffix,
+    check_repos_which_can_be_updated,
+    convert_suffix,
+    create_converted_repositories,
+    scan_repositories,
+    swap_repositories,
 )
+from tests.testhelpers import asyncio_test
 
 
 @ddt
@@ -96,9 +103,9 @@ class TestReleaseRepoMetaUpdate(unittest.TestCase):
                 with open(tmp, 'w+') as f:
                     f.write("\n")
 
-    @testhelpers.asyncio_test
+    @asyncio_test
     async def test_scan_repositories(self) -> None:
-        with tempfile.TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
+        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
             self._write_test_repo(tmpBaseDir, self.paths)
 
             done_repos, pending_repos, unconverted_repos, broken_repos = scan_repositories(tmpBaseDir)
@@ -112,9 +119,9 @@ class TestReleaseRepoMetaUpdate(unittest.TestCase):
             self.assertListEqual(sorted([repo.split(tmpBaseDir)[-1] for repo in done_repos]),
                                  sorted(["/repo5", "/repo7"]))
 
-    @testhelpers.asyncio_test
+    @asyncio_test
     async def test_check_repos_which_can_be_updated(self) -> None:
-        with tempfile.TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
+        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
             self._write_test_repo(tmpBaseDir, self.paths)
             done_repos, pending_repos, unconverted_repos, broken_repos = scan_repositories(tmpBaseDir)
 
@@ -124,18 +131,18 @@ class TestReleaseRepoMetaUpdate(unittest.TestCase):
             self.assertListEqual(sorted([repo.split(tmpBaseDir)[-1] for repo in existing_pending_repos]),
                                  sorted(["/repo2", "/repo3", "/repo7", "/repo9"]))
 
-    @testhelpers.asyncio_test
+    @asyncio_test
     async def test_swap_repositories_invalid(self) -> None:
-        with tempfile.TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
+        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
             self._write_test_repo(tmpBaseDir, self.paths)
             done_repos, pending_repos, unconverted_repos, broken_repos = scan_repositories(tmpBaseDir)
             with self.assertRaises(IfwRepoUpdateError):
                 await create_converted_repositories(repogen="foobar-repogen", repositories_to_migrate=unconverted_repos,
                                                     dry_run=True)
 
-    @testhelpers.asyncio_test
+    @asyncio_test
     async def test_swap_repositories_valid(self) -> None:
-        with tempfile.TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
+        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
             self._write_test_repo(tmpBaseDir, self.non_migrated_paths)
             done_repos, pending_repos, unconverted_repos, broken_repos = scan_repositories(tmpBaseDir)
             successful_conversions, failed_conversions = await create_converted_repositories(repogen="foobar-repogen",

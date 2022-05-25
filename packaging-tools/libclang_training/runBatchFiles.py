@@ -56,10 +56,10 @@ Notes:
 """
 
 import os
-import shutil
-import subprocess
 import sys
-import time
+from shutil import copyfile
+from subprocess import STDOUT, Popen
+from time import sleep, time
 
 import libclangtimings2csv
 import mergeCsvFiles
@@ -149,8 +149,8 @@ class DebugView:
     def startAsync(self):
         args = [self.executable, '/accepteula', '/l', self.logFilePath]
         verboseStart(args)
-        self.proc = subprocess.Popen(args, shell=False)
-        time.sleep(2)
+        self.proc = Popen(args, shell=False)
+        sleep(2)
 
     def stop(self):
         if self.proc:
@@ -178,7 +178,7 @@ def runSyncAndLogOutputWindows(args, batchFilePath, logFilePath):
     debugView.startAsync()
 
     verboseStart(args)
-    p = subprocess.Popen(args, env=createEnvironment(batchFilePath))
+    p = Popen(args, env=createEnvironment(batchFilePath))
     p.communicate()
 
     debugView.stop()
@@ -190,10 +190,10 @@ def runSyncAndLogOutputUnix(args, batchFilePath, logFilePath):
     logFile = open(logFilePath, 'w')
 
     verboseStart(args)
-    p = subprocess.Popen(args,
-                         stdout=logFile,
-                         stderr=subprocess.STDOUT,
-                         env=createEnvironment(batchFilePath))
+    p = Popen(args,
+              stdout=logFile,
+              stderr=STDOUT,
+              env=createEnvironment(batchFilePath))
     p.communicate()
 
     checkExitCodeOrDie(p.returncode, args)
@@ -241,10 +241,10 @@ def createDir(dirPath):
 
 def createBackupFile(filePath):
     if os.path.exists(filePath):
-        backupPath = filePath[:-4] + ".backup_" + str(time.time()) + ".log"
+        backupPath = filePath[:-4] + ".backup_" + str(time()) + ".log"
         if Config.Verbose:
             print('info: creating backup of already existing "%s"' % (filePath))
-        shutil.copyfile(filePath, backupPath)
+        copyfile(filePath, backupPath)
 
 
 def printDuration(s):
@@ -254,12 +254,12 @@ def printDuration(s):
 
 
 def processBatchFileTimed(libClangId, batchFilePath):
-    timeStarted = time.time()
+    timeStarted = time()
     print("processing", batchFilePath, end=' ')
 
     runRecord = processBatchFile(libClangId, batchFilePath)
 
-    printDuration(time.time() - timeStarted)
+    printDuration(time() - timeStarted)
 
     return runRecord
 
@@ -288,7 +288,7 @@ def getLibClangId(libClangDll):
 
 def switchLibClang(libClangDll):
     print('copying "%s" -> "%s"' % (libClangDll, Config.TargetLibClangDll))
-    shutil.copyfile(libClangDll, Config.TargetLibClangDll)
+    copyfile(libClangDll, Config.TargetLibClangDll)
 
 
 def runQtCreatorWithLibClang(libClangDll):

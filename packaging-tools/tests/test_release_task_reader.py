@@ -29,25 +29,27 @@
 #
 #############################################################################
 
-from tests import testhelpers
 import unittest
-from ddt import ddt
+from configparser import ConfigParser
 from typing import List
-import release_task_reader
-import configparser
+
+from ddt import ddt
+
+from release_task_reader import ReleaseTaskError, get_filter_parts, parse_data
+from tests.testhelpers import asyncio_test, asyncio_test_parallel_data
 
 
 @ddt
 class TestReleaseTaskReader(unittest.TestCase):
 
-    @testhelpers.asyncio_test_parallel_data(("linux,x64,common", ["linux", "x64", "common"]),
-                                            ("linux, x64,  common ", ["linux", "x64", "common"]),
-                                            ("linux; , x64  common ", ["linux", "x64", "common"]),
-                                            (": ,,; linux x64   common ", ["linux", "x64", "common"]))
+    @asyncio_test_parallel_data(("linux,x64,common", ["linux", "x64", "common"]),
+                                ("linux, x64,  common ", ["linux", "x64", "common"]),
+                                ("linux; , x64  common ", ["linux", "x64", "common"]),
+                                (": ,,; linux x64   common ", ["linux", "x64", "common"]))
     async def test_get_filter_parts(self, task_filters: str, expected_result: List[str]) -> None:
-        self.assertEqual(release_task_reader.get_filter_parts(task_filters), expected_result)
+        self.assertEqual(get_filter_parts(task_filters), expected_result)
 
-    @testhelpers.asyncio_test
+    @asyncio_test
     async def test_release_task_reader(self) -> None:
         sample_config = """
             [task.repository.linux.x86_64]
@@ -79,15 +81,15 @@ class TestReleaseTaskReader(unittest.TestCase):
             substitutions: arg13, arg23, arg33
             rta_key_list: key13, key23
         """
-        config = configparser.ConfigParser()
+        config = ConfigParser()
         config.read_string(sample_config)
 
         # parse all tasks i.e. no filters
-        tasks = release_task_reader.parse_data(config, task_filters=[])
+        tasks = parse_data(config, task_filters=[])
         self.assertTrue(len(tasks) == 4, "Did not parse all tasks from sample config")
 
         # parse only "repository" tasks
-        tasks = release_task_reader.parse_data(config, task_filters=["repository"])
+        tasks = parse_data(config, task_filters=["repository"])
         self.assertTrue(len(tasks) == 1)
         self.assertEqual(tasks[0].is_repository_task(), True)
         self.assertEqual(tasks[0].is_offline_installer_task(), False)
@@ -100,16 +102,16 @@ class TestReleaseTaskReader(unittest.TestCase):
         self.assertEqual(sorted(tasks[0].get_rta_key_list()), sorted(["key1", "key2", "key3", "key4"]))
 
         # parse only "offline" tasks with multiple filters
-        tasks = release_task_reader.parse_data(config, task_filters=["offline,linux,x86_64"])
+        tasks = parse_data(config, task_filters=["offline,linux,x86_64"])
         self.assertTrue(len(tasks) == 2)
-        tasks = release_task_reader.parse_data(config, task_filters=["offline,linux,x86_64,foobar"])
+        tasks = parse_data(config, task_filters=["offline,linux,x86_64,foobar"])
         self.assertTrue(len(tasks) == 1)
 
         # parse "offline" tasks with multiple filters and "online" tasks
-        tasks = release_task_reader.parse_data(config, task_filters=["offline,linux,x86_64", "online,linux,x86_64"])
+        tasks = parse_data(config, task_filters=["offline,linux,x86_64", "online,linux,x86_64"])
         self.assertTrue(len(tasks) == 3)
 
-    @testhelpers.asyncio_test
+    @asyncio_test
     async def test_release_task_reader_invalid_config(self) -> None:
         sample_config = """
             [task.repository]
@@ -119,10 +121,10 @@ class TestReleaseTaskReader(unittest.TestCase):
             repo_path: foo/bar/path
             rta_key_list: key1, key2
         """
-        config = configparser.ConfigParser()
+        config = ConfigParser()
         config.read_string(sample_config)
-        with self.assertRaises(release_task_reader.ReleaseTaskError):
-            release_task_reader.parse_data(config, task_filters=[])
+        with self.assertRaises(ReleaseTaskError):
+            parse_data(config, task_filters=[])
 
 
 if __name__ == '__main__':

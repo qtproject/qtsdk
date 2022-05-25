@@ -31,9 +31,9 @@
 
 import argparse
 import os
-import shutil
 import subprocess
 import sys
+from shutil import rmtree
 
 
 def is_file_with_debug_information_windows(path):
@@ -150,7 +150,7 @@ def _main():
 
     if os.path.exists(args.output_path):
         if args.clean_output_path:
-            shutil.rmtree(args.output_path, ignore_errors=True)
+            rmtree(args.output_path, ignore_errors=True)
     os.makedirs(args.output_path)
 
     for search_path in args.search_pathes.split(","):

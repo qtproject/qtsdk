@@ -29,12 +29,13 @@
 #
 #############################################################################
 
+import argparse
+import logging
 import os
 import sys
-import shutil
-import argparse
-import subprocess
-import logging
+from shutil import rmtree
+from subprocess import DEVNULL, check_call
+
 from read_remote_config import get_pkg_value
 
 log = logging.getLogger("Sign-utility")
@@ -45,10 +46,10 @@ def sign_mac_app(app_path: str, signing_identity: str) -> None:
     assert app_path.endswith(".app"), f"Not a valid path to .app bundle: {app_path}"
     # we need to unlock the keychain first
     unlock_script = "/Users/qt/unlock-keychain.sh"
-    subprocess.check_call([unlock_script])
+    check_call([unlock_script])
     # "-o runtime" is required for notarization
     cmd_args = ['codesign', '-o', 'runtime', '--verbose=3', '-r', get_pkg_value("SIGNING_FLAGS"), '-s', signing_identity, app_path]
-    subprocess.check_call(cmd_args)
+    check_call(cmd_args)
     log.info(f"Successfully signed: {app_path}")
 
 
@@ -58,7 +59,7 @@ def create_mac_dmg(app_path: str) -> None:
     destination_dmg_path = app_path.split(".app")[0] + '.dmg'
     cmd_args = ['hdiutil', 'create', '-srcfolder', app_path, '-volname', installer_name_base]
     cmd_args += ['-format', 'UDBZ', destination_dmg_path, '-ov', '-scrub', '-size', '4g']
-    subprocess.check_call(cmd_args)
+    check_call(cmd_args)
     log.info(f"Successfully created: {destination_dmg_path}")
 
 
@@ -69,15 +70,15 @@ def sign_windows_executable(file_path: str):
         dst = os.path.join(signToolsTempDir, item)
         curl_cmd_args = ['curl', "--fail", "-L", "--retry", "5", "--retry-delay", "30", "-o", dst,
                          '--create-dirs', get_pkg_value("SIGN_TOOLS_ADDR") + item]
-        subprocess.check_call(curl_cmd_args)
+        check_call(curl_cmd_args)
     cmd_args = [os.path.join(signToolsTempDir, 'signtool32.exe'), 'sign', '/v', '/du', get_pkg_value("SIGNING_SERVER"), '/p', get_pkg_value("SIGNING_PASSWORD")]
     cmd_args += ['/tr', get_pkg_value("TIMESTAMP_SERVER"), '/f', os.path.join(signToolsTempDir, 'keys.pfx'), '/td', "sha256", '/fd', "sha256", file_path]
     log_entry = cmd_args[:]
     log_entry[4] = "****"
     log_entry[6] = "****"
     log.info("Calling: {0}".format(' '.join(log_entry)))
-    subprocess.check_call(cmd_args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    shutil.rmtree(signToolsTempDir)
+    check_call(cmd_args, stdout=DEVNULL, stderr=DEVNULL)
+    rmtree(signToolsTempDir)
     log.info(f"Successfully signed: {file_path}")
 
 

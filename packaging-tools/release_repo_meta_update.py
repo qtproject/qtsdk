@@ -29,22 +29,23 @@
 #
 #############################################################################
 
-import os
-import sys
 import argparse
-import asyncio
-import time
-import datetime
+import os
 import shutil
+import sys
+from asyncio import get_event_loop
+from datetime import datetime
 from pathlib import Path
-from runner import exec_cmd
-from typing import List, Dict, Tuple
-from logging_util import init_logger
-from installer_utils import is_valid_url_path, download_archive, extract_archive
+from time import time
+from typing import Dict, List, Tuple
+
 from bldinstallercommon import locate_path
+from installer_utils import download_archive, extract_archive, is_valid_url_path
+from logging_util import init_logger
+from runner import exec_cmd
 
 log = init_logger(__name__, debug_mode=False)
-session_timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d--%H:%M:%S')
+session_timestamp = datetime.fromtimestamp(time()).strftime('%Y-%m-%d--%H:%M:%S')
 convert_suffix = "____unified_metadata_update"
 backup_suffix = "____split_metadata_backup-"
 
@@ -203,7 +204,7 @@ def scan_repositories(search_path: str) -> Tuple[List[str], List[str], List[str]
 
 
 def convert_repos(search_path: str, ifw_tools_url: str) -> None:
-    loop = asyncio.get_event_loop()
+    loop = get_event_loop()
     repogen = loop.run_until_complete(fetch_repogen(ifw_tools_url))
     log.info(f"Using repogen from: {repogen}")
     done_repos, pending_repos, unconverted_repos, broken_repos = scan_repositories(search_path)
@@ -224,7 +225,7 @@ def convert_repos(search_path: str, ifw_tools_url: str) -> None:
 
 
 def revert_repos(search_path: str, ifw_tools_url: str, time_stamp: str, dry_run: bool) -> None:
-    loop = asyncio.get_event_loop()
+    loop = get_event_loop()
     repogen = loop.run_until_complete(fetch_repogen(ifw_tools_url))
     log.info(f"Using repogen from: {repogen}")
     converted_repos, pending_repos, unconverted_repos, broken_repos = scan_repositories(search_path)
