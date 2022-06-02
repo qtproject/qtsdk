@@ -36,7 +36,7 @@ from asyncio import TimeoutError
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from ddt import data, ddt
+from ddt import data, ddt  # type: ignore
 
 from bld_utils import is_windows
 from runner import async_exec_cmd, do_execute_sub_process, exec_cmd

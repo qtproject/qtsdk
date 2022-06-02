@@ -28,7 +28,7 @@
 # $QT_END_LICENSE$
 #
 #############################################################################
-import builtins as __builtin__
+import builtins
 import itertools
 import os
 import sys
@@ -88,13 +88,13 @@ class StdErrHook:
 # builtin print() isn't threadsafe, lets make it threadsafe
 def threadedPrint(*a, **b):
     with outputLock:
-        __builtin__.org_print(*a, **b)
+        org_print(*a, **b)
 
 
 # this is really a HACK or better only useful in this complicate situation
-__builtin__.org_print = __builtin__.print
-__builtin__.org_stdout = sys.stdout
-__builtin__.org_sterr = sys.stderr
+org_print = builtins.print
+org_stdout = sys.stdout
+org_sterr = sys.stderr
 
 
 def enableThreadedPrint(enable=True, threadCount=cpu_count()):
@@ -107,11 +107,11 @@ def enableThreadedPrint(enable=True, threadCount=cpu_count()):
             outputFormatString = outputFormatString + "{" + str(x) + ":10}"
         sys.stdout = StdOutHook()
         sys.stderr = StdErrHook()
-        __builtin__.print = threadedPrint
+        builtins.print = threadedPrint
     else:
-        sys.stdout = __builtin__.org_stdout
-        sys.stderr = __builtin__.org_sterr
-        __builtin__.print = __builtin__.org_print
+        sys.stdout = org_stdout
+        sys.stderr = org_sterr
+        builtins.print = org_print
 
 
 threadData = threading.local()

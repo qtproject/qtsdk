@@ -41,9 +41,10 @@ from asyncio import get_event_loop
 from configparser import ConfigParser, ExtendedInterpolation
 from datetime import datetime
 from pathlib import Path
+from subprocess import PIPE
 from tempfile import TemporaryDirectory
 from time import gmtime, sleep, strftime, time
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 from urllib.error import HTTPError, URLError
 from urllib.request import urlopen, urlretrieve
 
@@ -58,15 +59,15 @@ from sign_installer import create_mac_dmg, sign_mac_app
 from sign_windows_installer import sign_executable
 
 if is_linux():
-    import sh
+    import sh  # type: ignore
 
 log = init_logger(__name__, debug_mode=False)
 timestamp = datetime.fromtimestamp(time()).strftime('%Y-%m-%d--%H:%M:%S')
 
 
 class event_register(object):
-    event_injector: Path = None
-    python_path: str = None
+    event_injector: Optional[Path] = None
+    python_path: str = ""
 
     def __init__(self, event_name: str, event_injector_path: str, summary_data: Dict[str, str]) -> None:
         self.event_name = event_name
@@ -79,9 +80,9 @@ class event_register(object):
             if platform.system() == "Linux":
                 cls.python_path = sh.which("python3")
             if platform.system() == "Windows":
-                cls.python_path = os.path.join(os.getenv("PYTHON3_PATH"), "python.exe")
+                cls.python_path = os.path.join(os.getenv("PYTHON3_PATH", ""), "python.exe")
             if platform.system() == "Darwin":
-                cls.python_path = os.path.join(os.getenv("PYTHON3_PATH"), "python3")
+                cls.python_path = os.path.join(os.getenv("PYTHON3_PATH", ""), "python3")
         if event_injector_path:
             cls.event_injector = Path(event_injector_path).resolve(strict=True)
 
@@ -112,7 +113,7 @@ class event_register(object):
                f"--sha1={export_summary.get('sha1', '')}",
                f"--message={message or ''}"]
         log.info(f"Calling: {' '.join(cmd)}")
-        ret = subprocess.run(cmd, shell=False, check=False, capture_output=True, encoding="utf-8", timeout=60 * 2)
+        ret = subprocess.run(cmd, shell=False, check=False, stdout=PIPE, stderr=PIPE, encoding="utf-8", timeout=60 * 2)
         if ret.returncode:
             log.warning(f"Failed to register event - stdout: {ret.stderr}")
             log.warning(f"Failed to register event - stderr: {ret.stdout}")
@@ -187,7 +188,7 @@ def create_remote_script(server: str, cmd: List[str], remoteScriptPath: str, scr
 def execute_remote_script(server: str, remoteScriptPath: str, timeout=60 * 60) -> None:
     cmd = get_remote_login_cmd(server) + [remoteScriptPath]
     retry_count = 5
-    delay = 60
+    delay = float(60)
     while retry_count:
         retry_count -= 1
         if not has_connection_error(exec_cmd(cmd, timeout)):
@@ -312,7 +313,7 @@ def reset_new_remote_repository(server: str, remoteSourceRepoPath: str, remoteTa
     exec_cmd(cmd, timeout=60 * 60)  # give it 60 mins
 
 
-def create_remote_repository_backup(server: str, remote_repo_path: str) -> None:
+def create_remote_repository_backup(server: str, remote_repo_path: str) -> str:
     backup_path = os.path.join(remote_repo_path + "____snapshot_backup")
     # if there exists a backup already then delete it, we keep only one backup
     if remote_path_exists(server, backup_path):
@@ -558,8 +559,7 @@ def append_to_task_filters(task_filters: List[str], task_filter: str) -> List[st
 
 
 def format_task_filters(task_filters: List[str]) -> List[str]:
-    if task_filters:
-        return [char.replace('.', ',') for char in task_filters]
+    return [char.replace('.', ',') for char in task_filters]
 
 
 def create_offline_remote_dirs(task: ReleaseTask, stagingServer: str, stagingServerRoot: str, installerBuildId: str) -> str:
@@ -685,7 +685,11 @@ async def _build_offline_tasks(stagingServer: str, stagingServerRoot: str, tasks
 def upload_snapshots_to_remote(staging_server: str, remote_upload_path: str, task: ReleaseTask, installer_build_id: str, installer_filename: str):
     project_name = task.get_project_name()
     version_full = task.get_version()
-    version_minor = re.match(r"\d+\.\d+", version_full).group(0)
+    version_minor_match = re.match(r"\d+\.\d+", version_full)
+    if version_minor_match:
+        version_minor = version_minor_match[0]
+    else:
+        raise PackagingError(f"Could not determine minor version from {version_full}")
     base, last_dir = os.path.split(get_pkg_value("SNAPSHOT_PATH").rstrip("/"))
     if last_dir == project_name:
         snapshot_path = get_pkg_value("SNAPSHOT_PATH")
@@ -772,7 +776,7 @@ if __name__ == "__main__":
 
     parser.add_argument("--config", dest="config", type=str, default=os.getenv("RELEASE_DESCRIPTION_FILE"),
                         help="Path to top level release config file")
-    parser.add_argument("--task-filter", dest="task_filters", action='append',
+    parser.add_argument("--task-filter", dest="task_filters", action='append', default=[],
                         help="Task include filters per section name in the --config file to match with "
                         "the section name, e.g. 'offline', 'repository', ...")
     parser.add_argument("--artifacts-share-url", dest="artifact_share_url", type=str, default=os.getenv("ARTIFACTS_SHARE_URL"),
@@ -829,7 +833,7 @@ if __name__ == "__main__":
     installerConfigBaseDir = os.path.abspath(os.path.join(os.path.dirname(args.config), os.pardir))
     assert os.path.isdir(installerConfigBaseDir), "Not able to figure out 'configurations/' directory correctly: {0}".format(installerConfigBaseDir)
 
-    export_data = load_export_summary_data(Path(args.config)) if args.event_injector else None
+    export_data = load_export_summary_data(Path(args.config)) if args.event_injector else {}
 
     loop = get_event_loop()
     if args.build_offline:

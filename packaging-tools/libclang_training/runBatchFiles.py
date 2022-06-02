@@ -60,6 +60,7 @@ import sys
 from shutil import copyfile
 from subprocess import STDOUT, Popen
 from time import sleep, time
+from typing import List
 
 import libclangtimings2csv
 import mergeCsvFiles
@@ -90,8 +91,8 @@ class Config:
     QtCreatorSettingsDir = None
     TargetLibClangDll = None
 
-    LibClangDlls = []
-    BatchFiles = []
+    LibClangDlls: List[str] = []
+    BatchFiles: List[str] = []
 
     @staticmethod
     def initializeFromEnvironment():

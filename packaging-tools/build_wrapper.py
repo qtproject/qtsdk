@@ -72,7 +72,7 @@ from threadedwork import Task, ThreadedWork
 
 # ----------------------------------------------------------------------
 SCRIPT_ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
-WORK_DIR = os.getenv('PKG_NODE_ROOT') if os.getenv("PKG_NODE_ROOT") else os.path.abspath(os.path.join(__file__, '../../../'))
+WORK_DIR = os.getenv('PKG_NODE_ROOT', os.path.abspath(os.path.join(__file__, '../../../')))
 LOCAL_MODE = os.getenv('LOCAL_MODE')  # if set, installers will be copied to a local directory
 LOCAL_INSTALLER_DIR = os.getenv('LOCAL_INSTALLER_DIR', os.path.join(WORK_DIR, 'installers'))
 
@@ -1151,7 +1151,7 @@ if __name__ == '__main__':
     CMD_LIST = (bld_qtcreator, bld_qtc_sdktool, bld_licheck, archive_repository)
 
     parser = argparse.ArgumentParser(prog="Build Wrapper", description="Manage all packaging related build steps.")
-    parser.add_argument("-c", "--command", dest="command", required=True, choices=CMD_LIST, help=CMD_LIST)
+    parser.add_argument("-c", "--command", dest="command", required=True, choices=CMD_LIST, help=str(CMD_LIST))
     parser.add_argument("--pkg-conf-file", dest="pkg_conf_file", default="", help="instead of reading various config options from env variables read them from the given file.")
     parser.add_argument("-l", "--license", dest="license", default="", help="license type: enterprise or opensource")
     parser.add_argument("-b", "--build_number", dest="build_number", default="", help="Unique build number identifier")

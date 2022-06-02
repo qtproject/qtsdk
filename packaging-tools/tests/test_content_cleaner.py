@@ -35,7 +35,7 @@ import unittest
 from tempfile import TemporaryDirectory
 from typing import List
 
-from ddt import data, ddt, unpack
+from ddt import data, ddt, unpack  # type: ignore
 
 from content_cleaner import preserve_content, remove_content, remove_empty_directories
 
@@ -165,7 +165,7 @@ class TestContentCleaner(unittest.TestCase):
         (["test/path/to/remove/", "test/.path/to/remove/"], True),
     )
     @unpack
-    def test_remove_empty_directories(self, test_content: str, remove_dir: bool) -> None:
+    def test_remove_empty_directories(self, test_content: List[str], remove_dir: bool) -> None:
         try:
             with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
                 test_base_dir = os.path.join(tmp_base_dir, "test-base-dir")

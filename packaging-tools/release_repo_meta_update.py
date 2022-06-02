@@ -181,7 +181,7 @@ def scan_repositories(search_path: str) -> Tuple[List[str], List[str], List[str]
             log.info(f"Skipping backup repo: {repo.as_posix()}")
             continue
         elif repo.as_posix().endswith(convert_suffix):
-            if not check_unified_meta_exists(repo):
+            if not check_unified_meta_exists(str(repo)):
                 # this is broken pending repo
                 log.error("Pending repository was missing '_meta.7z'")
                 broken_repos.append(repo.as_posix())
@@ -195,7 +195,7 @@ def scan_repositories(search_path: str) -> Tuple[List[str], List[str], List[str]
                 continue
             pending_repos.append(repo.as_posix())
         else:
-            if check_unified_meta_exists(repo):
+            if check_unified_meta_exists(str(repo)):
                 done_repos.append(repo.as_posix())
             else:
                 unconverted_repos.append(repo.as_posix())
@@ -230,15 +230,15 @@ def revert_repos(search_path: str, ifw_tools_url: str, time_stamp: str, dry_run:
     log.info(f"Using repogen from: {repogen}")
     converted_repos, pending_repos, unconverted_repos, broken_repos = scan_repositories(search_path)
 
-    revert_actions = {}
-    for converted_repo in converted_repos():
+    revert_actions: Dict[str, str] = {}
+    for converted_repo in converted_repos:
         expected_backup_repo = converted_repo + "____split_metadata_backup-" + time_stamp
         if not os.path.isdir(expected_backup_repo):
             log.warning(f"Can not revert repository as original backup repo does not exist: {expected_backup_repo}")
             continue
         revert_actions[converted_repo] = expected_backup_repo
 
-    for converted, backup in revert_actions:
+    for converted, backup in revert_actions.items():
         reverted_backup_repo_name = converted + "____REVERTED"
         log.info(f"Reverting: '{backup}' -> '{converted}'")
         if dry_run:
@@ -286,6 +286,6 @@ if __name__ == "__main__":
     elif args.command == "convert":
         convert_repos(args.search_path, args.ifw_tools_url)
     elif args.command == "revert":
-        convert_repos(args.search_path, args.ifw_tools_url, args.revert_timestamp, args.dry_run)
+        revert_repos(args.search_path, args.ifw_tools_url, args.revert_timestamp, args.dry_run)
     else:
         log.error(f"Invalid command given: {args.command}")

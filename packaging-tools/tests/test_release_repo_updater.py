@@ -34,8 +34,9 @@ import unittest
 from configparser import ConfigParser
 from shutil import rmtree
 from tempfile import TemporaryDirectory
+from typing import List
 
-from ddt import ddt
+from ddt import ddt  # type: ignore
 
 from installer_utils import PackagingError
 from read_remote_config import get_pkg_value
@@ -247,8 +248,8 @@ class TestReleaseRepoUpdater(unittest.TestCase):
         (["linux,common"], ["repository,linux,common"]),
         (["", "linux,common"], ["repository", "repository,linux,common"])
     )
-    async def test_append_to_task_filters(self, task_filters: str, expected_result: bool) -> None:
-        self.assertEqual(append_to_task_filters(task_filters, "repository"), expected_result)
+    async def test_append_to_task_filters(self, task_filters: List[str], exp_result: bool) -> None:
+        self.assertEqual(append_to_task_filters(task_filters, "repository"), exp_result)
 
     @asyncio_test_parallel_data(
         (["task.repository.linux.x64.feature1"], ["task,repository,linux,x64,feature1"]),
@@ -258,9 +259,9 @@ class TestReleaseRepoUpdater(unittest.TestCase):
         (["linux"], ["linux"]),
         ([""], [""])
     )
-    async def test_format_task_filters(self, task_filters: str, expected_result: bool) -> None:
+    async def test_format_task_filters(self, task_filters: List[str], exp_result: bool) -> None:
         print("test")
-        self.assertEqual(format_task_filters(task_filters), expected_result)
+        self.assertEqual(format_task_filters(task_filters), exp_result)
 
     @asyncio_test_parallel_data(
         ("qtsdkrepository/windows_x86/desktop/tools_maintenance/log-s3-2020-12-03--10:18:11-xml.t"

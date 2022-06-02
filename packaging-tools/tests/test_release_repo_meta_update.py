@@ -34,7 +34,7 @@ import unittest
 from tempfile import TemporaryDirectory
 from typing import List
 
-from ddt import ddt
+from ddt import ddt  # type: ignore
 
 from release_repo_meta_update import (
     IfwRepoUpdateError,

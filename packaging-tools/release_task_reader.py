@@ -60,7 +60,7 @@ class ReleaseTask:
         self.repo_components_to_update = settings.get("repo_components_to_update", "")
         self.installer_name = settings.get("installer_name", "")
         self.rta_key_list = settings.get("rta_key_list", "")
-        tmpList = [x.strip() for x in self.substitutions.split(',')] if self.substitutions else []  # type: List[str]
+        tmpList: List[str] = [x.strip() for x in self.substitutions.split(',')]
         self.installer_string_replacement_list = list(filter(None, tmpList))
         self.source_online_repository_path = ""
         self.source_pkg_path = ""

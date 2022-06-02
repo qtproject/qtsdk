@@ -33,7 +33,7 @@ import unittest
 from configparser import ConfigParser
 from typing import List
 
-from ddt import ddt
+from ddt import ddt  # type: ignore
 
 from release_task_reader import ReleaseTaskError, get_filter_parts, parse_data
 from tests.testhelpers import asyncio_test, asyncio_test_parallel_data

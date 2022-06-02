@@ -35,10 +35,12 @@ import subprocess
 import sys
 from configparser import ConfigParser
 from datetime import datetime
+from pathlib import Path
 from subprocess import DEVNULL
 from time import time
+from typing import List
 
-import pysftp
+import pysftp  # type: ignore
 from cryptography.fernet import Fernet
 from paramiko import SSHException
 
@@ -58,23 +60,21 @@ def _get_home_dir() -> str:
 
 def _get_private_key() -> bytes:
     log.info("Return the private key in the build agent")
-    private_key_path = os.path.join(_get_home_dir(), "sshkeys", os.getenv("ID_RSA_FILE"))
-    assert os.path.isfile(private_key_path), f"File not found: {private_key_path}"
-    with open(private_key_path, "rb") as private_key:
+    k_path = Path(_get_home_dir(), "sshkeys", os.environ["ID_RSA_FILE"]).resolve(strict=True)
+    with open(k_path, "rb") as private_key:
         return private_key.read()
 
 
 def _get_decrypt_key() -> bytes:
     log.info("Return the pre-generated Fernet key")
-    key_file_path = os.path.join(os.getenv("PKG_NODE_ROOT"), os.getenv("FILES_SHARE_PATH"))
-    assert os.path.isfile(key_file_path), f"File not found: {key_file_path}"
-    with open(key_file_path, "rb") as decrypt_key:
+    k_path = Path(os.environ["PKG_NODE_ROOT"], os.environ["FILES_SHARE_PATH"]).resolve(strict=True)
+    with open(k_path, "rb") as decrypt_key:
         return decrypt_key.read()
 
 
 def _handle_signing(file_path: str):
     config = ConfigParser()
-    config.read(os.path.basename(os.getenv("WINDOWS_SIGNKEYS_PATH")))
+    config.read(os.path.basename(os.environ["WINDOWS_SIGNKEYS_PATH"]))
     section = config.sections()[0]
     if section in config:
         kvu = config[section]['kvu']
@@ -94,7 +94,8 @@ def _handle_signing(file_path: str):
     if sign_result.returncode != 0:
         raise PackagingError(f"Package {file_path} signing  with error {sign_result.returncode}")
     log.info(f"Successfully signed: {file_path}")
-    cmd_args_verify = [os.path.basename(os.getenv("WINDOWS_SIGNTOOL_X64_PATH")), "verify", "-pa", file_path]
+    signtool = os.path.basename(os.environ["WINDOWS_SIGNTOOL_X64_PATH"])
+    cmd_args_verify: List[str] = [signtool, "verify", "-pa", file_path]
     verify_result = subprocess.run(cmd_args_verify, stdout=DEVNULL, stderr=DEVNULL)
     if verify_result.returncode != 0:
         raise PackagingError(f"Failed to verify {file_path} with error {verify_result.returncode}")
@@ -106,7 +107,7 @@ def decrypt_private_key() -> str:
     key = _get_decrypt_key()
     f = Fernet(key)
     decrypted_key = f.decrypt(_get_private_key())
-    temp_key_path = os.getenv("PKG_NODE_ROOT")
+    temp_key_path = os.environ["PKG_NODE_ROOT"]
     temp_file = os.path.join(temp_key_path, "temp_keyfile")
     with open(temp_file, 'wb') as outfile:
         outfile.write(decrypted_key)
@@ -127,15 +128,15 @@ def download_signing_tools(path_to_key: str):
 def sign_executable(file_path: str):
     log.info(f"Signing: {file_path}")
     try:
-        key_path = decrypt_private_key()
+        key_path: str = decrypt_private_key()
         download_signing_tools(key_path)
         _handle_signing(file_path)
     finally:
         # cleanup temporary files
         if "key_path" in locals():
             os.remove(key_path)
-        os.remove(os.path.basename(os.getenv("WINDOWS_SIGNKEYS_PATH")))
-        os.remove(os.path.basename(os.getenv("WINDOWS_SIGNTOOL_X64_PATH")))
+        os.remove(os.path.basename(os.environ["WINDOWS_SIGNKEYS_PATH"]))
+        os.remove(os.path.basename(os.environ["WINDOWS_SIGNTOOL_X64_PATH"]))
 
 
 if __name__ == "__main__":

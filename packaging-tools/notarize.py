@@ -44,7 +44,7 @@ log = logging.getLogger("Notarizer")
 log.setLevel(logging.INFO)
 # Unify format of all messages
 try:
-    from rainbow_logging_handler import RainbowLoggingHandler
+    from rainbow_logging_handler import RainbowLoggingHandler  # type: ignore
     handler = RainbowLoggingHandler(sys.stderr, color_asctime=(None, None, False))
 except ImportError:
     handler = logging.StreamHandler()

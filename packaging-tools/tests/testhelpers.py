@@ -31,13 +31,14 @@
 
 import asyncio
 import subprocess
+from subprocess import PIPE
 from typing import Any, Callable
 
 from bld_utils import is_windows
 from read_remote_config import get_pkg_value
 
 if not is_windows():
-    import sh
+    import sh  # type: ignore
 
 _asyncio_test_loop = asyncio.get_event_loop()
 
@@ -66,7 +67,7 @@ def isInternalFileServerReachable() -> bool:
     try:
         packageServer = get_pkg_value("PACKAGE_STORAGE_SERVER")
         ping = sh.which("ping")
-        ret = subprocess.run([ping, "-c", "1", packageServer], timeout=5, capture_output=True)
+        ret = subprocess.run(args=[ping, "-c", "1", packageServer], timeout=5, stdout=PIPE, stderr=PIPE)
         return ret.returncode == 0
     except Exception:
         pass

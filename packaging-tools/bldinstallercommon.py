@@ -51,7 +51,7 @@ from threadedwork import Task, ThreadedWork
 
 # need to include this for win platforms as long path names cause problems
 if is_windows():
-    import win32api
+    import win32api  # type: ignore
 
 DEBUG_RPATH = False
 MAX_DEBUG_PRINT_LENGTH = 10000

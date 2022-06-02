@@ -34,7 +34,7 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from ddt import data, ddt
+from ddt import data, ddt  # type: ignore
 
 from bld_utils import is_windows
 from bldinstallercommon import (

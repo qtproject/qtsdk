@@ -35,7 +35,7 @@ from fnmatch import fnmatch
 from typing import Generator, List
 from urllib.parse import urlparse
 
-import wget
+import wget  # type: ignore
 
 from logging_util import init_logger
 from runner import async_exec_cmd

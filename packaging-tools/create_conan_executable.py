@@ -133,7 +133,7 @@ async def run(
         rmtree(work_dir)
     work_dir.mkdir(parents=True)
 
-    with cd(work_dir):
+    with cd(str(work_dir)):
         venv_folder, pipenv, env = await create_venv(pythonSrc, getPipFile)
         await pip_install_url(pipenv, url_pip_packages, env)
         await pip_install_pkg(pipenv, pip_packages, env)

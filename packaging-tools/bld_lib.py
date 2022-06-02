@@ -45,7 +45,7 @@ from typing import List, Tuple
 from urllib.parse import urlparse
 from urllib.request import urlretrieve
 
-from rainbow_logging_handler import RainbowLoggingHandler
+from rainbow_logging_handler import RainbowLoggingHandler  # type: ignore
 
 from bld_utils import is_windows
 from read_remote_config import get_pkg_value
@@ -137,9 +137,9 @@ def build(qtDestDir: str, currentDir: str) -> str:
         f.write("[Paths]\n")
         f.write("Prefix=..\n")
 
-    proFile = glob(os.path.join(args.src_path, "*.pro"))
-    assert proFile, "Could not find .pro file(s) from: {0}".format(args.src_path)
-    proFile = proFile[0]
+    pro_files_list = glob(os.path.join(args.src_path, "*.pro"))
+    assert pro_files_list, "Could not find .pro file(s) from: {0}".format(args.src_path)
+    proFile = pro_files_list[0]
     log.info("Using .pro file: %s", proFile)
 
     installRootDir = os.path.join(currentDir, "lib_install_root")

@@ -70,7 +70,7 @@ from sdkcomponent import SdkComponent
 from threadedwork import ThreadedWork
 
 if is_windows():
-    import win32api
+    import win32api  # type: ignore
 
 log = getLogger("create_installer")
 log.setLevel("INFO")
