@@ -822,7 +822,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
 
     # repackage and sign opensource and enterprise packages on macOS
     # these are then for direct packaging in the offline installers
-    if is_macos() and get_pkg_value('SIGNING_IDENTITY'):
+    if is_macos() and get_pkg_value('SIGNING_IDENTITY') and not os.getenv('DISABLE_MAC_SIGNING'):
         # use build_environment for SIGNING_IDENTITY
         repackage_and_sign_qtcreator(src_path, work_dir,
                                      'qtcreator-signed.7z',
@@ -853,7 +853,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         snapshot_upload_list.append((dmg_filename, dmg_filename))
 
     # macOS signed zip
-    if is_macos() and get_pkg_value('SIGNING_IDENTITY'):
+    if is_macos() and get_pkg_value('SIGNING_IDENTITY') and not os.getenv('DISABLE_MAC_SIGNING'):
         file_upload_list.append(('qtcreator-signed.7z', target_env_dir + '/qtcreator-signed.7z'))
         snapshot_upload_list.append((target_env_dir + '/qtcreator-signed.7z', target_env_dir + '/qtcreator-signed.7z'))
         file_upload_list.append(('qtcreator-commercial-signed.7z', target_env_dir + '/qtcreator-commercial-signed.7z'))
