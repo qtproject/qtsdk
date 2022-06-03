@@ -133,7 +133,7 @@ async def pollNotarizationCompleted(args, uuid):
 async def embedNotarization(args):
     # Embed the notarization in the dmg package
     cmd = ['xcrun', 'stapler', 'staple', args.dmg]
-    retry_count = 5
+    retry_count = 10
     delay = 60
     while retry_count:
         retry_count -= 1
