@@ -70,7 +70,7 @@ from sdkcomponent import SdkComponent
 from threadedwork import ThreadedWork
 
 if is_windows():
-    import win32api  # type: ignore
+    import win32api  # type: ignore # pylint: disable=E0401
 
 log = getLogger("create_installer")
 log.setLevel("INFO")
@@ -557,7 +557,7 @@ def remove_all_debug_libraries(install_dir):
     elif is_macos():
         for macOS_debug_library_dir in locate_paths(install_dir, ['bin', 'lib', 'qml', 'plugins'], filters=[os.path.isdir]):
             log.info("Removing macOS debug libraries from: {0}".format(macOS_debug_library_dir))
-            debug_library_file_ending = '_debug.*'  # pylint: disable=W1401
+            debug_library_file_ending = '_debug.*'
             if os.path.exists(macOS_debug_library_dir):
                 for item in locate_paths(macOS_debug_library_dir, ['*' + debug_library_file_ending]):
                     Path(item).unlink()
@@ -655,7 +655,7 @@ def qml_examples_only(examples_dir):
         log.error("Archive not cleaned!")
         return
     subdir_list = []
-    regex = re.compile(r'^qml\S.*')  # pylint: disable=W1401
+    regex = re.compile(r'^qml\S.*')
     for root, dirs, _ in os.walk(examples_dir):
         for basename in dirs:
             if regex.search(basename):
@@ -790,7 +790,7 @@ def create_online_repository(task):
     # handle special case if MaintenanceTool repository build and
     # update.rcc update requeste
     if task.create_maintenance_tool_resource_file:
-        create_maintenance_tool_resource_file(task, task.substitution_list)
+        create_maintenance_tool_resource_file(task)
 
     # repogen arguments
     if task.create_repository:

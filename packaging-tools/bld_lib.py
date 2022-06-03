@@ -186,7 +186,7 @@ def archive(args: argparse.Namespace, installRootDir: str, currentDir: str) -> s
         os.chdir(archivePath)
         check_call(['7z', 'a', '-m0=lzma2', '-mmt=16', artifactsFilePath, '*'])
     except Exception as e:
-        print(e)
+        print(str(e))
         raise
     finally:
         os.chdir(currentDir)

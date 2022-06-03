@@ -206,7 +206,7 @@ def download(url, target, read_block_size=1048576):
                     continue
                 else:
                     if not os.path.lexists(target):
-                        raise Exception("Could not rename {0} to {1}{2}Error: {3}".format(savefile_tmp, target, os.linesep, e.message))
+                        raise Exception("Could not rename {0} to {1}{2}Error: {3}".format(savefile_tmp, target, os.linesep, str(e)))
     finally:  # this is done before the except code is called
         try:
             os.remove(savefile_tmp)

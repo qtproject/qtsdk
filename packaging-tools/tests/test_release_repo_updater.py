@@ -129,6 +129,7 @@ class TestReleaseRepoUpdater(unittest.TestCase):
     @unittest.skipUnless(isInternalFileServerReachable(), "Skipping because file server is not accessible")
     @asyncio_test
     async def test_upload_ifw_to_remote(self) -> None:
+        repogen = ""
         try:
             repogen = await _get_repogen()
         finally:

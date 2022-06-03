@@ -51,11 +51,10 @@ from threadedwork import Task, ThreadedWork
 
 # need to include this for win platforms as long path names cause problems
 if is_windows():
-    import win32api  # type: ignore
+    import win32api  # type: ignore # pylint: disable=E0401
 
 DEBUG_RPATH = False
 MAX_DEBUG_PRINT_LENGTH = 10000
-
 
 ###############################
 # function
@@ -205,7 +204,7 @@ def handle_remove_readonly(func, path, exc):
         os.chmod(path, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)  # 0777
         func(path)
     else:
-        raise
+        raise PackagingError(excvalue)
 
 
 def remove_tree(path):
