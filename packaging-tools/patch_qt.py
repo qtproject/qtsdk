@@ -32,23 +32,24 @@
 import os
 import re
 from fileinput import FileInput
+from typing import Any, Callable, Generator, List, Match
 
 
-def _file_iterator(artifacts_dir):
+def _file_iterator(artifacts_dir: str) -> Generator[Any, Any, Any]:
     print(f"Patching build time paths from: {artifacts_dir}")
     for root, _, files in os.walk(artifacts_dir):
         for file_name in files:
             yield os.path.join(os.path.join(root, file_name))
 
 
-def _get_patchers(product):
+def _get_patchers(product: str) -> List[Callable[[Any], Any]]:
     if product == 'qt_framework':
         return [patch_absolute_lib_paths_from_file, erase_qmake_prl_build_dir, patch_qconfig_pri]
     # default
     return [patch_absolute_lib_paths_from_file, erase_qmake_prl_build_dir]
 
 
-def patch_files(artifacts_dir, product):
+def patch_files(artifacts_dir: str, product: str) -> None:
     print(f"Patching files from: {artifacts_dir}")
     patchers = _get_patchers(product)
     for file_path in _file_iterator(artifacts_dir):
@@ -56,7 +57,7 @@ def patch_files(artifacts_dir, product):
             patcher(file_path)
 
 
-def patch_qt_edition(artifacts_dir, licheck_file_name, release_date):
+def patch_qt_edition(artifacts_dir: str, licheck_file_name: str, release_date: str) -> None:
     for root, _, files in os.walk(artifacts_dir):
         for file_name in files:
             if file_name == 'qconfig.pri':
@@ -64,7 +65,7 @@ def patch_qt_edition(artifacts_dir, licheck_file_name, release_date):
                 return
 
 
-def _patch_qt_edition(file_path, licheck_file_name, release_date):
+def _patch_qt_edition(file_path: str, licheck_file_name: str, release_date: str) -> None:
     for line in FileInput(file_path, inplace=True):
         if 'QT_EDITION' in line:
             edition_line = 'QT_EDITION = Enterprise'
@@ -77,13 +78,13 @@ def _patch_qt_edition(file_path, licheck_file_name, release_date):
             print(line.rstrip('\n'))
 
 
-def patch_qconfig_pri(file_path):
+def patch_qconfig_pri(file_path: str) -> None:
     for line in FileInput(file_path, inplace=True):
         patched_line = patch_qconfig_pri_from_line(line)
         print(patched_line.rstrip('\n'))
 
 
-def patch_qconfig_pri_from_line(line):
+def patch_qconfig_pri_from_line(line: str) -> str:
     if 'QMAKE_DEFAULT_LIBDIRS' in line:
         return line.split('=')[0].strip() + ' ='
     if 'QMAKE_DEFAULT_INCDIRS' in line:
@@ -91,24 +92,24 @@ def patch_qconfig_pri_from_line(line):
     return line
 
 
-def erase_qmake_prl_build_dir(file_path):
+def erase_qmake_prl_build_dir(file_path: str) -> None:
     # Erase lines starting with 'QMAKE_PRL_BUILD_DIR' from .prl files
     for line in FileInput(file_path, inplace=True):
         patched_line = patch_qmake_prl_build_dir_from_line(line)
         print(patched_line.rstrip('\n'))
 
 
-def patch_qmake_prl_build_dir_from_line(line):
+def patch_qmake_prl_build_dir_from_line(line: str) -> str:
     return '' if line.startswith('QMAKE_PRL_BUILD_DIR') else line
 
 
-def patch_absolute_lib_paths_from_file(file_path):
+def patch_absolute_lib_paths_from_file(file_path: str) -> None:
     for line in FileInput(file_path, inplace=True):
         patched_line = patch_absolute_lib_paths_from_line(line, file_path.split(".")[-1])
         print(patched_line.rstrip('\n'))
 
 
-def patch_absolute_lib_paths_from_line(line, file_extension):
+def patch_absolute_lib_paths_from_line(line: str, file_extension: str) -> str:
     r"""
     Captures XXX in e.g. /usr/lib/libXXX.so, /usr/lib64/libXXX.a, and C:\XXX.lib
     Paths are not allowed to contain whitespace though
@@ -119,7 +120,7 @@ def patch_absolute_lib_paths_from_line(line, file_extension):
       (\.[0-9]+)? - capture group for for versioned libraries
     """
 
-    def _remove_whitespace(line):
+    def _remove_whitespace(line: str) -> str:
         """Remove white space from paths if found inside quoted blocks."""
         erase_enabled = False
         result = ""
@@ -143,7 +144,7 @@ def patch_absolute_lib_paths_from_line(line, file_extension):
         re.compile(r'[^\s\"]+[\\/]([a-zA-Z0-9\_\-\.\+]+)\.(lib)(\.[0-9]+)?\b')
     ]
 
-    def _substitute_lib(match):
+    def _substitute_lib(match: Match[str]) -> str:
         if match.group(0).startswith("$$[QT_"):
             return match.group(0)
         result = "" if file_extension == "cmake" else "-l"  # .pri, .prl, .la, .pc

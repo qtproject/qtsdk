@@ -38,6 +38,7 @@ import subprocess
 import sys
 from multiprocessing import cpu_count
 from pathlib import Path
+from typing import Dict, List
 
 from bld_utils import is_linux, is_macos, is_windows
 from bldinstallercommon import (
@@ -76,7 +77,7 @@ if is_macos():
 ##################################################################
 # Get static Qt configure arguments. Platform is detected.
 ##################################################################
-def get_static_qt_configure_options(openssl_dir):
+def get_static_qt_configure_options(openssl_dir: str) -> str:
     options = get_common_qt_configure_options() + '-static -no-sql-sqlite '
     if is_macos():
         options += '-no-securetransport '
@@ -94,7 +95,7 @@ def get_static_qt_configure_options(openssl_dir):
 ##################################################################
 # Get common Qt configure arguments for all platforms
 ##################################################################
-def get_common_allos_qt_configure_options():
+def get_common_allos_qt_configure_options() -> str:
     options = '-release -opensource -confirm-license '
     options += '-nomake examples -nomake tests '
     options += '-accessibility '
@@ -104,7 +105,7 @@ def get_common_allos_qt_configure_options():
 ##################################################################
 # Get common Qt configure arguments for unix platform
 ##################################################################
-def get_common_unix_qt_configure_options():
+def get_common_unix_qt_configure_options() -> str:
     options = '-qt-zlib -qt-libpng -qt-libjpeg -no-cups -disable-vulkan '
     return options
 
@@ -112,7 +113,7 @@ def get_common_unix_qt_configure_options():
 ##################################################################
 # Get default Qt configure arguments. Platform is detected.
 ##################################################################
-def get_common_qt_configure_options():
+def get_common_qt_configure_options() -> str:
     # common
     options = get_common_allos_qt_configure_options()
     options += '-no-qml-debug '
@@ -136,7 +137,7 @@ def get_common_qt_configure_options():
 ##################################################################
 # Configure options for separate Qt build if doc build is needed.
 ##################################################################
-def get_dynamic_qt_configure_options():
+def get_dynamic_qt_configure_options() -> str:
     options = get_common_qt_configure_options()
     options += '-qt-sqlite '
     options += '-no-dbus '
@@ -146,7 +147,7 @@ def get_dynamic_qt_configure_options():
 ##################################################################
 # Define OPENSSL_LIBS env if openssl_dir is defined
 ##################################################################
-def get_build_env(openssl_dir):
+def get_build_env(openssl_dir: str) -> Dict[str, str]:
     tmp = dict(os.environ)
     if is_macos() and os.path.isdir(openssl_dir):
         tmp['OPENSSL_LIBS'] = f"-L{openssl_dir}/lib -lssl -lcrypto"
@@ -166,21 +167,22 @@ class IfwOptions:
     default_qt_installer_framework_branch_qt = '3.2'
     default_qt_installer_framework_qmake_args = ['-r', '-config', 'release', '-config', 'static']
 
-    def __init__(self,
-                 qt_source_package_uri,
-                 qt_configure_options,
-                 qt_installer_framework_uri,
-                 qt_installer_framework_branch,
-                 qt_installer_framework_qmake_args,
-                 openssl_dir,
-                 product_key_checker_pri,
-                 qt_binaries_static,
-                 qt_binaries_dynamic,
-                 signserver,
-                 signpwd,
-                 incremental_build=False,
-                 archive_qt=False
-                 ):
+    def __init__(
+        self,
+        qt_source_package_uri: str,
+        qt_configure_options: str,
+        qt_installer_framework_uri: str,
+        qt_installer_framework_branch: str,
+        qt_installer_framework_qmake_args: List[str],
+        openssl_dir: str,
+        product_key_checker_pri: str,
+        qt_binaries_static: str,
+        qt_binaries_dynamic: str,
+        signserver: str,
+        signpwd: str,
+        incremental_build: bool = False,
+        archive_qt: bool = False,
+    ) -> None:
         self.signserver = signserver
         self.signpwd = signpwd
         self.incremental_mode = incremental_build
@@ -248,7 +250,7 @@ class IfwOptions:
         # sanity check
         self.sanity_check()
 
-    def sanity_check(self):
+    def sanity_check(self) -> None:
         # check qt src package url
         res = is_content_url_valid(self.qt_source_package_uri)
         if not res:
@@ -261,7 +263,7 @@ class IfwOptions:
                 print(f'*** Error! Given product key checker is not a valid file: {self.product_key_checker_pri}')
                 sys.exit(-1)
 
-    def print_data(self):
+    def print_data(self) -> None:
         print("-----------------------------------------")
         print(f"make cmd:                                {self.make_cmd}")
         print(f"make doc_cmd:                            {self.make_doc_cmd}")
@@ -294,7 +296,7 @@ class IfwOptions:
 ###############################
 # Build IFW
 ###############################
-def build_ifw(options, create_installer=False, build_ifw_examples=False):
+def build_ifw(options: IfwOptions, create_installer: bool = False, build_ifw_examples: bool = False) -> str:
     # verbose
     options.print_data()
     # clean environment first
@@ -336,7 +338,7 @@ def build_ifw(options, create_installer=False, build_ifw_examples=False):
 ###############################
 # function
 ###############################
-def prepare_qt_sources(options):
+def prepare_qt_sources(options: IfwOptions) -> None:
     if options.incremental_mode and os.path.exists(options.qt_source_dir):
         return
     print('--------------------------------------------------------------------')
@@ -350,7 +352,7 @@ def prepare_qt_sources(options):
 ###############################
 # function
 ###############################
-def prepare_compressed_package(src_pkg_uri, src_pkg_saveas, destination_dir):
+def prepare_compressed_package(src_pkg_uri: str, src_pkg_saveas: str, destination_dir: str) -> None:
     print(f"Fetching package from: {src_pkg_uri}")
     if not os.path.isfile(src_pkg_saveas):
         if not is_content_url_valid(src_pkg_uri):
@@ -378,7 +380,7 @@ def prepare_compressed_package(src_pkg_uri, src_pkg_saveas, destination_dir):
 ###############################
 # function
 ###############################
-def build_qt(options, qt_build_dir, qt_configure_options, qt_modules):
+def build_qt(options: IfwOptions, qt_build_dir: str, qt_configure_options: str, qt_modules: List[str]) -> None:
     if options.incremental_mode:
         try:
             locate_path(qt_build_dir, ["lib"], filters=[os.path.isdir])
@@ -413,7 +415,7 @@ def build_qt(options, qt_build_dir, qt_configure_options, qt_modules):
 ###############################
 # function
 ###############################
-def prepare_installer_framework(options):
+def prepare_installer_framework(options: IfwOptions) -> None:
     if options.incremental_mode and os.path.exists(options.installer_framework_source_dir):
         return
     print('--------------------------------------------------------------------')
@@ -429,18 +431,18 @@ def prepare_installer_framework(options):
         prepare_compressed_package(options.qt_installer_framework_uri, options.qt_installer_framework_uri_saveas, options.installer_framework_source_dir)
 
 
-def start_ifw_build(options, cmd_args, installer_framework_build_dir):
+def start_ifw_build(options: IfwOptions, cmd_args: List[str], installer_framework_build_dir: str) -> None:
     print(f"cmd_args: {list_as_string(cmd_args)}")
     do_execute_sub_process(cmd_args, installer_framework_build_dir)
-    cmd_args = options.make_cmd
+    cmd_args = options.make_cmd.split(' ')
     print(f"cmd_args: {list_as_string(cmd_args)}")
-    do_execute_sub_process(cmd_args.split(' '), installer_framework_build_dir)
+    do_execute_sub_process(cmd_args, installer_framework_build_dir)
 
 
 ###############################
 # function
 ###############################
-def build_installer_framework(options):
+def build_installer_framework(options: IfwOptions) -> None:
     if options.incremental_mode:
         file_to_check = os.path.join(options.installer_framework_build_dir, 'bin', 'installerbase')
         if is_windows():
@@ -462,7 +464,7 @@ def build_installer_framework(options):
     start_ifw_build(options, cmd_args, options.installer_framework_build_dir)
 
 
-def build_installer_framework_examples(options):
+def build_installer_framework_examples(options: IfwOptions) -> None:
     print('--------------------------------------------------------------------')
     print('Building Installer Framework Examples')
     file_binarycreator = os.path.join(options.installer_framework_build_dir, 'bin', 'binarycreator')
@@ -485,7 +487,7 @@ def build_installer_framework_examples(options):
             config_file = os.path.join(root, directory, 'config', 'config.xml')
             package_dir = os.path.join(root, directory, 'packages')
             target_filename = os.path.join(root, directory, 'installer')
-            do_execute_sub_process(args=(file_binarycreator, '--offline-only', '-c', config_file, '-p', package_dir, target_filename), execution_path=package_dir)
+            do_execute_sub_process(args=[file_binarycreator, '--offline-only', '-c', config_file, '-p', package_dir, target_filename], execution_path=package_dir)
             if is_windows():
                 target_filename += '.exe'
             ifw_example_binaries.append(target_filename)
@@ -496,7 +498,7 @@ def build_installer_framework_examples(options):
 ###############################
 # function
 ###############################
-def build_ifw_docs(options):
+def build_ifw_docs(options: IfwOptions) -> None:
     print('--------------------------------------------------------------------')
     print('Building Qt Installer Framework Documentation')
     qmake_bin = os.path.join(options.qt_build_dir_dynamic, 'qtbase', 'bin', options.qt_qmake_bin)
@@ -517,7 +519,7 @@ def build_ifw_docs(options):
 ################################################################
 # Create installer containing the Qt Installer Framework itself
 ################################################################
-def create_installer_package(options):
+def create_installer_package(options: IfwOptions) -> None:
     print('--------------------------------------------------------------------')
     print('Creating installer for Qt Installer Framework')
     # Temporary dir for creating installer containing the Qt Installer Framework itself
@@ -531,11 +533,11 @@ def create_installer_package(options):
     os.chdir(package_dir)
     shutil.copytree(os.path.join(options.installer_framework_build_dir, 'bin'), os.path.join(package_dir, 'bin'), ignore=shutil.ignore_patterns("*.exe.manifest", "*.exp", "*.lib"))
     if is_linux():
-        do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/archivegen')), execution_path=package_dir)
-        do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/binarycreator')), execution_path=package_dir)
-        do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/devtool')), execution_path=package_dir)
-        do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/installerbase')), execution_path=package_dir)
-        do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/repogen')), execution_path=package_dir)
+        do_execute_sub_process(args=['strip', os.path.join(package_dir, 'bin/archivegen')], execution_path=package_dir)
+        do_execute_sub_process(args=['strip', os.path.join(package_dir, 'bin/binarycreator')], execution_path=package_dir)
+        do_execute_sub_process(args=['strip', os.path.join(package_dir, 'bin/devtool')], execution_path=package_dir)
+        do_execute_sub_process(args=['strip', os.path.join(package_dir, 'bin/installerbase')], execution_path=package_dir)
+        do_execute_sub_process(args=['strip', os.path.join(package_dir, 'bin/repogen')], execution_path=package_dir)
     shutil.copytree(os.path.join(options.installer_framework_build_dir, 'doc'), os.path.join(package_dir, 'doc'))
     shutil.copytree(os.path.join(options.installer_framework_source_dir, 'examples'), os.path.join(package_dir, 'examples'))
     shutil.copy(os.path.join(options.installer_framework_source_dir, 'README'), package_dir)
@@ -547,12 +549,12 @@ def create_installer_package(options):
     archive_file = os.path.join(options.installer_framework_source_dir, 'dist', 'packages', 'org.qtproject.ifw.binaries', 'data', 'data.7z')
     if not os.path.exists(os.path.dirname(archive_file)):
         os.makedirs(os.path.dirname(archive_file))
-    do_execute_sub_process(args=(os.path.join(package_dir, 'bin', 'archivegen'), archive_file, '*'), execution_path=package_dir)
+    do_execute_sub_process(args=[os.path.join(package_dir, 'bin', 'archivegen'), archive_file, '*'], execution_path=package_dir)
     # run installer
     binary_creator = os.path.join(options.installer_framework_build_dir, 'bin', 'binarycreator')
     config_file = os.path.join(options.installer_framework_source_dir, 'dist', 'config', 'config.xml')
     package_dir = os.path.join(options.installer_framework_source_dir, 'dist', 'packages')
-    do_execute_sub_process(args=(binary_creator, '--offline-only', '-c', config_file, '-p', package_dir, target_dir), execution_path=package_dir)
+    do_execute_sub_process(args=[binary_creator, '--offline-only', '-c', config_file, '-p', package_dir, target_dir], execution_path=package_dir)
     print(f"Installer package is at: {target_dir}")
     artifacts = os.listdir(options.installer_framework_target_dir)
     for artifact in artifacts:
@@ -566,7 +568,7 @@ def create_installer_package(options):
 ################################################################
 # Build and archive Qt for IFW builds
 ################################################################
-def build_and_archive_qt(options):
+def build_and_archive_qt(options: IfwOptions) -> None:
     print('--------------------------------------------------------------------')
     print('Build static Qt')
     prepare_qt_sources(options)
@@ -595,7 +597,7 @@ def build_and_archive_qt(options):
 ###############################
 # function
 ###############################
-def clean_build_environment(options):
+def clean_build_environment(options: IfwOptions) -> None:
     if os.path.isfile(options.installer_framework_archive_name):
         os.remove(options.installer_framework_archive_name)
     if os.path.isfile(options.installer_framework_payload_arch):
@@ -629,7 +631,7 @@ def clean_build_environment(options):
 ###############################
 # function
 ###############################
-def archive_installer_framework(installer_framework_build_dir, installer_framework_archive_name, options, create_tagged_package):
+def archive_installer_framework(installer_framework_build_dir: str, installer_framework_archive_name: str, options: IfwOptions, create_tagged_package: bool) -> None:
     print('--------------------------------------------------------------------')
     print('Archive Installer Framework')
     # first strip out all unnecessary files
@@ -655,7 +657,7 @@ def archive_installer_framework(installer_framework_build_dir, installer_framewo
 ###############################
 # function
 ###############################
-def archive_installerbase(options):
+def archive_installerbase(options: IfwOptions) -> None:
     print('--------------------------------------------------------------------')
     print('Archive Installerbase')
     cmd_args_archive = []
@@ -686,7 +688,7 @@ def archive_installerbase(options):
 ###############################
 # function
 ###############################
-def archive_binarycreator(options):
+def archive_binarycreator(options: IfwOptions) -> None:
     print('--------------------------------------------------------------------')
     print('Archive Installerbase and Binarycreator')
     cmd_args_archive = []
@@ -708,7 +710,7 @@ def archive_binarycreator(options):
 ###############################
 # sign windows installerbase
 ###############################
-def sign_windows_installerbase(file_name):
+def sign_windows_installerbase(file_name: str) -> None:
     print('--------------------------------------------------------------------')
     print('Sign Windows Installerbase')
     sign_tools_temp_dir = r'C:\Utils\sign_tools_temp'
@@ -736,7 +738,7 @@ def sign_windows_installerbase(file_name):
 ###############################
 # Replace all dict keys with values in file
 ###############################
-def patch(file, replacements):
+def patch(file: str, replacements: Dict[str, str]) -> None:
     filedata = None
     print(f"Patching {file} ...")
     with open(file, 'r', encoding="utf-8") as handle:
@@ -752,7 +754,7 @@ def patch(file, replacements):
 ###############################
 # Patch win32 mkspecs
 ###############################
-def patch_win32_mkspecs(mkspecsdir):
+def patch_win32_mkspecs(mkspecsdir: str) -> None:
     print('--------------------------------------------------------------------')
     print(f'Patching win32 mkspecs in {mkspecsdir} ...')
     for root, dummy, files in os.walk(mkspecsdir):
@@ -761,7 +763,7 @@ def patch_win32_mkspecs(mkspecsdir):
                 patch(os.path.join(root, file), {"-MD" : "-MT", "embed_manifest_dll" : "", "embed_manifest_exe" : ""})
 
 
-def get_platform_suffix():
+def get_platform_suffix() -> str:
     if is_windows():
         return 'win'
     if is_linux():
@@ -774,7 +776,7 @@ def get_platform_suffix():
 ###############################
 # Setup argument parser
 ###############################
-def setup_argument_parser():
+def setup_argument_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog=os.path.basename(sys.argv[0]),
         add_help=True, description="Build Qt Installer-Framework",

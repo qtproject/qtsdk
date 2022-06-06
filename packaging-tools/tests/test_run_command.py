@@ -35,6 +35,7 @@ import os
 import sys
 import unittest
 from time import sleep
+from typing import Any
 
 from bld_utils import run_command
 from threadedwork import ThreadedWork
@@ -50,11 +51,11 @@ if sys.platform.startswith("win"):
     SUBPROCESS_FLAGS = 0x8000000  # win32con.CREATE_NO_WINDOW?
 
 
-def base_command():
+def base_command() -> str:
     return " ".join([sys.executable, os.path.abspath(__file__)])
 
 
-def crash():
+def crash() -> None:
     '''\
     crash the Python interpreter...
     '''
@@ -62,24 +63,24 @@ def crash():
     j = ctypes.pointer(i)
     count = 0
     while True:
-        j[count] = b'a'
+        j[count] = b'a'  # type: ignore
         count += 1
 
 
-def print_lines(count):
+def print_lines(count: int) -> None:
     for line_number in range(count):
         print(f"{line_number} printed line")
 
 
-def use_run_command(test_arguments, *arguments):
+def use_run_command(test_arguments: Any, *arguments) -> Any:  # type: ignore
     return run_command(f"{base_command()} {test_arguments}", *arguments)
 
 
 class TestRunCommand(unittest.TestCase):
-    def test_exit_value_0(self):
+    def test_exit_value_0(self) -> None:
         self.assertEqual(use_run_command("--print_lines 10", os.getcwd()), 0)
 
-    def test_crash(self):
+    def test_crash(self) -> None:
         with self.assertRaises(Exception) as context_manager:
             use_run_command("--print_lines 10 --crash", os.getcwd())
 
@@ -89,7 +90,7 @@ class TestRunCommand(unittest.TestCase):
         message_start = str(context_manager.exception)[:len(expected_message_start)]
         self.assertEqual(expected_message_start, message_start)
 
-    def test_crash_only_error_case_output(self):
+    def test_crash_only_error_case_output(self) -> None:
         with self.assertRaises(Exception) as context_manager:
             use_run_command(
                 "--print_lines 10 --crash", os.getcwd(),
@@ -109,7 +110,7 @@ class TestRunCommand(unittest.TestCase):
         message_end = str(context_manager.exception).splitlines()[-1]
         self.assertTrue(expected_message_end in message_end)
 
-    def test_different_exit_code_only_error_case_output(self):
+    def test_different_exit_code_only_error_case_output(self) -> None:
         self.assertEqual(
             use_run_command(
                 "--print_lines 10 --exit_code 5", os.getcwd(),
@@ -122,7 +123,7 @@ class TestRunCommand(unittest.TestCase):
             ), 5
         )
 
-    def test_with_threadedwork(self):
+    def test_with_threadedwork(self) -> None:
         current_method_name = sys._getframe().f_code.co_name  # pylint: disable=W0212
         test_work = ThreadedWork(f"{current_method_name} - run some command threaded")
         task_string_list = []
@@ -135,7 +136,7 @@ class TestRunCommand(unittest.TestCase):
             test_work.add_task(task_string, use_run_command, task_string, os.getcwd())
         test_work.run()
 
-    def test_with_threadedwork_unexpected_exit_code(self):
+    def test_with_threadedwork_unexpected_exit_code(self) -> None:
         current_method_name = sys._getframe().f_code.co_name  # pylint: disable=W0212
         test_work = ThreadedWork(f"{current_method_name} - run some command threaded")
         # this exchange the current os._exit(-1) implementation only for this testing case
@@ -152,7 +153,7 @@ class TestRunCommand(unittest.TestCase):
             test_work.add_task(task_string, use_run_command, task_string, os.getcwd())
         test_work.run()
 
-    def test_with_threadedwork_crash(self):
+    def test_with_threadedwork_crash(self) -> None:
         current_method_name = sys._getframe().f_code.co_name  # pylint: disable=W0212
         test_work = ThreadedWork(f"{current_method_name} - run some command threaded")
         # this exchange the current os._exit(-1) implementation only for this testing case

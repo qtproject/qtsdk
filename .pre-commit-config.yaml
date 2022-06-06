@@ -35,7 +35,7 @@ repos:
         fail_fast: true
       - id: mypy
         name: Check types (mypy)
-        entry: bash -c 'for x in "$@"; do pipenv run python3 -m mypy "$x"; done'
+        entry: bash -c 'for x in "$@"; do pipenv run python3 -m mypy --strict "$x"; done'
         language: system
         types: [python]
         fail_fast: true

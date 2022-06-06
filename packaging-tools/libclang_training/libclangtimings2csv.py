@@ -38,9 +38,10 @@ import getopt
 import os
 import re
 import sys
+from typing import List, Pattern
 
 
-def construct_record_matcher():
+def construct_record_matcher() -> Pattern[str]:
     regex = (
         '( Parsing)'
         + '|( Precompiling preamble)'
@@ -52,7 +53,7 @@ def construct_record_matcher():
     return re.compile(regex)
 
 
-def construct_time_needed_matcher():
+def construct_time_needed_matcher() -> Pattern[str]:
     # An output line looks like:
     #   :   2.5625 (100.0%)   0.1563 (100.0%)   2.7188 (100.0%)   2.7813 (100.0%)
     # Note: There is always at least the wall clock time at the utmost right,
@@ -66,19 +67,19 @@ def construct_time_needed_matcher():
     return re.compile(regex)
 
 
-def csv_line(values):
-    return ','.join(values) + '\n'
+def csv_line(values: List[str]) -> str:
+    return ",".join(values) + "\n"
 
 
-def extract_records(file_content):
+def extract_records(file_content: str) -> List[List[str]]:
     record_matcher = construct_record_matcher()
     time_needed_matcher = construct_time_needed_matcher()
 
-    records = []
+    records: List[List[str]] = []
     previous_time_match_end = -1
 
     for record_start_match in record_matcher.finditer(file_content):
-        time_needed_in_ms = False
+        time_needed_in_ms = ""
         if previous_time_match_end >= record_start_match.start():
             # Ops, we've detected a missing time record.
             previous_record = records[-1]
@@ -98,7 +99,7 @@ def extract_records(file_content):
     return records
 
 
-def records_to_string(records):
+def records_to_string(records: List[List[str]]) -> str:
     string = ""
     for record in records:
         string += csv_line(record)
@@ -106,7 +107,7 @@ def records_to_string(records):
     return string
 
 
-def convert(input_file, column_label=None):
+def convert(input_file: str, column_label: str = "") -> str:
     if not column_label:
         column_label = os.path.basename(input_file)
     with open(input_file, 'r', encoding="utf-8") as file_content:
@@ -115,12 +116,12 @@ def convert(input_file, column_label=None):
     return records_to_string(records)
 
 
-def print_usage_and_exit():
+def print_usage_and_exit() -> None:
     print(__doc__)
     sys.exit(0)
 
 
-def main():
+def main() -> None:
     # parse command line options
     try:
         opts, args = getopt.getopt(sys.argv[1:], "h", ["help"])

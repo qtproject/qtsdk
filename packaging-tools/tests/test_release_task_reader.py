@@ -41,11 +41,12 @@ from tests.testhelpers import asyncio_test, asyncio_test_parallel_data
 
 @ddt
 class TestReleaseTaskReader(unittest.TestCase):
-
-    @asyncio_test_parallel_data(("linux,x64,common", ["linux", "x64", "common"]),
-                                ("linux, x64,  common ", ["linux", "x64", "common"]),
-                                ("linux; , x64  common ", ["linux", "x64", "common"]),
-                                (": ,,; linux x64   common ", ["linux", "x64", "common"]))
+    @asyncio_test_parallel_data(  # type: ignore
+        ("linux,x64,common", ["linux", "x64", "common"]),
+        ("linux, x64,  common ", ["linux", "x64", "common"]),
+        ("linux; , x64  common ", ["linux", "x64", "common"]),
+        (": ,,; linux x64   common ", ["linux", "x64", "common"]),
+    )
     async def test_get_filter_parts(self, task_filters: str, expected_result: List[str]) -> None:
         self.assertEqual(get_filter_parts(task_filters), expected_result)
 

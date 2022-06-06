@@ -43,14 +43,14 @@ from build_wrapper import init_snapshot_dir_and_upload_files
 @ddt
 class TestBuildWrapper(unittest.TestCase):
 
-    @data(
+    @data(  # type: ignore
         ("test-project-name", "1.0", "1234567890"),
         ("test-project-name-2", "snapshots/1.2.3", "1234567890"),
         ("test-project-name", "1.0", "1234567890", "mysubdir"),
-        ("test-project-name-2", "snapshots/1.2.3", "1234567890", "mysubdir")
+        ("test-project-name-2", "snapshots/1.2.3", "1234567890", "mysubdir"),
     )
-    @unpack
-    def test_init_snapshot_dir_and_upload_files(self, project_name, version_branch, build_number, subdir=""):
+    @unpack  # type: ignore
+    def test_init_snapshot_dir_and_upload_files(self, project_name: str, version_branch: str, build_number: str, subdir: str = "") -> None:
         temp_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'build_wrapper_test')
         option_dict = {}
         option_dict['WORK_DIR'] = os.getcwd()

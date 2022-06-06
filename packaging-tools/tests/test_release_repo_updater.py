@@ -124,7 +124,7 @@ class TestReleaseRepoUpdater(unittest.TestCase):
         cls.server = "127.0.0.1"
 
     @asyncio_test
-    async def test_remote_file_exists(self):
+    async def test_remote_file_exists(self) -> None:
         self.assertTrue(remote_file_exists(self.server, os.path.abspath(__file__)))
         self.assertFalse(remote_file_exists(self.server, "/some/bogus/directory/foo.txt"))
 
@@ -183,8 +183,17 @@ class TestReleaseRepoUpdater(unittest.TestCase):
             self.assertFalse(os.path.exists(remote_source_repo_path))
             self.assertListEqual(sorted(["Updates.xml", "qt.foo.bar1", "qt.foo.bar2"]), sorted(os.listdir(remote_repo_backup_path)))
 
-    @asyncio_test_parallel_data((True, True), (False, False), ("yes", True), ("1", True), ("y", True),
-                                ("false", False), ("n", False), ("0", False), ("no", False))
+    @asyncio_test_parallel_data(  # type: ignore
+        (True, True),
+        (False, False),
+        ("yes", True),
+        ("1", True),
+        ("y", True),
+        ("false", False),
+        ("n", False),
+        ("0", False),
+        ("no", False),
+    )
     async def test_string_to_bool(self, value: str, expected_result: bool) -> None:
         self.assertEqual(string_to_bool(value), expected_result)
 
@@ -212,41 +221,41 @@ class TestReleaseRepoUpdater(unittest.TestCase):
             await ensure_ext_repo_paths(self.server, self.server, expected_repo)
             self.assertTrue(os.path.isdir(expected_repo))
 
-    @asyncio_test_parallel_data(
+    @asyncio_test_parallel_data(  # type: ignore
         ("user@server.com:/foo/bar"),
         ("server.com:/foo/bar"),
         ("user@server.com:/"), unpack=False
     )
-    async def test_parse_ext_valid(self, ext) -> None:
+    async def test_parse_ext_valid(self, ext: str) -> None:
         parse_ext(ext)
 
-    @asyncio_test_parallel_data(
+    @asyncio_test_parallel_data(  # type: ignore
         ("user@server.com"),
         ("server.com:/foo/bar:"),
         ("user@server.com:some/path"), unpack=False
     )
-    async def test_parse_ext_invalid(self, ext) -> None:
+    async def test_parse_ext_invalid(self, ext: str) -> None:
         with self.assertRaises(PackagingError):
             parse_ext(ext)
 
-    @asyncio_test_parallel_data(
+    @asyncio_test_parallel_data(  # type: ignore
         ("Error: Repository parameter missing argument"),
         ("Invalid content in ..."),
         ("Repository target directory /foobar/bar/foo already exists."), unpack=False
     )
-    async def test_check_invalid_repogen_output(self, repogen_output) -> None:
+    async def test_check_invalid_repogen_output(self, repogen_output: str) -> None:
         with self.assertRaises(PackagingError):
             check_repogen_output(repogen_output)
 
-    @asyncio_test_parallel_data(
+    @asyncio_test_parallel_data(  # type: ignore
         ("Update component a.b.c.d"),
         ("Cannot find new components to update"), unpack=False
     )
-    async def test_check_valid_repogen_output(self, repogen_output) -> None:
+    async def test_check_valid_repogen_output(self, repogen_output: str) -> None:
         # should not throw exception
         check_repogen_output(repogen_output)
 
-    @asyncio_test_parallel_data(
+    @asyncio_test_parallel_data(  # type: ignore
         ([], ["repository"]),
         (["linux,common"], ["repository,linux,common"]),
         (["", "linux,common"], ["repository", "repository,linux,common"])
@@ -254,7 +263,7 @@ class TestReleaseRepoUpdater(unittest.TestCase):
     async def test_append_to_task_filters(self, task_filters: List[str], exp_result: bool) -> None:
         self.assertEqual(append_to_task_filters(task_filters, "repository"), exp_result)
 
-    @asyncio_test_parallel_data(
+    @asyncio_test_parallel_data(  # type: ignore
         (["task.repository.linux.x64.feature1"], ["task,repository,linux,x64,feature1"]),
         (["task.repository.linux.x64.feature1", "windows.x64,feature2"],
          ["task,repository,linux,x64,feature1", "windows,x64,feature2"]),
@@ -266,7 +275,7 @@ class TestReleaseRepoUpdater(unittest.TestCase):
         print("test")
         self.assertEqual(format_task_filters(task_filters), exp_result)
 
-    @asyncio_test_parallel_data(
+    @asyncio_test_parallel_data(  # type: ignore
         ("qtsdkrepository/windows_x86/desktop/tools_maintenance/log-s3-2020-12-03--10:18:11-xml.t"
          "xt:fatal error: Could not connect to the endpoint URL: 'https://qt-cdn.s3.eu-west-1.ama"
          "zonaws.com/?list-type=2&prefix=qtsdkrepository%2Fwindows_x86%2Fdesktop%2Ftools_maintena"

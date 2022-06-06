@@ -61,7 +61,7 @@ class TestInstallerUtils(unittest.TestCase):
                 self.assertEqual(tmp_base_dir, os.getcwd())
         self.assertEqual(cwd, os.getcwd())
 
-    @asyncio_test_parallel_data(
+    @asyncio_test_parallel_data(  # type: ignore
         ("https://www.qt.io", False),
         ("https://", False),
         (None, False),
@@ -71,7 +71,7 @@ class TestInstallerUtils(unittest.TestCase):
         self.assertEqual(is_valid_url_path(url), expected_result,
                          f"URL: {url} - expected result: {expected_result} - result was: {not expected_result}")
 
-    @asyncio_test_parallel_data(
+    @asyncio_test_parallel_data(  # type: ignore
         ("https://www.qt.io/some/file.zip", "7z"),
         ("https://www.qt.io/some/file.tar.gz", "tar"),
         ("https://www.qt.io/some/file.7z", "7z"),

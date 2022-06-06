@@ -30,17 +30,18 @@
 
 """Scripts to generate SDK installer based on open source InstallerFramework"""
 
-import argparse
 import os
 import re
 import shutil
 import sys
+from argparse import ArgumentParser, ArgumentTypeError, Namespace
 from configparser import ConfigParser, ExtendedInterpolation
 from logging import getLogger
 from multiprocessing import cpu_count
 from pathlib import Path
 from subprocess import check_call
 from time import gmtime, strftime
+from typing import Any, Generator, List
 
 import pkg_constants
 from archiveresolver import ArchiveLocationResolver
@@ -93,7 +94,7 @@ class CreateInstallerError(Exception):
 ##############################################################
 # Check that valid tools are present in the build environment
 ##############################################################
-def check_required_tools():
+def check_required_tools() -> None:
     """Check that valid tools are present in the build environment."""
     if not shutil.which("7z"):
         raise CreateInstallerError("7z tool not found in the PATH")
@@ -102,7 +103,7 @@ def check_required_tools():
 ##############################################################
 # Cleanup
 ##############################################################
-def clean_work_dirs(task):
+def clean_work_dirs(task: Any) -> None:
     """Clean working directories."""
     log.info("Cleaning work environment")
     for item in [task.packages_full_path_dst, task.repo_output_dir, task.config_dir_dst]:
@@ -114,7 +115,7 @@ def clean_work_dirs(task):
 ##############################################################
 # Set the config directory
 ##############################################################
-def set_config_directory(task):
+def set_config_directory(task: Any) -> None:
     """Copy config directory into correct place."""
     log.info("Set config directory")
     config_dir_template = task.config.get('ConfigDir', 'template_name')
@@ -130,7 +131,7 @@ def set_config_directory(task):
 ##############################################################
 # Set the config.xml
 ##############################################################
-def set_config_xml(task):
+def set_config_xml(task: Any) -> Any:
     """Copy config.xml template into correct place."""
     log.info("Set config.xml")
 
@@ -164,7 +165,7 @@ def set_config_xml(task):
 ##############################################################
 # Substitute common version numbers etc., match against tags
 ##############################################################
-def substitute_global_tags(task):
+def substitute_global_tags(task: Any) -> None:
     """ Substitute common version numbers etc., match against tags """
     log.info("Substituting global tags:")
     log.info("%%PACKAGE_CREATION_DATE%% = %s", task.build_timestamp)
@@ -192,7 +193,7 @@ def substitute_global_tags(task):
 ##############################################################
 # Substitute component specifig tags
 ##############################################################
-def substitute_component_tags(tag_pair_list, meta_dir_dest):
+def substitute_component_tags(tag_pair_list: List[List[str]], meta_dir_dest: str) -> None:
     """ Substitute component specific tags """
     if len(tag_pair_list) == 0:
         return
@@ -220,7 +221,7 @@ def substitute_component_tags(tag_pair_list, meta_dir_dest):
 ##############################################################
 # Parse SDK components
 ##############################################################
-def parse_component_data(task, configuration_file, configurations_base_path):
+def parse_component_data(task: Any, configuration_file: str, configurations_base_path: str) -> None:
     """Parse SDK component data"""
     file_full_path = configuration_file
     if not os.path.isfile(file_full_path):
@@ -283,7 +284,7 @@ def parse_component_data(task, configuration_file, configurations_base_path):
 ##############################################################
 # Parse SDK components
 ##############################################################
-def parse_components(task):
+def parse_components(task: Any) -> None:
     """Parse SDK all components"""
     log.info("Parse target configuration files")
     conf_base_path = task.configurations_dir + os.sep + task.platform_identifier + os.sep
@@ -291,7 +292,7 @@ def parse_components(task):
     parse_component_data(task, main_conf_file, conf_base_path)
 
 
-def create_metadata_map(sdk_component):
+def create_metadata_map(sdk_component: SdkComponent) -> List[List[str]]:
     """create lists for component specific tag substitutions"""
     component_metadata_tag_pair_list = []
     # version tag substitution if exists
@@ -319,7 +320,7 @@ def create_metadata_map(sdk_component):
     return component_metadata_tag_pair_list
 
 
-def get_component_sha1_file(sdk_component, sha1_file_dest):
+def get_component_sha1_file(sdk_component: SdkComponent, sha1_file_dest: str) -> None:
     """download component sha1 file"""
     download(sdk_component.component_sha1_uri, sha1_file_dest)
 
@@ -328,7 +329,14 @@ def get_component_sha1_file(sdk_component, sha1_file_dest):
         sdk_component.component_sha1 = sha1_file.read().strip()
 
 
-def get_component_data(task, sdk_component, archive, install_dir, data_dir_dest, compress_content_dir):
+def get_component_data(
+    task: Any,
+    sdk_component: SdkComponent,
+    archive: SdkComponent.DownloadableArchive,
+    install_dir: str,
+    data_dir_dest: str,
+    compress_content_dir: str,
+) -> None:
     """download and create data for a component"""
     package_raw_name = os.path.basename(archive.archive_uri)
 
@@ -448,7 +456,7 @@ def get_component_data(task, sdk_component, archive, install_dir, data_dir_dest,
     do_execute_sub_process(cmd_args, data_dir_dest)
 
 
-def handle_set_executable(base_dir, package_finalize_items):
+def handle_set_executable(base_dir: str, package_finalize_items: str) -> None:
     for item in parse_package_finalize_items(package_finalize_items, 'set_executable'):
         expected_path = os.path.join(base_dir, item)
         if not os.path.exists(expected_path):
@@ -457,7 +465,7 @@ def handle_set_executable(base_dir, package_finalize_items):
         log.info("Executable bit set for: %s", expected_path)
 
 
-def handle_set_licheck(task, base_dir, package_finalize_items):
+def handle_set_licheck(task: Any, base_dir: str, package_finalize_items: str) -> None:
     for licheck_file_name in parse_package_finalize_items(package_finalize_items, 'set_licheck'):
         licheck_file_path = os.path.join(base_dir, licheck_file_name)
         if not os.path.exists(licheck_file_path):
@@ -467,7 +475,7 @@ def handle_set_licheck(task, base_dir, package_finalize_items):
         break
 
 
-def parse_package_finalize_items(package_finalize_items, item_category):
+def parse_package_finalize_items(package_finalize_items: str, item_category: str) -> Generator[Any, Any, Any]:
     for item in package_finalize_items.split(","):
         if item_category not in item:
             continue
@@ -478,7 +486,7 @@ def parse_package_finalize_items(package_finalize_items, item_category):
 ##############################################################
 # Substitute pkg template directory names
 ##############################################################
-def substitute_package_name(task, package_name):
+def substitute_package_name(task: Any, package_name: str) -> str:
     for item in task.substitution_list:
         package_name = package_name.replace(item[0], item[1])
 
@@ -488,7 +496,7 @@ def substitute_package_name(task, package_name):
 ##############################################################
 # Remove debug information files
 ##############################################################
-def remove_all_debug_information_files(install_dir):
+def remove_all_debug_information_files(install_dir: str) -> None:
     """Remove debug information files according to host machine."""
     if is_windows():
         debug_information_file_ending = 'pdb'
@@ -505,7 +513,7 @@ def remove_all_debug_information_files(install_dir):
 ##############################################################
 # Remove debug information files by file type
 ##############################################################
-def remove_debug_information_files_by_file_type(install_dir, dbg_file_suffix):
+def remove_debug_information_files_by_file_type(install_dir: str, dbg_file_suffix: str) -> None:
     """Remove debug information files by file type"""
     dirs = locate_paths(install_dir, ['bin', 'lib', 'qml', 'plugins'], filters=[os.path.isdir])
     for dbg_info_dir in dirs:
@@ -523,7 +531,7 @@ def remove_debug_information_files_by_file_type(install_dir, dbg_file_suffix):
 ##############################################################
 # Remove debug libraries
 ##############################################################
-def remove_all_debug_libraries(install_dir):
+def remove_all_debug_libraries(install_dir: str) -> None:
     """Remove debug libraries."""
     # at this point of packaging we don't necessarily have reliable source of library names
     # on Windows we trust debug library filenames to follow *d.dll | *d.lib industry standard naming convention
@@ -566,7 +574,7 @@ def remove_all_debug_libraries(install_dir):
 ##############################################################
 # Create target components
 ##############################################################
-def create_target_components(task):
+def create_target_components(task: Any) -> None:
     """Create target components."""
     Path(task.packages_full_path_dst).mkdir(parents=True, exist_ok=True)
 
@@ -574,8 +582,8 @@ def create_target_components(task):
     # download and extract lrelease binary for creating translation binaries
     if task.create_repository and os.environ.get("LRELEASE_TOOL"):
         if not os.path.isfile(os.path.join(task.script_root_dir, "lrelease")):
-            download(os.environ.get("LRELEASE_TOOL"), task.script_root_dir)
-            extract_file(os.path.basename(os.environ.get("LRELEASE_TOOL")), task.script_root_dir)
+            download(os.environ.get("LRELEASE_TOOL", ""), task.script_root_dir)
+            extract_file(os.path.basename(os.environ.get("LRELEASE_TOOL", "")), task.script_root_dir)
     get_component_data_work = ThreadedWork("get components data")
     for sdk_component in task.sdk_component_list:
         sdk_component.print_component_data()
@@ -647,7 +655,7 @@ def create_target_components(task):
 ##############################################################
 # Cleanup examples
 ##############################################################
-def qml_examples_only(examples_dir):
+def qml_examples_only(examples_dir: str) -> None:
     if not os.path.isdir(examples_dir):
         log.error("Given examples directory is not valid path: %s", examples_dir)
         log.error("Archive not cleaned!")
@@ -682,7 +690,7 @@ def qml_examples_only(examples_dir):
 ##############################################################
 # Cleanup unnecessary documentation files
 ##############################################################
-def cleanup_docs(install_dir):
+def cleanup_docs(install_dir: str) -> None:
     if not os.path.isdir(install_dir):
         log.error("Given docs directory is not valid path: %s", install_dir)
         log.error("Archive not cleaned!")
@@ -713,7 +721,7 @@ def cleanup_docs(install_dir):
 ##############################################################
 # Create the final installer binary
 ##############################################################
-def create_installer_binary(task):
+def create_installer_binary(task: Any) -> None:
     """Create installer binary files using binarycreator tool."""
     log.info("Create installer binary")
 
@@ -781,7 +789,7 @@ def create_installer_binary(task):
 ##############################################################
 # Create the repository
 ##############################################################
-def create_online_repository(task):
+def create_online_repository(task: Any) -> None:
     """Create online repository using repogen tool."""
     log.info("Create online repository")
 
@@ -808,7 +816,7 @@ def create_online_repository(task):
 ##############################################################
 # Create MaintenanceTool resource file
 ##############################################################
-def create_maintenance_tool_resource_file(task):
+def create_maintenance_tool_resource_file(task: Any) -> None:
     """Create MaintenanceTool resource file."""
     log.info("Create MaintenanceTool resource file")
     set_config_directory(task)
@@ -829,7 +837,7 @@ def create_maintenance_tool_resource_file(task):
 ###############################
 # function
 ###############################
-def inject_update_rcc_to_archive(archive_file_path, file_to_be_injected):
+def inject_update_rcc_to_archive(archive_file_path: str, file_to_be_injected: str) -> None:
     log.info("Injecting file [%s] into [%s]", file_to_be_injected, archive_file_path)
     if not os.path.isfile(file_to_be_injected):
         log.error("*** Unable to locate file: %s", file_to_be_injected)
@@ -860,7 +868,7 @@ def inject_update_rcc_to_archive(archive_file_path, file_to_be_injected):
 ##############################################################
 # Create the final installer binary
 ##############################################################
-def create_mac_disk_image(task):
+def create_mac_disk_image(task: Any) -> None:
     """Create Apple disk image."""
     log.info("Create Apple disk image")
 
@@ -877,7 +885,7 @@ def create_mac_disk_image(task):
 ##############################################################
 # All main build steps
 ##############################################################
-def create_installer(task):
+def create_installer(task: Any) -> None:
     """Installer creation main steps."""
     log.info("Creating Qt Installer Framework based installer/online repository")
     # check required tools
@@ -906,19 +914,19 @@ def create_installer(task):
         create_online_repository(task)
 
 
-def str2bool(value):
+def str2bool(value: str) -> bool:
     if isinstance(value, bool):
         return value
     if value.lower() in ('yes', 'true', 't', 'y', '1'):
         return True
     if value.lower() in ('no', 'false', 'f', 'n', '0'):
         return False
-    raise argparse.ArgumentTypeError('Boolean value expected.')
+    raise ArgumentTypeError('Boolean value expected.')
 
 
 class QtInstallerTask:
 
-    def __init__(self, args):
+    def __init__(self, args: Namespace):
         log.info("Parsing: %s", args.configuration_file)
         self.config = ConfigParser(interpolation=ExtendedInterpolation())
         with open(args.configuration_file, encoding="utf-8") as cfgfile:
@@ -929,10 +937,10 @@ class QtInstallerTask:
         self.script_root_dir = os.path.dirname(os.path.realpath(__file__))
         self.ifw_tools_uri = args.ifw_tools_uri
         self.ifw_tools_dir = os.path.join(self.script_root_dir, "ifwt")
-        self.archivegen_tool = None
-        self.binarycreator_tool = None
-        self.installerbase_tool = None
-        self.repogen_tool = None
+        self.archivegen_tool: str = ""
+        self.binarycreator_tool: str = ""
+        self.installerbase_tool: str = ""
+        self.repogen_tool: str = ""
         self.config_dir_dst = os.path.join(self.script_root_dir, "config")
         self.packages_full_path_dst = os.path.join(self.script_root_dir, "pkg")
 
@@ -945,10 +953,10 @@ class QtInstallerTask:
                                                                        args.configurations_dir)
 
         self.substitution_list = self.parse_substitutions(args)
-        self.directories_for_substitutions = []
-        self.sdk_component_list = []
-        self.sdk_component_list_skipped = []
-        self.sdk_component_ignore_list = []
+        self.directories_for_substitutions: List[str] = []
+        self.sdk_component_list: List[SdkComponent] = []
+        self.sdk_component_list_skipped: List[SdkComponent] = []
+        self.sdk_component_ignore_list: List[SdkComponent] = []
 
         self.archive_location_resolver = ArchiveLocationResolver(self.config, args.archive_base_url, args.configurations_dir,
                                                                  self.substitution_list)
@@ -969,7 +977,7 @@ class QtInstallerTask:
         self.max_cpu_count = args.max_cpu_count
         self.create_maintenance_tool_resource_file = args.create_maintenance_tool_resource_file
 
-    def verbose(self):
+    def verbose(self) -> None:
         log.info("Installer task:")
         log.info("  IFW tools: %s", self.ifw_tools_uri)
         log.info("  Archivegen: %s", self.archivegen_tool)
@@ -996,7 +1004,7 @@ class QtInstallerTask:
         log.info("  Mac cpu count: %s", self.max_cpu_count)
         log.info("  Create MaintenanceTool resource file: %s", self.create_maintenance_tool_resource_file)
 
-    def parse_substitutions(self, args):
+    def parse_substitutions(self, args: Namespace) -> List[List[str]]:
         substitution_list = []
         for item in args.substitution_list:
             key, value = item.split("=", maxsplit=1)
@@ -1006,7 +1014,7 @@ class QtInstallerTask:
         substitution_list.append(['%LICENSE%', args.license_type])
         return substitution_list
 
-    def parse_ifw_pkg_template_dirs(self, template_list, configurations_dir):
+    def parse_ifw_pkg_template_dirs(self, template_list: str, configurations_dir: str) -> List[str]:
         ret = []
         packages_list_raw = template_list.replace(' ', '')
         for package_template_dir in packages_list_raw.split(','):
@@ -1027,7 +1035,7 @@ class QtInstallerTask:
                     ret.append(os.path.join(configurations_dir, package_template_dir))
         return ret
 
-    def install_ifw_tools(self):
+    def install_ifw_tools(self) -> None:
         """Setup Installer-Framework tools."""
         log.info("Install Installer Framework tools")
 
@@ -1045,7 +1053,7 @@ class QtInstallerTask:
     ##############################################################
     # Install Installer-Framework tools
     ##############################################################
-    def set_ifw_tools(self):
+    def set_ifw_tools(self) -> None:
         executable_suffix = ".exe" if is_windows() else ""
         self.archivegen_tool = locate_executable(self.ifw_tools_dir, ['archivegen' + executable_suffix])
         self.binarycreator_tool = locate_executable(self.ifw_tools_dir, ['binarycreator' + executable_suffix])
@@ -1061,7 +1069,7 @@ class QtInstallerTask:
         log.info("Repogen tool: %s", self.repogen_tool)
         log.info("Installerbase: %s", self.installerbase_tool)
 
-    def download_and_extract_ifw_tools(self):
+    def download_and_extract_ifw_tools(self) -> None:
         package_save_as_temp = os.path.join(self.ifw_tools_dir, os.path.basename(self.ifw_tools_uri))
         package_save_as_temp = os.path.normpath(package_save_as_temp)
         # download ifw archive if not present on disk
@@ -1081,7 +1089,7 @@ class QtInstallerTask:
 
 def main() -> None:
     """Main"""
-    parser = argparse.ArgumentParser(prog="Script to create Qt Installer Framework based installers.")
+    parser = ArgumentParser(prog="Script to create Qt Installer Framework based installers.")
     parser.add_argument("-c", "--configurations-dir", dest="configurations_dir", type=str, default="configurations",
                         help="define configurations directory where to read installer configuration files")
     parser.add_argument("-f", "--configuration-file", dest="configuration_file", type=str,

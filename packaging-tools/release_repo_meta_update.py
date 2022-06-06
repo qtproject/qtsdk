@@ -88,7 +88,7 @@ def check_repos_which_can_be_updated(repositories_to_migrate: List[str]) -> Tupl
     return (updatable_repos, existing_pending_repos)
 
 
-async def create_converted_repositories(repogen: str, repositories_to_migrate: List[str], dry_run=False) -> Tuple[Dict[str, str], Dict[str, str]]:
+async def create_converted_repositories(repogen: str, repositories_to_migrate: List[str], dry_run: bool = False) -> Tuple[Dict[str, str], Dict[str, str]]:
     # first check that pending repository does not already exist per given repository
     log.info("Starting to create new converted repositories: %s", len(repositories_to_migrate))
     updatable_repos, existing_pending_repos = check_repos_which_can_be_updated(repositories_to_migrate)
@@ -168,7 +168,7 @@ def scan_repositories(search_path: str) -> Tuple[List[str], List[str], List[str]
     assert os.path.isdir(search_path), f"Not a valid directory: {search_path}"
     log.info("Scan repository status from: %s", search_path)
 
-    def check_unified_meta_exists(path: str) -> bool:
+    def check_unified_meta_exists(path: Path) -> bool:
         return any(Path(path).glob("*_meta.7z"))
 
     repos = [path.resolve().parent for path in Path(search_path).rglob('Updates.xml')]
@@ -181,7 +181,7 @@ def scan_repositories(search_path: str) -> Tuple[List[str], List[str], List[str]
             log.info("Skipping backup repo: %s", repo.as_posix())
             continue
         if repo.as_posix().endswith(CONVERT_SUFFIX):
-            if not check_unified_meta_exists(str(repo)):
+            if not check_unified_meta_exists(repo):
                 # this is broken pending repo
                 log.error("Pending repository was missing '_meta.7z'")
                 broken_repos.append(repo.as_posix())
@@ -195,7 +195,7 @@ def scan_repositories(search_path: str) -> Tuple[List[str], List[str], List[str]
                 continue
             pending_repos.append(repo.as_posix())
         else:
-            if check_unified_meta_exists(str(repo)):
+            if check_unified_meta_exists(repo):
                 done_repos.append(repo.as_posix())
             else:
                 unconverted_repos.append(repo.as_posix())

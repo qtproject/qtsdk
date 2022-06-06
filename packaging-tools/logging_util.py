@@ -34,7 +34,7 @@ import logging
 import colorlog
 
 
-def init_logger(dunder_name, debug_mode) -> logging.Logger:
+def init_logger(dunder_name: str, debug_mode: bool) -> logging.Logger:
     log_format = (
         '%(asctime)s '
         '%(levelname)s: '

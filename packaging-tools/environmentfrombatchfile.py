@@ -29,9 +29,11 @@
 #
 #############################################################################
 
+import io
 import os
 from itertools import takewhile
 from subprocess import PIPE, Popen
+from typing import IO, Any, Dict, Optional
 
 # http://stackoverflow.com/questions/1214496/how-to-get-environment-from-a-subprocess-in-python
 # def validate_pair(ob):
@@ -44,7 +46,7 @@ from subprocess import PIPE, Popen
 #     return True
 
 
-def consume(iterator):
+def consume(iterator: Any) -> None:
     try:
         while True:
             next(iterator)
@@ -56,7 +58,7 @@ class PackagingError(Exception):
     pass
 
 
-def sanity_check_env(env_cmd, env_dict):
+def sanity_check_env(env_cmd: str, env_dict: Dict[str, str]) -> None:
     # throw error if 'Path' exists in environment dictionary
     if "Path" in env_dict:
         raise PackagingError(
@@ -64,7 +66,9 @@ def sanity_check_env(env_cmd, env_dict):
         )
 
 
-def get(env_cmd, initial=None, arguments=None):
+def get(
+    env_cmd: str, initial: Optional[Dict[str, str]] = None, arguments: Any = None
+) -> Dict[str, str]:
     """
     Take a command (either a single command or list of arguments)
     and return the environment created after running that command.
@@ -90,7 +94,7 @@ def get(env_cmd, initial=None, arguments=None):
     # launch the process
     with Popen(cmd, stdout=PIPE, env=initial, universal_newlines=True) as proc:
         # parse the output sent to stdout
-        lines = proc.stdout
+        lines: IO[str] = proc.stdout or io.StringIO("")
         # consume whatever output occurs until the tag is reached
         consume(takewhile(lambda line: tag not in line, lines))
         # parse key/values into pairs

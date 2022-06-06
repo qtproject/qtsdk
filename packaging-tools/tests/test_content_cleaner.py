@@ -42,7 +42,7 @@ from content_cleaner import preserve_content, remove_content, remove_empty_direc
 
 @ddt
 class TestContentCleaner(unittest.TestCase):
-    def generate_test_content(self, test_base_dir: str, test_content_paths: List[str]):
+    def generate_test_content(self, test_base_dir: str, test_content_paths: List[str]) -> None:
         for test_content_path in test_content_paths:
             test_path = os.path.join(test_base_dir, test_content_path)
             os.makedirs(os.path.dirname(test_path), exist_ok=True)
@@ -50,7 +50,7 @@ class TestContentCleaner(unittest.TestCase):
                 with open(test_path, "w+", encoding="utf-8") as handle:
                     handle.write("")
 
-    @data(
+    @data(  # type: ignore
         (
             [
                 "libexec/codegen/preserve-file.ext",
@@ -97,7 +97,7 @@ class TestContentCleaner(unittest.TestCase):
             ["**/*preserve-file*"],
         ),
     )
-    @unpack
+    @unpack  # type: ignore
     def test_preserve_content(
         self,
         test_content: List[str],
@@ -111,7 +111,7 @@ class TestContentCleaner(unittest.TestCase):
             for item in expected_result:
                 self.assertTrue(os.path.isfile(os.path.join(test_base_dir, item)))
 
-    @data(
+    @data(  # type: ignore
         (
             [
                 "testA/path1/path2/path3/testfile1.ext",
@@ -139,7 +139,7 @@ class TestContentCleaner(unittest.TestCase):
             ["testfile1.ext", ".testfile2", "testfile3"],
         ),
     )
-    @unpack
+    @unpack  # type: ignore
     def test_remove_content(
         self,
         test_content: List[str],
@@ -160,11 +160,11 @@ class TestContentCleaner(unittest.TestCase):
         except FileNotFoundError:
             pass
 
-    @data(
+    @data(  # type: ignore
         (["test/path/test-file", "test/path/.test-file"], False),
         (["test/path/to/remove/", "test/.path/to/remove/"], True),
     )
-    @unpack
+    @unpack  # type: ignore
     def test_remove_empty_directories(self, test_content: List[str], remove_dir: bool) -> None:
         try:
             with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:

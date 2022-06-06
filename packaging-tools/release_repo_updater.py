@@ -46,7 +46,7 @@ from pathlib import Path
 from subprocess import PIPE
 from tempfile import TemporaryDirectory
 from time import gmtime, sleep, strftime, time
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from urllib.error import HTTPError, URLError
 from urllib.request import urlopen, urlretrieve
 
@@ -77,7 +77,7 @@ class EventRegister():
         self.initialize(event_injector_path)
 
     @classmethod
-    def initialize(cls, event_injector_path: str):
+    def initialize(cls, event_injector_path: str) -> None:
         if not cls.python_path:
             if platform.system() == "Linux":
                 cls.python_path = sh.which("python3")
@@ -93,7 +93,7 @@ class EventRegister():
             self.register_event(self.event_name, "START", self.summary_data, message="")
         return self
 
-    async def __aexit__(self, exc_type, exc_val, traceback) -> bool:
+    async def __aexit__(self, exc_type: Any, exc_val: Any, traceback: Any) -> bool:
         ret = True
         event_type = "FINISH"
         if traceback:
@@ -221,7 +221,13 @@ def has_connection_error(output: str) -> bool:
     return False
 
 
-def execute_remote_cmd(remote_server: str, remote_server_home: str, cmd: List[str], script_file_name: str, timeout=60 * 60) -> None:
+def execute_remote_cmd(
+    remote_server: str,
+    remote_server_home: str,
+    cmd: List[str],
+    script_file_name: str,
+    timeout: int = 60 * 60,
+) -> None:
     remote_tmp_dir = os.path.join(remote_server_home, "remote_scripts", timestamp)
     create_remote_paths(remote_server, [remote_tmp_dir])
     remote_script = create_remote_script(remote_server, cmd, remote_tmp_dir, script_file_name)
@@ -242,13 +248,13 @@ def create_remote_script(server: str, cmd: List[str], remote_script_path: str, s
         return os.path.join(remote_script_path, script_file_name)
 
 
-def execute_remote_script(server: str, remote_script_path: str, timeout=60 * 60) -> None:
+def execute_remote_script(server: str, remote_script_path: str, timeout: int = 60 * 60) -> None:
     cmd = get_remote_login_cmd(server) + [remote_script_path]
     retry_count = 5
     delay = float(60)
     while retry_count:
         retry_count -= 1
-        if not has_connection_error(exec_cmd(cmd, timeout)):
+        if not has_connection_error(exec_cmd(cmd, timeout=timeout)):
             break
         if retry_count:
             log.warning("Trying again after %ss", delay)
@@ -680,7 +686,7 @@ def sign_offline_installer(installer_path: str, installer_name: str) -> None:
         log.info("No signing available for this host platform: %s", platform.system())
 
 
-def notarize_dmg(dmg_path, installer_basename) -> None:
+def notarize_dmg(dmg_path: str, installer_basename: str) -> None:
     script_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "notarize.py"))
     # bundle-id is just a unique identifier without any special meaning, used to track the notarization progress
     bundle_id = installer_basename + "-" + strftime('%Y-%m-%d-%H-%M', gmtime())
@@ -735,7 +741,7 @@ async def _build_offline_tasks(staging_server: str, staging_server_root: str, ta
             upload_offline_to_remote(installer_output_dir, remote_upload_path, staging_server, task, installer_build_id, enable_oss_snapshots, license_)
 
 
-def upload_snapshots_to_remote(staging_server: str, remote_upload_path: str, task: ReleaseTask, installer_build_id: str, installer_filename: str):
+def upload_snapshots_to_remote(staging_server: str, remote_upload_path: str, task: ReleaseTask, installer_build_id: str, installer_filename: str) -> None:
     project_name = task.get_project_name()
     version_full = task.get_version()
     version_minor_match = re.match(r"\d+\.\d+", version_full)

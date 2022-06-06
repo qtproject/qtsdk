@@ -78,7 +78,7 @@ def locate_source_root(search_dir: str) -> str:
     raise BldPythonError(f"Could not find source root directory from: {search_dir}")
 
 
-async def create_symlink(python_dir: str):
+async def create_symlink(python_dir: str) -> None:
     python_exe = os.path.join(python_dir, 'python.exe')
     assert os.path.isfile(python_exe), f"The 'python' executable did not exist: {python_exe}"
     version_cmd = [python_exe, '--version']

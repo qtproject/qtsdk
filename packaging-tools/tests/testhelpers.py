@@ -43,20 +43,19 @@ if not is_windows():
 _asyncio_test_loop = asyncio.get_event_loop()
 
 
-def asyncio_test(func):
+def asyncio_test(func: Any) -> Any:
     assert asyncio.iscoroutinefunction(func)
     return lambda *args, **kwargs: _asyncio_test_loop.run_until_complete(func(*args, **kwargs))
 
 
-def asyncio_test_parallel_data(*data_args, unpack=True):
-    if not unpack:
-        # then double pack so we can unpack anyway
-        data_args = ((d,) for d in data_args)
+def asyncio_test_parallel_data(*data_args, unpack: bool = True) -> Any:  # type: ignore
+    # then double pack so we can unpack anyway
+    data_args = ((d,) for d in data_args) if not unpack else data_args  # type: ignore
 
-    def decorator(func: Callable[..., Any]):
+    def decorator(func: Callable[..., Any]) -> Callable[[Any], Any]:
         assert asyncio.iscoroutinefunction(func)
 
-        def wrapped(*args, **kwargs):
+        def wrapped(*args, **kwargs):  # type: ignore
             calls = (func(*args, *data, **kwargs) for data in data_args)
             _asyncio_test_loop.run_until_complete(asyncio.gather(*calls))
         return wrapped

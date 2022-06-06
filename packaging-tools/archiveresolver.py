@@ -30,6 +30,8 @@
 #############################################################################
 
 import os
+from configparser import ConfigParser
+from typing import List
 from urllib.parse import urlparse
 
 from bldinstallercommon import config_section_map, is_content_url_valid, safe_config_key_fetch
@@ -55,7 +57,7 @@ class ArchiveLocationResolver:
         ###############################
         # Constructor
         ###############################
-        def __init__(self, server_name, server_base_url, server_base_path):
+        def __init__(self, server_name: str, server_base_url: str, server_base_path: str) -> None:
             self.server_name = server_name
             temp = server_base_url
             if not temp.endswith('/') and not server_base_path.startswith('/'):
@@ -66,10 +68,16 @@ class ArchiveLocationResolver:
     ###############################
     # Constructor
     ###############################
-    def __init__(self, target_config, server_base_url_override, configurations_root_dir, key_substitution_list):
+    def __init__(
+        self,
+        target_config: ConfigParser,
+        server_base_url_override: str,
+        configurations_root_dir: str,
+        key_substitution_list: List[List[str]],
+    ) -> None:
         """Init data based on the target configuration"""
         self.server_list = []
-        self.pkg_templates_dir_list = []
+        self.pkg_templates_dir_list: List[str] = []
         self.default_server = None
         self.configurations_root_dir = configurations_root_dir
         self.key_substitution_list = key_substitution_list
@@ -101,10 +109,10 @@ class ArchiveLocationResolver:
     ###############################
     # Get full server URL by name
     ###############################
-    def server_url_by_name(self, server_name):
+    def server_url_by_name(self, server_name: str) -> str:
         """Get server URL by name. If empty name given, return the default server (may be null)."""
         if not server_name:
-            return self.default_server.server_url
+            return self.default_server.server_url if self.default_server else ""
         for server in self.server_list:
             if server.server_name == server_name:
                 return server.server_url
@@ -113,7 +121,7 @@ class ArchiveLocationResolver:
     ###############################
     # Get full server URI
     ###############################
-    def resolve_full_uri(self, package_name, server_name, archive_uri):
+    def resolve_full_uri(self, package_name: str, server_name: str, archive_uri: str) -> str:
         """Resolve the full URI in the following order
              1. is archive_uri a valid URI as such
              2. check if given archive_uri denotes a package under package templates directory
@@ -154,7 +162,7 @@ class ArchiveLocationResolver:
     ###############################
     # Print out server list
     ###############################
-    def print_server_list(self):
+    def print_server_list(self) -> None:
         print('--------------------------------------------------')
         print(' Server list:')
         for server in self.server_list:

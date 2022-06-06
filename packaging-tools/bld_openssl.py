@@ -37,13 +37,14 @@ import os
 import platform
 import subprocess
 import sys
+from typing import List
 
 from runner import do_execute_sub_process
 
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
-def build(src_dir, install_dir, toolset):
+def build(src_dir: str, install_dir: str, toolset: str) -> None:
     do_execute_sub_process(['perl', 'Configure', toolset, '--openssldir=' + install_dir], src_dir, True)
     if toolset == 'VC-WIN32':
         do_execute_sub_process([r'ms\do_nasm.bat'], src_dir, True)
@@ -53,16 +54,16 @@ def build(src_dir, install_dir, toolset):
     do_execute_sub_process(['nmake', '-f', 'ms\\ntdll.mak', 'install'], src_dir, True)
 
 
-def archive(install_dir, archive_prefix):
+def archive(install_dir: str, archive_prefix: str) -> None:
     (directory, name) = os.path.split(install_dir)
     do_execute_sub_process(['7z', 'a', archive_prefix + '.7z', name], directory, True)
     do_execute_sub_process(['7z', 'a', archive_prefix + '-runtime.7z', '*.dll'], os.path.join(install_dir, 'bin'), True)
 
 
-def check_environment():
+def check_environment() -> None:
     with open(os.devnull, 'w', encoding="utf-8") as fnull:
 
-        def check_cmd(cmd):
+        def check_cmd(cmd: List[str]) -> None:
             if subprocess.call(cmd, stdout=fnull, stderr=fnull) != 0:
                 print(f"*** Cannot execute {cmd[0]}")
                 sys.exit(1)
@@ -71,7 +72,7 @@ def check_environment():
         check_cmd(['7z'])
 
 
-def setup_argument_parser():
+def setup_argument_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog=os.path.basename(sys.argv[0]),
         add_help=True, description='Build openssl from sources',

@@ -42,7 +42,9 @@ from collections import namedtuple
 from configparser import ConfigParser
 from getpass import getuser
 from glob import glob
+from io import TextIOWrapper
 from time import gmtime, strftime
+from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 from urllib.request import urlopen
 
@@ -84,14 +86,14 @@ if LOCAL_MODE:
 ###############################
 # Unlock keychain script
 ###############################
-def unlock_keychain_script():
+def unlock_keychain_script() -> str:
     return '/Users/qt/unlock-keychain.sh'
 
 
 ###############################
 # Unlock keychain
 ###############################
-def unlock_keychain():
+def unlock_keychain() -> None:
     cmd_args = [unlock_keychain_script()]
     do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
 
@@ -99,7 +101,7 @@ def unlock_keychain():
 ###############################
 # Lock keychain
 ###############################
-def lock_keychain():
+def lock_keychain() -> None:
     cmd_args = ['/Users/qt/lock-keychain.sh']
     do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR, abort_on_fail=False)
 
@@ -107,7 +109,14 @@ def lock_keychain():
 ###########################################
 # init snapshot build dir and upload files
 ###########################################
-def init_snapshot_dir_and_upload_files(option_dict, project_name, project_version_or_branch, build_number, file_upload_list, subdir=''):
+def init_snapshot_dir_and_upload_files(
+    option_dict: Dict[str, str],
+    project_name: str,
+    project_version_or_branch: str,
+    build_number: str,
+    file_upload_list: List[str],
+    subdir: str = "",
+) -> None:
     if subdir != "" and subdir[0] != "/":
         subdir = "/" + subdir
     remote_path_base = option_dict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + project_name + '/' + project_version_or_branch
@@ -126,7 +135,7 @@ def init_snapshot_dir_and_upload_files(option_dict, project_name, project_versio
 ###############################
 # handle_qt_licheck_build
 ###############################
-def handle_qt_licheck_build(option_dict):
+def handle_qt_licheck_build(option_dict: Dict[str, str]) -> None:
     if option_dict['LICENSE'] == 'enterprise':
         # Build license checker
         exe_dir = option_dict['WORK_DIR'] + '/license-managing/licheck'
@@ -155,7 +164,7 @@ def handle_qt_licheck_build(option_dict):
 ###############################
 # Download Qt documentation, extract and repackage with toplevel dir renamed
 ###############################
-def move_files_to_parent_dir(source):
+def move_files_to_parent_dir(source: str) -> None:
     destination = os.path.abspath(os.path.join(source, os.pardir))
     print(f"Moving files from: [{source}] to: [{destination}]")
     assert os.path.isdir(source), f"The given source is not a directory: {source}"
@@ -166,7 +175,9 @@ def move_files_to_parent_dir(source):
     os.rmdir(source)
 
 
-def create_download_documentation_task(base_url, download_path):
+def create_download_documentation_task(
+    base_url: str, download_path: str
+) -> Tuple[Task, Task, str]:
     doc_base_url = base_url + "/doc"
 
     use_local = urlparse(doc_base_url).scheme == "file"
@@ -189,10 +200,10 @@ def create_download_documentation_task(base_url, download_path):
     extract_path = os.path.join(download_path, 'tqtc-qt5-documentation')
     target_filepath = os.path.join(download_path, 'qt-everywhere-documentation.7z')
 
-    def create_remove_one_dir_level_function(path):
+    def create_remove_one_dir_level_function(path: str) -> Any:
         return lambda: move_files_to_parent_dir(path)
 
-    def repackage():
+    def repackage() -> None:
         source_path = extract_path
         dest_doc_path = os.path.join(download_path, 'doc')
         os.rename(source_path, dest_doc_path)
@@ -213,7 +224,7 @@ def create_download_documentation_task(base_url, download_path):
     return (download_task, repackage_task, file_url(target_filepath))
 
 
-def create_download_openssl_task(url, download_path):
+def create_download_openssl_task(url: str, download_path: str) -> Tuple[Task, Task, str]:
     # create openssl 7zips which just contain the DLLs / SOs, so they can just be extracted
     # into the Qt lib directory and later on deployed with Qt
     (_, filename) = os.path.split(url)
@@ -221,7 +232,7 @@ def create_download_openssl_task(url, download_path):
     extract_path = os.path.join(download_path, 'openssl_download')
     target_filepath = os.path.join(download_path, 'openssl.7z')
 
-    def repackage():
+    def repackage() -> None:
         listing = os.listdir(extract_path)
         subdircount = len(listing)
         base_path = os.path.join(extract_path, listing[0]) if subdircount >= 1 else extract_path
@@ -251,9 +262,9 @@ def create_download_openssl_task(url, download_path):
 PluginConf = namedtuple('PluginConf', ['git_url', 'branch_or_tag', 'checkout_dir'])
 
 
-def parse_qtcreator_plugins(pkg_conf_file):
+def parse_qtcreator_plugins(pkg_conf_file: str) -> List[PluginConf]:
     """Parse available Qt Creator plugins from configuration file"""
-    plugin_list = []
+    plugin_list: List[PluginConf] = []
     if not pkg_conf_file:
         return plugin_list
     plugin_options = get_pkg_options(pkg_conf_file)
@@ -282,24 +293,35 @@ QtcPlugin = namedtuple('QtcPlugin', ['name',
                                      'package_commercial'])
 
 
-def make_qtcplugin(name, path, version, dependencies=None, modules=None,
-                   additional_arguments=None, build=True,
-                   package_commercial=False):
-    return QtcPlugin(name=name, path=path, version=version,
-                     dependencies=dependencies or [],
-                     modules=modules or [],
-                     additional_arguments=additional_arguments or [],
-                     build=build,
-                     package_commercial=package_commercial)
+def make_qtcplugin(
+    name: str,
+    path: str,
+    version: str,
+    dependencies: Optional[List[str]] = None,
+    modules: Optional[List[str]] = None,
+    additional_arguments: Optional[List[str]] = None,
+    build: bool = True,
+    package_commercial: bool = False,
+) -> QtcPlugin:
+    return QtcPlugin(
+        name=name,
+        path=path,
+        version=version,
+        dependencies=dependencies or [],
+        modules=modules or [],
+        additional_arguments=additional_arguments or [],
+        build=build,
+        package_commercial=package_commercial,
+    )
 
 
 class BuildLog:
-    def __init__(self, log_filepath, log_overwrite=False):
-        self.file = None
+    def __init__(self, log_filepath: str, log_overwrite: bool = False) -> None:
+        self.file: Optional[TextIOWrapper] = None
         self.log_filepath = log_filepath
         self.log_overwrite = log_overwrite
 
-    def __enter__(self):
+    def __enter__(self) -> TextIOWrapper:
         try:
             self.file = open(self.log_filepath, 'w' if self.log_overwrite else 'a', encoding="utf-8")
         except Exception:
@@ -308,8 +330,9 @@ class BuildLog:
             raise
         return self.file
 
-    def __exit__(self, exc_type, exc_value, exc_traceback):
-        self.file.close()
+    def __exit__(self, exc_type: Any, exc_value: Any, exc_traceback: Any) -> Optional[bool]:
+        if self.file is not None:
+            self.file.close()
         if exc_type:  # exception raised -> print the log and re-raise
             with open(self.log_filepath, 'r', encoding="utf-8") as handle:
                 print(handle.read())
@@ -319,8 +342,13 @@ class BuildLog:
 
 # writes output of process to log_filepath
 # on error it dumps the log file to stdout as well
-def check_call_log(args, execution_path, extra_env=None,
-                   log_filepath=None, log_overwrite=False):
+def check_call_log(
+    args: List[str],
+    execution_path: str,
+    extra_env: Optional[Dict[str, str]] = None,
+    log_filepath: Optional[str] = None,
+    log_overwrite: bool = False,
+) -> None:
     extra_env = extra_env or os.environ.copy()
     if not log_filepath:
         do_execute_sub_process(args, execution_path, extra_env=extra_env)
@@ -331,7 +359,7 @@ def check_call_log(args, execution_path, extra_env=None,
             )
 
 
-def create_qtcreator_source_package(option_dict, source_path, plugin_name, version, edition, target_path, log_filepath):
+def create_qtcreator_source_package(option_dict: Dict[str, str], source_path: str, plugin_name: Optional[str], version: str, edition: str, target_path: str, log_filepath: str) -> None:
     namepart = '-' + plugin_name if plugin_name else ''
     file_base = 'qt-creator-' + edition + namepart + '-src-' + version
     target_base = os.path.join(target_path, file_base)
@@ -351,7 +379,7 @@ def create_qtcreator_source_package(option_dict, source_path, plugin_name, versi
                            target_path, log_filepath=log_filepath)
 
 
-def qtcreator_build_plugin_script(qtcreator_dev_path):
+def qtcreator_build_plugin_script(qtcreator_dev_path: str) -> str:
     if is_macos():
         # scripts can be within the app bundle
         apps = glob(os.path.join(qtcreator_dev_path, '*.app'))
@@ -363,8 +391,16 @@ def qtcreator_build_plugin_script(qtcreator_dev_path):
     return path if os.path.exists(path) else os.path.join(qtcreator_dev_path, 'scripts', 'build_plugin.py')
 
 
-def build_qtcreator_plugins(option_dict, plugins, qtcreator_path, qtcreator_dev_path, icu_url=None,
-                            openssl_url=None, additional_config=None, log_filepath=None):
+def build_qtcreator_plugins(
+    option_dict: Dict[str, str],
+    plugins: List[QtcPlugin],
+    qtcreator_path: str,
+    qtcreator_dev_path: str,
+    icu_url: Optional[str] = None,
+    openssl_url: Optional[str] = None,
+    additional_config: Optional[List[str]] = None,
+    log_filepath: str = "",
+) -> None:
     work_dir = option_dict['WORK_DIR']
     for plugin in plugins:
         plugin_path = os.path.join(work_dir, plugin.path)
@@ -413,7 +449,7 @@ def build_qtcreator_plugins(option_dict, plugins, qtcreator_path, qtcreator_dev_
                                         'enterprise', work_dir, log_filepath)
 
 
-def get_qtcreator_version(path_to_qtcreator_src, option_dict):
+def get_qtcreator_version(path_to_qtcreator_src: str, option_dict: Dict[str, str]) -> str:
     expr = re.compile(r'\s*set[(]\s*IDE_VERSION_DISPLAY\s*"([^\s]+)"')
 
     ide_branding_path = option_dict.get('IDE_BRANDING_PATH')  # optional
@@ -425,10 +461,10 @@ def get_qtcreator_version(path_to_qtcreator_src, option_dict):
             match = expr.match(line)
             if match:
                 return match.group(1)
-    return None
+    return ""
 
 
-def make_qtcplugin_from_json(plugin_json):
+def make_qtcplugin_from_json(plugin_json: Dict[str, str]) -> QtcPlugin:
     return QtcPlugin(name=plugin_json['Name'],
                      path=plugin_json['Path'],
                      version=plugin_json.get('Version'),
@@ -439,7 +475,9 @@ def make_qtcplugin_from_json(plugin_json):
                      package_commercial=plugin_json.get('PackageCommercial') or False)
 
 
-def parse_qt_creator_plugin_conf(plugin_conf_file_path, option_dict):
+def parse_qt_creator_plugin_conf(
+    plugin_conf_file_path: str, option_dict: Dict[str, str]
+) -> List[QtcPlugin]:
     data = {}
     with open(plugin_conf_file_path, 'r', encoding="utf-8") as handle:
         data = json.load(handle)
@@ -451,18 +489,18 @@ def parse_qt_creator_plugin_conf(plugin_conf_file_path, option_dict):
     else:
         platform_name = 'mac'
 
-    def valid_for_platform(plugin_json):
+    def valid_for_platform(plugin_json: Dict[str, str]) -> bool:
         platforms = plugin_json.get('Platforms')
         return not platforms or platform_name in platforms
 
-    def fixup_plugin(plugin):
+    def fixup_plugin(plugin: QtcPlugin) -> QtcPlugin:
         plugin = plugin._replace(modules=[module % option_dict for module in plugin.modules])
         plugin = plugin._replace(additional_arguments=[arg % option_dict for arg in plugin.additional_arguments])
         return plugin
     return [fixup_plugin(make_qtcplugin_from_json(plugin)) for plugin in plugins_json if valid_for_platform(plugin)]
 
 
-def collect_qt_creator_plugin_sha1s(option_dict, plugins):
+def collect_qt_creator_plugin_sha1s(option_dict: Dict[str, str], plugins: List[QtcPlugin]) -> List[str]:
     work_dir = option_dict['WORK_DIR']
     sha1s = []
     for name in [p.name for p in plugins if p.build and os.path.isdir(os.path.join(work_dir, p.path))]:
@@ -474,7 +512,7 @@ def collect_qt_creator_plugin_sha1s(option_dict, plugins):
 
 # file_upload_list: list of 2-tuples,
 # (source_file_relative_to_WORK_DIR, target_file_or_path_relative_to_remote_path)
-def upload_files(remote_path, file_upload_list, option_dict):
+def upload_files(remote_path: str, file_upload_list: List[Tuple[str, str]], option_dict: Dict[str, str]) -> None:
     # prepare remote paths
     pkg_storage_server = option_dict['PACKAGE_STORAGE_SERVER_ADDR']
     target_env_dir = option_dict['QTC_PLATFORM']
@@ -488,15 +526,24 @@ def upload_files(remote_path, file_upload_list, option_dict):
         do_execute_sub_process(cmd_args, option_dict['WORK_DIR'])
 
 
-def update_job_link(remote_path_base, remote_target_path, option_dict):
+def update_job_link(
+    remote_path_base: str, remote_target_path: str, option_dict: Dict[str, str]
+) -> None:
     remote_link = remote_path_base + '/' + option_dict['PULSE_PROJECT']
     update_latest_link(option_dict, remote_target_path, remote_link)
 
 
-def repackage_and_sign_qtcreator(qtcreator_path, work_dir, result_package,
-                                 qtcreator_package, sdktool_package,
-                                 additional_plugins=None,
-                                 extra_env=None, log_filepath=None):
+def repackage_and_sign_qtcreator(
+    qtcreator_path: str,
+    work_dir: str,
+    result_package: str,
+    qtcreator_package: str,
+    sdktool_package: str,
+    additional_plugins: Optional[List[QtcPlugin]] = None,
+    extra_env: Optional[Dict[str, str]] = None,
+    log_filepath: Optional[str] = None,
+) -> None:
+    additional_plugins = additional_plugins or []
     extract_path = os.path.join(work_dir, 'temp_repackaged_qtc')
     if not os.path.exists(extract_path):
         os.makedirs(extract_path)
@@ -545,7 +592,7 @@ def repackage_and_sign_qtcreator(qtcreator_path, work_dir, result_package,
 ###############################
 # handle_qt_creator_build
 ###############################
-def handle_qt_creator_build(option_dict, qtcreator_plugins):
+def handle_qt_creator_build(option_dict: Dict[str, str], qtcreator_plugins: List[PluginConf]) -> None:
     target_env_dir = option_dict['QTC_PLATFORM']
     work_dir = option_dict['WORK_DIR']
     build_environment = dict(os.environ)
@@ -606,31 +653,31 @@ def handle_qt_creator_build(option_dict, qtcreator_plugins):
     notarize = option_dict.get('NOTARIZE')
     usp_server_url = option_dict.get('USP_SERVER_URL')
     usp_auth_key = option_dict.get('USP_AUTH_KEY')
-    qtc_additional_config = option_dict.get('QTC_ADDITIONAL_CONFIG')  # optional
+    qtc_additional_cfg: str = option_dict.get('QTC_ADDITIONAL_CONFIG', '')  # optional
     disable_docs = option_dict.get('DISABLE_DOCS')  # optional
-    if qtc_additional_config:
-        qtc_additional_config = qtc_additional_config.split()
+    if qtc_additional_cfg:
+        qtc_additional_config: List[str] = qtc_additional_cfg.split()
     qt_temp = os.path.join(work_dir, 'qt_temp')
 
-    def module_filename(module):
+    def module_filename(module: str) -> str:
         return module + '-' + qt_postfix + '.7z'
 
-    def module_urls(modules):
+    def module_urls(modules: List[str]) -> List[str]:
         return [pkg_base_path + '/' + qt_base_path + '/' + module + '/' + module_filename(module)
                 for module in modules]
 
     # Define paths for pre-built kdsme and gammaray packages
-    kdsme_url = option_dict.get("GAMMARAY_BASE_DIR")
+    kdsme_url = option_dict.get("GAMMARAY_BASE_DIR", "")
     if kdsme_url:
         kdsme_url = (pkg_base_path + '/' + kdsme_url + '/' + target_env_dir + '/qt5_kdsme.7z')
-    gammaray_url = option_dict.get("GAMMARAY_BASE_DIR")
+    gammaray_url = option_dict.get("GAMMARAY_BASE_DIR", "")
     if gammaray_url:
         gammaray_url = (pkg_base_path + '/' + gammaray_url + '/' + target_env_dir + '/qt5_gammaray.7z')
 
     download_work = ThreadedWork('Download packages')
     extract_work = Task('Extract packages', function=None)
 
-    def add_download_extract(url, target_path):
+    def add_download_extract(url: str, target_path: str) -> None:
         (dl_task, extract) = create_download_and_extract_tasks(
             url, target_path, download_temp)
         download_work.add_task_object(dl_task)
@@ -689,7 +736,7 @@ def handle_qt_creator_build(option_dict, qtcreator_plugins):
     if use_optimized_libclang:
         for file in opt_clang_to_copy:
             source = os.path.join(opt_clang_path, 'libclang', file)
-            target = os.path.join(llvm_install_dir, file)
+            target = os.path.join(llvm_install_dir or "", file)
             shutil.copyfile(source, target)
 
     # Qt Creator build depends on pre-built Qt binary packages.
@@ -800,7 +847,7 @@ def handle_qt_creator_build(option_dict, qtcreator_plugins):
                                               additional_arguments=plugin_telemetry_args)])
 
     # Build Qt Creator plugins
-    icu_local_url = file_url(os.path.join(qt_temp, os.path.basename(icu_libs))) if is_linux() else None
+    icu_local_url = file_url(os.path.join(qt_temp, os.path.basename(icu_libs or ""))) if is_linux() else None
     # extract qtcreator bin and dev packages
     qtcreator_path = os.path.join(work_dir, 'qtc_build')
     check_call_log(['7z', 'x', '-y', os.path.join(work_dir, 'qt-creator_build', 'qtcreator.7z'), '-o' + qtcreator_path],
@@ -869,8 +916,8 @@ def handle_qt_creator_build(option_dict, qtcreator_plugins):
         notarize_dmg(os.path.join(work_dir, 'qt-creator_build', 'qt-creator.dmg'), 'Qt Creator')
 
     # Upload
-    file_upload_list = []  # pairs (source, dest), source relative to WORK_DIR, dest relative to server + dir_path
-    snapshot_upload_list = []  # pairs (source, dest), source relative to server + dir_path, dest relative to snapshot server + snapshot_path
+    file_upload_list: List[Tuple[str, str]] = []  # pairs (source, dest), source relative to WORK_DIR, dest relative to server + dir_path
+    snapshot_upload_list: List[Tuple[str, str]] = []  # pairs (source, dest), source relative to server + dir_path, dest relative to snapshot server + snapshot_path
 
     # build log
     file_upload_list.append((log_filepath, target_env_dir + '/build_log.txt'))
@@ -931,7 +978,8 @@ def handle_qt_creator_build(option_dict, qtcreator_plugins):
     remote_path = base_path + '/latest'
     # public snapshot
     if snapshot_server and snapshot_path:
-        qtcreator_shortversion = re.match(r'\d+[.]\d+', qtcreator_version).group()
+        matches = re.match(r'\d+[.]\d+', qtcreator_version)
+        qtcreator_shortversion = matches.group() if matches else ""
         snapshot_base = snapshot_path + '/' + qtcreator_shortversion + '/' + qtcreator_version + '/installer_source/'
         snapshot_target = snapshot_base + build_id + '/'
         do_execute_sub_process(
@@ -957,7 +1005,7 @@ def handle_qt_creator_build(option_dict, qtcreator_plugins):
 ###############################
 # handle_sdktool_build
 ###############################
-def handle_sdktool_build(option_dict):
+def handle_sdktool_build(option_dict: Dict[str, str]) -> None:
     # environment
     target_env_dir = option_dict['QTC_PLATFORM']
     work_dir = option_dict['WORK_DIR']
@@ -1006,7 +1054,7 @@ def handle_sdktool_build(option_dict):
     update_job_link(unversioned_base_path, base_path, option_dict)
 
 
-def notarize_dmg(dmg_path, installer_name_base):
+def notarize_dmg(dmg_path: str, installer_name_base: str) -> None:
     # bundle-id is just a unique identifier without any special meaning, used to track the notarization progress
     bundle_id = installer_name_base + "-" + strftime('%Y-%m-%d', gmtime())
     bundle_id = bundle_id.replace('_', '-').replace(' ', '')  # replace illegal characters for bundle_id
@@ -1017,7 +1065,7 @@ def notarize_dmg(dmg_path, installer_name_base):
 ###############################
 # Update latest link
 ###############################
-def update_latest_link(option_dict, remote_dest_dir, latest_dir):
+def update_latest_link(option_dict: Dict[str, str], remote_dest_dir: str, latest_dir: str) -> None:
     cmd_args = [option_dict['SSH_COMMAND'], option_dict['PACKAGE_STORAGE_SERVER_ADDR'], 'ln -sfn', remote_dest_dir, latest_dir]
     do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
 
@@ -1025,7 +1073,7 @@ def update_latest_link(option_dict, remote_dest_dir, latest_dir):
 ###############################
 # create_remote_dirs
 ###############################
-def create_remote_dirs(option_dict, server, dir_path):
+def create_remote_dirs(option_dict: Dict[str, str], server: str, dir_path: str) -> None:
     cmd_args = [option_dict['SSH_COMMAND'], '-t', '-t', server, 'mkdir -p', dir_path]
     do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
 
@@ -1033,7 +1081,7 @@ def create_remote_dirs(option_dict, server, dir_path):
 ###############################
 # git archive given repository
 ###############################
-def do_git_archive_repo(option_dict, repo_and_ref):
+def do_git_archive_repo(option_dict: Dict[str, str], repo_and_ref: str) -> None:
     archive_name = git_archive_repo(repo_and_ref)
     (repository, ref) = repo_and_ref.split("#")
     project_name = repository.split("/")[-1].split(".")[0]
@@ -1048,14 +1096,14 @@ def do_git_archive_repo(option_dict, repo_and_ref):
     do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
 
 
-def init_pkg_options(args):
-    def merge_two_dicts(x_dict, y_dict):
+def init_pkg_options(args: argparse.Namespace) -> Dict[str, str]:
+    def merge_two_dicts(x_dict: Dict[Any, Any], y_dict: Dict[Any, Any]) -> Dict[Any, Any]:
         """Given two dicts, merge them into a new dict as a shallow copy."""
         z_dict = x_dict.copy()
         z_dict.update(y_dict)
         return z_dict
 
-    def get_default_target_env():
+    def get_default_target_env() -> str:
         """For local builds define default build target"""
         if is_windows():
             return "win-msvc2015-Windows10-x64"
@@ -1065,7 +1113,7 @@ def init_pkg_options(args):
             return "mac-clang-10.11-x64"
         raise RuntimeError("Unsupported host platform")
 
-    option_dict = {}
+    option_dict: Dict[str, str] = {}
     # Are we using local conf file for pkg options?
     if args.pkg_conf_file:
         options = get_pkg_options(args.pkg_conf_file)

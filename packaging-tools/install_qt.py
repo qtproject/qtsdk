@@ -37,7 +37,7 @@ from bldinstallercommon import create_qt_download_task, patch_qt
 from threadedwork import ThreadedWork
 
 
-def get_arguments():
+def get_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Build Qt Creator')
     parser.add_argument('--qt-path', help='path to Qt', required=True)
     parser.add_argument('--qt-module', help='Qt module package url (.7z) needed for building',
@@ -75,7 +75,7 @@ def get_arguments():
     return args
 
 
-def install_qt(args):
+def install_qt(args: argparse.Namespace) -> None:
     download_packages_work = ThreadedWork('get and extract Qt 5 binaries')
     need_to_install_qt = not os.path.lexists(args.qt_path)
     if need_to_install_qt:
@@ -88,7 +88,7 @@ def install_qt(args):
         patch_qt(args.qt_path)
 
 
-def main():
+def main() -> None:
     args = get_arguments()
     install_qt(args)
 

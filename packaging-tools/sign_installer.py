@@ -63,7 +63,7 @@ def create_mac_dmg(app_path: str) -> None:
     log.info("Successfully created: %s", destination_dmg_path)
 
 
-def sign_windows_executable(file_path: str):
+def sign_windows_executable(file_path: str) -> None:
     sign_tools = ["signtool32.exe", "keys.pfx", "capicom.dll"]
     sign_tools_temp_dir = r'C:\Utils\sign_tools_temp'
     for item in sign_tools:

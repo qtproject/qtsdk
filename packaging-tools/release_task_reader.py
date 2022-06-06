@@ -33,8 +33,8 @@ import argparse
 import os
 import re
 import sys
-from configparser import ConfigParser, ExtendedInterpolation
-from typing import Dict, List
+from configparser import ConfigParser, ExtendedInterpolation, SectionProxy
+from typing import List
 
 from logging_util import init_logger
 
@@ -46,8 +46,7 @@ class ReleaseTaskError(Exception):
 
 
 class ReleaseTask:
-
-    def __init__(self, name: str, settings: Dict[str, str]):
+    def __init__(self, name: str, settings: SectionProxy):
         if not len(name.split(".")) >= 3:
             raise ReleaseTaskError(f"The '[{name}]' has too few dot separated elements!")
         self.name = name
@@ -117,7 +116,7 @@ class ReleaseTask:
         return self.source_pkg_path
 
 
-def parse_substitutions_list(parser, section) -> List[str]:
+def parse_substitutions_list(parser: ConfigParser, section: str) -> List[str]:
     try:
         args = parser[section]['substitutions']
         return [x.strip() for x in args.split(',')]
@@ -131,7 +130,7 @@ def get_filter_parts(section_filters: str) -> List[str]:
     return list(filter(None, re.split("[, ;:]+", section_filters)))
 
 
-def parse_data(settings, task_filters: List[str]) -> List[ReleaseTask]:
+def parse_data(settings: ConfigParser, task_filters: List[str]) -> List[ReleaseTask]:
     tasks = []  # type: List[ReleaseTask]
     common_substitution_list = parse_substitutions_list(settings, 'common.substitutions')
     section_filters_list = [get_filter_parts(x) for x in task_filters]

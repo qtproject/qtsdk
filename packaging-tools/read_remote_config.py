@@ -34,6 +34,7 @@ import os
 import sys
 from configparser import ConfigParser
 from io import StringIO
+from typing import Any, Optional
 from urllib.request import urlopen
 
 
@@ -41,11 +42,11 @@ class RemotePkgConfigError(Exception):
     pass
 
 
-def read_packaging_keys_config_url(url):
+def read_packaging_keys_config_url(url: str) -> Any:
     return urlopen(url).read().decode('utf-8').strip()
 
 
-def parse_packaging_keys_config(config):
+def parse_packaging_keys_config(config: str) -> ConfigParser:
     buf = StringIO(config)
     settings = ConfigParser()
 
@@ -53,13 +54,17 @@ def parse_packaging_keys_config(config):
     return settings
 
 
-def get_pkg_value(key, section="packaging", url=os.getenv("PACKAGING_KEYS_CONFIG_URL")):
+def get_pkg_value(
+    key: str,
+    section: str = "packaging",
+    url: Optional[str] = os.getenv("PACKAGING_KEYS_CONFIG_URL"),
+) -> str:
     if getattr(get_pkg_value, 'pkg_remote_settings', None) is None:
         if not url:
             raise RemotePkgConfigError("Remote config URL not specified")
         config = read_packaging_keys_config_url(url)
-        get_pkg_value.pkg_remote_settings = parse_packaging_keys_config(config)
-    return get_pkg_value.pkg_remote_settings.get(section, key)
+        get_pkg_value.pkg_remote_settings = parse_packaging_keys_config(config)  # type: ignore
+    return get_pkg_value.pkg_remote_settings.get(section, key)  # type: ignore
 
 
 def main() -> None:

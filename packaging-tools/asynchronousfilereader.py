@@ -33,6 +33,7 @@ __version__ = '0.2.1'
 
 from queue import Queue
 from threading import Thread
+from typing import IO, Any, Generator, Optional
 
 
 class AsynchronousFileReader(Thread):
@@ -42,7 +43,9 @@ class AsynchronousFileReader(Thread):
     be consumed in another thread.
     """
 
-    def __init__(self, fd, queue=None, autostart=True):
+    def __init__(
+        self, fd: Optional[IO[bytes]], queue: Optional[Any] = None, autostart: bool = True
+    ) -> None:
         self._fd = fd
         if queue is None:
             queue = Queue()
@@ -53,23 +56,24 @@ class AsynchronousFileReader(Thread):
         if autostart:
             self.start()
 
-    def run(self):
+    def run(self) -> None:
         """
         The body of the tread: read lines and put them on the queue.
         """
         while True:
-            line = self._fd.readline()
+            if self._fd:
+                line = self._fd.readline()
             if not line:
                 break
             self.queue.put(line)
 
-    def eof(self):
+    def eof(self) -> bool:
         """
         Check whether there is no more content to expect.
         """
         return not self.is_alive() and self.queue.empty()
 
-    def readlines(self):
+    def readlines(self) -> Generator[Any, Any, Any]:
         """
         Get currently available lines.
         """

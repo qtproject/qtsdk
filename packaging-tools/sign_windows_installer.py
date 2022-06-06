@@ -71,7 +71,7 @@ def _get_decrypt_key() -> bytes:
         return decrypt_key.read()
 
 
-def _handle_signing(file_path: str):
+def _handle_signing(file_path: str) -> None:
     config = ConfigParser()
     config.read(os.path.basename(os.environ["WINDOWS_SIGNKEYS_PATH"]))
     section = config.sections()[0]
@@ -113,7 +113,7 @@ def decrypt_private_key() -> str:
     return temp_file
 
 
-def download_signing_tools(path_to_key: str):
+def download_signing_tools(path_to_key: str) -> None:
     try:
         cnopts = pysftp.CnOpts()
         cnopts.hostkeys = None
@@ -124,7 +124,7 @@ def download_signing_tools(path_to_key: str):
         raise PackagingError("FTP authentication failed!") from None
 
 
-def sign_executable(file_path: str):
+def sign_executable(file_path: str) -> None:
     log.info("Signing: %s", file_path)
     try:
         key_path: str = decrypt_private_key()

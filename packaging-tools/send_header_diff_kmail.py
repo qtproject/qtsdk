@@ -57,7 +57,7 @@ import sys
 from subprocess import check_call
 
 
-def send_headers(version, message_id, simulate):
+def send_headers(version: str, message_id: str, simulate: bool) -> None:
     receiver = 'development@qt-project.org'
     subject = 'Qt ' + version + ' header diff: '
     print(f"Header diff: {subject}")

@@ -49,7 +49,7 @@ from runner import do_execute_sub_process
 
 class TestPackaging(unittest.TestCase):
 
-    def test_patch_absolute_lib_paths(self):
+    def test_patch_absolute_lib_paths(self) -> None:
         test_data = (("QMAKE_LIBS_ZLIB = /opt/android/android-ndk-r18b/platforms/android-21/arch-arm64/usr/lib/libz.so",
                       "QMAKE_LIBS_ZLIB = -lz",
                       "pri"),
@@ -88,7 +88,7 @@ class TestPackaging(unittest.TestCase):
             result = patch_absolute_lib_paths_from_line(data[0], data[2])
             self.assertEqual(result, data[1], f"Failed to patch: [{data[0]}] as: [{data[1]}]")
 
-    def test_patch_qmake_prl_build_dir_from_line(self):
+    def test_patch_qmake_prl_build_dir_from_line(self) -> None:
         test_data = (("QMAKE_PRL_BUILD_DIR = /foo/bar", ""),
                      ("QMAKE_PRL_BUILD_DIR=   /foo/bar", ""),
                      ("foo bar = /foo/bar", "foo bar = /foo/bar"))
@@ -97,7 +97,7 @@ class TestPackaging(unittest.TestCase):
             result = patch_qmake_prl_build_dir_from_line(data[0])
             self.assertEqual(result, data[1], f"Failed to patch: [{data[0]}] as: [{data[1]}]")
 
-    def test_patch_qconfig_pri_from_line(self):
+    def test_patch_qconfig_pri_from_line(self) -> None:
         test_data = (("QMAKE_DEFAULT_LIBDIRS = /foo/bar", "QMAKE_DEFAULT_LIBDIRS ="),
                      ("QMAKE_DEFAULT_INCDIRS =   /foo/bar", "QMAKE_DEFAULT_INCDIRS ="),
                      ("foo bar = /foo/bar", "foo bar = /foo/bar"))
@@ -106,7 +106,7 @@ class TestPackaging(unittest.TestCase):
             result = patch_qconfig_pri_from_line(data[0])
             self.assertEqual(result, data[1], f"Failed to patch: [{data[0]}] as: [{data[1]}]. Got: [{result}]")
 
-    def test_parse_package_finalize_items(self):
+    def test_parse_package_finalize_items(self) -> None:
         test_data = (("set_executable=licheck64, foo=bar, set_executable=something", "set_executable", ["licheck64", "something"]),
                      ("set_executable=licheck64,foo=bar,   set_executable = something", "set_executable", ["licheck64", "something"]),
                      ("set_executable=licheck64", "set_executable", ["licheck64"]))
@@ -118,7 +118,7 @@ class TestPackaging(unittest.TestCase):
                 match_count += 1
             self.assertEqual(match_count, len(data[2]))
 
-    def test_patch_qt_edition(self):
+    def test_patch_qt_edition(self) -> None:
         temp_dir = mkdtemp(dir=os.getcwd())
         temp_file = os.path.join(temp_dir, "qconfig.pri")
 
@@ -150,19 +150,19 @@ class TestPackaging(unittest.TestCase):
     @unittest.skipUnless(os.environ.get("PKG_TEST_QT_CONFIG_BASE_PATH"), "Skipping because 'PKG_TEST_QT_CONFIG_BASE_PATH' is not set")
     @unittest.skipUnless(os.environ.get("PKG_TEST_QT_ARTIFACTS_URL"), "Skipping because 'PKG_TEST_QT_CONFIG_BASE_PATH' is not set")
     @unittest.skipUnless(os.environ.get("PKG_TEST_QT_IFW_TOOL_URL"), "Skipping because 'PKG_TEST_QT_IFW_TOOL_URL' is not set")
-    def test_create_installer(self):
+    def test_create_installer(self) -> None:
         extension = '.run' if platform.system().lower().startswith('linux') else ''
         tests_dir = os.path.dirname(os.path.abspath(__file__))
-        path = os.path.join(os.environ.get("PKG_TEST_QT_CONFIG_BASE_PATH"), "offline_installer_jobs", "5.9.3")
+        path = os.path.join(os.environ.get("PKG_TEST_QT_CONFIG_BASE_PATH", ""), "offline_installer_jobs", "5.9.3")
         offline_jobs = os.listdir(path)
         for offline_job in offline_jobs:
             cmd_args = [sys.executable, '-u', os.path.join(tests_dir, 'create_installer.py')]
-            cmd_args = cmd_args + ['-c', os.environ.get("PKG_TEST_QT_CONFIG_BASE_PATH")]
+            cmd_args = cmd_args + ['-c', os.environ.get("PKG_TEST_QT_CONFIG_BASE_PATH", "")]
             cmd_args = cmd_args + ['-f', os.path.join(path, offline_job)]
             cmd_args = cmd_args + ['--offline']
             cmd_args = cmd_args + ['-l', 'enterprise']
-            cmd_args = cmd_args + ['-u', os.environ.get("PKG_TEST_QT_ARTIFACTS_URL")]
-            cmd_args = cmd_args + ['--ifw-tools=' + os.environ.get("PKG_TEST_QT_IFW_TOOL_URL")]
+            cmd_args = cmd_args + ['-u', os.environ.get("PKG_TEST_QT_ARTIFACTS_URL", "")]
+            cmd_args = cmd_args + ['--ifw-tools=' + os.environ.get("PKG_TEST_QT_IFW_TOOL_URL", "")]
             cmd_args = cmd_args + ['--preferred-installer-name=' + offline_job]
             cmd_args = cmd_args + ['--dry-run']
             try:

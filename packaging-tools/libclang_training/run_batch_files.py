@@ -60,42 +60,42 @@ import sys
 from shutil import copyfile
 from subprocess import STDOUT, Popen
 from time import sleep, time
-from typing import List
+from typing import Dict, List, Optional
 
 import libclangtimings2csv
 import merge_csv_files
 
 
-def verbose_start(args):
+def verbose_start(args: List[str]) -> None:
     if Config.Verbose:
         print(f"info: starting {args}")
 
 
-def check_existence_or_die(file_path):
+def check_existence_or_die(file_path: str) -> None:
     if not os.path.exists(file_path):
         print(f"error: file path does not exist: {file_path}", file=sys.stderr)
         sys.exit(1)
 
 
-def check_exit_code_or_die(exit_code, args):
+def check_exit_code_or_die(exit_code: int, args: List[str]) -> None:
     if exit_code != 0:
         print(f"error: exit code is, {exit_code} for", ' '.join(args), file=sys.stderr)
         sys.exit(1)
 
 
 class Config:
-    Verbose = False
+    Verbose: bool = False
     # Verbose = True
 
-    LogDir = None
-    QtCreatorSettingsDir = None
-    TargetLibClangDll = None
+    LogDir: str = ""
+    QtCreatorSettingsDir: str = ""
+    TargetLibClangDll: str = ""
 
     LibClangDlls: List[str] = []
     BatchFiles: List[str] = []
 
     @staticmethod
-    def initialize_from_environment():
+    def initialize_from_environment() -> None:
         Config.LogDir = os.environ['QTC_CLANG_BATCH_CONFIG_LOG_DIR']
         check_existence_or_die(Config.LogDir)
 
@@ -118,7 +118,7 @@ class Config:
             # TODO: Check for format
 
     @staticmethod
-    def dump():
+    def dump() -> None:
         print("log dir:")
         print(f"  {Config.LogDir}")
         print("qt creator settings dir:")
@@ -134,27 +134,27 @@ class Config:
 
 
 class RunRecord:
-    def __init__(self, libclang_id, batch_file_path):
+    def __init__(self, libclang_id: str, batch_file_path: str):
         self.libclang_id = libclang_id
         parts = os.path.basename(batch_file_path).split('.')
         self.batch_file_id = '.'.join(parts[0:-1])  # Remove suffix
         self.log_file_path = self.batch_file_id + '___' + libclang_id + '.log'
-        self.csv_file_path = None
+        self.csv_file_path = ""
 
 
 class DebugView:
-    def __init__(self, log_file_path):
+    def __init__(self, log_file_path: str):
         self.log_file_path = log_file_path
         self.executable = 'dbgview.exe'
-        self.proc = None
+        self.proc: Optional[Popen] = None  # type: ignore
 
-    def start_async(self):
+    def start_async(self) -> None:
         args = [self.executable, '/accepteula', '/l', self.log_file_path]
         verbose_start(args)
         self.proc = Popen(args, shell=False)  # pylint: disable=R1732
         sleep(2)
 
-    def stop(self):
+    def stop(self) -> None:
         if self.proc:
             if Config.Verbose:
                 print(f"info: stopping {self.executable}")
@@ -162,7 +162,7 @@ class DebugView:
             self.proc.wait()
 
 
-def create_environment(batch_file_path):
+def create_environment(batch_file_path: str) -> Dict[str, str]:
     env = os.environ.copy()
     env['LIBCLANG_TIMING'] = '1'
     env['QT_LOGGING_RULES'] = 'qtc.clangcodemodel.batch=true'
@@ -175,7 +175,7 @@ def create_environment(batch_file_path):
     return env
 
 
-def run_sync_and_log_output_windows(args, batch_file_path, log_file_path):
+def run_sync_and_log_output_windows(args: List[str], batch_file_path: str, log_file_path: str) -> None:
     debug_view = DebugView(log_file_path)
     debug_view.start_async()
 
@@ -188,15 +188,15 @@ def run_sync_and_log_output_windows(args, batch_file_path, log_file_path):
         check_exit_code_or_die(proc.returncode, args)
 
 
-def run_sync_and_log_output_unix(args, batch_file_path, log_file_path):
-    with open(log_file_path, "w", encoding="utf-8") as log_file:
+def run_sync_and_log_output_unix(args: List[str], batch_file_path: str, log_file_path: str) -> None:
+    with open(log_file_path, 'w', encoding="utf-8") as log_file:
         verbose_start(args)
         with Popen(args, stdout=log_file, stderr=STDOUT, env=create_environment(batch_file_path)) as proc:
             proc.communicate()
             check_exit_code_or_die(proc.returncode, args)
 
 
-def run_qtcreator_with_batch_file(batch_file_path, log_file_path):
+def run_qtcreator_with_batch_file(batch_file_path: str, log_file_path: str) -> None:
     args = [
         'qtcreator',
         '-noload', 'all',
@@ -214,7 +214,7 @@ def run_qtcreator_with_batch_file(batch_file_path, log_file_path):
         run_sync_and_log_output_unix(args, batch_file_path, log_file_path)
 
 
-def convert_log_file_to_csv_file(log_file_path, column_label):
+def convert_log_file_to_csv_file(log_file_path: str, column_label: str) -> str:
     output = libclangtimings2csv.convert(log_file_path, column_label)
 
     csv_file_path = log_file_path + '.csv'
@@ -224,18 +224,18 @@ def convert_log_file_to_csv_file(log_file_path, column_label):
     return csv_file_path
 
 
-def log_file_from_id(log_file_id):
+def log_file_from_id(log_file_id: str) -> str:
     return log_file_id + ".log"
 
 
-def create_dir(dir_path):
+def create_dir(dir_path: str) -> None:
     if not os.path.exists(dir_path):
         if Config.Verbose:
             print(f"info: creating not existent {dir_path}")
         os.makedirs(dir_path)
 
 
-def create_backup_file(file_path):
+def create_backup_file(file_path: str) -> None:
     if os.path.exists(file_path):
         backup_path = file_path[:-4] + ".backup_" + str(time()) + ".log"
         if Config.Verbose:
@@ -243,13 +243,13 @@ def create_backup_file(file_path):
         copyfile(file_path, backup_path)
 
 
-def print_duration(seconds):
+def print_duration(seconds: float) -> None:
     hours, remainder = divmod(seconds, 3600)
     minutes, seconds = divmod(remainder, 60)
     print(f"...needed {hours}:{minutes}:{seconds}")
 
 
-def process_batch_file_timed(libclang_id, batch_file_path):
+def process_batch_file_timed(libclang_id: str, batch_file_path: str) -> RunRecord:
     time_started = time()
     print(f"processing {batch_file_path}", end=' ')
 
@@ -260,7 +260,7 @@ def process_batch_file_timed(libclang_id, batch_file_path):
     return run_record
 
 
-def process_batch_file(libclang_id, batch_file_path):
+def process_batch_file(libclang_id: str, batch_file_path: str) -> RunRecord:
     run_record = RunRecord(libclang_id, batch_file_path)
     log_file_path = os.path.join(Config.LogDir, run_record.log_file_path)
 
@@ -275,19 +275,19 @@ def process_batch_file(libclang_id, batch_file_path):
     return run_record
 
 
-def get_libclang_id(libclang_dll):
+def get_libclang_id(libclang_dll: str) -> str:
     file_name = os.path.basename(libclang_dll)
     parts = file_name.split('.')
     identifier = '.'.join(parts[0:-1])
     return identifier
 
 
-def switch_libclang(libclang_dll):
+def switch_libclang(libclang_dll: str) -> None:
     print(f"copying '{libclang_dll}' -> '{Config.TargetLibClangDll}'")
     copyfile(libclang_dll, Config.TargetLibClangDll)
 
 
-def run_qtcreator_with_libclang(libclang_dll):
+def run_qtcreator_with_libclang(libclang_dll: str) -> List[RunRecord]:
     print("")
     switch_libclang(libclang_dll)
 
@@ -300,15 +300,15 @@ def run_qtcreator_with_libclang(libclang_dll):
     return run_records
 
 
-def log_id_part_from_libclang_dll(libclang_dll):
+def log_id_part_from_libclang_dll(libclang_dll: str) -> str:
     file_name = os.path.basename(libclang_dll)
     parts = file_name.split('.')
     file_name = '.'.join(parts[1:-1])
     return file_name
 
 
-def merge_generated_csv_files(run_records):
-    batch_file_id_2_run_record = {}
+def merge_generated_csv_files(run_records: List[RunRecord]) -> None:
+    batch_file_id_2_run_record: Dict[str, List[RunRecord]] = {}
     for run_record in run_records:
         new_value = [run_record]
         if run_record.batch_file_id in batch_file_id_2_run_record:
@@ -324,7 +324,7 @@ def merge_generated_csv_files(run_records):
         print(f"generated: {merge_file_path}")
 
 
-def main():
+def main() -> None:
     Config.initialize_from_environment()
     Config.dump()
 

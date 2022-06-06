@@ -44,7 +44,7 @@ class RemoteUploaderError(Exception):
 class RemoteUploader:
     """RemoteUploader can be used to upload given file(s) to remote network disk."""
 
-    def __init__(self, dry_run, remote_server, remote_server_username, remote_base_path):
+    def __init__(self, dry_run: bool, remote_server: str, remote_server_username: str, remote_base_path: str):
         self.dry_run = dry_run
         self.set_tools(remote_server, remote_server_username)
         self.remote_latest_link = ""
@@ -53,7 +53,7 @@ class RemoteUploader:
         self.remote_target_base_dir = remote_base_path
         self.init_finished = False
 
-    def set_tools(self, remote_server, remote_server_username):
+    def set_tools(self, remote_server: str, remote_server_username: str) -> None:
         self.ssh_cmd = ['ssh', '-o', 'GSSAPIAuthentication=no', '-o', 'StrictHostKeyChecking=no', remote_server_username + '@' + remote_server]
         system = platform.system().lower()
         if "windows" in system:
@@ -65,20 +65,20 @@ class RemoteUploader:
                 raise RemoteUploaderError("'rsync' tool not found from PATH")
             self.copy_cmd = ['rsync']
 
-    def init_snapshot_upload_path(self, project_name, version, snapshot_id):
+    def init_snapshot_upload_path(self, project_name: str, version: str, snapshot_id: str) -> None:
         assert not self.init_finished, f"Already initialized as: {self.remote_target_dir}"
         self.remote_target_dir = self.remote_target_base_dir + "/" + project_name + "/" + version + "/" + snapshot_id
         self.remote_latest_link = self.remote_target_base_dir + "/" + project_name + "/" + version + "/latest"
         self.init_finished = True
         self.ensure_remote_dir(self.remote_target_dir)
 
-    def init_upload_path(self, remote_path):
+    def init_upload_path(self, remote_path: str) -> None:
         assert not self.init_finished, f"Already initialized as: {self.remote_target_dir}"
         self.remote_target_dir = self.remote_target_base_dir + "/" + remote_path
         self.init_finished = True
         self.ensure_remote_dir(self.remote_target_dir)
 
-    def ensure_remote_dir(self, remote_dir):
+    def ensure_remote_dir(self, remote_dir: str) -> None:
         assert self.init_finished, "RemoteUploader not initialized!"
         print(f"Creating remote directory: {remote_dir}")
         cmd = self.ssh_cmd + ['mkdir', '-p', remote_dir]
@@ -86,7 +86,7 @@ class RemoteUploader:
         if not self.dry_run:
             check_call(cmd, timeout=60)  # give it 60s
 
-    def _copy_to_remote(self, file_name, dest_dir_name):
+    def _copy_to_remote(self, file_name: str, dest_dir_name: str) -> None:
         """Copy the given file to dest_dir_name which is relative to remote_base_path."""
         assert self.init_finished, "RemoteUploader not initialized!"
         remote_destination = self.remote_login + ':' + self.remote_target_dir
@@ -100,12 +100,12 @@ class RemoteUploader:
         if not self.dry_run:
             check_call(cmd, timeout=60 * 10)  # give it 10 mins
 
-    def copy_to_remote(self, path: str, dest_dir_name=""):
+    def copy_to_remote(self, path: str, dest_dir_name: str = "") -> None:
         items = [path] if os.path.isfile(path) else [os.path.join(path, x) for x in os.listdir(path)]
         for item in items:
             self._copy_to_remote(item, dest_dir_name)
 
-    def update_latest_symlink(self, force_update=True):
+    def update_latest_symlink(self, force_update: bool = True) -> None:
         assert self.init_finished, "RemoteUploader not initialized!"
         print(f"Creating remote symlink: [{self.remote_latest_link}] -> [{self.remote_target_dir}]")
         options = ["-sfn"] if force_update else ["-sn"]

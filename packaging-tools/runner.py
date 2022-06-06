@@ -32,9 +32,10 @@
 import asyncio
 import os
 import sys
+from io import TextIOWrapper
 from subprocess import PIPE, STDOUT, CalledProcessError, Popen, TimeoutExpired, check_output
 from traceback import print_exc
-from typing import Dict, List
+from typing import Any, Dict, List, Optional, Tuple
 
 from bld_utils import is_windows
 from logging_util import init_logger
@@ -48,7 +49,9 @@ if sys.platform == 'win32':
     asyncio.set_event_loop(loop)
 
 
-def exec_cmd(cmd: List[str], timeout=60, env: Dict[str, str] = None) -> str:
+def exec_cmd(
+    cmd: List[str], timeout: float = 60.0, env: Optional[Dict[str, str]] = None
+) -> str:
     env = env if env else os.environ.copy()
     log.info("Calling: %s", ' '.join(cmd))
     output = check_output(' '.join(cmd), shell=True, env=env, timeout=timeout).decode("utf-8").strip()
@@ -56,7 +59,9 @@ def exec_cmd(cmd: List[str], timeout=60, env: Dict[str, str] = None) -> str:
     return output
 
 
-async def async_exec_cmd(cmd: List[str], timeout: int = 60 * 60, env: Dict[str, str] = None) -> None:
+async def async_exec_cmd(
+    cmd: List[str], timeout: int = 60 * 60, env: Optional[Dict[str, str]] = None
+) -> None:
     env = env if env else os.environ.copy()
     proc = await asyncio.create_subprocess_exec(*cmd, stdout=None, stderr=STDOUT, env=env)
     try:
@@ -73,8 +78,15 @@ async def async_exec_cmd(cmd: List[str], timeout: int = 60 * 60, env: Dict[str, 
         raise
 
 
-def do_execute_sub_process(args, execution_path, abort_on_fail=True, get_output=False,
-                           extra_env=None, redirect_output=None, args_log=None):
+def do_execute_sub_process(
+    args: List[str],
+    execution_path: str,
+    abort_on_fail: bool = True,
+    get_output: bool = False,
+    extra_env: Optional[Dict[str, str]] = None,
+    redirect_output: Optional[TextIOWrapper] = None,
+    args_log: Optional[str] = None,
+) -> Tuple[int, str]:
     extra_env = extra_env or os.environ.copy()
     _args_log = args_log or ' '.join([str(i) for i in args])
     print('      --------------------------------------------------------------------')
@@ -82,7 +94,7 @@ def do_execute_sub_process(args, execution_path, abort_on_fail=True, get_output=
     print(f'      Execution path: [{execution_path}]')
     print(f'      Abort on fail:  [{str(abort_on_fail)}]')
     sys.stdout.flush()
-    theproc = None
+    theproc: Any
     return_code = -1
     output = ''
 

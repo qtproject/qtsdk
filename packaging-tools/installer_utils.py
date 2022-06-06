@@ -32,7 +32,7 @@
 import os
 from contextlib import contextmanager
 from fnmatch import fnmatch
-from typing import Generator, List
+from typing import Any, Generator, List
 from urllib.parse import urlparse
 
 import wget  # type: ignore
@@ -48,7 +48,7 @@ class PackagingError(Exception):
 
 
 @contextmanager
-def ch_dir(path: str) -> Generator:
+def ch_dir(path: str) -> Generator[Any, Any, Any]:
     oldwd = os.getcwd()
     os.chdir(path)
     try:

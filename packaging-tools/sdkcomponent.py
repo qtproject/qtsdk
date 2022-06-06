@@ -31,7 +31,10 @@
 
 import ntpath
 import os
+from configparser import ConfigParser
+from typing import Any, List
 
+from archiveresolver import ArchiveLocationResolver
 from bldinstallercommon import config_section_map, is_content_url_valid, safe_config_key_fetch
 
 ONLINE_ARCHIVE_LIST_TAG = '<!--ONLINE_ARCHIVE_LIST-->'
@@ -41,7 +44,16 @@ class SdkComponent:
     """SdkComponent class contains all required info for one installable SDK component"""
     class DownloadableArchive:
         """DownloadableArchive subclass contains all required info about data packages for one SDK component"""
-        def __init__(self, archive, package_name, parent_target_install_base, archive_server_name, target_config, archive_location_resolver, key_value_substitution_list):
+        def __init__(
+            self,
+            archive: str,
+            package_name: str,
+            parent_target_install_base: str,
+            archive_server_name: str,
+            target_config: ConfigParser,
+            archive_location_resolver: ArchiveLocationResolver,
+            key_value_substitution_list: List[str],
+        ) -> None:
             self.archive_uri = config_section_map(target_config, archive)['archive_uri']
             self.archive_action = safe_config_key_fetch(target_config, archive, 'archive_action')
             self.extract_archive = safe_config_key_fetch(target_config, archive, 'extract_archive')
@@ -50,9 +62,9 @@ class SdkComponent:
             # parent's 'target_install_base'
             self.parent_target_install_base = parent_target_install_base
             # in case the individual archive needs to be installed outside the root dir specified by the parent component
-            self.target_install_base = safe_config_key_fetch(target_config, archive, 'target_install_base')
+            self.target_install_base: str = safe_config_key_fetch(target_config, archive, 'target_install_base')
             # this is relative to 1) current archive's 'target_install_base' 2) parent components 'target_install_base'. (1) takes priority
-            self.target_install_dir = safe_config_key_fetch(target_config, archive, 'target_install_dir').lstrip(os.path.sep)
+            self.target_install_dir: str = safe_config_key_fetch(target_config, archive, 'target_install_dir').lstrip(os.path.sep)
             self.rpath_target = safe_config_key_fetch(target_config, archive, 'rpath_target')
             self.component_sha1_file = safe_config_key_fetch(target_config, archive, 'component_sha1_file')
             self.nomalize_archive_uri(package_name, archive_server_name, archive_location_resolver)
@@ -72,10 +84,12 @@ class SdkComponent:
                 self.target_install_dir = self.target_install_dir.replace(item[0], item[1])
                 self.archive_name = self.archive_name.replace(item[0], item[1])
 
-        def nomalize_archive_uri(self, package_name, archive_server_name, archive_location_resolver):
+        def nomalize_archive_uri(
+            self, package_name: str, archive_server_name: str, archive_location_resolver: ArchiveLocationResolver
+        ) -> None:
             self.archive_uri = archive_location_resolver.resolve_full_uri(package_name, archive_server_name, self.archive_uri)
 
-        def check_archive_data(self):
+        def check_archive_data(self) -> Any:
             if self.archive_uri.startswith('http'):
                 res = is_content_url_valid(self.archive_uri)
                 if not res:
@@ -84,16 +98,24 @@ class SdkComponent:
                 return '*** Archive check fail! ***\n*** Unable to locate archive: ' + self.archive_uri
             return None
 
-        def path_leaf(self, path):
+        def path_leaf(self, path: str) -> str:
             head, tail = ntpath.split(path)
             return tail or ntpath.basename(head)
 
-        def get_archive_installation_directory(self):
+        def get_archive_installation_directory(self) -> str:
             if self.target_install_base:
                 return self.target_install_base + os.path.sep + self.target_install_dir
             return self.parent_target_install_base + os.path.sep + self.target_install_dir
 
-    def __init__(self, section_name, target_config, packages_full_path_list, archive_location_resolver, key_value_substitution_list, is_offline_build):
+    def __init__(
+        self,
+        section_name: str,
+        target_config: ConfigParser,
+        packages_full_path_list: List[str],
+        archive_location_resolver: ArchiveLocationResolver,
+        key_value_substitution_list: List[str],
+        is_offline_build: bool,
+    ):
         self.static_component = safe_config_key_fetch(target_config, section_name, 'static_component')
         self.root_component = safe_config_key_fetch(target_config, section_name, 'root_component')
         self.package_name = section_name
@@ -103,7 +125,7 @@ class SdkComponent:
         self.archives = self.archives.replace(' ', '').replace('\n', '')
         self.archives_extract_dir = safe_config_key_fetch(target_config, section_name, 'archives_extract_dir')
         self.archive_server_name = safe_config_key_fetch(target_config, section_name, 'archive_server_name')
-        self.downloadable_archive_list = []
+        self.downloadable_archive_list: List[SdkComponent.DownloadableArchive] = []  # pylint: disable=E0601
         self.target_install_base = safe_config_key_fetch(target_config, section_name, 'target_install_base')
         self.version = safe_config_key_fetch(target_config, section_name, 'version')
         self.version_tag = safe_config_key_fetch(target_config, section_name, 'version_tag')
@@ -124,25 +146,27 @@ class SdkComponent:
                 tmp = tmp.replace(item[0], item[1])
             if tmp.lower() in ['yes', 'true', '1']:
                 self.optional_for_offline = True
-        self.downloadable_arch_list_qs = []
+        self.downloadable_arch_list_qs: List[Any] = []
         self.pkg_template_dir = ''
         self.sanity_check_error_msg = ''
         self.target_config = target_config
         self.archive_location_resolver = archive_location_resolver
+        self.meta_dir_dest: str = ""
+        self.temp_data_dir: str = ""
         # substitute key-value pairs if any
         for item in self.key_value_substitution_list:
             self.target_install_base = self.target_install_base.replace(item[0], item[1])
             self.version = self.version.replace(item[0], item[1])
 
-    def is_root_component(self):
+    def is_root_component(self) -> bool:
         if self.root_component in ('yes', 'true'):
             return True
         return False
 
-    def set_archive_skip(self, do_skip):
+    def set_archive_skip(self, do_skip: bool) -> None:
         self.archive_skip = do_skip
 
-    def validate(self):
+    def validate(self) -> None:
         # look up correct package template directory from list
         found = False
         for item in self.key_value_substitution_list:
@@ -163,7 +187,7 @@ class SdkComponent:
         self.parse_archives(self.target_config, self.archive_location_resolver)
         self.check_component_data()
 
-    def check_component_data(self):
+    def check_component_data(self) -> None:
         if self.static_component:
             if not os.path.isfile(self.static_component):
                 self.sanity_check_fail(self.package_name, 'Unable to locate given static package: ' + self.static_component)
@@ -200,21 +224,21 @@ class SdkComponent:
                     self.sanity_check_fail(self.package_name, error_msg)
                     return
 
-    def sanity_check_fail(self, component_name, message):
+    def sanity_check_fail(self, component_name: str, message: str) -> None:
         self.sanity_check_error_msg = '*** Sanity check fail! ***\n*** Component: [' + component_name + ']\n*** ' + message
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
         if self.sanity_check_error_msg:
             return False
         return True
 
-    def error_msg(self):
+    def error_msg(self) -> str:
         return self.sanity_check_error_msg
 
-    def optional_for_offline_installer(self):
+    def optional_for_offline_installer(self) -> bool:
         return self.optional_for_offline
 
-    def parse_archives(self, target_config, archive_location_resolver):
+    def parse_archives(self, target_config: ConfigParser, archive_location_resolver: ArchiveLocationResolver) -> None:
         if self.archives:
             archives_list = self.archives.split(',')
             for archive in archives_list:
@@ -229,7 +253,7 @@ class SdkComponent:
                                                                self.key_value_substitution_list)
                 self.downloadable_archive_list.append(archive_obj)
 
-    def generate_downloadable_archive_list(self):
+    def generate_downloadable_archive_list(self) -> List[List[str]]:
         """Generate list that is embedded into package.xml"""
         output = ''
         for item in self.downloadable_archive_list:
@@ -242,7 +266,7 @@ class SdkComponent:
         temp_list.append([ONLINE_ARCHIVE_LIST_TAG, output])
         return temp_list
 
-    def print_component_data(self):
+    def print_component_data(self) -> None:
         print('=============================================================')
         print(f' [{self.package_name}]')
         if self.static_component:

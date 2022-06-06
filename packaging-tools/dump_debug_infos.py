@@ -34,9 +34,10 @@ import os
 import subprocess
 import sys
 from shutil import rmtree
+from typing import List
 
 
-def is_file_with_debug_information_windows(path):
+def is_file_with_debug_information_windows(path: str) -> bool:
     if not path.endswith('.pdb'):
         return False
     base_path, _ = os.path.splitext(path)
@@ -48,25 +49,25 @@ def is_file_with_debug_information_windows(path):
     return False
 
 
-def is_file_with_debug_information_mac(path):
+def is_file_with_debug_information_mac(path: str) -> bool:
     if ".dSYM/Contents/Resources/DWARF" in path:
         return True
     return False
 
 
-def file_with_debug_information_linux(file):
+def file_with_debug_information_linux(file: str) -> bool:
     if file.endswith(".so") or os.access(file, os.X_OK) or file.endswith(".debug"):
         return True
     return False
 
 
-def read_output(*args):
+def read_output(args: List[str]) -> bytes:
     with subprocess.Popen(args=args, stdout=subprocess.PIPE) as proc:
         (stdout, _) = proc.communicate()
         return stdout.rstrip()
 
 
-def dump_sym(dump_syms_path, architecture, absolute_path, sym_path, verbose):
+def dump_sym(dump_syms_path: str, architecture: str, absolute_path: str, sym_path: str, verbose: bool) -> bool:
     dump_syms_command = f'{dump_syms_path} {architecture} "{absolute_path}" > "{sym_path}"'
     if verbose:
         print(f"call: {dump_syms_command}")
@@ -76,7 +77,13 @@ def dump_sym(dump_syms_path, architecture, absolute_path, sym_path, verbose):
     raise Exception(f"dump_syms can not be called: \n{dump_syms_command}\n{dump_syms_return}")
 
 
-def dump_syms(dump_syms_path, architectures, search_pathes, output_path, verbose):
+def dump_syms(
+    dump_syms_path: str,
+    architectures: List[str],
+    search_pathes: str,
+    output_path: str,
+    verbose: bool,
+) -> List[str]:
     is_file_with_debug_information = {
         'darwin': is_file_with_debug_information_mac,
         'win32': is_file_with_debug_information_windows
@@ -104,7 +111,7 @@ def dump_syms(dump_syms_path, architectures, search_pathes, output_path, verbose
 
 
 ################################################################################
-def _main():
+def _main() -> None:
     parser = argparse.ArgumentParser(
         description="fetch Breakpad symbols",
         formatter_class=argparse.RawTextHelpFormatter

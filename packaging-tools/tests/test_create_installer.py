@@ -33,6 +33,7 @@ import os
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import Tuple
 
 from ddt import data, ddt  # type: ignore
 
@@ -43,7 +44,7 @@ from create_installer import remove_all_debug_libraries
 
 @ddt
 class TestCommon(unittest.TestCase):
-    @data((
+    @data((  # type: ignore
         ("/bin/", "/lib/", "/qml/", "/plugins/", "/unrelated/"),
         (
             "Foo.lib", "Food.lib", "dd.qml", "Bar.exe", "Bard.exe", "Qt3d.dll", "Qt3dd.dll"
@@ -55,7 +56,7 @@ class TestCommon(unittest.TestCase):
         ] if is_windows() else ["foodebugbar"]
     ))
     @unittest.skipIf(not(is_windows() or is_macos()), "This test is only for Windows and macOS")
-    def test_remove_all_debug_libraries_win(self, test_data):
+    def test_remove_all_debug_libraries_win(self, test_data: Tuple[str, str, str]) -> None:
         dirs, files, remaining_files = test_data
         with TemporaryDirectory(dir=os.getcwd()) as tmpdir:
             for directory in dirs:

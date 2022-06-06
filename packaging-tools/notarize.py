@@ -36,6 +36,7 @@ import sys
 from shutil import which
 from subprocess import STDOUT, CalledProcessError, TimeoutExpired
 from time import gmtime, sleep, strftime
+from typing import List
 
 from read_remote_config import get_pkg_value
 
@@ -58,14 +59,14 @@ class NotarizationError(Exception):
     pass
 
 
-def parse_value_from_data(key, data):
+def parse_value_from_data(key: str, data: str) -> str:
     for line in data.split("\n"):
         if line.strip().startswith(key):
             return line.split(key)[-1].strip()
     return ""
 
 
-async def request_cmd(args, cmd):
+async def request_cmd(args: argparse.Namespace, cmd: List[str]) -> str:
     proc = await asyncio.create_subprocess_exec(*cmd, stdout=asyncio.subprocess.PIPE, stderr=STDOUT)
     attempts = 3
 
@@ -89,7 +90,7 @@ async def request_cmd(args, cmd):
     return data[0].decode('utf-8')
 
 
-async def request_notarization(args):
+async def request_notarization(args: argparse.Namespace) -> str:
     # long lasting command, it uploads the binary to Apple server
     cmd = ['xcrun', 'altool', '-u', args.user, '-p', args.passwd, '--notarize-app', '-t', 'osx']
     cmd += ['--primary-bundle-id', args.bundle_id, '-f', args.dmg]
@@ -101,7 +102,7 @@ async def request_notarization(args):
     return request_uuid.split("=")[-1].strip()
 
 
-async def poll_notarization_completed(args, uuid):
+async def poll_notarization_completed(args: argparse.Namespace, uuid: str) -> bool:
     cmd = ['xcrun', 'altool', '-u', args.user, '-p', args.passwd, '--notarization-info', uuid]
 
     attempts = 180
@@ -128,11 +129,11 @@ async def poll_notarization_completed(args, uuid):
     return False
 
 
-async def embed_notarization(args):
+async def embed_notarization(args: argparse.Namespace) -> None:
     # Embed the notarization in the dmg package
     cmd = ['xcrun', 'stapler', 'staple', args.dmg]
     retry_count = 10
-    delay = 60
+    delay: float = 60
     while retry_count:
         retry_count -= 1
         data = await request_cmd(args, cmd)
@@ -153,7 +154,7 @@ async def embed_notarization(args):
             raise NotarizationError(f"Failed to 'staple' the: {args.dmg}")
 
 
-async def notarize(args):
+async def notarize(args: argparse.Namespace) -> None:
     uuid = await request_notarization(args)
     if not await poll_notarization_completed(args, uuid):
         raise NotarizationError(f"Notarization failed for: {args.dmg}")

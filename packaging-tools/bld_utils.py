@@ -32,6 +32,7 @@
 import os
 import shutil
 import sys
+from argparse import Namespace
 from builtins import OSError
 from collections import deque
 from copy import deepcopy
@@ -40,6 +41,7 @@ from subprocess import PIPE, STDOUT, Popen
 from sys import platform
 from threading import current_thread
 from time import sleep
+from typing import Any, Dict, List, Optional, Union
 from urllib.error import HTTPError
 from urllib.parse import urljoin, urlparse
 from urllib.request import pathname2url, urlopen
@@ -68,8 +70,8 @@ def is_linux() -> bool:
 
 # make sure any argument is deep copied, for example the install command changes the makeflags,
 # but should not do that on the further used environment dict
-def deep_copy_arguments(to_call):
-    def func(*args, **kwargs):
+def deep_copy_arguments(to_call: Any) -> Any:
+    def func(*args: Any, **kwargs: Any) -> Any:
         return to_call(*(deepcopy(x) for x in args),
                        **{k: deepcopy(v) for k, v in kwargs.items()})
     return func
@@ -77,22 +79,22 @@ def deep_copy_arguments(to_call):
 
 class DirRenamer():
 
-    def __init__(self, path, new_name):
+    def __init__(self, path: str, new_name: str) -> None:
         self.old_name = path
         self.new_name = os.path.join(os.path.split(path)[0], new_name)
         print(f"self.old_name: {self.old_name}")
         print(f"self.new_name: {self.new_name}")
 
-    def __enter__(self):
+    def __enter__(self) -> None:
         if self.old_name != self.new_name:
             os.rename(self.old_name, self.new_name)
 
-    def __exit__(self, etype, value, etraceback):
+    def __exit__(self, etype: Any, value: Any, etraceback: Any) -> None:
         if self.old_name != self.new_name:
             os.rename(self.new_name, self.old_name)
 
 
-def compress(path, directory_name, sevenzip_target):
+def compress(path: str, directory_name: str, sevenzip_target: str) -> None:
     sevenzip_extension = os.extsep + '7z'
     parent_directory_path = os.path.abspath(os.path.join(path, '..'))
     if os.path.splitext(sevenzip_target)[1] != sevenzip_extension:
@@ -106,18 +108,18 @@ def compress(path, directory_name, sevenzip_target):
         shutil.move(current_sevenzip_path, sevenzip_target)
 
 
-def strip_vars(sobject, chars):
+def strip_vars(sobject: Namespace, chars: str) -> None:
     for key, value in vars(sobject).items():
         if isinstance(value, str):
             setattr(sobject, key, value.strip(chars))
 
 
-def urllib2_response_read(response, file_path, block_size, total_size):
+def urllib2_response_read(response: Any, file_path: str, block_size: int, total_size: int) -> int:
     total_size = int(total_size)
-    bytes_count = 0
+    bytes_count: int = 0
 
     with open(file_path, "wb") as filename:
-        old_percent = -1
+        old_percent: float = -1
         while 1:
             block = response.read(block_size)
             filename.write(block)
@@ -134,7 +136,7 @@ def urllib2_response_read(response, file_path, block_size, total_size):
     return bytes_count
 
 
-def download(url, target, read_block_size=1048576):
+def download(url: str, target: str, read_block_size: int = 1048576) -> None:
     try:
         if os.path.isdir(os.path.abspath(target)):
             filename = os.path.basename(urlparse(url).path)
@@ -142,7 +144,7 @@ def download(url, target, read_block_size=1048576):
         if os.path.lexists(target):
             raise Exception(f"Can not download '{url}' to '{target}' as target. The file already exists.")
 
-        def local_download(local_file_path, target_file_path):
+        def local_download(local_file_path: str, target_file_path: str) -> None:
             if os.path.isfile(local_file_path):
                 print(f"copying file from '{local_file_path}' to '{target_file_path}'")
                 try:
@@ -211,7 +213,7 @@ def download(url, target, read_block_size=1048576):
             pass
 
 
-def set_value_on_environment_dict(environment, key, value):
+def set_value_on_environment_dict(environment: Dict[str, str], key: str, value: str) -> None:
     if key in environment:
         # if the data already contains the value stop here
         if value in environment[key].split(os.pathsep):
@@ -222,7 +224,7 @@ def set_value_on_environment_dict(environment, key, value):
 
 
 @deep_copy_arguments
-def get_environment(extra_environment=None):
+def get_environment(extra_environment: Optional[Dict[str, str]] = None) -> Dict[str, str]:
     # first take the one from the system and use the plain dictionary data for that
     environment = dict(os.environ)
 
@@ -239,12 +241,8 @@ def get_environment(extra_environment=None):
 
 
 @deep_copy_arguments
-def run_command(command, cwd, extra_environment=None, only_error_case_output=False, expected_exit_codes=None):
+def run_command(command: Union[List[str], str], cwd: str, extra_environment: Optional[Dict[str, str]] = None, only_error_case_output: bool = False, expected_exit_codes: Optional[List[int]] = None) -> int:
     expected_exit_codes = expected_exit_codes or [0]
-    if not isinstance(expected_exit_codes, list):
-        raise TypeError(f"expected_exit_codes({type(expected_exit_codes)}) is not {list}")
-    if not isinstance(only_error_case_output, bool):
-        raise TypeError(f"only_error_case_output({type(only_error_case_output)}) is not {bool}")
 
     if isinstance(command, list):
         command_as_list = command
@@ -279,8 +277,8 @@ def run_command(command, cwd, extra_environment=None, only_error_case_output=Fal
         raise Exception(f"The current working directory is not existing: {cwd}")
 
     use_shell = is_windows()
-    last_stdout_lines = []
-    last_stderr_lines = []
+    last_stdout_lines: List[Any] = []
+    last_stderr_lines: List[Any] = []
     if current_thread().name == "MainThread" and not only_error_case_output:
         process = Popen(
             command_as_list, shell=use_shell,
@@ -294,8 +292,8 @@ def run_command(command, cwd, extra_environment=None, only_error_case_output=Fal
         )
 
         max_saved_line_numbers = 1000
-        last_stdout_lines = deque(maxlen=max_saved_line_numbers)
-        last_stderr_lines = deque(maxlen=max_saved_line_numbers)
+        last_stdout_lines = list(deque(maxlen=max_saved_line_numbers))
+        last_stderr_lines = list(deque(maxlen=max_saved_line_numbers))
 
         # Launch the asynchronous readers of the process' stdout and stderr.
         stdout = AsynchronousFileReader(process.stdout)
@@ -325,8 +323,10 @@ def run_command(command, cwd, extra_environment=None, only_error_case_output=Fal
         stderr.join()
 
         # Close subprocess' file descriptors.
-        process.stdout.close()
-        process.stderr.close()
+        if process.stdout:
+            process.stdout.close()
+        if process.stderr:
+            process.stderr.close()
 
     process.wait()
     exit_code = process.returncode
@@ -356,9 +356,15 @@ def run_command(command, cwd, extra_environment=None, only_error_case_output=Fal
 
 
 @deep_copy_arguments
-def run_install_command(arguments=None, cwd=None, caller_arguments=None, extra_environment=None, only_error_case_output=False):
+def run_install_command(
+    arguments: Optional[List[str]] = None,
+    cwd: Optional[str] = None,
+    caller_arguments: Optional[Namespace] = None,
+    extra_environment: Optional[Dict[str, str]] = None,
+    only_error_case_output: bool = False,
+) -> str:
     arguments = arguments or ['install']
-    if hasattr(caller_arguments, 'installcommand') and caller_arguments.installcommand:
+    if caller_arguments and hasattr(caller_arguments, 'installcommand') and caller_arguments.installcommand:
         installcommand = caller_arguments.installcommand.split()
     else:
         installcommand = ['make', '-j1']
@@ -369,24 +375,33 @@ def run_install_command(arguments=None, cwd=None, caller_arguments=None, extra_e
             extra_environment["MAKEFLAGS"] = "-j1"
 
     if arguments:
-        installcommand.extend(arguments if isinstance(arguments, list) else arguments.split())
-    return run_command(installcommand, cwd, extra_environment, only_error_case_output=only_error_case_output)
+        installcommand.extend(arguments)
+    return str(run_command(installcommand, cwd, extra_environment, only_error_case_output=only_error_case_output))
 
 
 @deep_copy_arguments
-def run_build_command(arguments=None, cwd=None, caller_arguments=None, extra_environment=None, only_error_case_output=False, expected_exit_codes=None):
+def run_build_command(
+    arguments: Optional[List[str]] = None,
+    cwd: Optional[str] = None,
+    caller_arguments: Optional[Namespace] = None,
+    extra_environment: Optional[Dict[str, str]] = None,
+    only_error_case_output: bool = False,
+    expected_exit_codes: Optional[List[int]] = None,
+) -> str:
     expected_exit_codes = expected_exit_codes or [0]
     buildcommand = ['make']
-    if hasattr(caller_arguments, 'buildcommand') and caller_arguments.buildcommand:
+    if caller_arguments and hasattr(caller_arguments, 'buildcommand') and caller_arguments.buildcommand:
         buildcommand = caller_arguments.buildcommand.split()
 
     if arguments:
-        buildcommand.extend(arguments if isinstance(arguments, list) else arguments.split())
-    return run_command(buildcommand, cwd, extra_environment, only_error_case_output=only_error_case_output, expected_exit_codes=expected_exit_codes)
+        buildcommand.extend(arguments)
+    return str(run_command(buildcommand, cwd, extra_environment, only_error_case_output=only_error_case_output, expected_exit_codes=expected_exit_codes))
 
 
 @deep_copy_arguments
-def get_return_value(command, cwd=None, extra_environment=None):
+def get_return_value(
+    command: str, cwd: Optional[str] = None, extra_environment: Optional[Dict[str, str]] = None
+) -> bytes:
     command_as_list = command[:].split(' ')
     return Popen(
         command_as_list, stdout=PIPE, stderr=STDOUT,
@@ -394,15 +409,15 @@ def get_return_value(command, cwd=None, extra_environment=None):
     ).communicate()[0].strip()
 
 
-def git_sha(path):
+def git_sha(path: str) -> str:
     git_binary = "git"
     if is_git_directory(path):
-        return get_return_value(git_binary + " rev-list -n1 HEAD", cwd=path).strip()
+        return str(get_return_value(git_binary + " rev-list -n1 HEAD", cwd=path).strip())
     return ''
 
 
 # get commit SHA either directly from git, or from a .tag file in the source directory
-def get_commit_sha(source_path):
+def get_commit_sha(source_path: str) -> str:
     build_git_sha = git_sha(source_path)
     if not build_git_sha:
         tagfile = os.path.join(source_path, '.tag')
@@ -412,12 +427,12 @@ def get_commit_sha(source_path):
     return build_git_sha
 
 
-def is_git_directory(repository_path):
+def is_git_directory(repository_path: str) -> bool:
     if not repository_path:
         return False
     git_config_dir = os.path.abspath(os.path.join(repository_path, '.git'))
     return os.path.lexists(git_config_dir)
 
 
-def file_url(file_path):
+def file_url(file_path: str) -> str:
     return urljoin('file:', pathname2url(file_path))

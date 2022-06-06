@@ -34,6 +34,7 @@ Usage: ./$0 <mergedFileName> <csvFile1> <csvFile2> ..."""
 import csv
 import getopt
 import sys
+from typing import List, Tuple
 
 
 class Global:
@@ -41,13 +42,13 @@ class Global:
 
 
 class FileWithValues:
-    def __init__(self, file_path, tag, values):
+    def __init__(self, file_path: str, tag: str, values: List[List[str]]) -> None:
         self.file_path = file_path
         self.tag = tag
         self.values = values
 
 
-def read_csv(file_path, delimiter):
+def read_csv(file_path: str, delimiter: str) -> List[Tuple[str, str]]:
     lines = []
     with open(file_path, 'rt', encoding="utf-8") as handle:
         lines = handle.readlines()
@@ -62,7 +63,7 @@ def read_csv(file_path, delimiter):
     return records
 
 
-def read_csv_files(file_paths):
+def read_csv_files(file_paths: List[str]) -> List[FileWithValues]:
     files = []
 
     for file_path in file_paths:
@@ -82,7 +83,7 @@ def read_csv_files(file_paths):
     return files
 
 
-def check_consistency(files):
+def check_consistency(files: List[FileWithValues]) -> List[str]:
     reference_entry = files[0]
     reference_entry_size = len(reference_entry.values)
     reference_entry_identifiers = [v[0] for v in reference_entry.values]
@@ -103,9 +104,12 @@ def check_consistency(files):
     return reference_entry_identifiers
 
 
-def merge_files_helper(output_file_path, reference_identifiers, files):
-    with open(output_file_path, 'wt', encoding="utf-8") as csvfile:
-        writer = csv.writer(csvfile, delimiter=Global.Delimiter, quotechar='"', quoting=csv.QUOTE_MINIMAL)
+def merge_files_helper(
+    output_file_path: str, reference_identifiers: List[str], files: List[FileWithValues]
+) -> None:
+    with open(output_file_path, "wt", encoding="utf-8") as csvfile:
+        delimiter = Global.Delimiter
+        writer = csv.writer(csvfile, delimiter=delimiter, quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
         # Write header row
         headers = ['action'] + [f.tag for f in files]
@@ -118,18 +122,18 @@ def merge_files_helper(output_file_path, reference_identifiers, files):
             writer.writerow(row)
 
 
-def merge_files(output_file_path, files_to_merge):
+def merge_files(output_file_path: str, files_to_merge: List[str]) -> None:
     files = read_csv_files(files_to_merge)
     reference_identifiers = check_consistency(files)
     merge_files_helper(output_file_path, reference_identifiers, files)
 
 
-def print_help_and_exit():
+def print_help_and_exit() -> None:
     print(__doc__)
     sys.exit(0)
 
 
-def main():
+def main() -> None:
     try:
         opts, args = getopt.getopt(sys.argv[1:], "h", ["help"])
     except getopt.error as msg:

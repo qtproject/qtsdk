@@ -35,6 +35,7 @@ import sys
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import Any, Dict, List, Tuple
 
 from ddt import data, ddt  # type: ignore
 
@@ -65,36 +66,36 @@ class TestRunner(unittest.TestCase):
         with self.assertRaises(asyncio.TimeoutError):
             await async_exec_cmd(cmd, timeout=1)
 
-    @data(
+    @data(  # type: ignore
         (["echo", "TEST"], "TEST", True),
         (["echo", "TEST"], '', False),
     )
-    def test_do_execute_sub_process_get_output(self, test_data):
+    def test_do_execute_sub_process_get_output(self, test_data: Tuple[List[str], str, bool]) -> None:
         # Test get_output
         args, expected_output, get_output = test_data
         _, output = do_execute_sub_process(args, os.getcwd(), get_output=get_output)
         self.assertEqual(output.strip(), expected_output)
 
-    @data(
+    @data(  # type: ignore
         (["echo TEST"], Exception if is_windows() else FileNotFoundError),
         ('"echo TEST"', Exception if is_windows() else FileNotFoundError),
         (None, TypeError),
         (1234, TypeError)
     )
-    def test_do_execute_sub_process_invalid_args(self, test_data):
+    def test_do_execute_sub_process_invalid_args(self, test_data: Tuple[Any, Any]) -> None:
         # Test with invalid args
         test_args, expected_exception = test_data
         with self.assertRaises(expected_exception):
             do_execute_sub_process(test_args, os.getcwd())
 
-    def test_do_execute_sub_process_execution_path(self):
+    def test_do_execute_sub_process_execution_path(self) -> None:
         args = ["cd"] if is_windows() else ["pwd"]
         # Test execution_path
         with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
             _, output = do_execute_sub_process(args, tmp_base_dir, get_output=True)
             self.assertEqual(output.strip(), tmp_base_dir)
 
-    def test_do_execute_sub_process_abort_on_fail(self):
+    def test_do_execute_sub_process_abort_on_fail(self) -> None:
         # Throw exception in subprocess with error code 1
         args = [sys.executable, "-c", "exit(1)"]
         # abort_on_fail=True should throw an exception (default)
@@ -104,7 +105,7 @@ class TestRunner(unittest.TestCase):
         return_code, _ = do_execute_sub_process(args, os.getcwd(), abort_on_fail=False)
         self.assertEqual(return_code, 1)
 
-    def test_do_execute_sub_process_redirect_output(self):
+    def test_do_execute_sub_process_redirect_output(self) -> None:
         # Test redirect_output
         with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
             log_file = Path(tmp_base_dir) / "log"
@@ -114,11 +115,11 @@ class TestRunner(unittest.TestCase):
             with open(log_file, 'r', encoding="utf-8") as handle:
                 self.assertEqual(handle.read().strip(), "TEST")
 
-    @data(
+    @data(  # type: ignore
         ({"EXTRA": "ENV"}, "ENV"),
         ({}, "%EXTRA%" if is_windows() else ""),
     )
-    def test_do_execute_sub_process_extra_env(self, test_data):
+    def test_do_execute_sub_process_extra_env(self, test_data: Tuple[Dict[str, str], str]) -> None:
         args = ["echo", "%EXTRA%"] if is_windows() else ["printenv", "EXTRA"]
         # Test extra_env
         extra_env, expected_value = test_data

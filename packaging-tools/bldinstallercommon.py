@@ -35,12 +35,15 @@ import re
 import shutil
 import stat
 import sys
+from argparse import Namespace
+from configparser import ConfigParser
 from fnmatch import fnmatch
 from pathlib import Path
 from subprocess import PIPE, STDOUT, Popen, check_call
 from tempfile import mkdtemp
 from traceback import print_exc
-from typing import Callable, List, Optional, Union
+from types import TracebackType
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 from urllib.parse import urlparse
 from urllib.request import urlcleanup, urlopen, urlretrieve
 
@@ -60,7 +63,7 @@ MAX_DEBUG_PRINT_LENGTH = 10000
 ###############################
 # function
 ###############################
-def is_content_url_valid(url):
+def is_content_url_valid(url: str) -> bool:
     # check first if the url points to file on local file system
     if os.path.isfile(url):
         return True
@@ -77,7 +80,7 @@ def is_content_url_valid(url):
 ###############################
 # function
 ###############################
-def dl_progress(count, block_size, total_size):
+def dl_progress(count: int, block_size: int, total_size: int) -> None:
     current_download_percent = 0
     percent = int(count * block_size * 100 / total_size)
     # produce only reasonable amount of prints into stdout
@@ -93,7 +96,8 @@ def dl_progress(count, block_size, total_size):
 ###############################
 # function
 ###############################
-def retrieve_url(url, savefile):
+def retrieve_url(url: str, savefile: str) -> None:
+    savefile_tmp: str = ""
     try:
         savefile_tmp = savefile + '.tmp'
         urlcleanup()
@@ -106,7 +110,7 @@ def retrieve_url(url, savefile):
             os.remove(savefile_tmp)
         except Exception:  # swallow, do not shadow actual error
             pass
-        raise exc from err
+        raise Exception(exc) from err
 
 
 ###############################
@@ -117,7 +121,7 @@ def search_for_files(
 ) -> List[str]:
     pattern = re.compile(rgx_pattern, flags=re.MULTILINE)
 
-    def _matches_rgx(path: Path):
+    def _matches_rgx(path: Path) -> bool:
         if rgx_pattern:
             with open(path, 'r', encoding="utf-8") as handle:
                 return bool(pattern.search(handle.read()))
@@ -128,7 +132,7 @@ def search_for_files(
 ###############################
 # function
 ###############################
-def move_tree(srcdir, dstdir, pattern=None):
+def move_tree(srcdir: str, dstdir: str, pattern: Optional[str] = None) -> None:
     # windows has length limit for path names so try to truncate them as much as possible
     if is_windows():
         srcdir = win32api.GetShortPathName(srcdir)
@@ -157,7 +161,7 @@ def move_tree(srcdir, dstdir, pattern=None):
 ###############################
 # function
 ###############################
-def copy_tree(source_dir, dest_dir):
+def copy_tree(source_dir: str, dest_dir: str) -> None:
     # windows has length limit for path names so try to truncate them as much as possible
     if is_windows():
         source_dir = win32api.GetShortPathName(source_dir)
@@ -177,7 +181,7 @@ def copy_tree(source_dir, dest_dir):
             shutil.copy(full_file_name, dest_dir)
 
 
-def remove_one_tree_level(directory):
+def remove_one_tree_level(directory: str) -> None:
     dircontents = os.listdir(directory)
     items = len(dircontents)
     if items == 1:
@@ -196,16 +200,18 @@ def remove_one_tree_level(directory):
 ###############################
 # function
 ###############################
-def handle_remove_readonly(func, path, exc):
+def handle_remove_readonly(
+    func: Callable[..., None], path: Union[str, Path], exc: Tuple[type, int, TracebackType]
+) -> None:
     excvalue = exc[1]
-    if func in (os.rmdir, os.remove) and excvalue.errno == errno.EACCES:
+    if func in (os.rmdir, os.remove) and excvalue == errno.EACCES:
         os.chmod(path, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)  # 0777
         func(path)
     else:
         raise PackagingError(excvalue)
 
 
-def remove_tree(path):
+def remove_tree(path: str) -> bool:
     if os.path.isdir(path) and os.path.exists(path):
         if is_windows():
             path = win32api.GetShortPathName(path.replace('/', '\\'))
@@ -224,7 +230,7 @@ def remove_tree(path):
 # function
 ###############################
 # substitute all matches in files with replacement_string
-def replace_in_files(filelist, regexp, replacement_string):
+def replace_in_files(filelist: List[str], regexp: str, replacement_string: str) -> None:
     regexp_obj = re.compile(regexp)
     for xfile in filelist:
         with open(xfile, 'r+', encoding="utf-8") as handle:
@@ -240,7 +246,7 @@ def replace_in_files(filelist, regexp, replacement_string):
 ###############################
 # function
 ###############################
-def ensure_text_file_endings(filename):
+def ensure_text_file_endings(filename: str) -> None:
     print('------------ ensure_text_file_endings ----------------')
     if os.path.isdir(filename):
         print(f'*** Warning, given file is directory? Did nothing for: {filename}')
@@ -262,7 +268,7 @@ def ensure_text_file_endings(filename):
 ###############################
 # function
 ###############################
-def safe_config_key_fetch(conf, section, key):
+def safe_config_key_fetch(conf: ConfigParser, section: str, key: str) -> Any:
     if not conf.has_section(section):
         return ''
     if not conf.has_option(section, key):
@@ -273,8 +279,8 @@ def safe_config_key_fetch(conf, section, key):
 ###############################
 # function
 ###############################
-def config_section_map(conf, section):
-    dict1 = {}
+def config_section_map(conf: ConfigParser, section: str) -> Dict[str, Any]:
+    dict1: Dict[str, Any] = {}
     options = conf.options(section)
     for option in options:
         try:
@@ -288,7 +294,7 @@ def config_section_map(conf, section):
 
 
 def locate_executable(search_dir: Union[str, Path], patterns: List[str]) -> str:
-    def _is_executable(path: Path):
+    def _is_executable(path: Path) -> bool:
         return bool(path.stat().st_mode & stat.S_IEXEC)
     return locate_path(search_dir, patterns, filters=[os.path.isfile, _is_executable])
 
@@ -317,30 +323,28 @@ def locate_paths(search_dir: Union[str, Path], patterns: List[str],
     return [str(p) for p in paths if all(f(p) for f in filters)]
 
 
-def is_text(data):
+def is_text(data: Union[str, bytes]) -> bool:
     # original snippet:
     # http://code.activestate.com/recipes/173220-test-if-a-file-or-string-is-text-or-binary/
-    text_characters = "".join(list(map(chr, list(range(32, 127)))) + list("\n\r\t\b"))
-    trans_table = str.maketrans("", "", text_characters)
-    try:
-        if "\0" in data:
-            return 0
-    except TypeError:
-        if b"\0" in data:
-            return 0
+    data = str(data)
+    if isinstance(data, str) and "\0" in data or isinstance(data, bytes) and b"\0" in data:
+        return False
     if not data:  # Empty files are considered text
-        return 1
+        return True
     # Get the non-text characters (maps a character to itself then
     # use the 'remove' option to get rid of the text characters.)
-    non_text = data.translate(trans_table)
+    text_characters = "".join(list(map(chr, list(range(32, 127)))) + list("\n\r\t\b"))
+    non_text = data
+    for char in text_characters:
+        non_text = non_text.replace(char, "")
     # If more than 30% non-text characters, then
     # this is considered a binary file
     if len(non_text) / len(data) > 0.30:
-        return 0
-    return 1
+        return False
+    return True
 
 
-def is_text_file(filename, blocksize=512):
+def is_text_file(filename: Union[str, Path], blocksize: int = 512) -> bool:
     try:
         return is_text(open(filename, encoding="utf-8").read(blocksize))
     except UnicodeDecodeError:
@@ -350,7 +354,7 @@ def is_text_file(filename, blocksize=512):
 ###############################
 # Function
 ###############################
-def requires_rpath(file_path):
+def requires_rpath(file_path: str) -> bool:
     if is_linux():
         if not os.access(file_path, os.X_OK):
             return False
@@ -363,13 +367,15 @@ def requires_rpath(file_path):
 ###############################
 # Function
 ###############################
-def sanity_check_rpath_max_length(file_path, new_rpath):
+def sanity_check_rpath_max_length(file_path: str, new_rpath: str) -> bool:
     if is_linux():
         if not os.access(file_path, os.X_OK):
             return False
         with Popen(["chrpath", "-l", file_path], stdout=PIPE) as proc:
-            result = re.search(r':*.R.*PATH=.*', proc.stdout.read().decode())
-            if not result:
+            result = None
+            if proc.stdout is not None:
+                result = re.search(r":*.R.*PATH=.*", proc.stdout.read().decode())
+            if result is None:
                 print(f'*** No RPath found from given file: {file_path}')
             else:
                 rpath = result.group()
@@ -387,7 +393,7 @@ def sanity_check_rpath_max_length(file_path, new_rpath):
 ###############################
 # Function
 ###############################
-def pathsplit(path, rest=None):
+def pathsplit(path: str, rest: Optional[List[str]] = None) -> List[str]:
     rest = rest or []
     (head, tail) = os.path.split(path)
     if len(head) < 1:
@@ -397,7 +403,7 @@ def pathsplit(path, rest=None):
     return pathsplit(head, [tail] + rest)
 
 
-def commonpath(list1, list2, common=None):
+def commonpath(list1: List[str], list2: List[str], common: Optional[List[str]] = None) -> Tuple[List[str], List[str], List[str]]:
     common = common or []
     if len(list1) < 1:
         return (common, list1, list2)
@@ -408,7 +414,7 @@ def commonpath(list1, list2, common=None):
     return commonpath(list1[1:], list2[1:], common + [list1[0]])
 
 
-def calculate_relpath(path1, path2):
+def calculate_relpath(path1: str, path2: str) -> str:
     (_, list1, list2) = commonpath(pathsplit(path1), pathsplit(path2))
     path = []
     if len(list1) > 0:
@@ -421,7 +427,7 @@ def calculate_relpath(path1, path2):
 ##############################################################
 # Calculate the relative RPath for the given file
 ##############################################################
-def calculate_rpath(file_full_path, destination_lib_path):
+def calculate_rpath(file_full_path: str, destination_lib_path: str) -> str:
     if not os.path.isfile(file_full_path):
         raise IOError(f"*** Not a valid file: {file_full_path}")
 
@@ -446,7 +452,7 @@ def calculate_rpath(file_full_path, destination_lib_path):
 ##############################################################
 # Handle the RPath in the given component files
 ##############################################################
-def handle_component_rpath(component_root_path, destination_lib_paths):
+def handle_component_rpath(component_root_path: str, destination_lib_paths: str) -> None:
     print('        @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
     print('        Handle RPath')
     print('')
@@ -467,10 +473,11 @@ def handle_component_rpath(component_root_path, destination_lib_paths):
 
                     # look for existing $ORIGIN path in the binary
                     with Popen(["chrpath", "-l", file_full_path], stdout=PIPE) as proc:
-                        origin_rpath = re.search(
-                            r'\$ORIGIN[^:\n]*',
-                            proc.stdout.read().decode()
-                        )
+                        if proc.stdout is not None:
+                            origin_rpath = re.search(
+                                r'\$ORIGIN[^:\n]*',
+                                proc.stdout.read().decode()
+                            )
 
                         if origin_rpath and origin_rpath.group() not in rpaths:
                             rpaths.append(origin_rpath.group())
@@ -487,7 +494,13 @@ def handle_component_rpath(component_root_path, destination_lib_paths):
 ###############################
 # function
 ###############################
-def clone_repository(repo_url, repo_branch_or_tag, destination_folder, full_clone=False, init_subrepos=False):
+def clone_repository(
+    repo_url: str,
+    repo_branch_or_tag: str,
+    destination_folder: str,
+    full_clone: bool = False,
+    init_subrepos: bool = False,
+) -> None:
     print('--------------------------------------------------------------------')
     print(f'Cloning repository: {repo_url}')
     print(f'        branch/tag: {repo_branch_or_tag}')
@@ -512,7 +525,7 @@ def clone_repository(repo_url, repo_branch_or_tag, destination_folder, full_clon
         do_execute_sub_process(cmd_args, destination_folder)
 
 
-def get_tag_from_branch(directory):
+def get_tag_from_branch(directory: str) -> str:
     """
     Takes in a git directory path as a parameter.
     Return a tag if the current branch of the given directory is tagged but tag not checked out.
@@ -544,7 +557,7 @@ def get_tag_from_branch(directory):
 ###############################
 # git archive given repository
 ###############################
-def git_archive_repo(repo_and_ref):
+def git_archive_repo(repo_and_ref: str) -> str:
     # define archive
     (repository, ref) = repo_and_ref.split("#")
     project_name = repository.split("/")[-1].split(".")[0]
@@ -570,7 +583,7 @@ def git_archive_repo(repo_and_ref):
 ###############################
 # function
 ###############################
-def extract_file(path, to_directory='.'):
+def extract_file(path: str, to_directory: str = ".") -> bool:
     cmd_args = []
     if path.endswith('.tar'):
         cmd_args = ['tar', '-xf', path]
@@ -595,7 +608,7 @@ def extract_file(path, to_directory='.'):
 ###############################
 # function
 ###############################
-def list_as_string(argument_list):
+def list_as_string(argument_list: List[Any]) -> str:
     output = ' '.join([str(i) for i in argument_list])
     return output
 
@@ -603,18 +616,18 @@ def list_as_string(argument_list):
 ###############################
 # function
 ###############################
-def remote_path_exists(remote_addr, path_to_check, ssh_command='ssh'):
+def remote_path_exists(remote_addr: str, path_to_check: str, ssh_command: str = 'ssh') -> bool:
     text_to_print = 'REMOTE_PATH_EXISTS'
     cmd_args = [ssh_command, remote_addr, 'bash', '-c', '\"if [ -e ' + path_to_check + ' ] ; then echo ' + text_to_print + ' ; fi\"']
     output = do_execute_sub_process(cmd_args, os.getcwd(), get_output=True)
     check = output[1].rstrip()
-    return check == text_to_print
+    return bool(check == text_to_print)
 
 
 ###############################
 # function
 ###############################
-def create_mac_disk_image(execution_path, file_directory, file_base_name, image_size='4g'):
+def create_mac_disk_image(execution_path: str, file_directory: str, file_base_name: str, image_size: str = '4g') -> None:
     # create disk image
     cmd_args = ['hdiutil', 'create', '-srcfolder',
                 os.path.join(file_directory, file_base_name + '.app'),
@@ -628,7 +641,7 @@ def create_mac_disk_image(execution_path, file_directory, file_base_name, image_
 ###############################
 # function
 ###############################
-def create_extract_function(file_path, target_path):
+def create_extract_function(file_path: str, target_path: str) -> Callable[[], Any]:
     Path(target_path).mkdir(parents=True, exist_ok=True)
     working_dir = os.path.dirname(file_path)
     if file_path.endswith('.tar.gz'):
@@ -639,7 +652,7 @@ def create_extract_function(file_path, target_path):
 ###############################
 # function
 ###############################
-def create_download_and_extract_tasks(url, target_path, temp_path):
+def create_download_and_extract_tasks(url: str, target_path: str, temp_path: str) -> Tuple[Task, Task]:
     filename = os.path.basename(urlparse(url).path)
     sevenzip_file = os.path.join(temp_path, filename)
     download_task = Task(f"download '{url}' to '{sevenzip_file}'", function=None)
@@ -652,7 +665,7 @@ def create_download_and_extract_tasks(url, target_path, temp_path):
 ###############################
 # function
 ###############################
-def create_download_extract_task(url, target_path, temp_path):
+def create_download_extract_task(url: str, target_path: str, temp_path: str) -> Task:
     filename = os.path.basename(urlparse(url).path)
     sevenzip_file = os.path.join(temp_path, filename)
     download_extract_task = Task(f"download {url} to {sevenzip_file} and extract it to {target_path}", function=None)
@@ -664,7 +677,7 @@ def create_download_extract_task(url, target_path, temp_path):
 ###############################
 # function
 ###############################
-def create_qt_download_task(module_urls, target_qt5_path, temp_path, caller_arguments):
+def create_qt_download_task(module_urls: List[str], target_qt5_path: str, temp_path: str, caller_arguments: Optional[Namespace]) -> Task:
     qt_task = Task(f'download and extract Qt to "{target_qt5_path}"', function=None)
     download_work = ThreadedWork(f'download Qt packages to "{temp_path}"')
     unzip_task = Task(f'extracting packages to "{target_qt5_path}"', function=None)
@@ -680,37 +693,38 @@ def create_qt_download_task(module_urls, target_qt5_path, temp_path, caller_argu
             print(f"warning: could not find '{module_url}' for download")
     # add icu, d3dcompiler, opengl32, openssl
     target_path = os.path.join(target_qt5_path, 'bin' if is_windows() else 'lib')
-    if not is_macos() and hasattr(caller_arguments, 'icu7z') and caller_arguments.icu7z:
-        (download_task, extract_task) = create_download_and_extract_tasks(
-            caller_arguments.icu7z, target_path, temp_path
-        )
-        download_work.add_task_object(download_task)
-        unzip_task.add_function(extract_task.do_task)
-    if is_windows():
-        if hasattr(caller_arguments, 'd3dcompiler7z') and caller_arguments.d3dcompiler7z:
+    if caller_arguments:
+        if not is_macos() and hasattr(caller_arguments, 'icu7z') and caller_arguments.icu7z:
             (download_task, extract_task) = create_download_and_extract_tasks(
-                caller_arguments.d3dcompiler7z, target_path, temp_path
+                caller_arguments.icu7z, target_path, temp_path
             )
             download_work.add_task_object(download_task)
             unzip_task.add_function(extract_task.do_task)
-        if hasattr(caller_arguments, 'opengl32sw7z') and caller_arguments.opengl32sw7z:
-            (download_task, extract_task) = create_download_and_extract_tasks(
-                caller_arguments.opengl32sw7z, target_path, temp_path
-            )
-            download_work.add_task_object(download_task)
-            unzip_task.add_function(extract_task.do_task)
-        if hasattr(caller_arguments, 'openssl7z') and caller_arguments.openssl7z:
-            (download_task, extract_task) = create_download_and_extract_tasks(
-                caller_arguments.openssl7z, target_path, temp_path
-            )
-            download_work.add_task_object(download_task)
-            unzip_task.add_function(extract_task.do_task)
+        if is_windows():
+            if hasattr(caller_arguments, 'd3dcompiler7z') and caller_arguments.d3dcompiler7z:
+                (download_task, extract_task) = create_download_and_extract_tasks(
+                    caller_arguments.d3dcompiler7z, target_path, temp_path
+                )
+                download_work.add_task_object(download_task)
+                unzip_task.add_function(extract_task.do_task)
+            if hasattr(caller_arguments, 'opengl32sw7z') and caller_arguments.opengl32sw7z:
+                (download_task, extract_task) = create_download_and_extract_tasks(
+                    caller_arguments.opengl32sw7z, target_path, temp_path
+                )
+                download_work.add_task_object(download_task)
+                unzip_task.add_function(extract_task.do_task)
+            if hasattr(caller_arguments, 'openssl7z') and caller_arguments.openssl7z:
+                (download_task, extract_task) = create_download_and_extract_tasks(
+                    caller_arguments.openssl7z, target_path, temp_path
+                )
+                download_work.add_task_object(download_task)
+                unzip_task.add_function(extract_task.do_task)
     qt_task.add_function(download_work.run)
     qt_task.add_function(unzip_task.do_task)
     return qt_task
 
 
-def patch_qt(qt5_path):
+def patch_qt(qt5_path: str) -> None:
     print("##### patch Qt #####")
     qmake_binary = os.path.join(qt5_path, 'bin', 'qmake')
     # write qt.conf

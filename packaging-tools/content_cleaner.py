@@ -34,7 +34,7 @@ import os
 import sys
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Generator, List
+from typing import Any, Generator, List
 
 from logging_util import init_logger
 
@@ -46,7 +46,7 @@ class CleanerError(Exception):
 
 
 @contextmanager
-def ch_dir(path: str) -> Generator:
+def ch_dir(path: str) -> Generator[Any, Any, Any]:
     oldwd = os.getcwd()
     os.chdir(path)
     try:
@@ -66,7 +66,7 @@ def expand_rules(rules: List[str]) -> List[str]:
     return matches
 
 
-def remove_empty_directories(root_path: str):
+def remove_empty_directories(root_path: str) -> None:
     for root, dirs, _ in os.walk(root_path, topdown=True):
         for name in dirs:
             dir_path = os.path.join(root, name)

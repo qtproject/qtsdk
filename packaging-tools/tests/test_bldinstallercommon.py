@@ -33,6 +33,7 @@ import os
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import Callable, List, Optional, Tuple
 
 from ddt import data, ddt  # type: ignore
 
@@ -50,7 +51,7 @@ from installer_utils import PackagingError
 
 @ddt
 class TestCommon(unittest.TestCase):
-    @data(
+    @data(  # type: ignore
         (
             "%TAG_VERSION%%TAG_EDITION%",
             [("%TAG_VERSION%", "6.3.0"), ("%TAG_EDITION%", "opensource"), ("foo", "bar")],
@@ -73,7 +74,7 @@ class TestCommon(unittest.TestCase):
         ),
         ("%foo\nbar%foo", [("%foobar%", "foobar"), ("%foo%", "")], "%foo\nbar%foo"),
     )
-    def test_replace_in_files(self, test_data):
+    def test_replace_in_files(self, test_data: Tuple[str, List[Tuple[str, str]], str]) -> None:
         # unpack data
         file_contents, replacements, expected_file_content = test_data
         with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
@@ -82,29 +83,29 @@ class TestCommon(unittest.TestCase):
             with open(tmp_file, "a", encoding="utf-8") as handle:
                 handle.write(file_contents)
             for key, value in replacements:
-                replace_in_files([tmp_file], key, value)
+                replace_in_files([str(tmp_file)], key, value)
             with open(tmp_file, "r", encoding="utf-8") as handle:
                 file_contents = handle.read()
                 # check that file contents match
                 self.assertEqual(file_contents, expected_file_content)
 
-    def test_replace_in_files_invalid_path(self):
+    def test_replace_in_files_invalid_path(self) -> None:
         with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
             # invalid file path should raise FileNotFoundError
             invalid_path = Path(tmp_base_dir) / "invalid"
             with self.assertRaises(FileNotFoundError):
-                replace_in_files([invalid_path], "foo", "bar")
+                replace_in_files([str(invalid_path)], "foo", "bar")
 
-    def test_replace_in_files_not_array(self):
+    def test_replace_in_files_not_array(self) -> None:
         # non-array should raise TypeError
         with self.assertRaises(TypeError):
-            replace_in_files(None, "foo", "bar")
+            replace_in_files(None, "foo", "bar")  # type: ignore
 
-    def test_replace_in_files_empty_array(self):
+    def test_replace_in_files_empty_array(self) -> None:
         # empty file array should not raise exception
         replace_in_files([], "foo", "bar")
 
-    @data(
+    @data(  # type: ignore
         (
             ("script.py", "content\n foo bar\n"),
             (["*.prl", ".pri"], "foo"),
@@ -136,7 +137,7 @@ class TestCommon(unittest.TestCase):
             ["file.x"],
         ),
     )
-    def test_search_for_files(self, test_data):
+    def test_search_for_files(self, test_data: Tuple[Tuple[str, str], Tuple[List[str], str], List[str]]) -> None:
         file, params, expected_files = test_data
         with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
             path, content = file
@@ -150,7 +151,7 @@ class TestCommon(unittest.TestCase):
             for result_path, expected_path in zip(result, expected_files):
                 self.assertEqual(Path(result_path).name, expected_path)
 
-    @data(
+    @data(  # type: ignore
         (([], [], ['d', '.d', 'tst.y', '.t', 'tst.t', 'tempty', 'd/tst.t', 'd/n', '.d/.t'])),
         ((["*"], [], ['d', '.d', 'tst.y', '.t', 'tst.t', 'tempty', 'd/tst.t', 'd/n', '.d/.t'])),
         ((["tst*"], [os.path.isfile], ['tst.y', 'tst.t', 'd/tst.t'])),
@@ -158,10 +159,10 @@ class TestCommon(unittest.TestCase):
         ((["*y"], [], ['tst.y', 'tempty'])),
         ((["tst.t"], [], ['tst.t', 'd/tst.t'])),
         ((["wontmatch"], [], [])),
-        ((["*.t", "*.y"], [], ['tst.y', '.t', 'tst.t', 'd/tst.t', '.d/.t'])),
-        (([".t", ".d"], [], ['.d', '.t', '.d/.t']))
+        ((["*.t", "*.y"], [], ["tst.y", ".t", "tst.t", "d/tst.t", ".d/.t"])),
+        (([".t", ".d"], [], [".d", ".t", ".d/.t"]))
     )
-    def test_locate_paths(self, test_data):
+    def test_locate_paths(self, test_data: Tuple[List[str], Optional[List[Callable[[Path], bool]]], List[str]]) -> None:
         pattern, filters, expected_results = test_data
         with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
             # Create files and folders
@@ -175,18 +176,18 @@ class TestCommon(unittest.TestCase):
             result = [str(Path(p).relative_to(tmp_base_dir)) for p in result]
             self.assertCountEqual(expected_results, result)
 
-    def test_locate_path(self):
+    def test_locate_path(self) -> None:
         with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
             test_file = tmp_base_dir + "/test"
             Path(test_file).touch()
             self.assertEqual(test_file, locate_path(tmp_base_dir, ["test"], [os.path.isfile]))
 
-    def test_locate_path_no_matches(self):
+    def test_locate_path_no_matches(self) -> None:
         with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
             with self.assertRaises(PackagingError):
                 locate_path(tmp_base_dir, ["test"], [os.path.isfile])
 
-    def test_locate_path_multiple_matches(self):
+    def test_locate_path_multiple_matches(self) -> None:
         with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
             Path(tmp_base_dir + "/file").touch()
             Path(tmp_base_dir + "/file2").touch()
@@ -194,7 +195,7 @@ class TestCommon(unittest.TestCase):
                 locate_path(tmp_base_dir, ["file", "file2"])
 
     @unittest.skipIf(is_windows(), "Windows not supported for this test")
-    def test_locate_executable(self):
+    def test_locate_executable(self) -> None:
         with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
             Path(tmp_base_dir + "/test_file").touch()
             Path(tmp_base_dir + "/test_file2").touch(0o755)
@@ -205,7 +206,7 @@ class TestCommon(unittest.TestCase):
                 locate_executable(tmp_base_dir, ["test_file2"]),
                 tmp_base_dir + "/test_file2")
 
-    @data(
+    @data(  # type: ignore
         ("/home/qt/bin/foo/bar", "/home/qt/lib", "../../../lib"),
         ("/home/qt/bin/foo/", "/home/qt/lib", "/home/qt/lib"),
         ("/home/qt/bin", "/home/qt/lib", "../lib"),
@@ -220,18 +221,18 @@ class TestCommon(unittest.TestCase):
         ("/home/qt", "", "../../../"),
         ("", "/home/qt", "/home/qt"),
     )
-    def test_calculate_relpath(self, test_data) -> None:
+    def test_calculate_relpath(self, test_data: Tuple[str, str, str]) -> None:
         path1, path2, expected = test_data
         result = calculate_relpath(path1, path2)
         self.assertEqual(result, expected)
 
-    @data(
+    @data(  # type: ignore
         ("/home/qt", "/home/qt"),
         ("/", "/"),
         ("lib", "lib"),
         ("", ""),
     )
-    def test_calculate_relpath_invalid(self, test_data) -> None:
+    def test_calculate_relpath_invalid(self, test_data: Tuple[str, str]) -> None:
         path1, path2 = test_data
         with self.assertRaises(TypeError):
             calculate_relpath(path1, path2)

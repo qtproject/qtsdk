@@ -37,6 +37,7 @@ from fileinput import FileInput
 from functools import reduce
 from multiprocessing import cpu_count
 from pathlib import Path
+from typing import List
 
 from bld_utils import (
     is_linux,
@@ -69,7 +70,7 @@ MODULE_SRC_DIR = os.path.join(SCRIPT_ROOT_DIR, MODULE_SRC_DIR_NAME)
 ###############################
 # function
 ###############################
-def patch_archive(base_dir, search_strings, qt_install_prefix):
+def patch_archive(base_dir: str, search_strings: List[str], qt_install_prefix: str) -> None:
     erase_qmake_prl_build_dir(base_dir)
     patch_build_time_paths(base_dir, search_strings, qt_install_prefix)
 
@@ -77,7 +78,7 @@ def patch_archive(base_dir, search_strings, qt_install_prefix):
 ###############################
 # function
 ###############################
-def get_qt_install_prefix(qt_path):
+def get_qt_install_prefix(qt_path: str) -> str:
     cmd_args = [os.path.join(qt_path, 'bin', 'qmake'), '-query', 'QT_INSTALL_PREFIX']
     _, qt_install_prefix = do_execute_sub_process(cmd_args, qt_path, get_output=True)
     return qt_install_prefix.strip()
@@ -86,14 +87,14 @@ def get_qt_install_prefix(qt_path):
 ###############################
 # function
 ###############################
-def erase_qmake_prl_build_dir(search_path):
+def erase_qmake_prl_build_dir(search_path: str) -> None:
     print('--- Fix .prl files ---')
     # fetch all .prl files
     file_list = locate_paths(search_path, ['*.prl'], filters=[os.path.isfile])
     # erase lines starting with 'QMAKE_PRL_BUILD_DIR' from .prl files
     for item in file_list:
         found = False
-        for line in FileInput(item, inplace=1):
+        for line in FileInput(item, inplace=True):
             if line.startswith('QMAKE_PRL_BUILD_DIR'):
                 found = True
                 print(''.rstrip('\n'))
@@ -106,14 +107,14 @@ def erase_qmake_prl_build_dir(search_path):
 ###############################
 # function
 ###############################
-def patch_build_time_paths(search_path, search_strings, qt_install_prefix):
+def patch_build_time_paths(search_path: str, search_strings: List[str], qt_install_prefix: str) -> None:
     extension_list = ['*.prl', '*.pri', '*.pc', '*.la']
     search_regexp = '|'.join(search_strings)
     file_list = search_for_files(search_path, extension_list, search_regexp)
 
     for item in file_list:
         print(f"Replacing {search_strings} paths from file: {item}")
-        for line in FileInput(item, inplace=1):
+        for line in FileInput(item, inplace=True):
             patched_line = reduce(lambda accum, value: accum.replace(value, qt_install_prefix),
                                   search_strings,
                                   line)
