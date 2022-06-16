@@ -52,7 +52,7 @@ def is_file_with_debug_information_mac(path):
         return True
     return False
 
-def file_with_debug_information_linux():
+def file_with_debug_information_linux(file):
     if file.endswith(".so") or os.access(file, os.X_OK) or file.endswith(".debug"):
         return True
     return False

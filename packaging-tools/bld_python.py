@@ -83,7 +83,7 @@ async def create_symlink(pythonDir: str):
     assert os.path.isfile(pythonExe), "The 'python' executable did not exist: {0}".format(pythonExe)
     versionCmd = [pythonExe, '--version']
     versionOutput = subprocess.check_output(versionCmd, shell=True).decode("utf-8")
-    match = re.search('(\d+)\.(\d+)\.(\d+)', versionOutput)
+    match = re.search(r'(\d+)\.(\d+)\.(\d+)', versionOutput)
     if match:
         destination = os.path.join(pythonDir, 'python' + match.group(1) + match.group(2) + '.exe')
         os.symlink(pythonExe, destination)

@@ -47,9 +47,9 @@ ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 def build(src_dir, install_dir, toolset):
     do_execute_sub_process(['perl', 'Configure', toolset, '--openssldir=' + install_dir], src_dir, True)
     if toolset == 'VC-WIN32':
-        do_execute_sub_process(['ms\do_nasm.bat'], src_dir, True)
+        do_execute_sub_process([r'ms\do_nasm.bat'], src_dir, True)
     else:
-        do_execute_sub_process(['ms\do_win64a'], src_dir, True)
+        do_execute_sub_process([r'ms\do_win64a'], src_dir, True)
     do_execute_sub_process(['nmake', '-f', 'ms\\ntdll.mak'], src_dir, True)
     do_execute_sub_process(['nmake', '-f', 'ms\\ntdll.mak', 'install'], src_dir, True)
 
@@ -75,7 +75,7 @@ def setup_argument_parser():
                formatter_class=argparse.RawTextHelpFormatter)
 
     parser.add_argument('--sourcedir', help='Source directory', required=True)
-    parser.add_argument('--installdir', help='Target directory (should be on C:\)', required=False, default='C:\usr\local\openssl')
+    parser.add_argument('--installdir', help=r'Target directory (should be on C:\)', required=False, default=r'C:\usr\local\openssl')
     parser.add_argument('--toolset', help='Either VC-WIN32 or VC-WIN64', required=False, default='VC-WIN32')
     parser.add_argument('--archive_prefix', help='The start of the archive name to create', required=False, default=ROOT_DIR + '\\openssl')
     return parser

@@ -21,7 +21,7 @@ repos:
         name: Check PEP8 compliance (flake8)
         # Disable E203 for compatibility with blackformatter, and W503 as it goes against PEP8
         # Disable checks that are not relevant to this patch, they will be introduced later
-        entry: bash -c 'pipenv run python3 -m flake8 --max-line-length=99 --ignore=E111,E117,E121,E123,E124,E125,E126,E127,E128,E201,E202,E203,E211,E221,E222,E225,E226,E231,E251,E252,E301,E302,E303,E305,E306,E501,E502,E703,E722,E741,E999,F523,F541,W391,W503,W504,W605 "$@"'
+        entry: bash -c 'pipenv run python3 -m flake8 --max-line-length=99 --ignore=E111,E117,E121,E123,E124,E125,E126,E127,E128,E201,E202,E203,E211,E221,E222,E225,E226,E231,E251,E252,E301,E302,E303,E305,E306,E501,E502,E722,E741,W391,W503,W504 "$@"'
         language: system
         types: [python]
         fail_fast: true

@@ -90,7 +90,7 @@ def lock_keychain():
 # init snapshot build dir and upload files
 ###########################################
 def init_snapshot_dir_and_upload_files(optionDict, project_name, project_version_or_branch, build_number, file_upload_list, subdir = ''):
-    if subdir is not "" and subdir[0] is not "/":
+    if subdir != "" and subdir[0] != "/":
         subdir = "/" + subdir
     remote_path_base                        = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + project_name + '/' + project_version_or_branch
     remote_path_snapshot_dir                = remote_path_base + '/' + build_number
@@ -1005,6 +1005,8 @@ def create_remote_dirs(optionDict, server, dir_path):
 ###############################
 def git_archive_repo(optionDict, repo_and_ref):
     archive_name = bldinstallercommon.git_archive_repo(repo_and_ref)
+    (repository, ref) = repo_and_ref.split("#")
+    project_name = repository.split("/")[-1].split(".")[0]
     # Create remote dest directories
     remote_dest_dir_base = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + project_name + '/' + ref
     remote_dest_dir = remote_dest_dir_base + '/' + optionDict['BUILD_NUMBER']

@@ -111,7 +111,7 @@ def patchAbsoluteLibPathsFromFile(filePath):
 
 
 def patchAbsoluteLibPathsFromLine(line, fileExtension):
-    """
+    r"""
     Captures XXX in e.g. /usr/lib/libXXX.so, /usr/lib64/libXXX.a, and C:\XXX.lib
     Paths are not allowed to contain whitespace though
       [^\s\"]+ - start of path

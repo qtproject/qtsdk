@@ -243,7 +243,7 @@ def processBatchFileTimed(libClangId, batchFilePath):
 
     runRecord = processBatchFile(libClangId, batchFilePath)
 
-    printDuration(time.time() - timeStarted);
+    printDuration(time.time() - timeStarted)
 
     return runRecord
 

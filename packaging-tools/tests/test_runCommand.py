@@ -42,7 +42,7 @@ if sys.platform.startswith("win"):
     # Raymond Chen's response [1]
 
     SEM_NOGPFAULTERRORBOX = 0x0002  # From MSDN
-    ctypes.windll.kernel32.SetErrorMode(SEM_NOGPFAULTERRORBOX);
+    ctypes.windll.kernel32.SetErrorMode(SEM_NOGPFAULTERRORBOX)
     subprocess_flags = 0x8000000  # win32con.CREATE_NO_WINDOW?
 
 def baseCommand():

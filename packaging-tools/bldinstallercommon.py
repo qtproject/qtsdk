@@ -643,7 +643,7 @@ def rename_android_soname_files(qt5_base_path):
             # filename, so, version = ['libQt5Core', 'so', '5.2.0']
             filename, so, version = name.split(os.extsep, 2)
             # let's just rename the appropriate files
-            if filename.startswith('lib') and so == 'so' and p.match(version) != None:
+            if filename.startswith('lib') and so == 'so' and p.match(version) is not None:
                 old_filepath = os.path.join(lib_dir, name)
                 new_filepath = os.path.join(lib_dir, filename + '.so')
                 shutil.move(old_filepath, new_filepath)

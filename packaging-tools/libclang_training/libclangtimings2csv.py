@@ -53,9 +53,9 @@ def constructTimeNeededMatcher():
     #   :   2.5625 (100.0%)   0.1563 (100.0%)   2.7188 (100.0%)   2.7813 (100.0%)
     # Note: There is always at least the wall clock time at the utmost right,
     #       the others in front (up to 3) are optional.
-    startIndicator = '\s*:'
-    notRelevantParts =  '(\s*\d+\.\d+ \(\d+\.\d+\%\)){0,3}'
-    wallClockTime = '\s*(\d+\.\d+) \(\d+\.\d+\%\)'
+    startIndicator = r'\s*:'
+    notRelevantParts =  r'(\s*\d+\.\d+ \(\d+\.\d+\%\)){0,3}'
+    wallClockTime = r'\s*(\d+\.\d+) \(\d+\.\d+\%\)'
 
     regex = startIndicator \
           + notRelevantParts \

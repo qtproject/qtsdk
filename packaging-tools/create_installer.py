@@ -634,7 +634,7 @@ def qml_examples_only(examples_dir):
         log.error("Archive not cleaned!")
         return
     subdir_list = []
-    regex = re.compile('^qml\S.*')  # pylint: disable=W1401
+    regex = re.compile(r'^qml\S.*')  # pylint: disable=W1401
     for root, dirs, _ in os.walk(examples_dir):
         for basename in dirs:
             if regex.search(basename):
