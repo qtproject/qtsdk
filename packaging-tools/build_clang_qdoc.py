@@ -29,15 +29,9 @@
 #
 #############################################################################
 
-import glob
 import os
-import shutil
-import subprocess
 import bld_utils
-import bldinstallercommon
 import environmentfrombatchfile
-import threadedwork
-import multiprocessing
 from bld_utils import is_windows, is_linux
 from read_remote_config import get_pkg_value
 from runner import do_execute_sub_process

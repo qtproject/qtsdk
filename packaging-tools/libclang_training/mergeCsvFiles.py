@@ -33,7 +33,6 @@ Usage: ./$0 <mergedFileName> <csvFile1> <csvFile2> ..."""
 
 import csv
 import getopt
-import os
 import sys
 
 class Global:

@@ -48,7 +48,7 @@ timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d--%H:
 def _get_home_dir() -> str:
     home_dir = os.getenv("HOME") or os.getenv("USERPROFILE")
     if not home_dir:
-        raise PackagingError(f"Failed to determine home directory.")
+        raise PackagingError("Failed to determine home directory.")
     return home_dir
 
 

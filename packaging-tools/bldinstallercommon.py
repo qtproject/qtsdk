@@ -35,17 +35,14 @@ import os
 import re
 import shutil
 import subprocess
-from subprocess import PIPE, STDOUT
+from subprocess import STDOUT
 import tempfile
 import sys
 import stat
-import tempfile
 import traceback
 import urllib.request
 import urllib.error
 import urllib.parse
-import string
-import fileinput
 from pathlib import Path
 
 from bld_utils import runCommand, download, is_windows, is_macos, is_linux
@@ -72,7 +69,6 @@ def is_content_url_valid(url):
     if os.path.isfile(url):
         return True
     # throws error if url does not point to valid object
-    result = False
     try:
         response = urllib.request.urlopen(url)
         total_size = response.info().get('Content-Length').strip()

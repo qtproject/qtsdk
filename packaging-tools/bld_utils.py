@@ -47,9 +47,6 @@ import builtins
 # 3rd party module to read process output in a convenient way
 from asynchronousfilereader import AsynchronousFileReader
 
-# own imports
-import environmentfrombatchfile
-
 # make a timeout for download jobs
 import socket
 socket.setdefaulttimeout(30)
@@ -98,7 +95,7 @@ def compress(path, directoryName, sevenZipTarget, callerArguments):
     if os.path.splitext(sevenZipTarget)[1] != sevenZipExtension:
         sevenZipTarget = sevenZipTarget + sevenZipExtension
     sevenZipFileName = os.path.split(sevenZipTarget)[1]
-    with DirRenamer(path, directoryName) as otherThing:
+    with DirRenamer(path, directoryName):
         runCommand(' '.join(('7z a -mx9', sevenZipFileName, directoryName)), parentDirectoryPath, callerArguments)
 
     currentSevenZipPath = os.path.join(parentDirectoryPath, sevenZipFileName)

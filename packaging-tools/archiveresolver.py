@@ -30,7 +30,6 @@
 #############################################################################
 
 import os
-import sys
 import bldinstallercommon
 import pkg_constants
 from urllib.parse import urlparse

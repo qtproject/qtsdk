@@ -48,7 +48,6 @@ from time import gmtime, strftime
 import bld_utils
 from bld_utils import is_windows, is_macos, is_linux
 import bldinstallercommon
-from bldinstallercommon import locate_paths
 from threadedwork import ThreadedWork, Task
 import bld_sdktool
 from read_remote_config import get_pkg_value
@@ -1013,7 +1012,6 @@ def git_archive_repo(optionDict, repo_and_ref):
     create_remote_dirs(optionDict, optionDict['PACKAGE_STORAGE_SERVER_ADDR'], remote_dest_dir)
     update_latest_link(optionDict, remote_dest_dir, remote_dest_dir_latest)
     # upload archive to network disk
-    dest_dir = optionDict['PACKAGE_STORAGE_SERVER_USER'] + '@' + optionDict['PACKAGE_STORAGE_SERVER'] + ':' + remote_dest_dir
     cmd_args = ['scp', archive_name, remote_dest_dir]
     do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
 

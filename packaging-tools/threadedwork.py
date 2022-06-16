@@ -141,7 +141,7 @@ class Task():
         try:
             for taskFunction in self.listOfFunctions:
                 taskFunction.function(*(taskFunction.arguments))
-        except Exception as e:
+        except Exception:
             print("FAIL")
             with outputLock:
                 # there is no clean exit so we adding linesep here

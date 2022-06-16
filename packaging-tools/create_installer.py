@@ -1041,10 +1041,10 @@ class QtInstallerTask:
         assert os.path.isfile(self.binarycreator_tool), "Binary creator tool not found: {0}".format(self.binarycreator_tool)
         assert os.path.isfile(self.installerbase_tool), "Installerbase not found: {0}".format(self.installerbase_tool)
         assert os.path.isfile(self.repogen_tool), "Repogen tool not found: {0}".format(self.repogen_tool)
-        log.info("Archive generator tool: ".format(self.archivegen_tool))
-        log.info("Binary creator tool: ".format(self.binarycreator_tool))
-        log.info("Repogen tool: ".format(self.repogen_tool))
-        log.info("Installerbase: ".format(self.installerbase_tool))
+        log.info("Archive generator tool: {0}".format(self.archivegen_tool))
+        log.info("Binary creator tool: {0}".format(self.binarycreator_tool))
+        log.info("Repogen tool: {0}".format(self.repogen_tool))
+        log.info("Installerbase: {0}".format(self.installerbase_tool))
 
 
     def download_and_extract_ifw_tools(self):

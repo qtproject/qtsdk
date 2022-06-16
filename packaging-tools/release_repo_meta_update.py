@@ -182,7 +182,7 @@ def scan_repositories(search_path: str) -> Tuple[List[str], List[str], List[str]
         elif repo.as_posix().endswith(convert_suffix):
             if not check_unified_meta_exists(repo):
                 # this is broken pending repo
-                log.error(f"Pending repository was missing '_meta.7z'")
+                log.error("Pending repository was missing '_meta.7z'")
                 broken_repos.append(repo.as_posix())
                 continue
             # expected destination repo

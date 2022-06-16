@@ -34,14 +34,13 @@ import argparse  # commandline argument parser
 import multiprocessing
 import os
 import sys
-import fnmatch
 import shutil
 import fileinput
 from functools import reduce
 from pathlib import Path
 
 # own imports
-from threadedwork import Task, ThreadedWork
+from threadedwork import ThreadedWork
 from bld_utils import runCommand, runBuildCommand, runInstallCommand, stripVars, is_windows, is_linux, is_macos
 import bldinstallercommon
 from bldinstallercommon import locate_path, locate_paths

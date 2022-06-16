@@ -57,7 +57,7 @@ if is_macos():
     try:
         print("Trying to use 7z from")
         subprocess.call(['where', '7z'])
-    except OSError as e:
+    except OSError:
         print("7z not found from path. Try to use 7z from /usr/local/bin")
         ARCHIVE_PROGRAM = '/usr/local/bin/7z'
 

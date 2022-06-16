@@ -29,7 +29,6 @@
 #
 #############################################################################
 
-import os
 import sys
 import time
 import argparse
@@ -151,7 +150,7 @@ async def embedNotarization(args):
             time.sleep(delay)
             delay = delay + delay/2  # 60, 90, 135, 202, 303
         else:
-            log.critical(f"Execution of the remote script probably failed!")
+            log.critical("Execution of the remote script probably failed!")
             raise NotarizationError("Failed to 'staple' the: {0}".format(args.dmg))
 
 

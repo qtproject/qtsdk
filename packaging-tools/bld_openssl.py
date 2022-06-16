@@ -35,7 +35,6 @@
 # import the print function which is used in python 3.x
 from __future__ import print_function
 import argparse
-import bldinstallercommon
 import os
 import platform
 import subprocess
