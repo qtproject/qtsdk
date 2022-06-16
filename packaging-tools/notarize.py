@@ -148,7 +148,7 @@ async def embedNotarization(args):
         if retry_count:
             log.warning(f"Trying again after {delay}s")
             time.sleep(delay)
-            delay = delay + delay/2  # 60, 90, 135, 202, 303
+            delay = delay + delay / 2  # 60, 90, 135, 202, 303
         else:
             log.critical("Execution of the remote script probably failed!")
             raise NotarizationError("Failed to 'staple' the: {0}".format(args.dmg))
@@ -167,7 +167,7 @@ if __name__ == "__main__":
     parser.add_argument("--user", dest="user", type=str, default=get_pkg_value("AC_USERNAME"), help="App Store Connect Username")
     parser.add_argument("--passwd", dest="passwd", type=str, default=get_pkg_value("AC_PASSWORD"), help="App Store Connect Password")
     parser.add_argument("--bundle-id", dest="bundle_id", default=strftime('%Y-%m-%d-%H-%M-%S', gmtime()), type=str, help="Give unique id for this bundle")
-    parser.add_argument("--timeout", dest="timeout", type=int, default=60*60*3, help="Timeout value for the remote requests")
+    parser.add_argument("--timeout", dest="timeout", type=int, default=60 * 60 * 3, help="Timeout value for the remote requests")
     args = parser.parse_args(sys.argv[1:])
 
     if not which("xcrun"):

@@ -47,9 +47,9 @@ from bldinstallercommon import locate_path, locate_paths
 from installer_utils import PackagingError
 from runner import do_execute_sub_process
 
-SCRIPT_ROOT_DIR             = os.path.dirname(os.path.realpath(__file__))
-MODULE_SRC_DIR_NAME         = 'module_src'
-MODULE_SRC_DIR              = os.path.join(SCRIPT_ROOT_DIR, MODULE_SRC_DIR_NAME)
+SCRIPT_ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
+MODULE_SRC_DIR_NAME = 'module_src'
+MODULE_SRC_DIR = os.path.join(SCRIPT_ROOT_DIR, MODULE_SRC_DIR_NAME)
 
 
 ###############################
@@ -79,7 +79,7 @@ def erase_qmake_prl_build_dir(search_path):
     # erase lines starting with 'QMAKE_PRL_BUILD_DIR' from .prl files
     for item in file_list:
         found = False
-        for line in fileinput.FileInput(item, inplace = 1):
+        for line in fileinput.FileInput(item, inplace=1):
             if line.startswith('QMAKE_PRL_BUILD_DIR'):
                 found = True
                 print(''.rstrip('\n'))
@@ -99,7 +99,7 @@ def patch_build_time_paths(search_path, search_strings, qt_install_prefix):
 
     for item in file_list:
         print('Replacing {0} paths from file: {1}'.format(search_strings, item))
-        for line in fileinput.FileInput(item, inplace = 1):
+        for line in fileinput.FileInput(item, inplace=1):
             patched_line = reduce(lambda accum, value: accum.replace(value, qt_install_prefix),
                                   search_strings,
                                   line)
@@ -107,7 +107,7 @@ def patch_build_time_paths(search_path, search_strings, qt_install_prefix):
 
 
 # install an argument parser
-parser = argparse.ArgumentParser(prog = os.path.basename(sys.argv[0]),
+parser = argparse.ArgumentParser(prog=os.path.basename(sys.argv[0]),
     add_help=True, description="build Qt 5 based Qt Module", formatter_class=argparse.RawTextHelpFormatter)
 if is_windows():
     parser.epilog = "example on windows: " + os.linesep + "\tpython {0} --clean " \
@@ -201,7 +201,7 @@ if is_windows():
     # check whether this is a QNX build
     if any('qnx' in qt5_url.lower() for qt5_url in callerArguments.qt5_module_urls):
         # apply the workaround from QTBUG-38555
-        qtModuleInstallDirectory = qtModuleInstallDirectory.replace('\\','/').replace('/', '\\', 1)
+        qtModuleInstallDirectory = qtModuleInstallDirectory.replace('\\', '/').replace('/', '\\', 1)
 
 
 # clean step
@@ -289,16 +289,16 @@ else:  # --> qmake
         generateCommand.append(os.environ["EXTRA_QMAKE_ARGS"])
     generateCommand.append(qtModuleProFile)
 
-runCommand(generateCommand, currentWorkingDirectory = qtModuleBuildDirectory,
-           callerArguments = callerArguments, extra_environment = environment)
+runCommand(generateCommand, currentWorkingDirectory=qtModuleBuildDirectory,
+           callerArguments=callerArguments, extra_environment=environment)
 
-ret = runBuildCommand(currentWorkingDirectory = qtModuleBuildDirectory, callerArguments = callerArguments)
+ret = runBuildCommand(currentWorkingDirectory=qtModuleBuildDirectory, callerArguments=callerArguments)
 if ret:
     raise RuntimeError('Failure running the last command: %i' % ret)
 
 ret = runInstallCommand(['install', 'INSTALL_ROOT=' + qtModuleInstallDirectory],
-                 currentWorkingDirectory = qtModuleBuildDirectory,
-                 callerArguments = callerArguments, extra_environment = environment)
+                 currentWorkingDirectory=qtModuleBuildDirectory,
+                 callerArguments=callerArguments, extra_environment=environment)
 if ret:
     raise RuntimeError('Failure running the last command: %i' % ret)
 
@@ -318,21 +318,21 @@ if callerArguments.collectDocs:
 if callerArguments.makeDocs:
     # build docs first
     ret = runInstallCommand('docs',
-                     currentWorkingDirectory = qtModuleBuildDirectory,
-                     callerArguments = callerArguments, extra_environment = environment)
+                     currentWorkingDirectory=qtModuleBuildDirectory,
+                     callerArguments=callerArguments, extra_environment=environment)
     if ret:
         raise RuntimeError('Failure running the last command: %i' % ret)
     # then make install those
     ret = runInstallCommand(['install_docs', 'INSTALL_ROOT=' + qtModuleInstallDirectory],
-                     currentWorkingDirectory = qtModuleBuildDirectory,
-                     callerArguments = callerArguments, extra_environment = environment)
+                     currentWorkingDirectory=qtModuleBuildDirectory,
+                     callerArguments=callerArguments, extra_environment=environment)
     if ret:
         raise RuntimeError('Failure running the last command: %i' % ret)
     # make separate "doc.7z" for later use if needed
     doc_dir = locate_path(qtModuleInstallDirectory, ["doc"], filters=[os.path.isdir])
     archive_name = callerArguments.module_name + '-' + os.environ['LICENSE'] + '-doc-' + os.environ['MODULE_VERSION'] + '.7z'
     ret = runCommand(['7z', 'a', os.path.join('doc_archives', archive_name), doc_dir],
-                        currentWorkingDirectory = os.path.dirname(os.path.realpath(__file__)))
+                        currentWorkingDirectory=os.path.dirname(os.path.realpath(__file__)))
     if ret:
         raise RuntimeError('Failure running the last command: %i' % ret)
 
@@ -359,6 +359,6 @@ if callerArguments.use_cmake:
     archive_cmd.append(os.path.join(dir_to_archive, '*'))
 else:
     archive_cmd.append(dir_to_archive)
-ret = runCommand(archive_cmd, currentWorkingDirectory = os.path.dirname(os.path.realpath(__file__)))
+ret = runCommand(archive_cmd, currentWorkingDirectory=os.path.dirname(os.path.realpath(__file__)))
 if ret:
     raise RuntimeError('Failure running the last command: %i' % ret)

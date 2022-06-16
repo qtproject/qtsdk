@@ -258,7 +258,7 @@ def mingw_training(base_path, qtcreator_path, environment, bitness):
     # First time open the project, then close it. This will generate initial settings and .user files. Second time do the actual training.
     for batchFile in ['qtc.openProject.batch', 'qtc.fileTextEditorCpp.batch']:
         bld_utils.runCommand([os.path.join(training_dir, 'runBatchFiles.bat'), msvc_version(), 'x64' if bitness == 64 else 'x86', batchFile],
-                            base_path, callerArguments = None, extra_environment = None, onlyErrorCaseOutput=False, expectedExitCodes=[0,1])
+                            base_path, callerArguments=None, extra_environment=None, onlyErrorCaseOutput=False, expectedExitCodes=[0, 1])
 
 
 def is_msvc_toolchain(toolchain):

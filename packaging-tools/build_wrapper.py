@@ -54,10 +54,10 @@ from read_remote_config import get_pkg_value
 from runner import do_execute_sub_process
 
 # ----------------------------------------------------------------------
-SCRIPT_ROOT_DIR             = os.path.dirname(os.path.realpath(__file__))
-WORK_DIR                    = os.getenv('PKG_NODE_ROOT') if os.getenv("PKG_NODE_ROOT") else os.path.abspath(os.path.join(__file__, '../../../'))
-LOCAL_MODE                  = os.getenv('LOCAL_MODE')  # if set, installers will be copied to a local directory
-LOCAL_INSTALLER_DIR         = os.getenv('LOCAL_INSTALLER_DIR', os.path.join(WORK_DIR, 'installers'))
+SCRIPT_ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
+WORK_DIR = os.getenv('PKG_NODE_ROOT') if os.getenv("PKG_NODE_ROOT") else os.path.abspath(os.path.join(__file__, '../../../'))
+LOCAL_MODE = os.getenv('LOCAL_MODE')  # if set, installers will be copied to a local directory
+LOCAL_INSTALLER_DIR = os.getenv('LOCAL_INSTALLER_DIR', os.path.join(WORK_DIR, 'installers'))
 
 if LOCAL_MODE:
     assert os.path.exists(LOCAL_INSTALLER_DIR), "Local installer destination directory does not exist: %s" % LOCAL_INSTALLER_DIR
@@ -90,12 +90,12 @@ def lock_keychain():
 ###########################################
 # init snapshot build dir and upload files
 ###########################################
-def init_snapshot_dir_and_upload_files(optionDict, project_name, project_version_or_branch, build_number, file_upload_list, subdir = ''):
+def init_snapshot_dir_and_upload_files(optionDict, project_name, project_version_or_branch, build_number, file_upload_list, subdir=''):
     if subdir != "" and subdir[0] != "/":
         subdir = "/" + subdir
-    remote_path_base                        = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + project_name + '/' + project_version_or_branch
-    remote_path_snapshot_dir                = remote_path_base + '/' + build_number
-    remote_path_latest_link                 = remote_path_base + '/' + 'latest'
+    remote_path_base = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + project_name + '/' + project_version_or_branch
+    remote_path_snapshot_dir = remote_path_base + '/' + build_number
+    remote_path_latest_link = remote_path_base + '/' + 'latest'
     # ensure remote directory exists
     create_remote_dirs(optionDict, optionDict['PACKAGE_STORAGE_SERVER_ADDR'], remote_path_snapshot_dir + subdir)
     # upload files
@@ -128,7 +128,7 @@ def handle_qt_licheck_build(optionDict):
         else:
             cmd_args = ['make', '-j6', '-f', 'Makefile_macos']
             do_execute_sub_process(cmd_args, exe_dir, True)
-            cmd_args = ['rsync', '-r', 'licheck_mac', upload_path +'licheck_mac']
+            cmd_args = ['rsync', '-r', 'licheck_mac', upload_path + 'licheck_mac']
             do_execute_sub_process(cmd_args, exe_dir, True)
     else:
         # opensource, do nothing
@@ -438,8 +438,8 @@ def parse_qt_creator_plugin_conf(plugin_conf_file_path, optionDict):
         return not platforms or platform_name in platforms
 
     def fixup_plugin(plugin):
-        plugin = plugin._replace(modules = [module % optionDict for module in plugin.modules])
-        plugin = plugin._replace(additional_arguments = [arg % optionDict for arg in plugin.additional_arguments])
+        plugin = plugin._replace(modules=[module % optionDict for module in plugin.modules])
+        plugin = plugin._replace(additional_arguments=[arg % optionDict for arg in plugin.additional_arguments])
         return plugin
     return [fixup_plugin(make_QtcPlugin_from_json(plugin)) for plugin in plugins_json if valid_for_platform(plugin)]
 
@@ -1129,11 +1129,11 @@ def initPkgOptions(args):
 
 if __name__ == '__main__':
     # Define supported build steps
-    bld_qtcreator                           = 'build_creator'
-    bld_qtc_sdktool                         = 'build_sdktool'
-    bld_licheck                             = 'licheck_bld'
-    archive_repository                      = 'archive_repo'
-    CMD_LIST =  (bld_qtcreator, bld_qtc_sdktool, bld_licheck, archive_repository)
+    bld_qtcreator = 'build_creator'
+    bld_qtc_sdktool = 'build_sdktool'
+    bld_licheck = 'licheck_bld'
+    archive_repository = 'archive_repo'
+    CMD_LIST = (bld_qtcreator, bld_qtc_sdktool, bld_licheck, archive_repository)
 
     parser = argparse.ArgumentParser(prog="Build Wrapper", description="Manage all packaging related build steps.")
     parser.add_argument("-c", "--command", dest="command", required=True, choices=CMD_LIST, help=CMD_LIST)

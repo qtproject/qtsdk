@@ -63,7 +63,7 @@ def sanity_check_env(env_cmd, env_dict):
                         .format(env_cmd))
 
 
-def get(env_cmd, initial = None, arguments = None):
+def get(env_cmd, initial=None, arguments=None):
     """
     Take a command (either a single command or list of arguments)
     and return the environment created after running that command.
@@ -87,7 +87,7 @@ def get(env_cmd, initial = None, arguments = None):
     cmd = 'cmd.exe /s /c "\"{env_cmd}\" {arguments}&& echo "{tag}" && set"'.format(**vars())
 
     # launch the process
-    proc = subprocess.Popen(cmd, stdout = subprocess.PIPE, env = initial, universal_newlines = True)
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, env=initial, universal_newlines=True)
     # parse the output sent to stdout
     lines = proc.stdout
     # consume whatever output occurs until the tag is reached

@@ -136,7 +136,7 @@ def urllib2_response_read(response, file_path, block_size, total_size):
     return bytes_count
 
 
-def download(url, target, read_block_size = 1048576):
+def download(url, target, read_block_size=1048576):
     try:
         if os.path.isdir(os.path.abspath(target)):
             filename = os.path.basename(urllib.parse.urlparse(url).path)
@@ -225,7 +225,7 @@ def setValueOnEnvironmentDict(environment, key, value):
 
 
 @deep_copy_arguments
-def getEnvironment(extra_environment = None, callerArguments = None):
+def getEnvironment(extra_environment=None, callerArguments=None):
     # first take the one from the system and use the plain dictionary data for that
     environment = dict(os.environ)
 
@@ -242,7 +242,7 @@ def getEnvironment(extra_environment = None, callerArguments = None):
 
 
 @deep_copy_arguments
-def runCommand(command, currentWorkingDirectory, callerArguments = None, extra_environment = None, onlyErrorCaseOutput=False, expectedExitCodes=[0]):
+def runCommand(command, currentWorkingDirectory, callerArguments=None, extra_environment=None, onlyErrorCaseOutput=False, expectedExitCodes=[0]):
     if builtins.type(expectedExitCodes) is not list:
         raise TypeError("{}({}) is not {}".format("expectedExitCodes", builtins.type(expectedExitCodes), list))
     if builtins.type(onlyErrorCaseOutput) is not bool:
@@ -284,15 +284,15 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None, extra_e
     lastStdErrLines = []
     if threading.currentThread().name == "MainThread" and not onlyErrorCaseOutput:
         process = subprocess.Popen(commandAsList, shell=useShell,
-            cwd = currentWorkingDirectory, bufsize = -1, env = environment)
+            cwd=currentWorkingDirectory, bufsize=-1, env=environment)
     else:
         process = subprocess.Popen(commandAsList, shell=useShell,
-            stdout = subprocess.PIPE, stderr = subprocess.PIPE,
-            cwd = currentWorkingDirectory, bufsize = -1, env = environment)
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            cwd=currentWorkingDirectory, bufsize=-1, env=environment)
 
         maxSavedLineNumbers = 1000
-        lastStdOutLines = collections.deque(maxlen = maxSavedLineNumbers)
-        lastStdErrLines = collections.deque(maxlen = maxSavedLineNumbers)
+        lastStdOutLines = collections.deque(maxlen=maxSavedLineNumbers)
+        lastStdErrLines = collections.deque(maxlen=maxSavedLineNumbers)
 
         # Launch the asynchronous readers of the process' stdout and stderr.
         stdout = AsynchronousFileReader(process.stdout)
@@ -353,7 +353,7 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None, extra_e
 
 
 @deep_copy_arguments
-def runInstallCommand(arguments = ['install'], currentWorkingDirectory = None, callerArguments = None, extra_environment = None, onlyErrorCaseOutput = False):
+def runInstallCommand(arguments=['install'], currentWorkingDirectory=None, callerArguments=None, extra_environment=None, onlyErrorCaseOutput=False):
     if hasattr(callerArguments, 'installcommand') and callerArguments.installcommand:
         installcommand = callerArguments.installcommand.split()
     else:
@@ -366,36 +366,36 @@ def runInstallCommand(arguments = ['install'], currentWorkingDirectory = None, c
 
     if arguments:
         installcommand.extend(arguments if builtins.type(arguments) is list else arguments.split())
-    return runCommand(installcommand, currentWorkingDirectory, callerArguments, extra_environment = extra_environment, onlyErrorCaseOutput = onlyErrorCaseOutput)
+    return runCommand(installcommand, currentWorkingDirectory, callerArguments, extra_environment=extra_environment, onlyErrorCaseOutput=onlyErrorCaseOutput)
 
 
 @deep_copy_arguments
-def runBuildCommand(arguments = None, currentWorkingDirectory = None, callerArguments = None, extra_environment = None, onlyErrorCaseOutput = False, expectedExitCodes=[0]):
+def runBuildCommand(arguments=None, currentWorkingDirectory=None, callerArguments=None, extra_environment=None, onlyErrorCaseOutput=False, expectedExitCodes=[0]):
     buildcommand = ['make']
     if hasattr(callerArguments, 'buildcommand') and callerArguments.buildcommand:
         buildcommand = callerArguments.buildcommand.split()
 
     if arguments:
         buildcommand.extend(arguments if builtins.type(arguments) is list else arguments.split())
-    return runCommand(buildcommand, currentWorkingDirectory, callerArguments, extra_environment = extra_environment, onlyErrorCaseOutput = onlyErrorCaseOutput, expectedExitCodes = expectedExitCodes)
+    return runCommand(buildcommand, currentWorkingDirectory, callerArguments, extra_environment=extra_environment, onlyErrorCaseOutput=onlyErrorCaseOutput, expectedExitCodes=expectedExitCodes)
 
 
 @deep_copy_arguments
-def getReturnValue(command, currentWorkingDirectory = None, extra_environment = None, callerArguments = None):
+def getReturnValue(command, currentWorkingDirectory=None, extra_environment=None, callerArguments=None):
     commandAsList = command[:].split(' ')
-    return subprocess.Popen(commandAsList, stdout=subprocess.PIPE, stderr = subprocess.STDOUT,
-        cwd = currentWorkingDirectory, env = getEnvironment(extra_environment, callerArguments)).communicate()[0].strip()
+    return subprocess.Popen(commandAsList, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+        cwd=currentWorkingDirectory, env=getEnvironment(extra_environment, callerArguments)).communicate()[0].strip()
 
 
-def gitSHA(path, callerArguments = None):
+def gitSHA(path, callerArguments=None):
     gitBinary = "git"
     if isGitDirectory(path):
-        return getReturnValue(gitBinary + " rev-list -n1 HEAD", currentWorkingDirectory = path, callerArguments = callerArguments).strip()
+        return getReturnValue(gitBinary + " rev-list -n1 HEAD", currentWorkingDirectory=path, callerArguments=callerArguments).strip()
     return ''
 
 
 # get commit SHA either directly from git, or from a .tag file in the source directory
-def get_commit_SHA(source_path, callerArguments = None):
+def get_commit_SHA(source_path, callerArguments=None):
     buildGitSHA = gitSHA(source_path, callerArguments)
     if not buildGitSHA:
         tagfile = os.path.join(source_path, '.tag')

@@ -47,7 +47,7 @@ if sys.platform.startswith("win"):
 
 
 def baseCommand():
-    return " ".join([sys.executable,os.path.abspath(__file__)])
+    return " ".join([sys.executable, os.path.abspath(__file__)])
 
 
 def crash():
@@ -116,7 +116,7 @@ class TestRunCommand(unittest.TestCase):
             # onlyErrorCaseOutput=
             True,
             # expectedExitCodes=
-            [0,5]), 5)
+            [0, 5]), 5)
 
     def test_withThreadedWork(self):
         currentMethodName = sys._getframe().f_code.co_name
@@ -174,7 +174,7 @@ if __name__ == '__main__':
     if not sys.argv[1:]:
         unittest.main()
     else:
-        parser = argparse.ArgumentParser(prog = os.path.basename(sys.argv[0]))
+        parser = argparse.ArgumentParser(prog=os.path.basename(sys.argv[0]))
         parser.add_argument('--sleep', type=int)
         parser.add_argument('--printLines', type=int)
         parser.add_argument('--crash', action='store_true', default=False)

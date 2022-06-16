@@ -98,7 +98,7 @@ __builtin__.org_stdout = sys.stdout
 __builtin__.org_sterr = sys.stderr
 
 
-def enableThreadedPrint(enable = True, threadCount = multiprocessing.cpu_count()):
+def enableThreadedPrint(enable=True, threadCount=multiprocessing.cpu_count()):
     if enable:
         global outputStates
         global outputFormatString
@@ -134,7 +134,7 @@ class TaskFunction():
 
 class Task():
 
-    def __init__(self, description, function = None, *arguments):
+    def __init__(self, description, function=None, *arguments):
         self.taskNumber = 0  # will be set from outside
         self.description = description
         self.listOfFunctions = []
@@ -188,7 +188,7 @@ class ThreadedWork():
         if self.exitFunction:
             task.exitFunction = self.exitFunction
             task.exitFunctionArguments = self.exitFunctionArguments
-        self.legend.append(("{:d}: " + os.linesep +"\t{}" + os.linesep).format(task.taskNumber, task.description))
+        self.legend.append(("{:d}: " + os.linesep + "\t{}" + os.linesep).format(task.taskNumber, task.description))
         self.queue.put(task)
         self.taskNumber = self.taskNumber + 1
 
@@ -231,7 +231,7 @@ class Consumer(threading.Thread):
         self.workerThreadId = workerThreadId
         threading.Thread.__init__(self)
 
-    def run(self, stableRunIndicator = True):
+    def run(self, stableRunIndicator=True):
         if stableRunIndicator:
             threadData.progressIndicator = itertools.cycle(['..'])
         else:

@@ -74,7 +74,7 @@ def check_environment():
 
 
 def setup_argument_parser():
-    parser = argparse.ArgumentParser(prog = os.path.basename(sys.argv[0]),
+    parser = argparse.ArgumentParser(prog=os.path.basename(sys.argv[0]),
               add_help=True, description='Build openssl from sources',
                formatter_class=argparse.RawTextHelpFormatter)
 

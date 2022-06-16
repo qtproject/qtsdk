@@ -63,9 +63,9 @@ class TestBuildWrapper(unittest.TestCase):
         else:
             init_snapshot_dir_and_upload_files(optionDict, projectName, versioOrBranch, buildNumber, filesToUpload)
 
-        remote_path_base            = os.path.join(temp_dir, projectName, versioOrBranch)
-        remote_path_snapshot_dir    = os.path.join(remote_path_base, buildNumber)
-        remote_path_latest_link     = os.path.join(remote_path_base, 'latest')
+        remote_path_base = os.path.join(temp_dir, projectName, versioOrBranch)
+        remote_path_snapshot_dir = os.path.join(remote_path_base, buildNumber)
+        remote_path_latest_link = os.path.join(remote_path_base, 'latest')
         print(remote_path_latest_link)
         self.assertTrue(os.path.isdir(remote_path_base))
         self.assertTrue(os.path.isdir(remote_path_snapshot_dir))

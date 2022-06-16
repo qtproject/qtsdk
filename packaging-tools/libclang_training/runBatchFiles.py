@@ -243,14 +243,14 @@ def createBackupFile(filePath):
     if os.path.exists(filePath):
         backupPath = filePath[:-4] + ".backup_" + str(time.time()) + ".log"
         if Config.Verbose:
-            print('info: creating backup of already existing "%s"' %(filePath))
+            print('info: creating backup of already existing "%s"' % (filePath))
         shutil.copyfile(filePath, backupPath)
 
 
 def printDuration(s):
     hours, remainder = divmod(s, 3600)
     minutes, seconds = divmod(remainder, 60)
-    print('...needed %d:%02d:%02d' %(hours, minutes, seconds))
+    print('...needed %d:%02d:%02d' % (hours, minutes, seconds))
 
 
 def processBatchFileTimed(libClangId, batchFilePath):
@@ -287,7 +287,7 @@ def getLibClangId(libClangDll):
 
 
 def switchLibClang(libClangDll):
-    print('copying "%s" -> "%s"' %(libClangDll, Config.TargetLibClangDll))
+    print('copying "%s" -> "%s"' % (libClangDll, Config.TargetLibClangDll))
     shutil.copyfile(libClangDll, Config.TargetLibClangDll)
 
 

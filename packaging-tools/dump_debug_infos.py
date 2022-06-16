@@ -92,13 +92,13 @@ def dump_syms(dump_syms_path, architectures, search_pathes, output_path, verbose
                     start_slash = 1
                     sym_path_base = base_path[start_slash + len(search_path):].replace("/", "_")
                     sym_filename = "{}.sym".format(sym_path_base)
-                    sym_path =  os.path.join(output_path, sym_filename)
+                    sym_path = os.path.join(output_path, sym_filename)
                     if dump_sym(dump_syms_path, architectures[0], absolute_path, sym_path, verbose):
                         sym_filenames.append(sym_filename)
                     if len(architectures) == 2:
                         arch_argument_len = len("--arch ")
                         sym_filename = "{}_{}.sym".format(sym_path_base, architectures[1][arch_argument_len:])
-                        sym_path =  os.path.join(output_path, sym_filename)
+                        sym_path = os.path.join(output_path, sym_filename)
                         if dump_sym(dump_syms_path, architectures[1], absolute_path, sym_path, verbose):
                             sym_filenames.append(sym_filename)
     return sym_filenames

@@ -150,10 +150,10 @@ def get_build_env(openssl_dir):
 ###############################
 class IfwOptions:
 
-    default_qt_src_pkg                          = 'http://download.qt.io/official_releases/qt/' + QT_VERSION + '/' + QT_VERSION_MINOR + '/single/qt-everywhere-src-' + QT_VERSION_MINOR + ARCH_EXT
-    default_qt_installer_framework_url          = 'git://code.qt.io/installer-framework/installer-framework.git'
-    default_qt_installer_framework_branch_qt    = '3.2'
-    default_qt_installer_framework_qmake_args   = ['-r', '-config', 'release', '-config', 'static']
+    default_qt_src_pkg = 'http://download.qt.io/official_releases/qt/' + QT_VERSION + '/' + QT_VERSION_MINOR + '/single/qt-everywhere-src-' + QT_VERSION_MINOR + ARCH_EXT
+    default_qt_installer_framework_url = 'git://code.qt.io/installer-framework/installer-framework.git'
+    default_qt_installer_framework_branch_qt = '3.2'
+    default_qt_installer_framework_qmake_args = ['-r', '-config', 'release', '-config', 'static']
 
     def __init__(self,
                  qt_source_package_uri,
@@ -167,73 +167,73 @@ class IfwOptions:
                  qt_binaries_dynamic,
                  signserver,
                  signpwd,
-                 incremental_build = False,
-                 archive_qt = False
+                 incremental_build=False,
+                 archive_qt=False
                  ):
-        self.signserver                                 = signserver
-        self.signpwd                                    = signpwd
-        self.incremental_mode                           = incremental_build
-        self.qt_source_dir                              = os.path.join(ROOT_DIR, 'qt-src')
-        self.qt_build_dir                               = os.path.join(ROOT_DIR, 'qt-bld')
-        self.qt_build_dir_dynamic                       = os.path.join(ROOT_DIR, 'qt-bld-dynamic')
-        self.installer_framework_source_dir             = os.path.join(ROOT_DIR, 'ifw-src')
-        self.installer_framework_build_dir              = os.path.join(ROOT_DIR, 'ifw-bld')
-        self.installer_framework_pkg_dir                = os.path.join(ROOT_DIR, 'ifw-pkg')
-        self.installer_framework_target_dir             = os.path.join(ROOT_DIR, 'ifw-target')
-        self.qt_installer_framework_uri                 = qt_installer_framework_uri
-        self.qt_installer_framework_uri_saveas          = os.path.join(ROOT_DIR, os.path.basename(self.qt_installer_framework_uri))
-        self.qt_installer_framework_branch              = qt_installer_framework_branch
-        self.qt_installer_framework_branch_pretty       = qt_installer_framework_branch.replace("/", "_")
-        self.qt_installer_framework_qmake_args          = qt_installer_framework_qmake_args
-        self.openssl_dir                                = openssl_dir
-        self.qt_binaries_static                         = qt_binaries_static
+        self.signserver = signserver
+        self.signpwd = signpwd
+        self.incremental_mode = incremental_build
+        self.qt_source_dir = os.path.join(ROOT_DIR, 'qt-src')
+        self.qt_build_dir = os.path.join(ROOT_DIR, 'qt-bld')
+        self.qt_build_dir_dynamic = os.path.join(ROOT_DIR, 'qt-bld-dynamic')
+        self.installer_framework_source_dir = os.path.join(ROOT_DIR, 'ifw-src')
+        self.installer_framework_build_dir = os.path.join(ROOT_DIR, 'ifw-bld')
+        self.installer_framework_pkg_dir = os.path.join(ROOT_DIR, 'ifw-pkg')
+        self.installer_framework_target_dir = os.path.join(ROOT_DIR, 'ifw-target')
+        self.qt_installer_framework_uri = qt_installer_framework_uri
+        self.qt_installer_framework_uri_saveas = os.path.join(ROOT_DIR, os.path.basename(self.qt_installer_framework_uri))
+        self.qt_installer_framework_branch = qt_installer_framework_branch
+        self.qt_installer_framework_branch_pretty = qt_installer_framework_branch.replace("/", "_")
+        self.qt_installer_framework_qmake_args = qt_installer_framework_qmake_args
+        self.openssl_dir = openssl_dir
+        self.qt_binaries_static = qt_binaries_static
         if self.qt_binaries_static:
-            self.qt_binaries_static_saveas              = os.path.join(ROOT_DIR, os.path.basename(self.qt_binaries_static))
-        self.qt_binaries_dynamic                        = qt_binaries_dynamic
+            self.qt_binaries_static_saveas = os.path.join(ROOT_DIR, os.path.basename(self.qt_binaries_static))
+        self.qt_binaries_dynamic = qt_binaries_dynamic
         if self.qt_binaries_dynamic:
-            self.qt_binaries_dynamic_saveas             = os.path.join(ROOT_DIR, os.path.basename(self.qt_binaries_dynamic))
-        self.qt_build_modules                           = ["qtbase", "qtdeclarative", "qttools", "qttranslations"]
-        self.qt_build_modules_docs                      = ["qtbase", "qttools"]
+            self.qt_binaries_dynamic_saveas = os.path.join(ROOT_DIR, os.path.basename(self.qt_binaries_dynamic))
+        self.qt_build_modules = ["qtbase", "qtdeclarative", "qttools", "qttranslations"]
+        self.qt_build_modules_docs = ["qtbase", "qttools"]
         if is_windows():
             self.qt_build_modules.append("qtwinextras")
-            self.make_cmd                               = 'jom.exe'
-            self.make_doc_cmd                           = 'jom.exe'
-            self.make_install_cmd                       = 'jom.exe install'
-            self.qt_qmake_bin                           = 'qmake.exe'
-            self.qt_configure_bin                       = self.qt_source_dir + os.sep + 'configure.bat'
+            self.make_cmd = 'jom.exe'
+            self.make_doc_cmd = 'jom.exe'
+            self.make_install_cmd = 'jom.exe install'
+            self.qt_qmake_bin = 'qmake.exe'
+            self.qt_configure_bin = self.qt_source_dir + os.sep + 'configure.bat'
         else:
-            self.make_cmd                               = 'make -j' + str(multiprocessing.cpu_count() + 1)
-            self.make_doc_cmd                           = 'make'
-            self.make_install_cmd                       = 'make install'
-            self.qt_qmake_bin                           = 'qmake'
-            self.qt_configure_bin                       = self.qt_source_dir + os.sep + 'configure'
+            self.make_cmd = 'make -j' + str(multiprocessing.cpu_count() + 1)
+            self.make_doc_cmd = 'make'
+            self.make_install_cmd = 'make install'
+            self.qt_qmake_bin = 'qmake'
+            self.qt_configure_bin = self.qt_source_dir + os.sep + 'configure'
 
-        self.build_artifacts_dir                        = os.path.join(ROOT_DIR, pkg_constants.IFW_BUILD_ARTIFACTS_DIR)
-        self.mac_deploy_qt_archive_name                 = 'macdeployqt.7z'
-        self.mac_qt_menu_nib_archive_name               = 'qt_menu.nib.7z'
+        self.build_artifacts_dir = os.path.join(ROOT_DIR, pkg_constants.IFW_BUILD_ARTIFACTS_DIR)
+        self.mac_deploy_qt_archive_name = 'macdeployqt.7z'
+        self.mac_qt_menu_nib_archive_name = 'qt_menu.nib.7z'
         # determine filenames used later on
         self.architecture = 'x64'
-        self.plat_suffix                                = get_platform_suffix()
-        self.installer_framework_archive_name           = 'installer-framework-build-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
-        self.installer_base_archive_name                = 'installerbase-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
-        self.binarycreator_archive_name                 = 'binarycreator-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
-        self.installer_framework_payload_arch           = 'installer-framework-build-stripped-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
-        self.qt_source_package_uri                      = qt_source_package_uri
-        self.qt_source_package_uri_saveas               = os.path.join(ROOT_DIR, os.path.basename(self.qt_source_package_uri))
+        self.plat_suffix = get_platform_suffix()
+        self.installer_framework_archive_name = 'installer-framework-build-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
+        self.installer_base_archive_name = 'installerbase-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
+        self.binarycreator_archive_name = 'binarycreator-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
+        self.installer_framework_payload_arch = 'installer-framework-build-stripped-' + self.qt_installer_framework_branch_pretty + "-" + self.plat_suffix + '-' + self.architecture + '.7z'
+        self.qt_source_package_uri = qt_source_package_uri
+        self.qt_source_package_uri_saveas = os.path.join(ROOT_DIR, os.path.basename(self.qt_source_package_uri))
         # Set Qt build prefix
-        qt_prefix                                       = ' -prefix ' + self.qt_build_dir + os.sep + 'qtbase'
-        self.qt_configure_options                       = qt_configure_options + qt_prefix
+        qt_prefix = ' -prefix ' + self.qt_build_dir + os.sep + 'qtbase'
+        self.qt_configure_options = qt_configure_options + qt_prefix
         # Product key checker
-        self.product_key_checker_pri                    = product_key_checker_pri
+        self.product_key_checker_pri = product_key_checker_pri
         if product_key_checker_pri:
             if os.path.isfile(product_key_checker_pri):
                 self.qt_installer_framework_qmake_args += ['PRODUCTKEYCHECK_PRI_FILE=' + self.product_key_checker_pri]
         # macOS specific
         if is_macos():
-            self.qt_installer_framework_qmake_args     += ['"LIBS+=-framework IOKit"']
-        self.archive_qt                                 = archive_qt
-        self.qt_static_binary_name                      = 'qt-bin-' + QT_VERSION + '-' + self.plat_suffix + '_static.7z'
-        self.qt_shared_binary_name                      = 'qt-bin-' + QT_VERSION + '-' + self.plat_suffix + '_shared.7z'
+            self.qt_installer_framework_qmake_args += ['"LIBS+=-framework IOKit"']
+        self.archive_qt = archive_qt
+        self.qt_static_binary_name = 'qt-bin-' + QT_VERSION + '-' + self.plat_suffix + '_static.7z'
+        self.qt_shared_binary_name = 'qt-bin-' + QT_VERSION + '-' + self.plat_suffix + '_shared.7z'
         # sanity check
         self.sanity_check()
 
@@ -389,7 +389,7 @@ def build_qt(options, qt_build_dir, qt_configure_options, qt_modules):
     print('Building Qt')
     cmd_args = options.make_cmd
     for module in qt_modules:
-        cmd_args += " module-"+module
+        cmd_args += " module-" + module
     do_execute_sub_process(cmd_args.split(' '), options.qt_source_dir, True, False, get_build_env(options.openssl_dir))
     print('--------------------------------------------------------------------')
     print('Installing Qt')
@@ -471,7 +471,7 @@ def build_installer_framework_examples(options):
             dirs.remove('translations')  # for now don't visit translation example as qm files needs to be generated first
         for directory in dirs:
             print("********** building example " + directory)
-            config_file =  os.path.join(root, directory, 'config', 'config.xml')
+            config_file = os.path.join(root, directory, 'config', 'config.xml')
             package_dir = os.path.join(root, directory, 'packages')
             target_filename = os.path.join(root, directory, 'installer')
             do_execute_sub_process(args=(file_binarycreator, '--offline-only', '-c', config_file, '-p', package_dir, target_filename), execution_path=package_dir)
@@ -516,7 +516,7 @@ def create_installer_package(options):
 
     current_dir = os.getcwd()
     os.chdir(package_dir)
-    shutil.copytree(os.path.join(options.installer_framework_build_dir, 'bin'), os.path.join(package_dir, 'bin'), ignore = shutil.ignore_patterns("*.exe.manifest","*.exp","*.lib"))
+    shutil.copytree(os.path.join(options.installer_framework_build_dir, 'bin'), os.path.join(package_dir, 'bin'), ignore=shutil.ignore_patterns("*.exe.manifest", "*.exp", "*.lib"))
     if is_linux():
         do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/archivegen')), execution_path=package_dir)
         do_execute_sub_process(args=('strip', os.path.join(package_dir, 'bin/binarycreator')), execution_path=package_dir)
@@ -745,7 +745,7 @@ def patch_win32_mkspecs(mkspecsdir):
     for root, dummy, files in os.walk(mkspecsdir):
         for file in files:
             if "win32" in root and file == "qmake.conf":
-                patch(os.path.join(root, file), {"-MD" : "-MT", "embed_manifest_dll" : "", "embed_manifest_exe" : "" })
+                patch(os.path.join(root, file), {"-MD" : "-MT", "embed_manifest_dll" : "", "embed_manifest_exe" : ""})
 
 
 def get_platform_suffix():
@@ -763,7 +763,7 @@ def get_platform_suffix():
 # Setup argument parser
 ###############################
 def setup_argument_parser():
-    parser = argparse.ArgumentParser(prog = os.path.basename(sys.argv[0]),
+    parser = argparse.ArgumentParser(prog=os.path.basename(sys.argv[0]),
               add_help=True, description="Build Qt Installer-Framework",
               epilog="Builds Qt Installer Framework against static Qt libraries and archives the build artifacts for further usage. \n"
                      "To create an installer which installs the built Installer Framework libraries and tools use \"--create_installer\" option.",
@@ -796,11 +796,11 @@ if __name__ == "__main__":
     PARSER = setup_argument_parser()
     # parse args
     CARGS = PARSER.parse_args()
-    qt_src               = IfwOptions.default_qt_src_pkg if not CARGS.qt_archive_uri else CARGS.qt_archive_uri
+    qt_src = IfwOptions.default_qt_src_pkg if not CARGS.qt_archive_uri else CARGS.qt_archive_uri
     qt_configure_options = get_static_qt_configure_options(CARGS.openssl_dir) if not CARGS.qt_configure_options else CARGS.qt_configure_options
-    ifw_branch           = IfwOptions.default_qt_installer_framework_branch_qt if not CARGS.ifw_branch else CARGS.ifw_branch
-    signserver           = '' if not CARGS.sign_server else CARGS.sign_server
-    signpwd              = '' if not CARGS.sign_server_pwd else CARGS.sign_server_pwd
+    ifw_branch = IfwOptions.default_qt_installer_framework_branch_qt if not CARGS.ifw_branch else CARGS.ifw_branch
+    signserver = '' if not CARGS.sign_server else CARGS.sign_server
+    signpwd = '' if not CARGS.sign_server_pwd else CARGS.sign_server_pwd
 
     qt_conf_args = CARGS.qt_configure_options
     ifw_qmake_args = CARGS.ifw_qmake_args

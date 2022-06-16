@@ -56,7 +56,7 @@ def constructTimeNeededMatcher():
     # Note: There is always at least the wall clock time at the utmost right,
     #       the others in front (up to 3) are optional.
     startIndicator = r'\s*:'
-    notRelevantParts =  r'(\s*\d+\.\d+ \(\d+\.\d+\%\)){0,3}'
+    notRelevantParts = r'(\s*\d+\.\d+ \(\d+\.\d+\%\)){0,3}'
     wallClockTime = r'\s*(\d+\.\d+) \(\d+\.\d+\%\)'
 
     regex = startIndicator \
@@ -106,7 +106,7 @@ def recordsToString(records):
     return string
 
 
-def convert(inputFile, columnLabel = None):
+def convert(inputFile, columnLabel=None):
     if not columnLabel:
         columnLabel = os.path.basename(inputFile)
     fileContent = open(inputFile, 'r').read()

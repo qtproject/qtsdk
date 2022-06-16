@@ -60,15 +60,15 @@ log = logging.getLogger("create_installer")
 log.setLevel("INFO")
 
 # ----------------------------------------------------------------------
-TARGET_INSTALL_DIR_NAME_TAG         = '%TARGET_INSTALL_DIR%'
-ARCHIVES_EXTRACT_DIR_NAME_TAG       = '%ARCHIVES_EXTRACT_DIR%'
-PACKAGE_DEFAULT_TAG                 = '%PACKAGE_DEFAULT_TAG%'
-UPDATE_REPOSITORY_URL_TAG           = '%UPDATE_REPOSITORY_URL%'
-PACKAGE_CREATION_DATE_TAG           = '%PACKAGE_CREATION_DATE%'
-INSTALL_PRIORITY_TAG                = '%INSTALL_PRIORITY%'
-SORTING_PRIORITY_TAG                = '%SORTING_PRIORITY%'
-VERSION_NUMBER_AUTO_INCREASE_TAG    = '%VERSION_NUMBER_AUTO_INCREASE%'
-COMPONENT_SHA1_TAG                  = '%COMPONENT_SHA1%'
+TARGET_INSTALL_DIR_NAME_TAG = '%TARGET_INSTALL_DIR%'
+ARCHIVES_EXTRACT_DIR_NAME_TAG = '%ARCHIVES_EXTRACT_DIR%'
+PACKAGE_DEFAULT_TAG = '%PACKAGE_DEFAULT_TAG%'
+UPDATE_REPOSITORY_URL_TAG = '%UPDATE_REPOSITORY_URL%'
+PACKAGE_CREATION_DATE_TAG = '%PACKAGE_CREATION_DATE%'
+INSTALL_PRIORITY_TAG = '%INSTALL_PRIORITY%'
+SORTING_PRIORITY_TAG = '%SORTING_PRIORITY%'
+VERSION_NUMBER_AUTO_INCREASE_TAG = '%VERSION_NUMBER_AUTO_INCREASE%'
+COMPONENT_SHA1_TAG = '%COMPONENT_SHA1%'
 
 
 class CreateInstallerError(Exception):
@@ -431,7 +431,7 @@ def get_component_data(task, sdk_component, archive, install_dir, data_dir_dest,
     content_list = [(compress_content_dir + os.sep + x) for x in content_list]
 
     saveas = os.path.normpath(data_dir_dest + os.sep + archive.archive_name)
-    cmd_args = [ task.archivegen_tool, saveas] + content_list
+    cmd_args = [task.archivegen_tool, saveas] + content_list
     do_execute_sub_process(cmd_args, data_dir_dest)
 
 
@@ -533,7 +533,7 @@ def remove_all_debug_libraries(install_dir):
                     for debug_library_name in set(debug_files_list_intersection):
                         # remove one 'd' from library names ending letter 'd' also in release builds
                         # and exclude from removed libraries
-                        altered_library_name = debug_library_name[:-5] + debug_library_name[-5+1:]
+                        altered_library_name = debug_library_name[:-5] + debug_library_name[-5 + 1:]
                         all_debug_files_list.remove(altered_library_name)
                 # remove all debug libraries with filenames ending *d.dll | *d.lib
                 for item in all_debug_files_list:
@@ -709,9 +709,9 @@ def create_installer_binary(task):
     #    extension is exe, dmg, or run
     #    tag is alpha1, beta2, rc1, etc (no tag for final).
     #    platform is win, linux, mac, etc.
-    platform        = task.config.get('PlatformIdentifier', 'identifier')
-    installer_type  = 'offline' if task.offline_installer else 'online'
-    extension       = '.run' if is_linux() else ''
+    platform = task.config.get('PlatformIdentifier', 'identifier')
+    installer_type = 'offline' if task.offline_installer else 'online'
+    extension = '.run' if is_linux() else ''
 
     if not task.installer_name:
         task.installer_name = task.installer_name + '-' + platform + '-' + task.license_type

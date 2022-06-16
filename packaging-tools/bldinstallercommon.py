@@ -57,8 +57,8 @@ from runner import do_execute_sub_process
 if is_windows():
     import win32api
 
-DEBUG_RPATH             = False
-MAX_DEBUG_PRINT_LENGTH  = 10000
+DEBUG_RPATH = False
+MAX_DEBUG_PRINT_LENGTH = 10000
 
 
 ###############################
@@ -86,13 +86,13 @@ CURRENT_DOWNLOAD_PERCENT = 0
 
 def dlProgress(count, blockSize, totalSize):
     global CURRENT_DOWNLOAD_PERCENT
-    percent = int(count*blockSize*100/totalSize)
+    percent = int(count * blockSize * 100 / totalSize)
     # produce only reasonable amount of prints into stdout
     if percent > CURRENT_DOWNLOAD_PERCENT:
         CURRENT_DOWNLOAD_PERCENT = percent
         sys.stdout.write("\r" + "     Downloading: %d%%" % percent)
         sys.stdout.flush()
-    if count*blockSize >= totalSize:
+    if count * blockSize >= totalSize:
         CURRENT_DOWNLOAD_PERCENT = 0
         print('\n')
 
@@ -206,7 +206,7 @@ def remove_one_tree_level(directory):
 def handle_remove_readonly(func, path, exc):
     excvalue = exc[1]
     if func in (os.rmdir, os.remove) and excvalue.errno == errno.EACCES:
-        os.chmod(path, stat.S_IRWXU| stat.S_IRWXG| stat.S_IRWXO)  # 0777
+        os.chmod(path, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)  # 0777
         func(path)
     else:
         raise
@@ -328,7 +328,7 @@ def locate_paths(search_dir: Union[str, Path], patterns: List[str],
 ###############################
 # original snippet: http://code.activestate.com/recipes/173220-test-if-a-file-or-string-is-text-or-binary/
 text_characters = "".join(list(map(chr, list(range(32, 127)))) + list("\n\r\t\b"))
-trans_table      = str.maketrans("", "", text_characters)
+trans_table = str.maketrans("", "", text_characters)
 
 
 def is_text(s):
@@ -345,12 +345,12 @@ def is_text(s):
     t = s.translate(trans_table)
     # If more than 30% non-text characters, then
     # this is considered a binary file
-    if len(t)/len(s) > 0.30:
+    if len(t) / len(s) > 0.30:
         return 0
     return 1
 
 
-def is_text_file(filename, blocksize = 512):
+def is_text_file(filename, blocksize=512):
     try:
         return is_text(open(filename).read(blocksize))
     except UnicodeDecodeError:
@@ -383,7 +383,7 @@ def sanity_check_rpath_max_length(file_path, new_rpath):
         else:
             rpath = result.group()
             index = rpath.index('=')
-            rpath = rpath[index+1:]
+            rpath = rpath[index + 1:]
             space_for_new_rpath = len(rpath)
             if len(new_rpath) > space_for_new_rpath:
                 print('*** Warning - Not able to process RPath for file: ' + file_path)
@@ -399,10 +399,10 @@ def sanity_check_rpath_max_length(file_path, new_rpath):
 def pathsplit(p, rest=[]):
     (h, t) = os.path.split(p)
     if len(h) < 1:
-        return [t]+rest
+        return [t] + rest
     if len(t) < 1:
-        return [h]+rest
-    return pathsplit(h, [t]+rest)
+        return [h] + rest
+    return pathsplit(h, [t] + rest)
 
 
 def commonpath(l1, l2, common=[]):
@@ -412,7 +412,7 @@ def commonpath(l1, l2, common=[]):
         return (common, l1, l2)
     if l1[0] != l2[0]:
         return (common, l1, l2)
-    return commonpath(l1[1:], l2[1:], common+[l1[0]])
+    return commonpath(l1[1:], l2[1:], common + [l1[0]])
 
 
 def calculate_relpath(p1, p2):
@@ -420,9 +420,9 @@ def calculate_relpath(p1, p2):
     p = []
     if len(l1) > 0:
         tmp = '..' + os.sep
-        p = [ tmp * len(l1) ]
+        p = [tmp * len(l1)]
     p = p + l2
-    return os.path.join( *p )
+    return os.path.join(*p)
 
 
 ##############################################################
@@ -432,7 +432,7 @@ def calculate_rpath(file_full_path, destination_lib_path):
     if not os.path.isfile(file_full_path):
         raise IOError('*** Not a valid file: %s' % file_full_path)
 
-    bin_path    = os.path.dirname(file_full_path)
+    bin_path = os.path.dirname(file_full_path)
     path_to_lib = os.path.abspath(destination_lib_path)
     full_rpath = ''
     if path_to_lib == bin_path:
@@ -492,7 +492,7 @@ def handle_component_rpath(component_root_path, destination_lib_paths):
 ###############################
 # function
 ###############################
-def clone_repository(repo_url, repo_branch_or_tag, destination_folder, full_clone = False, init_subrepos = False):
+def clone_repository(repo_url, repo_branch_or_tag, destination_folder, full_clone=False, init_subrepos=False):
     print('--------------------------------------------------------------------')
     print('Cloning repository: ' + repo_url)
     print('        branch/tag: ' + repo_branch_or_tag)
@@ -608,7 +608,7 @@ def list_as_string(argument_list):
 ###############################
 # function
 ###############################
-def remote_path_exists(remote_addr, path_to_check, ssh_command = 'ssh'):
+def remote_path_exists(remote_addr, path_to_check, ssh_command='ssh'):
     text_to_print = 'REMOTE_PATH_EXISTS'
     cmd_args = [ssh_command, remote_addr, 'bash', '-c', '\"if [ -e ' + path_to_check + ' ] ; then echo ' + text_to_print + ' ; fi\"']
     output = do_execute_sub_process(cmd_args, os.getcwd(), get_output=True)
@@ -619,7 +619,7 @@ def remote_path_exists(remote_addr, path_to_check, ssh_command = 'ssh'):
 ###############################
 # function
 ###############################
-def create_mac_disk_image(execution_path, file_directory, file_base_name, image_size = '4g'):
+def create_mac_disk_image(execution_path, file_directory, file_base_name, image_size='4g'):
     # create disk image
     cmd_args = ['hdiutil', 'create', '-srcfolder',
                 os.path.join(file_directory, file_base_name + '.app'),
@@ -634,15 +634,15 @@ def create_mac_disk_image(execution_path, file_directory, file_base_name, image_
 # function
 ###############################
 def rename_android_soname_files(qt5_base_path):
-    print ('---------- Renaming .so name files in ' + qt5_base_path + ' ----------------')
+    print('---------- Renaming .so name files in ' + qt5_base_path + ' ----------------')
     # QTBUG-33793
     # temporary solution for Android on Windows compilations
     # rename the .so files for Android on Windows
     # find the lib directory under the install directory for essentials
     try:
-        print ('Trying to locate /lib from: ' + qt5_base_path)
+        print('Trying to locate /lib from: ' + qt5_base_path)
         lib_dir = locate_path(qt5_base_path, ["lib"], filters=[os.path.isdir])
-        print ('Match found: ' + lib_dir)
+        print('Match found: ' + lib_dir)
         # regex for Qt version, eg. 5.2.0
         # assuming that Qt version will always have one digit, eg, 5.2.0
         p = re.compile(r'\d\.\d\.\d')
@@ -657,10 +657,10 @@ def rename_android_soname_files(qt5_base_path):
                 old_filepath = os.path.join(lib_dir, name)
                 new_filepath = os.path.join(lib_dir, filename + '.so')
                 shutil.move(old_filepath, new_filepath)
-                print ('---> Old file name : ' + old_filepath)
-                print ('---> New file name : ' + new_filepath)
+                print('---> Old file name : ' + old_filepath)
+                print('---> New file name : ' + new_filepath)
             else:
-                print ('*** Warning! The file : ' + filename + ' does not match the pattern')
+                print('*** Warning! The file : ' + filename + ' does not match the pattern')
     except PackagingError:
         print('*** No .so files found to be renamed as /lib was not found. Skipping.')
 
@@ -668,12 +668,12 @@ def rename_android_soname_files(qt5_base_path):
 ###############################
 # function
 ###############################
-def create_extract_function(file_path, target_path, caller_arguments = None):
+def create_extract_function(file_path, target_path, caller_arguments=None):
     Path(target_path).mkdir(parents=True, exist_ok=True)
     working_dir = os.path.dirname(file_path)
     if file_path.endswith('.tar.gz'):
         return lambda: runCommand(['tar', 'zxf', file_path, '-C', target_path], working_dir, caller_arguments)
-    return lambda: runCommand(['7z', 'x', '-y', file_path, '-o'+target_path], working_dir, caller_arguments)
+    return lambda: runCommand(['7z', 'x', '-y', file_path, '-o' + target_path], working_dir, caller_arguments)
 
 
 ###############################
