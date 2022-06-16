@@ -45,13 +45,11 @@ PACKAGE_ARCHIVE_TAG             = 'ARCHIVE_TAG'
 class ArchiveLocationResolver:
     """Helper class to resolve full URI for archive"""
 
-
     ######################################
     # inner class ArchiveRemoteLocation
     ######################################
     class ArchiveRemoteLocation:
         """Container class for server URL data"""
-
 
         ###############################
         # Constructor
@@ -63,7 +61,6 @@ class ArchiveLocationResolver:
                 temp = temp + '/'
             temp = temp + server_base_path
             self.server_url = temp
-
 
     ###############################
     # Constructor
@@ -100,7 +97,6 @@ class ArchiveLocationResolver:
         if len(self.server_list) == 1:
             self.default_server = self.server_list[0]
 
-
     ###############################
     # Get full server URL by name
     ###############################
@@ -112,7 +108,6 @@ class ArchiveLocationResolver:
             if server.server_name == server_name:
                 return server.server_url
         raise RuntimeError('*** Error! Unable to find server by name: %s' % server_name)
-
 
     ###############################
     # Get full server URI
@@ -157,7 +152,6 @@ class ArchiveLocationResolver:
         temp = temp + archive_uri
         return temp
 
-
     ###############################
     # Print out server list
     ###############################
@@ -168,4 +162,3 @@ class ArchiveLocationResolver:
             print (' ---------------------------------------------')
             print (' Server name: ' + server.server_name)
             print (' Server url:  ' + server.server_url)
-

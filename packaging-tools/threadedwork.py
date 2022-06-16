@@ -44,6 +44,7 @@ outputLock = threading.RLock()
 outputStates = None
 outputFormatString = ''
 
+
 # prepare our std output hooks
 class StdOutHook:
     def write(self, text):
@@ -75,6 +76,7 @@ class StdOutHook:
     def flush(self):
         sys.__stdout__.flush()
 
+
 class StdErrHook:
     def write(self, text):
         with outputLock:
@@ -83,15 +85,18 @@ class StdErrHook:
     def flush(self):
         sys.__stderr__.flush()
 
+
 # builtin print() isn't threadsafe, lets make it threadsafe
 def threadedPrint(*a, **b):
     with outputLock:
         __builtin__.org_print(*a, **b)
 
+
 # this is really a HACK or better only useful in this complicate situation
 __builtin__.org_print = __builtin__.print
 __builtin__.org_stdout = sys.stdout
 __builtin__.org_sterr = sys.stderr
+
 
 def enableThreadedPrint(enable = True, threadCount = multiprocessing.cpu_count()):
     if enable:
@@ -109,19 +114,26 @@ def enableThreadedPrint(enable = True, threadCount = multiprocessing.cpu_count()
         sys.stderr = __builtin__.org_sterr
         __builtin__.print = __builtin__.org_print
 
+
 threadData = threading.local()
+
 
 def nextProgressIndicator():
     return next(threadData.progressIndicator)
 
+
 class TaskFunction():
+
     def __init__(self, function, *arguments):
         self.function = function
         self.arguments = arguments
+
     def __str__(self):
         return str(self.__dict__)
 
+
 class Task():
+
     def __init__(self, description, function = None, *arguments):
         self.taskNumber = 0  # will be set from outside
         self.description = description
@@ -154,13 +166,16 @@ class Task():
                 self.exitFunction(*(self.exitFunctionArguments))
         print("Done")
 
+
 class ThreadedWork():
+
     def __init__(self, description):
         self.description = os.linesep + "##### {} #####".format(description)
         self.queue = queue.Queue()
         self.legend = []
         self.taskNumber = 0
         self.exitFunction = None
+
     def setExitFailFunction(self, function, *arguments):
         self.exitFunction = function
         self.exitFunctionArguments = arguments
@@ -208,11 +223,14 @@ class ThreadedWork():
             enableThreadedPrint(False)
         print(os.linesep + self.description + ' ... done')
 
+
 class Consumer(threading.Thread):
+
     def __init__(self, queue, workerThreadId):
         self.queue = queue
         self.workerThreadId = workerThreadId
         threading.Thread.__init__(self)
+
     def run(self, stableRunIndicator = True):
         if stableRunIndicator:
             threadData.progressIndicator = itertools.cycle(['..'])

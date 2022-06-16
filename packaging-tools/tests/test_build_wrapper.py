@@ -77,5 +77,6 @@ class TestBuildWrapper(unittest.TestCase):
 
         shutil.rmtree(remote_path_base)
 
+
 if __name__ == '__main__':
     unittest.main()

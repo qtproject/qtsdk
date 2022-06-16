@@ -39,6 +39,7 @@ from read_remote_config import get_pkg_value
 from bld_utils import is_windows, is_macos, is_linux
 from runner import do_execute_sub_process
 
+
 def git_clone_and_checkout(base_path, remote_repository_url, directory, revision):
     bld_utils.runCommand(['git', 'clone',
                           '--depth', '1',
@@ -48,14 +49,17 @@ def git_clone_and_checkout(base_path, remote_repository_url, directory, revision
                           '--recursive',
                           remote_repository_url, directory], base_path)
 
+
 def get_clang(base_path, llvm_repository_url, llvm_revision):
     git_clone_and_checkout(base_path, llvm_repository_url, 'llvm', llvm_revision)
+
 
 def msvc_version():
     msvc_ver = os.environ.get('MSVC_VERSION')
     if not msvc_ver:
         msvc_ver = '14.1'
     return msvc_ver
+
 
 def msvc_year_version():
     return {
@@ -65,6 +69,7 @@ def msvc_year_version():
         '14.2': 'MSVC2019'
     }.get(os.environ.get('MSVC_VERSION'), 'MSVC2017')
 
+
 def msvc_year():
     return {
         '12.0': '2013',
@@ -72,6 +77,7 @@ def msvc_year():
         '14.1': '2017',
         '14.2': '2019'
     }.get(os.environ.get('MSVC_VERSION'), 'MSVC2017')
+
 
 def msvc_year_version_libclang():
     return {
@@ -81,11 +87,13 @@ def msvc_year_version_libclang():
         '14.2': 'vs2019'
     }.get(os.environ.get('MSVC_VERSION'), 'vs2017')
 
+
 def cmake_version():
     cmake_ver = os.environ.get('CMAKE_VERSION')
     if not cmake_ver:
         cmake_ver = '3.18.3'
     return cmake_ver
+
 
 def msvc_environment(bitness):
     program_files = os.path.join('C:', '/Program Files (x86)')
@@ -100,10 +108,12 @@ def msvc_environment(bitness):
         arg = 'amd64' if bitness == 64 else 'x86'
     return environmentfrombatchfile.get(vcvarsall, arguments=arg)
 
+
 def paths_with_sh_exe_removed(path_value):
     items = path_value.split(os.pathsep)
     items = [i for i in items if not os.path.exists(os.path.join(i, 'sh.exe'))]
     return os.pathsep.join(items)
+
 
 def build_environment(toolchain, bitness):
     if is_windows():
@@ -122,11 +132,13 @@ def build_environment(toolchain, bitness):
     else:
         return None  # == process environment
 
+
 def training_qt_version():
     qt_ver = os.environ.get('TRAINING_QT_VERSION')
     if not qt_ver:
         qt_ver = '6.2'
     return qt_ver
+
 
 def training_qt_long_version():
     qt_ver = os.environ.get('TRAINING_QT_LONG_VERSION')
@@ -134,11 +146,13 @@ def training_qt_long_version():
         qt_ver = '6.2.3'
     return qt_ver
 
+
 def training_qtcreator_version():
     qtcreator_ver = os.environ.get('TRAINING_QTCREATOR_VERSION')
     if not qtcreator_ver:
         qtcreator_ver = '4.5'
     return qtcreator_ver
+
 
 def mingw_training(base_path, qtcreator_path, environment, bitness):
     # Checkout qt-creator, download libclang for build, qt installer and DebugView
@@ -246,20 +260,25 @@ def mingw_training(base_path, qtcreator_path, environment, bitness):
         bld_utils.runCommand([os.path.join(training_dir, 'runBatchFiles.bat'), msvc_version(), 'x64' if bitness == 64 else 'x86', batchFile],
                             base_path, callerArguments = None, extra_environment = None, onlyErrorCaseOutput=False, expectedExitCodes=[0,1])
 
+
 def is_msvc_toolchain(toolchain):
     return 'msvc' in toolchain
+
 
 def is_mingw_toolchain(toolchain):
     return 'mingw' in toolchain
 
+
 def is_gcc_toolchain(toolchain):
     return 'g++' in toolchain
+
 
 def cmake_generator(toolchain):
     if is_windows():
         return 'Ninja'
     else:
         return 'Unix Makefiles'
+
 
 # We need '-fprofile-correction -Wno-error=coverage-mismatch' to deal with possible conflicts
 # in the initial build while using profiler data from the build with plugins
@@ -289,15 +308,18 @@ def profile_data_flags(toolchain, profile_data_path, first_run):
         ]
     return []
 
+
 def bitness_flags(bitness):
     if bitness == 32 and is_linux():
         return ['-DLLVM_BUILD_32_BITS=ON']
     return []
 
+
 def rtti_flags(toolchain):
     if is_mingw_toolchain(toolchain):
         return ['-DLLVM_ENABLE_RTTI:BOOL=OFF']
     return ['-DLLVM_ENABLE_RTTI:BOOL=ON']
+
 
 def build_command(toolchain):
     if is_windows():
@@ -306,12 +328,14 @@ def build_command(toolchain):
         command = ['make']
     return command
 
+
 def install_command(toolchain):
     if is_windows():
         command = ['ninja']
     else:
         command = ['make', '-j1']
     return command
+
 
 # For instrumented build we now use the same targets because clazy
 # requires the llvm installation to properly build
@@ -320,6 +344,7 @@ def build_and_install(toolchain, build_path, environment, build_targets, install
     do_execute_sub_process(build_cmd + build_targets, build_path, extra_env=environment)
     install_cmd = install_command(toolchain)
     do_execute_sub_process(install_cmd + install_targets, build_path, extra_env=environment)
+
 
 def cmake_command(toolchain, src_path, build_path, install_path, profile_data_path, first_run, bitness, build_type):
     enabled_projects = 'clang;clang-tools-extra'
@@ -347,6 +372,7 @@ def cmake_command(toolchain, src_path, build_path, install_path, profile_data_pa
 
     return command
 
+
 def build_clang(toolchain, src_path, build_path, install_path, profile_data_path, first_run, bitness=64, environment=None, build_type='Release'):
     if build_path and not os.path.lexists(build_path):
         os.makedirs(build_path)
@@ -366,6 +392,7 @@ def build_clang(toolchain, src_path, build_path, install_path, profile_data_path
         install_targets = ['tools/clang/tools/libclang/install/strip']  # we only want to build / install libclang
 
     build_and_install(toolchain, build_path, environment, build_targets, install_targets)
+
 
 def build_clazy(toolchain, src_path, build_path, install_path, bitness=64, environment=None):
     if build_path and not os.path.lexists(build_path):
@@ -393,6 +420,7 @@ def build_clazy(toolchain, src_path, build_path, install_path, bitness=64, envir
         install_targets = ['install']  # There is no 'install/strip' for nmake.
     build_and_install(toolchain, build_path, environment, [], install_targets)
 
+
 def check_clang(toolchain, build_path, environment):
     if is_msvc_toolchain(toolchain) or is_mingw_toolchain(toolchain):
         tools_path = os.environ.get('WINDOWS_UNIX_TOOLS_PATH')
@@ -403,10 +431,12 @@ def check_clang(toolchain, build_path, environment):
     build_cmd = build_command(toolchain)
     do_execute_sub_process(build_cmd + ['check-clang'], build_path, abort_on_fail=False, extra_env=environment)
 
+
 def package_clang(install_path, result_file_path):
     (basepath, dirname) = os.path.split(install_path)
     zip_command = ['7z', 'a', '-mmt4', result_file_path, dirname]
     bld_utils.runCommand(zip_command, basepath)
+
 
 def upload_clang(file_path, remote_path):
     (path, filename) = os.path.split(file_path)
@@ -414,9 +444,11 @@ def upload_clang(file_path, remote_path):
     scp_command = [scp_bin, filename, remote_path]
     bld_utils.runCommand(scp_command, path)
 
+
 def profile_data(toolchain):
     if is_windows() and is_mingw_toolchain(toolchain):
         return os.getenv('PROFILE_DATA_URL')
+
 
 def main():
     # Used Environment variables:
@@ -496,7 +528,6 @@ def main():
         mingw_training(base_path, os.path.join(base_path, 'qt-creator'), environment, bitness)
         build_clang(toolchain, src_path, build_path_training, install_path, profile_data_path, False, bitness, environment, build_type='Release')
 
-
     # Get, build and install clazy
     git_clone_and_checkout(base_path,
                            os.environ['CLAZY_REPOSITORY_URL'],
@@ -513,6 +544,7 @@ def main():
     result_file_path = os.path.join(base_path, 'libclang-' + branch + '-' + os.environ['CLANG_PLATFORM'] + '.7z')
     package_clang(install_path, result_file_path)
     upload_clang(result_file_path, remote_path)
+
 
 if __name__ == "__main__":
     main()

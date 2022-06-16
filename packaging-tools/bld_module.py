@@ -51,12 +51,14 @@ SCRIPT_ROOT_DIR             = os.path.dirname(os.path.realpath(__file__))
 MODULE_SRC_DIR_NAME         = 'module_src'
 MODULE_SRC_DIR              = os.path.join(SCRIPT_ROOT_DIR, MODULE_SRC_DIR_NAME)
 
+
 ###############################
 # function
 ###############################
 def patch_archive(base_dir, search_strings, qt_install_prefix):
     erase_qmake_prl_build_dir(base_dir)
     patch_build_time_paths(base_dir, search_strings, qt_install_prefix)
+
 
 ###############################
 # function
@@ -65,6 +67,7 @@ def get_qt_install_prefix(qt_path):
     cmd_args = [os.path.join(qt_path, 'bin', 'qmake'), '-query', 'QT_INSTALL_PREFIX']
     ret, qt_install_prefix = do_execute_sub_process(cmd_args, qt_path, get_output=True)
     return qt_install_prefix.strip()
+
 
 ###############################
 # function
@@ -84,6 +87,7 @@ def erase_qmake_prl_build_dir(search_path):
                 print(line.rstrip('\n'))
         if found:
             print('Erased \'QMAKE_PRL_BUILD_DIR\' from: ' + item)
+
 
 ###############################
 # function

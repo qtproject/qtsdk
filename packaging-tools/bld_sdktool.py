@@ -41,6 +41,7 @@ BuildParams = collections.namedtuple('BuildParams',
                                      ['src_path', 'build_path', 'target_path',
                                       'make_command', 'redirect_output'])
 
+
 def qt_static_configure_options():
     return ['-release', '-opensource', '-confirm-license', '-accessibility',
             '-no-gui',
@@ -51,6 +52,7 @@ def qt_static_configure_options():
             '-nomake', 'tests',
             '-static'] + qt_static_platform_configure_options()
 
+
 def qt_static_platform_configure_options():
     if is_windows():
         return ['-static-runtime', '-no-icu', '-mp']
@@ -58,11 +60,14 @@ def qt_static_platform_configure_options():
         return ['-no-icu', '-no-glib', '-qt-zlib', '-qt-pcre', '-qt-doubleconversion']
     return []
 
+
 def qt_src_path(qt_build_base):
     return os.path.join(qt_build_base, 'src')
 
+
 def qt_build_path(qt_build_base):
     return os.path.join(qt_build_base, 'build')
+
 
 def package_extension(url):
     if url.endswith('.tar.gz'):
@@ -75,6 +80,7 @@ def package_extension(url):
         (_, ext) = os.path.splitext(url)
         return ext
 
+
 def get_and_extract_qt_src(url, temp, path):
     Path(temp).mkdir(parents=True, exist_ok=True)
     ext = package_extension(url)
@@ -84,14 +90,17 @@ def get_and_extract_qt_src(url, temp, path):
     bldinstallercommon.extract_file(file_path, path)
     bldinstallercommon.remove_one_tree_level(path)
 
+
 def configure_qt(params, src, build):
     Path(build).mkdir(parents=True, exist_ok=True)
     configure = os.path.join(src, 'configure')
     do_execute_sub_process([configure, '-prefix', build] + qt_static_configure_options(),
                                               build, redirect_output=params.redirect_output)
 
+
 def build_qt(params, build):
     do_execute_sub_process([params.make_command], build, redirect_output=params.redirect_output)
+
 
 def build_sdktool_impl(params, qt_build_path):
     Path(params.build_path).mkdir(parents=True, exist_ok=True)
@@ -115,6 +124,7 @@ def build_sdktool_impl(params, qt_build_path):
                                               params.build_path,
                                               redirect_output=params.redirect_output)
 
+
 def build_sdktool(qt_src_url, qt_build_base, sdktool_src_path, sdktool_build_path, sdktool_target_path,
                   make_command, redirect_output=None):
     params = BuildParams(src_path=sdktool_src_path,
@@ -128,6 +138,7 @@ def build_sdktool(qt_src_url, qt_build_base, sdktool_src_path, sdktool_build_pat
     configure_qt(params, qt_src, qt_build)
     build_qt(params, qt_build)
     build_sdktool_impl(params, qt_build)
+
 
 def zip_sdktool(sdktool_target_path, out_7zip, redirect_output=None):
     glob = "*.exe" if is_windows() else "*"

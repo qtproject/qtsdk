@@ -56,6 +56,7 @@ import os
 import subprocess
 import sys
 
+
 def send_headers(version, message_id, simulate):
     receiver = 'development@qt-project.org'
     subject = 'Qt ' + version + ' header diff: '

@@ -39,6 +39,7 @@ import os
 import re
 import sys
 
+
 def constructRecordMatcher():
     regex = '( Parsing)' \
           + '|( Precompiling preamble)' \
@@ -47,6 +48,7 @@ def constructRecordMatcher():
           + '|( Code completion)'
 
     return re.compile(regex)
+
 
 def constructTimeNeededMatcher():
     # An output line looks like:
@@ -63,8 +65,10 @@ def constructTimeNeededMatcher():
 
     return re.compile(regex)
 
+
 def csvLine(values):
     return ','.join(values) + '\n'
+
 
 def extractRecords(fileContent):
     recordMatcher = constructRecordMatcher()
@@ -93,12 +97,14 @@ def extractRecords(fileContent):
     # for record in records: print record
     return records
 
+
 def recordsToString(records):
     string = ""
     for record in records:
         string += csvLine(record)
 
     return string
+
 
 def convert(inputFile, columnLabel = None):
     if not columnLabel:
@@ -109,9 +115,11 @@ def convert(inputFile, columnLabel = None):
 
     return recordsToString(records)
 
+
 def printUsageAndExit():
     print(__doc__)
     sys.exit(0)
+
 
 def main():
     # parse command line options
@@ -133,6 +141,6 @@ def main():
     for arg in args:
         print(convert(arg))
 
+
 if __name__ == "__main__":
     main()
-

@@ -82,6 +82,8 @@ def is_content_url_valid(url):
 # function
 ###############################
 CURRENT_DOWNLOAD_PERCENT = 0
+
+
 def dlProgress(count, blockSize, totalSize):
     global CURRENT_DOWNLOAD_PERCENT
     percent = int(count*blockSize*100/totalSize)
@@ -181,6 +183,7 @@ def copy_tree(source_dir, dest_dir):
         if os.path.isfile(full_file_name):
             shutil.copy(full_file_name, dest_dir)
 
+
 def remove_one_tree_level(directory):
     dircontents = os.listdir(directory)
     items = len(dircontents)
@@ -196,6 +199,7 @@ def remove_one_tree_level(directory):
     else:
         raise IOError('Cannot remove one level of directory structure of "%s", it has %s subdirectories' % (dir, items))
 
+
 ###############################
 # function
 ###############################
@@ -206,6 +210,7 @@ def handle_remove_readonly(func, path, exc):
         func(path)
     else:
         raise
+
 
 def remove_tree(path):
     if os.path.isdir(path) and os.path.exists(path):
@@ -317,13 +322,14 @@ def locate_paths(search_dir: Union[str, Path], patterns: List[str],
     paths = [p for p in Path(search_dir).rglob("*") if any(p.match(ptn) for ptn in patterns)]
     return [str(p) for p in paths if all(f(p) for f in filters)]
 
+
 ###############################
 # Function
 ###############################
 # original snippet: http://code.activestate.com/recipes/173220-test-if-a-file-or-string-is-text-or-binary/
-
 text_characters = "".join(list(map(chr, list(range(32, 127)))) + list("\n\r\t\b"))
 trans_table      = str.maketrans("", "", text_characters)
+
 
 def is_text(s):
     try:
@@ -342,6 +348,7 @@ def is_text(s):
     if len(t)/len(s) > 0.30:
         return 0
     return 1
+
 
 def is_text_file(filename, blocksize = 512):
     try:
@@ -397,6 +404,7 @@ def pathsplit(p, rest=[]):
         return [h]+rest
     return pathsplit(h, [t]+rest)
 
+
 def commonpath(l1, l2, common=[]):
     if len(l1) < 1:
         return (common, l1, l2)
@@ -405,6 +413,7 @@ def commonpath(l1, l2, common=[]):
     if l1[0] != l2[0]:
         return (common, l1, l2)
     return commonpath(l1[1:], l2[1:], common+[l1[0]])
+
 
 def calculate_relpath(p1, p2):
     (common, l1, l2) = commonpath(pathsplit(p1), pathsplit(p2))
@@ -506,6 +515,7 @@ def clone_repository(repo_url, repo_branch_or_tag, destination_folder, full_clon
     if init_subrepos:
         cmd_args = ['git', 'submodule', 'update', '--init']
         do_execute_sub_process(cmd_args, destination_folder)
+
 
 #####################################################################
 # This function returns a tag if the given branch is tagged. Branch
@@ -665,6 +675,7 @@ def create_extract_function(file_path, target_path, caller_arguments = None):
         return lambda: runCommand(['tar', 'zxf', file_path, '-C', target_path], working_dir, caller_arguments)
     return lambda: runCommand(['7z', 'x', '-y', file_path, '-o'+target_path], working_dir, caller_arguments)
 
+
 ###############################
 # function
 ###############################
@@ -688,6 +699,7 @@ def create_download_extract_task(url, target_path, temp_path, caller_arguments):
     download_extract_task.addFunction(download, url, sevenzip_file)
     download_extract_task.addFunction(create_extract_function(sevenzip_file, target_path, caller_arguments))
     return download_extract_task
+
 
 ###############################
 # function
@@ -731,6 +743,7 @@ def create_qt_download_task(module_urls, target_qt5_path, temp_path, caller_argu
     qt_task.addFunction(download_work.run)
     qt_task.addFunction(unzip_task.do)
     return qt_task
+
 
 def patch_qt(qt5_path):
     print("##### {0} #####".format("patch Qt"))

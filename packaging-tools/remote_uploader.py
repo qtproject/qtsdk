@@ -135,4 +135,3 @@ if __name__ == "__main__":
     uploader.init_snapshot_upload_path(args.project_name, args.project_version, args.project_snapshot_id)
     uploader.copyToRemote(args.source, args.subdir_name)
     uploader.updateLatestSymlink()
-

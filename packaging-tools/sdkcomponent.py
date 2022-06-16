@@ -92,7 +92,6 @@ class SdkComponent:
             else:
                 return self.parent_target_install_base + os.path.sep + self.target_install_dir
 
-
     def __init__(self, section_name, target_config, packages_full_path_list, archive_location_resolver, key_value_substitution_list, is_offline_build):
         self.static_component            = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'static_component')
         self.root_component              = bldinstallercommon.safe_config_key_fetch(target_config, section_name, 'root_component')
@@ -163,7 +162,6 @@ class SdkComponent:
         self.parse_archives(self.target_config, self.archive_location_resolver)
         self.check_component_data(self.target_config)
 
-
     def check_component_data(self, target_config):
         if self.static_component:
             if not os.path.isfile(self.static_component):
@@ -202,10 +200,8 @@ class SdkComponent:
                         self.sanity_check_fail(self.package_name, error_msg)
                         return
 
-
     def sanity_check_fail(self, component_name, message):
         self.sanity_check_error_msg = '*** Sanity check fail! ***\n*** Component: [' + component_name + ']\n*** ' + message
-
 
     def is_valid(self):
         if self.sanity_check_error_msg:
@@ -213,14 +209,11 @@ class SdkComponent:
         else:
             return True
 
-
     def error_msg(self):
         return self.sanity_check_error_msg
 
-
     def optional_for_offline_installer(self):
         return self.optional_for_offline
-
 
     def parse_archives(self, target_config, archive_location_resolver):
         if self.archives:
@@ -237,7 +230,6 @@ class SdkComponent:
                                                                self.key_value_substitution_list)
                 self.downloadable_archive_list.append(archive_obj)
 
-
     def generate_downloadable_archive_list(self):
         """Generate list that is embedded into package.xml"""
         output = ''
@@ -250,7 +242,6 @@ class SdkComponent:
         temp_list = []
         temp_list.append([ONLINE_ARCHIVE_LIST_TAG, output])
         return temp_list
-
 
     def print_component_data(self):
         print ('=============================================================')
@@ -274,4 +265,3 @@ class SdkComponent:
                 print ('   Archive target install dir: ' + archive.get_archive_installation_directory())
                 print ('   Archive RPath target:       ' + archive.rpath_target)
                 print ('   Archive URI:                ' + archive.archive_uri)
-

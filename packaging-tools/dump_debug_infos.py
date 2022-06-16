@@ -47,19 +47,23 @@ def is_file_with_debug_information_windows(path):
         return True
     return False
 
+
 def is_file_with_debug_information_mac(path):
     if ".dSYM/Contents/Resources/DWARF" in path:
         return True
     return False
+
 
 def file_with_debug_information_linux(file):
     if file.endswith(".so") or os.access(file, os.X_OK) or file.endswith(".debug"):
         return True
     return False
 
+
 def read_output(*args):
     (stdout, _) = subprocess.Popen(args=args, stdout=subprocess.PIPE).communicate()
     return stdout.rstrip()
+
 
 def dump_sym(dump_syms_path, architecture, absolute_path, sym_path, verbose):
     dump_syms_command = '{} {} "{}" > "{}"'.format(dump_syms_path, architecture, absolute_path, sym_path)
@@ -71,6 +75,7 @@ def dump_sym(dump_syms_path, architecture, absolute_path, sym_path, verbose):
     else:
         raise Exception("dump_syms can not be called: \n{}\n{}".format(dump_syms_command, dump_syms_return))
     return False
+
 
 def dump_syms(dump_syms_path, architectures, search_pathes, output_path, verbose):
     is_file_with_debug_information = {
@@ -97,6 +102,7 @@ def dump_syms(dump_syms_path, architectures, search_pathes, output_path, verbose
                         if dump_sym(dump_syms_path, architectures[1], absolute_path, sym_path, verbose):
                             sym_filenames.append(sym_filename)
     return sym_filenames
+
 
 ################################################################################
 def _main():
@@ -158,6 +164,7 @@ def _main():
     print(testoutput)
 
     return
+
 
 if __name__ == '__main__':
     # use everything capsulated in functions to make sure we are not using module globals

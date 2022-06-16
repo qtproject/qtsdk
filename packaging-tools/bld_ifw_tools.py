@@ -280,7 +280,6 @@ class IfwOptions:
         print('-----------------------------------------')
 
 
-
 ###############################
 # Build IFW
 ###############################
@@ -426,6 +425,7 @@ def start_IFW_build(options, cmd_args, installer_framework_build_dir):
     print("cmd_args: " + bldinstallercommon.list_as_string(cmd_args))
     do_execute_sub_process(cmd_args.split(' '), installer_framework_build_dir)
 
+
 ###############################
 # function
 ###############################
@@ -449,6 +449,7 @@ def build_installer_framework(options):
     cmd_args += options.qt_installer_framework_qmake_args
     cmd_args += [options.installer_framework_source_dir]
     start_IFW_build(options, cmd_args, options.installer_framework_build_dir)
+
 
 def build_installer_framework_examples(options):
     print('--------------------------------------------------------------------')
@@ -548,6 +549,7 @@ def create_installer_package(options):
         shutil.move(os.path.join(options.installer_framework_target_dir, artifact), destFileName)
     os.chdir(current_dir)
 
+
 ################################################################
 # Build and archive Qt for IFW builds
 ################################################################
@@ -636,6 +638,7 @@ def archive_installer_framework(installer_framework_build_dir, installer_framewo
             print('Create archive {0}'.format(installer_framework_tagged_archive))
             shutil.copy(os.path.join(options.build_artifacts_dir, installer_framework_archive_name), os.path.join(options.build_artifacts_dir, installer_framework_tagged_archive))
 
+
 ###############################
 # function
 ###############################
@@ -666,6 +669,7 @@ def archive_installerbase(options):
         sys.exit(-1)
     shutil.move(options.installer_base_archive_name, options.build_artifacts_dir)
 
+
 ###############################
 # function
 ###############################
@@ -686,6 +690,7 @@ def archive_binarycreator(options):
     if not os.path.isfile(options.binarycreator_archive_name):
         raise Exception("*** Failed to generate archive: {0}".format(options.binarycreator_archive_name))
     shutil.move(options.binarycreator_archive_name, options.build_artifacts_dir)
+
 
 ###############################
 # sign windows installerbase
@@ -729,6 +734,7 @@ def patch(file, dict):
 
     with open(file, 'w') as f:
         f.write(filedata)
+
 
 ###############################
 # Patch win32 mkspecs
@@ -781,6 +787,7 @@ def setup_argument_parser():
     parser.add_argument('--archive_qt', help="Build and archive both static and shared Qt binaries for IFW", action='store_true', required=False, default=False)
     return parser
 
+
 ###############################
 # Main
 ###############################
@@ -820,5 +827,3 @@ if __name__ == "__main__":
         build_and_archive_qt(OPTIONS)
     else:
         build_ifw(OPTIONS, CARGS.create_installer, CARGS.build_ifw_examples)
-
-

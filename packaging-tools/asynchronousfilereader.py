@@ -80,4 +80,3 @@ class AsynchronousFileReader(threading.Thread):
         """
         while not self.queue.empty():
             yield self.queue.get()
-

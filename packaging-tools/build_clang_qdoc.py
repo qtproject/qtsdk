@@ -36,6 +36,7 @@ from bld_utils import is_windows, is_linux
 from read_remote_config import get_pkg_value
 from runner import do_execute_sub_process
 
+
 def git_clone_and_checkout(base_path, remote_repository_url, directory, revision):
     bld_utils.runCommand(['git', 'clone',
                           '--config', 'core.eol=lf',
@@ -44,14 +45,17 @@ def git_clone_and_checkout(base_path, remote_repository_url, directory, revision
                           '--recursive',
                           remote_repository_url, directory], base_path)
 
+
 def get_clang(base_path, llvm_revision):
     git_clone_and_checkout(base_path, 'git://code.qt.io/clang/llvm-project.git', 'llvm', llvm_revision)
+
 
 def msvc_version():
     msvc_ver = os.environ.get('MSVC_VERSION')
     if not msvc_ver:
         msvc_ver = '14.2'
     return msvc_ver
+
 
 def msvc_year_version():
     return {
@@ -61,6 +65,7 @@ def msvc_year_version():
         '14.2': 'MSVC2019'
     }.get(os.environ.get('MSVC_VERSION'), 'MSVC2019')
 
+
 def msvc_year():
     return {
         '12.0': '2013',
@@ -69,6 +74,7 @@ def msvc_year():
         '14.2': '2019'
     }.get(os.environ.get('MSVC_VERSION'), 'MSVC2019')
 
+
 def msvc_year_version_libclang():
     return {
         '12.0': 'vs2013',
@@ -76,6 +82,7 @@ def msvc_year_version_libclang():
         '14.1': 'vs2017',
         '14.2': 'vs2019'
     }.get(os.environ.get('MSVC_VERSION'), 'vs2019')
+
 
 def msvc_environment(bitness):
     program_files = os.path.join('C:', '/Program Files (x86)')
@@ -90,10 +97,12 @@ def msvc_environment(bitness):
         arg = 'amd64' if bitness == 64 else 'x86'
     return environmentfrombatchfile.get(vcvarsall, arguments=arg)
 
+
 def paths_with_sh_exe_removed(path_value):
     items = path_value.split(os.pathsep)
     items = [i for i in items if not os.path.exists(os.path.join(i, 'sh.exe'))]
     return os.pathsep.join(items)
+
 
 def build_environment(toolchain, bitness):
     if is_windows():
@@ -112,20 +121,25 @@ def build_environment(toolchain, bitness):
     else:
         return None  # == process environment
 
+
 def is_msvc_toolchain(toolchain):
     return 'msvc' in toolchain
+
 
 def is_mingw_toolchain(toolchain):
     return 'mingw' in toolchain
 
+
 def is_gcc_toolchain(toolchain):
     return 'g++' in toolchain
+
 
 def cmake_generator(toolchain):
     if is_windows():
         return 'Ninja'
     else:
         return 'Unix Makefiles'
+
 
 def static_flags(toolchain):
     if is_mingw_toolchain(toolchain):
@@ -135,15 +149,18 @@ def static_flags(toolchain):
         ]
     return []
 
+
 def bitness_flags(bitness):
     if bitness == 32 and is_linux():
         return ['-DLLVM_BUILD_32_BITS=ON']
     return []
 
+
 def rtti_flags(toolchain):
     if is_mingw_toolchain(toolchain):
         return ['-DLLVM_ENABLE_RTTI:BOOL=OFF']
     return ['-DLLVM_ENABLE_RTTI:BOOL=ON']
+
 
 def build_command(toolchain):
     if is_windows():
@@ -152,12 +169,14 @@ def build_command(toolchain):
         command = ['make']
     return command
 
+
 def install_command(toolchain):
     if is_windows():
         command = ['ninja']
     else:
         command = ['make', '-j1']
     return command
+
 
 # For instrumented build we now use the same targets because clazy
 # requires the llvm installation to properly build
@@ -166,6 +185,7 @@ def build_and_install(toolchain, build_path, environment, build_targets, install
     do_execute_sub_process(build_cmd + build_targets, build_path, extra_env=environment)
     install_cmd = install_command(toolchain)
     do_execute_sub_process(install_cmd + install_targets, build_path, extra_env=environment)
+
 
 def cmake_command(toolchain, src_path, build_path, install_path, bitness, build_type):
     command = ['cmake',
@@ -191,6 +211,7 @@ def cmake_command(toolchain, src_path, build_path, install_path, bitness, build_
 
     return command
 
+
 def build_clang(toolchain, src_path, build_path, install_path, bitness=64, environment=None, build_type='Release'):
     if build_path and not os.path.lexists(build_path):
         os.makedirs(build_path)
@@ -203,6 +224,7 @@ def build_clang(toolchain, src_path, build_path, install_path, bitness=64, envir
         build_targets = ['install']  # There is no 'install/strip' for nmake.
     build_and_install(toolchain, build_path, environment, ['libclang', 'clang', 'llvm-config'], build_targets)
 
+
 def check_clang(toolchain, build_path, environment):
     if is_msvc_toolchain(toolchain) or is_mingw_toolchain(toolchain):
         tools_path = os.environ.get('WINDOWS_UNIX_TOOLS_PATH')
@@ -213,16 +235,19 @@ def check_clang(toolchain, build_path, environment):
     build_cmd = build_command(toolchain)
     do_execute_sub_process(build_cmd + ['check-clang'], build_path, extra_env=environment)
 
+
 def package_clang(install_path, result_file_path):
     (basepath, dirname) = os.path.split(install_path)
     zip_command = ['cmake', '-E', 'tar', 'cvf', result_file_path, '--format=7zip', dirname]
     bld_utils.runCommand(zip_command, basepath)
+
 
 def upload_clang(file_path, remote_path):
     (path, filename) = os.path.split(file_path)
     scp_bin = '%SCP%' if is_windows() else 'scp'
     scp_command = [scp_bin, filename, remote_path]
     bld_utils.runCommand(scp_command, path)
+
 
 def main():
     # Used Environment variables:
@@ -277,6 +302,7 @@ def main():
 
     package_clang(install_path, result_file_path)
     upload_clang(result_file_path, remote_path)
+
 
 if __name__ == "__main__":
     main()

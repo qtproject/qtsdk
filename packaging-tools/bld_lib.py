@@ -77,6 +77,7 @@ def collectLibs(searchPath: str) -> List[str]:
                 return [os.path.join(root, dir, x) for x in os.listdir(os.path.join(root, dir))]
     assert False, "Unbale to find: 'lib' from: {0}".format(searchPath)
 
+
 def parseQtVersion(downloadUrlPath: str) -> str:
     regex = re.compile(r'([\d.]+)')
     for item in downloadUrlPath.split("/"):

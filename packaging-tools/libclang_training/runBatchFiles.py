@@ -64,19 +64,23 @@ import time
 import libclangtimings2csv
 import mergeCsvFiles
 
+
 def verboseStart(args):
     if Config.Verbose:
         print("info: starting", args)
+
 
 def checkExistenceOrDie(filePath):
     if not os.path.exists(filePath):
         print("error: file path does not exist:", filePath, file=sys.stderr)
         sys.exit(1)
 
+
 def checkExitCodeOrDie(exitCode, args):
     if exitCode != 0:
         print("error: exit code is,", exitCode, "for", ' '.join(args), file=sys.stderr)
         sys.exit(1)
+
 
 class Config:
     Verbose = False
@@ -127,6 +131,7 @@ class Config:
         for b in Config.BatchFiles:
             print("  ", b)
 
+
 class RunRecord:
     def __init__(self, libClangId, batchFilePath):
         self.libClangId = libClangId
@@ -134,6 +139,7 @@ class RunRecord:
         self.batchFileId = '.'.join(parts[0:-1])  # Remove suffix
         self.logFilePath = self.batchFileId + '___' + libClangId + '.log'
         self.csvFilePath = None
+
 
 class DebugView:
     def __init__(self, logFilePath):
@@ -153,6 +159,7 @@ class DebugView:
             self.proc.terminate()
             self.proc.wait()
 
+
 def createEnvironment(batchFilePath):
     env = os.environ.copy()
     env['LIBCLANG_TIMING'] = '1'
@@ -164,6 +171,7 @@ def createEnvironment(batchFilePath):
     env['QTC_CLANG_BATCH'] = batchFilePath
 
     return env
+
 
 def runSyncAndLogOutputWindows(args, batchFilePath, logFilePath):
     debugView = DebugView(logFilePath)
@@ -177,6 +185,7 @@ def runSyncAndLogOutputWindows(args, batchFilePath, logFilePath):
 
     checkExitCodeOrDie(p.returncode, args)
 
+
 def runSyncAndLogOutputUnix(args, batchFilePath, logFilePath):
     logFile = open(logFilePath, 'w')
 
@@ -188,6 +197,7 @@ def runSyncAndLogOutputUnix(args, batchFilePath, logFilePath):
     p.communicate()
 
     checkExitCodeOrDie(p.returncode, args)
+
 
 def runQtCreatorWithBatchFile(batchFilePath, logFilePath):
     args = [
@@ -206,6 +216,7 @@ def runQtCreatorWithBatchFile(batchFilePath, logFilePath):
     else:
         runSyncAndLogOutputUnix(args, batchFilePath, logFilePath)
 
+
 def convertLogFileToCsvFile(logFilePath, columnLabel):
     output = libclangtimings2csv.convert(logFilePath, columnLabel)
 
@@ -216,14 +227,17 @@ def convertLogFileToCsvFile(logFilePath, columnLabel):
 
     return csvFilePath
 
+
 def logFileFromId(logFileId):
     return logFileId + ".log"
+
 
 def createDir(dirPath):
     if not os.path.exists(dirPath):
         if Config.Verbose:
             print("info: creating not existent", dirPath)
         os.makedirs(dirPath)
+
 
 def createBackupFile(filePath):
     if os.path.exists(filePath):
@@ -232,10 +246,12 @@ def createBackupFile(filePath):
             print('info: creating backup of already existing "%s"' %(filePath))
         shutil.copyfile(filePath, backupPath)
 
+
 def printDuration(s):
     hours, remainder = divmod(s, 3600)
     minutes, seconds = divmod(remainder, 60)
     print('...needed %d:%02d:%02d' %(hours, minutes, seconds))
+
 
 def processBatchFileTimed(libClangId, batchFilePath):
     timeStarted = time.time()
@@ -246,6 +262,7 @@ def processBatchFileTimed(libClangId, batchFilePath):
     printDuration(time.time() - timeStarted)
 
     return runRecord
+
 
 def processBatchFile(libClangId, batchFilePath):
     runRecord = RunRecord(libClangId, batchFilePath)
@@ -261,15 +278,18 @@ def processBatchFile(libClangId, batchFilePath):
 
     return runRecord
 
+
 def getLibClangId(libClangDll):
     fileName = os.path.basename(libClangDll)
     parts = fileName.split('.')
     identifier = '.'.join(parts[0:-1])
     return identifier
 
+
 def switchLibClang(libClangDll):
     print('copying "%s" -> "%s"' %(libClangDll, Config.TargetLibClangDll))
     shutil.copyfile(libClangDll, Config.TargetLibClangDll)
+
 
 def runQtCreatorWithLibClang(libClangDll):
     print("")
@@ -283,11 +303,13 @@ def runQtCreatorWithLibClang(libClangDll):
 
     return runRecords
 
+
 def logIdPartFromLibClangDll(libClangDll):
     fileName = os.path.basename(libClangDll)
     parts = fileName.split('.')
     fileName = '.'.join(parts[1:-1])
     return fileName
+
 
 def mergeGeneratedCsvFiles(runRecords):
     batchFileId2RunRecord = {}
@@ -305,6 +327,7 @@ def mergeGeneratedCsvFiles(runRecords):
         mergeCsvFiles.mergeFiles(mergeFilePath, csvFilePaths)
         print("generated:", mergeFilePath)
 
+
 def main():
     Config.initializeFromEnvironment()
     Config.dump()
@@ -316,6 +339,6 @@ def main():
     print
     mergeGeneratedCsvFiles(runRecords)
 
+
 if __name__ == "__main__":
     main()
-

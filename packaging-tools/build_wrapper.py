@@ -70,6 +70,7 @@ if LOCAL_MODE:
 def unlock_keychain_script():
     return '/Users/qt/unlock-keychain.sh'
 
+
 ###############################
 # Unlock keychain
 ###############################
@@ -194,6 +195,7 @@ def create_download_documentation_task(base_url, download_path):
     repackage_task.addFunction(repackage)
     return (download_task, repackage_task, bld_utils.file_url(target_filepath))
 
+
 def create_download_openssl_task(url, download_path):
     # create openssl 7zips which just contain the DLLs / SOs, so they can just be extracted
     # into the Qt lib directory and later on deployed with Qt
@@ -273,6 +275,7 @@ def make_QtcPlugin(name, path, version, dependencies=None, modules=None,
                      build=build,
                      package_commercial=package_commercial)
 
+
 class BuildLog:
     def __init__(self, log_filepath, log_overwrite=False):
         self.file = None
@@ -295,6 +298,7 @@ class BuildLog:
                 print(f.read())
             return True  # re-raise
 
+
 # writes output of process to log_filepath
 # on error it dumps the log file to stdout as well
 def check_call_log(args, execution_path, extra_env=dict(os.environ),
@@ -307,6 +311,7 @@ def check_call_log(args, execution_path, extra_env=dict(os.environ),
             do_execute_sub_process(args, execution_path,
                                                       extra_env=extra_env,
                                                       redirect_output=f)
+
 
 def create_qtcreator_source_package(source_path, plugin_name, version, edition, target_path, log_filepath):
     namepart = '-' + plugin_name if plugin_name else ''
@@ -326,6 +331,7 @@ def create_qtcreator_source_package(source_path, plugin_name, version, edition, 
         if create_zip:
             check_call_log(['7z', 'a', '-tzip', file_base + '.zip', file_base, '-xr!.git'],
                            target_path, log_filepath=log_filepath)
+
 
 def qtcreator_build_plugin_script(qtcreator_dev_path):
     if is_macos():
@@ -388,6 +394,7 @@ def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url
         create_qtcreator_source_package(os.path.join(work_dir, plugin.path), plugin.name, plugin.version,
                                         'enterprise', work_dir, log_filepath)
 
+
 def get_qtcreator_version(path_to_qtcreator_src, optionDict):
     expr = re.compile(r'\s*set[(]\s*IDE_VERSION_DISPLAY\s*"([^\s]+)"')
 
@@ -402,6 +409,7 @@ def get_qtcreator_version(path_to_qtcreator_src, optionDict):
                 return match.group(1)
     return None
 
+
 def make_QtcPlugin_from_json(plugin_json):
     return QtcPlugin(name=plugin_json['Name'],
                      path=plugin_json['Path'],
@@ -411,6 +419,7 @@ def make_QtcPlugin_from_json(plugin_json):
                      additional_arguments=plugin_json.get('AdditionalArguments') or [],
                      build=plugin_json.get('Build') or True,
                      package_commercial=plugin_json.get('PackageCommercial') or False)
+
 
 def parse_qt_creator_plugin_conf(plugin_conf_file_path, optionDict):
     data = {}
@@ -433,6 +442,7 @@ def parse_qt_creator_plugin_conf(plugin_conf_file_path, optionDict):
         plugin = plugin._replace(additional_arguments = [arg % optionDict for arg in plugin.additional_arguments])
         return plugin
     return [fixup_plugin(make_QtcPlugin_from_json(plugin)) for plugin in plugins_json if valid_for_platform(plugin)]
+
 
 def collect_qt_creator_plugin_sha1s(plugins):
     work_dir = optionDict['WORK_DIR']
@@ -458,6 +468,7 @@ def upload_files(remote_path, file_upload_list, optionDict):
     for source, destination in file_upload_list:
         cmd_args = [optionDict['SCP_COMMAND'], source, pkg_storage_server + ':' + dir_path + '/' + destination]
         do_execute_sub_process(cmd_args, optionDict['WORK_DIR'])
+
 
 def update_job_link(remote_path_base, remote_target_path, optionDict):
     remote_link = remote_path_base + '/' + optionDict['PULSE_PROJECT']
@@ -923,6 +934,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
             do_execute_sub_process(cmd_args, work_dir)
     # create link from job name to display name
     update_job_link(unversioned_base_path, base_path, optionDict)
+
 
 ###############################
 # handle_sdktool_build

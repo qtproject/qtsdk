@@ -43,6 +43,7 @@ import os
 #         return False
 #     return True
 
+
 def consume(iterator):
     try:
         while True:

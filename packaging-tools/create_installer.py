@@ -74,6 +74,7 @@ COMPONENT_SHA1_TAG                  = '%COMPONENT_SHA1%'
 class CreateInstallerError(Exception):
     pass
 
+
 ##############################################################
 # Check that valid tools are present in the build environment
 ##############################################################
@@ -201,6 +202,7 @@ def substitute_component_tags(tag_pair_list, meta_dir_dest):
         else:
             log.warning("Ignoring incomplete tag pair: {0} = {1}".format(tag, value))
 
+
 ##############################################################
 # Parse SDK components
 ##############################################################
@@ -275,6 +277,7 @@ def parse_components(task):
     parse_component_data(task, main_conf_file, conf_base_path)
     return
 
+
 def create_metadata_map(sdk_component):
     """create lists for component specific tag substitutions"""
     component_metadata_tag_pair_list = []
@@ -302,6 +305,7 @@ def create_metadata_map(sdk_component):
 
     return component_metadata_tag_pair_list
 
+
 def get_component_sha1_file(sdk_component, sha1_file_dest):
     """download component sha1 file"""
     bld_utils.download(sdk_component.component_sha1_uri, sha1_file_dest)
@@ -309,6 +313,7 @@ def get_component_sha1_file(sdk_component, sha1_file_dest):
     # read sha1 from the file
     with open(sha1_file_dest, "r") as sha1_file:
         sdk_component.component_sha1 = sha1_file.read().strip()
+
 
 def get_component_data(task, sdk_component, archive, install_dir, data_dir_dest, compress_content_dir):
     """download and create data for a component"""
@@ -465,6 +470,7 @@ def substitute_package_name(task, package_name):
         package_name = package_name.replace(item[0], item[1])
 
     return package_name
+
 
 ##############################################################
 # Remove debug information files
@@ -1046,7 +1052,6 @@ class QtInstallerTask:
         log.info("Repogen tool: {0}".format(self.repogen_tool))
         log.info("Installerbase: {0}".format(self.installerbase_tool))
 
-
     def download_and_extract_ifw_tools(self):
         package_save_as_temp = os.path.join(self.ifw_tools_dir, os.path.basename(self.ifw_tools_uri))
         package_save_as_temp = os.path.normpath(package_save_as_temp)
@@ -1063,7 +1068,6 @@ class QtInstallerTask:
         # extract ifw archive
         bldinstallercommon.extract_file(package_save_as_temp, self.ifw_tools_dir)
         log.info("IFW tools extracted into: {0}".format(self.ifw_tools_dir))
-
 
 
 if __name__ == "__main__":
@@ -1129,6 +1133,3 @@ if __name__ == "__main__":
     task = QtInstallerTask(args)
     task.verbose()
     create_installer(task)
-
-
-

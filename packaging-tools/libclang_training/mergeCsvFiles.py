@@ -35,14 +35,17 @@ import csv
 import getopt
 import sys
 
+
 class Global:
     Delimiter = ','
+
 
 class FileWithValues:
     def __init__(self, filePath, tag, values):
         self.filePath = filePath
         self.tag = tag
         self.values = values
+
 
 def readCsv(filePath, delimiter):
     lines = []
@@ -57,6 +60,7 @@ def readCsv(filePath, delimiter):
         records.append((identifier, value))
 
     return records
+
 
 def readCsvFiles(filePaths):
     files = []
@@ -76,6 +80,7 @@ def readCsvFiles(filePaths):
         files.append(myFile)
 
     return files
+
 
 def checkConsistency(files):
     referenceEntry = files[0]
@@ -97,6 +102,7 @@ def checkConsistency(files):
 
     return referenceEntryIdentifiers
 
+
 def mergeFilesHelper(outputFilePath, referenceIdentifiers, files):
     with open(outputFilePath, 'wt') as csvfile:
         writer = csv.writer(csvfile, delimiter=Global.Delimiter, quotechar='"', quoting=csv.QUOTE_MINIMAL)
@@ -111,14 +117,17 @@ def mergeFilesHelper(outputFilePath, referenceIdentifiers, files):
         for row in rows:
             writer.writerow(row)
 
+
 def mergeFiles(outputFilePath, filesToMerge):
     files = readCsvFiles(filesToMerge)
     referenceIdentifiers = checkConsistency(files)
     mergeFilesHelper(outputFilePath, referenceIdentifiers, files)
 
+
 def printHelpAndExit():
     print(__doc__)
     sys.exit(0)
+
 
 def main():
     try:
@@ -137,6 +146,7 @@ def main():
     outputFile = args[0]
     filesToMerge = args[1:]
     mergeFiles(outputFile, filesToMerge)
+
 
 if __name__ == "__main__":
     main()

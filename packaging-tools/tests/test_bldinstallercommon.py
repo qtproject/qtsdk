@@ -40,6 +40,7 @@ from pathlib import Path
 from bld_utils import is_windows
 from installer_utils import PackagingError
 
+
 @ddt
 class TestCommon(unittest.TestCase):
     @data(

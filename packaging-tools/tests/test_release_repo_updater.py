@@ -260,5 +260,6 @@ class TestReleaseRepoUpdater(unittest.TestCase):
     async def test_has_connection_error(self, output: str, expected_result: bool) -> None:
         self.assertEqual(expected_result, has_connection_error(output))
 
+
 if __name__ == '__main__':
     unittest.main()

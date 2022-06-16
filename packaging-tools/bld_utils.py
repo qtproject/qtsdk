@@ -77,17 +77,21 @@ def deep_copy_arguments(to_call):
 
 
 class DirRenamer(object):
+
     def __init__(self, path, newName):
         self.oldName = path
         self.newName = os.path.join(os.path.split(path)[0], newName)
         print("self.oldName: " + self.oldName)
         print("self.newName: " + self.newName)
+
     def __enter__(self):
         if self.oldName != self.newName:
             os.rename(self.oldName, self.newName)
+
     def __exit__(self, etype, value, etraceback):
         if self.oldName != self.newName:
             os.rename(self.newName, self.oldName)
+
 
 def compress(path, directoryName, sevenZipTarget, callerArguments):
     sevenZipExtension = os.extsep + '7z'
@@ -102,10 +106,12 @@ def compress(path, directoryName, sevenZipTarget, callerArguments):
     if currentSevenZipPath != sevenZipTarget:
         shutil.move(currentSevenZipPath, sevenZipTarget)
 
+
 def stripVars(sobject, chars):
     for key, value in vars(sobject).items():
         if isinstance(value, str):
             setattr(sobject, key, value.strip(chars))
+
 
 def urllib2_response_read(response, file_path, block_size, total_size):
     total_size = int(total_size)
@@ -129,6 +135,7 @@ def urllib2_response_read(response, file_path, block_size, total_size):
     filename.close()
     return bytes_count
 
+
 def download(url, target, read_block_size = 1048576):
     try:
         if os.path.isdir(os.path.abspath(target)):
@@ -136,6 +143,7 @@ def download(url, target, read_block_size = 1048576):
             target = os.path.join(os.path.abspath(target), filename)
         if os.path.lexists(target):
             raise Exception("Can not download '{0}' to '{1}' as target. The file already exists.".format(url, target))
+
         def localDownload(localFilePath, targtFilePath):
             if os.path.isfile(localFilePath):
                 print("copying file from '{0}' to {1}".format(localFilePath, targtFilePath))
@@ -205,6 +213,7 @@ def download(url, target, read_block_size = 1048576):
         except Exception:  # swallow, do not shadow actual error
             pass
 
+
 def setValueOnEnvironmentDict(environment, key, value):
     if key in environment:
         # if the data already contains the value stop here
@@ -213,6 +222,7 @@ def setValueOnEnvironmentDict(environment, key, value):
         environment[key] = os.pathsep.join((value, environment[key]))
     else:
         environment[key] = value
+
 
 @deep_copy_arguments
 def getEnvironment(extra_environment = None, callerArguments = None):
@@ -229,6 +239,7 @@ def getEnvironment(extra_environment = None, callerArguments = None):
         else:
             environment[key] = extra_environment[key]
     return environment
+
 
 @deep_copy_arguments
 def runCommand(command, currentWorkingDirectory, callerArguments = None, extra_environment = None, onlyErrorCaseOutput=False, expectedExitCodes=[0]):
@@ -340,6 +351,7 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None, extra_e
         raise Exception("Different exit code then expected({0}): {1}{2}".format(expectedExitCodes, exitCode, prettyLastOutput))
     return exitCode
 
+
 @deep_copy_arguments
 def runInstallCommand(arguments = ['install'], currentWorkingDirectory = None, callerArguments = None, extra_environment = None, onlyErrorCaseOutput = False):
     if hasattr(callerArguments, 'installcommand') and callerArguments.installcommand:
@@ -356,6 +368,7 @@ def runInstallCommand(arguments = ['install'], currentWorkingDirectory = None, c
         installcommand.extend(arguments if builtins.type(arguments) is list else arguments.split())
     return runCommand(installcommand, currentWorkingDirectory, callerArguments, extra_environment = extra_environment, onlyErrorCaseOutput = onlyErrorCaseOutput)
 
+
 @deep_copy_arguments
 def runBuildCommand(arguments = None, currentWorkingDirectory = None, callerArguments = None, extra_environment = None, onlyErrorCaseOutput = False, expectedExitCodes=[0]):
     buildcommand = ['make']
@@ -366,17 +379,20 @@ def runBuildCommand(arguments = None, currentWorkingDirectory = None, callerArgu
         buildcommand.extend(arguments if builtins.type(arguments) is list else arguments.split())
     return runCommand(buildcommand, currentWorkingDirectory, callerArguments, extra_environment = extra_environment, onlyErrorCaseOutput = onlyErrorCaseOutput, expectedExitCodes = expectedExitCodes)
 
+
 @deep_copy_arguments
 def getReturnValue(command, currentWorkingDirectory = None, extra_environment = None, callerArguments = None):
     commandAsList = command[:].split(' ')
     return subprocess.Popen(commandAsList, stdout=subprocess.PIPE, stderr = subprocess.STDOUT,
         cwd = currentWorkingDirectory, env = getEnvironment(extra_environment, callerArguments)).communicate()[0].strip()
 
+
 def gitSHA(path, callerArguments = None):
     gitBinary = "git"
     if isGitDirectory(path):
         return getReturnValue(gitBinary + " rev-list -n1 HEAD", currentWorkingDirectory = path, callerArguments = callerArguments).strip()
     return ''
+
 
 # get commit SHA either directly from git, or from a .tag file in the source directory
 def get_commit_SHA(source_path, callerArguments = None):
@@ -388,11 +404,13 @@ def get_commit_SHA(source_path, callerArguments = None):
                 buildGitSHA = f.read().strip()
     return buildGitSHA
 
+
 def isGitDirectory(repository_path):
     if not repository_path:
         return False
     gitConfigDir = os.path.abspath(os.path.join(repository_path, '.git'))
     return os.path.lexists(gitConfigDir)
+
 
 def file_url(file_path):
     return urllib.parse.urljoin('file:', urllib.request.pathname2url(file_path))

@@ -139,7 +139,6 @@ class TestPackaging(unittest.TestCase):
         finally:
             shutil.rmtree(tempDir)
 
-
     @unittest.skipUnless(os.environ.get("PKG_TEST_QT_CONFIG_BASE_PATH"), "Skipping because 'PKG_TEST_QT_CONFIG_BASE_PATH' is not set")
     @unittest.skipUnless(os.environ.get("PKG_TEST_QT_ARTIFACTS_URL"), "Skipping because 'PKG_TEST_QT_CONFIG_BASE_PATH' is not set")
     @unittest.skipUnless(os.environ.get("PKG_TEST_QT_IFW_TOOL_URL"), "Skipping because 'PKG_TEST_QT_IFW_TOOL_URL' is not set")
@@ -165,7 +164,6 @@ class TestPackaging(unittest.TestCase):
             except Exception as e:
                 self.assertTrue(False, "Failed to execute: [{0}] -> {1}".format(" ".join(cmd_args), str(e)))
             self.assertTrue(os.path.exists(os.path.join(testsDir, 'installer_output', offlineJob + extension)), "No installers generated")
-
 
 
 if __name__ == '__main__':

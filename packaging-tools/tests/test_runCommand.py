@@ -45,8 +45,10 @@ if sys.platform.startswith("win"):
     ctypes.windll.kernel32.SetErrorMode(SEM_NOGPFAULTERRORBOX)
     subprocess_flags = 0x8000000  # win32con.CREATE_NO_WINDOW?
 
+
 def baseCommand():
     return " ".join([sys.executable,os.path.abspath(__file__)])
+
 
 def crash():
         '''\
@@ -60,13 +62,16 @@ def crash():
                 c += 1
         j
 
+
 def printLines(count):
     for lineNumber in range(count):
         print("{0} printed line".format(lineNumber))
 
+
 def useRunCommand(testArguments, *arguments):
     from bld_utils import runCommand
     return runCommand("{0} {1}".format(baseCommand(), testArguments), *arguments)
+
 
 class TestRunCommand(unittest.TestCase):
     def test_ExitValue_0(self):
@@ -126,6 +131,7 @@ class TestRunCommand(unittest.TestCase):
         for taskString in taskStringList:
             testWork.addTask(taskString, useRunCommand, taskString, os.getcwd())
         testWork.run()
+
     def test_withThreadedWork_unexpected_exitCode(self):
         currentMethodName = sys._getframe().f_code.co_name
         from threadedwork import ThreadedWork
@@ -143,6 +149,7 @@ class TestRunCommand(unittest.TestCase):
         for taskString in taskStringList:
             testWork.addTask(taskString, useRunCommand, taskString, os.getcwd())
         testWork.run()
+
     def test_withThreadedWork_crash(self):
         currentMethodName = sys._getframe().f_code.co_name
         from threadedwork import ThreadedWork
@@ -160,6 +167,7 @@ class TestRunCommand(unittest.TestCase):
         for taskString in taskStringList:
             testWork.addTask(taskString, useRunCommand, taskString, os.getcwd())
         testWork.run()
+
 
 if __name__ == '__main__':
     # no args means we are calling the tests
