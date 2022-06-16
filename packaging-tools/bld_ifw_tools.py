@@ -287,9 +287,9 @@ class IfwOptions:
 def build_ifw(options, create_installer=False, build_ifw_examples=False):
     # verbose
     options.print_data()
-    #clean environment first
+    # clean environment first
     clean_build_environment(options)
-    #checkout sources
+    # checkout sources
     prepare_installer_framework(options)
 
     if options.qt_binaries_static:
@@ -316,7 +316,7 @@ def build_ifw(options, create_installer=False, build_ifw_examples=False):
             build_qt(options, options.qt_build_dir_dynamic, configure_options, options.qt_build_modules_docs)
         build_ifw_docs(options)
         create_installer_package(options)
-    #archive
+    # archive
     archive_installerbase(options)
     archive_installer_framework(options.installer_framework_build_dir, options.installer_framework_archive_name, options, True)
     archive_binarycreator(options)
@@ -408,7 +408,7 @@ def prepare_installer_framework(options):
         return
     print('--------------------------------------------------------------------')
     print('Prepare Installer Framework source')
-    #create dirs
+    # create dirs
     Path(options.installer_framework_build_dir).mkdir(parents=True, exist_ok=True)
     if options.qt_installer_framework_uri.endswith('.git'):
         # clone repos
@@ -477,7 +477,7 @@ def build_installer_framework_examples(options):
             if is_windows():
                 target_filename += '.exe'
             ifw_example_binaries.append(target_filename)
-        #Breaking here as we don't want to go through sub directories
+        # Breaking here as we don't want to go through sub directories
         break
 
 

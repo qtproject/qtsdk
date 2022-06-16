@@ -123,7 +123,7 @@ class TaskFunction():
 
 class Task():
     def __init__(self, description, function = None, *arguments):
-        self.taskNumber = 0 # will be set from outside
+        self.taskNumber = 0  # will be set from outside
         self.description = description
         self.listOfFunctions = []
         if function:
@@ -198,10 +198,10 @@ class ThreadedWork():
         for consumer in listOfConsumers:
             while consumer.is_alive():
                 try:
-                    #wait 1 second, then go back and ask if thread is still alive
+                    # wait 1 second, then go back and ask if thread is still alive
                     time.sleep(1)
-                except KeyboardInterrupt: #if ctrl-C is pressed within that second,
-                    #catch the KeyboardInterrupt exception
+                except KeyboardInterrupt:  # if ctrl-C is pressed within that second,
+                    # catch the KeyboardInterrupt exception
                     sys.exit(0)
         # self.queue.join() <- this ignoring the KeyboardInterrupt
         if maxThreads > 1:

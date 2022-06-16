@@ -30,7 +30,7 @@
 #############################################################################
 
 # built in imports
-import argparse # commandline argument parser
+import argparse  # commandline argument parser
 import multiprocessing
 import os
 import sys
@@ -201,7 +201,7 @@ if is_windows():
         qtModuleInstallDirectory = qtModuleInstallDirectory.replace('\\','/').replace('/', '\\', 1)
 
 
-### clean step
+# clean step
 if callerArguments.clean:
     print("##### {0} #####".format("clean old builds"))
     bldinstallercommon.remove_tree(callerArguments.qt5path)
@@ -229,7 +229,7 @@ if not os.path.lexists(callerArguments.qt5path):
     # "install" Qt
     bldinstallercommon.patch_qt(callerArguments.qt5path)
 
-### lets start building
+# lets start building
 
 # prepare the environment for example setting LD_LIBRARY_PATH
 # or adding qmake path into the Path environment variable (Qt deployment step)

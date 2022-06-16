@@ -32,7 +32,7 @@ import ctypes
 import time
 import sys
 import unittest
-import argparse # commandline argument parser
+import argparse  # commandline argument parser
 import os
 
 if sys.platform.startswith("win"):
@@ -41,9 +41,9 @@ if sys.platform.startswith("win"):
     # How to suppress crash notification dialog?, Jan 14,2004 -
     # Raymond Chen's response [1]
 
-    SEM_NOGPFAULTERRORBOX = 0x0002 # From MSDN
+    SEM_NOGPFAULTERRORBOX = 0x0002  # From MSDN
     ctypes.windll.kernel32.SetErrorMode(SEM_NOGPFAULTERRORBOX);
-    subprocess_flags = 0x8000000 #win32con.CREATE_NO_WINDOW?
+    subprocess_flags = 0x8000000  # win32con.CREATE_NO_WINDOW?
 
 def baseCommand():
     return " ".join([sys.executable,os.path.abspath(__file__)])
@@ -85,13 +85,13 @@ class TestRunCommand(unittest.TestCase):
     def test_Crash_onlyErrorCaseOutput(self):
         with self.assertRaises(Exception) as contextManager:
             useRunCommand("--printLines 10 --crash", os.getcwd(),
-            #callerArguments=
+            # callerArguments=
             None,
-            #extra_environment=
+            # extra_environment=
             None,
-            #onlyErrorCaseOutput=
+            # onlyErrorCaseOutput=
             True,
-            #expectedExitCodes=
+            # expectedExitCodes=
             [0])
         self.assertIsNotNone(contextManager)
         self.assertIsNotNone(contextManager.exception)
@@ -104,13 +104,13 @@ class TestRunCommand(unittest.TestCase):
 
     def test_differentExitCode_onlyErrorCaseOutput(self):
         self.assertEqual(useRunCommand("--printLines 10 --exitCode 5", os.getcwd(),
-            #callerArguments=
+            # callerArguments=
             None,
-            #extra_environment=
+            # extra_environment=
             None,
-            #onlyErrorCaseOutput=
+            # onlyErrorCaseOutput=
             True,
-            #expectedExitCodes=
+            # expectedExitCodes=
             [0,5]), 5)
 
     def test_withThreadedWork(self):
@@ -184,5 +184,5 @@ if __name__ == '__main__':
         if callerArguments.exitCode:
             os._exit(callerArguments.exitCode)
         if callerArguments.testMethod:
-            #python test_runCommand.py --testMethod test_Crash_onlyErrorCaseOutput
+            # python test_runCommand.py --testMethod test_Crash_onlyErrorCaseOutput
             TestRunCommand(methodName=callerArguments.testMethod).debug()

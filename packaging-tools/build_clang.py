@@ -123,7 +123,7 @@ def build_environment(toolchain, bitness):
             environment['CXX'] = 'cl'
             return environment
     else:
-        return None # == process environment
+        return None  # == process environment
 
 def training_qt_version():
     qt_ver = os.environ.get('TRAINING_QT_VERSION')
@@ -362,11 +362,11 @@ def build_clang(toolchain, src_path, build_path, install_path, profile_data_path
     install_targets = ['install/strip']
 
     if is_msvc_toolchain(toolchain):
-        install_targets = ['install'] # There is no 'install/strip' for nmake.
+        install_targets = ['install']  # There is no 'install/strip' for nmake.
 
     if profile_data_path and first_run:
         build_targets = ['libclang']
-        install_targets = ['tools/clang/tools/libclang/install/strip'] # we only want to build / install libclang
+        install_targets = ['tools/clang/tools/libclang/install/strip']  # we only want to build / install libclang
 
     build_and_install(toolchain, build_path, environment, build_targets, install_targets)
 
@@ -393,7 +393,7 @@ def build_clazy(toolchain, src_path, build_path, install_path, bitness=64, envir
 
     install_targets = ['install/strip']
     if is_msvc_toolchain(toolchain):
-        install_targets = ['install'] # There is no 'install/strip' for nmake.
+        install_targets = ['install']  # There is no 'install/strip' for nmake.
     build_and_install(toolchain, build_path, environment, [], install_targets)
 
 def check_clang(toolchain, build_path, environment):
@@ -471,7 +471,7 @@ def main():
     remote_path = (get_pkg_value("PACKAGE_STORAGE_SERVER_USER") + '@' + get_pkg_value("PACKAGE_STORAGE_SERVER") + ':'
                    + os.environ['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + os.environ['CLANG_UPLOAD_SERVER_PATH'])
 
-    ### Get, build and install LLVM/Clang
+    # Get, build and install LLVM/Clang
     get_clang(base_path, os.environ['LLVM_REPOSITORY_URL'], os.environ['LLVM_REVISION'])
 
     # TODO: put args in some struct to improve readability, add error checks
@@ -500,7 +500,7 @@ def main():
         build_clang(toolchain, src_path, build_path_training, install_path, profile_data_path, False, bitness, environment, build_type='Release')
 
 
-    ### Get, build and install clazy
+    # Get, build and install clazy
     git_clone_and_checkout(base_path,
                            os.environ['CLAZY_REPOSITORY_URL'],
                            'clazy',
@@ -512,7 +512,7 @@ def main():
                 bitness,
                 environment)
 
-    ### Package and upload
+    # Package and upload
     result_file_path = os.path.join(base_path, 'libclang-' + branch + '-' + os.environ['CLANG_PLATFORM'] + '.7z')
     package_clang(install_path, result_file_path)
     upload_clang(result_file_path, remote_path)

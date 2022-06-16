@@ -161,5 +161,5 @@ def _main():
     return
 
 if __name__ == '__main__':
-# use everything capsulated in functions to make sure we are not using module globals
+    # use everything capsulated in functions to make sure we are not using module globals
     _main()

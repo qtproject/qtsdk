@@ -113,7 +113,7 @@ def retrieve_url(url, savefile):
         print(exc)
         try:
             os.remove(savefile_tmp)
-        except: #swallow, do not shadow actual error
+        except:  # swallow, do not shadow actual error
             pass
         raise exc
 
@@ -193,7 +193,7 @@ def remove_one_tree_level(directory):
         full_dir_name = os.path.join(directory, dir_name)
         # avoid directory name collision by first moving to temporary dir
         tempdir_base = tempfile.mkdtemp()
-        tempdir = os.path.join(tempdir_base, 'a') # dummy name
+        tempdir = os.path.join(tempdir_base, 'a')  # dummy name
         shutil.move(full_dir_name, tempdir)
         move_tree(tempdir, directory)
         remove_tree(tempdir_base)
@@ -206,7 +206,7 @@ def remove_one_tree_level(directory):
 def handle_remove_readonly(func, path, exc):
     excvalue = exc[1]
     if func in (os.rmdir, os.remove) and excvalue.errno == errno.EACCES:
-        os.chmod(path, stat.S_IRWXU| stat.S_IRWXG| stat.S_IRWXO) # 0777
+        os.chmod(path, stat.S_IRWXU| stat.S_IRWXG| stat.S_IRWXO)  # 0777
         func(path)
     else:
         raise
@@ -215,14 +215,14 @@ def remove_tree(path):
     if os.path.isdir(path) and os.path.exists(path):
         if is_windows():
             path = win32api.GetShortPathName(path.replace('/', '\\'))
-            #a funny thing is that rmdir does not set an exitcode it is just using the last set one
+            # a funny thing is that rmdir does not set an exitcode it is just using the last set one
             try:
                 runCommand(['rmdir', path, '/S', '/Q'], os.getcwd(), onlyErrorCaseOutput=True)
             except:
                 traceback.print_exc()
                 pass
         else:
-            #shutil.rmtree(path)
+            # shutil.rmtree(path)
             runCommand(['rm', '-rf', path], os.getcwd(), onlyErrorCaseOutput=True)
     return not os.path.exists(path)
 
@@ -477,9 +477,9 @@ def handle_component_rpath(component_root_path, destination_lib_paths):
 
                     rp = ':'.join(rpaths)
                     if sanity_check_rpath_max_length(file_full_path, rp):
-                        #print '        RPath value: [' + rp + '] for file: [' + file_full_path + ']'
+                        # print '        RPath value: [' + rp + '] for file: [' + file_full_path + ']'
                         cmd_args = ['chrpath', '-r', rp, file_full_path]
-                        #force silent operation
+                        # force silent operation
                         work_dir = os.path.dirname(os.path.realpath(__file__))
                         do_execute_sub_process(cmd_args, work_dir)
 
@@ -629,9 +629,9 @@ def create_mac_disk_image(execution_path, file_directory, file_base_name, image_
 ###############################
 def rename_android_soname_files(qt5_base_path):
     print ('---------- Renaming .so name files in ' + qt5_base_path + ' ----------------')
-    ## QTBUG-33793
+    # QTBUG-33793
     # temporary solution for Android on Windows compilations
-    ## rename the .so files for Android on Windows
+    # rename the .so files for Android on Windows
     # find the lib directory under the install directory for essentials
     try:
         print ('Trying to locate /lib from: ' + qt5_base_path)

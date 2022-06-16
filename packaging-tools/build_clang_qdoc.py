@@ -116,7 +116,7 @@ def build_environment(toolchain, bitness):
             environment['CXX'] = 'cl'
             return environment
     else:
-        return None # == process environment
+        return None  # == process environment
 
 def is_msvc_toolchain(toolchain):
     return 'msvc' in toolchain
@@ -206,7 +206,7 @@ def build_clang(toolchain, src_path, build_path, install_path, bitness=64, envir
     do_execute_sub_process(cmake_cmd, build_path, extra_env=environment)
     build_targets = ['install/strip']
     if is_msvc_toolchain(toolchain):
-        build_targets = ['install'] # There is no 'install/strip' for nmake.
+        build_targets = ['install']  # There is no 'install/strip' for nmake.
     build_and_install(toolchain, build_path, environment, ['libclang', 'clang', 'llvm-config'], build_targets)
 
 def check_clang(toolchain, build_path, environment):

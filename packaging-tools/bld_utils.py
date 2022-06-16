@@ -30,7 +30,7 @@
 #############################################################################
 
 # built in imports
-from distutils.spawn import find_executable # runCommand method
+from distutils.spawn import find_executable  # runCommand method
 import os
 import sys
 from sys import platform
@@ -202,10 +202,10 @@ def download(url, target, read_block_size = 1048576):
                 else:
                     if not os.path.lexists(target):
                         raise Exception("Could not rename {0} to {1}{2}Error: {3}".format(savefile_tmp, target, os.linesep, e.message))
-    finally: # this is done before the except code is called
+    finally:  # this is done before the except code is called
         try:
             os.remove(savefile_tmp)
-        except: #swallow, do not shadow actual error
+        except:  # swallow, do not shadow actual error
             pass
 
 def setValueOnEnvironmentDict(environment, key, value):
@@ -321,9 +321,9 @@ def runCommand(command, currentWorkingDirectory, callerArguments = None, extra_e
     exitCode = process.returncode
 
     # lets keep that for debugging
-    #if environment:
-    #    for key in sorted(environment):
-    #        sys.stderr.write("set " + key + "=" + environment[key] + os.linesep)
+    # if environment:
+    #     for key in sorted(environment):
+    #         sys.stderr.write("set " + key + "=" + environment[key] + os.linesep)
     if exitCode not in expectedExitCodes:
         lastOutput = ""
         type = ""

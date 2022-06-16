@@ -34,14 +34,14 @@ import subprocess
 import os
 
 # http://stackoverflow.com/questions/1214496/how-to-get-environment-from-a-subprocess-in-python
-#def validate_pair(ob):
-#    try:
-#        if not (len(ob) == 2):
-#            print("Unexpected result:", ob, file = sys.stderr)
-#            raise ValueError
-#    except:
-#        return False
-#    return True
+# def validate_pair(ob):
+#     try:
+#         if not (len(ob) == 2):
+#             print("Unexpected result:", ob, file = sys.stderr)
+#             raise ValueError
+#     except:
+#         return False
+#     return True
 
 def consume(iterator):
     try:
@@ -75,10 +75,10 @@ def get(env_cmd, initial = None, arguments = None):
     if not os.path.lexists(env_cmd):
         raise Exception("Can not find {0} to get an environment from it.".format(env_cmd))
 
-    #if not isinstance(env_cmd, (list, tuple)):
-    #    env_cmd = [env_cmd]
+    # if not isinstance(env_cmd, (list, tuple)):
+    #     env_cmd = [env_cmd]
     # construct the command that will alter the environment
-    #env_cmd = subprocess.list2cmdline(env_cmd)
+    # env_cmd = subprocess.list2cmdline(env_cmd)
 
     # create a tag so we can tell in the output when the proc is done
     tag = 'Done running command'

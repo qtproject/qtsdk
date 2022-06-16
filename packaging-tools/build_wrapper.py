@@ -57,7 +57,7 @@ from runner import do_execute_sub_process
 # ----------------------------------------------------------------------
 SCRIPT_ROOT_DIR             = os.path.dirname(os.path.realpath(__file__))
 WORK_DIR                    = os.getenv('PKG_NODE_ROOT') if os.getenv("PKG_NODE_ROOT") else os.path.abspath(os.path.join(__file__, '../../../'))
-LOCAL_MODE                  = os.getenv('LOCAL_MODE') # if set, installers will be copied to a local directory
+LOCAL_MODE                  = os.getenv('LOCAL_MODE')  # if set, installers will be copied to a local directory
 LOCAL_INSTALLER_DIR         = os.getenv('LOCAL_INSTALLER_DIR', os.path.join(WORK_DIR, 'installers'))
 
 if LOCAL_MODE:
@@ -131,7 +131,7 @@ def handle_qt_licheck_build(optionDict):
             cmd_args = ['rsync', '-r', 'licheck_mac', upload_path +'licheck_mac']
             do_execute_sub_process(cmd_args, exe_dir, True)
     else:
-        #opensource, do nothing
+        # opensource, do nothing
         print('*** opensource build, nothing to build ...')
 
 
@@ -549,27 +549,27 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     scheme = "" if urlparse(pkg_base_path).scheme != "" else "file://"
     pkg_base_path = scheme + pkg_base_path
     pkg_storage_server = optionDict['PACKAGE_STORAGE_SERVER_ADDR']
-    qtcreator_edition_name = optionDict.get('QT_CREATOR_EDITION_NAME') # optional
+    qtcreator_edition_name = optionDict.get('QT_CREATOR_EDITION_NAME')  # optional
     unversioned_base_path = optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] + '/' + optionDict['QTC_BASE_DIR']
     base_path = unversioned_base_path + '/' + qtcreator_version
     if qtcreator_edition_name:
         base_path += '_' + qtcreator_edition_name
-    snapshot_server = optionDict.get('SNAPSHOT_SERVER') # optional
-    snapshot_path = optionDict['SNAPSHOT_SERVER_PATH'] # optional
+    snapshot_server = optionDict.get('SNAPSHOT_SERVER')  # optional
+    snapshot_path = optionDict['SNAPSHOT_SERVER_PATH']  # optional
     qt_base_path = optionDict['QTC_QT_BASE_DIR']
-    ide_branding_path = optionDict.get('IDE_BRANDING_PATH') # optional
-    installer_patch = optionDict.get('INSTALLER_PATCH') # optional
-    skip_cdb = optionDict.get('SKIP_CDB') # optional
-    skip_dmg = optionDict.get('SKIP_DMG') # optional
+    ide_branding_path = optionDict.get('IDE_BRANDING_PATH')  # optional
+    installer_patch = optionDict.get('INSTALLER_PATCH')  # optional
+    skip_cdb = optionDict.get('SKIP_CDB')  # optional
+    skip_dmg = optionDict.get('SKIP_DMG')  # optional
     build_id = optionDict['BUILD_NUMBER']
-    icu_libs = optionDict.get('ICU_LIBS') # optional
-    openssl_libs = optionDict.get('OPENSSL_LIBS') # optional
-    openssl_local_url = None # optionally defined later
-    qt_extra_module_url = optionDict.get('QT_EXTRA_MODULE_URL') # optional
+    icu_libs = optionDict.get('ICU_LIBS')  # optional
+    openssl_libs = optionDict.get('OPENSSL_LIBS')  # optional
+    openssl_local_url = None  # optionally defined later
+    qt_extra_module_url = optionDict.get('QT_EXTRA_MODULE_URL')  # optional
     qt_postfix = os.environ['QT_POSTFIX']
-    sdktool_base = optionDict.get('SDKTOOL_QTBASESRC_BASE') # optional
-    sdktool_ext = optionDict.get('SDKTOOL_QTBASESRC_EXT') # optional
-    sdktool_qtbase_src = sdktool_base + sdktool_ext if sdktool_base and sdktool_ext else None # optional
+    sdktool_base = optionDict.get('SDKTOOL_QTBASESRC_BASE')  # optional
+    sdktool_ext = optionDict.get('SDKTOOL_QTBASESRC_EXT')  # optional
+    sdktool_qtbase_src = sdktool_base + sdktool_ext if sdktool_base and sdktool_ext else None  # optional
     download_temp = os.path.join(work_dir, 'downloads')
     has_unlock_keychain_script = os.path.exists(unlock_keychain_script())
     # from 4.4 on we use external elfutil builds and also build on Windows
@@ -578,8 +578,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     notarize = optionDict.get('NOTARIZE')
     usp_server_url = optionDict.get('USP_SERVER_URL')
     usp_auth_key = optionDict.get('USP_AUTH_KEY')
-    qtc_additional_config = optionDict.get('QTC_ADDITIONAL_CONFIG') # optional
-    disable_docs = optionDict.get('DISABLE_DOCS') # optional
+    qtc_additional_config = optionDict.get('QTC_ADDITIONAL_CONFIG')  # optional
+    disable_docs = optionDict.get('DISABLE_DOCS')  # optional
     if qtc_additional_config:
         qtc_additional_config = qtc_additional_config.split()
     qt_temp = os.path.join(work_dir, 'qt_temp')
@@ -615,7 +615,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     clang_platform = optionDict.get('CLANG_PLATFORM')
     if clang_filebase and clang_platform:
         clang_extract_path = os.path.join(download_temp, 'libclang')
-        llvm_install_dir = os.path.join(clang_extract_path, 'libclang') # package contains libclang subdir
+        llvm_install_dir = os.path.join(clang_extract_path, 'libclang')  # package contains libclang subdir
         clang_suffix = optionDict.get('CLANG_FILESUFFIX')
         clang_suffix = clang_suffix if clang_suffix is not None else ''
         clang_url = (pkg_base_path + '/' + optionDict['CLANG_FILEBASE'] + '-' + clang_platform + clang_suffix + '.7z')
@@ -773,7 +773,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
 
     # Build Qt Creator plugins
     icu_local_url = bld_utils.file_url(os.path.join(qt_temp, os.path.basename(icu_libs))) if is_linux() else None
-    ## extract qtcreator bin and dev packages
+    # extract qtcreator bin and dev packages
     qtcreator_path = os.path.join(work_dir, 'qtc_build')
     check_call_log(['7z', 'x', '-y', os.path.join(work_dir, 'qt-creator_build', 'qtcreator.7z'), '-o' + qtcreator_path],
                    work_dir, log_filepath=log_filepath)
@@ -841,8 +841,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         notarizeDmg(os.path.join(work_dir, 'qt-creator_build', 'qt-creator.dmg'), 'Qt Creator')
 
     # Upload
-    file_upload_list = [] # pairs (source, dest), source relative to WORK_DIR, dest relative to server + dir_path
-    snapshot_upload_list = [] # pairs (source, dest), source relative to server + dir_path, dest relative to snapshot server + snapshot_path
+    file_upload_list = []  # pairs (source, dest), source relative to WORK_DIR, dest relative to server + dir_path
+    snapshot_upload_list = []  # pairs (source, dest), source relative to server + dir_path, dest relative to snapshot server + snapshot_path
 
     # build log
     file_upload_list.append((log_filepath, target_env_dir + '/build_log.txt'))
@@ -933,7 +933,7 @@ def handle_sdktool_build(optionDict):
     target_env_dir = optionDict['QTC_PLATFORM']
     work_dir = optionDict['WORK_DIR']
     qtcreator_version = get_qtcreator_version(os.path.join(work_dir, 'qt-creator'), optionDict)
-    qtcreator_edition_name = optionDict.get('QT_CREATOR_EDITION_NAME') # optional
+    qtcreator_edition_name = optionDict.get('QT_CREATOR_EDITION_NAME')  # optional
     unversioned_base_path = (optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR']
                              + '/' + optionDict['QTC_BASE_DIR'])
     base_path = unversioned_base_path + '/' + qtcreator_version
@@ -952,7 +952,7 @@ def handle_sdktool_build(optionDict):
                               'nmake' if is_windows() else 'make')
     bld_sdktool.zip_sdktool(sdktool_target_path, os.path.join(work_dir, 'sdktool.7z'))
     file_upload_list = [('sdktool.7z', target_env_dir + '/sdktool.7z')]
-    if is_windows(): # wininterrupt & qtcreatorcdbext
+    if is_windows():  # wininterrupt & qtcreatorcdbext
         cmd_args = [sys.executable, '-u', os.path.join(qtcreator_src, 'scripts', 'build.py'),
                     '--src', qtcreator_src,
                     '--build', os.path.join(work_dir, 'build'),
@@ -1072,7 +1072,7 @@ def initPkgOptions(args):
 
         if LOCAL_MODE:
             from getpass import getuser
-            optionDict['PACKAGE_STORAGE_SERVER_USER'] = getuser() # current user
+            optionDict['PACKAGE_STORAGE_SERVER_USER'] = getuser()  # current user
             optionDict['PACKAGE_STORAGE_SERVER'] = "127.0.0.1"
             optionDict['PACKAGE_STORAGE_SERVER_ADDR'] = optionDict['PACKAGE_STORAGE_SERVER_USER'] + "@" + optionDict['PACKAGE_STORAGE_SERVER']
             optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] = LOCAL_INSTALLER_DIR

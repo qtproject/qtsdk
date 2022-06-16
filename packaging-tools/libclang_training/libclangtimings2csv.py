@@ -90,7 +90,7 @@ def extractRecords(fileContent):
         record = [recordId, timeNeededInMs]
         records.append(record)
 
-    #for record in records: print record
+    # for record in records: print record
     return records
 
 def recordsToString(records):

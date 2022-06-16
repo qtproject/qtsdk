@@ -80,7 +80,7 @@ def checkExitCodeOrDie(exitCode, args):
 
 class Config:
     Verbose = False
-    #Verbose = True
+    # Verbose = True
 
     LogDir = None
     QtCreatorSettingsDir = None
@@ -131,7 +131,7 @@ class RunRecord:
     def __init__(self, libClangId, batchFilePath):
         self.libClangId = libClangId
         parts = os.path.basename(batchFilePath).split('.')
-        self.batchFileId = '.'.join(parts[0:-1]) # Remove suffix
+        self.batchFileId = '.'.join(parts[0:-1])  # Remove suffix
         self.logFilePath = self.batchFileId + '___' + libClangId + '.log'
         self.csvFilePath = None
 

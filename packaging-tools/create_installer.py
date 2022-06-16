@@ -38,7 +38,7 @@ import re
 import subprocess
 from time import gmtime, strftime
 import argparse
-import multiprocessing # to get the cpu core count
+import multiprocessing  # to get the cpu core count
 from bld_utils import is_windows, is_macos, is_linux
 if is_windows():
     import win32api
@@ -422,7 +422,7 @@ def get_component_data(task, sdk_component, archive, install_dir, data_dir_dest,
 
     # lastly compress the component back to .7z archive
     content_list = os.listdir(compress_content_dir)
-    #adding compress_content_dir in front of every item
+    # adding compress_content_dir in front of every item
     content_list = [(compress_content_dir + os.sep + x) for x in content_list]
 
     saveas = os.path.normpath(data_dir_dest + os.sep + archive.archive_name)
@@ -634,7 +634,7 @@ def qml_examples_only(examples_dir):
         log.error("Archive not cleaned!")
         return
     subdir_list = []
-    regex = re.compile('^qml\S.*') # pylint: disable=W1401
+    regex = re.compile('^qml\S.*')  # pylint: disable=W1401
     for root, dirs, _ in os.walk(examples_dir):
         for basename in dirs:
             if regex.search(basename):

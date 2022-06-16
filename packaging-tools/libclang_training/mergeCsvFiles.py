@@ -70,8 +70,8 @@ def readCsvFiles(filePaths):
         for row in reader:
             values.append(row)
 
-        tag = values[0][0] # remember column label
-        values = values[1:] # skip header
+        tag = values[0][0]  # remember column label
+        values = values[1:]  # skip header
 
         myFile = FileWithValues(filePath, tag, values)
         files.append(myFile)

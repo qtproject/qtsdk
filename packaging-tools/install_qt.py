@@ -66,7 +66,7 @@ def get_arguments():
             print('either --qt-module or --base-url and module_name(s) are required')
             exit(1)
 
-    args.qt_modules = args.qt_modules if args.qt_modules else [] # ensure list
+    args.qt_modules = args.qt_modules if args.qt_modules else []  # ensure list
     args.qt_modules += [args.base_url + '/' + module + '/' + module + args.base_url_postfix
                         for module in args.module_name]
 
