@@ -51,7 +51,7 @@ class PackagingOptions:
                 dict1[option] = self.config.get(section, option)
                 if dict1[option] == -1:
                     print("skip: %s" % option)
-            except:
+            except Exception:
                 print("exception on %s!" % option)
                 dict1[option] = None
         return dict1

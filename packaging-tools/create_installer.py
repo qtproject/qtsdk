@@ -847,11 +847,11 @@ def create_mac_disk_image(task):
     log.info("Create Apple disk image")
 
     # create disk image
-    cmd_args = ['hdiutil', 'create', '-srcfolder', \
-                os.path.join(task.script_root_dir, pkg_constants.INSTALLER_OUTPUT_DIR_NAME, task.installer_name + '.app'), \
-                '-volname', task.installer_name, \
-                '-format', 'UDBZ', \
-                os.path.join(task.script_root_dir, pkg_constants.INSTALLER_OUTPUT_DIR_NAME, task.installer_name + '.dmg'), \
+    cmd_args = ['hdiutil', 'create', '-srcfolder',
+                os.path.join(task.script_root_dir, pkg_constants.INSTALLER_OUTPUT_DIR_NAME, task.installer_name + '.app'),
+                '-volname', task.installer_name,
+                '-format', 'UDBZ',
+                os.path.join(task.script_root_dir, pkg_constants.INSTALLER_OUTPUT_DIR_NAME, task.installer_name + '.dmg'),
                 '-ov', '-scrub', '-size', '4g']
     do_execute_sub_process(cmd_args, task.script_root_dir)
 
@@ -1097,7 +1097,7 @@ if __name__ == "__main__":
 
     parser.add_argument("--add-substitution", dest="substitution_list", action='append',
                         default=[],
-                        help="Task include filters per section name in the --config file to match with " \
+                        help="Task include filters per section name in the --config file to match with "
                         "the section name, e.g. 'offline', 'repository', ...")
 
     parser.add_argument("--build-timestamp", dest="build_timestamp", type=str,

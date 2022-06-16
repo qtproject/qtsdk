@@ -169,7 +169,7 @@ if __name__ == "__main__":
     parser.add_argument("--config", dest="config", type=str, default=os.getenv("RELEASE_DESCRIPTION_FILE"),
                         help="Path to top level release config file")
     parser.add_argument("--task-filter", dest="task_filters", action='append',
-                        help="Task include filters per section name in the --config file to match with " \
+                        help="Task include filters per section name in the --config file to match with "
                         "the section name, e.g. 'offline', 'repository', ...")
     args = parser.parse_args(sys.argv[1:])
 

@@ -102,8 +102,8 @@ class Config:
         libClangDlls = os.environ['QTC_CLANG_BATCH_CONFIG_LIBCLANGS']
         Config.LibClangDlls = libClangDlls.split(os.pathsep)
         assert len(Config.LibClangDlls) >= 1
-        for l in Config.LibClangDlls:
-            checkExistenceOrDie(l)
+        for dll in Config.LibClangDlls:
+            checkExistenceOrDie(dll)
 
         batchFiles = os.environ['QTC_CLANG_BATCH_CONFIG_FILES']
         Config.BatchFiles = batchFiles.split(os.pathsep)
@@ -121,8 +121,8 @@ class Config:
         print("target libclang:")
         print("  ", Config.TargetLibClangDll)
         print("libclangs:")
-        for l in Config.LibClangDlls:
-            print("  ", l)
+        for dll in Config.LibClangDlls:
+            print("  ", dll)
         print("batch files:")
         for b in Config.BatchFiles:
             print("  ", b)

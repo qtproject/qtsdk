@@ -353,10 +353,10 @@ def prepare_compressed_package(src_pkg_uri, src_pkg_saveas, destination_dir):
     print('--------------------------------------------------------------------')
     Path(destination_dir).mkdir(parents=True, exist_ok=True)
     bldinstallercommon.extract_file(src_pkg_saveas, destination_dir)
-    l = os.listdir(destination_dir)
-    items = len(l)
+    dir_contents = os.listdir(destination_dir)
+    items = len(dir_contents)
     if items == 1:
-        dir_name = l[0]
+        dir_name = dir_contents[0]
         full_dir_name = destination_dir + os.sep + dir_name
         bldinstallercommon.move_tree(full_dir_name, destination_dir)
         bldinstallercommon.remove_tree(full_dir_name)

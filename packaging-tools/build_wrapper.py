@@ -500,9 +500,9 @@ def repackage_and_sign_qtcreator(qtcreator_path, work_dir, result_package,
     # sign
     unlock_keychain()
     import_path = os.path.join(qtcreator_path, 'scripts')
-    check_call_log([sys.executable, '-u', '-c', "import common; common.codesign('" +
-                    os.path.join(extract_path, app) +
-                    "')"],
+    check_call_log([sys.executable, '-u', '-c', "import common; common.codesign('"
+                    + os.path.join(extract_path, app)
+                    + "')"],
                    import_path, extra_env=extra_env, log_filepath=log_filepath)
     # repackage
     result_filepath = os.path.join(work_dir, result_package)

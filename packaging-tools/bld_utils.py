@@ -141,7 +141,7 @@ def download(url, target, read_block_size = 1048576):
                 print("copying file from '{0}' to {1}".format(localFilePath, targtFilePath))
                 try:
                     os.makedirs(os.path.dirname(targtFilePath))
-                except:
+                except Exception:
                     pass
                 shutil.copy2(localFilePath, target)
                 print("Done" + os.linesep)
@@ -162,7 +162,7 @@ def download(url, target, read_block_size = 1048576):
         savefile_tmp = os.extsep.join((target, 'tmp'))
         try:
             os.makedirs(os.path.dirname(savefile_tmp))
-        except:
+        except Exception:
             pass
 
         try:
@@ -202,7 +202,7 @@ def download(url, target, read_block_size = 1048576):
     finally:  # this is done before the except code is called
         try:
             os.remove(savefile_tmp)
-        except:  # swallow, do not shadow actual error
+        except Exception:  # swallow, do not shadow actual error
             pass
 
 def setValueOnEnvironmentDict(environment, key, value):

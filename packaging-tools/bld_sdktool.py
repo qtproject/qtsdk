@@ -104,8 +104,7 @@ def build_sdktool_impl(params, qt_build_path):
     if is_windows():
         cmake_args += ['-DCMAKE_C_COMPILER=cl', '-DCMAKE_CXX_COMPILER=cl']
 
-    do_execute_sub_process(cmake_args +
-                                              ['-G', 'Ninja', params.src_path],
+    do_execute_sub_process(cmake_args + ['-G', 'Ninja', params.src_path],
                                               params.build_path,
                                               redirect_output=params.redirect_output)
     do_execute_sub_process(['cmake', '--build', '.'], params.build_path,

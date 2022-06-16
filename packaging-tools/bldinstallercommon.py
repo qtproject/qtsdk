@@ -104,12 +104,12 @@ def retrieve_url(url, savefile):
         urllib.request.urlcleanup()
         urllib.request.urlretrieve(url, savefile_tmp, reporthook=dlProgress)
         shutil.move(savefile_tmp, savefile)
-    except:
+    except Exception:
         exc = sys.exc_info()[0]
         print(exc)
         try:
             os.remove(savefile_tmp)
-        except:  # swallow, do not shadow actual error
+        except Exception:  # swallow, do not shadow actual error
             pass
         raise exc
 
@@ -182,10 +182,10 @@ def copy_tree(source_dir, dest_dir):
             shutil.copy(full_file_name, dest_dir)
 
 def remove_one_tree_level(directory):
-    l = os.listdir(directory)
-    items = len(l)
+    dircontents = os.listdir(directory)
+    items = len(dircontents)
     if items == 1:
-        dir_name = l[0]
+        dir_name = dircontents[0]
         full_dir_name = os.path.join(directory, dir_name)
         # avoid directory name collision by first moving to temporary dir
         tempdir_base = tempfile.mkdtemp()
@@ -214,7 +214,7 @@ def remove_tree(path):
             # a funny thing is that rmdir does not set an exitcode it is just using the last set one
             try:
                 runCommand(['rmdir', path, '/S', '/Q'], os.getcwd(), onlyErrorCaseOutput=True)
-            except:
+            except Exception:
                 traceback.print_exc()
                 pass
         else:
@@ -284,7 +284,7 @@ def config_section_map(conf, section):
             dict1[option] = conf.get(section, option)
             if dict1[option] == -1:
                 print('skip: %s' % option)
-        except:
+        except Exception:
             print('exception on %s!' % option)
             dict1[option] = ''
     return dict1
@@ -611,11 +611,11 @@ def remote_path_exists(remote_addr, path_to_check, ssh_command = 'ssh'):
 ###############################
 def create_mac_disk_image(execution_path, file_directory, file_base_name, image_size = '4g'):
     # create disk image
-    cmd_args = ['hdiutil', 'create', '-srcfolder', \
-                os.path.join(file_directory, file_base_name + '.app'), \
-                '-volname', file_base_name, \
-                '-format', 'UDBZ', \
-                os.path.join(file_directory, file_base_name + '.dmg'), \
+    cmd_args = ['hdiutil', 'create', '-srcfolder',
+                os.path.join(file_directory, file_base_name + '.app'),
+                '-volname', file_base_name,
+                '-format', 'UDBZ',
+                os.path.join(file_directory, file_base_name + '.dmg'),
                 '-ov', '-scrub', '-size', image_size]
     do_execute_sub_process(cmd_args, execution_path)
 
