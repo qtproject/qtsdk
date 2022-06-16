@@ -35,10 +35,10 @@ import unittest
 import tempfile
 from ddt import ddt
 from typing import List
-from release_repo_meta_update import IfwRepoUpdateError, scan_repositories, \
-                                     swap_repositories, create_converted_repositories, \
-                                     check_repos_which_can_be_updated, \
-                                     convert_suffix, backup_suffix
+from release_repo_meta_update import (
+    IfwRepoUpdateError, scan_repositories, swap_repositories, create_converted_repositories,
+    check_repos_which_can_be_updated, convert_suffix, backup_suffix
+)
 
 
 @ddt
@@ -50,43 +50,43 @@ class TestReleaseRepoMetaUpdate(unittest.TestCase):
     @classmethod
     def setUpClass(self) -> None:
         self.paths = [
-                 "repo1/Updates.xml",
-                 "repo2/Updates.xml",
-                 "repo2" + convert_suffix + "/Updates.xml",
-                 "repo2" + convert_suffix + "/123456_meta.7z",
-                 "repo3/Updates.xml",
-                 "repo3" + convert_suffix + "/Updates.xml",
-                 "repo3" + convert_suffix + "/123456_meta.7z",
-                 "repo4/Updates.xml",
-                 "repo5/Updates.xml",
-                 "repo5/123456_meta.7z",
-                 "repo6/Updates.xml",
-                 "repo7/Updates.xml",
-                 "repo7/123456_meta.7z",
-                 "repo7" + convert_suffix + "/Updates.xml",
-                 "repo7" + convert_suffix + "/123456_meta.7z",
-                 "repo8/Updates.xml",
-                 "repo9/Updates.xml",
-                 "repo9" + convert_suffix + "/Updates.xml",
-                 "repo9" + convert_suffix + "/",  # meta.7z missing
-                 "repo10" + backup_suffix + "123456"
-            ]
+            "repo1/Updates.xml",
+            "repo2/Updates.xml",
+            "repo2" + convert_suffix + "/Updates.xml",
+            "repo2" + convert_suffix + "/123456_meta.7z",
+            "repo3/Updates.xml",
+            "repo3" + convert_suffix + "/Updates.xml",
+            "repo3" + convert_suffix + "/123456_meta.7z",
+            "repo4/Updates.xml",
+            "repo5/Updates.xml",
+            "repo5/123456_meta.7z",
+            "repo6/Updates.xml",
+            "repo7/Updates.xml",
+            "repo7/123456_meta.7z",
+            "repo7" + convert_suffix + "/Updates.xml",
+            "repo7" + convert_suffix + "/123456_meta.7z",
+            "repo8/Updates.xml",
+            "repo9/Updates.xml",
+            "repo9" + convert_suffix + "/Updates.xml",
+            "repo9" + convert_suffix + "/",  # meta.7z missing
+            "repo10" + backup_suffix + "123456"
+        ]
         self.non_migrated_paths = [
-                 "repo1/Updates.xml",
-                 "repo2/sub2/Updates.xml",
-                 "repo3/sub3/subsub3/Updates.xml",
-                 "repo4/Updates.xml",
-                 "repo5/Updates.xml",
-            ]
+            "repo1/Updates.xml",
+            "repo2/sub2/Updates.xml",
+            "repo3/sub3/subsub3/Updates.xml",
+            "repo4/Updates.xml",
+            "repo5/Updates.xml",
+        ]
         self.mixed_migrated_paths = [
-                 "repo1/Updates.xml",
-                 "repo1" + convert_suffix + "/Updates.xml",
-                 "repo2/sub2/Updates.xml",
-                 "repo3/sub3/subsub3/Updates.xml",
-                 "repo3/sub3/subsub3" + convert_suffix + "/Updates.xml",
-                 "repo4/Updates.xml",
-                 "repo5/Updates.xml",
-            ]
+            "repo1/Updates.xml",
+            "repo1" + convert_suffix + "/Updates.xml",
+            "repo2/sub2/Updates.xml",
+            "repo3/sub3/subsub3/Updates.xml",
+            "repo3/sub3/subsub3" + convert_suffix + "/Updates.xml",
+            "repo4/Updates.xml",
+            "repo5/Updates.xml",
+        ]
 
     def _write_test_repo(self, tmp_base_dir: str, paths: List[str]) -> None:
         for path in paths:

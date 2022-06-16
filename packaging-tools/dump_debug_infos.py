@@ -106,27 +106,44 @@ def dump_syms(dump_syms_path, architectures, search_pathes, output_path, verbose
 
 ################################################################################
 def _main():
-    parser = argparse.ArgumentParser(description="fetch Breakpad symbols",
-        formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument('--dump-syms-path', required=True,
-        help="path to dump_syms tool")
-    parser.add_argument('--sentry-cli-path', required=True,
-        help="path to sentry-cli tool")
-    parser.add_argument('--search-pathes', required=True,
-        help="directories where the binaries can be found, separated by comma")
-    parser.add_argument('--architectures', default="",
-        help="if there is more then one architecture for example on mac: \"x86_64,arm64\"")
-    parser.add_argument('--output-path', required=True,
-        help="directory where the extracted debug information will be stored")
-    parser.add_argument('--clean-output-path', action='store_true',
-        help="empty the output directory at the beginning")
-    parser.add_argument('-v', '--verbose', action='store_true',
-        help="Gives some output what the tool is actual doing.")
+    parser = argparse.ArgumentParser(
+        description="fetch Breakpad symbols",
+        formatter_class=argparse.RawTextHelpFormatter
+    )
+    parser.add_argument(
+        '--dump-syms-path', required=True,
+        help="path to dump_syms tool"
+    )
+    parser.add_argument(
+        '--sentry-cli-path', required=True,
+        help="path to sentry-cli tool"
+    )
+    parser.add_argument(
+        '--search-pathes', required=True,
+        help="directories where the binaries can be found, separated by comma"
+    )
+    parser.add_argument(
+        '--architectures', default="",
+        help="if there is more then one architecture for example on mac: \"x86_64,arm64\""
+    )
+    parser.add_argument(
+        '--output-path', required=True,
+        help="directory where the extracted debug information will be stored"
+    )
+    parser.add_argument(
+        '--clean-output-path', action='store_true',
+        help="empty the output directory at the beginning"
+    )
+    parser.add_argument(
+        '-v', '--verbose', action='store_true',
+        help="Gives some output what the tool is actual doing."
+    )
     args = parser.parse_args()
 
     # make sure we can call dump_syms
     dump_syms_output = subprocess.check_output(
-              [args.dump_syms_path, '--help']).decode('utf-8')
+        [args.dump_syms_path, '--help']
+    ).decode('utf-8')
 
     if len(dump_syms_output) <= 0:
         raise Exception("dump_syms can not be called: \n{}".format(dump_syms_output))
@@ -160,7 +177,8 @@ def _main():
     if args.verbose:
         print(source_bundle_command)
     testoutput = subprocess.check_output(
-              source_bundle_command, cwd=args.output_path).decode('utf-8')
+        source_bundle_command, cwd=args.output_path
+    ).decode('utf-8')
     print(testoutput)
 
     return

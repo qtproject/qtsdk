@@ -497,8 +497,10 @@ def build_ifw_docs(options):
     cmd_args = options.make_doc_cmd + ' docs'
     env = dict(os.environ)
     env['LD_LIBRARY_PATH'] = os.path.normpath(os.path.join(os.path.dirname(qmake_bin), '..', 'lib'))
-    do_execute_sub_process(args=cmd_args.split(' '), execution_path=options.installer_framework_build_dir,
-                                              abort_on_fail=True, get_output=False, extra_env=env)
+    do_execute_sub_process(
+        args=cmd_args.split(' '), execution_path=options.installer_framework_build_dir,
+        abort_on_fail=True, get_output=False, extra_env=env
+    )
 
 
 ################################################################
@@ -763,11 +765,13 @@ def get_platform_suffix():
 # Setup argument parser
 ###############################
 def setup_argument_parser():
-    parser = argparse.ArgumentParser(prog=os.path.basename(sys.argv[0]),
-              add_help=True, description="Build Qt Installer-Framework",
-              epilog="Builds Qt Installer Framework against static Qt libraries and archives the build artifacts for further usage. \n"
-                     "To create an installer which installs the built Installer Framework libraries and tools use \"--create_installer\" option.",
-               formatter_class=argparse.RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(
+        prog=os.path.basename(sys.argv[0]),
+        add_help=True, description="Build Qt Installer-Framework",
+        epilog="Builds Qt Installer Framework against static Qt libraries and archives the build artifacts for further usage. \n"
+        "To create an installer which installs the built Installer Framework libraries and tools use \"--create_installer\" option.",
+        formatter_class=argparse.RawTextHelpFormatter
+    )
 
     parser.add_argument('--qt_archive_uri', help="Qt source package for Qt Installer-Framework", required=False)
     parser.add_argument('--qt_configure_options', help="Configure options for (static) Qt build", required=False)
@@ -808,20 +812,21 @@ if __name__ == "__main__":
         qt_conf_args = qt_conf_args.replace('-release', '-debug')
         ifw_qmake_args = ifw_qmake_args.replace('-config release', '-config debug')
     # create options object
-    OPTIONS = IfwOptions(qt_src,
-                         qt_configure_options,
-                         CARGS.ifw_uri,
-                         ifw_branch,
-                         ifw_qmake_args,
-                         CARGS.openssl_dir,
-                         CARGS.product_key_checker_pri,
-                         CARGS.qt_binaries_static,
-                         CARGS.qt_binaries_dynamic,
-                         signserver,
-                         signpwd,
-                         CARGS.incremental,
-                         CARGS.archive_qt
-                        )
+    OPTIONS = IfwOptions(
+        qt_src,
+        qt_configure_options,
+        CARGS.ifw_uri,
+        ifw_branch,
+        ifw_qmake_args,
+        CARGS.openssl_dir,
+        CARGS.product_key_checker_pri,
+        CARGS.qt_binaries_static,
+        CARGS.qt_binaries_dynamic,
+        signserver,
+        signpwd,
+        CARGS.incremental,
+        CARGS.archive_qt
+    )
     # build ifw tools
     if CARGS.archive_qt:
         build_and_archive_qt(OPTIONS)

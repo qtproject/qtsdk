@@ -107,8 +107,11 @@ def patch_build_time_paths(search_path, search_strings, qt_install_prefix):
 
 
 # install an argument parser
-parser = argparse.ArgumentParser(prog=os.path.basename(sys.argv[0]),
-    add_help=True, description="build Qt 5 based Qt Module", formatter_class=argparse.RawTextHelpFormatter)
+parser = argparse.ArgumentParser(
+    prog=os.path.basename(sys.argv[0]),
+    add_help=True, description="build Qt 5 based Qt Module",
+    formatter_class=argparse.RawTextHelpFormatter
+)
 if is_windows():
     parser.epilog = "example on windows: " + os.linesep + "\tpython {0} --clean " \
         "--buildcommand C:\\bin\\ibjom.cmd" \
@@ -147,7 +150,7 @@ parser.add_argument('--buildcommand', help="this means usually make", default="m
 parser.add_argument('--installcommand', help="this means usually make", default="make")
 parser.add_argument('--debug', help="use debug builds", action='store_true', default=False)
 parser.add_argument('--qt5_module_url', help="a file or url where to get a qt5 module's binary content that is needed for the build as 7z",
-    dest='qt5_module_urls', action='append')
+                    dest='qt5_module_urls', action='append')
 parser.add_argument('--module-name', help='name of the module, used for the resulting 7zip file')
 parser.add_argument('--module_url', help="Git URL for Qt Module", required=False, default='')
 parser.add_argument('--module_branch', help="Git branch for Qt Module", required=False, default='')
@@ -170,7 +173,7 @@ callerArguments = parser.parse_args()
 stripVars(callerArguments, "\"")
 if callerArguments.qt5path != os.path.abspath(callerArguments.qt5path):
     print("changing the value of --qt5path from {0} to {1}".format(callerArguments.qt5path,
-        os.path.abspath(callerArguments.qt5path)))
+          os.path.abspath(callerArguments.qt5path)))
     callerArguments.qt5path = os.path.abspath(callerArguments.qt5path)
 
 if not callerArguments.module_name:
@@ -214,7 +217,7 @@ if callerArguments.clean:
 if not os.path.lexists(callerArguments.qt5path) and not callerArguments.qt5_module_urls:
     parser.print_help()
     print(("error: Please add the missing qt5_module_url arguments if the {0} does not exist"
-        + os.linesep + os.linesep).format(callerArguments.qt5path))
+           + os.linesep + os.linesep).format(callerArguments.qt5path))
     raise RuntimeError()
 
 qmakeBinary = os.path.abspath(os.path.join(callerArguments.qt5path, 'bin', 'qmake'))
@@ -222,8 +225,12 @@ qmakeBinary = os.path.abspath(os.path.join(callerArguments.qt5path, 'bin', 'qmak
 if not os.path.lexists(callerArguments.qt5path):
     # get Qt
     myGetQtBinaryWork = ThreadedWork("get and extract Qt 5 binary")
-    myGetQtBinaryWork.addTaskObject(bldinstallercommon.create_qt_download_task(callerArguments.qt5_module_urls,
-                                       callerArguments.qt5path, tempPath, callerArguments))
+    myGetQtBinaryWork.addTaskObject(
+        bldinstallercommon.create_qt_download_task(
+            callerArguments.qt5_module_urls,
+            callerArguments.qt5path, tempPath, callerArguments
+        )
+    )
     myGetQtBinaryWork.run()
 
     # Save QT_INSTALL_PREFIX
@@ -245,8 +252,10 @@ pathKeyList.append(pythonExecutablePath)
 environment = {'PATH': os.pathsep.join(pathKeyList)}
 
 if is_linux():
-    environment["LD_LIBRARY_PATH"] = os.pathsep.join([os.path.join(callerArguments.qt5path, 'lib')]
-+ os.environ.get("LD_LIBRARY_PATH", "").split(os.pathsep))
+    environment["LD_LIBRARY_PATH"] = os.pathsep.join(
+        [os.path.join(callerArguments.qt5path, 'lib')]
+        + os.environ.get("LD_LIBRARY_PATH", "").split(os.pathsep)
+    )
     environment["QMAKESPEC"] = "linux-g++"
 
 if is_macos():
@@ -296,9 +305,11 @@ ret = runBuildCommand(currentWorkingDirectory=qtModuleBuildDirectory, callerArgu
 if ret:
     raise RuntimeError('Failure running the last command: %i' % ret)
 
-ret = runInstallCommand(['install', 'INSTALL_ROOT=' + qtModuleInstallDirectory],
-                 currentWorkingDirectory=qtModuleBuildDirectory,
-                 callerArguments=callerArguments, extra_environment=environment)
+ret = runInstallCommand(
+    ['install', 'INSTALL_ROOT=' + qtModuleInstallDirectory],
+    currentWorkingDirectory=qtModuleBuildDirectory,
+    callerArguments=callerArguments, extra_environment=environment
+)
 if ret:
     raise RuntimeError('Failure running the last command: %i' % ret)
 
@@ -317,22 +328,27 @@ if callerArguments.collectDocs:
 # enginio etc. docs creation
 if callerArguments.makeDocs:
     # build docs first
-    ret = runInstallCommand('docs',
-                     currentWorkingDirectory=qtModuleBuildDirectory,
-                     callerArguments=callerArguments, extra_environment=environment)
+    ret = runInstallCommand(
+        'docs', currentWorkingDirectory=qtModuleBuildDirectory,
+        callerArguments=callerArguments, extra_environment=environment
+    )
     if ret:
         raise RuntimeError('Failure running the last command: %i' % ret)
     # then make install those
-    ret = runInstallCommand(['install_docs', 'INSTALL_ROOT=' + qtModuleInstallDirectory],
-                     currentWorkingDirectory=qtModuleBuildDirectory,
-                     callerArguments=callerArguments, extra_environment=environment)
+    ret = runInstallCommand(
+        ['install_docs', 'INSTALL_ROOT=' + qtModuleInstallDirectory],
+        currentWorkingDirectory=qtModuleBuildDirectory,
+        callerArguments=callerArguments, extra_environment=environment
+    )
     if ret:
         raise RuntimeError('Failure running the last command: %i' % ret)
     # make separate "doc.7z" for later use if needed
     doc_dir = locate_path(qtModuleInstallDirectory, ["doc"], filters=[os.path.isdir])
     archive_name = callerArguments.module_name + '-' + os.environ['LICENSE'] + '-doc-' + os.environ['MODULE_VERSION'] + '.7z'
-    ret = runCommand(['7z', 'a', os.path.join('doc_archives', archive_name), doc_dir],
-                        currentWorkingDirectory=os.path.dirname(os.path.realpath(__file__)))
+    ret = runCommand(
+        ['7z', 'a', os.path.join('doc_archives', archive_name), doc_dir],
+        currentWorkingDirectory=os.path.dirname(os.path.realpath(__file__))
+    )
     if ret:
         raise RuntimeError('Failure running the last command: %i' % ret)
 

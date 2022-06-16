@@ -184,8 +184,8 @@ def mingw_training(base_path, qtcreator_path, environment, bitness):
         + training_qt_version() + '/' + training_qt_long_version() + '-final-released/Qt' + training_qt_long_version()
     msvc_year_ver = msvc_year_version()
     if bitness == 64:
-      qt_mingw_postfix = '-Windows-Windows_10-Mingw-Windows-Windows_10-X86_64.7z'
-      qt_postfix = '-Windows-Windows_10-' + msvc_year_ver + '-Windows-Windows_10-X86_64.7z'
+        qt_mingw_postfix = '-Windows-Windows_10-Mingw-Windows-Windows_10-X86_64.7z'
+        qt_postfix = '-Windows-Windows_10-' + msvc_year_ver + '-Windows-Windows_10-X86_64.7z'
 
     qt_module_urls = [qt_base_url + '/' + module + '/' + module + qt_postfix for module in qt_modules]
     qt_mingw_module_urls = [qt_base_url + '/' + module + '/' + module + qt_mingw_postfix for module in qt_modules]
@@ -214,37 +214,37 @@ def mingw_training(base_path, qtcreator_path, environment, bitness):
     # WITH_TESTS is required for QtCreator to support running .batch files
     cmake_command = os.path.join(cmake_dir, 'cmake-' + cmake_version() + '-' + cmake_arch_suffix, 'bin', 'cmake')
     qtc_cmake = [cmake_command,
-               '-GNinja',
-               '-DCMAKE_BUILD_TYPE=Release',
-               '-DWITH_TESTS=ON',
-               '-DBUILD_WITH_PCH=OFF',
+                 '-GNinja',
+                 '-DCMAKE_BUILD_TYPE=Release',
+                 '-DWITH_TESTS=ON',
+                 '-DBUILD_WITH_PCH=OFF',
 
-               '-DBUILD_QBS=OFF',
+                 '-DBUILD_QBS=OFF',
 
-               '-DBUILD_PLUGINS_BY_DEFAULT=OFF',
-               '-DBUILD_EXECUTABLES_BY_DEFAULT=OFF',
+                 '-DBUILD_PLUGINS_BY_DEFAULT=OFF',
+                 '-DBUILD_EXECUTABLES_BY_DEFAULT=OFF',
 
-               '-DBUILD_PLUGIN_CORE=ON',
-               '-DBUILD_PLUGIN_TEXTEDITOR=ON',
-               '-DBUILD_PLUGIN_PROJECTEXPLORER=ON',
-               '-DBUILD_PLUGIN_CPPEDITOR=ON',
-               '-DBUILD_PLUGIN_QMAKEPROJECTMANAGER=ON',
-               '-DBUILD_PLUGIN_CLANGCODEMODEL=ON',
-               '-DBUILD_PLUGIN_CLANGTOOLS=ON',
-               '-DBUILD_PLUGIN_DEBUGGER=ON',
-               '-DBUILD_PLUGIN_DESIGNER=ON',
-               '-DBUILD_PLUGIN_LANGUAGECLIENT=ON',
-               '-DBUILD_PLUGIN_QTSUPPORT=ON',
-               '-DBUILD_PLUGIN_RESOURCEEDITOR=ON',
+                 '-DBUILD_PLUGIN_CORE=ON',
+                 '-DBUILD_PLUGIN_TEXTEDITOR=ON',
+                 '-DBUILD_PLUGIN_PROJECTEXPLORER=ON',
+                 '-DBUILD_PLUGIN_CPPEDITOR=ON',
+                 '-DBUILD_PLUGIN_QMAKEPROJECTMANAGER=ON',
+                 '-DBUILD_PLUGIN_CLANGCODEMODEL=ON',
+                 '-DBUILD_PLUGIN_CLANGTOOLS=ON',
+                 '-DBUILD_PLUGIN_DEBUGGER=ON',
+                 '-DBUILD_PLUGIN_DESIGNER=ON',
+                 '-DBUILD_PLUGIN_LANGUAGECLIENT=ON',
+                 '-DBUILD_PLUGIN_QTSUPPORT=ON',
+                 '-DBUILD_PLUGIN_RESOURCEEDITOR=ON',
 
-               '-DBUILD_EXECUTABLE_QTCREATOR=ON',
-               '-DBUILD_EXECUTABLE_ECHO=ON',
-               '-DBUILD_EXECUTABLE_CLANGBACKEND=ON',
-               '-DBUILD_EXECUTABLE_QTCREATOR_PROCESSLAUNCHER=ON',
+                 '-DBUILD_EXECUTABLE_QTCREATOR=ON',
+                 '-DBUILD_EXECUTABLE_ECHO=ON',
+                 '-DBUILD_EXECUTABLE_CLANGBACKEND=ON',
+                 '-DBUILD_EXECUTABLE_QTCREATOR_PROCESSLAUNCHER=ON',
 
-               '-DCMAKE_PREFIX_PATH=' + qt_mingw_dir + ';' + os.path.join(base_path, 'libclang'),
-               '-S' + qtcreator_path,
-               '-B' + creator_build_dir]
+                 '-DCMAKE_PREFIX_PATH=' + qt_mingw_dir + ';' + os.path.join(base_path, 'libclang'),
+                 '-S' + qtcreator_path,
+                 '-B' + creator_build_dir]
 
     bld_utils.runCommand(qtc_cmake, creator_build_dir, None, environment)
     bld_utils.runCommand([cmake_command, '--build', creator_build_dir], creator_build_dir, None, environment)
@@ -257,8 +257,10 @@ def mingw_training(base_path, qtcreator_path, environment, bitness):
     # Train mingw libclang library with build QtCreator
     # First time open the project, then close it. This will generate initial settings and .user files. Second time do the actual training.
     for batchFile in ['qtc.openProject.batch', 'qtc.fileTextEditorCpp.batch']:
-        bld_utils.runCommand([os.path.join(training_dir, 'runBatchFiles.bat'), msvc_version(), 'x64' if bitness == 64 else 'x86', batchFile],
-                            base_path, callerArguments=None, extra_environment=None, onlyErrorCaseOutput=False, expectedExitCodes=[0, 1])
+        bld_utils.runCommand(
+            [os.path.join(training_dir, 'runBatchFiles.bat'), msvc_version(), 'x64' if bitness == 64 else 'x86', batchFile],
+            base_path, callerArguments=None, extra_environment=None, onlyErrorCaseOutput=False, expectedExitCodes=[0, 1]
+        )
 
 
 def is_msvc_toolchain(toolchain):
@@ -303,8 +305,9 @@ def profile_data_flags(toolchain, profile_data_path, first_run):
         return cmake_flags
     if is_mingw_toolchain(toolchain):
         linker_flags = '-static-libgcc -static-libstdc++ -static'
-        return ['-DCMAKE_SHARED_LINKER_FLAGS=' + linker_flags,
-                '-DCMAKE_EXE_LINKER_FLAGS=' + linker_flags,
+        return [
+            '-DCMAKE_SHARED_LINKER_FLAGS=' + linker_flags,
+            '-DCMAKE_EXE_LINKER_FLAGS=' + linker_flags,
         ]
     return []
 

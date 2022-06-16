@@ -94,8 +94,10 @@ def get_and_extract_qt_src(url, temp, path):
 def configure_qt(params, src, build):
     Path(build).mkdir(parents=True, exist_ok=True)
     configure = os.path.join(src, 'configure')
-    do_execute_sub_process([configure, '-prefix', build] + qt_static_configure_options(),
-                                              build, redirect_output=params.redirect_output)
+    do_execute_sub_process(
+        [configure, '-prefix', build] + qt_static_configure_options(),
+        build, redirect_output=params.redirect_output
+    )
 
 
 def build_qt(params, build):
@@ -113,16 +115,17 @@ def build_sdktool_impl(params, qt_build_path):
     if is_windows():
         cmake_args += ['-DCMAKE_C_COMPILER=cl', '-DCMAKE_CXX_COMPILER=cl']
 
-    do_execute_sub_process(cmake_args + ['-G', 'Ninja', params.src_path],
-                                              params.build_path,
-                                              redirect_output=params.redirect_output)
-    do_execute_sub_process(['cmake', '--build', '.'], params.build_path,
-                                              redirect_output=params.redirect_output)
-    do_execute_sub_process(['cmake',
-                                               '--install', '.',
-                                               '--prefix', params.target_path],
-                                              params.build_path,
-                                              redirect_output=params.redirect_output)
+    do_execute_sub_process(
+        cmake_args + ['-G', 'Ninja', params.src_path],
+        params.build_path, redirect_output=params.redirect_output
+    )
+    do_execute_sub_process(
+        ['cmake', '--build', '.'], params.build_path, redirect_output=params.redirect_output
+    )
+    do_execute_sub_process(
+        ['cmake', '--install', '.', '--prefix', params.target_path],
+        params.build_path, redirect_output=params.redirect_output
+    )
 
 
 def build_sdktool(qt_src_url, qt_build_base, sdktool_src_path, sdktool_build_path, sdktool_target_path,
@@ -142,5 +145,6 @@ def build_sdktool(qt_src_url, qt_build_base, sdktool_src_path, sdktool_build_pat
 
 def zip_sdktool(sdktool_target_path, out_7zip, redirect_output=None):
     glob = "*.exe" if is_windows() else "*"
-    do_execute_sub_process(['7z', 'a', out_7zip, glob],
-                                              sdktool_target_path, redirect_output=redirect_output)
+    do_execute_sub_process(
+        ['7z', 'a', out_7zip, glob], sdktool_target_path, redirect_output=redirect_output
+    )

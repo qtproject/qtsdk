@@ -256,8 +256,8 @@ def runCommand(command, currentWorkingDirectory, callerArguments=None, extra_env
     environment = getEnvironment(extra_environment, callerArguments)
 
     # if we can not find the command, just check the current working dir
-    if not os.path.lexists(commandAsList[0]) and currentWorkingDirectory and \
-        os.path.isfile(os.path.abspath(os.path.join(currentWorkingDirectory, commandAsList[0]))):
+    if (not os.path.lexists(commandAsList[0]) and currentWorkingDirectory
+            and os.path.isfile(os.path.abspath(os.path.join(currentWorkingDirectory, commandAsList[0])))):
         commandAsList[0] = os.path.abspath(os.path.join(currentWorkingDirectory, commandAsList[0]))
 
     pathEnvironment = environment['PATH']
@@ -283,12 +283,16 @@ def runCommand(command, currentWorkingDirectory, callerArguments=None, extra_env
     lastStdOutLines = []
     lastStdErrLines = []
     if threading.currentThread().name == "MainThread" and not onlyErrorCaseOutput:
-        process = subprocess.Popen(commandAsList, shell=useShell,
-            cwd=currentWorkingDirectory, bufsize=-1, env=environment)
+        process = subprocess.Popen(
+            commandAsList, shell=useShell,
+            cwd=currentWorkingDirectory, bufsize=-1, env=environment
+        )
     else:
-        process = subprocess.Popen(commandAsList, shell=useShell,
+        process = subprocess.Popen(
+            commandAsList, shell=useShell,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-            cwd=currentWorkingDirectory, bufsize=-1, env=environment)
+            cwd=currentWorkingDirectory, bufsize=-1, env=environment
+        )
 
         maxSavedLineNumbers = 1000
         lastStdOutLines = collections.deque(maxlen=maxSavedLineNumbers)
@@ -383,8 +387,10 @@ def runBuildCommand(arguments=None, currentWorkingDirectory=None, callerArgument
 @deep_copy_arguments
 def getReturnValue(command, currentWorkingDirectory=None, extra_environment=None, callerArguments=None):
     commandAsList = command[:].split(' ')
-    return subprocess.Popen(commandAsList, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-        cwd=currentWorkingDirectory, env=getEnvironment(extra_environment, callerArguments)).communicate()[0].strip()
+    return subprocess.Popen(
+        commandAsList, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+        cwd=currentWorkingDirectory, env=getEnvironment(extra_environment, callerArguments)
+    ).communicate()[0].strip()
 
 
 def gitSHA(path, callerArguments=None):

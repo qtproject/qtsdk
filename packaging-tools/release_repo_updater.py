@@ -728,11 +728,11 @@ def load_export_summary_data(config_file: Path) -> Dict[str, str]:
 
 if __name__ == "__main__":
     args_from_file_parser = argparse.ArgumentParser(
-            description=__doc__,
-            formatter_class=argparse.RawDescriptionHelpFormatter,
-            # Turn off help, so we print all options in response to -h
-            add_help=False
-            )
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        # Turn off help, so we print all options in response to -h
+        add_help=False
+    )
     args_from_file_parser.add_argument("--config", dest="config", type=str, default=os.getenv("RELEASE_DESCRIPTION_FILE"),
                                        help="Path to top level release config file", metavar="FILE")
     args, _ = args_from_file_parser.parse_known_args()

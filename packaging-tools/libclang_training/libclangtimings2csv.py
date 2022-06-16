@@ -41,11 +41,13 @@ import sys
 
 
 def constructRecordMatcher():
-    regex = '( Parsing)' \
-          + '|( Precompiling preamble)' \
-          + '|( Reparsing)' \
-          + '|( Cache global code completions)' \
-          + '|( Code completion)'
+    regex = (
+        '( Parsing)'
+        + '|( Precompiling preamble)'
+        + '|( Reparsing)'
+        + '|( Cache global code completions)'
+        + '|( Code completion)'
+    )
 
     return re.compile(regex)
 
@@ -59,9 +61,7 @@ def constructTimeNeededMatcher():
     notRelevantParts = r'(\s*\d+\.\d+ \(\d+\.\d+\%\)){0,3}'
     wallClockTime = r'\s*(\d+\.\d+) \(\d+\.\d+\%\)'
 
-    regex = startIndicator \
-          + notRelevantParts \
-          + wallClockTime
+    regex = startIndicator + notRelevantParts + wallClockTime
 
     return re.compile(regex)
 

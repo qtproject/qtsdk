@@ -144,8 +144,9 @@ def cmake_generator(toolchain):
 def static_flags(toolchain):
     if is_mingw_toolchain(toolchain):
         linker_flags = '-static-libgcc -static-libstdc++ -static'
-        return ['-DCMAKE_SHARED_LINKER_FLAGS=' + linker_flags,
-                '-DCMAKE_EXE_LINKER_FLAGS=' + linker_flags,
+        return [
+            '-DCMAKE_SHARED_LINKER_FLAGS=' + linker_flags,
+            '-DCMAKE_EXE_LINKER_FLAGS=' + linker_flags,
         ]
     return []
 

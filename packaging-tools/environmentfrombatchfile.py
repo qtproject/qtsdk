@@ -59,8 +59,9 @@ class PackagingError(Exception):
 def sanity_check_env(env_cmd, env_dict):
     # throw error if 'Path' exists in environment dictionary
     if "Path" in env_dict:
-        raise PackagingError("Configuration error, possible duplicate path 'Path' found in {0}"
-                        .format(env_cmd))
+        raise PackagingError(
+            "Configuration error, possible duplicate path 'Path' found in {0}".format(env_cmd)
+        )
 
 
 def get(env_cmd, initial=None, arguments=None):

@@ -51,16 +51,16 @@ def baseCommand():
 
 
 def crash():
-        '''\
-        crash the Python interpreter...
-        '''
-        i = ctypes.c_char(b'a')
-        j = ctypes.pointer(i)
-        c = 0
-        while True:
-                j[c] = b'a'
-                c += 1
-        j
+    '''\
+    crash the Python interpreter...
+    '''
+    i = ctypes.c_char(b'a')
+    j = ctypes.pointer(i)
+    c = 0
+    while True:
+        j[c] = b'a'
+        c += 1
+    j
 
 
 def printLines(count):
@@ -89,15 +89,17 @@ class TestRunCommand(unittest.TestCase):
 
     def test_Crash_onlyErrorCaseOutput(self):
         with self.assertRaises(Exception) as contextManager:
-            useRunCommand("--printLines 10 --crash", os.getcwd(),
-            # callerArguments=
-            None,
-            # extra_environment=
-            None,
-            # onlyErrorCaseOutput=
-            True,
-            # expectedExitCodes=
-            [0])
+            useRunCommand(
+                "--printLines 10 --crash", os.getcwd(),
+                # callerArguments=
+                None,
+                # extra_environment=
+                None,
+                # onlyErrorCaseOutput=
+                True,
+                # expectedExitCodes=
+                [0]
+            )
         self.assertIsNotNone(contextManager)
         self.assertIsNotNone(contextManager.exception)
         expectedMessageStart = "Different exit code then expected"
@@ -108,15 +110,19 @@ class TestRunCommand(unittest.TestCase):
         self.assertTrue(messageEnd.__contains__(expectedMessageEnd))
 
     def test_differentExitCode_onlyErrorCaseOutput(self):
-        self.assertEqual(useRunCommand("--printLines 10 --exitCode 5", os.getcwd(),
-            # callerArguments=
-            None,
-            # extra_environment=
-            None,
-            # onlyErrorCaseOutput=
-            True,
-            # expectedExitCodes=
-            [0, 5]), 5)
+        self.assertEqual(
+            useRunCommand(
+                "--printLines 10 --exitCode 5", os.getcwd(),
+                # callerArguments=
+                None,
+                # extra_environment=
+                None,
+                # onlyErrorCaseOutput=
+                True,
+                # expectedExitCodes=
+                [0, 5]
+            ), 5
+        )
 
     def test_withThreadedWork(self):
         currentMethodName = sys._getframe().f_code.co_name

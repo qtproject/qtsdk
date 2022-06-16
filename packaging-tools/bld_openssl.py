@@ -74,9 +74,11 @@ def check_environment():
 
 
 def setup_argument_parser():
-    parser = argparse.ArgumentParser(prog=os.path.basename(sys.argv[0]),
-              add_help=True, description='Build openssl from sources',
-               formatter_class=argparse.RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(
+        prog=os.path.basename(sys.argv[0]),
+        add_help=True, description='Build openssl from sources',
+        formatter_class=argparse.RawTextHelpFormatter
+    )
 
     parser.add_argument('--sourcedir', help='Source directory', required=True)
     parser.add_argument('--installdir', help=r'Target directory (should be on C:\)', required=False, default=r'C:\usr\local\openssl')

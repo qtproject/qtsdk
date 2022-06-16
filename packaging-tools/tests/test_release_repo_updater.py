@@ -224,38 +224,39 @@ class TestReleaseRepoUpdater(unittest.TestCase):
         ("Cannot find new components to update"), unpack=False
     )
     async def test_check_valid_repogen_output(self, repogen_output) -> None:
-            # should not throw exception
-            check_repogen_output(repogen_output)
+        # should not throw exception
+        check_repogen_output(repogen_output)
 
-    @testhelpers.asyncio_test_parallel_data(([], ["repository"]),
-                                            (["linux,common"], ["repository,linux,common"]),
-                                            (["", "linux,common"], ["repository", "repository,linux,common"])
+    @testhelpers.asyncio_test_parallel_data(
+        ([], ["repository"]),
+        (["linux,common"], ["repository,linux,common"]),
+        (["", "linux,common"], ["repository", "repository,linux,common"])
     )
     async def test_append_to_task_filters(self, task_filters: str, expected_result: bool) -> None:
         self.assertEqual(append_to_task_filters(task_filters, "repository"), expected_result)
 
-    @testhelpers.asyncio_test_parallel_data((["task.repository.linux.x64.feature1"], ["task,repository,linux,x64,feature1"]),
-                                            (["task.repository.linux.x64.feature1", "windows.x64,feature2"],
-                                            ["task,repository,linux,x64,feature1", "windows,x64,feature2"]),
-                                            (["offline,linux.x64,feature1"], ["offline,linux,x64,feature1"]),
-                                            (["linux"], ["linux"]),
-                                            ([""], [""])
+    @testhelpers.asyncio_test_parallel_data(
+        (["task.repository.linux.x64.feature1"], ["task,repository,linux,x64,feature1"]),
+        (["task.repository.linux.x64.feature1", "windows.x64,feature2"],
+         ["task,repository,linux,x64,feature1", "windows,x64,feature2"]),
+        (["offline,linux.x64,feature1"], ["offline,linux,x64,feature1"]),
+        (["linux"], ["linux"]),
+        ([""], [""])
     )
     async def test_format_task_filters(self, task_filters: str, expected_result: bool) -> None:
         print("test")
         self.assertEqual(format_task_filters(task_filters), expected_result)
 
-    @testhelpers.asyncio_test_parallel_data(("qtsdkrepository/windows_x86/desktop/tools_maintenance/log-s3-2020-12-03"
-                                             "--10:18:11-xml.txt:fatal error: Could not connect to the endpoint URL: 'https"
-                                             "://qt-cdn.s3.eu-west-1.amazonaws.com/?list-type=2&prefix=qtsdkreposit"
-                                             "ory%2Fwindows_x86%2Fdesktop%2Ftools_maintenance%2F&encoding-type=url'"
-                                             "qtsdkrepository/", True),
-                                            ("qtsdkrepository/windows_x86/desktop/tools_maintenance/log-s3-2020-12-03"
-                                             "--10:18:11-xml.txt:fatal error: to the endpoint URL: 'https"
-                                             "://qt-cdn.s3.eu-west-1.amazonaws.com/?list-type=2&prefix=qtsdkreposit"
-                                             "ory%2Fwindows_x86%2Fdesktop%2Ftools_maintenance%2F&encoding-type=url'"
-                                             "qtsdkrepository/", False),
-                                            ("", False)
+    @testhelpers.asyncio_test_parallel_data(
+        ("qtsdkrepository/windows_x86/desktop/tools_maintenance/log-s3-2020-12-03--10:18:11-xml.t"
+         "xt:fatal error: Could not connect to the endpoint URL: 'https://qt-cdn.s3.eu-west-1.ama"
+         "zonaws.com/?list-type=2&prefix=qtsdkrepository%2Fwindows_x86%2Fdesktop%2Ftools_maintena"
+         "nce%2F&encoding-type=url'qtsdkrepository/", True),
+        ("qtsdkrepository/windows_x86/desktop/tools_maintenance/log-s3-2020-12-03--10:18:11-xml.t"
+         "xt:fatal error: to the endpoint URL: 'https://qt-cdn.s3.eu-west-1.amazonaws.com/?list-t"
+         "ype=2&prefix=qtsdkrepository%2Fwindows_x86%2Fdesktop%2Ftools_maintenance%2F&encoding-ty"
+         "pe=url'qtsdkrepository/", False),
+        ("", False)
     )
     async def test_has_connection_error(self, output: str, expected_result: bool) -> None:
         self.assertEqual(expected_result, has_connection_error(output))

@@ -364,9 +364,11 @@ def requires_rpath(file_path):
     if is_linux():
         if not os.access(file_path, os.X_OK):
             return False
-        return (re.search(r':*.R.*PATH=',
-            subprocess.Popen(['chrpath', '-l', file_path],
-                stdout=subprocess.PIPE).stdout.read().decode()) is not None)
+        return (
+            re.search(r':*.R.*PATH=', subprocess.Popen(
+                ['chrpath', '-l', file_path], stdout=subprocess.PIPE
+            ).stdout.read().decode()) is not None
+        )
     return False
 
 
@@ -473,9 +475,12 @@ def handle_component_rpath(component_root_path, destination_lib_paths):
                         rpaths.append(rp)
 
                     # look for existing $ORIGIN path in the binary
-                    origin_rpath = re.search(r'\$ORIGIN[^:\n]*',
-                        subprocess.Popen(['chrpath', '-l', file_full_path],
-                        stdout=subprocess.PIPE).stdout.read().decode())
+                    origin_rpath = re.search(
+                        r'\$ORIGIN[^:\n]*',
+                        subprocess.Popen(
+                            ['chrpath', '-l', file_full_path], stdout=subprocess.PIPE
+                        ).stdout.read().decode()
+                    )
 
                     if origin_rpath and origin_rpath.group() not in rpaths:
                         rpaths.append(origin_rpath.group())
@@ -711,8 +716,9 @@ def create_qt_download_task(module_urls, target_qt5_path, temp_path, caller_argu
     # add Qt modules
     for module_url in module_urls:
         if is_content_url_valid(module_url):
-            (download_task, extract_task) = create_download_and_extract_tasks(module_url,
-                                                target_qt5_path, temp_path, caller_arguments)
+            (download_task, extract_task) = create_download_and_extract_tasks(
+                module_url, target_qt5_path, temp_path, caller_arguments
+            )
             download_work.addTaskObject(download_task)
             unzip_task.addFunction(extract_task.do)
         else:
@@ -720,24 +726,28 @@ def create_qt_download_task(module_urls, target_qt5_path, temp_path, caller_argu
     # add icu, d3dcompiler, opengl32, openssl
     target_path = os.path.join(target_qt5_path, 'bin' if is_windows() else 'lib')
     if not is_macos() and hasattr(caller_arguments, 'icu7z') and caller_arguments.icu7z:
-        (download_task, extract_task) = create_download_and_extract_tasks(caller_arguments.icu7z,
-                                                target_path, temp_path, caller_arguments)
+        (download_task, extract_task) = create_download_and_extract_tasks(
+            caller_arguments.icu7z, target_path, temp_path, caller_arguments
+        )
         download_work.addTaskObject(download_task)
         unzip_task.addFunction(extract_task.do)
     if is_windows():
         if hasattr(caller_arguments, 'd3dcompiler7z') and caller_arguments.d3dcompiler7z:
-            (download_task, extract_task) = create_download_and_extract_tasks(caller_arguments.d3dcompiler7z,
-                                                    target_path, temp_path, caller_arguments)
+            (download_task, extract_task) = create_download_and_extract_tasks(
+                caller_arguments.d3dcompiler7z, target_path, temp_path, caller_arguments
+            )
             download_work.addTaskObject(download_task)
             unzip_task.addFunction(extract_task.do)
         if hasattr(caller_arguments, 'opengl32sw7z') and caller_arguments.opengl32sw7z:
-            (download_task, extract_task) = create_download_and_extract_tasks(caller_arguments.opengl32sw7z,
-                                                    target_path, temp_path, caller_arguments)
+            (download_task, extract_task) = create_download_and_extract_tasks(
+                caller_arguments.opengl32sw7z, target_path, temp_path, caller_arguments
+            )
             download_work.addTaskObject(download_task)
             unzip_task.addFunction(extract_task.do)
         if hasattr(caller_arguments, 'openssl7z') and caller_arguments.openssl7z:
-            (download_task, extract_task) = create_download_and_extract_tasks(caller_arguments.openssl7z,
-                                                    target_path, temp_path, caller_arguments)
+            (download_task, extract_task) = create_download_and_extract_tasks(
+                caller_arguments.openssl7z, target_path, temp_path, caller_arguments
+            )
             download_work.addTaskObject(download_task)
             unzip_task.addFunction(extract_task.do)
     qt_task.addFunction(download_work.run)

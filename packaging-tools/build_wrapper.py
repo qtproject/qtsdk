@@ -304,13 +304,12 @@ class BuildLog:
 def check_call_log(args, execution_path, extra_env=dict(os.environ),
                    log_filepath=None, log_overwrite=False):
     if not log_filepath:
-        do_execute_sub_process(args, execution_path,
-                                                  extra_env=extra_env)
+        do_execute_sub_process(args, execution_path, extra_env=extra_env)
     else:
         with BuildLog(log_filepath, log_overwrite) as f:
-            do_execute_sub_process(args, execution_path,
-                                                      extra_env=extra_env,
-                                                      redirect_output=f)
+            do_execute_sub_process(
+                args, execution_path, extra_env=extra_env, redirect_output=f
+            )
 
 
 def create_qtcreator_source_package(source_path, plugin_name, version, edition, target_path, log_filepath):
