@@ -377,6 +377,7 @@ def build_clazy(toolchain, src_path, build_path, install_path, bitness=64, envir
                  '-G', cmake_generator(toolchain),
                  '-DCMAKE_INSTALL_PREFIX=' + install_path,
                  '-DCMAKE_BUILD_TYPE=Release',
+                 '-DCLAZY_LINK_CLANG_DYLIB=OFF',
                  '-DCMAKE_PREFIX_PATH=' + install_path]
 
     if is_msvc_toolchain(toolchain):
