@@ -634,41 +634,6 @@ def create_mac_disk_image(execution_path, file_directory, file_base_name, image_
 ###############################
 # function
 ###############################
-def rename_android_soname_files(qt5_base_path):
-    print(f'---------- Renaming .so name files in {qt5_base_path} ----------------')
-    # QTBUG-33793
-    # temporary solution for Android on Windows compilations
-    # rename the .so files for Android on Windows
-    # find the lib directory under the install directory for essentials
-    try:
-        print(f'Trying to locate /lib from: {qt5_base_path}')
-        lib_dir = locate_path(qt5_base_path, ["lib"], filters=[os.path.isdir])
-        print(f'Match found: {lib_dir}')
-        # regex for Qt version, eg. 5.2.0
-        # assuming that Qt version will always have one digit, eg, 5.2.0
-        p = re.compile(r'\d\.\d\.\d')
-        # just list the files with a pattern like 'libQt5Core.so.5.2.0'
-        files = [f for f in os.listdir(lib_dir) if re.match(r'lib.*\.so\..*', f)]
-        for name in files:
-            # if name is something like 'libQt5Core.so.5.2.0' then
-            # filename, so, version = ['libQt5Core', 'so', '5.2.0']
-            filename, so, version = name.split(os.extsep, 2)
-            # let's just rename the appropriate files
-            if filename.startswith('lib') and so == 'so' and p.match(version) is not None:
-                old_filepath = os.path.join(lib_dir, name)
-                new_filepath = os.path.join(lib_dir, filename + '.so')
-                shutil.move(old_filepath, new_filepath)
-                print(f'---> Old file name: {old_filepath}')
-                print(f'---> New file name: {new_filepath}')
-            else:
-                print(f"*** Warning! The file '{filename}' does not match the pattern")
-    except PackagingError:
-        print('*** No .so files found to be renamed as /lib was not found. Skipping.')
-
-
-###############################
-# function
-###############################
 def create_extract_function(file_path, target_path):
     Path(target_path).mkdir(parents=True, exist_ok=True)
     working_dir = os.path.dirname(file_path)

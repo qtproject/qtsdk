@@ -55,7 +55,6 @@ from bldinstallercommon import (
     locate_paths,
     patch_qt,
     remove_tree,
-    rename_android_soname_files,
     search_for_files,
 )
 from installer_utils import PackagingError
@@ -321,10 +320,6 @@ ret = runInstallCommand(
 )
 if ret:
     raise RuntimeError(f"Failure running the last command: {ret}")
-
-# patch .so filenames on Windows/Android
-if is_windows() and os.environ.get('DO_PATCH_ANDROID_SONAME_FILES'):
-    rename_android_soname_files(qtModuleInstallDirectory)
 
 # doc collection
 if callerArguments.collectDocs:
