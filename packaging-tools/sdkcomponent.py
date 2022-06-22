@@ -157,9 +157,9 @@ class SdkComponent:
                 else:
                     # sanity check, duplicate template should not exist to avoid
                     # problems!
-                    print('*** Found duplicate template for: ' + self.package_name)
-                    print('*** Ignoring: ' + template_full_path)
-                    print('*** Using:    ' + self.pkg_template_dir)
+                    print(f'*** Found duplicate template for: {self.package_name}')
+                    print(f'*** Ignoring: {template_full_path}')
+                    print(f'*** Using:    {self.pkg_template_dir}')
         self.parse_archives(self.target_config, self.archive_location_resolver)
         self.check_component_data(self.target_config)
 
@@ -194,8 +194,8 @@ class SdkComponent:
                 error_msg = archive.check_archive_data()
                 if error_msg:
                     if self.optional_for_offline:
-                        print('!!! Package: [{0}] Given data archive not found: [{1}] But this component was marked optional -> keep going'.format(self.package_name, archive.archive_uri))
-                        self.sanity_check_fail(self.package_name, 'Given data archive not found: [{0}] But this component was marked optional'.format(archive.archive_uri))
+                        print(f'!!! Package: [{self.package_name}] Given data archive not found: [{archive.archive_uri}] But this component was marked optional -> keep going')
+                        self.sanity_check_fail(self.package_name, f'Given data archive not found: [{archive.archive_uri}] But this component was marked optional')
                         return
                     else:
                         self.sanity_check_fail(self.package_name, error_msg)
@@ -221,11 +221,11 @@ class SdkComponent:
             archives_list = self.archives.split(',')
             for archive in archives_list:
                 if not archive:
-                    print("Warning: There appears to be ',' issues in the config file archive list for component: ", self.package_name)
+                    print(f"Warning: There appears to be ',' issues in the config file archive list for component: {self.package_name}")
                     continue
                 # check that archive template exists
                 if not target_config.has_section(archive):
-                    raise RuntimeError('*** Error! Given archive section does not exist in configuration file: %s' % archive)
+                    raise RuntimeError(f'*** Error! Given archive section does not exist in configuration file: {archive}')
                 archive_obj = SdkComponent.DownloadableArchive(archive, self.package_name, self.target_install_base, self.archive_server_name,
                                                                target_config, archive_location_resolver,
                                                                self.key_value_substitution_list)
@@ -246,23 +246,23 @@ class SdkComponent:
 
     def print_component_data(self):
         print('=============================================================')
-        print(' [' + self.package_name + ']')
+        print(f' [{self.package_name}]')
         if self.static_component:
-            print(' Static component:    ' + self.static_component)
+            print(f' Static component:    {self.static_component}')
             return
         if self.root_component:
-            print(' Root component:      ' + self.root_component)
-        print(' Include filter:      ' + self.include_filter)
-        print(' Target install base: ' + self.target_install_base)
-        print(' Version:             ' + self.version)
-        print(' Version tag:         ' + self.version_tag)
-        print(' Package default:     ' + self.package_default)
+            print(f' Root component:      {self.root_component}')
+        print(f' Include filter:      {self.include_filter}')
+        print(f' Target install base: {self.target_install_base}')
+        print(f' Version:             {self.version}')
+        print(f' Version tag:         {self.version_tag}')
+        print(f' Package default:     {self.package_default}')
         if self.downloadable_archive_list:
             print(' Archives:')
             for archive in self.downloadable_archive_list:
                 print('   ---------------------------------------------------------------')
-                print('   Downloadable archive name:  ' + archive.archive_name)
-                print('   Archive strip dirs:         ' + archive.package_strip_dirs)
-                print('   Archive target install dir: ' + archive.get_archive_installation_directory())
-                print('   Archive RPath target:       ' + archive.rpath_target)
-                print('   Archive URI:                ' + archive.archive_uri)
+                print(f'   Downloadable archive name:  {archive.archive_name}')
+                print(f'   Archive strip dirs:         {archive.package_strip_dirs}')
+                print(f'   Archive target install dir: {archive.get_archive_installation_directory()}')
+                print(f'   Archive RPath target:       {archive.rpath_target}')
+                print(f'   Archive URI:                {archive.archive_uri}')

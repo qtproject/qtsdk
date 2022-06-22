@@ -64,21 +64,21 @@ class RemoteUploader:
             self.copy_cmd = ['rsync']
 
     def init_snapshot_upload_path(self, projectName, version, snapshotId):
-        assert not self.init_finished, "Already initialized as: {0}".format(self.remoteTargetDir)
+        assert not self.init_finished, f"Already initialized as: {self.remoteTargetDir}"
         self.remoteTargetDir = self.remoteTargetBaseDir + "/" + projectName + "/" + version + "/" + snapshotId
         self.remoteLatestLink = self.remoteTargetBaseDir + "/" + projectName + "/" + version + "/latest"
         self.init_finished = True
         self.ensureRemoteDir(self.remoteTargetDir)
 
     def init_upload_path(self, remotePath):
-        assert not self.init_finished, "Already initialized as: {0}".format(self.remoteTargetDir)
+        assert not self.init_finished, f"Already initialized as: {self.remoteTargetDir}"
         self.remoteTargetDir = self.remoteTargetBaseDir + "/" + remotePath
         self.init_finished = True
         self.ensureRemoteDir(self.remoteTargetDir)
 
     def ensureRemoteDir(self, remoteDir):
         assert self.init_finished, "RemoteUploader not initialized!"
-        print("Creating remote directory: {0}".format(remoteDir))
+        print(f"Creating remote directory: {remoteDir}")
         cmd = self.ssh_cmd + ['mkdir', '-p', remoteDir]
         print("Executing: ", ' '.join(cmd))
         if not self.dryRun:
@@ -92,7 +92,7 @@ class RemoteUploader:
             remoteDestination = remoteDestination + '/' + destDirName + '/'
             if "windows" in platform.system().lower():
                 self.ensureRemoteDir(self.remoteTargetDir + '/' + destDirName + '/')
-        print("Copying [{0}] to [{1}]".format(fileName, remoteDestination))
+        print(f"Copying [{fileName}] to [{remoteDestination}]")
         cmd = self.copy_cmd + [fileName, remoteDestination]
         print("Executing: ", ' '.join(cmd))
         if not self.dryRun:
@@ -105,7 +105,7 @@ class RemoteUploader:
 
     def updateLatestSymlink(self, forceUpdate=True):
         assert self.init_finished, "RemoteUploader not initialized!"
-        print("Creating remote symlink: [{0}] -> [{1}]".format(self.remoteLatestLink, self.remoteTargetDir))
+        print(f"Creating remote symlink: [{self.remoteLatestLink}] -> [{self.remoteTargetDir}]")
         options = ["-sfn"] if forceUpdate else ["-sn"]
         try:
             cmd = self.ssh_cmd + ['ln'] + options + [self.remoteTargetDir, self.remoteLatestLink]

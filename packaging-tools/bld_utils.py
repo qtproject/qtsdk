@@ -81,8 +81,8 @@ class DirRenamer(object):
     def __init__(self, path, newName):
         self.oldName = path
         self.newName = os.path.join(os.path.split(path)[0], newName)
-        print("self.oldName: " + self.oldName)
-        print("self.newName: " + self.newName)
+        print(f"self.oldName: {self.oldName}")
+        print(f"self.newName: {self.newName}")
 
     def __enter__(self):
         if self.oldName != self.newName:
@@ -129,7 +129,7 @@ def urllib2_response_read(response, file_path, block_size, total_size):
 
         percent = min(100, bytes_count * 100 / total_size)
         if percent != old_percent:
-            sys.stdout.write("\r{}%".format(percent))
+            sys.stdout.write(f"\r{percent}%")
         old_percent = percent
 
     filename.close()
@@ -142,11 +142,11 @@ def download(url, target, read_block_size=1048576):
             filename = os.path.basename(urlparse(url).path)
             target = os.path.join(os.path.abspath(target), filename)
         if os.path.lexists(target):
-            raise Exception("Can not download '{0}' to '{1}' as target. The file already exists.".format(url, target))
+            raise Exception(f"Can not download '{url}' to '{target}' as target. The file already exists.")
 
         def localDownload(localFilePath, targtFilePath):
             if os.path.isfile(localFilePath):
-                print("copying file from '{0}' to {1}".format(localFilePath, targtFilePath))
+                print(f"copying file from '{localFilePath}' to '{targtFilePath}'")
                 try:
                     os.makedirs(os.path.dirname(targtFilePath))
                 except Exception:
@@ -177,13 +177,13 @@ def download(url, target, read_block_size=1048576):
             # use urlopen which raise an error if that file is not existing
             response = urlopen(url)
             total_size = response.info().get('Content-Length').strip()
-            print("Downloading file from '{0}' with size {1} bytes to {2}".format(url, total_size, target))
+            print(f"Downloading file from '{url}' with size {total_size} bytes to {target}")
             # run the download
             received_size = urllib2_response_read(response, savefile_tmp, read_block_size, total_size)
             if received_size != int(total_size):
-                raise Exception("Broken download, got a wrong size after download from '{0}'(total size: {1}, but {2} received).".format(url, total_size, received_size))
+                raise Exception(f"Broken download, got a wrong size after download from '{url}'(total size: {total_size}, but {received_size} received).")
         except HTTPError as error:
-            raise Exception("Can not download '{0}' to '{1}' as target(error code: '{2}').".format(url, target, error.code))
+            raise Exception(f"Can not download '{url}' to '{target}' as target(error code: '{error.code}').")
 
         renamed = False
         tryRenameCounter = 0
@@ -191,9 +191,9 @@ def download(url, target, read_block_size=1048576):
             tryRenameCounter = tryRenameCounter + 1
             try:
                 if tryRenameCounter > 5 :
-                    sys.stdout.write("r{0}".format(tryRenameCounter))
+                    sys.stdout.write(f"r{tryRenameCounter}")
                 if os.path.lexists(target):
-                    raise Exception("Please remove savefile first: {0}".format(target))
+                    raise Exception(f"Please remove savefile first: {target}")
                 os.rename(savefile_tmp, target)
                 if not os.path.lexists(savefile_tmp):
                     renamed = True
@@ -206,7 +206,7 @@ def download(url, target, read_block_size=1048576):
                     continue
                 else:
                     if not os.path.lexists(target):
-                        raise Exception("Could not rename {0} to {1}{2}Error: {3}".format(savefile_tmp, target, os.linesep, str(e)))
+                        raise Exception(f"Could not rename {savefile_tmp} to {target}{os.linesep}Error: {str(e)}")
     finally:  # this is done before the except code is called
         try:
             os.remove(savefile_tmp)
@@ -244,9 +244,9 @@ def getEnvironment(extra_environment=None, callerArguments=None):
 @deep_copy_arguments
 def runCommand(command, currentWorkingDirectory, callerArguments=None, extra_environment=None, onlyErrorCaseOutput=False, expectedExitCodes=[0]):
     if type(expectedExitCodes) is not list:
-        raise TypeError("{}({}) is not {}".format("expectedExitCodes", type(expectedExitCodes), list))
+        raise TypeError(f"expectedExitCodes({type(expectedExitCodes)}) is not {list}")
     if type(onlyErrorCaseOutput) is not bool:
-        raise TypeError("{}({}) is not {}".format("onlyErrorCaseOutput", type(onlyErrorCaseOutput), bool))
+        raise TypeError(f"onlyErrorCaseOutput({type(onlyErrorCaseOutput)}) is not {bool}")
 
     if type(command) is list:
         commandAsList = command
@@ -268,16 +268,16 @@ def runCommand(command, currentWorkingDirectory, callerArguments=None, extra_env
     if currentWorkingDirectory and not os.path.lexists(currentWorkingDirectory):
         os.makedirs(currentWorkingDirectory)
 
-    print(os.linesep + '========================== do ... ==========================')
+    print('\n========================== do ... ==========================')
     if currentWorkingDirectory:
-        print("Working Directory: " + currentWorkingDirectory)
+        print(f"Working Directory: {currentWorkingDirectory}")
     else:
         print("No currentWorkingDirectory set!")
-    print("Last command:      " + ' '.join(commandAsList))
+    print("Last command:      ", ' '.join(commandAsList))
     sys.stdout.flush()
 
     if currentWorkingDirectory and not os.path.lexists(currentWorkingDirectory):
-        raise Exception("The current working directory is not existing: %s" % currentWorkingDirectory)
+        raise Exception(f"The current working directory is not existing: {currentWorkingDirectory}")
 
     useShell = True if sys.platform.startswith('win') else False
     lastStdOutLines = []
@@ -349,10 +349,10 @@ def runCommand(command, currentWorkingDirectory, callerArguments=None, extra_env
         prettyLastOutput += "Working Directory: " + currentWorkingDirectory + os.linesep
         prettyLastOutput += "Last command:      " + ' '.join(commandAsList) + os.linesep
         if lastOutput:
-            prettyLastOutput += "last {0}output:{1}{2}".format(exit_type, os.linesep, lastOutput)
+            prettyLastOutput += f"last {exit_type}output:{os.linesep}{lastOutput}"
         else:
             prettyLastOutput += " - no process output caught - "
-        raise Exception("Different exit code then expected({0}): {1}{2}".format(expectedExitCodes, exitCode, prettyLastOutput))
+        raise Exception(f"Different exit code then expected({expectedExitCodes}): {exitCode}{prettyLastOutput}")
     return exitCode
 
 

@@ -69,11 +69,11 @@ def crash():
 
 def printLines(count):
     for lineNumber in range(count):
-        print("{0} printed line".format(lineNumber))
+        print(f"{lineNumber} printed line")
 
 
 def useRunCommand(testArguments, *arguments):
-    return runCommand("{0} {1}".format(baseCommand(), testArguments), *arguments)
+    return runCommand(f"{baseCommand()} {testArguments}", *arguments)
 
 
 class TestRunCommand(unittest.TestCase):
@@ -129,7 +129,7 @@ class TestRunCommand(unittest.TestCase):
 
     def test_withThreadedWork(self):
         currentMethodName = sys._getframe().f_code.co_name
-        testWork = ThreadedWork("{} - run some command threaded".format(currentMethodName))
+        testWork = ThreadedWork(f"{currentMethodName} - run some command threaded")
         taskStringList = []
         taskStringList.append("--sleep 1 --printLines 10")
         taskStringList.append("--sleep 2 --printLines 30")
@@ -142,9 +142,9 @@ class TestRunCommand(unittest.TestCase):
 
     def test_withThreadedWork_unexpected_exitCode(self):
         currentMethodName = sys._getframe().f_code.co_name
-        testWork = ThreadedWork("{} - run some command threaded".format(currentMethodName))
+        testWork = ThreadedWork(f"{currentMethodName} - run some command threaded")
         # this exchange the current os._exit(-1) implementation only for this testing case
-        separatorLine = "{0}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>{0}".format(os.linesep)
+        separatorLine = f"{os.linesep}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>{os.linesep}"
         separatorText = "the complete python application would stop here"
         testWork.setExitFailFunction(sys.__stdout__.write, ''.join([separatorLine, separatorText, separatorLine]))
         taskStringList = []
@@ -159,9 +159,9 @@ class TestRunCommand(unittest.TestCase):
 
     def test_withThreadedWork_crash(self):
         currentMethodName = sys._getframe().f_code.co_name
-        testWork = ThreadedWork("{} - run some command threaded".format(currentMethodName))
+        testWork = ThreadedWork(f"{currentMethodName} - run some command threaded")
         # this exchange the current os._exit(-1) implementation only for this testing case
-        separatorLine = "{0}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>{0}".format(os.linesep)
+        separatorLine = f"{os.linesep}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>{os.linesep}"
         separatorText = "the complete python application would stop here"
         testWork.setExitFailFunction(sys.__stdout__.write, ''.join([separatorLine, separatorText, separatorLine]))
         taskStringList = []

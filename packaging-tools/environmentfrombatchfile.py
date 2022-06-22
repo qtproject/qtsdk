@@ -60,7 +60,7 @@ def sanity_check_env(env_cmd, env_dict):
     # throw error if 'Path' exists in environment dictionary
     if "Path" in env_dict:
         raise PackagingError(
-            "Configuration error, possible duplicate path 'Path' found in {0}".format(env_cmd)
+            f"Configuration error, possible duplicate path 'Path' found in {env_cmd}"
         )
 
 
@@ -75,7 +75,7 @@ def get(env_cmd, initial=None, arguments=None):
     to the child process.
     """
     if not os.path.lexists(env_cmd):
-        raise Exception("Can not find {0} to get an environment from it.".format(env_cmd))
+        raise Exception(f"Can not find {env_cmd} to get an environment from it.")
 
     # if not isinstance(env_cmd, (list, tuple)):
     #     env_cmd = [env_cmd]
@@ -85,7 +85,7 @@ def get(env_cmd, initial=None, arguments=None):
     # create a tag so we can tell in the output when the proc is done
     tag = 'Done running command'
     # construct a cmd.exe command to do accomplish this
-    cmd = 'cmd.exe /s /c "\"{env_cmd}\" {arguments}&& echo "{tag}" && set"'.format(**vars())
+    cmd = f'cmd.exe /s /c ""{env_cmd}" {arguments}&& echo "{tag}" && set"'
 
     # launch the process
     proc = Popen(cmd, stdout=PIPE, env=initial, universal_newlines=True)

@@ -82,7 +82,7 @@ def get_extract_cmd(artifact: str) -> List[str]:
     elif any(fnmatch(artifact, p) for p in ["*.tar*", "*.tgz"]):
         return ['tar', '-xf', artifact]
     else:
-        raise PackagingError("Could not find suitable extractor for: {0}".format(artifact))
+        raise PackagingError(f"Could not find suitable extractor for: {artifact}")
 
 
 async def extract_archive(artifact: str, destinationDir: str) -> None:

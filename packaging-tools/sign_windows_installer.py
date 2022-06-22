@@ -89,17 +89,17 @@ def _handle_signing(file_path: str):
     log_entry[7] = "****"
     log_entry[9] = "****"
     log_entry[11] = "****"
-    log.info(f"Calling: {' '.join(log_entry)}")
+    log.info("Calling: %s", ' '.join(log_entry))
     sign_result = subprocess.run(cmd_args_sign, stdout=DEVNULL, stderr=DEVNULL)
     if sign_result.returncode != 0:
         raise PackagingError(f"Package {file_path} signing  with error {sign_result.returncode}")
-    log.info(f"Successfully signed: {file_path}")
+    log.info("Successfully signed: %s", file_path)
     signtool = os.path.basename(os.environ["WINDOWS_SIGNTOOL_X64_PATH"])
     cmd_args_verify: List[str] = [signtool, "verify", "-pa", file_path]
     verify_result = subprocess.run(cmd_args_verify, stdout=DEVNULL, stderr=DEVNULL)
     if verify_result.returncode != 0:
         raise PackagingError(f"Failed to verify {file_path} with error {verify_result.returncode}")
-    log.info(f"Successfully verified: {file_path}")
+    log.info("Successfully verified: %s", file_path)
 
 
 def decrypt_private_key() -> str:
@@ -126,7 +126,7 @@ def download_signing_tools(path_to_key: str):
 
 
 def sign_executable(file_path: str):
-    log.info(f"Signing: {file_path}")
+    log.info("Signing: %s", file_path)
     try:
         key_path: str = decrypt_private_key()
         download_signing_tools(key_path)

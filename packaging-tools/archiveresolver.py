@@ -108,7 +108,7 @@ class ArchiveLocationResolver:
         for server in self.server_list:
             if server.server_name == server_name:
                 return server.server_url
-        raise RuntimeError('*** Error! Unable to find server by name: %s' % server_name)
+        raise RuntimeError(f"*** Error! Unable to find server by name: {server_name}")
 
     ###############################
     # Get full server URI
@@ -145,7 +145,7 @@ class ArchiveLocationResolver:
         else:
             parts = urlparse(archive_uri)
             if parts.scheme and parts.netloc:
-                raise RuntimeError("Url: [%s] points to valid location but it is inaccessible." % (archive_uri))
+                raise RuntimeError(f"Url: [{archive_uri}] points to valid location but it is inaccessible.")
         # 3. try to compose full URL
         temp = self.server_url_by_name(server_name)
         if not temp.endswith('/') and not archive_uri.startswith('/'):
@@ -161,5 +161,5 @@ class ArchiveLocationResolver:
         print(' Server list:')
         for server in self.server_list:
             print(' ---------------------------------------------')
-            print(' Server name: ' + server.server_name)
-            print(' Server url:  ' + server.server_url)
+            print(f' Server name: {server.server_name}')
+            print(f' Server url: {server.server_url}')

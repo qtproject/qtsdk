@@ -112,11 +112,11 @@ class event_register(object):
                f"--integration-id={export_summary.get('id', '')}",
                f"--sha1={export_summary.get('sha1', '')}",
                f"--message={message or ''}"]
-        log.info(f"Calling: {' '.join(cmd)}")
+        log.info("Calling: %s", " ".join(cmd))
         ret = subprocess.run(cmd, shell=False, check=False, stdout=PIPE, stderr=PIPE, encoding="utf-8", timeout=60 * 2)
         if ret.returncode:
-            log.warning(f"Failed to register event - stdout: {ret.stderr}")
-            log.warning(f"Failed to register event - stderr: {ret.stdout}")
+            log.warning("Failed to register event - stdout: %s", ret.stderr)
+            log.warning("Failed to register event - stderr: %s", ret.stdout)
 
 
 class QtRepositoryLayout:
@@ -194,11 +194,11 @@ def execute_remote_script(server: str, remoteScriptPath: str, timeout=60 * 60) -
         if not has_connection_error(exec_cmd(cmd, timeout)):
             break
         if retry_count:
-            log.warning(f"Trying again after {delay}s")
+            log.warning("Trying again after %ss", delay)
             sleep(delay)
             delay = delay + delay / 2  # 60, 90, 135, 202, 303
         else:
-            log.critical(f"Execution of the remote script probably failed: {cmd}")
+            log.critical("Execution of the remote script probably failed: %s", cmd)
 
 
 async def upload_ifw_to_remote(ifwTools: str, remoteServer: str, remoteServerHome: str) -> str:
@@ -226,7 +226,7 @@ async def upload_ifw_to_remote(ifwTools: str, remoteServer: str, remoteServerHom
 
 def check_repogen_output(output: str) -> None:
     if any(fail_string in output.strip().lower() for fail_string in ["error", "invalid", "already exists"]):
-        raise PackagingError("Repogen failed: {0}".format(output.strip()))
+        raise PackagingError(f"Repogen failed: {output.strip()}")
 
 
 def get_remote_login_cmd(server: str) -> List[str]:
@@ -269,12 +269,12 @@ def is_safe_directory(paths: List[str]) -> None:
     for _path in paths:
         path = os.path.abspath(_path)
         if path == "/":
-            raise PackagingError("You should not make modifications directly to root: {0}".format(path))
+            raise PackagingError(f"You should not make modifications directly to root: {path}")
         illegalDirectories = ("/bin", "/boot", "/sys", "/sbin", "/root", "/lib", "/dev")
         if path.startswith(illegalDirectories):
-            raise PackagingError("You should not make modifications ('{0}') under these directories: {1}".format(path, illegalDirectories))
+            raise PackagingError(f"You should not make modifications ('{path}') under these directories: {illegalDirectories}")
         if path in ["~", os.path.expanduser("~"), "/home"]:
-            raise PackagingError("You should not make modifications directly to home directory: {0}".format(path))
+            raise PackagingError(f"You should not make modifications directly to home directory: {path}")
 
 
 def create_remote_paths(server: str, paths: List[str]) -> None:
@@ -302,7 +302,7 @@ def upload_pending_repository_content(server: str, sourcePath: str, remoteDestin
 
 def reset_new_remote_repository(server: str, remoteSourceRepoPath: str, remoteTargetRepoPath: str) -> None:
     if not remote_path_exists(server, remoteSourceRepoPath):
-        raise PackagingError("The remote source repository path did not exist on the server: {0}:{1}".format(server, remoteSourceRepoPath))
+        raise PackagingError(f"The remote source repository path did not exist on the server: {server}:{remoteSourceRepoPath}")
     if remote_path_exists(server, remoteTargetRepoPath):
         # this will _move_ the currect repo as backup
         create_remote_repository_backup(server, remoteTargetRepoPath)
@@ -389,7 +389,7 @@ def spawn_remote_background_task(server: str, serverHome: str, remoteCmd: List[s
 
 async def update_repository(stagingServer: str, repoLayout: QtRepositoryLayout, task: ReleaseTask,
                             updateStaging: bool, updateProduction: bool, rta: str, remoteRepogen: str) -> None:
-    assert task.get_source_online_repository_path(), "Can not update repository: [{0}] because source repo is missing".format(task.get_repo_path())
+    assert task.get_source_online_repository_path(), f"Can not update repository: [{task.get_repo_path()}] because source repo is missing"
     # ensure the repository paths exists at server
     log.info("Starting repository update: %s", task.get_repo_path())
     create_remote_paths(stagingServer, repoLayout.get_repo_layout())
@@ -432,7 +432,7 @@ async def build_online_repositories(tasks: List[ReleaseTask], license: str, inst
     assert ifwTools, "The 'ifwTools' must be defined!"
     # locate the repo build script
     scriptPath = os.path.abspath(os.path.join(os.path.dirname(__file__), "create_installer.py"))
-    assert os.path.isfile(scriptPath), "Not a valid script path: {0}".format(scriptPath)
+    assert os.path.isfile(scriptPath), f"Not a valid script path: {scriptPath}"
 
     # build online repositories first
     done_repositories = []  # type: List[str]
@@ -446,7 +446,7 @@ async def build_online_repositories(tasks: List[ReleaseTask], license: str, inst
         log.info("Building repository: %s", task.get_repo_path())
         installerConfigFile = os.path.join(installerConfigBaseDir, task.get_config_file())
         if not os.path.isfile(installerConfigFile):
-            raise PackagingError("Invalid 'config_file' path: {0}".format(installerConfigFile))
+            raise PackagingError(f"Invalid 'config_file' path: {installerConfigFile}")
 
         # TODO: license
         cmd = [sys.executable, scriptPath, "-c", installerConfigBaseDir, "-f", installerConfigFile]
@@ -462,7 +462,7 @@ async def build_online_repositories(tasks: List[ReleaseTask], license: str, inst
             raise
 
         onlineRepositoryPath = os.path.abspath(os.path.join(os.path.dirname(__file__), "online_repository"))
-        assert os.path.isdir(onlineRepositoryPath), "Not a valid path: {0}".format(onlineRepositoryPath)
+        assert os.path.isdir(onlineRepositoryPath), f"Not a valid path: {onlineRepositoryPath}"
         shutil.move(onlineRepositoryPath, task.source_online_repository_path)
         log.info("Repository created at: %s", task.source_online_repository_path)
         done_repositories.append(task.source_online_repository_path)
@@ -493,7 +493,7 @@ async def sync_production(tasks: List[ReleaseTask], repoLayout: QtRepositoryLayo
     for task in tasks:
         key = os.path.join(repoLayout.get_repo_domain(), task.get_repo_path())
         if key in updatedProductionRepositories:
-            raise PackagingError("Duplicate repository path found: {0}".format(key))
+            raise PackagingError(f"Duplicate repository path found: {key}")
         updatedProductionRepositories[key] = os.path.join(repoLayout.get_production_path(), task.get_repo_path())
 
     # if _all_ repository updates to production were successful then we can sync to production
@@ -542,15 +542,15 @@ def string_to_bool(value: str) -> bool:
     elif value.lower() in ('no', 'false', 'n', '0'):
         return False
     else:
-        raise argparse.ArgumentTypeError('Unable to convert to boolean: {0}'.format(value))
+        raise argparse.ArgumentTypeError(f"Unable to convert to boolean: {value}")
 
 
 def parse_ext(ext: str) -> Tuple[str, str]:
     parts = ext.split(":")
     if len(parts) != 2:
-        raise PackagingError("Ext format should be '<login>@<server>:/base/path'. Format was invalid: {0}".format(ext))
+        raise PackagingError(f"Ext format should be '<login>@<server>:/base/path'. Format was invalid: {ext}")
     if not parts[1].startswith("/"):
-        raise PackagingError("Ext server path should start with '/'. Format was invalid: {0}".format(parts[1]))
+        raise PackagingError(f"Ext server path should start with '/'. Format was invalid: {parts[1]}")
     return parts[0], parts[1]
 
 
@@ -574,7 +574,7 @@ def create_offline_remote_dirs(task: ReleaseTask, stagingServer: str, stagingSer
 
 
 def update_remote_latest_available_dir(newInstaller: str, remoteUploadPath: str, task: ReleaseTask, stagingServerRoot: str, installerBuildId: str) -> None:
-    log.info(f"Update latest available installer directory: {remoteUploadPath}")
+    log.info("Update latest available installer directory: %s", remoteUploadPath)
     regex = re.compile('.*' + task.get_version())
     new_installer_base_path = "".join(regex.findall(newInstaller))
     path, name = os.path.split(new_installer_base_path)
@@ -584,13 +584,13 @@ def update_remote_latest_available_dir(newInstaller: str, remoteUploadPath: str,
     previous_installer_path = latest_available_path + name + '*'
     try:
         cmd_rm = get_remote_login_cmd(stagingServerRoot) + ['rm', previous_installer_path.split(':')[1]]
-        log.info(f"Running remove cmd: {cmd_rm}")
+        log.info("Running remove cmd: %s", cmd_rm)
         exec_cmd(cmd_rm, timeout=60 * 60)  # 1h
     except Exception:
         log.info("Running cmd failed - this happens only if latest_available is empty")
         pass
     cmd_cp = get_remote_login_cmd(stagingServerRoot) + ['cp', remoteUploadPath.split(':')[1] + name + '*', latest_available_path.split(':')[1]]
-    log.info(f"Running copy cmd: {cmd_cp}")
+    log.info("Running copy cmd: %s", cmd_cp)
     exec_cmd(cmd_cp, timeout=60 * 60)  # 1h
 
 
@@ -605,7 +605,7 @@ def upload_offline_to_remote(installerPath: str, remoteUploadPath: str, stagingS
         os.rename(os.path.join(installerPath, file), installer)
         remote_destination = stagingServer + ":" + remoteUploadPath
         cmd = ['scp', installer, remote_destination]
-        log.info(f"Uploading offline installer: {installer} to: {remote_destination}")
+        log.info("Uploading offline installer: %s to: %s", installer, remote_destination)
         exec_cmd(cmd, timeout=60 * 60)  # 1h
         update_remote_latest_available_dir(installer, remote_destination, task, stagingServer, installerBuildId)
         if enable_oss_snapshots and license == "opensource":
@@ -624,7 +624,7 @@ def sign_offline_installer(installer_path: str, installer_name: str) -> None:
         log.info("Notarize macOS installer")
         notarize_dmg(os.path.join(installer_path, installer_name + '.dmg'), installer_name)
     else:
-        log.info(f"No signing available for this host platform: {platform.system()}")
+        log.info("No signing available for this host platform: %s", platform.system())
 
 
 def notarize_dmg(dmgPath, installerBasename) -> None:
@@ -655,12 +655,12 @@ async def _build_offline_tasks(stagingServer: str, stagingServerRoot: str, tasks
     assert ifwTools, "The 'ifwTools' must be defined!"
 
     scriptPath = os.path.abspath(os.path.join(os.path.dirname(__file__), "create_installer.py"))
-    assert os.path.isfile(scriptPath), "Not a valid script path: {0}".format(scriptPath)
+    assert os.path.isfile(scriptPath), f"Not a valid script path: {scriptPath}"
     installer_output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "installer_output"))
 
     # build installers
     for task in tasks:
-        log.info(f"Building offline installer: {task.get_installer_name()}")
+        log.info("Building offline installer: %s", task.get_installer_name())
         installerConfigFile = os.path.join(installerConfigBaseDir, task.get_config_file())
         if not os.path.isfile(installerConfigFile):
             raise PackagingError(f"Invalid 'config_file' path: {installerConfigFile}")
@@ -703,10 +703,10 @@ def upload_snapshots_to_remote(staging_server: str, remote_upload_path: str, tas
         remote_installer_path = remote_installer_path.replace("\\", "/")
     login = get_remote_login_cmd(staging_server) + get_remote_login_cmd(get_pkg_value("SNAPSHOT_SERVER"))
     cmd_mkdir = login + ["mkdir", "-p", snapshot_upload_path]
-    log.info(f"Creating offline snapshot directory: {cmd_mkdir}")
+    log.info("Creating offline snapshot directory: %s", cmd_mkdir)
     exec_cmd(cmd_mkdir, timeout=60 * 60)
     cmd_scp_installer = get_remote_login_cmd(staging_server) + ["scp", "-r", remote_installer_path] + [get_pkg_value("SNAPSHOT_SERVER") + ":" + snapshot_upload_path + "/"]
-    log.info(f"Uploading offline snapshot: {cmd_scp_installer}")
+    log.info("Uploading offline snapshot: %s", cmd_scp_installer)
     exec_cmd(cmd_scp_installer, timeout=60 * 60 * 2)
 
 
@@ -721,10 +721,10 @@ def load_export_summary_data(config_file: Path) -> Dict[str, str]:
             ret = json.loads(url.read().decode())
     except KeyError:
         # it's ok, not mandatory
-        log.info(f"Export summary file url not present in: {config_file}")
+        log.info("Export summary file url not present in: %s", config_file)
         pass
     except URLError as e:
-        log.warning(f"Unable to read export summary file: {str(e)}")
+        log.warning("Unable to read export summary file: %s", str(e))
     except ValueError:
         # it's ok, not mandatory
         pass
@@ -831,7 +831,7 @@ if __name__ == "__main__":
     args.task_filters = format_task_filters(args.task_filters)
     # installer configuration files are relative to the given top level release description file
     installerConfigBaseDir = os.path.abspath(os.path.join(os.path.dirname(args.config), os.pardir))
-    assert os.path.isdir(installerConfigBaseDir), "Not able to figure out 'configurations/' directory correctly: {0}".format(installerConfigBaseDir)
+    assert os.path.isdir(installerConfigBaseDir), f"Not able to figure out 'configurations/' directory correctly: {installerConfigBaseDir}"
 
     export_data = load_export_summary_data(Path(args.config)) if args.event_injector else {}
 
@@ -854,4 +854,4 @@ if __name__ == "__main__":
                                       args.build_repositories, do_update_repositories, do_sync_repositories,
                                       args.event_injector, export_data))
         for repo in ret:
-            log.info(f"{repo}")
+            log.info("%s", repo)

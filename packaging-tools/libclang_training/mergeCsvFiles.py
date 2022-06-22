@@ -90,14 +90,14 @@ def checkConsistency(files):
     # Ensure same size of records
     for f in files:
         if not len(f.values) == referenceEntrySize:
-            print('error: number of entries mismatch between "%s" and "%s".' % (referenceEntry.filePath, f.filePath), file=sys.stderr)
+            print(f"error: number of entries mismatch between '{referenceEntry.filePath}' and '{f.filePath}'.", file=sys.stderr)
             sys.exit(1)
 
     # Ensure same identifier on the left
     for f in files:
         identifiers = [v[0] for v in f.values]
         if not identifiers == referenceEntryIdentifiers:
-            print('error: mismatch between identifers in first column between "%s" and "%s".' % (referenceEntry.filePath, f.filePath), file=sys.stderr)
+            print(f"error: mismatch between identifers in first column between '{referenceEntry.filePath}' and '{f.filePath}'.", file=sys.stderr)
             sys.exit(1)
 
     return referenceEntryIdentifiers

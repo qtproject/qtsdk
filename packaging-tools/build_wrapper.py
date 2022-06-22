@@ -77,8 +77,8 @@ LOCAL_MODE = os.getenv('LOCAL_MODE')  # if set, installers will be copied to a l
 LOCAL_INSTALLER_DIR = os.getenv('LOCAL_INSTALLER_DIR', os.path.join(WORK_DIR, 'installers'))
 
 if LOCAL_MODE:
-    assert os.path.exists(LOCAL_INSTALLER_DIR), "Local installer destination directory does not exist: %s" % LOCAL_INSTALLER_DIR
-    print("Installer files will be copied to local directory: %s" % LOCAL_INSTALLER_DIR)
+    assert os.path.exists(LOCAL_INSTALLER_DIR), f"Local installer dest dir does not exist: {LOCAL_INSTALLER_DIR}"
+    print(f"Installer files will be copied to local directory: {LOCAL_INSTALLER_DIR}")
 
 
 ###############################
@@ -157,9 +157,9 @@ def handle_qt_licheck_build(optionDict):
 ###############################
 def move_files_to_parent_dir(source):
     destination = os.path.abspath(os.path.join(source, os.pardir))
-    print("Moving files from: [{0}] to: [{1}]".format(source, destination))
-    assert os.path.isdir(source), "The given source is not a directory: %s" % source
-    assert os.path.isdir(destination), "The destination is not a directory: %s" % destination
+    print(f"Moving files from: [{source}] to: [{destination}]")
+    assert os.path.isdir(source), f"The given source is not a directory: {source}"
+    assert os.path.isdir(destination), f"The destination is not a directory: {destination}"
     files_list = os.listdir(source)
     for file in files_list:
         shutil.move(os.path.join(source, file), destination)
@@ -170,7 +170,7 @@ def create_download_documentation_task(base_url, download_path):
     doc_base_url = base_url + "/doc"
 
     useLocal = urlparse(doc_base_url).scheme == "file"
-    print("doc_base_url: {} useLocal: {}".format(doc_base_url, useLocal))
+    print(f"doc_base_url: {doc_base_url} useLocal: {useLocal}")
     if useLocal:
         file_list = os.listdir(doc_base_url[len("file:///"):])
     else:
@@ -200,7 +200,7 @@ def create_download_documentation_task(base_url, download_path):
         runCommand(['7z', 'a', '-mx1', '-mmt2', '-md32m', '-ms=1g', target_filepath, dest_doc_path],
                    dest_doc_path, None)
 
-    download_task = Task("downloading documentation from {0}".format(base_url))
+    download_task = Task(f"downloading documentation from {base_url}")
     for item in file_list:
         url = base_url + '/doc/' + item
         download_filepath = os.path.join(download_path, item)
@@ -208,7 +208,7 @@ def create_download_documentation_task(base_url, download_path):
         download_task.addFunction(create_extract_function(download_filepath, extract_path, None))
         download_task.addFunction(create_remove_one_dir_level_function(os.path.join(extract_path, item.rstrip(".zip"))))
 
-    repackage_task = Task("repackaging documentation as {0}".format(target_filepath))
+    repackage_task = Task(f"repackaging documentation as {target_filepath}")
     repackage_task.addFunction(repackage)
     return (download_task, repackage_task, file_url(target_filepath))
 
@@ -240,9 +240,9 @@ def create_download_openssl_task(url, download_path):
         runCommand(['7z', 'a', '-mmt2', target_filepath, pattern],
                    source_path, None)
 
-    download_task = Task('downloading openssl from {0}'.format(url))
+    download_task = Task(f"downloading openssl from {url}")
     download_task.addFunction(download, url, download_filepath)
-    repackage_task = Task("repackaging openssl as {0}".format(target_filepath))
+    repackage_task = Task(f"repackaging openssl as {target_filepath}")
     repackage_task.addFunction(create_extract_function(download_filepath, extract_path, None))
     repackage_task.addFunction(repackage)
     return (download_task, repackage_task, file_url(target_filepath))
@@ -303,7 +303,7 @@ class BuildLog:
         try:
             self.file = open(self.log_filepath, 'w' if self.log_overwrite else 'a')
         except Exception:
-            print('Failed to write log file "' + self.log_filepath + '"')
+            print(f"Failed to write log file '{self.log_filepath}'")
             sys.stdout.flush()
             raise
         return self.file
@@ -382,7 +382,7 @@ def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url
         for dependency_name in plugin.dependencies:
             matches = [dep for dep in plugins if dep.name == dependency_name]
             if not matches:
-                raise RuntimeError('did not find dependency "{0}" for plugin "{1}"'.format(dependency_name, plugin.name))
+                raise RuntimeError(f'did not find dependency "{dependency_name}" for plugin "{plugin.name}"')
             dependency = matches[0]
             cmd_arguments.extend(['--add-path', os.path.join(work_dir, dependency.name + '-build', 'build')])
             for module in dependency.modules:

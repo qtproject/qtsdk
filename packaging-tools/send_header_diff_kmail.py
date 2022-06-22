@@ -60,11 +60,11 @@ from subprocess import check_call
 def send_headers(version, message_id, simulate):
     receiver = 'development@qt-project.org'
     subject = 'Qt ' + version + ' header diff: '
-    print("Header diff:", subject)
+    print(f"Header diff: {subject}")
 
     for diff in os.listdir('.'):
         if diff.endswith('.diff'):
-            print('Sending: ', diff)
+            print(f'Sending: {diff}')
             s = subject + diff
             h1 = 'In-Reply-To:<' + message_id + '>'
             h2 = 'References:<' + message_id + '>'

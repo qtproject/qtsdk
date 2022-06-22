@@ -68,18 +68,18 @@ import mergeCsvFiles
 
 def verboseStart(args):
     if Config.Verbose:
-        print("info: starting", args)
+        print(f"info: starting {args}")
 
 
 def checkExistenceOrDie(filePath):
     if not os.path.exists(filePath):
-        print("error: file path does not exist:", filePath, file=sys.stderr)
+        print(f"error: file path does not exist: {filePath}", file=sys.stderr)
         sys.exit(1)
 
 
 def checkExitCodeOrDie(exitCode, args):
     if exitCode != 0:
-        print("error: exit code is,", exitCode, "for", ' '.join(args), file=sys.stderr)
+        print(f"error: exit code is, {exitCode} for", ' '.join(args), file=sys.stderr)
         sys.exit(1)
 
 
@@ -120,17 +120,17 @@ class Config:
     @staticmethod
     def dump():
         print("log dir:")
-        print("  ", Config.LogDir)
+        print(f"  {Config.LogDir}")
         print("qt creator settings dir:")
-        print("  ", Config.QtCreatorSettingsDir)
+        print(f"  {Config.QtCreatorSettingsDir}")
         print("target libclang:")
-        print("  ", Config.TargetLibClangDll)
+        print(f"  {Config.TargetLibClangDll}")
         print("libclangs:")
         for dll in Config.LibClangDlls:
-            print("  ", dll)
+            print(f"  {dll}")
         print("batch files:")
         for b in Config.BatchFiles:
-            print("  ", b)
+            print(f"  {b}")
 
 
 class RunRecord:
@@ -156,7 +156,7 @@ class DebugView:
     def stop(self):
         if self.proc:
             if Config.Verbose:
-                print("info: stopping", self.executable)
+                print(f"info: stopping {self.executable}")
             self.proc.terminate()
             self.proc.wait()
 
@@ -236,7 +236,7 @@ def logFileFromId(logFileId):
 def createDir(dirPath):
     if not os.path.exists(dirPath):
         if Config.Verbose:
-            print("info: creating not existent", dirPath)
+            print(f"info: creating not existent {dirPath}")
         os.makedirs(dirPath)
 
 
@@ -244,19 +244,19 @@ def createBackupFile(filePath):
     if os.path.exists(filePath):
         backupPath = filePath[:-4] + ".backup_" + str(time()) + ".log"
         if Config.Verbose:
-            print('info: creating backup of already existing "%s"' % (filePath))
+            print(f"info: creating backup of already existing '{filePath}'")
         copyfile(filePath, backupPath)
 
 
 def printDuration(s):
     hours, remainder = divmod(s, 3600)
     minutes, seconds = divmod(remainder, 60)
-    print('...needed %d:%02d:%02d' % (hours, minutes, seconds))
+    print(f"...needed {hours}:{minutes}:{seconds}")
 
 
 def processBatchFileTimed(libClangId, batchFilePath):
     timeStarted = time()
-    print("processing", batchFilePath, end=' ')
+    print(f"processing {batchFilePath}", end=' ')
 
     runRecord = processBatchFile(libClangId, batchFilePath)
 
@@ -288,7 +288,7 @@ def getLibClangId(libClangDll):
 
 
 def switchLibClang(libClangDll):
-    print('copying "%s" -> "%s"' % (libClangDll, Config.TargetLibClangDll))
+    print(f"copying '{libClangDll}' -> '{Config.TargetLibClangDll}'")
     copyfile(libClangDll, Config.TargetLibClangDll)
 
 
@@ -326,7 +326,7 @@ def mergeGeneratedCsvFiles(runRecords):
         mergeFilePath = os.path.join(Config.LogDir, batchFileId + ".csv")
 
         mergeCsvFiles.mergeFiles(mergeFilePath, csvFilePaths)
-        print("generated:", mergeFilePath)
+        print(f"generated: {mergeFilePath}")
 
 
 def main():

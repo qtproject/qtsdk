@@ -66,7 +66,7 @@ def findFile(searchPath: str, fileName: str) -> str:
     for root, dirs, files in os.walk(searchPath):
         if fileName in files:
             return os.path.join(root, fileName)
-    assert False, "Unbale to find: {0} from: {1}".format(fileName, searchPath)
+    assert False, f"Unable to find: {fileName} from: {searchPath}"
 
 
 def collectLibs(searchPath: str) -> List[str]:
@@ -74,7 +74,7 @@ def collectLibs(searchPath: str) -> List[str]:
         for dir in dirs:
             if dir == "lib":
                 return [os.path.join(root, dir, x) for x in os.listdir(os.path.join(root, dir))]
-    assert False, "Unbale to find: 'lib' from: {0}".format(searchPath)
+    assert False, f"Unable to find: 'lib' from: {searchPath}"
 
 
 def parseQtVersion(downloadUrlPath: str) -> str:
@@ -83,12 +83,12 @@ def parseQtVersion(downloadUrlPath: str) -> str:
         m = regex.search(item)
         if m:
             return m.groups()[0]
-    assert False, "Could not parse Qt version number from: {0}".format(downloadUrlPath)
+    assert False, f"Could not parse Qt version number from: {downloadUrlPath}"
 
 
 def downloadQtPkg(args: argparse.Namespace, currentDir: str) -> Tuple[str, str]:
     urlRes = urlparse(args.qtpkg)
-    assert urlRes.scheme and urlRes.netloc and urlRes.path, "Invalid URL: {0}".format(args.qtpkg)
+    assert urlRes.scheme and urlRes.netloc and urlRes.path, f"Invalid URL: {args.qtpkg}"
     qtVersion = parseQtVersion(urlRes.path)
 
     saveAs = os.path.join(currentDir, os.path.basename(urlRes.path))
@@ -130,7 +130,7 @@ def build(qtDestDir: str, currentDir: str) -> str:
         makeToolName = "make"
 
     qmakeTool = findFile(qtDestDir, qmakeToolName)
-    assert qmakeTool, "Could not find: {0} from: {1}".format(qmakeToolName, qtDestDir)
+    assert qmakeTool, f"Could not find: {qmakeToolName} from: {qtDestDir}"
 
     # patch
     with open(os.path.join(os.path.dirname(qmakeTool), "qt.conf"), "w+") as f:
@@ -138,7 +138,7 @@ def build(qtDestDir: str, currentDir: str) -> str:
         f.write("Prefix=..\n")
 
     pro_files_list = glob(os.path.join(args.src_path, "*.pro"))
-    assert pro_files_list, "Could not find .pro file(s) from: {0}".format(args.src_path)
+    assert pro_files_list, f"Could not find .pro file(s) from: {args.src_path}"
     proFile = pro_files_list[0]
     log.info("Using .pro file: %s", proFile)
 

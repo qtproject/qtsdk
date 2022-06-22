@@ -75,4 +75,4 @@ if __name__ == "__main__":
         parser.print_help(sys.stderr)
         sys.exit(1)
 
-    print("{0}: '{1}'".format(args.key, get_pkg_value(args.key, args.section, args.url)))
+    print(f"{args.key}: '{get_pkg_value(args.key, args.section, args.url)}'")

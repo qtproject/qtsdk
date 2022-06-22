@@ -109,7 +109,7 @@ def clean_work_dirs(task):
     for item in [task.packages_full_path_dst, task.repo_output_dir, task.config_dir_dst]:
         if os.path.exists(item):
             remove_tree(item)
-            log.debug("Deleted directory: {0}".format(item))
+            log.debug("Deleted directory: %s", item)
 
 
 ##############################################################
@@ -121,11 +121,11 @@ def set_config_directory(task):
     config_dir_template = task.config.get('ConfigDir', 'template_name')
     config_template_src = os.path.normpath(os.path.join(task.configurations_dir, config_dir_template))
     if not os.path.exists(config_template_src):
-        raise CreateInstallerError("No such 'config' template directory: '{0}'".format(config_template_src))
+        raise CreateInstallerError(f"No such 'config' template directory: '{config_template_src}'")
 
     Path(task.config_dir_dst).mkdir(parents=True, exist_ok=True)
     copy_tree(config_template_src, task.config_dir_dst)
-    log.info("Copied: '{0}' into: {1}".format(config_template_src, task.config_dir_dst))
+    log.info("Copied: '%s' into: '%s'", config_template_src, task.config_dir_dst)
 
 
 ##############################################################
@@ -139,7 +139,7 @@ def set_config_xml(task):
     config_template_source = task.configurations_dir + os.sep + task.platform_identifier + os.sep + configxml_filename
     # if no config.xml template, we assume the "config" template dir already contains it
     if not os.path.exists(config_template_source):
-        raise CreateInstallerError("Given config.xml template does not exist: {0}".format(config_template_source))
+        raise CreateInstallerError(f"Given config.xml template does not exist: {config_template_source}")
 
     # name has to be config.xml for installer-framework
     config_template_dest_dir = task.config_dir_dst
@@ -147,10 +147,10 @@ def set_config_xml(task):
 
     if os.path.exists(config_template_dest):
         os.remove(config_template_dest)
-        log.debug("Deleted old existing config.xml: {0}".format(config_template_dest))
+        log.debug("Deleted old existing config.xml: %s", config_template_dest)
     Path(config_template_dest_dir).mkdir(parents=True, exist_ok=True)
     shutil.copy(config_template_source, config_template_dest)
-    log.info("Copied '{0}' into: '{1}'".format(config_template_source, config_template_dest))
+    log.info("Copied '%s' into: '%s'", config_template_source, config_template_dest)
 
     update_repository_url = safe_config_key_fetch(task.config, 'SdkUpdateRepository', 'repository_url_release')
 
@@ -168,10 +168,10 @@ def set_config_xml(task):
 def substitute_global_tags(task):
     """ Substitute common version numbers etc., match against tags """
     log.info("Substituting global tags:")
-    log.info("%PACKAGE_CREATION_DATE% = {0}".format(task.build_timestamp))
-    log.info("%VERSION_NUMBER_AUTO_INCREASE% = {0}".format(task.version_number_auto_increase_value))
+    log.info("%%PACKAGE_CREATION_DATE%% = %s", task.build_timestamp)
+    log.info("%%VERSION_NUMBER_AUTO_INCREASE%% = %s", task.version_number_auto_increase_value)
     for item in task.substitution_list:
-        log.info("{0} = {1}".format(item[0], item[1]))
+        log.info("%s = %s", item[0], item[1])
 
     # initialize the file list
     fileslist = []
@@ -212,10 +212,10 @@ def substitute_component_tags(tag_pair_list, meta_dir_dest):
         tag = pair[0]
         value = pair[1]
         if tag and value:
-            log.info("Matching '{0}' and '{1}' in files list".format(tag, value))
+            log.info("Matching '%s' and '%s' in files list", tag, value)
             replace_in_files(fileslist, tag, value)
         else:
-            log.warning("Ignoring incomplete tag pair: {0} = {1}".format(tag, value))
+            log.warning("Ignoring incomplete tag pair: %s = %s", tag, value)
 
 
 ##############################################################
@@ -231,7 +231,7 @@ def parse_component_data(task, configuration_file, configurations_base_path):
             # check the 'all-os' directory
             allos_conf_file_dir = os.path.normpath(task.configurations_dir + os.sep + 'all-os')
             file_full_path = locate_path(allos_conf_file_dir, [configuration_file], filters=[os.path.isfile])
-    log.info("Reading target configuration file: {0}".format(file_full_path))
+    log.info("Reading target configuration file: %s", file_full_path)
     configuration = ConfigParser(interpolation=ExtendedInterpolation())
     configuration.read_file(open(file_full_path))
 
@@ -263,12 +263,12 @@ def parse_component_data(task, configuration_file, configurations_base_path):
                         task.sdk_component_list.append(sdk_component)
                 else:
                     if task.offline_installer and sdk_component.optional_for_offline_installer():
-                        log.warning("The [{0}] was not valid but it was marked optional for offline installers so skipping it.".format(sdk_component.package_name))
+                        log.warning("The [%s] was not valid but it was marked optional for offline installers so skipping it.", sdk_component.package_name)
                     else:
                         if task.strict_mode:
-                            raise CreateInstallerError("{0}".format(sdk_component.error_msg()))
+                            raise CreateInstallerError(f"{sdk_component.error_msg()}")
                         else:
-                            log.warning("Ignored component in non-strict mode (missing archive data or metadata?): {0}".format(section))
+                            log.warning("Ignored component in non-strict mode (missing archive data or metadata?): %s", section)
                             task.sdk_component_list_skipped.append(sdk_component)
     # check for extra configuration files if defined
     extra_conf_list = safe_config_key_fetch(configuration, 'PackageConfigurationFiles', 'file_list')
@@ -380,7 +380,7 @@ def get_component_data(task, sdk_component, archive, install_dir, data_dir_dest,
             script_args = script_args or ""
             script_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), script_file)
             if not os.path.exists(script_path):
-                raise CreateInstallerError("Unable to locate custom archive action script: {0}".format(script_path))
+                raise CreateInstallerError(f"Unable to locate custom archive action script: {script_path}")
             check_call([script_path, '--input-dir=' + install_dir, script_args.strip()])
 
         # strip out unnecessary folder structure based on the configuration
@@ -393,7 +393,7 @@ def get_component_data(task, sdk_component, archive, install_dir, data_dir_dest,
         if 'delete_doc_directory' in archive.package_finalize_items:
             try:
                 doc_dir = locate_path(install_dir, ["doc"], filters=[os.path.isdir])
-                log.info("Erasing doc: {0}".format(doc_dir))
+                log.info("Erasing doc: %s", doc_dir)
                 shutil.rmtree(doc_dir)
             except PackagingError:
                 pass
@@ -438,7 +438,7 @@ def get_component_data(task, sdk_component, archive, install_dir, data_dir_dest,
             with open(sha1_file_path, "r") as sha1_file:
                 sdk_component.component_sha1 = sha1_file.read().strip()
         else:
-            raise CreateInstallerError("Component SHA1 file '{0}' not found".format(archive.component_sha1_file))
+            raise CreateInstallerError(f"Component SHA1 file '{archive.component_sha1_file}' not found")
 
     # lastly compress the component back to .7z archive
     content_list = os.listdir(compress_content_dir)
@@ -454,18 +454,18 @@ def handle_set_executable(baseDir, packageFinalizeItems):
     for item in parsePackageFinalizeItems(packageFinalizeItems, 'set_executable'):
         expectedPath = os.path.join(baseDir, item)
         if not os.path.exists(expectedPath):
-            raise CreateInstallerError('Can not set executable bit as path not found: "{0}"'.format(expectedPath))
+            raise CreateInstallerError(f'Can not set executable bit as path not found: "{expectedPath}"')
         os.chmod(expectedPath, 0o755)
-        log.info("Executable bit set for: {0}".format(expectedPath))
+        log.info("Executable bit set for: %s", expectedPath)
 
 
 def handle_set_licheck(task, baseDir, packageFinalizeItems):
     for licheckFileName in parsePackageFinalizeItems(packageFinalizeItems, 'set_licheck'):
         licheckFilePath = os.path.join(baseDir, licheckFileName)
         if not os.path.exists(licheckFilePath):
-            raise CreateInstallerError('Can not set licheck as path not found: "{0}"'.format(licheckFilePath))
+            raise CreateInstallerError(f'Can not set licheck as path not found: "{licheckFilePath}"')
         patchQtEdition(baseDir, licheckFileName, task.build_timestamp)
-        log.info("Licheck set for: {0}".format(licheckFilePath))
+        log.info("Licheck set for: %s", licheckFilePath)
         break
 
 
@@ -511,7 +511,7 @@ def remove_debug_information_files_by_file_type(install_dir, dbg_file_suffix):
     """Remove debug information files by file type"""
     dirs = locate_paths(install_dir, ['bin', 'lib', 'qml', 'plugins'], filters=[os.path.isdir])
     for dbg_info_dir in dirs:
-        log.info("Removing debug information files from: {0}".format(dbg_info_dir))
+        log.info("Removing debug information files from: %s", dbg_info_dir)
         if dbg_file_suffix == 'dSYM':
             # On macOS, debug symbols are in dSYM folder bundles instead of files.
             dbg_file_list = locate_paths(dbg_info_dir, ["*dSYM"], [os.path.isdir])
@@ -534,7 +534,7 @@ def remove_all_debug_libraries(install_dir):
     if is_windows():
         for directory in ('bin', 'lib', 'qml', 'plugins'):
             windows_debug_library_dir = locate_path(install_dir, [directory], filters=[os.path.isdir])
-            log.info("Removing Windows debug libraries from: {0}".format(windows_debug_library_dir))
+            log.info("Removing Windows debug libraries from: %s", windows_debug_library_dir)
             # go through all library types and related qmake files
             debug_library_file_endings = ['dll', 'lib', 'prl']
             for debug_library_file_type in debug_library_file_endings:
@@ -556,7 +556,7 @@ def remove_all_debug_libraries(install_dir):
     # remove macOS debug libraries
     elif is_macos():
         for macOS_debug_library_dir in locate_paths(install_dir, ['bin', 'lib', 'qml', 'plugins'], filters=[os.path.isdir]):
-            log.info("Removing macOS debug libraries from: {0}".format(macOS_debug_library_dir))
+            log.info("Removing macOS debug libraries from: %s", macOS_debug_library_dir)
             debug_library_file_ending = '_debug.*'
             if os.path.exists(macOS_debug_library_dir):
                 for item in locate_paths(macOS_debug_library_dir, ['*' + debug_library_file_ending]):
@@ -617,12 +617,12 @@ def create_target_components(task):
                     if is_windows():
                         install_dir = win32api.GetShortPathName(install_dir)
                         data_dir_dest = win32api.GetShortPathName(data_dir_dest)
-                    getComponentDataWork.addTask("adding {0} to {1}".format(archive.archive_name, sdk_component.package_name),
+                    getComponentDataWork.addTask(f"adding {archive.archive_name} to {sdk_component.package_name}",
                                                  get_component_data, task, sdk_component, archive, install_dir, data_dir_dest, compress_content_dir)
         # handle component sha1 uri
         if sdk_component.component_sha1_uri:
             sha1_file_dest = os.path.normpath(dest_base + 'SHA1')
-            getComponentDataWork.addTask("getting component sha1 file for {0}".format(sdk_component.package_name),
+            getComponentDataWork.addTask(f"getting component sha1 file for {sdk_component.package_name}",
                                          get_component_sha1_file, sdk_component, sha1_file_dest)
 
         # maybe there is some static data
@@ -641,7 +641,7 @@ def create_target_components(task):
         if hasattr(sdk_component, 'temp_data_dir') and os.path.exists(sdk_component.temp_data_dir):
             # lastly remove temp dir after all data is prepared
             if not remove_tree(sdk_component.temp_data_dir):
-                raise CreateInstallerError("Unable to remove directory: {0}".format(sdk_component.temp_data_dir))
+                raise CreateInstallerError(f"Unable to remove directory: {sdk_component.temp_data_dir}")
             # substitute downloadable archive names in installscript.qs
             substitute_component_tags(sdk_component.generate_downloadable_archive_list(), sdk_component.meta_dir_dest)
 
@@ -651,7 +651,7 @@ def create_target_components(task):
 ##############################################################
 def qml_examples_only(examples_dir):
     if not os.path.isdir(examples_dir):
-        log.error("Given examples directory is not valid path: {0}".format(examples_dir))
+        log.error("Given examples directory is not valid path: %s", examples_dir)
         log.error("Archive not cleaned!")
         return
     subdir_list = []
@@ -674,10 +674,10 @@ def qml_examples_only(examples_dir):
     for submodule in subdir_list:
         # remove unwanted subdirectories
         if regex.search(submodule):
-            log.info("QML example package: {0}".format(submodule))
+            log.info("QML example package: %s", submodule)
         else:
             delete_dir = os.path.join(root_dir, submodule)
-            log.info("Delete non qml examples directory: {0}".format(delete_dir))
+            log.info("Delete non qml examples directory: %s", delete_dir)
             shutil.rmtree(delete_dir)
 
 
@@ -686,7 +686,7 @@ def qml_examples_only(examples_dir):
 ##############################################################
 def cleanup_docs(install_dir):
     if not os.path.isdir(install_dir):
-        log.error("Given docs directory is not valid path: {0}".format(install_dir))
+        log.error("Given docs directory is not valid path: %s", install_dir)
         log.error("Archive not cleaned!")
         return
     submodule_list = []
@@ -701,14 +701,14 @@ def cleanup_docs(install_dir):
         # remove unnecessary subdirectories first
         for item in [os.path.join(submodule, i) for i in dirs_to_delete]:
             if os.path.isdir(item):
-                log.info("Cleaning up -> deleting directory: {0}".format(item))
+                log.info("Cleaning up -> deleting directory: %s", item)
                 shutil.rmtree(item, ignore_errors=True)
         # then remove unnecessary files
         for filename in os.listdir(submodule):
             if filename.endswith(('.qdocconf', '.sha1', '.html')):
                 full_filename = os.path.join(submodule, filename)
                 if os.path.isfile(full_filename):
-                    log.info("Cleaning up -> deleting file: {0}".format(item))
+                    log.info("Cleaning up -> deleting file: %s", item)
                     os.remove(full_filename)
 
 
@@ -774,9 +774,9 @@ def create_installer_binary(task):
         old_existing_file_name = old_existing_file_name + '.exe'
     # remove old if exists
     if os.path.isfile(old_existing_file_name):
-        log.info("Deleting old existing file: {0}".format(old_existing_file_name))
+        log.info("Deleting old existing file: %s", old_existing_file_name)
         os.remove(old_existing_file_name)
-    log.info("Moving '{0}' into '{1}'".format(file_name, output_dir))
+    log.info("Moving '%s' into '%s'", file_name, output_dir)
     shutil.move(file_name, output_dir)
 
 
@@ -795,8 +795,8 @@ def create_online_repository(task):
     # repogen arguments
     if task.create_repository:
         log.info("Creating online repository:")
-        log.info("Destination dir: {0}".format(task.repo_output_dir))
-        log.info("Input data dir: {0}".format(task.packages_full_path_dst))
+        log.info("Destination dir: %s", task.repo_output_dir)
+        log.info("Input data dir: %s", task.packages_full_path_dst)
         repogen_args = [task.repogen_tool]
         if os.environ.get('IFW_UNITE_METADATA'):
             repogen_args += ['--unite-metadata']
@@ -804,7 +804,7 @@ def create_online_repository(task):
         # create repository
         do_execute_sub_process(repogen_args, task.script_root_dir)
         if not os.path.exists(task.repo_output_dir):
-            raise CreateInstallerError("Unable to create repository directory: {0}".format(task.repo_output_dir))
+            raise CreateInstallerError(f"Unable to create repository directory: {task.repo_output_dir}")
 
 
 ##############################################################
@@ -824,7 +824,7 @@ def create_maintenance_tool_resource_file(task):
         # inject the resource file to the same archive where installerbase is
         inject_update_rcc_to_archive(installer_base_archive, resource_file)
     except PackagingError:
-        log.error("Unable to locate installerbase archive from: {0}".format(task.packages_full_path_dst))
+        log.error("Unable to locate installerbase archive from: %s", task.packages_full_path_dst)
         log.error("The update.rcc will not be included in the MaintenanceTool repository!")
         pass
 
@@ -833,11 +833,11 @@ def create_maintenance_tool_resource_file(task):
 # function
 ###############################
 def inject_update_rcc_to_archive(archive_file_path, file_to_be_injected):
-    log.info("Injecting file [{0}] into [{1}]".format(file_to_be_injected, archive_file_path))
+    log.info("Injecting file [%s] into [%s]", file_to_be_injected, archive_file_path)
     if not os.path.isfile(file_to_be_injected):
-        log.error("*** Unable to locate file: {0}".format(file_to_be_injected))
+        log.error("*** Unable to locate file: %s", file_to_be_injected)
     if not os.path.isfile(archive_file_path):
-        log.error('*** Unable to locate file: {0}'.format(archive_file_path))
+        log.error("*** Unable to locate file: %s", archive_file_path)
     archive_file_name = os.path.basename(archive_file_path)
     # copy to tmp location
     tmp_dir = os.path.join(os.path.dirname(archive_file_path), '_tmp')
@@ -923,7 +923,7 @@ def str2bool(v):
 class QtInstallerTask:
 
     def __init__(self, args):
-        log.info("Parsing: {0}".format(args.configuration_file))
+        log.info("Parsing: %s", args.configuration_file)
         self.config = ConfigParser(interpolation=ExtendedInterpolation())
         self.config.read_file(open(args.configuration_file))
         self.configurations_dir = args.configurations_dir
@@ -974,40 +974,37 @@ class QtInstallerTask:
 
     def verbose(self):
         log.info("Installer task:")
-        log.info("  IFW tools: {0}".format(self.ifw_tools_uri))
-        log.info("  Archivegen: {0}".format(self.archivegen_tool))
-        log.info("  Binarycreator: {0}".format(self.binarycreator_tool))
-        log.info("  Installerbase: {0}".format(self.installerbase_tool))
-        log.info("  Repogen: {0}".format(self.repogen_tool))
-        log.info("  Working config dir: {0}".format(self.config_dir_dst))
-        log.info("  Working pkg dir: {0}".format(self.packages_full_path_dst))
-        log.info("  Package namespace: {0}".format(self.package_namespace))
-        log.info("  Platform identifier: {0}".format(self.platform_identifier))
-        log.info("  Installer name: {0}".format(self.installer_name))
-        log.info("  IFW pkg templates: {0}".format(self.packages_dir_name_list))
-        log.info("  Substitutions: {0}".format(self.substitution_list))
-        log.info("  Remove debug information files: {0}".format(self.remove_debug_information_files))
-        log.info("  Remove debug libraries: {0}".format(self.remove_debug_libraries))
-        log.info("  Remove pdb files: {0}".format(self.remove_pdb_files))
-        log.info("  Online installer: {0}".format(self.online_installer))
-        log.info("  Offline installer: {0}".format(self.offline_installer))
-        log.info("  Create repository: {0}".format(self.create_repository))
-        log.info("  License: {0}".format(self.license_type))
-        log.info("  Build timestamp: {0}".format(self.build_timestamp))
-        log.info("  Force version number increase: {0}".format(self.force_version_number_increase))
-        log.info("  Version number autom increase value: {0}".format(self.version_number_auto_increase_value))
-        log.info("  Mac cpu count: {0}".format(self.max_cpu_count))
-        log.info("  Create MaintenanceTool resource file: {0}".format(self.create_maintenance_tool_resource_file))
+        log.info("  IFW tools: %s", self.ifw_tools_uri)
+        log.info("  Archivegen: %s", self.archivegen_tool)
+        log.info("  Binarycreator: %s", self.binarycreator_tool)
+        log.info("  Installerbase: %s", self.installerbase_tool)
+        log.info("  Repogen: %s", self.repogen_tool)
+        log.info("  Working config dir: %s", self.config_dir_dst)
+        log.info("  Working pkg dir: %s", self.packages_full_path_dst)
+        log.info("  Package namespace: %s", self.package_namespace)
+        log.info("  Platform identifier: %s", self.platform_identifier)
+        log.info("  Installer name: %s", self.installer_name)
+        log.info("  IFW pkg templates: %s", self.packages_dir_name_list)
+        log.info("  Substitutions: %s", self.substitution_list)
+        log.info("  Remove debug information files: %s", self.remove_debug_information_files)
+        log.info("  Remove debug libraries: %s", self.remove_debug_libraries)
+        log.info("  Remove pdb files: %s", self.remove_pdb_files)
+        log.info("  Online installer: %s", self.online_installer)
+        log.info("  Offline installer: %s", self.offline_installer)
+        log.info("  Create repository: %s", self.create_repository)
+        log.info("  License: %s", self.license_type)
+        log.info("  Build timestamp: %s", self.build_timestamp)
+        log.info("  Force version number increase: %s", self.force_version_number_increase)
+        log.info("  Version number autom increase value: %s", self.version_number_auto_increase_value)
+        log.info("  Mac cpu count: %s", self.max_cpu_count)
+        log.info("  Create MaintenanceTool resource file: %s", self.create_maintenance_tool_resource_file)
 
     def parse_substitutions(self, args):
         substitution_list = []
         for item in args.substitution_list:
             key, value = item.split("=", maxsplit=1)
             if not value:
-                log.warning(
-                    "Empty value for substitution string given, substituting anyway:"
-                    f" '{item}'"
-                )
+                log.warning("Empty value for substitution string given, substituting anyway: %s", item)
             substitution_list.append([key, value])
         substitution_list.append(['%LICENSE%', args.license_type])
         return substitution_list
@@ -1058,14 +1055,14 @@ class QtInstallerTask:
         self.installerbase_tool = locate_executable(self.ifw_tools_dir, ['installerbase' + executable_suffix])
         self.repogen_tool = locate_executable(self.ifw_tools_dir, ['repogen' + executable_suffix])
         # check
-        assert os.path.isfile(self.archivegen_tool), "Archivegen tool not found: {0}".format(self.archivegen_tool)
-        assert os.path.isfile(self.binarycreator_tool), "Binary creator tool not found: {0}".format(self.binarycreator_tool)
-        assert os.path.isfile(self.installerbase_tool), "Installerbase not found: {0}".format(self.installerbase_tool)
-        assert os.path.isfile(self.repogen_tool), "Repogen tool not found: {0}".format(self.repogen_tool)
-        log.info("Archive generator tool: {0}".format(self.archivegen_tool))
-        log.info("Binary creator tool: {0}".format(self.binarycreator_tool))
-        log.info("Repogen tool: {0}".format(self.repogen_tool))
-        log.info("Installerbase: {0}".format(self.installerbase_tool))
+        assert os.path.isfile(self.archivegen_tool), f"Archivegen tool not found: {self.archivegen_tool}"
+        assert os.path.isfile(self.binarycreator_tool), f"Binary creator tool not found: {self.binarycreator_tool}"
+        assert os.path.isfile(self.installerbase_tool), f"Installerbase not found: {self.installerbase_tool}"
+        assert os.path.isfile(self.repogen_tool), f"Repogen tool not found: {self.repogen_tool}"
+        log.info("Archive generator tool: %s", self.archivegen_tool)
+        log.info("Binary creator tool: %s", self.binarycreator_tool)
+        log.info("Repogen tool: %s", self.repogen_tool)
+        log.info("Installerbase: %s", self.installerbase_tool)
 
     def download_and_extract_ifw_tools(self):
         package_save_as_temp = os.path.join(self.ifw_tools_dir, os.path.basename(self.ifw_tools_uri))
@@ -1074,15 +1071,15 @@ class QtInstallerTask:
         if not os.path.exists(package_save_as_temp):
             # create needed dirs
             Path(self.ifw_tools_dir).mkdir(parents=True, exist_ok=True)
-            log.info("Downloading: {0}".format(self.ifw_tools_uri))
+            log.info("Downloading: %s", self.ifw_tools_uri)
             if not is_content_url_valid(self.ifw_tools_uri):
-                raise CreateInstallerError("Package URL is invalid: {0}".format(self.ifw_tools_uri))
+                raise CreateInstallerError(f"Package URL is invalid: {self.ifw_tools_uri}")
             retrieve_url(self.ifw_tools_uri, package_save_as_temp)
             if not (os.path.isfile(package_save_as_temp)):
                 raise CreateInstallerError("Downloading failed! Aborting!")
         # extract ifw archive
         extract_file(package_save_as_temp, self.ifw_tools_dir)
-        log.info("IFW tools extracted into: {0}".format(self.ifw_tools_dir))
+        log.info("IFW tools extracted into: %s", self.ifw_tools_dir)
 
 
 if __name__ == "__main__":

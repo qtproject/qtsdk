@@ -74,14 +74,14 @@ def check_repos_which_can_be_updated(repositories_to_migrate: List[str]) -> Tupl
     updatable_repos = {}  # type: Dict[str, str]
     for repo in repositories_to_migrate:
         if repo.endswith(convert_suffix):
-            log.info(f"Skipping '{repo}' as it already is the pending repository")
+            log.info("Skipping '%s' as it already is the pending repository", repo)
             continue
         if backup_suffix in repo:
-            log.info(f"Skipping backup repo: {repo}")
+            log.info("Skipping backup repo: %s", repo)
             continue
         migrated_repo = repo + convert_suffix
         if os.path.exists(migrated_repo):
-            log.warning(f"There already exists pending repository '{migrated_repo}' for the source repo: {repo}")
+            log.warning("There already exists pending repository '%s' for the source repo: %s", migrated_repo, repo)
             existing_pending_repos[repo] = migrated_repo
         else:
             updatable_repos[repo] = migrated_repo
@@ -90,12 +90,12 @@ def check_repos_which_can_be_updated(repositories_to_migrate: List[str]) -> Tupl
 
 async def create_converted_repositories(repogen: str, repositories_to_migrate: List[str], dry_run=False) -> Tuple[Dict[str, str], Dict[str, str]]:
     # first check that pending repository does not already exist per given repository
-    log.info(f"Starting to create new converted repositories: {len(repositories_to_migrate)}")
+    log.info("Starting to create new converted repositories: %s", len(repositories_to_migrate))
     updatable_repos, existing_pending_repos = check_repos_which_can_be_updated(repositories_to_migrate)
     if existing_pending_repos:
         log.warning("There are already existing pending repositories which should be completed first:")
         for repo in existing_pending_repos:
-            log.warning(f"  {repo}")
+            log.warning("  %s", repo)
         raise IfwRepoUpdateError("Repositories found in pending state, complete those first!")
 
     # convert all repositories to combined metadata version
@@ -111,14 +111,14 @@ async def create_converted_repositories(repogen: str, repositories_to_migrate: L
             exec_cmd(cmd, timeout=60 * 15)
             successful_conversions[repo] = repo_output_path
         except Exception as e:
-            log.error(f"Failed to update metadata for repository: {repo} - reason: {str(e)}")
+            log.error("Failed to update metadata for repository: %s - reason: %s", repo, str(e))
             failed_conversions[repo] = repo_output_path
 
     return (successful_conversions, failed_conversions)
 
 
 def swap_repositories(repositories_to_swap: Dict[str, str]) -> Tuple[Dict[str, Tuple[str, str, str]], Dict[str, Tuple[str, str, str]]]:
-    log.info(f"Starting to swap converted repositories with destination directories: {len(repositories_to_swap)}")
+    log.info("Starting to swap converted repositories with destination directories: %s", len(repositories_to_swap))
     errors = []  # type: List[Tuple[str, str]]
     for orig_repo, converted_repo in repositories_to_swap.items():
         backup_repo_name = orig_repo + backup_suffix + session_timestamp
@@ -133,7 +133,7 @@ def swap_repositories(repositories_to_swap: Dict[str, str]) -> Tuple[Dict[str, T
     if errors:
         log.error("Unable to proceed to swap repositories due to following found issues:")
         for orig_repo, msg in errors:
-            log.error(f"  [{orig_repo}]: {msg}")
+            log.error("  [%s]: %s", orig_repo, msg)
         raise IfwRepoUpdateError("Failed to swap repositories!")
 
     operations_ok = {}  # type: Dict[str, Tuple[str, str, str]]
@@ -165,8 +165,8 @@ def swap_repositories(repositories_to_swap: Dict[str, str]) -> Tuple[Dict[str, T
 
 
 def scan_repositories(search_path: str) -> Tuple[List[str], List[str], List[str], List[str]]:
-    assert os.path.isdir(search_path), "Not a valid directory: {0}".format(args.search_path)
-    log.info(f"Scan repository status from: {search_path}")
+    assert os.path.isdir(search_path), f"Not a valid directory: {search_path}"
+    log.info("Scan repository status from: %s", search_path)
 
     def check_unified_meta_exists(path: str) -> bool:
         return any(Path(path).glob("*_meta.7z"))
@@ -178,7 +178,7 @@ def scan_repositories(search_path: str) -> Tuple[List[str], List[str], List[str]
     broken_repos = []  # type: List[str]
     for repo in repos:
         if backup_suffix in repo.as_posix():
-            log.info(f"Skipping backup repo: {repo.as_posix()}")
+            log.info("Skipping backup repo: %s", repo.as_posix())
             continue
         elif repo.as_posix().endswith(convert_suffix):
             if not check_unified_meta_exists(str(repo)):
@@ -190,7 +190,7 @@ def scan_repositories(search_path: str) -> Tuple[List[str], List[str], List[str]
             expected_destination_repo = Path(repo.as_posix().rstrip(convert_suffix))
             if not expected_destination_repo.exists():
                 # this is broken pending repo
-                log.error(f"Pending repository '{repo.as_posix()}' was missing matching destination directory: {expected_destination_repo.as_posix()}")
+                log.error("Pending repository '%s' was missing matching destination directory: %s", repo.as_posix(), expected_destination_repo.as_posix())
                 broken_repos.append(repo.as_posix())
                 continue
             pending_repos.append(repo.as_posix())
@@ -206,41 +206,41 @@ def scan_repositories(search_path: str) -> Tuple[List[str], List[str], List[str]
 def convert_repos(search_path: str, ifw_tools_url: str) -> None:
     loop = get_event_loop()
     repogen = loop.run_until_complete(fetch_repogen(ifw_tools_url))
-    log.info(f"Using repogen from: {repogen}")
+    log.info("Using repogen from: %s", repogen)
     done_repos, pending_repos, unconverted_repos, broken_repos = scan_repositories(search_path)
     successful_conversions, failed_conversions = loop.run_until_complete(create_converted_repositories(repogen, unconverted_repos))
     operations_ok, operations_nok = swap_repositories(successful_conversions)
     for orig_repo, items in operations_ok.items():
         converted_repo, backup_repo_name, _msg = items
-        log.info(f"Converted repo: {orig_repo}")
-        log.info(f"  original backup: {backup_repo_name}")
+        log.info("Converted repo: %s", orig_repo)
+        log.info("  original backup: %s", backup_repo_name)
     if failed_conversions:
         log.error("Some of the conversions failed -> aborting! Original repo(s) are in place. Cleanup tmp converted repo dirs!:")
         for repo, expected_output_repo in failed_conversions.items():
-            log.error(f"  '{repo}' -> '{expected_output_repo}'")
+            log.error("  '%s' -> '%s'", repo, expected_output_repo)
     for orig_repo, items in operations_nok.items():
         converted_repo, backup_repo_name, _msg = items
-        log.error(f"Failed swaps: {orig_repo}")
-        log.warning(f"  original backup: {backup_repo_name}")
+        log.error("Failed swaps: %s", orig_repo)
+        log.warning("  original backup: %s", backup_repo_name)
 
 
 def revert_repos(search_path: str, ifw_tools_url: str, time_stamp: str, dry_run: bool) -> None:
     loop = get_event_loop()
     repogen = loop.run_until_complete(fetch_repogen(ifw_tools_url))
-    log.info(f"Using repogen from: {repogen}")
+    log.info("Using repogen from: %s", repogen)
     converted_repos, pending_repos, unconverted_repos, broken_repos = scan_repositories(search_path)
 
     revert_actions: Dict[str, str] = {}
     for converted_repo in converted_repos:
         expected_backup_repo = converted_repo + "____split_metadata_backup-" + time_stamp
         if not os.path.isdir(expected_backup_repo):
-            log.warning(f"Can not revert repository as original backup repo does not exist: {expected_backup_repo}")
+            log.warning("Can not revert repository as original backup repo does not exist: %s", expected_backup_repo)
             continue
         revert_actions[converted_repo] = expected_backup_repo
 
     for converted, backup in revert_actions.items():
         reverted_backup_repo_name = converted + "____REVERTED"
-        log.info(f"Reverting: '{backup}' -> '{converted}'")
+        log.info("Reverting: '%s' -> '%s'", backup, converted)
         if dry_run:
             continue
         try:
@@ -257,19 +257,19 @@ def scan_repos(search_path: str) -> None:
     log.info("")
     log.info("Repositories already containing combined metadata:")
     for repo in sorted(done_repos):
-        log.info(f"{repo}")
+        log.info("%s", repo)
     log.info("")
     log.info("Pending repositories containing combined metadata updates:")
     for repo in sorted(pending_repos):
-        log.info(f"{repo}")
+        log.info("%s", repo)
     log.info("")
     log.info("Repositories that do not contain combined metadata (needs update):")
     for repo in sorted(unconverted_repos):
-        log.info(f"{repo}")
+        log.info("%s", repo)
     log.info("")
     log.info("Broken repositories:")
     for repo in sorted(broken_repos):
-        log.error(f"{repo}")
+        log.error("%s", repo)
 
 
 if __name__ == "__main__":
@@ -288,4 +288,4 @@ if __name__ == "__main__":
     elif args.command == "revert":
         revert_repos(args.search_path, args.ifw_tools_url, args.revert_timestamp, args.dry_run)
     else:
-        log.error(f"Invalid command given: {args.command}")
+        log.error("Invalid command given: %s", args.command)

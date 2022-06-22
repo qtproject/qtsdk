@@ -86,7 +86,7 @@ class TestPackaging(unittest.TestCase):
 
         for data in testData:
             result = patchAbsoluteLibPathsFromLine(data[0], data[2])
-            self.assertEqual(result, data[1], "Failed to patch: [{0}] as: [{1}]".format(data[0], data[1]))
+            self.assertEqual(result, data[1], f"Failed to patch: [{data[0]}] as: [{data[1]}]")
 
     def test_patchQmakePrlBuildDirFromLine(self):
         testData = (("QMAKE_PRL_BUILD_DIR = /foo/bar", ""),
@@ -95,7 +95,7 @@ class TestPackaging(unittest.TestCase):
 
         for data in testData:
             result = patchQmakePrlBuildDirFromLine(data[0])
-            self.assertEqual(result, data[1], "Failed to patch: [{0}] as: [{1}]".format(data[0], data[1]))
+            self.assertEqual(result, data[1], f"Failed to patch: [{data[0]}] as: [{data[1]}]")
 
     def test_patchQConfigPriFromLine(self):
         testData = (("QMAKE_DEFAULT_LIBDIRS = /foo/bar", "QMAKE_DEFAULT_LIBDIRS ="),
@@ -104,7 +104,7 @@ class TestPackaging(unittest.TestCase):
 
         for data in testData:
             result = patchQConfigPriFromLine(data[0])
-            self.assertEqual(result, data[1], "Failed to patch: [{0}] as: [{1}]. Got: [{2}]".format(data[0], data[1], result))
+            self.assertEqual(result, data[1], f"Failed to patch: [{data[0]}] as: [{data[1]}]. Got: [{result}]")
 
     def test_parsePackageFinalizeItems(self):
         testData = (("set_executable=licheck64, foo=bar, set_executable=something", "set_executable", ["licheck64", "something"]),
@@ -141,8 +141,8 @@ class TestPackaging(unittest.TestCase):
 
             idx = 0
             for line in FileInput(tempFile, inplace=False):
-                print("Received data: [{0}] expected data: [{1}]".format(line.strip(), expectedData[idx]))
-                self.assertEqual(line.strip(), expectedData[idx], "Received data: [{0}] differs from expected data: [{1}]".format(line, expectedData[idx]))
+                print(f"Received data: [{line.strip()}] expected data: [{expectedData[idx]}]")
+                self.assertEqual(line.strip(), expectedData[idx], f"Received data: [{line}] differs from expected data: [{expectedData[idx]}]")
                 idx += 1
         finally:
             rmtree(tempDir)
@@ -168,7 +168,7 @@ class TestPackaging(unittest.TestCase):
             try:
                 do_execute_sub_process(cmd_args, os.getcwd())
             except Exception as e:
-                self.assertTrue(False, "Failed to execute: [{0}] -> {1}".format(" ".join(cmd_args), str(e)))
+                self.assertTrue(False, f"Failed to execute: [{' '.join(cmd_args)}] -> {str(e)}")
             self.assertTrue(os.path.exists(os.path.join(testsDir, 'installer_output', offlineJob + extension)), "No installers generated")
 
 

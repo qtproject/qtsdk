@@ -49,7 +49,7 @@ class ReleaseTask:
 
     def __init__(self, name: str, settings: Dict[str, str]):
         if not len(name.split(".")) >= 3:
-            raise ReleaseTaskError("The '[{0}]' has too few dot separated elements!".format(name))
+            raise ReleaseTaskError(f"The '[{name}]' has too few dot separated elements!")
         self.name = name
         self.config_file = settings["config_file"]
         self.project_name = settings.get("project_name", "")
@@ -159,7 +159,7 @@ def parse_data(settings, task_filters: List[str]) -> List[ReleaseTask]:
 
 def parse_config(configFile: str, task_filters: List[str]) -> List[ReleaseTask]:
     if not os.path.isfile(configFile):
-        raise ReleaseTaskError("Not such file: {0}".format(configFile))
+        raise ReleaseTaskError(f"Not such file: {configFile}")
     settings = ConfigParser(interpolation=ExtendedInterpolation())
     settings.read(configFile)
     return parse_data(settings, task_filters)
@@ -174,5 +174,5 @@ if __name__ == "__main__":
                         "the section name, e.g. 'offline', 'repository', ...")
     args = parser.parse_args(sys.argv[1:])
 
-    assert os.path.isfile(args.config), "Not a valid file: {0}".format(args.config)
+    assert os.path.isfile(args.config), f"Not a valid file: {args.config}"
     parse_config(args.config, args.task_filters)

@@ -38,7 +38,7 @@ class PackagingOptions:
     """Utility class to read options from configuration file that follows .ini file format."""
     def __init__(self, confFile):
         if not os.path.isfile(confFile):
-            raise IOError("Not a valid file: {0}".format(confFile))
+            raise IOError(f"Not a valid file: {confFile}")
         self.config = ConfigParser(os.environ)
         self.config.optionxform = str
         self.config.read(confFile)
@@ -50,9 +50,9 @@ class PackagingOptions:
             try:
                 dict1[option] = self.config.get(section, option)
                 if dict1[option] == -1:
-                    print("skip: %s" % option)
+                    print(f"skip: {option}")
             except Exception:
-                print("exception on %s!" % option)
+                print(f"exception on {option}!")
                 dict1[option] = None
         return dict1
 
@@ -70,10 +70,10 @@ class PackagingOptions:
 
     def verbose(self):
         for section in self.config.sections():
-            print("[" + section + "]")
+            print(f"[{section}]")
             options = self.config.options(section)
             for option in options:
-                print("{0} = {1}".format(option, self.config.get(section, option)))
+                print(f"{option} = {self.config.get(section, option)}")
             print
 
 

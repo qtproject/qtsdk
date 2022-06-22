@@ -47,16 +47,14 @@ log = init_logger(__name__, debug_mode=False)
 
 
 def locate_file_from_venv(venv_folder: str, fileName: str) -> str:
-    log.info(f"Locating file '{fileName}' from: {venv_folder}")
+    log.info("Locating file '%s' from: %s", fileName, venv_folder)
     matches = [f for f in Path(venv_folder).resolve(strict=True).rglob(fileName)]
     assert len(matches) == 1, f"Found != 1 mathes: {matches}"
     return str(matches.pop())
 
 
 async def clone_repo(url: str, destinationDir: str, env: Dict[str, str]) -> None:
-    assert not os.path.isdir(destinationDir), "Destination dir already exists: {0}".format(
-        destinationDir
-    )
+    assert not os.path.isdir(destinationDir), f"Destination dir already exists: {destinationDir}"
     os.makedirs(os.path.dirname(destinationDir), exist_ok=True)
     log.info("Cloning repo: %s -> %s", url, destinationDir)
     cmd = ["git", "clone", url, destinationDir]
@@ -115,7 +113,7 @@ async def generate_executable(
 
     destPath = os.path.join(os.getcwd(), "dist")
     generatedFiles = [os.path.join(destPath, x) for x in os.listdir(destPath)]
-    assert generatedFiles, "No generated executables found from: {0}".format(destPath)
+    assert generatedFiles, f"No generated executables found from: {destPath}"
     log.info("Created executable: %s", generatedFiles)
     return destPath
 

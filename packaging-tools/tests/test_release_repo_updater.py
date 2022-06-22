@@ -77,8 +77,8 @@ def _write_package_xml(path: str, version: str, releaseDate: str) -> None:
         f.write("  <Name>qt.foo.bar1</Name>\n")
         f.write("  <DisplayName>Test</DisplayName>\n")
         f.write("  <Description>Test</Description>\n")
-        f.write("  <Version>{0}</Version>\n".format(version))
-        f.write("  <ReleaseDate>{0}</ReleaseDate>\n".format(releaseDate))
+        f.write(f"  <Version>{version}</Version>\n")
+        f.write(f"  <ReleaseDate>{releaseDate}</ReleaseDate>\n")
         f.write("</Package>\n")
 
 
@@ -93,8 +93,8 @@ def _write_updates_xml(path: str, version: str, releaseDate: str) -> None:
         f.write("    <Name>qt.foo.bar1</Name>\n")
         f.write("    <DisplayName>Foo bar</DisplayName>\n")
         f.write("    <Description>Foo and bar</Description>\n")
-        f.write("    <Version>{0}</Version>\n".format(version))
-        f.write("    <ReleaseDate>{0}</ReleaseDate>\n".format(releaseDate))
+        f.write(f"    <Version>{version}</Version>\n")
+        f.write(f"    <ReleaseDate>{releaseDate}</ReleaseDate>\n")
         f.write("    <DownloadableArchives/>\n")
         f.write("    <UpdateFile CompressedSize=\"0\" OS=\"Any\" UncompressedSize=\"0\"/>\n")
         f.write("    <SHA1>c1559cbb0f0983909f7229dc79dfdf7eab46cd52</SHA1>\n")

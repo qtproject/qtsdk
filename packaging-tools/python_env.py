@@ -56,9 +56,7 @@ def get_env(pythonInstallation: str) -> Dict[str, str]:
     binDir = os.path.join(pythonInstallation, "bin")
     if "windows" in system:
         binDir = os.path.join(pythonInstallation, "PCbuild", "amd64")
-        assert os.path.isdir(binDir), "The python binary directory did not exist: {0}".format(
-            binDir
-        )
+        assert os.path.isdir(binDir), f"The python binary directory did not exist: {binDir}"
         env["LIB_PATH"] = binDir
         env["PATH"] = binDir + ";" + os.environ.get("PATH", "")
         env["SYSTEMROOT"] = os.environ["SYSTEMROOT"]
@@ -85,12 +83,10 @@ async def install_pip(getPipFile: str, pythonInstallation: str) -> str:
         os.makedirs(pipTmpDir)
         getPipFile = download_archive(getPipFile, pipTmpDir)
     elif not (getPipFile and os.path.isfile(getPipFile)):
-        raise PythonEnvError("Could not install pip from: {0}".format(getPipFile))
+        raise PythonEnvError(f"Could not install pip from: {getPipFile}")
 
     pythonExe = os.path.join(pythonInstallation, "PCBuild", "amd64", "python.exe")
-    assert os.path.isfile(pythonExe), "The 'python' executable did not exist: {0}".format(
-        pythonExe
-    )
+    assert os.path.isfile(pythonExe), f"The 'python' executable did not exist: {pythonExe}"
     installPipCmd = [pythonExe, getPipFile]
     await async_exec_cmd(installPipCmd)
     return os.path.join(pythonInstallation, "Scripts", "pip3.exe")
@@ -106,15 +102,15 @@ async def create_venv(pythonSrc: str, getPipFile: str) -> Tuple[str, str, Dict[s
         pip3 = await install_pip(getPipFile, prefix)
     else:
         pip3 = os.path.join(prefix, "bin", "pip3")
-    assert os.path.isfile(pip3), "The 'pip3' executable did not exist: {0}".format(pip3)
-    log.info(f"Installing pipenv using: {pip3}")
+    assert os.path.isfile(pip3), f"The 'pip3' executable did not exist: {pip3}"
+    log.info("Installing pipenv using: %s", pip3)
     cmd = [pip3, "install", "pipenv"]
     await async_exec_cmd(cmd=cmd, timeout=60 * 15, env=env)  # give it 15 mins
     if "windows" in system:
         pipenv = os.path.join(prefix, "Scripts", "pipenv.exe")
     else:
         pipenv = os.path.join(prefix, "bin", "pipenv")
-    assert os.path.isfile(pipenv), "The 'pipenv' executable did not exist: {0}".format(pipenv)
+    assert os.path.isfile(pipenv), f"The 'pipenv' executable did not exist: {pipenv}"
     cmd = [pipenv, "install"]
     log.info("Installing pipenv requirements into: %s", prefix)
     await async_exec_cmd(cmd=cmd, timeout=60 * 30, env=env)  # give it 30 mins

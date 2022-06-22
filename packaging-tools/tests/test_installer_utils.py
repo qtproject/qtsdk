@@ -69,7 +69,7 @@ class TestInstallerUtils(unittest.TestCase):
     )
     async def test_is_valid_url_path(self, url: str, expectedResult: bool) -> None:
         self.assertEqual(is_valid_url_path(url), expectedResult,
-                         "URL: {0} - expected result: {1} - result was: {2}".format(url, expectedResult, not expectedResult))
+                         f"URL: {url} - expected result: {expectedResult} - result was: {not expectedResult}")
 
     @asyncio_test_parallel_data(
         ("https://www.qt.io/some/file.zip", "7z"),
@@ -79,7 +79,7 @@ class TestInstallerUtils(unittest.TestCase):
     )
     async def test_valid_extractor(self, archive: str, expectedExtractor: str) -> None:
         extractCmd = get_extract_cmd(archive)
-        self.assertEqual(extractCmd[0], expectedExtractor, "Not a valid extractor Callable obtained for: {0}".format(archive))
+        self.assertEqual(extractCmd[0], expectedExtractor, f"Not a valid extractor Callable obtained for: {archive}")
 
     @asyncio_test
     async def test_invalid_extractor(self) -> None:

@@ -101,7 +101,7 @@ def erase_qmake_prl_build_dir(search_path):
             else:
                 print(line.rstrip('\n'))
         if found:
-            print('Erased \'QMAKE_PRL_BUILD_DIR\' from: ' + item)
+            print(f"Erased 'QMAKE_PRL_BUILD_DIR' from: {item}")
 
 
 ###############################
@@ -113,7 +113,7 @@ def patch_build_time_paths(search_path, search_strings, qt_install_prefix):
     file_list = search_for_files(search_path, extension_list, search_regexp)
 
     for item in file_list:
-        print('Replacing {0} paths from file: {1}'.format(search_strings, item))
+        print(f"Replacing {search_strings} paths from file: {item}")
         for line in FileInput(item, inplace=1):
             patched_line = reduce(lambda accum, value: accum.replace(value, qt_install_prefix),
                                   search_strings,
@@ -128,33 +128,30 @@ parser = argparse.ArgumentParser(
     formatter_class=argparse.RawTextHelpFormatter
 )
 if is_windows():
-    parser.epilog = "example on windows: " + os.linesep + "\tpython {0} --clean " \
+    parser.epilog = f"example on windows: {os.linesep}\tpython {os.path.basename(sys.argv[0])} --clean " \
         "--buildcommand C:\\bin\\ibjom.cmd" \
         "--qt5_module_url <uri to qt5_essentials.7z> " \
         "--qt5_module_url <uri to qt5_addons.7z> " \
         "--qt5_module_url <uri to qt5_webengine.7z> " \
         "--module_url <url into module repository>" \
         "--module_branch <module branch>" \
-        "--module_dir <Local copy of module>" \
-        "".format(os.path.basename(sys.argv[0]))
+        "--module_dir <Local copy of module>"
 elif is_macos():
-    parser.epilog = "example: " + os.linesep + "\tpython {0} --clean " \
+    parser.epilog = f"example: {os.linesep}\tpython {os.path.basename(sys.argv[0])} --clean " \
         "--qt5_module_url <uri to qt5_essentials.7z> " \
         "--qt5_module_url <uri to qt5_addons.7z> " \
         "--qt5_module_url <uri to qt5_webengine.7z> " \
         "--module_url <url into module repository>" \
         "--module_branch <module branch>" \
-        "--module_dir <Local copy of module>" \
-        "".format(os.path.basename(sys.argv[0]))
+        "--module_dir <Local copy of module>"
 else:
-    parser.epilog = "example: " + os.linesep + "\tpython {0} --clean " \
+    parser.epilog = f"example: {os.linesep}\tpython {os.path.basename(sys.argv[0])} --clean " \
         "--qt5_module_url <uri to qt5_essentials.7z> " \
         "--qt5_module_url <uri to qt5_addons.7z> " \
         "--qt5_module_url <uri to qt5_webengine.7z> " \
         "--module_url <url into module repository>" \
         "--module_branch <module branch>" \
-        "--module_dir <Local copy of module>" \
-        "".format(os.path.basename(sys.argv[0]))
+        "--module_dir <Local copy of module>"
 
 # general arguments
 parser.add_argument('--clean', help="clean up everything from old builds", action='store_true', default=False)
@@ -187,8 +184,7 @@ callerArguments = parser.parse_args()
 # cleanup some values inside the callerArguments object
 stripVars(callerArguments, "\"")
 if callerArguments.qt5path != os.path.abspath(callerArguments.qt5path):
-    print("changing the value of --qt5path from {0} to {1}".format(callerArguments.qt5path,
-          os.path.abspath(callerArguments.qt5path)))
+    print(f"changing the value of --qt5path from {callerArguments.qt5path} to {os.path.abspath(callerArguments.qt5path)}")
     callerArguments.qt5path = os.path.abspath(callerArguments.qt5path)
 
 if not callerArguments.module_name:
@@ -208,7 +204,7 @@ elif callerArguments.module7z != '':
     myGetQtModule.run()
     qtModuleSourceDirectory = MODULE_SRC_DIR
 else:
-    print(("Using local copy of {0}").format(callerArguments.module_name))
+    print(f"Using local copy of {callerArguments.module_name}")
     qtModuleSourceDirectory = callerArguments.module_dir
 
 # install directory
@@ -224,15 +220,14 @@ if is_windows():
 
 # clean step
 if callerArguments.clean:
-    print("##### {0} #####".format("clean old builds"))
+    print("##### clean old builds #####")
     remove_tree(callerArguments.qt5path)
     remove_tree(qtModuleInstallDirectory)
     remove_tree(tempPath)
 
 if not os.path.lexists(callerArguments.qt5path) and not callerArguments.qt5_module_urls:
     parser.print_help()
-    print(("error: Please add the missing qt5_module_url arguments if the {0} does not exist"
-           + os.linesep + os.linesep).format(callerArguments.qt5path))
+    print(f"error: Please add the missing qt5_module_url arguments if the {callerArguments.qt5path} does not exist {os.linesep}{os.linesep}")
     raise RuntimeError()
 
 qmakeBinary = os.path.abspath(os.path.join(callerArguments.qt5path, 'bin', 'qmake'))
@@ -318,7 +313,7 @@ runCommand(generateCommand, currentWorkingDirectory=qtModuleBuildDirectory,
 
 ret = runBuildCommand(currentWorkingDirectory=qtModuleBuildDirectory, callerArguments=callerArguments)
 if ret:
-    raise RuntimeError('Failure running the last command: %i' % ret)
+    raise RuntimeError(f"Failure running the last command: {ret}")
 
 ret = runInstallCommand(
     ['install', 'INSTALL_ROOT=' + qtModuleInstallDirectory],
@@ -326,7 +321,7 @@ ret = runInstallCommand(
     callerArguments=callerArguments, extra_environment=environment
 )
 if ret:
-    raise RuntimeError('Failure running the last command: %i' % ret)
+    raise RuntimeError(f"Failure running the last command: {ret}")
 
 # patch .so filenames on Windows/Android
 if is_windows() and os.environ.get('DO_PATCH_ANDROID_SONAME_FILES'):
@@ -348,7 +343,7 @@ if callerArguments.makeDocs:
         callerArguments=callerArguments, extra_environment=environment
     )
     if ret:
-        raise RuntimeError('Failure running the last command: %i' % ret)
+        raise RuntimeError(f"Failure running the last command: {ret}")
     # then make install those
     ret = runInstallCommand(
         ['install_docs', 'INSTALL_ROOT=' + qtModuleInstallDirectory],
@@ -356,7 +351,7 @@ if callerArguments.makeDocs:
         callerArguments=callerArguments, extra_environment=environment
     )
     if ret:
-        raise RuntimeError('Failure running the last command: %i' % ret)
+        raise RuntimeError(f"Failure running the last command: {ret}")
     # make separate "doc.7z" for later use if needed
     doc_dir = locate_path(qtModuleInstallDirectory, ["doc"], filters=[os.path.isdir])
     archive_name = callerArguments.module_name + '-' + os.environ['LICENSE'] + '-doc-' + os.environ['MODULE_VERSION'] + '.7z'
@@ -365,7 +360,7 @@ if callerArguments.makeDocs:
         currentWorkingDirectory=os.path.dirname(os.path.realpath(__file__))
     )
     if ret:
-        raise RuntimeError('Failure running the last command: %i' % ret)
+        raise RuntimeError(f"Failure running the last command: {ret}")
 
 # try to figure out where the actual exported content is
 qt5_install_basename = os.path.basename(callerArguments.qt5path)
@@ -392,4 +387,4 @@ else:
     archive_cmd.append(dir_to_archive)
 ret = runCommand(archive_cmd, currentWorkingDirectory=os.path.dirname(os.path.realpath(__file__)))
 if ret:
-    raise RuntimeError('Failure running the last command: %i' % ret)
+    raise RuntimeError(f"Failure running the last command: {ret}")

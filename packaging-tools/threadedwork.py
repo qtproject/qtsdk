@@ -59,7 +59,7 @@ class StdOutHook:
         else:
             localProgressIndicator = strippedText
 
-        newValue = "{:d}: {}".format(threadData.taskNumber, localProgressIndicator)
+        newValue = f"{threadData.taskNumber}: {localProgressIndicator}"
         with outputLock:
             if newValue != outputStates[threadData.workerThreadId]:
                 oldOutput = "\r" + outputFormatString.format(*outputStates).strip()
@@ -169,7 +169,7 @@ class Task():
 class ThreadedWork():
 
     def __init__(self, description):
-        self.description = os.linesep + "##### {} #####".format(description)
+        self.description = os.linesep + f"##### {description} #####"
         self.queue = Queue()
         self.legend = []
         self.taskNumber = 0
@@ -220,7 +220,7 @@ class ThreadedWork():
         # self.queue.join() <- this ignoring the KeyboardInterrupt
         if maxThreads > 1:
             enableThreadedPrint(False)
-        print(os.linesep + self.description + ' ... done')
+        print(f"\n{self.description} ... done")
 
 
 class Consumer(threading.Thread):

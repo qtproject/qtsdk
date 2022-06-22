@@ -97,7 +97,7 @@ async def requestNotarization(args):
     data = await requestCmd(args, cmd)
     requestUUID = parseValueFromData("RequestUUID", data)
     if not requestUUID:
-        raise NotarizationError("Failed to notarize app:\n\n{0}".format(data))
+        raise NotarizationError(f"Failed to notarize app:\n\n{data}")
     return requestUUID.split("=")[-1].strip()
 
 
@@ -116,7 +116,7 @@ async def pollNotarizationCompleted(args, uuid):
             return True
         elif statusCode == "2":
             log.info("Notarization failed for: %s", args.dmg)
-            raise NotarizationError("Notarization failed:\n\n{0}".format(data))
+            raise NotarizationError(f"Notarization failed:\n\n{data}")
         else:
             log.info("Notarization not ready yet for: %s", args.dmg)
             log.info("%s", data)
@@ -146,18 +146,18 @@ async def embedNotarization(args):
         log.error("Failed to 'staple' the %s - Reason:\n\n%s", args.dmg, data)
 
         if retry_count:
-            log.warning(f"Trying again after {delay}s")
+            log.warning("Trying again after %ss", delay)
             sleep(delay)
             delay = delay + delay / 2  # 60, 90, 135, 202, 303
         else:
             log.critical("Execution of the remote script probably failed!")
-            raise NotarizationError("Failed to 'staple' the: {0}".format(args.dmg))
+            raise NotarizationError(f"Failed to 'staple' the: {args.dmg}")
 
 
 async def main(args):
     uuid = await requestNotarization(args)
     if not await pollNotarizationCompleted(args, uuid):
-        raise NotarizationError("Notarization failed for: {0}".format(args.dmg))
+        raise NotarizationError(f"Notarization failed for: {args.dmg}")
     await embedNotarization(args)
 
 

@@ -67,7 +67,7 @@ async def prepare_sources(src: str, tmpBaseDir: str) -> str:
         destFile = download_archive(src, tmpBaseDir)
         await extract_archive(destFile, srcTmpDir)
     else:
-        raise BldPythonError("Could not prepare sources from: {0}".format(src))
+        raise BldPythonError(f"Could not prepare sources from: {src}")
     return srcTmpDir
 
 
@@ -75,12 +75,12 @@ def locate_source_root(searchDir: str) -> str:
     for root, dirs, files in os.walk(searchDir):
         if "configure" in files and os.path.isfile(os.path.join(root, "configure")):
             return root
-    raise BldPythonError("Could not find source root directory from: {0}".format(searchDir))
+    raise BldPythonError(f"Could not find source root directory from: {searchDir}")
 
 
 async def create_symlink(pythonDir: str):
     pythonExe = os.path.join(pythonDir, 'python.exe')
-    assert os.path.isfile(pythonExe), "The 'python' executable did not exist: {0}".format(pythonExe)
+    assert os.path.isfile(pythonExe), f"The 'python' executable did not exist: {pythonExe}"
     versionCmd = [pythonExe, '--version']
     versionOutput = check_output(versionCmd, shell=True).decode("utf-8")
     match = re.search(r'(\d+)\.(\d+)\.(\d+)', versionOutput)
@@ -89,17 +89,17 @@ async def create_symlink(pythonDir: str):
         os.symlink(pythonExe, destination)
         log.info("Symbolic link created from %s to %s", pythonExe, destination)
     else:
-        raise BldPythonError("Could not parse version output: {0}".format(versionOutput))
+        raise BldPythonError(f"Could not parse version output: {versionOutput}")
 
 
 async def _build_python_win(srcDir: str) -> str:
     log.info("Building..")
     log.info("Source dir: %s", srcDir)
     buildBat = os.path.join(srcDir, 'PCbuild', 'build.bat')
-    assert os.path.isfile(buildBat), "The 'build.bat' batch file did not exist: {0}".format(buildBat)
+    assert os.path.isfile(buildBat), f"The 'build.bat' batch file did not exist: {buildBat}"
     await async_exec_cmd([buildBat])
     destDir = os.path.join(srcDir, 'PCbuild', 'amd64')
-    assert os.path.isdir(destDir), "The build destination directory did not exist: {0}".format(destDir)
+    assert os.path.isdir(destDir), f"The build destination directory did not exist: {destDir}"
     await create_symlink(destDir)
     log.info("Python built successfully and installed to: %s", destDir)
     return srcDir
@@ -175,9 +175,9 @@ if __name__ == "__main__":
     parser.add_argument("--prefix", dest="prefix", type=str, default=os.path.join(os.path.expanduser("~"), "_python_bld"))
     args = parser.parse_args(sys.argv[1:])
 
-    for requiredTool in ["7z", "tar"]:
-        if not which(requiredTool):
-            log.error("Could not find '{0}' from the system. This tool is needed. Aborting..".format(requiredTool))
+    for tool in ["7z", "tar"]:
+        if not which(tool):
+            log.error("Could not find '%s' from the system. This tool is needed. Aborting..", tool)
             sys.exit(1)
 
     loop = get_event_loop()

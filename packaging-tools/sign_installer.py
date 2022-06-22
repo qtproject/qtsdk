@@ -50,7 +50,7 @@ def sign_mac_app(app_path: str, signing_identity: str) -> None:
     # "-o runtime" is required for notarization
     cmd_args = ['codesign', '-o', 'runtime', '--verbose=3', '-r', get_pkg_value("SIGNING_FLAGS"), '-s', signing_identity, app_path]
     check_call(cmd_args)
-    log.info(f"Successfully signed: {app_path}")
+    log.info("Successfully signed: %s", app_path)
 
 
 def create_mac_dmg(app_path: str) -> None:
@@ -60,7 +60,7 @@ def create_mac_dmg(app_path: str) -> None:
     cmd_args = ['hdiutil', 'create', '-srcfolder', app_path, '-volname', installer_name_base]
     cmd_args += ['-format', 'UDBZ', destination_dmg_path, '-ov', '-scrub', '-size', '4g']
     check_call(cmd_args)
-    log.info(f"Successfully created: {destination_dmg_path}")
+    log.info("Successfully created: %s", destination_dmg_path)
 
 
 def sign_windows_executable(file_path: str):
@@ -76,10 +76,10 @@ def sign_windows_executable(file_path: str):
     log_entry = cmd_args[:]
     log_entry[4] = "****"
     log_entry[6] = "****"
-    log.info("Calling: {0}".format(' '.join(log_entry)))
+    log.info("Calling: %s", " ".join(log_entry))
     check_call(cmd_args, stdout=DEVNULL, stderr=DEVNULL)
     rmtree(signToolsTempDir)
-    log.info(f"Successfully signed: {file_path}")
+    log.info("Successfully signed: %s", file_path)
 
 
 if __name__ == "__main__":

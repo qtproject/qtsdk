@@ -64,7 +64,7 @@ def check_environment():
 
     def check_cmd(cmd):
         if subprocess.call(cmd, stdout=FNULL, stderr=FNULL) != 0:
-            print('*** Cannot execute {0}'.format(cmd[0]))
+            print(f"*** Cannot execute {cmd[0]}")
             exit(1)
     check_cmd(['nasm', '-h'])
     check_cmd(['nmake', '/?'])

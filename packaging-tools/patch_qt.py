@@ -35,7 +35,7 @@ from fileinput import FileInput
 
 
 def _fileIterator(artifactsDir):
-    print('Patching build time paths from: {0}'.format(artifactsDir))
+    print(f"Patching build time paths from: {artifactsDir}")
     for root, dirs, files in os.walk(artifactsDir):
         for fileName in files:
             yield os.path.join(os.path.join(root, fileName))
@@ -50,7 +50,7 @@ def _getPatchers(product):
 
 
 def patchFiles(artifactsDir, product):
-    print('Patching files from: {0}'.format(artifactsDir))
+    print(f"Patching files from: {artifactsDir}")
     patchers = _getPatchers(product)
     for filePath in _fileIterator(artifactsDir):
         for patcher in patchers:

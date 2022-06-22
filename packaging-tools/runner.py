@@ -77,9 +77,9 @@ def do_execute_sub_process(args, execution_path, abort_on_fail=True, get_output=
                            extra_env=dict(os.environ), redirect_output=None, args_log=None):
     _args_log = args_log or ' '.join([str(i) for i in args])
     print('      --------------------------------------------------------------------')
-    print('      Executing:      [' + _args_log + ']')
-    print('      Execution path: [' + execution_path + ']')
-    print('      Abort on fail:  [' + str(abort_on_fail) + ']')
+    print(f'      Executing:      [{_args_log}]')
+    print(f'      Execution path: [{execution_path}]')
+    print(f'      Abort on fail:  [{str(abort_on_fail)}]')
     sys.stdout.flush()
     theproc = None
     return_code = -1
@@ -116,7 +116,7 @@ def do_execute_sub_process(args, execution_path, abort_on_fail=True, get_output=
             else:
                 print('Note, no output from the sub process!')
                 sys.stdout.flush()
-            raise Exception('*** Execution failed with code: {0}'.format(theproc.returncode))
+            raise Exception(f"*** Execution failed with code: {theproc.returncode}")
         print('      --------------------------------------------------------------------')
         sys.stdout.flush()
     except Exception:

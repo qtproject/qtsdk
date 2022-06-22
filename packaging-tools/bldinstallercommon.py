@@ -56,6 +56,7 @@ if is_windows():
 DEBUG_RPATH = False
 MAX_DEBUG_PRINT_LENGTH = 10000
 
+
 ###############################
 # function
 ###############################
@@ -85,7 +86,7 @@ def dlProgress(count, blockSize, totalSize):
     # produce only reasonable amount of prints into stdout
     if percent > CURRENT_DOWNLOAD_PERCENT:
         CURRENT_DOWNLOAD_PERCENT = percent
-        sys.stdout.write("\r" + "     Downloading: %d%%" % percent)
+        sys.stdout.write("\r" + f"     Downloading: {percent}%")
         sys.stdout.flush()
     if count * blockSize >= totalSize:
         CURRENT_DOWNLOAD_PERCENT = 0
@@ -171,7 +172,7 @@ def copy_tree(source_dir, dest_dir):
             raise IOError('*** Fatal error! Unable to create source file path, too long path name!')
         if is_windows():
             if len(full_file_name) > 255:
-                raise IOError('given full_file_name length [%s] too long for Windows: %s' % (len(full_file_name), full_file_name))
+                raise IOError(f'given full_file_name length [{len(full_file_name)}] too long for Windows: {full_file_name}')
         if os.path.isdir(full_file_name):
             Path(dest_dir + os.sep + file_name).mkdir(parents=True, exist_ok=True)
             copy_tree(full_file_name, dest_dir + os.sep + file_name)
@@ -192,7 +193,7 @@ def remove_one_tree_level(directory):
         move_tree(tempdir, directory)
         remove_tree(tempdir_base)
     else:
-        raise IOError('Cannot remove one level of directory structure of "%s", it has %s subdirectories' % (dir, items))
+        raise IOError(f'Cannot remove one level of directory structure of "{dir}", it has {items} subdirectories')
 
 
 ###############################
@@ -246,16 +247,16 @@ def replace_in_files(filelist, regexp, replacement_string):
 def ensure_text_file_endings(filename):
     print('------------ ensure_text_file_endings ----------------')
     if os.path.isdir(filename):
-        print('*** Warning, given file is directory? Did nothing for: ' + filename)
+        print(f'*** Warning, given file is directory? Did nothing for: {filename}')
         return
     data = open(filename, "rb").read()
     if b'\0' in data:
-        print('*** Warning, given file is binary? Did nothing for: ' + filename)
+        print(f'*** Warning, given file is binary? Did nothing for: {filename}')
         return
     if is_windows():
         newdata = re.sub(b"\r?\n", b"\r\n", data)
         if newdata != data:
-            print('File endings changed for: ' + filename)
+            print(f'File endings changed for: {filename}')
             f = open(filename, "wb")
             f.write(newdata)
             f.close()
@@ -283,9 +284,9 @@ def config_section_map(conf, section):
         try:
             dict1[option] = conf.get(section, option)
             if dict1[option] == -1:
-                print('skip: %s' % option)
+                print(f"skip: {option}")
         except Exception:
-            print('exception on %s!' % option)
+            print(f"exception on {option}!")
             dict1[option] = ''
     return dict1
 
@@ -376,16 +377,16 @@ def sanity_check_rpath_max_length(file_path, new_rpath):
             return False
         result = re.search(r':*.R.*PATH=.*', Popen(['chrpath', '-l', file_path], stdout=PIPE).stdout.read().decode())
         if not result:
-            print('*** No RPath found from given file: ' + file_path)
+            print(f'*** No RPath found from given file: {file_path}')
         else:
             rpath = result.group()
             index = rpath.index('=')
             rpath = rpath[index + 1:]
             space_for_new_rpath = len(rpath)
             if len(new_rpath) > space_for_new_rpath:
-                print('*** Warning - Not able to process RPath for file: ' + file_path)
-                print('*** Required length for new RPath [' + new_rpath + '] is: ' + str(len(new_rpath)))
-                print('*** Space available for new RPath inside the binary is: ' + str(space_for_new_rpath))
+                print(f'*** Warning - Not able to process RPath for file: {file_path}')
+                print(f'*** Required length for new RPath [{new_rpath}] is: {str(len(new_rpath))}')
+                print(f'*** Space available for new RPath inside the binary is: {str(space_for_new_rpath)}')
                 raise IOError()
     return True
 
@@ -427,7 +428,7 @@ def calculate_relpath(p1, p2):
 ##############################################################
 def calculate_rpath(file_full_path, destination_lib_path):
     if not os.path.isfile(file_full_path):
-        raise IOError('*** Not a valid file: %s' % file_full_path)
+        raise IOError(f"*** Not a valid file: {file_full_path}")
 
     bin_path = os.path.dirname(file_full_path)
     path_to_lib = os.path.abspath(destination_lib_path)
@@ -440,9 +441,9 @@ def calculate_rpath(file_full_path, destination_lib_path):
 
     if DEBUG_RPATH:
         print('        ----------------------------------------')
-        print('         RPath target folder: ' + path_to_lib)
-        print('         Bin file:            ' + file_full_path)
-        print('         Calculated RPath:    ' + full_rpath)
+        print(f'         RPath target folder: {path_to_lib}')
+        print(f'         Bin file:            {file_full_path}')
+        print(f'         Calculated RPath:    {full_rpath}')
 
     return full_rpath
 
@@ -454,8 +455,8 @@ def handle_component_rpath(component_root_path, destination_lib_paths):
     print('        @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
     print('        Handle RPath')
     print('')
-    print('        Component root path:  ' + component_root_path)
-    print('        Destination lib path: ' + destination_lib_paths)
+    print(f'        Component root path:  {component_root_path}')
+    print(f'        Destination lib path: {destination_lib_paths}')
 
     # loop on all files
     for root, dirs, files in os.walk(component_root_path):
@@ -494,9 +495,9 @@ def handle_component_rpath(component_root_path, destination_lib_paths):
 ###############################
 def clone_repository(repo_url, repo_branch_or_tag, destination_folder, full_clone=False, init_subrepos=False):
     print('--------------------------------------------------------------------')
-    print('Cloning repository: ' + repo_url)
-    print('        branch/tag: ' + repo_branch_or_tag)
-    print('Dest:               ' + destination_folder)
+    print(f'Cloning repository: {repo_url}')
+    print(f'        branch/tag: {repo_branch_or_tag}')
+    print(f'Dest:               {destination_folder}')
     print('--------------------------------------------------------------------')
 
     work_dir = os.path.dirname(os.path.realpath(__file__))
@@ -565,9 +566,9 @@ def git_archive_repo(repo_and_ref):
     clone_repository(repository, ref, checkout_dir, full_clone=True, init_subrepos=True)
     # git archive repo with given name
     archive_file = open(archive_name, 'w')
-    check_call("git --no-pager archive %s" % (ref), stdout=archive_file, stderr=STDOUT, shell=True, cwd=checkout_dir)
+    check_call(f"git --no-pager archive {ref}", stdout=archive_file, stderr=STDOUT, shell=True, cwd=checkout_dir)
     archive_file.close()
-    print('Created archive: {0}'.format(archive_name))
+    print(f"Created archive: {archive_name}")
     shutil.rmtree(checkout_dir, ignore_errors=True)
     return archive_name
 
@@ -588,12 +589,12 @@ def extract_file(path, to_directory='.'):
     elif path.endswith('.7z') or path.endswith('.zip'):
         cmd_args = ['7z', 'x', path]
     else:
-        print('Did not extract the file! Not archived or no appropriate extractor was found: ' + path)
+        print(f'Did not extract the file! Not archived or no appropriate extractor was found: {path}')
         return False
 
     ret = runCommand(cmd_args, currentWorkingDirectory=to_directory, onlyErrorCaseOutput=True)
     if ret:
-        raise RuntimeError('Failure running the last command: %i' % ret)
+        raise RuntimeError(f"Failure running the last command: {ret}")
     return True
 
 
@@ -634,15 +635,15 @@ def create_mac_disk_image(execution_path, file_directory, file_base_name, image_
 # function
 ###############################
 def rename_android_soname_files(qt5_base_path):
-    print('---------- Renaming .so name files in ' + qt5_base_path + ' ----------------')
+    print(f'---------- Renaming .so name files in {qt5_base_path} ----------------')
     # QTBUG-33793
     # temporary solution for Android on Windows compilations
     # rename the .so files for Android on Windows
     # find the lib directory under the install directory for essentials
     try:
-        print('Trying to locate /lib from: ' + qt5_base_path)
+        print(f'Trying to locate /lib from: {qt5_base_path}')
         lib_dir = locate_path(qt5_base_path, ["lib"], filters=[os.path.isdir])
-        print('Match found: ' + lib_dir)
+        print(f'Match found: {lib_dir}')
         # regex for Qt version, eg. 5.2.0
         # assuming that Qt version will always have one digit, eg, 5.2.0
         p = re.compile(r'\d\.\d\.\d')
@@ -657,10 +658,10 @@ def rename_android_soname_files(qt5_base_path):
                 old_filepath = os.path.join(lib_dir, name)
                 new_filepath = os.path.join(lib_dir, filename + '.so')
                 shutil.move(old_filepath, new_filepath)
-                print('---> Old file name : ' + old_filepath)
-                print('---> New file name : ' + new_filepath)
+                print(f'---> Old file name: {old_filepath}')
+                print(f'---> New file name: {new_filepath}')
             else:
-                print('*** Warning! The file : ' + filename + ' does not match the pattern')
+                print(f"*** Warning! The file '{filename}' does not match the pattern")
     except PackagingError:
         print('*** No .so files found to be renamed as /lib was not found. Skipping.')
 
@@ -682,9 +683,9 @@ def create_extract_function(file_path, target_path, caller_arguments=None):
 def create_download_and_extract_tasks(url, target_path, temp_path, caller_arguments):
     filename = os.path.basename(urlparse(url).path)
     sevenzip_file = os.path.join(temp_path, filename)
-    download_task = Task('download "{0}" to "{1}"'.format(url, sevenzip_file))
+    download_task = Task(f"download '{url}' to '{sevenzip_file}'")
     download_task.addFunction(download, url, sevenzip_file)
-    extract_task = Task('extract "{0}" to "{1}"'.format(sevenzip_file, target_path))
+    extract_task = Task(f"extract '{sevenzip_file}' to '{target_path}'")
     extract_task.addFunction(create_extract_function(sevenzip_file, target_path, caller_arguments))
     return (download_task, extract_task)
 
@@ -695,7 +696,7 @@ def create_download_and_extract_tasks(url, target_path, temp_path, caller_argume
 def create_download_extract_task(url, target_path, temp_path, caller_arguments):
     filename = os.path.basename(urlparse(url).path)
     sevenzip_file = os.path.join(temp_path, filename)
-    download_extract_task = Task("download {0} to {1} and extract it to {2}".format(url, sevenzip_file, target_path))
+    download_extract_task = Task(f"download {url} to {sevenzip_file} and extract it to {target_path}")
     download_extract_task.addFunction(download, url, sevenzip_file)
     download_extract_task.addFunction(create_extract_function(sevenzip_file, target_path, caller_arguments))
     return download_extract_task
@@ -705,9 +706,9 @@ def create_download_extract_task(url, target_path, temp_path, caller_arguments):
 # function
 ###############################
 def create_qt_download_task(module_urls, target_qt5_path, temp_path, caller_arguments):
-    qt_task = Task('download and extract Qt to "{0}"'.format(target_qt5_path))
-    download_work = ThreadedWork('download Qt packages to "{0}"'.format(temp_path))
-    unzip_task = Task('extracting packages to "{0}"'.format(target_qt5_path))
+    qt_task = Task(f'download and extract Qt to "{target_qt5_path}"')
+    download_work = ThreadedWork(f'download Qt packages to "{temp_path}"')
+    unzip_task = Task(f'extracting packages to "{target_qt5_path}"')
     # add Qt modules
     for module_url in module_urls:
         if is_content_url_valid(module_url):
@@ -717,7 +718,7 @@ def create_qt_download_task(module_urls, target_qt5_path, temp_path, caller_argu
             download_work.addTaskObject(download_task)
             unzip_task.addFunction(extract_task.do)
         else:
-            print('warning: could not find "{0}" for download'.format(module_url))
+            print(f"warning: could not find '{module_url}' for download")
     # add icu, d3dcompiler, opengl32, openssl
     target_path = os.path.join(target_qt5_path, 'bin' if is_windows() else 'lib')
     if not is_macos() and hasattr(caller_arguments, 'icu7z') and caller_arguments.icu7z:
@@ -751,7 +752,7 @@ def create_qt_download_task(module_urls, target_qt5_path, temp_path, caller_argu
 
 
 def patch_qt(qt5_path):
-    print("##### {0} #####".format("patch Qt"))
+    print("##### patch Qt #####")
     qmake_binary = os.path.join(qt5_path, 'bin', 'qmake')
     # write qt.conf
     qtConfFile = open(os.path.join(qt5_path, 'bin', 'qt.conf'), "w")
@@ -761,5 +762,5 @@ def patch_qt(qt5_path):
     # fix rpaths
     if is_linux():
         handle_component_rpath(qt5_path, 'lib')
-    print("##### {0} ##### ... done".format("patch Qt"))
+    print("##### patch Qt ##### ... done")
     runCommand(qmake_binary + " -query", qt5_path)

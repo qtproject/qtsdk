@@ -71,12 +71,12 @@ def remove_empty_directories(root_path: str):
         for name in dirs:
             dirPath = os.path.join(root, name)
             if not os.listdir(dirPath):  # to check whether the dir is empty
-                log.info(f"Removing empty directory: {dirPath}")
+                log.info("Removing empty directory: %s", dirPath)
                 os.removedirs(dirPath)
 
 
 def preserve_content(input_dir: str, preserve_rules: List[str]) -> None:
-    log.info(f"Cleaning content from: '{input_dir}' - preserve_rules: {preserve_rules}")
+    log.info("Cleaning content from: '%s' - preserve_rules: %s", input_dir, preserve_rules)
     if not os.path.isdir(input_dir):
         raise CleanerError(f"Not a valid input directory: {input_dir}")
     split_preserve_rules = [word for line in preserve_rules for word in line.split()]
@@ -87,13 +87,13 @@ def preserve_content(input_dir: str, preserve_rules: List[str]) -> None:
                 continue
             if not os.path.islink(p) and os.path.isdir(p):
                 continue
-            log.info(f"Removing file: {p}")
+            log.info("Removing file: %s", p)
             os.remove(p)
     remove_empty_directories(input_dir)
 
 
 def remove_content(input_dir: str, remove_rules: List[str]) -> None:
-    log.info(f"Removing files from: '{input_dir}' - remove_rules: {remove_rules}")
+    log.info("Removing files from: '%s' - remove_rules: %s", input_dir, remove_rules)
     if not os.path.isdir(input_dir):
         raise CleanerError(f"Not a valid input directory: {input_dir}")
     split_remove_rules = [word for line in remove_rules for word in line.split()]
@@ -103,7 +103,7 @@ def remove_content(input_dir: str, remove_rules: List[str]) -> None:
             if os.path.isdir(p):
                 continue
             if str(p) in files_to_remove:
-                log.info(f"Removing: {p}")
+                log.info("Removing: %s", p)
                 os.remove(p)
     remove_empty_directories(input_dir)
 

@@ -66,14 +66,14 @@ def read_output(*args):
 
 
 def dump_sym(dump_syms_path, architecture, absolute_path, sym_path, verbose):
-    dump_syms_command = '{} {} "{}" > "{}"'.format(dump_syms_path, architecture, absolute_path, sym_path)
+    dump_syms_command = f'{dump_syms_path} {architecture} "{absolute_path}" > "{sym_path}"'
     if (verbose):
-        print("call: {}".format(dump_syms_command))
+        print(f"call: {dump_syms_command}")
     dump_syms_return = subprocess.call(dump_syms_command, shell=True)
     if os.path.exists(sym_path) and os.stat(sym_path).st_size > 0 and dump_syms_return == 0:
         return True
     else:
-        raise Exception("dump_syms can not be called: \n{}\n{}".format(dump_syms_command, dump_syms_return))
+        raise Exception(f"dump_syms can not be called: \n{dump_syms_command}\n{dump_syms_return}")
     return False
 
 
@@ -91,13 +91,13 @@ def dump_syms(dump_syms_path, architectures, search_pathes, output_path, verbose
                     base_path, extension = os.path.splitext(absolute_path)
                     start_slash = 1
                     sym_path_base = base_path[start_slash + len(search_path):].replace("/", "_")
-                    sym_filename = "{}.sym".format(sym_path_base)
+                    sym_filename = f"{sym_path_base}.sym"
                     sym_path = os.path.join(output_path, sym_filename)
                     if dump_sym(dump_syms_path, architectures[0], absolute_path, sym_path, verbose):
                         sym_filenames.append(sym_filename)
                     if len(architectures) == 2:
                         arch_argument_len = len("--arch ")
-                        sym_filename = "{}_{}.sym".format(sym_path_base, architectures[1][arch_argument_len:])
+                        sym_filename = f"{sym_path_base}_{architectures[1][arch_argument_len:]}.sym"
                         sym_path = os.path.join(output_path, sym_filename)
                         if dump_sym(dump_syms_path, architectures[1], absolute_path, sym_path, verbose):
                             sym_filenames.append(sym_filename)
@@ -146,7 +146,7 @@ def _main():
     ).decode('utf-8')
 
     if len(dump_syms_output) <= 0:
-        raise Exception("dump_syms can not be called: \n{}".format(dump_syms_output))
+        raise Exception(f"dump_syms can not be called: \n{dump_syms_output}")
 
     if os.path.exists(args.output_path):
         if args.clean_output_path:
@@ -155,14 +155,14 @@ def _main():
 
     for search_path in args.search_pathes.split(","):
         if not os.path.isdir(search_path):
-            raise Exception("search_path does not exist: {}".format(search_path))
+            raise Exception(f"search_path does not exist: {search_path}")
 
     architectures = args.architectures.split(",")
     if len(architectures) == 2:
-        architectures[0] = "--arch {}".format(architectures[0])
-        architectures[1] = "--arch {}".format(architectures[1])
+        architectures[0] = f"--arch {architectures[0]}"
+        architectures[1] = f"--arch {architectures[1]}"
     elif args.architectures != "":
-        architectures = ["--arch {}".format(args.architectures)]
+        architectures = [f"--arch {args.architectures}"]
 
     sym_filenames = dump_syms(args.dump_syms_path,
                               architectures,
@@ -170,7 +170,7 @@ def _main():
                               args.output_path,
                               args.verbose)
     if len(sym_filenames) == 0:
-        raise Exception("no debug information files found in {}".format(args.search_pathes))
+        raise Exception(f"no debug information files found in {args.search_pathes}")
 
     source_bundle_command = [args.sentry_cli_path, "difutil", "bundle-sources"]
     source_bundle_command.extend(sym_filenames)
