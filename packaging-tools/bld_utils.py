@@ -76,7 +76,7 @@ def deep_copy_arguments(to_call):
     return f
 
 
-class DirRenamer(object):
+class DirRenamer():
 
     def __init__(self, path, newName):
         self.oldName = path
@@ -204,9 +204,8 @@ def download(url, target, read_block_size=1048576):
                 if os.path.lexists(savefile_tmp) and tryRenameCounter < 720:
                     sleep(2)
                     continue
-                else:
-                    if not os.path.lexists(target):
-                        raise Exception(f"Could not rename {savefile_tmp} to {target}{os.linesep}Error: {str(e)}")
+                if not os.path.lexists(target):
+                    raise Exception(f"Could not rename {savefile_tmp} to {target}{os.linesep}Error: {str(e)}")
     finally:  # this is done before the except code is called
         try:
             os.remove(savefile_tmp)
@@ -225,7 +224,7 @@ def setValueOnEnvironmentDict(environment, key, value):
 
 
 @deep_copy_arguments
-def getEnvironment(extra_environment=None, callerArguments=None):
+def getEnvironment(extra_environment=None):
     # first take the one from the system and use the plain dictionary data for that
     environment = dict(os.environ)
 
@@ -242,7 +241,7 @@ def getEnvironment(extra_environment=None, callerArguments=None):
 
 
 @deep_copy_arguments
-def runCommand(command, currentWorkingDirectory, callerArguments=None, extra_environment=None, onlyErrorCaseOutput=False, expectedExitCodes=[0]):
+def runCommand(command, currentWorkingDirectory, extra_environment=None, onlyErrorCaseOutput=False, expectedExitCodes=[0]):
     if type(expectedExitCodes) is not list:
         raise TypeError(f"expectedExitCodes({type(expectedExitCodes)}) is not {list}")
     if type(onlyErrorCaseOutput) is not bool:
@@ -253,7 +252,7 @@ def runCommand(command, currentWorkingDirectory, callerArguments=None, extra_env
     else:
         commandAsList = command[:].split(' ')
 
-    environment = getEnvironment(extra_environment, callerArguments)
+    environment = getEnvironment(extra_environment)
 
     # if we can not find the command, just check the current working dir
     if (not os.path.lexists(commandAsList[0]) and currentWorkingDirectory
@@ -279,7 +278,7 @@ def runCommand(command, currentWorkingDirectory, callerArguments=None, extra_env
     if currentWorkingDirectory and not os.path.lexists(currentWorkingDirectory):
         raise Exception(f"The current working directory is not existing: {currentWorkingDirectory}")
 
-    useShell = True if sys.platform.startswith('win') else False
+    useShell = is_windows()
     lastStdOutLines = []
     lastStdErrLines = []
     if currentThread().name == "MainThread" and not onlyErrorCaseOutput:
@@ -370,7 +369,7 @@ def runInstallCommand(arguments=['install'], currentWorkingDirectory=None, calle
 
     if arguments:
         installcommand.extend(arguments if type(arguments) is list else arguments.split())
-    return runCommand(installcommand, currentWorkingDirectory, callerArguments, extra_environment=extra_environment, onlyErrorCaseOutput=onlyErrorCaseOutput)
+    return runCommand(installcommand, currentWorkingDirectory, extra_environment, onlyErrorCaseOutput=onlyErrorCaseOutput)
 
 
 @deep_copy_arguments
@@ -381,28 +380,28 @@ def runBuildCommand(arguments=None, currentWorkingDirectory=None, callerArgument
 
     if arguments:
         buildcommand.extend(arguments if type(arguments) is list else arguments.split())
-    return runCommand(buildcommand, currentWorkingDirectory, callerArguments, extra_environment=extra_environment, onlyErrorCaseOutput=onlyErrorCaseOutput, expectedExitCodes=expectedExitCodes)
+    return runCommand(buildcommand, currentWorkingDirectory, extra_environment, onlyErrorCaseOutput=onlyErrorCaseOutput, expectedExitCodes=expectedExitCodes)
 
 
 @deep_copy_arguments
-def getReturnValue(command, currentWorkingDirectory=None, extra_environment=None, callerArguments=None):
+def getReturnValue(command, currentWorkingDirectory=None, extra_environment=None):
     commandAsList = command[:].split(' ')
     return Popen(
         commandAsList, stdout=PIPE, stderr=STDOUT,
-        cwd=currentWorkingDirectory, env=getEnvironment(extra_environment, callerArguments)
+        cwd=currentWorkingDirectory, env=getEnvironment(extra_environment)
     ).communicate()[0].strip()
 
 
-def gitSHA(path, callerArguments=None):
+def gitSHA(path):
     gitBinary = "git"
     if isGitDirectory(path):
-        return getReturnValue(gitBinary + " rev-list -n1 HEAD", currentWorkingDirectory=path, callerArguments=callerArguments).strip()
+        return getReturnValue(gitBinary + " rev-list -n1 HEAD", currentWorkingDirectory=path).strip()
     return ''
 
 
 # get commit SHA either directly from git, or from a .tag file in the source directory
-def get_commit_SHA(source_path, callerArguments=None):
-    buildGitSHA = gitSHA(source_path, callerArguments)
+def get_commit_SHA(source_path):
+    buildGitSHA = gitSHA(source_path)
     if not buildGitSHA:
         tagfile = os.path.join(source_path, '.tag')
         if os.path.exists(tagfile):

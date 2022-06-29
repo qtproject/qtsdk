@@ -79,10 +79,9 @@ def download_archive(url: str, destDir: str) -> str:
 def get_extract_cmd(artifact: str) -> List[str]:
     if artifact.endswith(".7z") or artifact.endswith(".zip"):
         return ['7z', 'x', artifact]
-    elif any(fnmatch(artifact, p) for p in ["*.tar*", "*.tgz"]):
+    if any(fnmatch(artifact, p) for p in ["*.tar*", "*.tgz"]):
         return ['tar', '-xf', artifact]
-    else:
-        raise PackagingError(f"Could not find suitable extractor for: {artifact}")
+    raise PackagingError(f"Could not find suitable extractor for: {artifact}")
 
 
 async def extract_archive(artifact: str, destinationDir: str) -> None:

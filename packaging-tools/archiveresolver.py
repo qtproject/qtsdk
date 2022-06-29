@@ -142,16 +142,14 @@ class ArchiveLocationResolver:
         res = is_content_url_valid(archive_uri)
         if res:
             return archive_uri
-        else:
-            parts = urlparse(archive_uri)
-            if parts.scheme and parts.netloc:
-                raise RuntimeError(f"Url: [{archive_uri}] points to valid location but it is inaccessible.")
+        parts = urlparse(archive_uri)
+        if parts.scheme and parts.netloc:
+            raise RuntimeError(f"Url: [{archive_uri}] points to valid location but it is inaccessible.")
         # 3. try to compose full URL
         temp = self.server_url_by_name(server_name)
         if not temp.endswith('/') and not archive_uri.startswith('/'):
             temp = temp + '/'
-        temp = temp + archive_uri
-        return temp
+        return temp + archive_uri
 
     ###############################
     # Print out server list

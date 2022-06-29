@@ -48,8 +48,8 @@ log = init_logger(__name__, debug_mode=False)
 
 def locate_file_from_venv(venv_folder: str, fileName: str) -> str:
     log.info("Locating file '%s' from: %s", fileName, venv_folder)
-    matches = [f for f in Path(venv_folder).resolve(strict=True).rglob(fileName)]
-    assert len(matches) == 1, f"Found != 1 mathes: {matches}"
+    matches = list(Path(venv_folder).resolve(strict=True).rglob(fileName))
+    assert len(matches) == 1, f"Found != 1 matches: {matches}"
     return str(matches.pop())
 
 

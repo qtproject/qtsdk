@@ -1057,12 +1057,11 @@ def initPkgOptions(args):
         """For local builds define default build target"""
         if is_windows():
             return "win-msvc2015-Windows10-x64"
-        elif is_linux():
+        if is_linux():
             return "linux-g++-Rhel6.6-x64"
-        elif is_macos():
+        if is_macos():
             return "mac-clang-10.11-x64"
-        else:
-            raise RuntimeError("Unsupported host platform")
+        raise RuntimeError("Unsupported host platform")
 
     optionDict = {}
     # Are we using local conf file for pkg options?

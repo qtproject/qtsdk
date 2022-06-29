@@ -72,7 +72,7 @@ async def prepare_sources(src: str, tmpBaseDir: str) -> str:
 
 
 def locate_source_root(searchDir: str) -> str:
-    for root, dirs, files in os.walk(searchDir):
+    for root, _, files in os.walk(searchDir):
         if "configure" in files and os.path.isfile(os.path.join(root, "configure")):
             return root
     raise BldPythonError(f"Could not find source root directory from: {searchDir}")

@@ -131,7 +131,7 @@ def main():
         sys.exit(2)
 
     # process options
-    for o, a in opts:
+    for o, _ in opts:
         if o in ("-h", "--help"):
             printUsageAndExit()
 

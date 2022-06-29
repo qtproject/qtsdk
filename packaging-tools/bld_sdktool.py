@@ -56,7 +56,7 @@ def qt_static_configure_options():
 def qt_static_platform_configure_options():
     if is_windows():
         return ['-static-runtime', '-no-icu', '-mp']
-    elif is_linux():
+    if is_linux():
         return ['-no-icu', '-no-glib', '-qt-zlib', '-qt-pcre', '-qt-doubleconversion']
     return []
 
@@ -72,13 +72,12 @@ def qt_build_path(qt_build_base):
 def package_extension(url):
     if url.endswith('.tar.gz'):
         return '.tar.gz'
-    elif url.endswith('.zip'):
+    if url.endswith('.zip'):
         return '.zip'
-    elif url.endswith('.tar.xz'):
+    if url.endswith('.tar.xz'):
         return '.tar.xz'
-    else:
-        (_, ext) = os.path.splitext(url)
-        return ext
+    (_, ext) = os.path.splitext(url)
+    return ext
 
 
 def get_and_extract_qt_src(url, temp, path):

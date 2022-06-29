@@ -137,7 +137,7 @@ def main():
         print("for help use --help")
         sys.exit(2)
 
-    for o, a in opts:
+    for o, _ in opts:
         if o in ("-h", "--help"):
             printHelpAndExit()
     if len(args) <= 2:

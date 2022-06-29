@@ -123,7 +123,7 @@ class TestReleaseRepoMetaUpdate(unittest.TestCase):
     async def test_check_repos_which_can_be_updated(self) -> None:
         with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
             self._write_test_repo(tmpBaseDir, self.paths)
-            done_repos, pending_repos, unconverted_repos, broken_repos = scan_repositories(tmpBaseDir)
+            done_repos, pending_repos, unconverted_repos, _ = scan_repositories(tmpBaseDir)
 
             updatable_repos, existing_pending_repos = check_repos_which_can_be_updated(done_repos + pending_repos + unconverted_repos)
             self.assertListEqual(sorted([repo.split(tmpBaseDir)[-1] for repo in updatable_repos]),
@@ -135,7 +135,7 @@ class TestReleaseRepoMetaUpdate(unittest.TestCase):
     async def test_swap_repositories_invalid(self) -> None:
         with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
             self._write_test_repo(tmpBaseDir, self.paths)
-            done_repos, pending_repos, unconverted_repos, broken_repos = scan_repositories(tmpBaseDir)
+            unconverted_repos = scan_repositories(tmpBaseDir)[2]
             with self.assertRaises(IfwRepoUpdateError):
                 await create_converted_repositories(repogen="foobar-repogen", repositories_to_migrate=unconverted_repos,
                                                     dry_run=True)
@@ -144,19 +144,19 @@ class TestReleaseRepoMetaUpdate(unittest.TestCase):
     async def test_swap_repositories_valid(self) -> None:
         with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
             self._write_test_repo(tmpBaseDir, self.non_migrated_paths)
-            done_repos, pending_repos, unconverted_repos, broken_repos = scan_repositories(tmpBaseDir)
+            unconverted_repos = scan_repositories(tmpBaseDir)[2]
             successful_conversions, failed_conversions = await create_converted_repositories(repogen="foobar-repogen",
                                                                                              repositories_to_migrate=unconverted_repos,
                                                                                              dry_run=True)
             self.assertTrue(not failed_conversions)
             # as it was dry-run we need to create the dummy migrated repo directories here
-            for orig_repo, migrated_repo in successful_conversions.items():
+            for _, migrated_repo in successful_conversions.items():
                 os.makedirs(migrated_repo)
             operations_ok, operations_nok = swap_repositories(successful_conversions)
             self.assertTrue(not operations_nok)
             self.assertListEqual(sorted(successful_conversions.keys()), sorted(operations_ok.keys()))
-            for orig_repo, items in operations_ok.items():
-                converted_repo, backup_repo_name, _msg = items
+            for _, items in operations_ok.items():
+                backup_repo_name = items[1]
                 self.assertTrue(backup_suffix in backup_repo_name)
 
 

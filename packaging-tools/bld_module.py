@@ -80,7 +80,7 @@ def patch_archive(base_dir, search_strings, qt_install_prefix):
 ###############################
 def get_qt_install_prefix(qt_path):
     cmd_args = [os.path.join(qt_path, 'bin', 'qmake'), '-query', 'QT_INSTALL_PREFIX']
-    ret, qt_install_prefix = do_execute_sub_process(cmd_args, qt_path, get_output=True)
+    _, qt_install_prefix = do_execute_sub_process(cmd_args, qt_path, get_output=True)
     return qt_install_prefix.strip()
 
 
@@ -308,8 +308,7 @@ else:  # --> qmake
         generateCommand.append(os.environ["EXTRA_QMAKE_ARGS"])
     generateCommand.append(qtModuleProFile)
 
-runCommand(generateCommand, currentWorkingDirectory=qtModuleBuildDirectory,
-           callerArguments=callerArguments, extra_environment=environment)
+runCommand(generateCommand, currentWorkingDirectory=qtModuleBuildDirectory, extra_environment=environment)
 
 ret = runBuildCommand(currentWorkingDirectory=qtModuleBuildDirectory, callerArguments=callerArguments)
 if ret:

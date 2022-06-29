@@ -114,12 +114,11 @@ async def pollNotarizationCompleted(args, uuid):
             log.info("Notarization succeeded for: %s", args.dmg)
             log.info("%s", data)
             return True
-        elif statusCode == "2":
+        if statusCode == "2":
             log.info("Notarization failed for: %s", args.dmg)
             raise NotarizationError(f"Notarization failed:\n\n{data}")
-        else:
-            log.info("Notarization not ready yet for: %s", args.dmg)
-            log.info("%s", data)
+        log.info("Notarization not ready yet for: %s", args.dmg)
+        log.info("%s", data)
 
         attempts -= 1
         log.info("Sleeping %is before next poll attempt (attempts left: %i)", pollInterval, attempts)

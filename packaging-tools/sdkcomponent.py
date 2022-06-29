@@ -90,8 +90,7 @@ class SdkComponent:
         def get_archive_installation_directory(self):
             if self.target_install_base:
                 return self.target_install_base + os.path.sep + self.target_install_dir
-            else:
-                return self.parent_target_install_base + os.path.sep + self.target_install_dir
+            return self.parent_target_install_base + os.path.sep + self.target_install_dir
 
     def __init__(self, section_name, target_config, packages_full_path_list, archive_location_resolver, key_value_substitution_list, is_offline_build):
         self.static_component = safe_config_key_fetch(target_config, section_name, 'static_component')
@@ -112,7 +111,7 @@ class SdkComponent:
         self.sorting_priority = safe_config_key_fetch(target_config, section_name, 'sorting_priority')
         self.component_sha1 = ""
         self.component_sha1_uri = safe_config_key_fetch(target_config, section_name, 'component_sha1_uri')
-        if (self.component_sha1_uri):
+        if self.component_sha1_uri:
             self.component_sha1_uri = archive_location_resolver.resolve_full_uri(self.package_name, self.archive_server_name, self.component_sha1_uri)
         self.optional_for_offline = False
         self.key_value_substitution_list = key_value_substitution_list
@@ -161,9 +160,9 @@ class SdkComponent:
                     print(f'*** Ignoring: {template_full_path}')
                     print(f'*** Using:    {self.pkg_template_dir}')
         self.parse_archives(self.target_config, self.archive_location_resolver)
-        self.check_component_data(self.target_config)
+        self.check_component_data()
 
-    def check_component_data(self, target_config):
+    def check_component_data(self):
         if self.static_component:
             if not os.path.isfile(self.static_component):
                 self.sanity_check_fail(self.package_name, 'Unable to locate given static package: ' + self.static_component)
@@ -197,9 +196,8 @@ class SdkComponent:
                         print(f'!!! Package: [{self.package_name}] Given data archive not found: [{archive.archive_uri}] But this component was marked optional -> keep going')
                         self.sanity_check_fail(self.package_name, f'Given data archive not found: [{archive.archive_uri}] But this component was marked optional')
                         return
-                    else:
-                        self.sanity_check_fail(self.package_name, error_msg)
-                        return
+                    self.sanity_check_fail(self.package_name, error_msg)
+                    return
 
     def sanity_check_fail(self, component_name, message):
         self.sanity_check_error_msg = '*** Sanity check fail! ***\n*** Component: [' + component_name + ']\n*** ' + message
@@ -207,8 +205,7 @@ class SdkComponent:
     def is_valid(self):
         if self.sanity_check_error_msg:
             return False
-        else:
-            return True
+        return True
 
     def error_msg(self):
         return self.sanity_check_error_msg

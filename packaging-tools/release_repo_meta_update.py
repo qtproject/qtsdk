@@ -180,7 +180,7 @@ def scan_repositories(search_path: str) -> Tuple[List[str], List[str], List[str]
         if backup_suffix in repo.as_posix():
             log.info("Skipping backup repo: %s", repo.as_posix())
             continue
-        elif repo.as_posix().endswith(convert_suffix):
+        if repo.as_posix().endswith(convert_suffix):
             if not check_unified_meta_exists(str(repo)):
                 # this is broken pending repo
                 log.error("Pending repository was missing '_meta.7z'")
@@ -207,11 +207,11 @@ def convert_repos(search_path: str, ifw_tools_url: str) -> None:
     loop = get_event_loop()
     repogen = loop.run_until_complete(fetch_repogen(ifw_tools_url))
     log.info("Using repogen from: %s", repogen)
-    done_repos, pending_repos, unconverted_repos, broken_repos = scan_repositories(search_path)
+    unconverted_repos = scan_repositories(search_path)[2]
     successful_conversions, failed_conversions = loop.run_until_complete(create_converted_repositories(repogen, unconverted_repos))
     operations_ok, operations_nok = swap_repositories(successful_conversions)
     for orig_repo, items in operations_ok.items():
-        converted_repo, backup_repo_name, _msg = items
+        backup_repo_name = items[1]
         log.info("Converted repo: %s", orig_repo)
         log.info("  original backup: %s", backup_repo_name)
     if failed_conversions:
@@ -219,7 +219,7 @@ def convert_repos(search_path: str, ifw_tools_url: str) -> None:
         for repo, expected_output_repo in failed_conversions.items():
             log.error("  '%s' -> '%s'", repo, expected_output_repo)
     for orig_repo, items in operations_nok.items():
-        converted_repo, backup_repo_name, _msg = items
+        backup_repo_name = items[1]
         log.error("Failed swaps: %s", orig_repo)
         log.warning("  original backup: %s", backup_repo_name)
 
@@ -228,7 +228,7 @@ def revert_repos(search_path: str, ifw_tools_url: str, time_stamp: str, dry_run:
     loop = get_event_loop()
     repogen = loop.run_until_complete(fetch_repogen(ifw_tools_url))
     log.info("Using repogen from: %s", repogen)
-    converted_repos, pending_repos, unconverted_repos, broken_repos = scan_repositories(search_path)
+    converted_repos = scan_repositories(search_path)[0]
 
     revert_actions: Dict[str, str] = {}
     for converted_repo in converted_repos:

@@ -217,7 +217,6 @@ def remove_tree(path):
                 runCommand(['rmdir', path, '/S', '/Q'], os.getcwd(), onlyErrorCaseOutput=True)
             except Exception:
                 print_exc()
-                pass
         else:
             # shutil.rmtree(path)
             runCommand(['rm', '-rf', path], os.getcwd(), onlyErrorCaseOutput=True)
@@ -414,7 +413,7 @@ def commonpath(l1, l2, common=[]):
 
 
 def calculate_relpath(p1, p2):
-    (common, l1, l2) = commonpath(pathsplit(p1), pathsplit(p2))
+    (_, l1, l2) = commonpath(pathsplit(p1), pathsplit(p2))
     p = []
     if len(l1) > 0:
         tmp = '..' + os.sep
@@ -459,7 +458,7 @@ def handle_component_rpath(component_root_path, destination_lib_paths):
     print(f'        Destination lib path: {destination_lib_paths}')
 
     # loop on all files
-    for root, dirs, files in os.walk(component_root_path):
+    for root, _, files in os.walk(component_root_path):
         for name in files:
             file_full_path = os.path.join(root, name)
             if not os.path.isdir(file_full_path) and not os.path.islink(file_full_path):
@@ -518,11 +517,12 @@ def clone_repository(repo_url, repo_branch_or_tag, destination_folder, full_clon
         do_execute_sub_process(cmd_args, destination_folder)
 
 
-#####################################################################
-# This function returns a tag if the given branch is tagged. Branch
-# parameter can be also a tag, in that case we return empty string.
-#####################################################################
-def get_tag_from_branch(directory, branch):
+def get_tag_from_branch(directory):
+    """
+    Takes in a git directory path as a parameter.
+    Return a tag if the current branch of the given directory is tagged but tag not checked out.
+    Otherwise, return an empty string.
+    """
     tag = ""
     # Check if we already have checked out a tag
     cmd_args = ['git', 'symbolic-ref', 'HEAD']

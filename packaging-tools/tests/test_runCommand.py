@@ -64,7 +64,6 @@ def crash():
     while True:
         j[c] = b'a'
         c += 1
-    j
 
 
 def printLines(count):
@@ -94,8 +93,6 @@ class TestRunCommand(unittest.TestCase):
         with self.assertRaises(Exception) as contextManager:
             useRunCommand(
                 "--printLines 10 --crash", os.getcwd(),
-                # callerArguments=
-                None,
                 # extra_environment=
                 None,
                 # onlyErrorCaseOutput=
@@ -116,8 +113,6 @@ class TestRunCommand(unittest.TestCase):
         self.assertEqual(
             useRunCommand(
                 "--printLines 10 --exitCode 5", os.getcwd(),
-                # callerArguments=
-                None,
                 # extra_environment=
                 None,
                 # onlyErrorCaseOutput=

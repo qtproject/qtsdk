@@ -168,7 +168,7 @@ class TestPackaging(unittest.TestCase):
             try:
                 do_execute_sub_process(cmd_args, os.getcwd())
             except Exception as e:
-                self.assertTrue(False, f"Failed to execute: [{' '.join(cmd_args)}] -> {str(e)}")
+                self.fail(f"Failed to execute: [{' '.join(cmd_args)}] -> {str(e)}")
             self.assertTrue(os.path.exists(os.path.join(testsDir, 'installer_output', offlineJob + extension)), "No installers generated")
 
 

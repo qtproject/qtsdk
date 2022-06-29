@@ -65,7 +65,7 @@ log = init_logger(__name__, debug_mode=False)
 timestamp = datetime.fromtimestamp(time()).strftime('%Y-%m-%d--%H:%M:%S')
 
 
-class event_register(object):
+class event_register():
     event_injector: Optional[Path] = None
     python_path: str = ""
 
@@ -388,7 +388,7 @@ def spawn_remote_background_task(server: str, serverHome: str, remoteCmd: List[s
 
 
 async def update_repository(stagingServer: str, repoLayout: QtRepositoryLayout, task: ReleaseTask,
-                            updateStaging: bool, updateProduction: bool, rta: str, remoteRepogen: str) -> None:
+                            updateStaging: bool, updateProduction: bool, rta: str) -> None:
     assert task.get_source_online_repository_path(), f"Can not update repository: [{task.get_repo_path()}] because source repo is missing"
     # ensure the repository paths exists at server
     log.info("Starting repository update: %s", task.get_repo_path())
@@ -475,7 +475,7 @@ async def update_repositories(tasks: List[ReleaseTask], stagingServer: str, stag
     remoteRepogen = await upload_ifw_to_remote(ifwTools, stagingServer, stagingServerRoot)
     try:
         for task in tasks:
-            await update_repository(stagingServer, repoLayout, task, updateStaging, updateProduction, rta, remoteRepogen)
+            await update_repository(stagingServer, repoLayout, task, updateStaging, updateProduction, rta)
     except PackagingError as e:
         log.error("Aborting online repository update: %s", str(e))
         raise
@@ -539,10 +539,9 @@ def string_to_bool(value: str) -> bool:
         return value
     if value.lower() in ('yes', 'true', 'y', '1'):
         return True
-    elif value.lower() in ('no', 'false', 'n', '0'):
+    if value.lower() in ('no', 'false', 'n', '0'):
         return False
-    else:
-        raise argparse.ArgumentTypeError(f"Unable to convert to boolean: {value}")
+    raise argparse.ArgumentTypeError(f"Unable to convert to boolean: {value}")
 
 
 def parse_ext(ext: str) -> Tuple[str, str]:
@@ -577,7 +576,7 @@ def update_remote_latest_available_dir(newInstaller: str, remoteUploadPath: str,
     log.info("Update latest available installer directory: %s", remoteUploadPath)
     regex = re.compile('.*' + task.get_version())
     new_installer_base_path = "".join(regex.findall(newInstaller))
-    path, name = os.path.split(new_installer_base_path)
+    _, name = os.path.split(new_installer_base_path)
 
     # update latest_available
     latest_available_path = re.sub(r"\/" + str(installerBuildId) + r"\/", "/latest_available/", remoteUploadPath)
@@ -588,7 +587,6 @@ def update_remote_latest_available_dir(newInstaller: str, remoteUploadPath: str,
         exec_cmd(cmd_rm, timeout=60 * 60)  # 1h
     except Exception:
         log.info("Running cmd failed - this happens only if latest_available is empty")
-        pass
     cmd_cp = get_remote_login_cmd(stagingServerRoot) + ['cp', remoteUploadPath.split(':')[1] + name + '*', latest_available_path.split(':')[1]]
     log.info("Running copy cmd: %s", cmd_cp)
     exec_cmd(cmd_cp, timeout=60 * 60)  # 1h
@@ -596,7 +594,7 @@ def update_remote_latest_available_dir(newInstaller: str, remoteUploadPath: str,
 
 def upload_offline_to_remote(installerPath: str, remoteUploadPath: str, stagingServer: str, task: ReleaseTask,
                              installerBuildId: str, enable_oss_snapshots: bool, license: str) -> None:
-    for file in [f for f in os.listdir(installerPath)]:
+    for file in os.listdir(installerPath):
         if file.endswith(".app"):
             continue
         name, file_ext = os.path.splitext(file)
@@ -722,7 +720,6 @@ def load_export_summary_data(config_file: Path) -> Dict[str, str]:
     except KeyError:
         # it's ok, not mandatory
         log.info("Export summary file url not present in: %s", config_file)
-        pass
     except URLError as e:
         log.warning("Unable to read export summary file: %s", str(e))
     except ValueError:

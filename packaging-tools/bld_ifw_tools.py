@@ -251,7 +251,7 @@ class IfwOptions:
     def sanity_check(self):
         # check qt src package url
         res = is_content_url_valid(self.qt_source_package_uri)
-        if not(res):
+        if not res:
             print(f"*** Qt src package uri is invalid: {self.qt_source_package_uri}")
             sys.exit(-1)
         if self.product_key_checker_pri:
@@ -475,7 +475,7 @@ def build_installer_framework_examples(options):
     ifw_examples = os.path.join(options.installer_framework_source_dir, 'examples')
     ifw_example_binaries = []
 
-    for root, dirs, files in os.walk(ifw_examples):
+    for root, dirs, _ in os.walk(ifw_examples):
         if 'doc' in dirs:
             dirs.remove('doc')  # don't visit doc dir
         if 'translations' in dirs:
@@ -644,7 +644,7 @@ def archive_installer_framework(installer_framework_build_dir, installer_framewo
     # create a package with a tagged name.
     # Package with the tagged name is needed for creating e.g. offline installers from stable builds
     if options.qt_installer_framework_uri.endswith('.git') and create_tagged_package:
-        tag = get_tag_from_branch(options.installer_framework_source_dir, options.qt_installer_framework_branch)
+        tag = get_tag_from_branch(options.installer_framework_source_dir)
         if tag:
             print(f"Create archive from tag {tag}")
             installer_framework_tagged_archive = 'installer-framework-build-' + tag + "-" + options.plat_suffix + '-' + options.architecture + '.7z'
@@ -672,7 +672,7 @@ def archive_installerbase(options):
         bin_temp = ROOT_DIR + os.sep + 'tempSDKMaintenanceToolBase.exe'
         shutil.copy(bin_path, bin_temp)
         if options.signserver and options.signpwd:
-            sign_windows_installerbase('tempSDKMaintenanceToolBase.exe', ROOT_DIR + os.sep, True, options)
+            sign_windows_installerbase('tempSDKMaintenanceToolBase.exe')
         cmd_args_archive = [ARCHIVE_PROGRAM, 'a', options.installer_base_archive_name, bin_temp]
         cmd_args_clean = ['del', bin_temp]
     do_execute_sub_process(cmd_args_archive, ROOT_DIR)
@@ -708,7 +708,7 @@ def archive_binarycreator(options):
 ###############################
 # sign windows installerbase
 ###############################
-def sign_windows_installerbase(file_name, working_dir, abort_on_fail, options):
+def sign_windows_installerbase(file_name):
     print('--------------------------------------------------------------------')
     print('Sign Windows Installerbase')
     signToolsTempDir = r'C:\Utils\sign_tools_temp'
@@ -764,12 +764,11 @@ def patch_win32_mkspecs(mkspecsdir):
 def get_platform_suffix():
     if is_windows():
         return 'win'
-    elif is_linux():
+    if is_linux():
         return 'linux'
-    elif is_macos():
+    if is_macos():
         return 'mac'
-    else:
-        raise EnvironmentError('*** Unsupported platform, abort!')
+    raise EnvironmentError('*** Unsupported platform, abort!')
 
 
 ###############################

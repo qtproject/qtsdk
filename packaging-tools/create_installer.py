@@ -267,9 +267,8 @@ def parse_component_data(task, configuration_file, configurations_base_path):
                     else:
                         if task.strict_mode:
                             raise CreateInstallerError(f"{sdk_component.error_msg()}")
-                        else:
-                            log.warning("Ignored component in non-strict mode (missing archive data or metadata?): %s", section)
-                            task.sdk_component_list_skipped.append(sdk_component)
+                        log.warning("Ignored component in non-strict mode (missing archive data or metadata?): %s", section)
+                        task.sdk_component_list_skipped.append(sdk_component)
     # check for extra configuration files if defined
     extra_conf_list = safe_config_key_fetch(configuration, 'PackageConfigurationFiles', 'file_list')
     if extra_conf_list:
@@ -290,7 +289,6 @@ def parse_components(task):
     conf_base_path = task.configurations_dir + os.sep + task.platform_identifier + os.sep
     main_conf_file = task.configuration_file
     parse_component_data(task, main_conf_file, conf_base_path)
-    return
 
 
 def create_metadata_map(sdk_component):
@@ -386,7 +384,7 @@ def get_component_data(task, sdk_component, archive, install_dir, data_dir_dest,
         # strip out unnecessary folder structure based on the configuration
         count = 0
         iterations = int(archive.package_strip_dirs)
-        while(count < iterations):
+        while count < iterations:
             count = count + 1
             remove_one_tree_level(install_dir)
         # perform package finalization tasks for the given archive
@@ -826,7 +824,6 @@ def create_maintenance_tool_resource_file(task):
     except PackagingError:
         log.error("Unable to locate installerbase archive from: %s", task.packages_full_path_dst)
         log.error("The update.rcc will not be included in the MaintenanceTool repository!")
-        pass
 
 
 ###############################
@@ -914,10 +911,9 @@ def str2bool(v):
         return v
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
         return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+    if v.lower() in ('no', 'false', 'f', 'n', '0'):
         return False
-    else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
+    raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
 class QtInstallerTask:
@@ -1075,7 +1071,7 @@ class QtInstallerTask:
             if not is_content_url_valid(self.ifw_tools_uri):
                 raise CreateInstallerError(f"Package URL is invalid: {self.ifw_tools_uri}")
             retrieve_url(self.ifw_tools_uri, package_save_as_temp)
-            if not (os.path.isfile(package_save_as_temp)):
+            if not os.path.isfile(package_save_as_temp):
                 raise CreateInstallerError("Downloading failed! Aborting!")
         # extract ifw archive
         extract_file(package_save_as_temp, self.ifw_tools_dir)

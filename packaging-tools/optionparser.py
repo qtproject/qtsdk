@@ -74,7 +74,7 @@ class PackagingOptions:
             options = self.config.options(section)
             for option in options:
                 print(f"{option} = {self.config.get(section, option)}")
-            print
+            print()
 
 
 def getPkgOptions(confFilePath):

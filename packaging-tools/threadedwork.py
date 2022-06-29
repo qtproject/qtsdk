@@ -242,8 +242,7 @@ class Consumer(threading.Thread):
             if task is None:
                 self.queue.task_done()
                 break
-            else:
-                # we like to know which task get the progress -> see std handling
-                threadData.taskNumber = task.taskNumber
-                task.do()
-                self.queue.task_done()
+            # we like to know which task get the progress -> see std handling
+            threadData.taskNumber = task.taskNumber
+            task.do()
+            self.queue.task_done()

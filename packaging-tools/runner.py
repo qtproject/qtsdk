@@ -128,7 +128,5 @@ def do_execute_sub_process(args, execution_path, abort_on_fail=True, get_output=
         sys.stdout.flush()
         if abort_on_fail:
             raise
-        else:
-            pass
 
     return return_code, output

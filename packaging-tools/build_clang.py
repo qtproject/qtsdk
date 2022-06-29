@@ -124,13 +124,11 @@ def build_environment(toolchain, bitness):
             environment['CC'] = 'gcc'
             environment['CXX'] = 'g++'
             return environment
-        else:
-            environment = msvc_environment(bitness)
-            environment['CC'] = 'cl'
-            environment['CXX'] = 'cl'
-            return environment
-    else:
-        return None  # == process environment
+        environment = msvc_environment(bitness)
+        environment['CC'] = 'cl'
+        environment['CXX'] = 'cl'
+        return environment
+    return None  # == process environment
 
 
 def training_qt_version():
@@ -259,7 +257,7 @@ def mingw_training(base_path, qtcreator_path, environment, bitness):
     for batchFile in ['qtc.openProject.batch', 'qtc.fileTextEditorCpp.batch']:
         runCommand(
             [os.path.join(training_dir, 'runBatchFiles.bat'), msvc_version(), 'x64' if bitness == 64 else 'x86', batchFile],
-            base_path, callerArguments=None, extra_environment=None, onlyErrorCaseOutput=False, expectedExitCodes=[0, 1]
+            base_path, extra_environment=None, onlyErrorCaseOutput=False, expectedExitCodes=[0, 1]
         )
 
 
@@ -275,11 +273,10 @@ def is_gcc_toolchain(toolchain):
     return 'g++' in toolchain
 
 
-def cmake_generator(toolchain):
+def cmake_generator():
     if is_windows():
         return 'Ninja'
-    else:
-        return 'Unix Makefiles'
+    return 'Unix Makefiles'
 
 
 # We need '-fprofile-correction -Wno-error=coverage-mismatch' to deal with possible conflicts
@@ -324,7 +321,7 @@ def rtti_flags(toolchain):
     return ['-DLLVM_ENABLE_RTTI:BOOL=ON']
 
 
-def build_command(toolchain):
+def build_command():
     if is_windows():
         command = ['ninja']
     else:
@@ -332,7 +329,7 @@ def build_command(toolchain):
     return command
 
 
-def install_command(toolchain):
+def install_command():
     if is_windows():
         command = ['ninja']
     else:
@@ -342,14 +339,14 @@ def install_command(toolchain):
 
 # For instrumented build we now use the same targets because clazy
 # requires the llvm installation to properly build
-def build_and_install(toolchain, build_path, environment, build_targets, install_targets):
-    build_cmd = build_command(toolchain)
+def build_and_install(build_path, environment, build_targets, install_targets):
+    build_cmd = build_command()
     do_execute_sub_process(build_cmd + build_targets, build_path, extra_env=environment)
-    install_cmd = install_command(toolchain)
+    install_cmd = install_command()
     do_execute_sub_process(install_cmd + install_targets, build_path, extra_env=environment)
 
 
-def cmake_command(toolchain, src_path, build_path, install_path, profile_data_path, first_run, bitness, build_type):
+def cmake_command(toolchain, src_path, install_path, profile_data_path, first_run, bitness, build_type):
     enabled_projects = 'clang;clang-tools-extra'
     if profile_data_path and first_run:
         enabled_projects = 'clang'
@@ -357,7 +354,7 @@ def cmake_command(toolchain, src_path, build_path, install_path, profile_data_pa
     command = ['cmake',
                '-DCMAKE_INSTALL_PREFIX=' + install_path,
                '-G',
-               cmake_generator(toolchain),
+               cmake_generator(),
                '-DCMAKE_BUILD_TYPE=' + build_type,
                '-DLLVM_TEMPORARILY_ALLOW_OLD_TOOLCHAIN=ON',
                '-DLLVM_ENABLE_LIBXML2=OFF',
@@ -380,7 +377,7 @@ def build_clang(toolchain, src_path, build_path, install_path, profile_data_path
     if build_path and not os.path.lexists(build_path):
         os.makedirs(build_path)
 
-    cmake_cmd = cmake_command(toolchain, src_path, build_path, install_path, profile_data_path, first_run, bitness, build_type)
+    cmake_cmd = cmake_command(toolchain, src_path, install_path, profile_data_path, first_run, bitness, build_type)
 
     do_execute_sub_process(cmake_cmd, build_path, extra_env=environment)
 
@@ -394,7 +391,7 @@ def build_clang(toolchain, src_path, build_path, install_path, profile_data_path
         build_targets = ['libclang']
         install_targets = ['tools/clang/tools/libclang/install/strip']  # we only want to build / install libclang
 
-    build_and_install(toolchain, build_path, environment, build_targets, install_targets)
+    build_and_install(build_path, environment, build_targets, install_targets)
 
 
 def build_clazy(toolchain, src_path, build_path, install_path, bitness=64, environment=None):
@@ -402,7 +399,7 @@ def build_clazy(toolchain, src_path, build_path, install_path, bitness=64, envir
         os.makedirs(build_path)
 
     cmake_cmd = ['cmake',
-                 '-G', cmake_generator(toolchain),
+                 '-G', cmake_generator(),
                  '-DCMAKE_INSTALL_PREFIX=' + install_path,
                  '-DCMAKE_BUILD_TYPE=Release',
                  '-DCLAZY_LINK_CLANG_DYLIB=OFF',
@@ -421,7 +418,7 @@ def build_clazy(toolchain, src_path, build_path, install_path, bitness=64, envir
     install_targets = ['install/strip']
     if is_msvc_toolchain(toolchain):
         install_targets = ['install']  # There is no 'install/strip' for nmake.
-    build_and_install(toolchain, build_path, environment, [], install_targets)
+    build_and_install(build_path, environment, [], install_targets)
 
 
 def check_clang(toolchain, build_path, environment):
@@ -431,7 +428,7 @@ def check_clang(toolchain, build_path, environment):
             path_key = 'Path' if 'Path' in environment else 'PATH'
             environment[path_key] += ';' + tools_path
 
-    build_cmd = build_command(toolchain)
+    build_cmd = build_command()
     do_execute_sub_process(build_cmd + ['check-clang'], build_path, abort_on_fail=False, extra_env=environment)
 
 

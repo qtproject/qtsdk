@@ -36,7 +36,7 @@ from fileinput import FileInput
 
 def _fileIterator(artifactsDir):
     print(f"Patching build time paths from: {artifactsDir}")
-    for root, dirs, files in os.walk(artifactsDir):
+    for root, _, files in os.walk(artifactsDir):
         for fileName in files:
             yield os.path.join(os.path.join(root, fileName))
 
@@ -44,9 +44,8 @@ def _fileIterator(artifactsDir):
 def _getPatchers(product):
     if product == 'qt_framework':
         return [patchAbsoluteLibPathsFromFile, eraseQmakePrlBuildDir, patchQConfigPri]
-    else:
-        # default
-        return [patchAbsoluteLibPathsFromFile, eraseQmakePrlBuildDir]
+    # default
+    return [patchAbsoluteLibPathsFromFile, eraseQmakePrlBuildDir]
 
 
 def patchFiles(artifactsDir, product):
@@ -58,7 +57,7 @@ def patchFiles(artifactsDir, product):
 
 
 def patchQtEdition(artifactsDir, licheckFileName, releaseDate):
-    for root, dirs, files in os.walk(artifactsDir):
+    for root, _, files in os.walk(artifactsDir):
         for fileName in files:
             if fileName == 'qconfig.pri':
                 _patchQtEdition(os.path.join(root, fileName), licheckFileName, releaseDate)
@@ -89,8 +88,7 @@ def patchQConfigPriFromLine(line):
         return line.split('=')[0].strip() + ' ='
     if 'QMAKE_DEFAULT_INCDIRS' in line:
         return line.split('=')[0].strip() + ' ='
-    else:
-        return line
+    return line
 
 
 def eraseQmakePrlBuildDir(filePath):
@@ -146,7 +144,7 @@ def patchAbsoluteLibPathsFromLine(line, fileExtension):
     ]
 
     def _substituteLib(match):
-        if (match.group(0).startswith("$$[QT_")):
+        if match.group(0).startswith("$$[QT_"):
             return match.group(0)
         result = "" if fileExtension == "cmake" else "-l"  # .pri, .prl, .la, .pc
         result += match.group(1)

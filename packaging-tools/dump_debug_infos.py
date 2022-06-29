@@ -39,7 +39,7 @@ from shutil import rmtree
 def is_file_with_debug_information_windows(path):
     if not path.endswith('.pdb'):
         return False
-    base_path, extension = os.path.splitext(path)
+    base_path, _ = os.path.splitext(path)
     pdb = base_path + '.pdb'
     exe = base_path + '.exe'
     dll = base_path + '.dll'
@@ -67,14 +67,12 @@ def read_output(*args):
 
 def dump_sym(dump_syms_path, architecture, absolute_path, sym_path, verbose):
     dump_syms_command = f'{dump_syms_path} {architecture} "{absolute_path}" > "{sym_path}"'
-    if (verbose):
+    if verbose:
         print(f"call: {dump_syms_command}")
     dump_syms_return = subprocess.call(dump_syms_command, shell=True)
     if os.path.exists(sym_path) and os.stat(sym_path).st_size > 0 and dump_syms_return == 0:
         return True
-    else:
-        raise Exception(f"dump_syms can not be called: \n{dump_syms_command}\n{dump_syms_return}")
-    return False
+    raise Exception(f"dump_syms can not be called: \n{dump_syms_command}\n{dump_syms_return}")
 
 
 def dump_syms(dump_syms_path, architectures, search_pathes, output_path, verbose):
@@ -84,11 +82,11 @@ def dump_syms(dump_syms_path, architectures, search_pathes, output_path, verbose
     }[sys.platform]
     sym_filenames = []
     for search_path in search_pathes.split(","):
-        for root, dirnames, filenames in os.walk(search_path):
+        for root, _, filenames in os.walk(search_path):
             for filename in filenames:
                 absolute_path = os.path.join(root, filename).replace("\\", "/")
                 if is_file_with_debug_information(absolute_path):
-                    base_path, extension = os.path.splitext(absolute_path)
+                    base_path, _ = os.path.splitext(absolute_path)
                     start_slash = 1
                     sym_path_base = base_path[start_slash + len(search_path):].replace("/", "_")
                     sym_filename = f"{sym_path_base}.sym"
@@ -180,8 +178,6 @@ def _main():
         source_bundle_command, cwd=args.output_path
     ).decode('utf-8')
     print(testoutput)
-
-    return
 
 
 if __name__ == '__main__':

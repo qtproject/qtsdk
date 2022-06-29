@@ -63,14 +63,14 @@ log.addHandler(handler)
 
 
 def findFile(searchPath: str, fileName: str) -> str:
-    for root, dirs, files in os.walk(searchPath):
+    for root, _, files in os.walk(searchPath):
         if fileName in files:
             return os.path.join(root, fileName)
     assert False, f"Unable to find: {fileName} from: {searchPath}"
 
 
 def collectLibs(searchPath: str) -> List[str]:
-    for root, dirs, files in os.walk(searchPath):
+    for root, dirs, _ in os.walk(searchPath):
         for dir in dirs:
             if dir == "lib":
                 return [os.path.join(root, dir, x) for x in os.listdir(os.path.join(root, dir))]

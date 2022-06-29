@@ -85,8 +85,8 @@ class RemoteUploader:
             check_call(cmd, timeout=60)  # give it 60s
 
     def _copyToRemote(self, fileName, destDirName):
-        assert self.init_finished, "RemoteUploader not initialized!"
         """Copy the given file to destDirName which is relative to remoteBasePath."""
+        assert self.init_finished, "RemoteUploader not initialized!"
         remoteDestination = self.remoteLogin + ':' + self.remoteTargetDir
         if destDirName:
             remoteDestination = remoteDestination + '/' + destDirName + '/'

@@ -113,13 +113,11 @@ def build_environment(toolchain, bitness):
             environment['CC'] = 'gcc'
             environment['CXX'] = 'g++'
             return environment
-        else:
-            environment = msvc_environment(bitness)
-            environment['CC'] = 'cl'
-            environment['CXX'] = 'cl'
-            return environment
-    else:
-        return None  # == process environment
+        environment = msvc_environment(bitness)
+        environment['CC'] = 'cl'
+        environment['CXX'] = 'cl'
+        return environment
+    return None  # == process environment
 
 
 def is_msvc_toolchain(toolchain):
@@ -134,11 +132,10 @@ def is_gcc_toolchain(toolchain):
     return 'g++' in toolchain
 
 
-def cmake_generator(toolchain):
+def cmake_generator():
     if is_windows():
         return 'Ninja'
-    else:
-        return 'Unix Makefiles'
+    return 'Unix Makefiles'
 
 
 def static_flags(toolchain):
@@ -163,7 +160,7 @@ def rtti_flags(toolchain):
     return ['-DLLVM_ENABLE_RTTI:BOOL=ON']
 
 
-def build_command(toolchain):
+def build_command():
     if is_windows():
         command = ['ninja']
     else:
@@ -171,7 +168,7 @@ def build_command(toolchain):
     return command
 
 
-def install_command(toolchain):
+def install_command():
     if is_windows():
         command = ['ninja']
     else:
@@ -181,18 +178,18 @@ def install_command(toolchain):
 
 # For instrumented build we now use the same targets because clazy
 # requires the llvm installation to properly build
-def build_and_install(toolchain, build_path, environment, build_targets, install_targets):
-    build_cmd = build_command(toolchain)
+def build_and_install(build_path, environment, build_targets, install_targets):
+    build_cmd = build_command()
     do_execute_sub_process(build_cmd + build_targets, build_path, extra_env=environment)
-    install_cmd = install_command(toolchain)
+    install_cmd = install_command()
     do_execute_sub_process(install_cmd + install_targets, build_path, extra_env=environment)
 
 
-def cmake_command(toolchain, src_path, build_path, install_path, bitness, build_type):
+def cmake_command(toolchain, src_path, install_path, bitness, build_type):
     command = ['cmake',
                '-DCMAKE_INSTALL_PREFIX=' + install_path,
                '-G',
-               cmake_generator(toolchain),
+               cmake_generator(),
                '-DCMAKE_BUILD_TYPE=' + build_type,
                '-DLLVM_ENABLE_PROJECTS=clang',
                '-DLLVM_TARGETS_TO_BUILD=X86',
@@ -217,13 +214,13 @@ def build_clang(toolchain, src_path, build_path, install_path, bitness=64, envir
     if build_path and not os.path.lexists(build_path):
         os.makedirs(build_path)
 
-    cmake_cmd = cmake_command(toolchain, src_path, build_path, install_path, bitness, build_type)
+    cmake_cmd = cmake_command(toolchain, src_path, install_path, bitness, build_type)
 
     do_execute_sub_process(cmake_cmd, build_path, extra_env=environment)
     build_targets = ['install/strip']
     if is_msvc_toolchain(toolchain):
         build_targets = ['install']  # There is no 'install/strip' for nmake.
-    build_and_install(toolchain, build_path, environment, ['libclang', 'clang', 'llvm-config'], build_targets)
+    build_and_install(build_path, environment, ['libclang', 'clang', 'llvm-config'], build_targets)
 
 
 def check_clang(toolchain, build_path, environment):
@@ -233,7 +230,7 @@ def check_clang(toolchain, build_path, environment):
             path_key = 'Path' if 'Path' in environment else 'PATH'
             environment[path_key] += ';' + tools_path
 
-    build_cmd = build_command(toolchain)
+    build_cmd = build_command()
     do_execute_sub_process(build_cmd + ['check-clang'], build_path, extra_env=environment)
 
 

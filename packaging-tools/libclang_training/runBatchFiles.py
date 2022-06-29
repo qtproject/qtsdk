@@ -337,7 +337,7 @@ def main():
     for libClangDll in Config.LibClangDlls:
         runRecords += runQtCreatorWithLibClang(libClangDll)
 
-    print
+    print()
     mergeGeneratedCsvFiles(runRecords)
 
 
