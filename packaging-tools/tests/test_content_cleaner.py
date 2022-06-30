@@ -144,15 +144,19 @@ class TestContentCleaner(unittest.TestCase):
         remove_rules: List[str],
         verify_removed_files: List[str],
     ) -> None:
-
-        with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
-            test_base_dir = os.path.join(tmp_base_dir, "test-base-dir")
-            self.generate_test_content(test_base_dir, test_content)
-            remove_content(test_base_dir, remove_rules)
-            for file_path in verify_removed_files:
-                for path in test_content:
-                    if file_path in os.path.join(test_base_dir, path):
-                        self.assertFalse(os.path.isfile(os.path.join(test_base_dir, path)))
+        try:
+            with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
+                test_base_dir = os.path.join(tmp_base_dir, "test-base-dir")
+                self.generate_test_content(test_base_dir, test_content)
+                remove_content(test_base_dir, remove_rules)
+                for file_path in verify_removed_files:
+                    for path in test_content:
+                        if file_path in os.path.join(test_base_dir, path):
+                            self.assertFalse(os.path.isfile(os.path.join(test_base_dir, path)))
+        # Python 3.7 and below will throw FileNotFoundError on cleanup when exiting context
+        # if the TemporaryDirectory was removed.
+        except FileNotFoundError:
+            pass
 
     @data(
         (["test/path/test-file", "test/path/.test-file"], False),
@@ -160,16 +164,21 @@ class TestContentCleaner(unittest.TestCase):
     )
     @unpack
     def test_remove_empty_directories(self, test_content: str, remove_dir: bool) -> None:
-        with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
-            test_base_dir = os.path.join(tmp_base_dir, "test-base-dir")
-            self.generate_test_content(test_base_dir, test_content)
-            remove_empty_directories(test_base_dir)
-            for path in test_content:
-                verify_path = os.path.join(test_base_dir, path)
-                if remove_dir:
-                    self.assertFalse(os.path.exists(verify_path))
-                else:
-                    self.assertTrue(os.path.exists(verify_path))
+        try:
+            with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
+                test_base_dir = os.path.join(tmp_base_dir, "test-base-dir")
+                self.generate_test_content(test_base_dir, test_content)
+                remove_empty_directories(test_base_dir)
+                for path in test_content:
+                    verify_path = os.path.join(test_base_dir, path)
+                    if remove_dir:
+                        self.assertFalse(os.path.exists(verify_path))
+                    else:
+                        self.assertTrue(os.path.exists(verify_path))
+        # Python 3.7 and below will throw FileNotFoundError on cleanup when exiting context
+        # if the temporary directory was removed.
+        except FileNotFoundError:
+            pass
 
 
 if __name__ == "__main__":
