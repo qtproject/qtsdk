@@ -77,19 +77,19 @@ def is_content_url_valid(url):
 ###############################
 # function
 ###############################
-CURRENT_DOWNLOAD_PERCENT = 0
+current_download_percent = 0  # pylint: disable=C0103
 
 
 def dl_progress(count, block_size, total_size):
-    global CURRENT_DOWNLOAD_PERCENT
+    global current_download_percent  # pylint: disable=C0103
     percent = int(count * block_size * 100 / total_size)
     # produce only reasonable amount of prints into stdout
-    if percent > CURRENT_DOWNLOAD_PERCENT:
-        CURRENT_DOWNLOAD_PERCENT = percent
+    if percent > current_download_percent:
+        current_download_percent = percent
         sys.stdout.write("\r" + f"     Downloading: {percent}%")
         sys.stdout.flush()
     if count * block_size >= total_size:
-        CURRENT_DOWNLOAD_PERCENT = 0
+        current_download_percent = 0
         print('\n')
 
 
@@ -122,8 +122,8 @@ def search_for_files(
 
     def _matches_rgx(path: Path):
         if rgx_pattern:
-            with open(path, 'r', encoding="utf-8") as f:
-                return bool(pattern.search(f.read()))
+            with open(path, 'r', encoding="utf-8") as handle:
+                return bool(pattern.search(handle.read()))
         return True
     return locate_paths(search_path, suffixes, filters=[os.path.isfile, _matches_rgx])
 
@@ -230,14 +230,14 @@ def remove_tree(path):
 def replace_in_files(filelist, regexp, replacement_string):
     regexp_obj = re.compile(regexp)
     for xfile in filelist:
-        with open(xfile, 'r+', encoding="utf-8") as f:
-            old_contents = f.read()
+        with open(xfile, 'r+', encoding="utf-8") as handle:
+            old_contents = handle.read()
             new_contents = re.sub(regexp_obj, replacement_string, old_contents)
             if old_contents != new_contents:
                 print(f"Replacement '{replacement_string}' applied into: {xfile}")
-            f.seek(0)
-            f.write(new_contents)
-            f.truncate()
+            handle.seek(0)
+            handle.write(new_contents)
+            handle.truncate()
 
 
 ###############################
@@ -248,8 +248,8 @@ def ensure_text_file_endings(filename):
     if os.path.isdir(filename):
         print(f'*** Warning, given file is directory? Did nothing for: {filename}')
         return
-    with open(filename, "rb") as f:
-        data = f.read()
+    with open(filename, "rb") as handle:
+        data = handle.read()
     if b'\0' in data:
         print(f'*** Warning, given file is binary? Did nothing for: {filename}')
         return
@@ -257,8 +257,8 @@ def ensure_text_file_endings(filename):
         newdata = re.sub(b"\r?\n", b"\r\n", data)
         if newdata != data:
             print(f'File endings changed for: {filename}')
-            with open(filename, "wb") as f:
-                f.write(newdata)
+            with open(filename, "wb") as handle:
+                handle.write(newdata)
     print('--------------------------------------------------------------------')
 
 
@@ -318,29 +318,25 @@ def locate_paths(search_dir: Union[str, Path], patterns: List[str],
     return [str(p) for p in paths if all(f(p) for f in filters)]
 
 
-###############################
-# Function
-###############################
-# original snippet: http://code.activestate.com/recipes/173220-test-if-a-file-or-string-is-text-or-binary/
-text_characters = "".join(list(map(chr, list(range(32, 127)))) + list("\n\r\t\b"))
-trans_table = str.maketrans("", "", text_characters)
-
-
-def is_text(s):
+def is_text(data):
+    # original snippet:
+    # http://code.activestate.com/recipes/173220-test-if-a-file-or-string-is-text-or-binary/
+    text_characters = "".join(list(map(chr, list(range(32, 127)))) + list("\n\r\t\b"))
+    trans_table = str.maketrans("", "", text_characters)
     try:
-        if "\0" in s:
+        if "\0" in data:
             return 0
     except TypeError:
-        if b"\0" in s:
+        if b"\0" in data:
             return 0
-    if not s:  # Empty files are considered text
+    if not data:  # Empty files are considered text
         return 1
     # Get the non-text characters (maps a character to itself then
     # use the 'remove' option to get rid of the text characters.)
-    t = s.translate(trans_table)
+    non_text = data.translate(trans_table)
     # If more than 30% non-text characters, then
     # this is considered a binary file
-    if len(t) / len(s) > 0.30:
+    if len(non_text) / len(data) > 0.30:
         return 0
     return 1
 
@@ -392,33 +388,33 @@ def sanity_check_rpath_max_length(file_path, new_rpath):
 ###############################
 # Function
 ###############################
-def pathsplit(p, rest=[]):
-    (h, t) = os.path.split(p)
-    if len(h) < 1:
-        return [t] + rest
-    if len(t) < 1:
-        return [h] + rest
-    return pathsplit(h, [t] + rest)
+def pathsplit(path, rest=[]):
+    (head, tail) = os.path.split(path)
+    if len(head) < 1:
+        return [tail] + rest
+    if len(tail) < 1:
+        return [head] + rest
+    return pathsplit(head, [tail] + rest)
 
 
-def commonpath(l1, l2, common=[]):
-    if len(l1) < 1:
-        return (common, l1, l2)
-    if len(l2) < 1:
-        return (common, l1, l2)
-    if l1[0] != l2[0]:
-        return (common, l1, l2)
-    return commonpath(l1[1:], l2[1:], common + [l1[0]])
+def commonpath(list1, list2, common=[]):
+    if len(list1) < 1:
+        return (common, list1, list2)
+    if len(list2) < 1:
+        return (common, list1, list2)
+    if list1[0] != list2[0]:
+        return (common, list1, list2)
+    return commonpath(list1[1:], list2[1:], common + [list1[0]])
 
 
-def calculate_relpath(p1, p2):
-    (_, l1, l2) = commonpath(pathsplit(p1), pathsplit(p2))
-    p = []
-    if len(l1) > 0:
+def calculate_relpath(path1, path2):
+    (_, list1, list2) = commonpath(pathsplit(path1), pathsplit(path2))
+    path = []
+    if len(list1) > 0:
         tmp = '..' + os.sep
-        p = [tmp * len(l1)]
-    p = p + l2
-    return os.path.join(*p)
+        path = [tmp * len(list1)]
+    path = path + list2
+    return os.path.join(*path)
 
 
 ##############################################################
@@ -434,8 +430,8 @@ def calculate_rpath(file_full_path, destination_lib_path):
     if path_to_lib == bin_path:
         full_rpath = '$ORIGIN'
     else:
-        rp = calculate_relpath(bin_path, path_to_lib)
-        full_rpath = '$ORIGIN' + os.sep + rp
+        rpath = calculate_relpath(bin_path, path_to_lib)
+        full_rpath = '$ORIGIN' + os.sep + rpath
 
     if DEBUG_RPATH:
         print('        ----------------------------------------')
@@ -465,8 +461,8 @@ def handle_component_rpath(component_root_path, destination_lib_paths):
                     rpaths = []
                     for destination_lib_path in destination_lib_paths.split(':'):
                         dst = os.path.normpath(component_root_path + os.sep + destination_lib_path)
-                        rp = calculate_rpath(file_full_path, dst)
-                        rpaths.append(rp)
+                        rpath = calculate_rpath(file_full_path, dst)
+                        rpaths.append(rpath)
 
                     # look for existing $ORIGIN path in the binary
                     with Popen(["chrpath", "-l", file_full_path], stdout=PIPE) as proc:
@@ -478,10 +474,10 @@ def handle_component_rpath(component_root_path, destination_lib_paths):
                         if origin_rpath and origin_rpath.group() not in rpaths:
                             rpaths.append(origin_rpath.group())
 
-                    rp = ':'.join(rpaths)
-                    if sanity_check_rpath_max_length(file_full_path, rp):
-                        # print '        RPath value: [' + rp + '] for file: [' + file_full_path + ']'
-                        cmd_args = ['chrpath', '-r', rp, file_full_path]
+                    rpath = ':'.join(rpaths)
+                    if sanity_check_rpath_max_length(file_full_path, rpath):
+                        # print '        RPath value: [' + rpath + '] for file: [' + file_full_path + ']'
+                        cmd_args = ['chrpath', '-r', rpath, file_full_path]
                         # force silent operation
                         work_dir = os.path.dirname(os.path.realpath(__file__))
                         do_execute_sub_process(cmd_args, work_dir)
@@ -678,7 +674,7 @@ def create_qt_download_task(module_urls, target_qt5_path, temp_path, caller_argu
                 module_url, target_qt5_path, temp_path
             )
             download_work.add_task_object(download_task)
-            unzip_task.add_function(extract_task.do)
+            unzip_task.add_function(extract_task.do_task)
         else:
             print(f"warning: could not find '{module_url}' for download")
     # add icu, d3dcompiler, opengl32, openssl
@@ -688,28 +684,28 @@ def create_qt_download_task(module_urls, target_qt5_path, temp_path, caller_argu
             caller_arguments.icu7z, target_path, temp_path
         )
         download_work.add_task_object(download_task)
-        unzip_task.add_function(extract_task.do)
+        unzip_task.add_function(extract_task.do_task)
     if is_windows():
         if hasattr(caller_arguments, 'd3dcompiler7z') and caller_arguments.d3dcompiler7z:
             (download_task, extract_task) = create_download_and_extract_tasks(
                 caller_arguments.d3dcompiler7z, target_path, temp_path
             )
             download_work.add_task_object(download_task)
-            unzip_task.add_function(extract_task.do)
+            unzip_task.add_function(extract_task.do_task)
         if hasattr(caller_arguments, 'opengl32sw7z') and caller_arguments.opengl32sw7z:
             (download_task, extract_task) = create_download_and_extract_tasks(
                 caller_arguments.opengl32sw7z, target_path, temp_path
             )
             download_work.add_task_object(download_task)
-            unzip_task.add_function(extract_task.do)
+            unzip_task.add_function(extract_task.do_task)
         if hasattr(caller_arguments, 'openssl7z') and caller_arguments.openssl7z:
             (download_task, extract_task) = create_download_and_extract_tasks(
                 caller_arguments.openssl7z, target_path, temp_path
             )
             download_work.add_task_object(download_task)
-            unzip_task.add_function(extract_task.do)
+            unzip_task.add_function(extract_task.do_task)
     qt_task.add_function(download_work.run)
-    qt_task.add_function(unzip_task.do)
+    qt_task.add_function(unzip_task.do_task)
     return qt_task
 
 

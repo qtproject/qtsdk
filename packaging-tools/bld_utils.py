@@ -69,27 +69,27 @@ def is_linux() -> bool:
 # make sure any argument is deep copied, for example the install command changes the makeflags,
 # but should not do that on the further used environment dict
 def deep_copy_arguments(to_call):
-    def f(*args, **kwargs):
+    def func(*args, **kwargs):
         return to_call(*(deepcopy(x) for x in args),
                        **{k: deepcopy(v) for k, v in kwargs.items()})
-    return f
+    return func
 
 
 class DirRenamer():
 
     def __init__(self, path, new_name):
-        self.oldName = path
-        self.newName = os.path.join(os.path.split(path)[0], new_name)
-        print(f"self.oldName: {self.oldName}")
-        print(f"self.newName: {self.newName}")
+        self.old_name = path
+        self.new_name = os.path.join(os.path.split(path)[0], new_name)
+        print(f"self.old_name: {self.old_name}")
+        print(f"self.new_name: {self.new_name}")
 
     def __enter__(self):
-        if self.oldName != self.newName:
-            os.rename(self.oldName, self.newName)
+        if self.old_name != self.new_name:
+            os.rename(self.old_name, self.new_name)
 
     def __exit__(self, etype, value, etraceback):
-        if self.oldName != self.newName:
-            os.rename(self.newName, self.oldName)
+        if self.old_name != self.new_name:
+            os.rename(self.new_name, self.old_name)
 
 
 def compress(path, directory_name, sevenzip_target):
@@ -197,13 +197,13 @@ def download(url, target, read_block_size=1048576):
                     renamed = True
                     # make sure that another output starts in a new line
                     sys.stdout.write(os.linesep)
-            except OSError as e:
+            except OSError as error:
                 # if it still exists just try that after a microsleep and stop this after 720 tries
                 if os.path.lexists(savefile_tmp) and try_rename_counter < 720:
                     sleep(2)
                     continue
                 if not os.path.lexists(target):
-                    raise Exception(f"Could not rename {savefile_tmp} to {target}{os.linesep}Error: {str(e)}")
+                    raise Exception(f"Could not rename {savefile_tmp} to {target}{os.linesep}Error: {str(error)}")
     finally:  # this is done before the except code is called
         try:
             os.remove(savefile_tmp)
@@ -404,8 +404,8 @@ def get_commit_sha(source_path):
     if not build_git_sha:
         tagfile = os.path.join(source_path, '.tag')
         if os.path.exists(tagfile):
-            with open(tagfile, 'r', encoding="utf-8") as f:
-                build_git_sha = f.read().strip()
+            with open(tagfile, 'r', encoding="utf-8") as handle:
+                build_git_sha = handle.read().strip()
     return build_git_sha
 
 

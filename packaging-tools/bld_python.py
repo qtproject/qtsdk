@@ -39,7 +39,7 @@ from multiprocessing import cpu_count
 from shutil import copytree, rmtree, which
 from subprocess import check_output
 
-from installer_utils import cd, download_archive, extract_archive, is_valid_url_path
+from installer_utils import ch_dir, download_archive, extract_archive, is_valid_url_path
 from logging_util import init_logger
 from runner import async_exec_cmd, exec_cmd
 
@@ -147,7 +147,7 @@ async def _build_python(src_dir: str, bld_dir: str, prefix: str) -> str:
     rmtree(bld_dir, ignore_errors=True)
     os.makedirs(bld_dir)
 
-    with cd(bld_dir):
+    with ch_dir(bld_dir):
         await async_exec_cmd(configure_cmd)
         await async_exec_cmd(make_cmd)
         await async_exec_cmd(make_install_cmd)

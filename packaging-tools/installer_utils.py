@@ -48,7 +48,7 @@ class PackagingError(Exception):
 
 
 @contextmanager
-def cd(path: str) -> Generator:
+def ch_dir(path: str) -> Generator:
     oldwd = os.getcwd()
     os.chdir(path)
     try:
@@ -89,7 +89,7 @@ async def extract_archive(artifact: str, destination_dir: str) -> None:
     extract_cmd = get_extract_cmd(artifact)
     try:
         os.makedirs(destination_dir, exist_ok=True)
-        with cd(destination_dir):
+        with ch_dir(destination_dir):
             await async_exec_cmd(extract_cmd)
     except Exception:
         log.exception("Could not extact a file %s to %s", artifact, destination_dir)

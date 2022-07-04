@@ -175,9 +175,9 @@ def execute_remote_cmd(remote_server: str, remote_server_home: str, cmd: List[st
 def create_remote_script(server: str, cmd: List[str], remote_script_path: str, script_file_name: str) -> str:
     with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
         temp_file_path = os.path.join(tmp_base_dir, script_file_name)
-        with open(temp_file_path, 'w+', encoding="utf-8") as f:
-            f.write("#!/usr/bin/env bash\n")
-            f.write(' '.join(cmd))
+        with open(temp_file_path, 'w+', encoding="utf-8") as handle:
+            handle.write("#!/usr/bin/env bash\n")
+            handle.write(' '.join(cmd))
         os.chmod(temp_file_path, 0o755)
         create_remote_paths(server, [remote_script_path])
         cmd = ['rsync', '-avzh', temp_file_path, server + ":" + remote_script_path]
@@ -326,7 +326,7 @@ def create_remote_repository_backup(server: str, remote_repo_path: str) -> str:
     return backup_path
 
 
-def sync_production_repositories_to_s3(server: str, s3: str, updated_production_repositories: Dict[str, str],
+def sync_production_repositories_to_s3(server: str, s3_path: str, updated_production_repositories: Dict[str, str],
                                        remote_root_path: str, license_: str) -> None:
     remote_logs_base_path = os.path.join(remote_root_path, license_, "s3_sync_logs")
     create_remote_paths(server, [remote_logs_base_path])
@@ -335,7 +335,7 @@ def sync_production_repositories_to_s3(server: str, s3: str, updated_production_
         remote_log_file_base = os.path.join(remote_logs_base_path, repo, "log-s3-" + timestamp)
         create_remote_paths(server, [os.path.dirname(remote_log_file_base)])
 
-        s3_repo_path = os.path.join(s3, repo)
+        s3_repo_path = os.path.join(s3_path, repo)
         tip_prefix = repo.replace("/", "-") + "-"
 
         remote_log_file = remote_log_file_base + "-7z.txt"
@@ -456,8 +456,8 @@ async def build_online_repositories(tasks: List[ReleaseTask], license_: str, ins
 
         try:
             await async_exec_cmd(cmd, timeout=60 * 60 * 3)  # 3h for one repo build
-        except Exception as e:
-            log.error(str(e))
+        except Exception as error:
+            log.error(str(error))
             raise
 
         online_repository_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "online_repository"))
@@ -475,8 +475,8 @@ async def update_repositories(tasks: List[ReleaseTask], staging_server: str, sta
     try:
         for task in tasks:
             await update_repository(staging_server, repo_layout, task, update_staging, update_production, rta)
-    except PackagingError as e:
-        log.error("Aborting online repository update: %s", str(e))
+    except PackagingError as error:
+        log.error("Aborting online repository update: %s", str(error))
         raise
     finally:
         # Now we can delete the ifw tools at remote
@@ -669,8 +669,8 @@ async def _build_offline_tasks(staging_server: str, staging_server_root: str, ta
         cmd.extend(["--add-substitution=" + s for s in task.get_installer_string_replacement_list()])
         try:
             await async_exec_cmd(cmd, timeout=60 * 60 * 3)  # 3h
-        except Exception as e:
-            log.error(str(e))
+        except Exception as error:
+            log.error(str(error))
             raise
 
         sign_offline_installer(installer_output_dir, task.get_installer_name())
@@ -719,8 +719,8 @@ def load_export_summary_data(config_file: Path) -> Dict[str, str]:
     except KeyError:
         # it's ok, not mandatory
         log.info("Export summary file url not present in: %s", config_file)
-    except URLError as e:
-        log.warning("Unable to read export summary file: %s", str(e))
+    except URLError as error:
+        log.warning("Unable to read export summary file: %s", str(error))
     except ValueError:
         # it's ok, not mandatory
         pass

@@ -906,12 +906,12 @@ def create_installer(task):
         create_online_repository(task)
 
 
-def str2bool(v):
-    if isinstance(v, bool):
-        return v
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+def str2bool(value):
+    if isinstance(value, bool):
+        return value
+    if value.lower() in ('yes', 'true', 't', 'y', '1'):
         return True
-    if v.lower() in ('no', 'false', 'f', 'n', '0'):
+    if value.lower() in ('no', 'false', 'f', 'n', '0'):
         return False
     raise argparse.ArgumentTypeError('Boolean value expected.')
 

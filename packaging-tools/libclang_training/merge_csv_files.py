@@ -49,8 +49,8 @@ class FileWithValues:
 
 def read_csv(file_path, delimiter):
     lines = []
-    with open(file_path, 'rt', encoding="utf-8") as f:
-        lines = f.readlines()
+    with open(file_path, 'rt', encoding="utf-8") as handle:
+        lines = handle.readlines()
 
     records = []
     for line in lines:
@@ -66,8 +66,8 @@ def read_csv_files(file_paths):
     files = []
 
     for file_path in file_paths:
-        with open(file_path, 'rt', encoding="utf-8") as f:
-            reader = csv.reader(f, delimiter=Global.Delimiter, quoting=csv.QUOTE_NONE)
+        with open(file_path, 'rt', encoding="utf-8") as handle:
+            reader = csv.reader(handle, delimiter=Global.Delimiter, quoting=csv.QUOTE_NONE)
 
         values = []
         for row in reader:
@@ -88,16 +88,16 @@ def check_consistency(files):
     reference_entry_identifiers = [v[0] for v in reference_entry.values]
 
     # Ensure same size of records
-    for f in files:
-        if not len(f.values) == reference_entry_size:
-            print(f"error: number of entries mismatch between '{reference_entry.file_path}' and '{f.file_path}'.", file=sys.stderr)
+    for file in files:
+        if not len(file.values) == reference_entry_size:
+            print(f"error: number of entries mismatch between '{reference_entry.file_path}' and '{file.file_path}'.", file=sys.stderr)
             sys.exit(1)
 
     # Ensure same identifier on the left
-    for f in files:
-        identifiers = [v[0] for v in f.values]
+    for file in files:
+        identifiers = [v[0] for v in file.values]
         if not identifiers == reference_entry_identifiers:
-            print(f"error: mismatch between identifers in first column between '{reference_entry.file_path}' and '{f.file_path}'.", file=sys.stderr)
+            print(f"error: mismatch between identifers in first column between '{reference_entry.file_path}' and '{file.file_path}'.", file=sys.stderr)
             sys.exit(1)
 
     return reference_entry_identifiers
@@ -137,8 +137,8 @@ def main():
         print("for help use --help")
         sys.exit(2)
 
-    for o, _ in opts:
-        if o in ("-h", "--help"):
+    for opt, _ in opts:
+        if opt in ("-h", "--help"):
             print_help_and_exit()
     if len(args) <= 2:
         print_help_and_exit()

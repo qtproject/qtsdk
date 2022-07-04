@@ -46,8 +46,8 @@ from runner import exec_cmd
 
 log = init_logger(__name__, debug_mode=False)
 session_timestamp = datetime.fromtimestamp(time()).strftime('%Y-%m-%d--%H:%M:%S')
-convert_suffix = "____unified_metadata_update"
-backup_suffix = "____split_metadata_backup-"
+CONVERT_SUFFIX = "____unified_metadata_update"
+BACKUP_SUFFIX = "____split_metadata_backup-"
 
 
 class IfwRepoUpdateError(Exception):
@@ -73,13 +73,13 @@ def check_repos_which_can_be_updated(repositories_to_migrate: List[str]) -> Tupl
     existing_pending_repos = {}  # type: Dict[str, str]
     updatable_repos = {}  # type: Dict[str, str]
     for repo in repositories_to_migrate:
-        if repo.endswith(convert_suffix):
+        if repo.endswith(CONVERT_SUFFIX):
             log.info("Skipping '%s' as it already is the pending repository", repo)
             continue
-        if backup_suffix in repo:
+        if BACKUP_SUFFIX in repo:
             log.info("Skipping backup repo: %s", repo)
             continue
-        migrated_repo = repo + convert_suffix
+        migrated_repo = repo + CONVERT_SUFFIX
         if os.path.exists(migrated_repo):
             log.warning("There already exists pending repository '%s' for the source repo: %s", migrated_repo, repo)
             existing_pending_repos[repo] = migrated_repo
@@ -102,7 +102,7 @@ async def create_converted_repositories(repogen: str, repositories_to_migrate: L
     successful_conversions = {}  # type: Dict[str, str]
     failed_conversions = {}  # type: Dict[str, str]
     for repo in updatable_repos:
-        repo_output_path = repo + convert_suffix  # the "pending" repository
+        repo_output_path = repo + CONVERT_SUFFIX  # the "pending" repository
         cmd = [repogen, "--repository", repo, "--unite-metadata", repo_output_path]
         if dry_run:
             cmd.insert(0, "echo")
@@ -110,8 +110,8 @@ async def create_converted_repositories(repogen: str, repositories_to_migrate: L
             # perform the update
             exec_cmd(cmd, timeout=60 * 15)
             successful_conversions[repo] = repo_output_path
-        except Exception as e:
-            log.error("Failed to update metadata for repository: %s - reason: %s", repo, str(e))
+        except Exception as error:
+            log.error("Failed to update metadata for repository: %s - reason: %s", repo, str(error))
             failed_conversions[repo] = repo_output_path
 
     return (successful_conversions, failed_conversions)
@@ -121,7 +121,7 @@ def swap_repositories(repositories_to_swap: Dict[str, str]) -> Tuple[Dict[str, T
     log.info("Starting to swap converted repositories with destination directories: %s", len(repositories_to_swap))
     errors = []  # type: List[Tuple[str, str]]
     for orig_repo, converted_repo in repositories_to_swap.items():
-        backup_repo_name = orig_repo + backup_suffix + session_timestamp
+        backup_repo_name = orig_repo + BACKUP_SUFFIX + session_timestamp
         if os.path.exists(backup_repo_name):
             # this really should not happen as backup dir name contains timestamp, but do check anyways
             errors.append((orig_repo, f"Destination backup directory already exists: {backup_repo_name}"))
@@ -140,7 +140,7 @@ def swap_repositories(repositories_to_swap: Dict[str, str]) -> Tuple[Dict[str, T
     operations_nok = {}  # type: Dict[str, Tuple[str, str, str]]
     for orig_repo, converted_repo in repositories_to_swap.items():
         log.info("-> swapping: %s", orig_repo)
-        backup_repo_name = orig_repo + backup_suffix + session_timestamp  # unique backup dir name
+        backup_repo_name = orig_repo + BACKUP_SUFFIX + session_timestamp  # unique backup dir name
         try:
             # We want only unified metadata .7z and updated Updates.xml from the top level
             # and we want to ensure the data portion stays the same, so:
@@ -158,9 +158,9 @@ def swap_repositories(repositories_to_swap: Dict[str, str]) -> Tuple[Dict[str, T
             # rename converted repo as the existing one
             os.rename(converted_repo, orig_repo)
             operations_ok[orig_repo] = (converted_repo, backup_repo_name, "")
-        except Exception as e:
-            log.error("%s", str(e))
-            operations_nok[orig_repo] = (converted_repo, backup_repo_name, str(e))
+        except Exception as error:
+            log.error("%s", str(error))
+            operations_nok[orig_repo] = (converted_repo, backup_repo_name, str(error))
     return (operations_ok, operations_nok)
 
 
@@ -177,17 +177,17 @@ def scan_repositories(search_path: str) -> Tuple[List[str], List[str], List[str]
     unconverted_repos = []  # type: List[str]
     broken_repos = []  # type: List[str]
     for repo in repos:
-        if backup_suffix in repo.as_posix():
+        if BACKUP_SUFFIX in repo.as_posix():
             log.info("Skipping backup repo: %s", repo.as_posix())
             continue
-        if repo.as_posix().endswith(convert_suffix):
+        if repo.as_posix().endswith(CONVERT_SUFFIX):
             if not check_unified_meta_exists(str(repo)):
                 # this is broken pending repo
                 log.error("Pending repository was missing '_meta.7z'")
                 broken_repos.append(repo.as_posix())
                 continue
             # expected destination repo
-            expected_destination_repo = Path(repo.as_posix().rstrip(convert_suffix))
+            expected_destination_repo = Path(repo.as_posix().rstrip(CONVERT_SUFFIX))
             if not expected_destination_repo.exists():
                 # this is broken pending repo
                 log.error("Pending repository '%s' was missing matching destination directory: %s", repo.as_posix(), expected_destination_repo.as_posix())

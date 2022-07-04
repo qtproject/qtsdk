@@ -55,24 +55,24 @@ def init_logger(dunder_name, debug_mode) -> logging.Logger:
         logger.setLevel(logging.INFO)
 
     # Output full log
-    fh = logging.FileHandler('packaging.log')
-    fh.setLevel(logging.DEBUG)
+    file_handler = logging.FileHandler('packaging.log')
+    file_handler.setLevel(logging.DEBUG)
     formatter = logging.Formatter(log_format)
-    fh.setFormatter(formatter)
-    logger.addHandler(fh)
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
 
     # Output warning log
-    fh = logging.FileHandler('packaging.warning.log')
-    fh.setLevel(logging.WARNING)
+    file_handler = logging.FileHandler('packaging.warning.log')
+    file_handler.setLevel(logging.WARNING)
     formatter = logging.Formatter(log_format)
-    fh.setFormatter(formatter)
-    logger.addHandler(fh)
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
 
     # Output error log
-    fh = logging.FileHandler('packaging.error.log')
-    fh.setLevel(logging.ERROR)
+    file_handler = logging.FileHandler('packaging.error.log')
+    file_handler.setLevel(logging.ERROR)
     formatter = logging.Formatter(log_format)
-    fh.setFormatter(formatter)
-    logger.addHandler(fh)
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
 
     return logger

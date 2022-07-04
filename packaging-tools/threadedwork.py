@@ -39,9 +39,9 @@ from time import sleep
 from traceback import format_exc
 
 # we are using RLock, because threaded_print is using the same lock
-output_lock = threading.RLock()
-output_states = None
-output_format_string = ''
+output_lock = threading.RLock()  # pylint: disable=invalid-name
+output_states = None  # pylint: disable=invalid-name
+output_format_string = ''  # pylint: disable=invalid-name
 
 
 # prepare our std output hooks
@@ -51,19 +51,19 @@ class StdOutHook:
         stripped_text = text.strip()
         if stripped_text == "":
             return
-        global output_states
-        global output_format_string
+        global output_states  # pylint: disable=invalid-name
+        global output_format_string  # pylint: disable=invalid-name
         local_progress_indicator = None
         if len(stripped_text) > 6:
             local_progress_indicator = next_progress_indicator()
         else:
             local_progress_indicator = stripped_text
 
-        new_value = f"{thread_data.taskNumber}: {local_progress_indicator}"
+        new_value = f"{thread_data.task_number}: {local_progress_indicator}"
         with output_lock:
-            if new_value != output_states[thread_data.workerThreadId]:
+            if new_value != output_states[thread_data.worker_thread_id]:
                 old_output = "\r" + output_format_string.format(*output_states).strip()
-                output_states[thread_data.workerThreadId] = new_value
+                output_states[thread_data.worker_thread_id] = new_value
                 new_output = "\r" + output_format_string.format(*output_states).strip()
                 # cleanup old output if the new line is shorter
                 cleaner_string = ""
@@ -99,12 +99,12 @@ org_sterr = sys.stderr
 
 def enable_threaded_print(enable=True, thread_count=cpu_count()):
     if enable:
-        global output_states
-        global output_format_string
+        global output_states  # pylint: disable=invalid-name
+        global output_format_string  # pylint: disable=invalid-name
         output_states = [""] * (thread_count)
         output_format_string = ""
-        for x in range(thread_count):
-            output_format_string = output_format_string + "{" + str(x) + ":10}"
+        for xthread in range(thread_count):
+            output_format_string = output_format_string + "{" + str(xthread) + ":10}"
         sys.stdout = StdOutHook()
         sys.stderr = StdErrHook()
         builtins.print = threaded_print
@@ -118,7 +118,7 @@ thread_data = threading.local()
 
 
 def next_progress_indicator():
-    return next(thread_data.progressIndicator)
+    return next(thread_data.progress_indicator)
 
 
 class TaskFunction():
@@ -134,23 +134,23 @@ class TaskFunction():
 class Task():
 
     def __init__(self, description, function=None, *arguments):
-        self.taskNumber = 0  # will be set from outside
+        self.task_number = 0  # will be set from outside
         self.description = description
-        self.listOfFunctions = []
+        self.list_of_functions = []
         if function:
             first_function = TaskFunction(function, *arguments)
-            self.listOfFunctions.append(first_function)
+            self.list_of_functions.append(first_function)
         # exit the complete program with code -1, sys.exit would just close the thread
-        self.exitFunction = os._exit
-        self.exitFunctionArguments = [-1]
+        self.exit_function = os._exit
+        self.exit_function_arguments = [-1]
 
     def add_function(self, function, *arguments):
         a_function = TaskFunction(function, *arguments)
-        self.listOfFunctions.append(a_function)
+        self.list_of_functions.append(a_function)
 
-    def do(self):
+    def do_task(self):
         try:
-            for task_function in self.listOfFunctions:
+            for task_function in self.list_of_functions:
                 task_function.function(*(task_function.arguments))
         except Exception:
             print("FAIL")
@@ -162,7 +162,7 @@ class Task():
                 sys.__stderr__.write(os.linesep)
                 sys.__stderr__.write(format_exc())
                 sys.__stderr__.flush()
-                self.exitFunction(*(self.exitFunctionArguments))
+                self.exit_function(*(self.exit_function_arguments))
         print("Done")
 
 
@@ -172,28 +172,28 @@ class ThreadedWork():
         self.description = os.linesep + f"##### {description} #####"
         self.queue = Queue()
         self.legend = []
-        self.taskNumber = 0
-        self.exitFunction = None
+        self.task_number = 0
+        self.exit_function = None
 
     def set_exit_fail_function(self, function, *arguments):
-        self.exitFunction = function
-        self.exitFunctionArguments = arguments
+        self.exit_function = function
+        self.exit_function_arguments = arguments
 
     def add_task(self, description, function, *arguments):
         self.add_task_object(Task(description, function, *arguments))
 
     def add_task_object(self, task):
-        task.taskNumber = self.taskNumber
-        if self.exitFunction:
-            task.exitFunction = self.exitFunction
-            task.exitFunctionArguments = self.exitFunctionArguments
-        self.legend.append(("{:d}: " + os.linesep + "\t{}" + os.linesep).format(task.taskNumber, task.description))
+        task.task_number = self.task_number
+        if self.exit_function:
+            task.exit_function = self.exit_function
+            task.exit_function_arguments = self.exit_function_arguments
+        self.legend.append(("{:d}: " + os.linesep + "\t{}" + os.linesep).format(task.task_number, task.description))
         self.queue.put(task)
-        self.taskNumber = self.taskNumber + 1
+        self.task_number = self.task_number + 1
 
     def run(self, max_threads=None):
         if not max_threads:
-            max_threads = min(cpu_count(), self.taskNumber)
+            max_threads = min(cpu_count(), self.task_number)
         print(self.description)
         print(os.linesep.join(self.legend))
 
@@ -227,15 +227,15 @@ class Consumer(threading.Thread):
 
     def __init__(self, queue, worker_thread_id):
         self.queue = queue
-        self.workerThreadId = worker_thread_id
+        self.worker_thread_id = worker_thread_id
         threading.Thread.__init__(self)
 
     def run(self, stable_run_indicator=True):
         if stable_run_indicator:
-            thread_data.progressIndicator = itertools.cycle(['..'])
+            thread_data.progress_indicator = itertools.cycle(['..'])
         else:
-            thread_data.progressIndicator = itertools.cycle(['|', '/', '-', '\\'])
-        thread_data.workerThreadId = self.workerThreadId
+            thread_data.progress_indicator = itertools.cycle(['|', '/', '-', '\\'])
+        thread_data.worker_thread_id = self.worker_thread_id
         # run as long we have something in that queue
         while True:
             task = self.queue.get()
@@ -243,6 +243,6 @@ class Consumer(threading.Thread):
                 self.queue.task_done()
                 break
             # we like to know which task get the progress -> see std handling
-            thread_data.taskNumber = task.taskNumber
-            task.do()
+            thread_data.task_number = task.task_number
+            task.do_task()
             self.queue.task_done()

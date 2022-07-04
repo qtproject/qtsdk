@@ -739,14 +739,14 @@ def sign_windows_installerbase(file_name):
 def patch(file, replacements):
     filedata = None
     print(f"Patching {file} ...")
-    with open(file, 'r', encoding="utf-8") as f:
-        filedata = f.read()
+    with open(file, 'r', encoding="utf-8") as handle:
+        filedata = handle.read()
 
     for key in replacements:
         filedata = filedata.replace(key, replacements[key])
 
-    with open(file, 'w', encoding="utf-8") as f:
-        f.write(filedata)
+    with open(file, 'w', encoding="utf-8") as handle:
+        handle.write(filedata)
 
 
 ###############################

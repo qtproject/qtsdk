@@ -38,7 +38,7 @@ from typing import List
 
 from ddt import ddt  # type: ignore
 
-from installer_utils import PackagingError, cd
+from installer_utils import PackagingError, ch_dir
 from read_remote_config import get_pkg_value
 from release_repo_updater import (
     append_to_task_filters,
@@ -65,41 +65,41 @@ from tests.testhelpers import (
 
 def _write_dummy_file(path: str) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, 'w+', encoding="utf-8") as f:
-        f.write("\n")
+    with open(path, 'w+', encoding="utf-8") as handle:
+        handle.write("\n")
 
 
 def _write_package_xml(path: str, version: str, release_date: str) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, 'w+', encoding="utf-8") as f:
-        f.write("<?xml version=\"1.0\"?>\n")
-        f.write("<Package>\n")
-        f.write("  <Name>qt.foo.bar1</Name>\n")
-        f.write("  <DisplayName>Test</DisplayName>\n")
-        f.write("  <Description>Test</Description>\n")
-        f.write(f"  <Version>{version}</Version>\n")
-        f.write(f"  <ReleaseDate>{release_date}</ReleaseDate>\n")
-        f.write("</Package>\n")
+    with open(path, 'w+', encoding="utf-8") as handle:
+        handle.write("<?xml version=\"1.0\"?>\n")
+        handle.write("<Package>\n")
+        handle.write("  <Name>qt.foo.bar1</Name>\n")
+        handle.write("  <DisplayName>Test</DisplayName>\n")
+        handle.write("  <Description>Test</Description>\n")
+        handle.write(f"  <Version>{version}</Version>\n")
+        handle.write(f"  <ReleaseDate>{release_date}</ReleaseDate>\n")
+        handle.write("</Package>\n")
 
 
 def _write_updates_xml(path: str, version: str, release_date: str) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, 'w+', encoding="utf-8") as f:
-        f.write("<Updates>\n")
-        f.write("  <ApplicationName>{AnyApplication}</ApplicationName>\n")
-        f.write("  <ApplicationVersion>1.0.0</ApplicationVersion>\n")
-        f.write("  <Checksum>false</Checksum>\n")
-        f.write("  <PackageUpdate>\n")
-        f.write("    <Name>qt.foo.bar1</Name>\n")
-        f.write("    <DisplayName>Foo bar</DisplayName>\n")
-        f.write("    <Description>Foo and bar</Description>\n")
-        f.write(f"    <Version>{version}</Version>\n")
-        f.write(f"    <ReleaseDate>{release_date}</ReleaseDate>\n")
-        f.write("    <DownloadableArchives/>\n")
-        f.write("    <UpdateFile CompressedSize=\"0\" OS=\"Any\" UncompressedSize=\"0\"/>\n")
-        f.write("    <SHA1>c1559cbb0f0983909f7229dc79dfdf7eab46cd52</SHA1>\n")
-        f.write("  </PackageUpdate>\n")
-        f.write("</Updates>\n")
+    with open(path, 'w+', encoding="utf-8") as handle:
+        handle.write("<Updates>\n")
+        handle.write("  <ApplicationName>{AnyApplication}</ApplicationName>\n")
+        handle.write("  <ApplicationVersion>1.0.0</ApplicationVersion>\n")
+        handle.write("  <Checksum>false</Checksum>\n")
+        handle.write("  <PackageUpdate>\n")
+        handle.write("    <Name>qt.foo.bar1</Name>\n")
+        handle.write("    <DisplayName>Foo bar</DisplayName>\n")
+        handle.write("    <Description>Foo and bar</Description>\n")
+        handle.write(f"    <Version>{version}</Version>\n")
+        handle.write(f"    <ReleaseDate>{release_date}</ReleaseDate>\n")
+        handle.write("    <DownloadableArchives/>\n")
+        handle.write("    <UpdateFile CompressedSize=\"0\" OS=\"Any\" UncompressedSize=\"0\"/>\n")
+        handle.write("    <SHA1>c1559cbb0f0983909f7229dc79dfdf7eab46cd52</SHA1>\n")
+        handle.write("  </PackageUpdate>\n")
+        handle.write("</Updates>\n")
 
 
 async def _get_repogen() -> str:
@@ -111,7 +111,7 @@ async def _get_repogen() -> str:
     server = "127.0.0.1"
     server_home = os.path.expanduser("~")
     with TemporaryDirectory(dir=os.getcwd()) as temp_dir:
-        with cd(temp_dir):
+        with ch_dir(temp_dir):
             return await upload_ifw_to_remote(ifw_tools, server, server_home)
 
 

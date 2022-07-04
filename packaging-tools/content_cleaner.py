@@ -46,7 +46,7 @@ class CleanerError(Exception):
 
 
 @contextmanager
-def cd(path: str) -> Generator:
+def ch_dir(path: str) -> Generator:
     oldwd = os.getcwd()
     os.chdir(path)
     try:
@@ -80,15 +80,15 @@ def preserve_content(input_dir: str, preserve_rules: List[str]) -> None:
     if not os.path.isdir(input_dir):
         raise CleanerError(f"Not a valid input directory: {input_dir}")
     split_preserve_rules = [word for line in preserve_rules for word in line.split()]
-    with cd(input_dir):
+    with ch_dir(input_dir):
         files_to_keep = expand_rules(split_preserve_rules)
-        for p in Path(".").rglob("*"):
-            if str(p) in files_to_keep:
+        for path in Path(".").rglob("*"):
+            if str(path) in files_to_keep:
                 continue
-            if not os.path.islink(p) and os.path.isdir(p):
+            if not os.path.islink(path) and os.path.isdir(path):
                 continue
-            log.info("Removing file: %s", p)
-            os.remove(p)
+            log.info("Removing file: %s", path)
+            os.remove(path)
     remove_empty_directories(input_dir)
 
 
@@ -97,14 +97,14 @@ def remove_content(input_dir: str, remove_rules: List[str]) -> None:
     if not os.path.isdir(input_dir):
         raise CleanerError(f"Not a valid input directory: {input_dir}")
     split_remove_rules = [word for line in remove_rules for word in line.split()]
-    with cd(input_dir):
+    with ch_dir(input_dir):
         files_to_remove = expand_rules(split_remove_rules)
-        for p in Path(".").rglob("*"):
-            if os.path.isdir(p):
+        for path in Path(".").rglob("*"):
+            if os.path.isdir(path):
                 continue
-            if str(p) in files_to_remove:
-                log.info("Removing: %s", p)
-                os.remove(p)
+            if str(path) in files_to_remove:
+                log.info("Removing: %s", path)
+                os.remove(path)
     remove_empty_directories(input_dir)
 
 

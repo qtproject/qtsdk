@@ -81,9 +81,9 @@ def collect_libs(search_path: str) -> List[str]:
 def parse_qt_version(download_url_path: str) -> str:
     regex = re.compile(r'([\d.]+)')
     for item in download_url_path.split("/"):
-        m = regex.search(item)
-        if m:
-            return m.groups()[0]
+        matches = regex.search(item)
+        if matches:
+            return matches.groups()[0]
     assert False, f"Could not parse Qt version number from: {download_url_path}"
 
 
@@ -114,8 +114,8 @@ def extract_archive(save_as: str, current_dir: str) -> str:
             try:
                 os.chdir(qt_dest_dir)
                 check_call(['7z', 'x', save_as])
-            except Exception as e:
-                log.error("Extracting 7z file failed: %s", str(e))
+            except Exception as error:
+                log.error("Extracting 7z file failed: %s", str(error))
                 raise
             finally:
                 os.chdir(current_dir)
@@ -134,9 +134,9 @@ def build(args: argparse.Namespace, qt_dest_dir: str, current_dir: str) -> str:
     assert qmake_tool, f"Could not find: {qmake_tool_name} from: {qt_dest_dir}"
 
     # patch
-    with open(os.path.join(os.path.dirname(qmake_tool), "qt.conf"), "w+", encoding="utf-8") as f:
-        f.write("[Paths]\n")
-        f.write("Prefix=..\n")
+    with open(os.path.join(os.path.dirname(qmake_tool), "qt.conf"), "w+", encoding="utf-8") as handle:
+        handle.write("[Paths]\n")
+        handle.write("Prefix=..\n")
 
     pro_files_list = glob(os.path.join(args.src_path, "*.pro"))
     assert pro_files_list, f"Could not find .pro file(s) from: {args.src_path}"
@@ -161,8 +161,8 @@ def build(args: argparse.Namespace, qt_dest_dir: str, current_dir: str) -> str:
     except CalledProcessError as build_error:
         log.error("Failed to build the project: %s", str(build_error))
         raise
-    except Exception as e:
-        log.error("Something bad happened: %s", str(e))
+    except Exception as error:
+        log.error("Something bad happened: %s", str(error))
         raise
     finally:
         os.chdir(current_dir)
@@ -186,8 +186,8 @@ def archive(args: argparse.Namespace, install_root_dir: str, current_dir: str) -
     try:
         os.chdir(archive_path)
         check_call(['7z', 'a', '-m0=lzma2', '-mmt=16', artifacts_file_path, '*'])
-    except Exception as e:
-        print(str(e))
+    except Exception as error:
+        print(str(error))
         raise
     finally:
         os.chdir(current_dir)

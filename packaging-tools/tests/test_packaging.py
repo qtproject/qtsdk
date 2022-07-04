@@ -123,10 +123,10 @@ class TestPackaging(unittest.TestCase):
         temp_file = os.path.join(temp_dir, "qconfig.pri")
 
         try:
-            with open(temp_file, "a", encoding="utf-8") as f:
-                f.write("something foo\n")
-                f.write("QT_EDITION = foobar\n")
-                f.write("nonsense\n")
+            with open(temp_file, "a", encoding="utf-8") as handle:
+                handle.write("something foo\n")
+                handle.write("QT_EDITION = foobar\n")
+                handle.write("nonsense\n")
 
             licheck_name = "licheck_foo"
             release_timestamp = "11223344"
@@ -167,8 +167,8 @@ class TestPackaging(unittest.TestCase):
             cmd_args = cmd_args + ['--dry-run']
             try:
                 do_execute_sub_process(cmd_args, os.getcwd())
-            except Exception as e:
-                self.fail(f"Failed to execute: [{' '.join(cmd_args)}] -> {str(e)}")
+            except Exception as error:
+                self.fail(f"Failed to execute: [{' '.join(cmd_args)}] -> {str(error)}")
             self.assertTrue(os.path.exists(os.path.join(tests_dir, 'installer_output', offline_job + extension)), "No installers generated")
 
 

@@ -66,12 +66,12 @@ def parse_value_from_data(key, data):
 
 
 async def request_cmd(args, cmd):
-    p = await asyncio.create_subprocess_exec(*cmd, stdout=asyncio.subprocess.PIPE, stderr=STDOUT)
+    proc = await asyncio.create_subprocess_exec(*cmd, stdout=asyncio.subprocess.PIPE, stderr=STDOUT)
     attempts = 3
 
     while attempts:
         try:
-            data = await asyncio.wait_for(p.communicate(), timeout=args.timeout)
+            data = await asyncio.wait_for(proc.communicate(), timeout=args.timeout)
             break
         except (asyncio.TimeoutError, TimeoutExpired):
             log.warning("Timeout (%ss)", str(args.timeout))
@@ -82,8 +82,8 @@ async def request_cmd(args, cmd):
         except CalledProcessError as command_err:
             log.critical("Failed to run command: %s", str(command_err))
             raise
-        except Exception as e:
-            log.critical("Something failed: %s", str(e))
+        except Exception as error:
+            log.critical("Something failed: %s", str(error))
             raise
 
     return data[0].decode('utf-8')

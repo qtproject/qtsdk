@@ -38,7 +38,7 @@ from pathlib import Path
 from shutil import rmtree
 from typing import Dict, List
 
-from installer_utils import cd, is_valid_url_path
+from installer_utils import ch_dir, is_valid_url_path
 from logging_util import init_logger
 from python_env import create_venv
 from runner import async_exec_cmd
@@ -131,7 +131,7 @@ async def run(
         rmtree(work_dir)
     work_dir.mkdir(parents=True)
 
-    with cd(str(work_dir)):
+    with ch_dir(str(work_dir)):
         venv_folder, pipenv, env = await create_venv(python_src, get_pip_file)
         await pip_install_url(pipenv, url_pip_packages, env)
         await pip_install_pkg(pipenv, pip_packages, env)

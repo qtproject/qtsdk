@@ -130,8 +130,8 @@ def main():
         sys.exit(2)
 
     # process options
-    for o, _ in opts:
-        if o in ("-h", "--help"):
+    for opt, _ in opts:
+        if opt in ("-h", "--help"):
             print_usage_and_exit()
 
     # process arguments

@@ -47,8 +47,8 @@ class TestContentCleaner(unittest.TestCase):
             test_path = os.path.join(test_base_dir, test_content_path)
             os.makedirs(os.path.dirname(test_path), exist_ok=True)
             if not test_path.endswith("/"):
-                with open(test_path, "w+", encoding="utf-8") as f:
-                    f.write("")
+                with open(test_path, "w+", encoding="utf-8") as handle:
+                    handle.write("")
 
     @data(
         (

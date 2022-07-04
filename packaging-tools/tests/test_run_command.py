@@ -47,7 +47,7 @@ if sys.platform.startswith("win"):
 
     SEM_NOGPFAULTERRORBOX = 0x0002  # From MSDN
     ctypes.windll.kernel32.SetErrorMode(SEM_NOGPFAULTERRORBOX)
-    subprocess_flags = 0x8000000  # win32con.CREATE_NO_WINDOW?
+    SUBPROCESS_FLAGS = 0x8000000  # win32con.CREATE_NO_WINDOW?
 
 
 def base_command():
@@ -60,10 +60,10 @@ def crash():
     '''
     i = ctypes.c_char(b'a')
     j = ctypes.pointer(i)
-    c = 0
+    count = 0
     while True:
-        j[c] = b'a'
-        c += 1
+        j[count] = b'a'
+        count += 1
 
 
 def print_lines(count):
@@ -193,5 +193,5 @@ if __name__ == '__main__':
         if caller_arguments.exit_code:
             os._exit(caller_arguments.exit_code)
         if caller_arguments.testMethod:
-            # python test_runCommand.py --testMethod test_crash_only_error_case_output
+            # python test_run_command.py --testMethod test_crash_only_error_case_output
             TestRunCommand(methodName=caller_arguments.testMethod).debug()

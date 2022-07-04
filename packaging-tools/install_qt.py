@@ -82,7 +82,7 @@ def install_qt(args):
             args.qt_modules, args.qt_path, args.temp_path, args))
 
     # run task if needed
-    if download_packages_work.taskNumber != 0:
+    if download_packages_work.task_number != 0:
         download_packages_work.run()
         patch_qt(args.qt_path)
 

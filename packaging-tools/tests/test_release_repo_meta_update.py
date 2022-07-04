@@ -37,10 +37,10 @@ from typing import List
 from ddt import ddt  # type: ignore
 
 from release_repo_meta_update import (
+    BACKUP_SUFFIX,
+    CONVERT_SUFFIX,
     IfwRepoUpdateError,
-    backup_suffix,
     check_repos_which_can_be_updated,
-    convert_suffix,
     create_converted_repositories,
     scan_repositories,
     swap_repositories,
@@ -59,24 +59,24 @@ class TestReleaseRepoMetaUpdate(unittest.TestCase):
         cls.paths = [
             "repo1/Updates.xml",
             "repo2/Updates.xml",
-            "repo2" + convert_suffix + "/Updates.xml",
-            "repo2" + convert_suffix + "/123456_meta.7z",
+            "repo2" + CONVERT_SUFFIX + "/Updates.xml",
+            "repo2" + CONVERT_SUFFIX + "/123456_meta.7z",
             "repo3/Updates.xml",
-            "repo3" + convert_suffix + "/Updates.xml",
-            "repo3" + convert_suffix + "/123456_meta.7z",
+            "repo3" + CONVERT_SUFFIX + "/Updates.xml",
+            "repo3" + CONVERT_SUFFIX + "/123456_meta.7z",
             "repo4/Updates.xml",
             "repo5/Updates.xml",
             "repo5/123456_meta.7z",
             "repo6/Updates.xml",
             "repo7/Updates.xml",
             "repo7/123456_meta.7z",
-            "repo7" + convert_suffix + "/Updates.xml",
-            "repo7" + convert_suffix + "/123456_meta.7z",
+            "repo7" + CONVERT_SUFFIX + "/Updates.xml",
+            "repo7" + CONVERT_SUFFIX + "/123456_meta.7z",
             "repo8/Updates.xml",
             "repo9/Updates.xml",
-            "repo9" + convert_suffix + "/Updates.xml",
-            "repo9" + convert_suffix + "/",  # meta.7z missing
-            "repo10" + backup_suffix + "123456"
+            "repo9" + CONVERT_SUFFIX + "/Updates.xml",
+            "repo9" + CONVERT_SUFFIX + "/",  # meta.7z missing
+            "repo10" + BACKUP_SUFFIX + "123456"
         ]
         cls.non_migrated_paths = [
             "repo1/Updates.xml",
@@ -87,10 +87,10 @@ class TestReleaseRepoMetaUpdate(unittest.TestCase):
         ]
         cls.mixed_migrated_paths = [
             "repo1/Updates.xml",
-            "repo1" + convert_suffix + "/Updates.xml",
+            "repo1" + CONVERT_SUFFIX + "/Updates.xml",
             "repo2/sub2/Updates.xml",
             "repo3/sub3/subsub3/Updates.xml",
-            "repo3/sub3/subsub3" + convert_suffix + "/Updates.xml",
+            "repo3/sub3/subsub3" + CONVERT_SUFFIX + "/Updates.xml",
             "repo4/Updates.xml",
             "repo5/Updates.xml",
         ]
@@ -100,8 +100,8 @@ class TestReleaseRepoMetaUpdate(unittest.TestCase):
             tmp = os.path.join(tmp_base_dir, path)
             os.makedirs(os.path.dirname(tmp), exist_ok=True)
             if tmp.endswith((".xml", ".7z")):
-                with open(tmp, 'w+', encoding="utf-8") as f:
-                    f.write("\n")
+                with open(tmp, 'w+', encoding="utf-8") as handle:
+                    handle.write("\n")
 
     @asyncio_test
     async def test_scan_repositories(self) -> None:
@@ -110,12 +110,12 @@ class TestReleaseRepoMetaUpdate(unittest.TestCase):
 
             done_repos, pending_repos, unconverted_repos, broken_repos = scan_repositories(tmp_base_dir)
             self.assertListEqual(sorted([repo.split(tmp_base_dir)[-1] for repo in broken_repos]),
-                                 sorted(["/repo9" + convert_suffix]))
+                                 sorted(["/repo9" + CONVERT_SUFFIX]))
             self.assertListEqual(sorted([repo.split(tmp_base_dir)[-1] for repo in unconverted_repos]),
                                  sorted(["/repo1", "/repo2", "/repo3", "/repo4", "/repo6", "/repo8", "/repo9"]))
             self.assertListEqual(sorted([repo.split(tmp_base_dir)[-1] for repo in pending_repos]),
-                                 sorted(["/repo2" + convert_suffix, "/repo3" + convert_suffix,
-                                         "/repo7" + convert_suffix]))
+                                 sorted(["/repo2" + CONVERT_SUFFIX, "/repo3" + CONVERT_SUFFIX,
+                                         "/repo7" + CONVERT_SUFFIX]))
             self.assertListEqual(sorted([repo.split(tmp_base_dir)[-1] for repo in done_repos]),
                                  sorted(["/repo5", "/repo7"]))
 
@@ -157,7 +157,7 @@ class TestReleaseRepoMetaUpdate(unittest.TestCase):
             self.assertListEqual(sorted(successful_conversions.keys()), sorted(operations_ok.keys()))
             for _, items in operations_ok.items():
                 backup_repo_name = items[1]
-                self.assertTrue(backup_suffix in backup_repo_name)
+                self.assertTrue(BACKUP_SUFFIX in backup_repo_name)
 
 
 if __name__ == '__main__':

@@ -45,10 +45,10 @@ class RemoteUploader:
     """RemoteUploader can be used to upload given file(s) to remote network disk."""
 
     def __init__(self, dry_run, remote_server, remote_server_username, remote_base_path):
-        self.dryRun = dry_run
+        self.dry_run = dry_run
         self.set_tools(remote_server, remote_server_username)
-        self.remoteLogin = remote_server_username + '@' + remote_server
-        self.remoteTargetBaseDir = remote_base_path
+        self.remote_login = remote_server_username + '@' + remote_server
+        self.remote_target_base_dir = remote_base_path
         self.init_finished = False
 
     def set_tools(self, remote_server, remote_server_username):
@@ -64,38 +64,38 @@ class RemoteUploader:
             self.copy_cmd = ['rsync']
 
     def init_snapshot_upload_path(self, project_name, version, snapshot_id):
-        assert not self.init_finished, f"Already initialized as: {self.remoteTargetDir}"
-        self.remoteTargetDir = self.remoteTargetBaseDir + "/" + project_name + "/" + version + "/" + snapshot_id
-        self.remoteLatestLink = self.remoteTargetBaseDir + "/" + project_name + "/" + version + "/latest"
+        assert not self.init_finished, f"Already initialized as: {self.remote_target_dir}"
+        self.remote_target_dir = self.remote_target_base_dir + "/" + project_name + "/" + version + "/" + snapshot_id
+        self.remote_latest_link = self.remote_target_base_dir + "/" + project_name + "/" + version + "/latest"
         self.init_finished = True
-        self.ensure_remote_dir(self.remoteTargetDir)
+        self.ensure_remote_dir(self.remote_target_dir)
 
     def init_upload_path(self, remote_path):
-        assert not self.init_finished, f"Already initialized as: {self.remoteTargetDir}"
-        self.remoteTargetDir = self.remoteTargetBaseDir + "/" + remote_path
+        assert not self.init_finished, f"Already initialized as: {self.remote_target_dir}"
+        self.remote_target_dir = self.remote_target_base_dir + "/" + remote_path
         self.init_finished = True
-        self.ensure_remote_dir(self.remoteTargetDir)
+        self.ensure_remote_dir(self.remote_target_dir)
 
     def ensure_remote_dir(self, remote_dir):
         assert self.init_finished, "RemoteUploader not initialized!"
         print(f"Creating remote directory: {remote_dir}")
         cmd = self.ssh_cmd + ['mkdir', '-p', remote_dir]
         print("Executing: ", ' '.join(cmd))
-        if not self.dryRun:
+        if not self.dry_run:
             check_call(cmd, timeout=60)  # give it 60s
 
     def _copy_to_remote(self, file_name, dest_dir_name):
-        """Copy the given file to dest_dirName which is relative to remoteBasePath."""
+        """Copy the given file to dest_dir_name which is relative to remote_base_path."""
         assert self.init_finished, "RemoteUploader not initialized!"
-        remote_destination = self.remoteLogin + ':' + self.remoteTargetDir
+        remote_destination = self.remote_login + ':' + self.remote_target_dir
         if dest_dir_name:
             remote_destination = remote_destination + '/' + dest_dir_name + '/'
             if "windows" in platform.system().lower():
-                self.ensure_remote_dir(self.remoteTargetDir + '/' + dest_dir_name + '/')
+                self.ensure_remote_dir(self.remote_target_dir + '/' + dest_dir_name + '/')
         print(f"Copying [{file_name}] to [{remote_destination}]")
         cmd = self.copy_cmd + [file_name, remote_destination]
         print("Executing: ", ' '.join(cmd))
-        if not self.dryRun:
+        if not self.dry_run:
             check_call(cmd, timeout=60 * 10)  # give it 10 mins
 
     def copy_to_remote(self, path: str, dest_dir_name=""):
@@ -105,12 +105,12 @@ class RemoteUploader:
 
     def update_latest_symlink(self, force_update=True):
         assert self.init_finished, "RemoteUploader not initialized!"
-        print(f"Creating remote symlink: [{self.remoteLatestLink}] -> [{self.remoteTargetDir}]")
+        print(f"Creating remote symlink: [{self.remote_latest_link}] -> [{self.remote_target_dir}]")
         options = ["-sfn"] if force_update else ["-sn"]
         try:
-            cmd = self.ssh_cmd + ['ln'] + options + [self.remoteTargetDir, self.remoteLatestLink]
+            cmd = self.ssh_cmd + ['ln'] + options + [self.remote_target_dir, self.remote_latest_link]
             print("Executing: ", ' '.join(cmd))
-            if not self.dryRun:
+            if not self.dry_run:
                 check_call(cmd, timeout=60)  # give it 60s
         except CalledProcessError:
             print("Failed to execute: ", ' '.join(cmd))

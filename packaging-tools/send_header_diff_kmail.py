@@ -65,10 +65,10 @@ def send_headers(version, message_id, simulate):
     for diff in os.listdir('.'):
         if diff.endswith('.diff'):
             print(f'Sending: {diff}')
-            s = subject + diff
-            h1 = 'In-Reply-To:<' + message_id + '>'
-            h2 = 'References:<' + message_id + '>'
-            args = ['kmail', '--subject', s, '--attach', diff, '--header', h1, '--header', h2, receiver]
+            subj = subject + diff
+            head1 = 'In-Reply-To:<' + message_id + '>'
+            head2 = 'References:<' + message_id + '>'
+            args = ['kmail', '--subject', subj, '--attach', diff, '--header', head1, '--header', head2, receiver]
             if simulate:
                 print("Simulate:", " ".join(args))
             else:

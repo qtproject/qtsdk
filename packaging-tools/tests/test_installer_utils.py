@@ -37,7 +37,7 @@ from tempfile import TemporaryDirectory
 
 from installer_utils import (
     PackagingError,
-    cd,
+    ch_dir,
     download_archive,
     extract_archive,
     get_extract_cmd,
@@ -54,10 +54,10 @@ from tests.testhelpers import (
 class TestInstallerUtils(unittest.TestCase):
 
     @asyncio_test
-    async def test_cd(self) -> None:
+    async def test_ch_dir(self) -> None:
         cwd = os.getcwd()
         with TemporaryDirectory(dir=cwd) as tmp_base_dir:
-            with cd(tmp_base_dir):
+            with ch_dir(tmp_base_dir):
                 self.assertEqual(tmp_base_dir, os.getcwd())
         self.assertEqual(cwd, os.getcwd())
 
@@ -96,8 +96,8 @@ class TestInstallerUtils(unittest.TestCase):
             # create tmp file
             temp_file_name = "foobar.txt"
             temp_file_path = os.path.join(absolute_temp_path, temp_file_name)
-            with open(temp_file_path, 'w+', encoding="utf-8") as f:
-                f.write("\n")
+            with open(temp_file_path, 'w+', encoding="utf-8") as handle:
+                handle.write("\n")
             self.assertTrue(os.path.isfile(temp_file_path))
 
             # create fake tar archive

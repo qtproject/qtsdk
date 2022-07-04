@@ -311,8 +311,8 @@ class BuildLog:
     def __exit__(self, exc_type, exc_value, exc_traceback):
         self.file.close()
         if exc_type:  # exception raised -> print the log and re-raise
-            with open(self.log_filepath, 'r', encoding="utf-8") as f:
-                print(f.read())
+            with open(self.log_filepath, 'r', encoding="utf-8") as handle:
+                print(handle.read())
             return True  # re-raise
 
 
@@ -323,9 +323,9 @@ def check_call_log(args, execution_path, extra_env=dict(os.environ),
     if not log_filepath:
         do_execute_sub_process(args, execution_path, extra_env=extra_env)
     else:
-        with BuildLog(log_filepath, log_overwrite) as f:
+        with BuildLog(log_filepath, log_overwrite) as handle:
             do_execute_sub_process(
-                args, execution_path, extra_env=extra_env, redirect_output=f
+                args, execution_path, extra_env=extra_env, redirect_output=handle
             )
 
 
@@ -418,8 +418,8 @@ def get_qtcreator_version(path_to_qtcreator_src, option_dict):
     ide_branding_path = ide_branding_path if ide_branding_path else os.path.join(path_to_qtcreator_src, 'cmake')
     ide_branding_file = os.path.join(ide_branding_path, 'QtCreatorIDEBranding.cmake')
 
-    with open(ide_branding_file, 'r', encoding="utf-8") as f:
-        for line in f:
+    with open(ide_branding_file, 'r', encoding="utf-8") as handle:
+        for line in handle:
             match = expr.match(line)
             if match:
                 return match.group(1)
@@ -439,8 +439,8 @@ def make_qtcplugin_from_json(plugin_json):
 
 def parse_qt_creator_plugin_conf(plugin_conf_file_path, option_dict):
     data = {}
-    with open(plugin_conf_file_path, 'r', encoding="utf-8") as f:
-        data = json.load(f)
+    with open(plugin_conf_file_path, 'r', encoding="utf-8") as handle:
+        data = json.load(handle)
     plugins_json = data['Plugins']
     if is_linux():
         platform_name = 'linux'
@@ -464,8 +464,8 @@ def collect_qt_creator_plugin_sha1s(option_dict, plugins):
     work_dir = option_dict['WORK_DIR']
     sha1s = []
     for name in [p.name for p in plugins if p.build and os.path.isdir(os.path.join(work_dir, p.path))]:
-        with open(os.path.join(work_dir, name + '.7z.git_sha'), 'r', encoding="utf-8") as f:
-            sha = f.read().strip()
+        with open(os.path.join(work_dir, name + '.7z.git_sha'), 'r', encoding="utf-8") as handle:
+            sha = handle.read().strip()
             sha1s.append(name + ': ' + sha)
     return sorted(sha1s)
 
@@ -632,7 +632,7 @@ def handle_qt_creator_build(option_dict, qtcreator_plugins):
         (dl_task, extract) = create_download_and_extract_tasks(
             url, target_path, download_temp)
         download_work.add_task_object(dl_task)
-        extract_work.add_function(extract.do)
+        extract_work.add_function(extract.do_task)
 
     # clang package
     use_optimized_libclang = False
@@ -671,17 +671,17 @@ def handle_qt_creator_build(option_dict, qtcreator_plugins):
     (dl_task, repackage, documentation_local_url) = create_download_documentation_task(
         pkg_base_path + '/' + qt_base_path, os.path.join(download_temp, 'qtdocumentation'))
     download_work.add_task_object(dl_task)
-    extract_work.add_function(repackage.do)
+    extract_work.add_function(repackage.do_task)
 
     if openssl_libs:
         (dl_task, repackage, openssl_local_url) = create_download_openssl_task(openssl_libs, os.path.join(download_temp, 'openssl'))
         download_work.add_task_object(dl_task)
-        extract_work.add_function(repackage.do)
+        extract_work.add_function(repackage.do_task)
 
     download_packages_work = Task('Get and extract all needed packages')
     download_packages_work.add_function(download_work.run)
-    download_packages_work.add_function(extract_work.do)
-    download_packages_work.do()
+    download_packages_work.add_function(extract_work.do_task)
+    download_packages_work.do_task()
 
     # copy optimized clang package
     if use_optimized_libclang:
@@ -810,8 +810,8 @@ def handle_qt_creator_build(option_dict, qtcreator_plugins):
                             log_filepath=log_filepath)
 
     qtcreator_sha = get_commit_sha(qtcreator_source)
-    with open(os.path.join(work_dir, 'QTC_SHA1'), 'w', encoding="utf-8") as f:
-        f.write(qtcreator_sha + '\n')
+    with open(os.path.join(work_dir, 'QTC_SHA1'), 'w', encoding="utf-8") as handle:
+        handle.write(qtcreator_sha + '\n')
 
     if is_linux():
         # summary of git SHA1s
@@ -820,8 +820,8 @@ def handle_qt_creator_build(option_dict, qtcreator_plugins):
         if os.path.exists(licensemanaging_source):
             sha1s.append('license-managing: ' + get_commit_sha(licensemanaging_source))
         sha1s.append('qt-creator: ' + qtcreator_sha)
-        with open(os.path.join(work_dir, 'SHA1'), 'w', encoding="utf-8") as f:
-            f.writelines([sha + '\n' for sha in sha1s])
+        with open(os.path.join(work_dir, 'SHA1'), 'w', encoding="utf-8") as handle:
+            handle.writelines([sha + '\n' for sha in sha1s])
 
     # Create opensource source package
     create_qtcreator_source_package(option_dict, os.path.join(work_dir, 'qt-creator'), None, qtcreator_version,
@@ -837,15 +837,15 @@ def handle_qt_creator_build(option_dict, qtcreator_plugins):
     if sdktool_qtbase_src:
         sdktool_build_path = os.path.join(work_dir, 'sdktool_build')
         sdktool_target_path = os.path.join(sdktool_build_path, 'target')
-        with BuildLog(log_filepath) as f:
+        with BuildLog(log_filepath) as handle:
             build_sdktool(sdktool_qtbase_src, os.path.join(sdktool_build_path, 'qt'),
                           os.path.join(work_dir, 'qt-creator', 'src', 'tools', 'sdktool'),
                           os.path.join(sdktool_build_path, 'src', 'tools', 'sdktool'),
                           sdktool_target_path,
                           'nmake' if is_windows() else 'make',
-                          redirect_output=f)
+                          redirect_output=handle)
             zip_sdktool(sdktool_target_path, os.path.join(work_dir, 'sdktool.7z'),
-                        redirect_output=f)
+                        redirect_output=handle)
 
     # repackage and sign opensource and enterprise packages on macOS
     # these are then for direct packaging in the offline installers
@@ -1047,11 +1047,11 @@ def do_git_archive_repo(option_dict, repo_and_ref):
 
 
 def init_pkg_options(args):
-    def merge_two_dicts(x, y):
+    def merge_two_dicts(x_dict, y_dict):
         """Given two dicts, merge them into a new dict as a shallow copy."""
-        z = x.copy()
-        z.update(y)
-        return z
+        z_dict = x_dict.copy()
+        z_dict.update(y_dict)
+        return z_dict
 
     def get_default_target_env():
         """For local builds define default build target"""
@@ -1131,10 +1131,10 @@ def init_pkg_options(args):
 
         parser = ConfigParser()
         parser.read(path)
-        for s in parser.sections():
-            if s == 'release.global':
-                version = safe_config_key_fetch(parser, s, 'version')
-                version_tag = safe_config_key_fetch(parser, s, 'version_tag')
+        for section in parser.sections():
+            if section == 'release.global':
+                version = safe_config_key_fetch(parser, section, 'version')
+                version_tag = safe_config_key_fetch(parser, section, 'version_tag')
                 option_dict['VERSION'] = version
                 option_dict['VERSION_TAG'] = version_tag
                 option_dict['VERSION_FULL'] = version if not version_tag else version + '-' + version_tag

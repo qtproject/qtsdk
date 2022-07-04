@@ -63,7 +63,7 @@ from time import sleep, time
 from typing import List
 
 import libclangtimings2csv
-import mergeCsvFiles
+import merge_csv_files
 
 
 def verbose_start(args):
@@ -113,8 +113,8 @@ class Config:
         batch_files = os.environ['QTC_CLANG_BATCH_CONFIG_FILES']
         Config.BatchFiles = batch_files.split(os.pathsep)
         assert len(Config.BatchFiles) >= 1
-        for b in Config.BatchFiles:
-            check_existence_or_die(b)
+        for batch_file in Config.BatchFiles:
+            check_existence_or_die(batch_file)
             # TODO: Check for format
 
     @staticmethod
@@ -129,8 +129,8 @@ class Config:
         for dll in Config.LibClangDlls:
             print(f"  {dll}")
         print("batch files:")
-        for b in Config.BatchFiles:
-            print(f"  {b}")
+        for batch_file in Config.BatchFiles:
+            print(f"  {batch_file}")
 
 
 class RunRecord:
@@ -179,20 +179,20 @@ def run_sync_and_log_output_windows(args, batch_file_path, log_file_path):
     debug_view.start_async()
 
     verbose_start(args)
-    with Popen(args, env=create_environment(batch_file_path)) as p:
-        p.communicate()
+    with Popen(args, env=create_environment(batch_file_path)) as proc:
+        proc.communicate()
 
         debug_view.stop()
 
-        check_exit_code_or_die(p.returncode, args)
+        check_exit_code_or_die(proc.returncode, args)
 
 
 def run_sync_and_log_output_unix(args, batch_file_path, log_file_path):
     with open(log_file_path, "w", encoding="utf-8") as log_file:
         verbose_start(args)
-        with Popen(args, stdout=log_file, stderr=STDOUT, env=create_environment(batch_file_path)) as p:
-            p.communicate()
-            check_exit_code_or_die(p.returncode, args)
+        with Popen(args, stdout=log_file, stderr=STDOUT, env=create_environment(batch_file_path)) as proc:
+            proc.communicate()
+            check_exit_code_or_die(proc.returncode, args)
 
 
 def run_qtcreator_with_batch_file(batch_file_path, log_file_path):
@@ -217,8 +217,8 @@ def convert_log_file_to_csv_file(log_file_path, column_label):
     output = libclangtimings2csv.convert(log_file_path, column_label)
 
     csv_file_path = log_file_path + '.csv'
-    with open(csv_file_path, 'w', encoding="utf-8") as f:
-        f.write(output)
+    with open(csv_file_path, 'w', encoding="utf-8") as handle:
+        handle.write(output)
 
     return csv_file_path
 
@@ -242,8 +242,8 @@ def create_backup_file(file_path):
         copyfile(file_path, backup_path)
 
 
-def print_duration(s):
-    hours, remainder = divmod(s, 3600)
+def print_duration(seconds):
+    hours, remainder = divmod(seconds, 3600)
     minutes, seconds = divmod(remainder, 60)
     print(f"...needed {hours}:{minutes}:{seconds}")
 
@@ -308,18 +308,18 @@ def log_id_part_from_libclang_dll(libclang_dll):
 
 def merge_generated_csv_files(run_records):
     batch_file_id_2_run_record = {}
-    for rr in run_records:
-        new_value = [rr]
-        if rr.batch_file_id in batch_file_id_2_run_record:
-            new_value = batch_file_id_2_run_record[rr.batch_file_id]
-            new_value.append(rr)
-        batch_file_id_2_run_record[rr.batch_file_id] = new_value
+    for run_record in run_records:
+        new_value = [run_record]
+        if run_record.batch_file_id in batch_file_id_2_run_record:
+            new_value = batch_file_id_2_run_record[run_record.batch_file_id]
+            new_value.append(run_record)
+        batch_file_id_2_run_record[run_record.batch_file_id] = new_value
 
     for batch_file_id in batch_file_id_2_run_record:
-        csv_file_paths = [rr.csv_file_path for rr in batch_file_id_2_run_record[batch_file_id]]
+        csv_file_paths = [run_record.csv_file_path for run_record in batch_file_id_2_run_record[batch_file_id]]
         merge_file_path = os.path.join(Config.LogDir, batch_file_id + ".csv")
 
-        mergeCsvFiles.merge_files(merge_file_path, csv_file_paths)
+        merge_csv_files.merge_files(merge_file_path, csv_file_paths)
         print(f"generated: {merge_file_path}")
 
 

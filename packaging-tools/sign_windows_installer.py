@@ -80,8 +80,8 @@ def _handle_signing(file_path: str):
         kvi = config[section]['kvi']
         kvs = config[section]['kvs']
         kvc = config[section]['kvc']
-        tr = config[section]['tr']
-    cmd_args_sign = ["AzureSignTool.exe", "sign", "-kvu", kvu, "-kvi", kvi, "-kvs", kvs, "-kvc", kvc, "-tr", tr, "-v", file_path]
+        tr_sect = config[section]['tr']
+    cmd_args_sign = ["AzureSignTool.exe", "sign", "-kvu", kvu, "-kvi", kvi, "-kvs", kvs, "-kvc", kvc, "-tr", tr_sect, "-v", file_path]
     log_entry = cmd_args_sign[:]
     log_entry[3] = "****"
     log_entry[5] = "****"
@@ -104,8 +104,8 @@ def _handle_signing(file_path: str):
 def decrypt_private_key() -> str:
     log.info("decrypt private key using pre-generated Fernet key")
     key = _get_decrypt_key()
-    f = Fernet(key)
-    decrypted_key = f.decrypt(_get_private_key())
+    fernet = Fernet(key)
+    decrypted_key = fernet.decrypt(_get_private_key())
     temp_key_path = os.environ["PKG_NODE_ROOT"]
     temp_file = os.path.join(temp_key_path, "temp_keyfile")
     with open(temp_file, 'wb') as outfile:
