@@ -301,7 +301,7 @@ class BuildLog:
 
     def __enter__(self):
         try:
-            self.file = open(self.log_filepath, 'w' if self.log_overwrite else 'a')
+            self.file = open(self.log_filepath, 'w' if self.log_overwrite else 'a', encoding="utf-8")
         except Exception:
             print(f"Failed to write log file '{self.log_filepath}'")
             sys.stdout.flush()
@@ -311,7 +311,7 @@ class BuildLog:
     def __exit__(self, type, value, traceback):
         self.file.close()
         if type:  # exception raised -> print the log and re-raise
-            with open(self.log_filepath, 'r') as f:
+            with open(self.log_filepath, 'r', encoding="utf-8") as f:
                 print(f.read())
             return True  # re-raise
 
@@ -418,7 +418,7 @@ def get_qtcreator_version(path_to_qtcreator_src, optionDict):
     ide_branding_path = ide_branding_path if ide_branding_path else os.path.join(path_to_qtcreator_src, 'cmake')
     ide_branding_file = os.path.join(ide_branding_path, 'QtCreatorIDEBranding.cmake')
 
-    with open(ide_branding_file, 'r') as f:
+    with open(ide_branding_file, 'r', encoding="utf-8") as f:
         for line in f:
             match = expr.match(line)
             if match:
@@ -439,7 +439,7 @@ def make_QtcPlugin_from_json(plugin_json):
 
 def parse_qt_creator_plugin_conf(plugin_conf_file_path, optionDict):
     data = {}
-    with open(plugin_conf_file_path, 'r') as f:
+    with open(plugin_conf_file_path, 'r', encoding="utf-8") as f:
         data = json.load(f)
     plugins_json = data['Plugins']
     if is_linux():
@@ -464,7 +464,7 @@ def collect_qt_creator_plugin_sha1s(plugins):
     work_dir = optionDict['WORK_DIR']
     sha1s = []
     for name in [p.name for p in plugins if p.build and os.path.isdir(os.path.join(work_dir, p.path))]:
-        with open(os.path.join(work_dir, name + '.7z.git_sha'), 'r') as f:
+        with open(os.path.join(work_dir, name + '.7z.git_sha'), 'r', encoding="utf-8") as f:
             sha = f.read().strip()
             sha1s.append(name + ': ' + sha)
     return sorted(sha1s)
@@ -810,7 +810,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                             log_filepath=log_filepath)
 
     qtcreator_sha = get_commit_SHA(qtcreator_source)
-    with open(os.path.join(work_dir, 'QTC_SHA1'), 'w') as f:
+    with open(os.path.join(work_dir, 'QTC_SHA1'), 'w', encoding="utf-8") as f:
         f.write(qtcreator_sha + '\n')
 
     if is_linux():
@@ -820,7 +820,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         if os.path.exists(licensemanaging_source):
             sha1s.append('license-managing: ' + get_commit_SHA(licensemanaging_source))
         sha1s.append('qt-creator: ' + qtcreator_sha)
-        with open(os.path.join(work_dir, 'SHA1'), 'w') as f:
+        with open(os.path.join(work_dir, 'SHA1'), 'w', encoding="utf-8") as f:
             f.writelines([sha + '\n' for sha in sha1s])
 
     # Create opensource source package

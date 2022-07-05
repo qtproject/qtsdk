@@ -405,7 +405,7 @@ def get_commit_SHA(source_path):
     if not buildGitSHA:
         tagfile = os.path.join(source_path, '.tag')
         if os.path.exists(tagfile):
-            with open(tagfile, 'r') as f:
+            with open(tagfile, 'r', encoding="utf-8") as f:
                 buildGitSHA = f.read().strip()
     return buildGitSHA
 

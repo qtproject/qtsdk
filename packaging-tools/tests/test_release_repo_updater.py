@@ -65,13 +65,13 @@ from tests.testhelpers import (
 
 def _write_dummy_file(path: str) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, 'w+') as f:
+    with open(path, 'w+', encoding="utf-8") as f:
         f.write("\n")
 
 
 def _write_package_xml(path: str, version: str, releaseDate: str) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, 'w+') as f:
+    with open(path, 'w+', encoding="utf-8") as f:
         f.write("<?xml version=\"1.0\"?>\n")
         f.write("<Package>\n")
         f.write("  <Name>qt.foo.bar1</Name>\n")
@@ -84,7 +84,7 @@ def _write_package_xml(path: str, version: str, releaseDate: str) -> None:
 
 def _write_updates_xml(path: str, version: str, releaseDate: str) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, 'w+') as f:
+    with open(path, 'w+', encoding="utf-8") as f:
         f.write("<Updates>\n")
         f.write("  <ApplicationName>{AnyApplication}</ApplicationName>\n")
         f.write("  <ApplicationVersion>1.0.0</ApplicationVersion>\n")

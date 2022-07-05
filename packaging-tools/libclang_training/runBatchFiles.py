@@ -188,7 +188,7 @@ def runSyncAndLogOutputWindows(args, batchFilePath, logFilePath):
 
 
 def runSyncAndLogOutputUnix(args, batchFilePath, logFilePath):
-    logFile = open(logFilePath, 'w')
+    logFile = open(logFilePath, 'w', encoding="utf-8")
 
     verboseStart(args)
     p = Popen(args,
@@ -222,7 +222,7 @@ def convertLogFileToCsvFile(logFilePath, columnLabel):
     output = libclangtimings2csv.convert(logFilePath, columnLabel)
 
     csvFilePath = logFilePath + '.csv'
-    f = open(csvFilePath, 'w')
+    f = open(csvFilePath, 'w', encoding="utf-8")
     f.write(output)
     f.close()
 

@@ -49,7 +49,7 @@ class FileWithValues:
 
 def readCsv(filePath, delimiter):
     lines = []
-    with open(filePath, 'rt') as f:
+    with open(filePath, 'rt', encoding="utf-8") as f:
         lines = f.readlines()
 
     records = []
@@ -66,7 +66,7 @@ def readCsvFiles(filePaths):
     files = []
 
     for filePath in filePaths:
-        f = open(filePath, 'rt')
+        f = open(filePath, 'rt', encoding="utf-8")
         reader = csv.reader(f, delimiter=Global.Delimiter, quoting=csv.QUOTE_NONE)
 
         values = []
@@ -104,7 +104,7 @@ def checkConsistency(files):
 
 
 def mergeFilesHelper(outputFilePath, referenceIdentifiers, files):
-    with open(outputFilePath, 'wt') as csvfile:
+    with open(outputFilePath, 'wt', encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile, delimiter=Global.Delimiter, quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
         # Write header row

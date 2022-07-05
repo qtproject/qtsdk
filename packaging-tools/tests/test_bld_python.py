@@ -45,7 +45,7 @@ class TestBldPython(unittest.TestCase):
             tempDir = os.path.join(tmpBaseDir, "foo", "bar", "test", "dir")
             os.makedirs(tempDir)
             tempFilePath = os.path.join(tempDir, "configure")
-            with open(tempFilePath, 'w+') as f:
+            with open(tempFilePath, 'w+', encoding="utf-8") as f:
                 f.write("\n")
 
             foundDir = locate_source_root(tmpBaseDir)

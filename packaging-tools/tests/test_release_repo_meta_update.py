@@ -100,7 +100,7 @@ class TestReleaseRepoMetaUpdate(unittest.TestCase):
             tmp = os.path.join(tmp_base_dir, path)
             os.makedirs(os.path.dirname(tmp), exist_ok=True)
             if tmp.endswith((".xml", ".7z")):
-                with open(tmp, 'w+') as f:
+                with open(tmp, 'w+', encoding="utf-8") as f:
                     f.write("\n")
 
     @asyncio_test

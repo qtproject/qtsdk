@@ -78,11 +78,11 @@ class TestCommon(unittest.TestCase):
         with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
             # run tag substitution with data
             tmp_file = Path(tmp_base_dir) / "test"
-            with open(tmp_file, "a") as f:
+            with open(tmp_file, "a", encoding="utf-8") as f:
                 f.write(file_contents)
             for key, value in replacements:
                 replace_in_files([tmp_file], key, value)
-            with open(tmp_file, "r") as f:
+            with open(tmp_file, "r", encoding="utf-8") as f:
                 file_contents = f.read()
                 # check that file contents match
                 self.assertEqual(file_contents, expected_file_content)
@@ -141,7 +141,7 @@ class TestCommon(unittest.TestCase):
             path, content = file
             tmp_file = Path(tmp_base_dir) / path
             tmp_file.parents[0].mkdir(parents=True, exist_ok=True)
-            with open(tmp_file, "a") as f:
+            with open(tmp_file, "a", encoding="utf-8") as f:
                 f.write(content)
             extensions, rgx = params
             result = search_for_files(tmp_base_dir, extensions, rgx)

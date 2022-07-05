@@ -109,7 +109,7 @@ def recordsToString(records):
 def convert(inputFile, columnLabel=None):
     if not columnLabel:
         columnLabel = os.path.basename(inputFile)
-    fileContent = open(inputFile, 'r').read()
+    fileContent = open(inputFile, 'r', encoding="utf-8").read()
 
     records = [[columnLabel, columnLabel]] + extractRecords(fileContent)
 

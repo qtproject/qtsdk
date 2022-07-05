@@ -232,7 +232,7 @@ def parse_component_data(task, configuration_file, configurations_base_path):
             file_full_path = locate_path(allos_conf_file_dir, [configuration_file], filters=[os.path.isfile])
     log.info("Reading target configuration file: %s", file_full_path)
     configuration = ConfigParser(interpolation=ExtendedInterpolation())
-    configuration.read_file(open(file_full_path))
+    configuration.read_file(open(file_full_path, encoding="utf-8"))
 
     # parse package ignore list first
     sdk_component_exclude_list = safe_config_key_fetch(configuration, 'PackageIgnoreList', 'packages')
@@ -323,7 +323,7 @@ def get_component_sha1_file(sdk_component, sha1_file_dest):
     download(sdk_component.component_sha1_uri, sha1_file_dest)
 
     # read sha1 from the file
-    with open(sha1_file_dest, "r") as sha1_file:
+    with open(sha1_file_dest, "r", encoding="utf-8") as sha1_file:
         sdk_component.component_sha1 = sha1_file.read().strip()
 
 
@@ -432,7 +432,7 @@ def get_component_data(task, sdk_component, archive, install_dir, data_dir_dest,
         # read sha1 from the file
         sha1_file_path = install_dir + os.sep + archive.component_sha1_file
         if os.path.exists(sha1_file_path):
-            with open(sha1_file_path, "r") as sha1_file:
+            with open(sha1_file_path, "r", encoding="utf-8") as sha1_file:
                 sdk_component.component_sha1 = sha1_file.read().strip()
         else:
             raise CreateInstallerError(f"Component SHA1 file '{archive.component_sha1_file}' not found")
@@ -920,7 +920,7 @@ class QtInstallerTask:
     def __init__(self, args):
         log.info("Parsing: %s", args.configuration_file)
         self.config = ConfigParser(interpolation=ExtendedInterpolation())
-        self.config.read_file(open(args.configuration_file))
+        self.config.read_file(open(args.configuration_file, encoding="utf-8"))
         self.configurations_dir = args.configurations_dir
         self.configuration_file = args.configuration_file
 

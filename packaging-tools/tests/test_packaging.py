@@ -123,7 +123,7 @@ class TestPackaging(unittest.TestCase):
         tempFile = os.path.join(tempDir, "qconfig.pri")
 
         try:
-            with open(tempFile, "a") as f:
+            with open(tempFile, "a", encoding="utf-8") as f:
                 f.write("something foo\n")
                 f.write("QT_EDITION = foobar\n")
                 f.write("nonsense\n")

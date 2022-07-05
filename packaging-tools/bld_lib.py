@@ -133,7 +133,7 @@ def build(qtDestDir: str, currentDir: str) -> str:
     assert qmakeTool, f"Could not find: {qmakeToolName} from: {qtDestDir}"
 
     # patch
-    with open(os.path.join(os.path.dirname(qmakeTool), "qt.conf"), "w+") as f:
+    with open(os.path.join(os.path.dirname(qmakeTool), "qt.conf"), "w+", encoding="utf-8") as f:
         f.write("[Paths]\n")
         f.write("Prefix=..\n")
 

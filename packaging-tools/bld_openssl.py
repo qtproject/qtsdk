@@ -60,7 +60,7 @@ def archive(install_dir, archive_prefix):
 
 
 def check_environment():
-    FNULL = open(os.devnull, 'w')
+    FNULL = open(os.devnull, 'w', encoding="utf-8")
 
     def check_cmd(cmd):
         if subprocess.call(cmd, stdout=FNULL, stderr=FNULL) != 0:

@@ -122,7 +122,7 @@ def search_for_files(
 
     def _matches_rgx(path: Path):
         if rgx_pattern:
-            with open(path, 'r') as f:
+            with open(path, 'r', encoding="utf-8") as f:
                 return bool(pattern.search(f.read()))
         return True
     return locate_paths(search_path, suffixes, filters=[os.path.isfile, _matches_rgx])
@@ -347,7 +347,7 @@ def is_text(s):
 
 def is_text_file(filename, blocksize=512):
     try:
-        return is_text(open(filename).read(blocksize))
+        return is_text(open(filename, encoding="utf-8").read(blocksize))
     except UnicodeDecodeError:
         return is_text(open(filename, 'rb').read(blocksize))
 
@@ -565,7 +565,7 @@ def git_archive_repo(repo_and_ref):
     # clone given repo to temp
     clone_repository(repository, ref, checkout_dir, full_clone=True, init_subrepos=True)
     # git archive repo with given name
-    archive_file = open(archive_name, 'w')
+    archive_file = open(archive_name, 'w', encoding="utf-8")
     check_call(f"git --no-pager archive {ref}", stdout=archive_file, stderr=STDOUT, shell=True, cwd=checkout_dir)
     archive_file.close()
     print(f"Created archive: {archive_name}")
@@ -720,7 +720,7 @@ def patch_qt(qt5_path):
     print("##### patch Qt #####")
     qmake_binary = os.path.join(qt5_path, 'bin', 'qmake')
     # write qt.conf
-    qtConfFile = open(os.path.join(qt5_path, 'bin', 'qt.conf'), "w")
+    qtConfFile = open(os.path.join(qt5_path, 'bin', 'qt.conf'), "w", encoding="utf-8")
     qtConfFile.write("[Paths]" + os.linesep)
     qtConfFile.write("Prefix=.." + os.linesep)
     qtConfFile.close()

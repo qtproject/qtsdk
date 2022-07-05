@@ -175,7 +175,7 @@ def execute_remote_cmd(remoteServer: str, remoteServerHome: str, cmd: List[str],
 def create_remote_script(server: str, cmd: List[str], remoteScriptPath: str, scriptFileName: str) -> str:
     with TemporaryDirectory(dir=os.getcwd()) as tmpBaseDir:
         tempFilePath = os.path.join(tmpBaseDir, scriptFileName)
-        with open(tempFilePath, 'w+') as f:
+        with open(tempFilePath, 'w+', encoding="utf-8") as f:
             f.write("#!/usr/bin/env bash\n")
             f.write(' '.join(cmd))
         os.chmod(tempFilePath, 0o755)

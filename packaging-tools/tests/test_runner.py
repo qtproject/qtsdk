@@ -109,9 +109,9 @@ class TestRunner(unittest.TestCase):
         with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
             log_file = Path(tmp_base_dir) / "log"
             log_file.touch()
-            with open(log_file, 'w') as f:
+            with open(log_file, 'w', encoding="utf-8") as f:
                 do_execute_sub_process(["echo", "TEST"], tmp_base_dir, redirect_output=f)
-            with open(log_file, 'r') as f:
+            with open(log_file, 'r', encoding="utf-8") as f:
                 self.assertEqual(f.read().strip(), "TEST")
 
     @data(

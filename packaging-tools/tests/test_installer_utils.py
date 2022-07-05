@@ -96,7 +96,7 @@ class TestInstallerUtils(unittest.TestCase):
             # create tmp file
             tempFileName = "foobar.txt"
             tempFilePath = os.path.join(absoluteTempPath, tempFileName)
-            with open(tempFilePath, 'w+') as f:
+            with open(tempFilePath, 'w+', encoding="utf-8") as f:
                 f.write("\n")
             self.assertTrue(os.path.isfile(tempFilePath))
 
