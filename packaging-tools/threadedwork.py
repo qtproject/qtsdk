@@ -51,8 +51,6 @@ class StdOutHook:
         stripped_text = text.strip()
         if stripped_text == "":
             return
-        global output_states  # pylint: disable=invalid-name
-        global output_format_string  # pylint: disable=invalid-name
         local_progress_indicator = None
         if len(stripped_text) > 6:
             local_progress_indicator = next_progress_indicator()
@@ -99,8 +97,8 @@ org_sterr = sys.stderr
 
 def enable_threaded_print(enable=True, thread_count=cpu_count()):
     if enable:
-        global output_states  # pylint: disable=invalid-name
-        global output_format_string  # pylint: disable=invalid-name
+        global output_states  # pylint: disable=W0603,C0103
+        global output_format_string  # pylint: disable=W0603,C0103
         output_states = [""] * (thread_count)
         output_format_string = ""
         for xthread in range(thread_count):
@@ -133,7 +131,7 @@ class TaskFunction():
 
 class Task():
 
-    def __init__(self, description, function=None, *arguments):
+    def __init__(self, description, function, *arguments):
         self.task_number = 0  # will be set from outside
         self.description = description
         self.list_of_functions = []
@@ -174,6 +172,7 @@ class ThreadedWork():
         self.legend = []
         self.task_number = 0
         self.exit_function = None
+        self.exit_function_arguments = None
 
     def set_exit_fail_function(self, function, *arguments):
         self.exit_function = function
@@ -230,7 +229,7 @@ class Consumer(threading.Thread):
         self.worker_thread_id = worker_thread_id
         threading.Thread.__init__(self)
 
-    def run(self, stable_run_indicator=True):
+    def run(self, stable_run_indicator=True):  # pylint: disable=W0221
         if stable_run_indicator:
             thread_data.progress_indicator = itertools.cycle(['..'])
         else:

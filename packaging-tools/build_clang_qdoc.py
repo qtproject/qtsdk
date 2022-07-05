@@ -89,7 +89,7 @@ def msvc_environment(bitness):
     if not os.path.exists(program_files):
         program_files = os.path.join('C:', '/Program Files')
     msvc_ver = msvc_version()
-    if msvc_ver == '14.1' or msvc_ver == '14.2':
+    if msvc_ver in ('14.1', '14.2'):
         vcvarsall = os.path.join(program_files, 'Microsoft Visual Studio', msvc_year(), 'Professional', 'VC', 'Auxiliary', 'Build', 'vcvarsall.bat')
         arg = 'x64' if bitness == 64 else 'x86'
     else:

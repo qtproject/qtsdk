@@ -36,8 +36,6 @@ from configparser import ConfigParser
 from io import StringIO
 from urllib.request import urlopen
 
-_pkg_remote_settings = None  # pylint: disable=invalid-name
-
 
 class RemotePkgConfigError(Exception):
     pass
@@ -56,12 +54,12 @@ def parse_packaging_keys_config(config):
 
 
 def get_pkg_value(key, section="packaging", url=os.getenv("PACKAGING_KEYS_CONFIG_URL")):
-    global _pkg_remote_settings  # pylint: disable=invalid-name
-    if not _pkg_remote_settings:
+    if getattr(get_pkg_value, 'pkg_remote_settings', None) is None:
         if not url:
             raise RemotePkgConfigError("Remote config URL not specified")
-        _pkg_remote_settings = parse_packaging_keys_config(read_packaging_keys_config_url(url))
-    return _pkg_remote_settings.get(section, key)
+        config = read_packaging_keys_config_url(url)
+        get_pkg_value.pkg_remote_settings = parse_packaging_keys_config(config)
+    return get_pkg_value.pkg_remote_settings.get(section, key)
 
 
 def main() -> None:

@@ -38,7 +38,7 @@ from copy import deepcopy
 from socket import setdefaulttimeout
 from subprocess import PIPE, STDOUT, Popen
 from sys import platform
-from threading import currentThread
+from threading import current_thread
 from time import sleep
 from urllib.error import HTTPError
 from urllib.parse import urljoin, urlparse
@@ -181,7 +181,7 @@ def download(url, target, read_block_size=1048576):
             if received_size != int(total_size):
                 raise Exception(f"Broken download, got a wrong size after download from '{url}'(total size: {total_size}, but {received_size} received).")
         except HTTPError as error:
-            raise Exception(f"Can not download '{url}' to '{target}' as target(error code: '{error.code}').")
+            raise Exception(f"Can not download '{url}' to '{target}' as target(error code: '{error.code}').") from error
 
         renamed = False
         try_rename_counter = 0
@@ -203,7 +203,7 @@ def download(url, target, read_block_size=1048576):
                     sleep(2)
                     continue
                 if not os.path.lexists(target):
-                    raise Exception(f"Could not rename {savefile_tmp} to {target}{os.linesep}Error: {str(error)}")
+                    raise Exception(f"Could not rename {savefile_tmp} to {target}{os.linesep}Error: {str(error)}") from error
     finally:  # this is done before the except code is called
         try:
             os.remove(savefile_tmp)
@@ -239,13 +239,14 @@ def get_environment(extra_environment=None):
 
 
 @deep_copy_arguments
-def run_command(command, cwd, extra_environment=None, only_error_case_output=False, expected_exit_codes=[0]):
-    if type(expected_exit_codes) is not list:
+def run_command(command, cwd, extra_environment=None, only_error_case_output=False, expected_exit_codes=None):
+    expected_exit_codes = expected_exit_codes or [0]
+    if not isinstance(expected_exit_codes, list):
         raise TypeError(f"expected_exit_codes({type(expected_exit_codes)}) is not {list}")
-    if type(only_error_case_output) is not bool:
+    if not isinstance(only_error_case_output, bool):
         raise TypeError(f"only_error_case_output({type(only_error_case_output)}) is not {bool}")
 
-    if type(command) is list:
+    if isinstance(command, list):
         command_as_list = command
     else:
         command_as_list = command[:].split(' ')
@@ -280,7 +281,7 @@ def run_command(command, cwd, extra_environment=None, only_error_case_output=Fal
     use_shell = is_windows()
     last_stdout_lines = []
     last_stderr_lines = []
-    if currentThread().name == "MainThread" and not only_error_case_output:
+    if current_thread().name == "MainThread" and not only_error_case_output:
         process = Popen(
             command_as_list, shell=use_shell,
             cwd=cwd, bufsize=-1, env=environment
@@ -306,14 +307,14 @@ def run_command(command, cwd, extra_environment=None, only_error_case_output=Fal
             for line in stdout.readlines():
                 line = line.decode()
                 last_stdout_lines.append(line)
-                if currentThread().name != "MainThread":
+                if current_thread().name != "MainThread":
                     sys.stdout.write(line)
 
             # Show what we received from standard error.
             for line in stderr.readlines():
                 line = line.decode()
                 last_stderr_lines.append(line)
-                if currentThread().name != "MainThread":
+                if current_thread().name != "MainThread":
                     sys.stdout.write(line)
 
             # Sleep a bit before polling the readers again.
@@ -337,7 +338,7 @@ def run_command(command, cwd, extra_environment=None, only_error_case_output=Fal
     if exit_code not in expected_exit_codes:
         last_output = ""
         exit_type = ""
-        if currentThread().name != "MainThread" or only_error_case_output:
+        if current_thread().name != "MainThread" or only_error_case_output:
             if len(last_stderr_lines) != 0:
                 last_output += "".join(str(last_stderr_lines))
                 exit_type = "error "
@@ -355,7 +356,8 @@ def run_command(command, cwd, extra_environment=None, only_error_case_output=Fal
 
 
 @deep_copy_arguments
-def run_install_command(arguments=['install'], cwd=None, caller_arguments=None, extra_environment=None, only_error_case_output=False):
+def run_install_command(arguments=None, cwd=None, caller_arguments=None, extra_environment=None, only_error_case_output=False):
+    arguments = arguments or ['install']
     if hasattr(caller_arguments, 'installcommand') and caller_arguments.installcommand:
         installcommand = caller_arguments.installcommand.split()
     else:
@@ -367,18 +369,19 @@ def run_install_command(arguments=['install'], cwd=None, caller_arguments=None, 
             extra_environment["MAKEFLAGS"] = "-j1"
 
     if arguments:
-        installcommand.extend(arguments if type(arguments) is list else arguments.split())
+        installcommand.extend(arguments if isinstance(arguments, list) else arguments.split())
     return run_command(installcommand, cwd, extra_environment, only_error_case_output=only_error_case_output)
 
 
 @deep_copy_arguments
-def run_build_command(arguments=None, cwd=None, caller_arguments=None, extra_environment=None, only_error_case_output=False, expected_exit_codes=[0]):
+def run_build_command(arguments=None, cwd=None, caller_arguments=None, extra_environment=None, only_error_case_output=False, expected_exit_codes=None):
+    expected_exit_codes = expected_exit_codes or [0]
     buildcommand = ['make']
     if hasattr(caller_arguments, 'buildcommand') and caller_arguments.buildcommand:
         buildcommand = caller_arguments.buildcommand.split()
 
     if arguments:
-        buildcommand.extend(arguments if type(arguments) is list else arguments.split())
+        buildcommand.extend(arguments if isinstance(arguments, list) else arguments.split())
     return run_command(buildcommand, cwd, extra_environment, only_error_case_output=only_error_case_output, expected_exit_codes=expected_exit_codes)
 
 

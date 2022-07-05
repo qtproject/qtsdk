@@ -74,7 +74,8 @@ async def async_exec_cmd(cmd: List[str], timeout: int = 60 * 60, env: Dict[str, 
 
 
 def do_execute_sub_process(args, execution_path, abort_on_fail=True, get_output=False,
-                           extra_env=dict(os.environ), redirect_output=None, args_log=None):
+                           extra_env=None, redirect_output=None, args_log=None):
+    extra_env = extra_env or os.environ.copy()
     _args_log = args_log or ' '.join([str(i) for i in args])
     print('      --------------------------------------------------------------------')
     print(f'      Executing:      [{_args_log}]')

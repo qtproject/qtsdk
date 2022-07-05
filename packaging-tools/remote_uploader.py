@@ -47,7 +47,9 @@ class RemoteUploader:
     def __init__(self, dry_run, remote_server, remote_server_username, remote_base_path):
         self.dry_run = dry_run
         self.set_tools(remote_server, remote_server_username)
+        self.remote_latest_link = ""
         self.remote_login = remote_server_username + '@' + remote_server
+        self.remote_target_dir = ""
         self.remote_target_base_dir = remote_base_path
         self.init_finished = False
 

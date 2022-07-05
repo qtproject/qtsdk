@@ -31,6 +31,7 @@
 
 import argparse
 import os
+import sys
 
 from bldinstallercommon import create_qt_download_task, patch_qt
 from threadedwork import ThreadedWork
@@ -65,7 +66,7 @@ def get_arguments():
     if not args.qt_modules or args.base_url or args.module_name:
         if not args.base_url or not args.module_name:
             print('either --qt-module or --base-url and module_name(s) are required')
-            exit(1)
+            sys.exit(1)
 
     args.qt_modules = args.qt_modules if args.qt_modules else []  # ensure list
     args.qt_modules += [args.base_url + '/' + module + '/' + module + args.base_url_postfix

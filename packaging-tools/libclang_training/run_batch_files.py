@@ -146,6 +146,7 @@ class DebugView:
     def __init__(self, log_file_path):
         self.log_file_path = log_file_path
         self.executable = 'dbgview.exe'
+        self.proc = None
 
     def start_async(self):
         args = [self.executable, '/accepteula', '/l', self.log_file_path]
@@ -315,8 +316,8 @@ def merge_generated_csv_files(run_records):
             new_value.append(run_record)
         batch_file_id_2_run_record[run_record.batch_file_id] = new_value
 
-    for batch_file_id in batch_file_id_2_run_record:
-        csv_file_paths = [run_record.csv_file_path for run_record in batch_file_id_2_run_record[batch_file_id]]
+    for batch_file_id, runrecord_list in batch_file_id_2_run_record.items():
+        csv_file_paths = [run_record.csv_file_path for run_record in runrecord_list]
         merge_file_path = os.path.join(Config.LogDir, batch_file_id + ".csv")
 
         merge_csv_files.merge_files(merge_file_path, csv_file_paths)

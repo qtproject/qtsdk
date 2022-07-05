@@ -850,9 +850,9 @@ def main() -> None:
     parser.add_argument("--offline-installer-build-id", dest="offline_installer_id", type=str, default=os.getenv('BUILD_NUMBER', timestamp),
                         help="Add unique id for the offline installer")
 
-    parser.add_argument("--update-staging", dest="update_staging", action='store_true', default=os.getenv("DO_UPDATE_STAGING_REPOSITORY", False),
+    parser.add_argument("--update-staging", dest="update_staging", action='store_true', default=bool(os.getenv("DO_UPDATE_STAGING_REPOSITORY", "")),
                         help="Should the staging repository be updated?")
-    parser.add_argument("--update-production", dest="update_production", action='store_true', default=os.getenv("DO_UPDATE_PRODUCTION_REPOSITORY", False),
+    parser.add_argument("--update-production", dest="update_production", action='store_true', default=bool(os.getenv("DO_UPDATE_PRODUCTION_REPOSITORY", "")),
                         help="Should the production repository be updated?")
     parser.add_argument("--update-source", dest="update_source_type", type=str,
                         choices=[RepoSource.PENDING.value, RepoSource.STAGING.value],

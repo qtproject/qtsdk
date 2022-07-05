@@ -82,6 +82,7 @@ class SdkComponent:
                     return '*** Archive check fail! ***\n*** Unable to locate archive: ' + self.archive_uri
             elif not os.path.isfile(self.archive_uri):
                 return '*** Archive check fail! ***\n*** Unable to locate archive: ' + self.archive_uri
+            return None
 
         def path_leaf(self, path):
             head, tail = ntpath.split(path)
@@ -134,7 +135,7 @@ class SdkComponent:
             self.version = self.version.replace(item[0], item[1])
 
     def is_root_component(self):
-        if self.root_component == 'yes' or self.root_component == 'true':
+        if self.root_component in ('yes', 'true'):
             return True
         return False
 

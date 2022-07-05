@@ -89,13 +89,13 @@ def _handle_signing(file_path: str):
     log_entry[9] = "****"
     log_entry[11] = "****"
     log.info("Calling: %s", ' '.join(log_entry))
-    sign_result = subprocess.run(cmd_args_sign, stdout=DEVNULL, stderr=DEVNULL)
+    sign_result = subprocess.run(cmd_args_sign, stdout=DEVNULL, stderr=DEVNULL, check=False)
     if sign_result.returncode != 0:
         raise PackagingError(f"Package {file_path} signing  with error {sign_result.returncode}")
     log.info("Successfully signed: %s", file_path)
     signtool = os.path.basename(os.environ["WINDOWS_SIGNTOOL_X64_PATH"])
     cmd_args_verify: List[str] = [signtool, "verify", "-pa", file_path]
-    verify_result = subprocess.run(cmd_args_verify, stdout=DEVNULL, stderr=DEVNULL)
+    verify_result = subprocess.run(cmd_args_verify, stdout=DEVNULL, stderr=DEVNULL, check=False)
     if verify_result.returncode != 0:
         raise PackagingError(f"Failed to verify {file_path} with error {verify_result.returncode}")
     log.info("Successfully verified: %s", file_path)

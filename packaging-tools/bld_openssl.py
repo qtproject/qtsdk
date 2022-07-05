@@ -65,7 +65,7 @@ def check_environment():
         def check_cmd(cmd):
             if subprocess.call(cmd, stdout=fnull, stderr=fnull) != 0:
                 print(f"*** Cannot execute {cmd[0]}")
-                exit(1)
+                sys.exit(1)
         check_cmd(['nasm', '-h'])
         check_cmd(['nmake', '/?'])
         check_cmd(['7z'])
@@ -96,7 +96,7 @@ def main() -> None:
     parser = setup_argument_parser()
     args = parser.parse_args()
 
-    if args.toolset != 'VC-WIN32' and args.toolset != 'VC-WIN64A':
+    if args.toolset not in ('VC-WIN32', 'VC-WIN64A'):
         print('*** --toolset must be either VC-WIN32 or VC-WIN64A')
         sys.exit(1)
 

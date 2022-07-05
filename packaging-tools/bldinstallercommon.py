@@ -40,7 +40,7 @@ from pathlib import Path
 from subprocess import PIPE, STDOUT, Popen, check_call
 from tempfile import mkdtemp
 from traceback import print_exc
-from typing import Callable, List, Union
+from typing import Callable, List, Optional, Union
 from urllib.parse import urlparse
 from urllib.request import urlcleanup, urlopen, urlretrieve
 
@@ -77,11 +77,8 @@ def is_content_url_valid(url):
 ###############################
 # function
 ###############################
-current_download_percent = 0  # pylint: disable=C0103
-
-
 def dl_progress(count, block_size, total_size):
-    global current_download_percent  # pylint: disable=C0103
+    current_download_percent = 0
     percent = int(count * block_size * 100 / total_size)
     # produce only reasonable amount of prints into stdout
     if percent > current_download_percent:
@@ -102,14 +99,14 @@ def retrieve_url(url, savefile):
         urlcleanup()
         urlretrieve(url, savefile_tmp, reporthook=dl_progress)
         shutil.move(savefile_tmp, savefile)
-    except Exception:
+    except Exception as err:
         exc = sys.exc_info()[0]
         print(exc)
         try:
             os.remove(savefile_tmp)
         except Exception:  # swallow, do not shadow actual error
             pass
-        raise exc
+        raise exc from err
 
 
 ###############################
@@ -300,7 +297,8 @@ def locate_executable(search_dir: Union[str, Path], patterns: List[str]) -> str:
 # Function
 ###############################
 def locate_path(search_dir: Union[str, Path], patterns: List[str],
-                filters: List[Callable[[Path], bool]] = []) -> str:
+                filters: Optional[List[Callable[[Path], bool]]] = None) -> str:
+    filters = filters or []
     matches = locate_paths(search_dir, patterns, filters)
     if len(matches) != 1:
         raise PackagingError(f"Expected one result in '{search_dir}' matching '{patterns}'"
@@ -312,7 +310,8 @@ def locate_path(search_dir: Union[str, Path], patterns: List[str],
 # Function
 ###############################
 def locate_paths(search_dir: Union[str, Path], patterns: List[str],
-                 filters: List[Callable[[Path], bool]] = []) -> List[str]:
+                 filters: Optional[List[Callable[[Path], bool]]] = None) -> List[str]:
+    filters = filters or []
     patterns = patterns if patterns else ["*"]
     paths = [p for p in Path(search_dir).rglob("*") if any(p.match(ptn) for ptn in patterns)]
     return [str(p) for p in paths if all(f(p) for f in filters)]
@@ -388,7 +387,8 @@ def sanity_check_rpath_max_length(file_path, new_rpath):
 ###############################
 # Function
 ###############################
-def pathsplit(path, rest=[]):
+def pathsplit(path, rest=None):
+    rest = rest or []
     (head, tail) = os.path.split(path)
     if len(head) < 1:
         return [tail] + rest
@@ -397,7 +397,8 @@ def pathsplit(path, rest=[]):
     return pathsplit(head, [tail] + rest)
 
 
-def commonpath(list1, list2, common=[]):
+def commonpath(list1, list2, common=None):
+    common = common or []
     if len(list1) < 1:
         return (common, list1, list2)
     if len(list2) < 1:
@@ -641,9 +642,9 @@ def create_extract_function(file_path, target_path):
 def create_download_and_extract_tasks(url, target_path, temp_path):
     filename = os.path.basename(urlparse(url).path)
     sevenzip_file = os.path.join(temp_path, filename)
-    download_task = Task(f"download '{url}' to '{sevenzip_file}'")
+    download_task = Task(f"download '{url}' to '{sevenzip_file}'", function=None)
     download_task.add_function(download, url, sevenzip_file)
-    extract_task = Task(f"extract '{sevenzip_file}' to '{target_path}'")
+    extract_task = Task(f"extract '{sevenzip_file}' to '{target_path}'", function=None)
     extract_task.add_function(create_extract_function(sevenzip_file, target_path))
     return (download_task, extract_task)
 
@@ -654,7 +655,7 @@ def create_download_and_extract_tasks(url, target_path, temp_path):
 def create_download_extract_task(url, target_path, temp_path):
     filename = os.path.basename(urlparse(url).path)
     sevenzip_file = os.path.join(temp_path, filename)
-    download_extract_task = Task(f"download {url} to {sevenzip_file} and extract it to {target_path}")
+    download_extract_task = Task(f"download {url} to {sevenzip_file} and extract it to {target_path}", function=None)
     download_extract_task.add_function(download, url, sevenzip_file)
     download_extract_task.add_function(create_extract_function(sevenzip_file, target_path))
     return download_extract_task
@@ -664,9 +665,9 @@ def create_download_extract_task(url, target_path, temp_path):
 # function
 ###############################
 def create_qt_download_task(module_urls, target_qt5_path, temp_path, caller_arguments):
-    qt_task = Task(f'download and extract Qt to "{target_qt5_path}"')
+    qt_task = Task(f'download and extract Qt to "{target_qt5_path}"', function=None)
     download_work = ThreadedWork(f'download Qt packages to "{temp_path}"')
-    unzip_task = Task(f'extracting packages to "{target_qt5_path}"')
+    unzip_task = Task(f'extracting packages to "{target_qt5_path}"', function=None)
     # add Qt modules
     for module_url in module_urls:
         if is_content_url_valid(module_url):

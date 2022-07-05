@@ -41,7 +41,15 @@ repos:
         fail_fast: true
       - id: pylint
         name: Analyze code (pylint)
-        entry: bash -c 'for x in "$@"; do pipenv run python3 -m pylint --errors-only --enable=C0209,W1202,W1203,C0325,R1705,R1720,R1721,R1723,R1724,W0104,W0105,W0107,W0612,W0613,R0205,R1711,R1727,R1719,W1503,W0402,W1514,R1732,W0621,W0622,C0103 "$x"; done'
+        # Disabled:
+        # Missing docstrings: C0114,C0115,C0116
+        # Line too long: C0301
+        # Need refactoring: C0302,R0201,R0902,R0903,R0911,R0912,R0913,R0914,R0915,R0916,R1702
+        # Duplicate code: R0801
+        # TODO comments: W0511
+        # Too general exceptions: W0703
+        # Checkers removed in some newer versions of pylint: R0022
+        entry: bash -c 'for x in "$@"; do pipenv run python3 -m pylint --disable=C0114,C0115,C0116,C0301,C0302,R0201,R0801,R0902,R0903,R0911,R0912,R0913,R0914,R0915,R0916,R1702,W0511,W0703,R0022 "$x"; done'
         language: system
         types: [python]
         fail_fast: true

@@ -67,7 +67,7 @@ def is_internal_file_server_reachable() -> bool:
     try:
         package_server = get_pkg_value("PACKAGE_STORAGE_SERVER")
         ping = sh.which("ping")
-        ret = subprocess.run(args=[ping, "-c", "1", package_server], timeout=5, stdout=PIPE, stderr=PIPE)
+        ret = subprocess.run(args=[ping, "-c", "1", package_server], timeout=5, stdout=PIPE, stderr=PIPE, check=False)
         return ret.returncode == 0
     except Exception:
         pass

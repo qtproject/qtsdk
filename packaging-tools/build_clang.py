@@ -100,7 +100,7 @@ def msvc_environment(bitness):
     if not os.path.exists(program_files):
         program_files = os.path.join('C:', '/Program Files')
     msvc_ver = msvc_version()
-    if msvc_ver == '14.1' or msvc_ver == '14.2':
+    if msvc_ver in ('14.1', '14.2'):
         vcvarsall = os.path.join(program_files, 'Microsoft Visual Studio', msvc_year(), 'Professional', 'VC', 'Auxiliary', 'Build', 'vcvarsall.bat')
         arg = 'x64' if bitness == 64 else 'x86'
     else:
@@ -447,6 +447,7 @@ def upload_clang(file_path, remote_path):
 def profile_data(toolchain):
     if is_windows() and is_mingw_toolchain(toolchain):
         return os.getenv('PROFILE_DATA_URL')
+    return None
 
 
 def main():

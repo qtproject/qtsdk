@@ -200,7 +200,7 @@ def create_download_documentation_task(base_url, download_path):
         run_command(['7z', 'a', '-mx1', '-mmt2', '-md32m', '-ms=1g', target_filepath, dest_doc_path],
                     dest_doc_path)
 
-    download_task = Task(f"downloading documentation from {base_url}")
+    download_task = Task(f"downloading documentation from {base_url}", function=None)
     for item in file_list:
         url = base_url + '/doc/' + item
         download_filepath = os.path.join(download_path, item)
@@ -208,7 +208,7 @@ def create_download_documentation_task(base_url, download_path):
         download_task.add_function(create_extract_function(download_filepath, extract_path))
         download_task.add_function(create_remove_one_dir_level_function(os.path.join(extract_path, item.rstrip(".zip"))))
 
-    repackage_task = Task(f"repackaging documentation as {target_filepath}")
+    repackage_task = Task(f"repackaging documentation as {target_filepath}", function=None)
     repackage_task.add_function(repackage)
     return (download_task, repackage_task, file_url(target_filepath))
 
@@ -240,9 +240,9 @@ def create_download_openssl_task(url, download_path):
         run_command(['7z', 'a', '-mmt2', target_filepath, pattern],
                     source_path)
 
-    download_task = Task(f"downloading openssl from {url}")
+    download_task = Task(f"downloading openssl from {url}", function=None)
     download_task.add_function(download, url, download_filepath)
-    repackage_task = Task(f"repackaging openssl as {target_filepath}")
+    repackage_task = Task(f"repackaging openssl as {target_filepath}", function=None)
     repackage_task.add_function(create_extract_function(download_filepath, extract_path))
     repackage_task.add_function(repackage)
     return (download_task, repackage_task, file_url(target_filepath))
@@ -314,12 +314,14 @@ class BuildLog:
             with open(self.log_filepath, 'r', encoding="utf-8") as handle:
                 print(handle.read())
             return True  # re-raise
+        return None
 
 
 # writes output of process to log_filepath
 # on error it dumps the log file to stdout as well
-def check_call_log(args, execution_path, extra_env=dict(os.environ),
+def check_call_log(args, execution_path, extra_env=None,
                    log_filepath=None, log_overwrite=False):
+    extra_env = extra_env or os.environ.copy()
     if not log_filepath:
         do_execute_sub_process(args, execution_path, extra_env=extra_env)
     else:
@@ -626,7 +628,7 @@ def handle_qt_creator_build(option_dict, qtcreator_plugins):
         gammaray_url = (pkg_base_path + '/' + gammaray_url + '/' + target_env_dir + '/qt5_gammaray.7z')
 
     download_work = ThreadedWork('Download packages')
-    extract_work = Task('Extract packages')
+    extract_work = Task('Extract packages', function=None)
 
     def add_download_extract(url, target_path):
         (dl_task, extract) = create_download_and_extract_tasks(
@@ -678,7 +680,7 @@ def handle_qt_creator_build(option_dict, qtcreator_plugins):
         download_work.add_task_object(dl_task)
         extract_work.add_function(repackage.do_task)
 
-    download_packages_work = Task('Get and extract all needed packages')
+    download_packages_work = Task('Get and extract all needed packages', function=None)
     download_packages_work.add_function(download_work.run)
     download_packages_work.add_function(extract_work.do_task)
     download_packages_work.do_task()
@@ -743,7 +745,7 @@ def handle_qt_creator_build(option_dict, qtcreator_plugins):
         try:
             value = get_pkg_value(key)
             # for python2 this is unicode which is not accepted as environment
-            if value and type(value) is not str:
+            if value and not isinstance(value, str):
                 value = value.encode('UTF-8')
             if value:
                 build_environment[key] = value
@@ -788,14 +790,14 @@ def handle_qt_creator_build(option_dict, qtcreator_plugins):
     additional_plugins.extend([make_qtcplugin('appmanagerintegration', 'pcore-plugin-appman', qtcreator_version,
                                               modules=qt_module_local_urls,
                                               dependencies=plugin_dependencies,
-                                              additional_arguments=['--with-docs'])]),
+                                              additional_arguments=['--with-docs'])])
     plugin_telemetry_args = []
     if usp_server_url and usp_auth_key:
         plugin_telemetry_args = ['--add-config=-DUSP_SERVER_URL=' + option_dict['USP_SERVER_URL'],
                                  '--add-config=-DUSP_AUTH_KEY=' + option_dict['USP_AUTH_KEY']]
     additional_plugins.extend([make_qtcplugin('plugin-telemetry', 'plugin-telemetry', qtcreator_version,
                                               modules=qt_module_local_urls,
-                                              additional_arguments=plugin_telemetry_args)]),
+                                              additional_arguments=plugin_telemetry_args)])
 
     # Build Qt Creator plugins
     icu_local_url = file_url(os.path.join(qt_temp, os.path.basename(icu_libs))) if is_linux() else None

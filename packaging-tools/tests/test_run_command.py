@@ -107,7 +107,7 @@ class TestRunCommand(unittest.TestCase):
         self.assertEqual(expected_message_start, message_start)
         expected_message_end = "9 printed line"
         message_end = str(context_manager.exception).splitlines()[-1]
-        self.assertTrue(message_end.__contains__(expected_message_end))
+        self.assertTrue(expected_message_end in message_end)
 
     def test_different_exit_code_only_error_case_output(self):
         self.assertEqual(
@@ -123,7 +123,7 @@ class TestRunCommand(unittest.TestCase):
         )
 
     def test_with_threadedwork(self):
-        current_method_name = sys._getframe().f_code.co_name
+        current_method_name = sys._getframe().f_code.co_name  # pylint: disable=W0212
         test_work = ThreadedWork(f"{current_method_name} - run some command threaded")
         task_string_list = []
         task_string_list.append("--sleep 1 --print_lines 10")
@@ -136,7 +136,7 @@ class TestRunCommand(unittest.TestCase):
         test_work.run()
 
     def test_with_threadedwork_unexpected_exit_code(self):
-        current_method_name = sys._getframe().f_code.co_name
+        current_method_name = sys._getframe().f_code.co_name  # pylint: disable=W0212
         test_work = ThreadedWork(f"{current_method_name} - run some command threaded")
         # this exchange the current os._exit(-1) implementation only for this testing case
         separator_line = f"{os.linesep}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>{os.linesep}"
@@ -153,7 +153,7 @@ class TestRunCommand(unittest.TestCase):
         test_work.run()
 
     def test_with_threadedwork_crash(self):
-        current_method_name = sys._getframe().f_code.co_name
+        current_method_name = sys._getframe().f_code.co_name  # pylint: disable=W0212
         test_work = ThreadedWork(f"{current_method_name} - run some command threaded")
         # this exchange the current os._exit(-1) implementation only for this testing case
         separator_line = f"{os.linesep}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>{os.linesep}"
@@ -191,7 +191,7 @@ if __name__ == '__main__':
             sys.__stderr__.flush()
             crash()
         if caller_arguments.exit_code:
-            os._exit(caller_arguments.exit_code)
+            os._exit(caller_arguments.exit_code)  # pylint: disable=W0212
         if caller_arguments.testMethod:
             # python test_run_command.py --testMethod test_crash_only_error_case_output
             TestRunCommand(methodName=caller_arguments.testMethod).debug()

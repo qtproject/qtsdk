@@ -706,7 +706,7 @@ def cleanup_docs(install_dir):
             if filename.endswith(('.qdocconf', '.sha1', '.html')):
                 full_filename = os.path.join(submodule, filename)
                 if os.path.isfile(full_filename):
-                    log.info("Cleaning up -> deleting file: %s", item)
+                    log.info("Cleaning up -> deleting file: %s", full_filename)
                     os.remove(full_filename)
 
 
