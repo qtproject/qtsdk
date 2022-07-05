@@ -29,10 +29,10 @@
 #
 #############################################################################
 
+import asyncio
 import os
 import sys
 import unittest
-from asyncio import TimeoutError
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -52,7 +52,7 @@ class TestRunner(unittest.TestCase):
         await async_exec_cmd(['echo', "TEST"])
 
         cmd = ['sleep', '2']
-        with self.assertRaises(TimeoutError):
+        with self.assertRaises(asyncio.TimeoutError):
             await async_exec_cmd(cmd, timeout=1)
 
     @unittest.skipIf(is_windows(), "Windows not supported for this test yet")
@@ -62,16 +62,16 @@ class TestRunner(unittest.TestCase):
         self.assertEqual(output, "TEST")
 
         cmd = ['sleep', '2']
-        with self.assertRaises(TimeoutError):
+        with self.assertRaises(asyncio.TimeoutError):
             await async_exec_cmd(cmd, timeout=1)
 
     @data(
         (["echo", "TEST"], "TEST", True),
         (["echo", "TEST"], '', False),
     )
-    def test_do_execute_sub_process_get_output(self, data):
+    def test_do_execute_sub_process_get_output(self, test_data):
         # Test get_output
-        args, expected_output, get_output = data
+        args, expected_output, get_output = test_data
         _, output = do_execute_sub_process(args, os.getcwd(), get_output=get_output)
         self.assertEqual(output.strip(), expected_output)
 
@@ -81,9 +81,9 @@ class TestRunner(unittest.TestCase):
         (None, TypeError),
         (1234, TypeError)
     )
-    def test_do_execute_sub_process_invalid_args(self, data):
+    def test_do_execute_sub_process_invalid_args(self, test_data):
         # Test with invalid args
-        test_args, expected_exception = data
+        test_args, expected_exception = test_data
         with self.assertRaises(expected_exception):
             do_execute_sub_process(test_args, os.getcwd())
 
@@ -118,10 +118,10 @@ class TestRunner(unittest.TestCase):
         ({"EXTRA": "ENV"}, "ENV"),
         ({}, "%EXTRA%" if is_windows() else ""),
     )
-    def test_do_execute_sub_process_extra_env(self, data):
+    def test_do_execute_sub_process_extra_env(self, test_data):
         args = ["echo", "%EXTRA%"] if is_windows() else ["printenv", "EXTRA"]
         # Test extra_env
-        extra_env, expected_value = data
+        extra_env, expected_value = test_data
         _, output = do_execute_sub_process(args, os.getcwd(), False, True, extra_env)
         self.assertEqual(output.strip(), expected_value)
 

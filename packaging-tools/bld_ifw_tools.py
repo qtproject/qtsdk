@@ -736,14 +736,14 @@ def sign_windows_installerbase(file_name):
 ###############################
 # Replace all dict keys with values in file
 ###############################
-def patch(file, dict):
+def patch(file, replacements):
     filedata = None
     print(f"Patching {file} ...")
     with open(file, 'r', encoding="utf-8") as f:
         filedata = f.read()
 
-    for key in dict:
-        filedata = filedata.replace(key, dict[key])
+    for key in replacements:
+        filedata = filedata.replace(key, replacements[key])
 
     with open(file, 'w', encoding="utf-8") as f:
         f.write(filedata)

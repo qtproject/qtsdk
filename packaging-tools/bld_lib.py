@@ -38,6 +38,7 @@ import shutil
 import sys
 import tarfile
 from glob import glob
+from pathlib import Path
 from shutil import which
 from subprocess import CalledProcessError, check_call
 from time import gmtime, strftime
@@ -71,9 +72,9 @@ def findFile(searchPath: str, fileName: str) -> str:
 
 def collectLibs(searchPath: str) -> List[str]:
     for root, dirs, _ in os.walk(searchPath):
-        for dir in dirs:
-            if dir == "lib":
-                return [os.path.join(root, dir, x) for x in os.listdir(os.path.join(root, dir))]
+        for dir_name in dirs:
+            if dir_name == "lib":
+                return [str(Path(root, dir_name, x)) for x in os.listdir(Path(root, dir_name))]
     assert False, f"Unable to find: 'lib' from: {searchPath}"
 
 

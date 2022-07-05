@@ -200,7 +200,7 @@ class TestReleaseRepoUpdater(unittest.TestCase):
 
         # parse all tasks i.e. no filters
         tasks = parse_data(config, task_filters=[])
-        await build_online_repositories(tasks=tasks, license="opensource", installerConfigBaseDir="foo", artifactShareBaseUrl="foo",
+        await build_online_repositories(tasks=tasks, license_="opensource", installerConfigBaseDir="foo", artifactShareBaseUrl="foo",
                                         ifwTools="foo", buildRepositories=False)
         task = tasks.pop()
         self.assertTrue(task.source_online_repository_path.endswith("foo/bar/path_1/online_repository"))

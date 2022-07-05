@@ -345,7 +345,7 @@ def build_and_install(build_path, environment, build_targets, install_targets):
     do_execute_sub_process(install_cmd + install_targets, build_path, extra_env=environment)
 
 
-def cmake_command(toolchain, src_path, install_path, profile_data_path, first_run, bitness, build_type):
+def get_cmake_command(toolchain, src_path, install_path, profile_data_path, first_run, bitness, build_type):
     enabled_projects = 'clang;clang-tools-extra'
     if profile_data_path and first_run:
         enabled_projects = 'clang'
@@ -376,7 +376,7 @@ def build_clang(toolchain, src_path, build_path, install_path, profile_data_path
     if build_path and not os.path.lexists(build_path):
         os.makedirs(build_path)
 
-    cmake_cmd = cmake_command(toolchain, src_path, install_path, profile_data_path, first_run, bitness, build_type)
+    cmake_cmd = get_cmake_command(toolchain, src_path, install_path, profile_data_path, first_run, bitness, build_type)
 
     do_execute_sub_process(cmake_cmd, build_path, extra_env=environment)
 

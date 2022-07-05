@@ -61,11 +61,11 @@ def qt_static_platform_configure_options():
     return []
 
 
-def qt_src_path(qt_build_base):
+def get_qt_src_path(qt_build_base):
     return os.path.join(qt_build_base, 'src')
 
 
-def qt_build_path(qt_build_base):
+def get_qt_build_path(qt_build_base):
     return os.path.join(qt_build_base, 'build')
 
 
@@ -134,8 +134,8 @@ def build_sdktool(qt_src_url, qt_build_base, sdktool_src_path, sdktool_build_pat
                          target_path=sdktool_target_path,
                          make_command=make_command,
                          redirect_output=redirect_output)
-    qt_src = qt_src_path(qt_build_base)
-    qt_build = qt_build_path(qt_build_base)
+    qt_src = get_qt_src_path(qt_build_base)
+    qt_build = get_qt_build_path(qt_build_base)
     get_and_extract_qt_src(qt_src_url, qt_build_base, qt_src)
     configure_qt(params, qt_src, qt_build)
     build_qt(params, qt_build)

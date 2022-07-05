@@ -72,9 +72,9 @@ class TestCommon(unittest.TestCase):
         ),
         ("%foo\nbar%foo", [("%foobar%", "foobar"), ("%foo%", "")], "%foo\nbar%foo"),
     )
-    def test_replace_in_files(self, data):
+    def test_replace_in_files(self, test_data):
         # unpack data
-        file_contents, replacements, expected_file_content = data
+        file_contents, replacements, expected_file_content = test_data
         with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
             # run tag substitution with data
             tmp_file = Path(tmp_base_dir) / "test"
@@ -135,8 +135,8 @@ class TestCommon(unittest.TestCase):
             ["file.x"],
         ),
     )
-    def test_search_for_files(self, data):
-        file, params, expected_files = data
+    def test_search_for_files(self, test_data):
+        file, params, expected_files = test_data
         with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
             path, content = file
             tmp_file = Path(tmp_base_dir) / path
@@ -160,8 +160,8 @@ class TestCommon(unittest.TestCase):
         ((["*.t", "*.y"], [], ['tst.y', '.t', 'tst.t', 'd/tst.t', '.d/.t'])),
         (([".t", ".d"], [], ['.d', '.t', '.d/.t']))
     )
-    def test_locate_paths(self, data):
-        pattern, filters, expected_results = data
+    def test_locate_paths(self, test_data):
+        pattern, filters, expected_results = test_data
         with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
             # Create files and folders
             test_folders = ["/tempty", "/d/n", "/.d"]

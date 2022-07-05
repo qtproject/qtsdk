@@ -54,8 +54,8 @@ def build(src_dir, install_dir, toolset):
 
 
 def archive(install_dir, archive_prefix):
-    (dir, name) = os.path.split(install_dir)
-    do_execute_sub_process(['7z', 'a', archive_prefix + '.7z', name], dir, True)
+    (directory, name) = os.path.split(install_dir)
+    do_execute_sub_process(['7z', 'a', archive_prefix + '.7z', name], directory, True)
     do_execute_sub_process(['7z', 'a', archive_prefix + '-runtime.7z', '*.dll'], os.path.join(install_dir, 'bin'), True)
 
 

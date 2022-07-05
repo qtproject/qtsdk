@@ -55,18 +55,18 @@ class TestCommon(unittest.TestCase):
         ] if is_windows() else ["foodebugbar"]
     ))
     @unittest.skipIf(not(is_windows() or is_macos()), "This test is only for Windows and macOS")
-    def test_remove_all_debug_libraries_win(self, data):
-        dirs, files, remaining_files = data
+    def test_remove_all_debug_libraries_win(self, test_data):
+        dirs, files, remaining_files = test_data
         with TemporaryDirectory(dir=os.getcwd()) as tmpdir:
-            for dir in dirs:
-                Path(tmpdir + dir).mkdir()
+            for directory in dirs:
+                Path(tmpdir + directory).mkdir()
                 for file in files:
-                    Path(tmpdir + dir + file).touch()
+                    Path(tmpdir + directory + file).touch()
             remove_all_debug_libraries(tmpdir)
-            for dir in dirs:
-                result_paths = locate_paths(tmpdir + dir, ["*"], [os.path.isfile])
-                result_rel = [str(Path(p).relative_to(tmpdir + dir)) for p in result_paths]
-                if dir == "/unrelated/":
+            for directory in dirs:
+                result_paths = locate_paths(tmpdir + directory, ["*"], [os.path.isfile])
+                result_rel = [str(Path(p).relative_to(tmpdir + directory)) for p in result_paths]
+                if directory == "/unrelated/":
                     self.assertCountEqual(result_rel, files)
                 else:
                     self.assertCountEqual(result_rel, remaining_files)

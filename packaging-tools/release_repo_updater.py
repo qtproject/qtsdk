@@ -121,9 +121,9 @@ class event_register():
 
 class QtRepositoryLayout:
 
-    def __init__(self, root_path: str, license: str, repo_domain: str) -> None:
+    def __init__(self, root_path: str, license_: str, repo_domain: str) -> None:
         self.root_path = root_path
-        self.license = license
+        self.license_ = license_
         self.repo_domain = repo_domain
         self.pending = "pending"
         self.staging = "staging"
@@ -131,8 +131,8 @@ class QtRepositoryLayout:
         # <root_path>/<license>/<pending|staging|production>/<repo_domain>/
         # /data/online_repositories/opensource/pending|staging|production/qtsdkrepository/
         log.info("self.root_path %s", self.root_path)
-        log.info("self.license %s", self.license)
-        self.base_repo_path = os.path.join(self.root_path, self.license)
+        log.info("self.license_ %s", self.license_)
+        self.base_repo_path = os.path.join(self.root_path, self.license_)
 
     def get_base_repo_path(self) -> str:
         return self.base_repo_path
@@ -244,18 +244,18 @@ def trigger_rta(rtaServerUrl: str, task: ReleaseTask) -> None:
             # let it proceed
 
 
-def _remote_path_exists(server: str, remotePath: str, type: str) -> bool:
-    cmd = get_remote_login_cmd(server) + ['test', type, remotePath, '&& echo OK || echo NOK']
+def _remote_path_exists(server: str, remotePath: str, test_arg: str) -> bool:
+    cmd = get_remote_login_cmd(server) + ['test', test_arg, remotePath, '&& echo OK || echo NOK']
     output = subprocess.check_output(' '.join(cmd), shell=True, timeout=60 * 2).decode("utf-8")
     return output.strip() == "OK"
 
 
 def remote_path_exists(server: str, remotePath: str) -> bool:
-    return _remote_path_exists(server, remotePath, type="-d")
+    return _remote_path_exists(server, remotePath, test_arg="-d")
 
 
 def remote_file_exists(server: str, remotePath: str) -> bool:
-    return _remote_path_exists(server, remotePath, type="-f")
+    return _remote_path_exists(server, remotePath, test_arg="-f")
 
 
 async def ensure_ext_repo_paths(server: str, ext: str, repo: str) -> None:
@@ -327,8 +327,8 @@ def create_remote_repository_backup(server: str, remote_repo_path: str) -> str:
 
 
 def sync_production_repositories_to_s3(server: str, s3: str, updatedProductionRepositories: Dict[str, str],
-                                       remoteRootPath: str, license: str) -> None:
-    remoteLogsBasePath = os.path.join(remoteRootPath, license, "s3_sync_logs")
+                                       remoteRootPath: str, license_: str) -> None:
+    remoteLogsBasePath = os.path.join(remoteRootPath, license_, "s3_sync_logs")
     create_remote_paths(server, [remoteLogsBasePath])
 
     for repo, remoteProductionRepoFullPath in updatedProductionRepositories.items():
@@ -361,8 +361,8 @@ def sync_production_xml_to_s3(server: str, serverHome: str, productionRepoPath: 
 
 
 async def sync_production_repositories_to_ext(server: str, ext: str, updatedProductionRepositories: Dict[str, str],
-                                              remoteRootPath: str, license: str) -> None:
-    remoteLogsBasePath = os.path.join(remoteRootPath, license, "ext_sync_logs")
+                                              remoteRootPath: str, license_: str) -> None:
+    remoteLogsBasePath = os.path.join(remoteRootPath, license_, "ext_sync_logs")
     create_remote_paths(server, [remoteLogsBasePath])
 
     extServer, extBasePath = parse_ext(ext)
@@ -418,7 +418,7 @@ async def update_repository(stagingServer: str, repoLayout: QtRepositoryLayout, 
         trigger_rta(rta, task)
 
 
-async def build_online_repositories(tasks: List[ReleaseTask], license: str, installerConfigBaseDir: str, artifactShareBaseUrl: str,
+async def build_online_repositories(tasks: List[ReleaseTask], license_: str, installerConfigBaseDir: str, artifactShareBaseUrl: str,
                                     ifwTools: str, buildRepositories: bool) -> List[str]:
     log.info("Building online repositories: %i", len(tasks))
     # create base tmp dir
@@ -427,7 +427,7 @@ async def build_online_repositories(tasks: List[ReleaseTask], license: str, inst
         shutil.rmtree(tmpBaseDir, ignore_errors=True)
     os.makedirs(tmpBaseDir, exist_ok=True)
 
-    assert license, "The 'license' must be defined!"
+    assert license_, "The 'license_' must be defined!"
     assert artifactShareBaseUrl, "The 'artifactShareBaseUrl' must be defined!"
     assert ifwTools, "The 'ifwTools' must be defined!"
     # locate the repo build script
@@ -449,7 +449,7 @@ async def build_online_repositories(tasks: List[ReleaseTask], license: str, inst
             raise PackagingError(f"Invalid 'config_file' path: {installerConfigFile}")
 
         cmd = [sys.executable, scriptPath, "-c", installerConfigBaseDir, "-f", installerConfigFile]
-        cmd += ["--create-repo", "-l", license, "-u", artifactShareBaseUrl, "--ifw-tools", ifwTools]
+        cmd += ["--create-repo", "-l", license_, "-u", artifactShareBaseUrl, "--ifw-tools", ifwTools]
         cmd += ["--force-version-number-increase"]
         for substitution in task.get_installer_string_replacement_list():
             cmd += ["--add-substitution=" + substitution]
@@ -484,7 +484,7 @@ async def update_repositories(tasks: List[ReleaseTask], stagingServer: str, stag
 
 
 async def sync_production(tasks: List[ReleaseTask], repoLayout: QtRepositoryLayout, syncS3: str, syncExt: str,
-                          stagingServer: str, stagingServerRoot: str, license: str, event_injector: str,
+                          stagingServer: str, stagingServerRoot: str, license_: str, event_injector: str,
                           export_data: Dict[str, str]) -> None:
     log.info("triggering production sync..")
     # collect production sync jobs
@@ -497,17 +497,17 @@ async def sync_production(tasks: List[ReleaseTask], repoLayout: QtRepositoryLayo
 
     # if _all_ repository updates to production were successful then we can sync to production
     if syncS3:
-        async with event_register(f"{license}: repo sync s3", event_injector, export_data):
+        async with event_register(f"{license_}: repo sync s3", event_injector, export_data):
             sync_production_repositories_to_s3(stagingServer, syncS3, updatedProductionRepositories,
-                                               stagingServerRoot, license)
+                                               stagingServerRoot, license_)
     if syncExt:
-        async with event_register(f"{license}: repo sync ext", event_injector, export_data):
+        async with event_register(f"{license_}: repo sync ext", event_injector, export_data):
             await sync_production_repositories_to_ext(stagingServer, syncExt, updatedProductionRepositories,
-                                                      stagingServerRoot, license)
+                                                      stagingServerRoot, license_)
     log.info("Production sync trigger done!")
 
 
-async def handle_update(stagingServer: str, stagingServerRoot: str, license: str, tasks: List[ReleaseTask],
+async def handle_update(stagingServer: str, stagingServerRoot: str, license_: str, tasks: List[ReleaseTask],
                         repoDomain: str, installerConfigBaseDir: str, artifactShareBaseUrl: str,
                         updateStaging: bool, updateProduction: bool, syncS3: str, syncExt: str, rta: str, ifwTools: str,
                         buildRepositories: bool, updateRepositories: bool, syncRepositories: bool,
@@ -515,18 +515,18 @@ async def handle_update(stagingServer: str, stagingServerRoot: str, license: str
     """Build all online repositories, update those to staging area and sync to production."""
     log.info("Starting repository update for %i tasks..", len(tasks))
     # get repository layout
-    repoLayout = QtRepositoryLayout(stagingServerRoot, license, repoDomain)
+    repoLayout = QtRepositoryLayout(stagingServerRoot, license_, repoDomain)
     # this may take a while depending on how big the repositories are
-    async with event_register(f"{license}: repo build", event_injector, export_data):
-        ret = await build_online_repositories(tasks, license, installerConfigBaseDir, artifactShareBaseUrl, ifwTools,
+    async with event_register(f"{license_}: repo build", event_injector, export_data):
+        ret = await build_online_repositories(tasks, license_, installerConfigBaseDir, artifactShareBaseUrl, ifwTools,
                                               buildRepositories)
 
     if updateRepositories:
-        async with event_register(f"{license}: repo update", event_injector, export_data):
+        async with event_register(f"{license_}: repo update", event_injector, export_data):
             await update_repositories(tasks, stagingServer, stagingServerRoot, repoLayout, updateStaging, updateProduction,
                                       rta, ifwTools)
     if syncRepositories:
-        await sync_production(tasks, repoLayout, syncS3, syncExt, stagingServer, stagingServerRoot, license,
+        await sync_production(tasks, repoLayout, syncS3, syncExt, stagingServer, stagingServerRoot, license_,
                               event_injector, export_data)
 
     log.info("Repository updates done!")
@@ -592,7 +592,7 @@ def update_remote_latest_available_dir(newInstaller: str, remoteUploadPath: str,
 
 
 def upload_offline_to_remote(installerPath: str, remoteUploadPath: str, stagingServer: str, task: ReleaseTask,
-                             installerBuildId: str, enable_oss_snapshots: bool, license: str) -> None:
+                             installerBuildId: str, enable_oss_snapshots: bool, license_: str) -> None:
     for file in os.listdir(installerPath):
         if file.endswith(".app"):
             continue
@@ -605,7 +605,7 @@ def upload_offline_to_remote(installerPath: str, remoteUploadPath: str, stagingS
         log.info("Uploading offline installer: %s to: %s", installer, remote_destination)
         exec_cmd(cmd, timeout=60 * 60)  # 1h
         update_remote_latest_available_dir(installer, remote_destination, task, stagingServer, installerBuildId)
-        if enable_oss_snapshots and license == "opensource":
+        if enable_oss_snapshots and license_ == "opensource":
             upload_snapshots_to_remote(stagingServer, remoteUploadPath, task, installerBuildId, file_name_final)
 
 
@@ -633,21 +633,21 @@ def notarize_dmg(dmgPath, installerBasename) -> None:
     exec_cmd(cmd, timeout=60 * 60 * 3)
 
 
-async def build_offline_tasks(stagingServer: str, stagingServerRoot: str, tasks: List[ReleaseTask], license: str,
+async def build_offline_tasks(stagingServer: str, stagingServerRoot: str, tasks: List[ReleaseTask], license_: str,
                               installerConfigBaseDir: str, artifactShareBaseUrl: str,
                               ifwTools: str, installerBuildId: str, updateStaging: bool,
                               enable_oss_snapshots: bool, event_injector: str, export_data: Dict[str, str]) -> None:
-    async with event_register(f"{license}: offline", event_injector, export_data):
-        await _build_offline_tasks(stagingServer, stagingServerRoot, tasks, license, installerConfigBaseDir,
+    async with event_register(f"{license_}: offline", event_injector, export_data):
+        await _build_offline_tasks(stagingServer, stagingServerRoot, tasks, license_, installerConfigBaseDir,
                                    artifactShareBaseUrl, ifwTools, installerBuildId, updateStaging, enable_oss_snapshots)
 
 
-async def _build_offline_tasks(stagingServer: str, stagingServerRoot: str, tasks: List[ReleaseTask], license: str,
+async def _build_offline_tasks(stagingServer: str, stagingServerRoot: str, tasks: List[ReleaseTask], license_: str,
                                installerConfigBaseDir: str, artifactShareBaseUrl: str,
                                ifwTools: str, installerBuildId: str, updateStaging: bool, enable_oss_snapshots: bool) -> None:
     log.info("Offline installer task(s): %i", len(tasks))
 
-    assert license, "The 'license' must be defined!"
+    assert license_, "The 'license_' must be defined!"
     assert artifactShareBaseUrl, "The 'artifactShareBaseUrl' must be defined!"
     assert ifwTools, "The 'ifwTools' must be defined!"
 
@@ -663,7 +663,7 @@ async def _build_offline_tasks(stagingServer: str, stagingServerRoot: str, tasks
             raise PackagingError(f"Invalid 'config_file' path: {installerConfigFile}")
 
         cmd = [sys.executable, scriptPath, "-c", installerConfigBaseDir, "-f", installerConfigFile]
-        cmd += ["--offline", "-l", license, "-u", artifactShareBaseUrl, "--ifw-tools", ifwTools]
+        cmd += ["--offline", "-l", license_, "-u", artifactShareBaseUrl, "--ifw-tools", ifwTools]
         cmd += ["--preferred-installer-name", task.get_installer_name()]
         cmd += ["--force-version-number-increase"]
         cmd.extend(["--add-substitution=" + s for s in task.get_installer_string_replacement_list()])
@@ -676,7 +676,7 @@ async def _build_offline_tasks(stagingServer: str, stagingServerRoot: str, tasks
         sign_offline_installer(installer_output_dir, task.get_installer_name())
         if updateStaging:
             remote_upload_path = create_offline_remote_dirs(task, stagingServer, stagingServerRoot, installerBuildId)
-            upload_offline_to_remote(installer_output_dir, remote_upload_path, stagingServer, task, installerBuildId, enable_oss_snapshots, license)
+            upload_offline_to_remote(installer_output_dir, remote_upload_path, stagingServer, task, installerBuildId, enable_oss_snapshots, license_)
 
 
 def upload_snapshots_to_remote(staging_server: str, remote_upload_path: str, task: ReleaseTask, installer_build_id: str, installer_filename: str):
@@ -779,7 +779,7 @@ def main() -> None:
     parser.add_argument("--artifacts-share-url", dest="artifact_share_url", type=str, default=os.getenv("ARTIFACTS_SHARE_URL"),
                         help="Root URL for artifacts")
 
-    parser.add_argument("--license", dest="license", type=str, choices=["enterprise", "opensource"], default=os.getenv("LICENSE"),
+    parser.add_argument("--license", dest="license_", type=str, choices=["enterprise", "opensource"], default=os.getenv("LICENSE"),
                         help="enterprise/opensource")
     parser.add_argument("--repo-domain", dest="repo_domain", type=str, choices=["qtsdkrepository", "marketplace"],
                         help="qtsdkrepository/marketplace")
@@ -817,7 +817,7 @@ def main() -> None:
     assert args.config, "'--config' was not given!"
     assert args.staging_server_root, "'--staging-server-root' was not given!"
 
-    if args.license == "opensource":
+    if args.license_ == "opensource":
         assert not args.sync_s3, "The '--sync-s3' is not supported for 'opensource' license!"
 
     # user explicitly disabled rta triggers
@@ -836,7 +836,7 @@ def main() -> None:
     if args.build_offline:
         # get offline tasks
         tasks = parse_config(args.config, task_filters=append_to_task_filters(args.task_filters, "offline"))
-        loop.run_until_complete(build_offline_tasks(args.staging_server, args.staging_server_root, tasks, args.license,
+        loop.run_until_complete(build_offline_tasks(args.staging_server, args.staging_server_root, tasks, args.license_,
                                                     installerConfigBaseDir, args.artifact_share_url, args.ifw_tools,
                                                     args.offline_installer_id, args.update_staging,
                                                     args.enable_oss_snapshots, args.event_injector, export_data))
@@ -844,7 +844,7 @@ def main() -> None:
     else:  # this is either repository build or repository sync build
         # get repository tasks
         tasks = parse_config(args.config, task_filters=append_to_task_filters(args.task_filters, "repository"))
-        ret = loop.run_until_complete(handle_update(args.staging_server, args.staging_server_root, args.license, tasks,
+        ret = loop.run_until_complete(handle_update(args.staging_server, args.staging_server_root, args.license_, tasks,
                                       args.repo_domain, installerConfigBaseDir, args.artifact_share_url,
                                       args.update_staging, args.update_production, args.sync_s3, args.sync_ext,
                                       args.rta, args.ifw_tools,

@@ -308,9 +308,9 @@ class BuildLog:
             raise
         return self.file
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, exc_type, exc_value, exc_traceback):
         self.file.close()
-        if type:  # exception raised -> print the log and re-raise
+        if exc_type:  # exception raised -> print the log and re-raise
             with open(self.log_filepath, 'r', encoding="utf-8") as f:
                 print(f.read())
             return True  # re-raise
@@ -629,9 +629,9 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     extract_work = Task('Extract packages')
 
     def add_download_extract(url, target_path):
-        (download, extract) = create_download_and_extract_tasks(
+        (dl_task, extract) = create_download_and_extract_tasks(
             url, target_path, download_temp)
-        download_work.addTaskObject(download)
+        download_work.addTaskObject(dl_task)
         extract_work.addFunction(extract.do)
 
     # clang package
@@ -668,14 +668,14 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     # Documentation package for cross-references to Qt.
     # Unfortunately this doesn't follow the normal module naming convention.
     # We have to download, unpack, and repack renaming the toplevel directory.
-    (download, repackage, documentation_local_url) = create_download_documentation_task(
+    (dl_task, repackage, documentation_local_url) = create_download_documentation_task(
         pkg_base_path + '/' + qt_base_path, os.path.join(download_temp, 'qtdocumentation'))
-    download_work.addTaskObject(download)
+    download_work.addTaskObject(dl_task)
     extract_work.addFunction(repackage.do)
 
     if openssl_libs:
-        (download, repackage, openssl_local_url) = create_download_openssl_task(openssl_libs, os.path.join(download_temp, 'openssl'))
-        download_work.addTaskObject(download)
+        (dl_task, repackage, openssl_local_url) = create_download_openssl_task(openssl_libs, os.path.join(download_temp, 'openssl'))
+        download_work.addTaskObject(dl_task)
         extract_work.addFunction(repackage.do)
 
     download_packages_work = Task('Get and extract all needed packages')
@@ -1074,7 +1074,7 @@ def initPkgOptions(args):
     else:
         optionDict = dict(os.environ)
         # Check for command line overrides
-        optionDict['LICENSE'] = args.license
+        optionDict['LICENSE'] = args.license_
         optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] = args.path
         optionDict['OPENSSL_LIBS'] = args.openssl_libs
         optionDict['SNAPSHOT_SERVER_PATH'] = args.snapshot_path
@@ -1153,7 +1153,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(prog="Build Wrapper", description="Manage all packaging related build steps.")
     parser.add_argument("-c", "--command", dest="command", required=True, choices=CMD_LIST, help=str(CMD_LIST))
     parser.add_argument("--pkg-conf-file", dest="pkg_conf_file", default="", help="instead of reading various config options from env variables read them from the given file.")
-    parser.add_argument("-l", "--license", dest="license", default="", help="license type: enterprise or opensource")
+    parser.add_argument("-l", "--license", dest="license_", default="", help="license type: enterprise or opensource")
     parser.add_argument("-b", "--build_number", dest="build_number", default="", help="Unique build number identifier")
     parser.add_argument("-s", "--server", dest="server", default="", help="Upload server e.g. <user>@<host>")
     parser.add_argument("--override_server_path_http", dest="override_server_path_http", help="In case we already have local downloaded modules or we want to use a different source it can be overwritten here.")
