@@ -33,9 +33,11 @@ import tempfile
 import unittest
 from configparser import ConfigParser, ExtendedInterpolation
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from ddt import data, ddt, unpack  # type: ignore
+from htmllistparse import FileEntry  # type: ignore
+from urlpath import URL  # type: ignore
 
 from sdkcomponent import (
     ArchiveResolver,
@@ -100,6 +102,32 @@ def create_paths(root_folder: str, paths: List[str]) -> List[str]:
             with open(full_path, "a", encoding="utf-8"):
                 pass
     return ret
+
+
+def create_listing(url: URL, timeout: int) -> Tuple[Optional[Any], List[FileEntry]]:
+    _ = timeout
+    uri = url.as_uri().rstrip("/")
+    if not uri:
+        return (None, [])
+    tree_dict: Dict[str, List[FileEntry]] = {
+        "http://fileshare.intra/base": [FileEntry("path/", "", "", "")],
+        "http://fileshare.intra/base/path": [
+            FileEntry("a.7z", "", "", ""),
+            FileEntry("b.7z", "", "", ""),
+            FileEntry("c.tar.gz", "", "", ""),
+            FileEntry("d.tar.xz", "", "", ""),
+            FileEntry("child/", "", "", ""),
+        ],
+        "http://fileshare.intra/base/path/child": [
+            FileEntry("a.7z", "", "", ""),
+            FileEntry("b.7z", "", "", ""),
+            FileEntry("c.tar.gz", "", "", ""),
+            FileEntry("d.txt", "", "", ""),
+            FileEntry("child/", "", "", ""),
+        ],
+        "http://fileshare.intra/base/path/child/child": [FileEntry("a.txt", "", "", "")]
+    }
+    return url.path if uri in tree_dict else None, tree_dict.get(uri, [])
 
 
 @ddt
@@ -239,12 +267,74 @@ class TestRunner(unittest.TestCase):
                 pass
 
             resolver = ArchiveResolver("http://intranet.local.it/artifacts", template_folder)
-            self.assertEqual(resolver.resolve_payload_uri("readme.txt"), payload_file)
+            self.assertEqual(resolver.resolve_payload_uri("readme.txt").pop(), payload_file)
             self.assertEqual(
-                resolver.resolve_payload_uri("qt/qtsvg/qtsvg-RHEL_7_4.7z"),
+                resolver.resolve_payload_uri("qt/qtsvg/qtsvg-RHEL_7_4.7z").pop(),
                 "http://intranet.local.it/artifacts/qt/qtsvg/qtsvg-RHEL_7_4.7z",
             )
-            self.assertEqual(resolver.resolve_payload_uri(__file__), __file__)
+            self.assertEqual(resolver.resolve_payload_uri(__file__).pop(), __file__)
+
+    @data(  # type: ignore
+        (
+            "http://fileshare.intra/base/path/*",
+            [
+                URL("http://fileshare.intra/base/path/a.7z"),
+                URL("http://fileshare.intra/base/path/b.7z"),
+                URL('http://fileshare.intra/base/path/c.tar.gz'),
+                URL('http://fileshare.intra/base/path/d.tar.xz'),
+                URL('http://fileshare.intra/base/path/child/a.7z'),
+                URL('http://fileshare.intra/base/path/child/b.7z'),
+                URL('http://fileshare.intra/base/path/child/c.tar.gz'),
+                URL('http://fileshare.intra/base/path/child/d.txt'),
+                URL('http://fileshare.intra/base/path/child/child/a.txt'),
+            ],
+        ),
+        (
+            "http://fileshare.intra/base/path/*.7z",
+            [
+                URL("http://fileshare.intra/base/path/a.7z"),
+                URL("http://fileshare.intra/base/path/b.7z"),
+                URL('http://fileshare.intra/base/path/child/a.7z'),
+                URL('http://fileshare.intra/base/path/child/b.7z'),
+            ],
+        ),
+        (
+            "http://fileshare.intra/base/path/*.tar.*",
+            [
+                URL('http://fileshare.intra/base/path/c.tar.gz'),
+                URL('http://fileshare.intra/base/path/d.tar.xz'),
+                URL('http://fileshare.intra/base/path/child/c.tar.gz'),
+            ],
+        ),
+        (
+            "http://fileshare.intra/base/path/*.t*",
+            [
+                URL('http://fileshare.intra/base/path/c.tar.gz'),
+                URL('http://fileshare.intra/base/path/d.tar.xz'),
+                URL('http://fileshare.intra/base/path/child/c.tar.gz'),
+                URL('http://fileshare.intra/base/path/child/d.txt'),
+                URL('http://fileshare.intra/base/path/child/child/a.txt'),
+            ],
+        ),
+        (
+            "http://fileshare.intra/base/path/chi?d/child/[a-f].txt",
+            [
+                URL('http://fileshare.intra/base/path/child/child/a.txt'),
+            ],
+        ),
+        (
+            "http://fileshare.intra/base/path/*[b-f].7z",
+            [
+                URL('http://fileshare.intra/base/path/b.7z'),
+                URL('http://fileshare.intra/base/path/child/b.7z'),
+            ],
+        ),
+    )
+    @unpack  # type: ignore
+    @unittest.mock.patch("htmllistparse.fetch_listing", side_effect=create_listing)  # type: ignore
+    def test_pattern_archive_resolver(self, pattern: str, expected: List[str], _: Any) -> None:
+        resolver = ArchiveResolver("", "")
+        self.assertCountEqual(resolver.resolve_uri_pattern(pattern, None), expected)
 
     def test_locate_pkg_templ_dir_invalid(self) -> None:
         with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
