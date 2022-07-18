@@ -37,6 +37,7 @@ import sys
 from argparse import ArgumentParser, ArgumentTypeError
 from configparser import ConfigParser, ExtendedInterpolation
 from dataclasses import dataclass, field
+from enum import Enum
 from multiprocessing import cpu_count
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -48,7 +49,6 @@ from bldinstallercommon import (
     copy_tree,
     extract_file,
     handle_component_rpath,
-    is_content_url_valid,
     locate_executable,
     locate_path,
     locate_paths,
@@ -57,13 +57,14 @@ from bldinstallercommon import (
     replace_in_files,
     retrieve_url,
     safe_config_key_fetch,
+    uri_exists,
 )
 from installer_utils import PackagingError
 from logging_util import init_logger
 from patch_qt import patch_files, patch_qt_edition
 from pkg_constants import INSTALLER_OUTPUT_DIR_NAME, PKG_TEMPLATE_BASE_DIR_NAME
 from runner import run_cmd
-from sdkcomponent import IfwPayloadItem, IfwSdkComponent, IfwSdkError, parse_ifw_sdk_comp
+from sdkcomponent import IfwPayloadItem, IfwSdkComponent, parse_ifw_sdk_comp
 from threadedwork import ThreadedWork
 
 if is_windows():
@@ -87,6 +88,39 @@ COMPONENT_SHA1_TAG = '%COMPONENT_SHA1%'
 
 class CreateInstallerError(Exception):
     pass
+
+
+class DryRunMode(Enum):
+    PAYLOAD = "payload"
+    CONFIGS = "configs"
+
+    @classmethod
+    def as_list(cls) -> List[str]:
+        """
+        Get the list of string mode names
+
+        Returns:
+            A list of supported values for dry run mode
+        """
+        return [mode.name for mode in cls]
+
+    @classmethod
+    def get_parser(cls) -> ArgumentParser:
+        """
+        Get a parser (without help) for specifying dry run modes
+
+        Returns:
+            An argparse.Argumentparser parser containing the --dry-run argument
+        """
+        choices = cls.as_list()
+        mode_parser = ArgumentParser(
+            prog=f"Test run w/o payload download, validation modes: {'|'.join(choices)}",
+            add_help=False
+        )
+        mode_parser.add_argument(
+            "--dry-run", dest="dry_run", type=str.upper, default=None, choices=choices
+        )
+        return mode_parser
 
 
 ##############################################################
@@ -256,19 +290,17 @@ def parse_component_data(
                     substitutions=task.substitutions,
                     file_share_base_url=task.archive_base_url,
                 )
-                try:
-                    # Validate component
-                    sdk_comp.validate()
-                    # Skip archive download if dry run
-                    if task.dry_run:
-                        sdk_comp.archive_skip = True
-                except IfwSdkError as err:
-                    if not task.strict_mode:
-                        raise CreateInstallerError from err
-                    log.warning(
-                        "Skip invalid component (missing payload/metadata?): [%s]",
-                        sdk_comp.ifw_sdk_comp_name
-                    )
+                # validate the component
+                # - payload URIs are always checked when not in dry_run or when mode is 'payload'
+                # - errors are not raised in dry_run, so we are able to log all the errors at once
+                component_is_valid = sdk_comp.validate(
+                    uri_check=not task.dry_run or task.dry_run == DryRunMode.PAYLOAD,
+                    ignore_errors=bool(task.dry_run) or task.partial_installer,
+                )
+                # invalid components are skipped when in partial_installer mode
+                # all component data is skipped when a dry_run mode is specified
+                if (task.partial_installer and not component_is_valid) or task.dry_run:
+                    log.warning("Skipping component: [%s]", sdk_comp.ifw_sdk_comp_name)
                     sdk_comp.archive_skip = True
                 # if include filter defined for component it is included only if LICENSE_TYPE
                 # matches to include_filter
@@ -1061,7 +1093,8 @@ def create_installer(task: QtInstallerTaskType) -> None:
         set_config_directory(task)
         set_config_xml(task)
     # install Installer Framework tools
-    task.install_ifw_tools()
+    if not task.dry_run:
+        task.install_ifw_tools()
     # parse SDK components
     parse_components(task)
     # create components
@@ -1069,13 +1102,14 @@ def create_installer(task: QtInstallerTaskType) -> None:
     # substitute global tags
     substitute_global_tags(task)
     # create the installer binary
-    if task.online_installer or task.offline_installer:
-        create_installer_binary(task)
-        # for mac we need some extra work
-        if is_macos():
-            create_mac_disk_image(task)
-    if task.create_repository:
-        create_online_repository(task)
+    if not task.dry_run:
+        if task.online_installer or task.offline_installer:
+            create_installer_binary(task)
+            # for mac we need some extra work
+            if is_macos():
+                create_mac_disk_image(task)
+        if task.create_repository:
+            create_online_repository(task)
 
 
 def str2bool(value: str) -> bool:
@@ -1121,8 +1155,8 @@ class QtInstallerTask(Generic[QtInstallerTaskType]):
     offline_installer: bool = False
     online_installer: bool = False
     create_repository: bool = False
-    strict_mode: bool = True
-    dry_run: Optional[str] = None
+    partial_installer: bool = False  # Invalid IfwSdkComponents will be excluded from the installer
+    dry_run: Optional[DryRunMode] = None
     license_type: str = "opensource"
     build_timestamp: str = strftime("%Y-%m-%d", gmtime())
     force_version_number_increase: bool = False
@@ -1240,7 +1274,7 @@ class QtInstallerTask(Generic[QtInstallerTaskType]):
             # create needed dirs
             Path(self.ifw_tools_dir).mkdir(parents=True, exist_ok=True)
             log.info("Downloading: %s", self.ifw_tools_uri)
-            if not is_content_url_valid(self.ifw_tools_uri):
+            if not uri_exists(self.ifw_tools_uri):
                 raise CreateInstallerError(f"Package URL is invalid: {self.ifw_tools_uri}")
             retrieve_url(self.ifw_tools_uri, package_save_as_temp)
             if not os.path.isfile(package_save_as_temp):
@@ -1252,7 +1286,10 @@ class QtInstallerTask(Generic[QtInstallerTaskType]):
 
 def main() -> None:
     """Main"""
-    parser = ArgumentParser(prog="Script to create Qt Installer Framework based installers.")
+    parser = ArgumentParser(
+        prog="Script to create Qt Installer Framework based installers.",
+        parents=[DryRunMode.get_parser()]  # add parser for --dry-run argument as parent
+    )
     parser.add_argument("-c", "--configurations-dir", dest="configurations_dir", type=str, default="configurations",
                         help="define configurations directory where to read installer configuration files")
     parser.add_argument("-f", "--configuration-file", dest="configuration_file", type=str,
@@ -1263,12 +1300,10 @@ def main() -> None:
                         help="Create online installer")
     parser.add_argument("-r", "--create-repo", dest="create_repository", action='store_true', default=False,
                         help="Create online repository")
-    parser.add_argument("-s", "--strict", dest="strict_mode", action='store_true', default=True,
-                        help="Use strict mode, abort on any error")
-    parser.add_argument("-S", "--non-strict", dest="strict_mode", action='store_true', default=False,
-                        help="Non strict mode, try to keep on going despite of errors")
-    parser.add_argument("--dry-run", dest="dry_run", action='store_true', default=False,
-                        help="For testing purposes (faster testing), skip downloading archives")
+    parser.add_argument(
+        "--allow-broken-components", dest="partial_installer", action="store_true", default=False,
+        help="Skip invalid components and missing payload, create a partial installer",
+    )
 
     parser.add_argument("-u", "--archive-base-url", dest="archive_base_url", type=str,
                         help="Define server base url where to look for archives (.7z)")
@@ -1313,8 +1348,8 @@ def main() -> None:
         offline_installer=args.offline_installer,
         online_installer=args.online_installer,
         create_repository=args.create_repository,
-        strict_mode=args.strict_mode,
-        dry_run=args.dry_run,
+        partial_installer=args.partial_installer,
+        dry_run=DryRunMode[args.dry_run] if args.dry_run else None,
         archive_base_url=args.archive_base_url,
         ifw_tools_uri=args.ifw_tools_uri,
         license_type=args.license_type,

@@ -46,7 +46,9 @@ from traceback import print_exc
 from types import TracebackType
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 from urllib.parse import urlparse
-from urllib.request import urlcleanup, urlopen, urlretrieve
+from urllib.request import urlcleanup, urlretrieve
+
+import requests
 
 from bld_utils import download, is_linux, is_macos, is_windows, run_command
 from installer_utils import PackagingError
@@ -63,20 +65,31 @@ log = init_logger(__name__, debug_mode=False)
 MAX_DEBUG_PRINT_LENGTH = 10000
 
 
-###############################
-# function
-###############################
-def is_content_url_valid(url: str) -> bool:
+def uri_exists(uri: str) -> bool:
+    """
+    Check URI and return whether the location exists, log the errors if any
+    HTTP URLs will be validated using the response headers from a HEAD request
+    Timeout for remote requests is set to 30 seconds
+
+    Args:
+        uri: An URI pointing to a local file or a remote file (HTTP)
+
+    Returns:
+        True if the file exists at the given URI location, otherwise False
+    """
     # check first if the url points to file on local file system
-    if os.path.isfile(url):
+    if Path(uri.replace("file://", "")).resolve().is_file():
         return True
-    # throws error if url does not point to valid object
     try:
-        with urlopen(url) as response:
-            total_size = response.info().get('Content-Length').strip()
-            return int(total_size) > 0
-    except Exception:
-        pass
+        with requests.head(uri, timeout=30, stream=True) as res:
+            res.raise_for_status()
+            if int(res.headers["content-length"]) > 0:
+                return True
+            log.error("Invalid content length: %s", res.headers['content-length'])
+    except requests.exceptions.HTTPError as err:  # HTTP error status codes
+        log.exception("HTTP %s: %s", err.response.status_code, err.response.text)
+    except requests.exceptions.RequestException as err:  # Other errors
+        log.exception("Error while checking URI: %s", str(err))
     return False
 
 
@@ -628,7 +641,7 @@ def create_qt_download_task(module_urls: List[str], target_qt5_path: str, temp_p
     unzip_task = Task(f'extracting packages to "{target_qt5_path}"', function=None)
     # add Qt modules
     for module_url in module_urls:
-        if is_content_url_valid(module_url):
+        if uri_exists(module_url):
             (download_task, extract_task) = create_download_and_extract_tasks(
                 module_url, target_qt5_path, temp_path
             )

@@ -36,6 +36,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 
+from bldinstallercommon import uri_exists
 from logging_util import init_logger
 
 log = init_logger(__name__, debug_mode=False)
@@ -108,6 +109,12 @@ class IfwPayloadItem:
             raise IfwSdkError(
                 f"[[{self.package_name}]] Invalid payload configuration - check your configs!"
             )
+
+    def validate_uri(self) -> None:
+        """Validate that the uri location exists either on the file system or online"""
+        log.info("[%s] Checking payload uri: %s", self.package_name, self.archive_uri)
+        if not uri_exists(self.archive_uri):
+            raise IfwSdkError(f"[{self.package_name}] Missing payload {self.archive_uri}")
 
     def _ensure_ifw_archive_name(self) -> str:
         """
@@ -253,17 +260,31 @@ class IfwSdkComponent:
         if self.comp_sha1_uri:
             self.comp_sha1_uri = self.archive_resolver.resolve_payload_uri(self.comp_sha1_uri)
 
-    def validate(self) -> None:
+    def validate(self, uri_check: bool = True, ignore_errors: bool = False) -> bool:
         """
         Perform validation on IfwSdkComponent, raise error if component not valid
+
+        Args:
+            uri_check: Whether to check that component's payload URIs are available
+            ignore_errors: Does not raise caught errors
 
         Raises:
             AssertionError: When the component's package name doesn't exist
             IfwSdkError: When component with payload doesn't have target install base configured
         """
-        assert self.ifw_sdk_comp_name, "Undefined package name?"
-        if self.downloadable_archives and not self.target_install_base:
-            raise IfwSdkError(f"[{self.ifw_sdk_comp_name}] is missing 'target_install_base'")
+        try:
+            assert self.ifw_sdk_comp_name, "Undefined package name?"
+            if self.downloadable_archives and not self.target_install_base:
+                raise IfwSdkError(f"[{self.ifw_sdk_comp_name}] is missing 'target_install_base'")
+            if uri_check:
+                for archive in self.downloadable_archives:
+                    archive.validate_uri()
+            return True
+        except IfwSdkError as err:
+            if not ignore_errors:
+                raise
+            log.exception("[%s] Ignored error in component: %s", self.ifw_sdk_comp_name, err)
+        return False
 
     def generate_downloadable_archive_list(self) -> List[List[str]]:
         """

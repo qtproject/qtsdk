@@ -45,12 +45,12 @@ from bldinstallercommon import (
     clone_repository,
     extract_file,
     get_tag_from_branch,
-    is_content_url_valid,
     locate_executable,
     locate_path,
     move_tree,
     remove_tree,
     retrieve_url,
+    uri_exists,
 )
 from installer_utils import PackagingError, ch_dir
 from logging_util import init_logger
@@ -253,8 +253,7 @@ class IfwOptions:
 
     def sanity_check(self) -> None:
         # check qt src package url
-        res = is_content_url_valid(self.qt_source_package_uri)
-        if not res:
+        if not uri_exists(self.qt_source_package_uri):
             raise SystemExit(f"Qt src package uri is invalid: {self.qt_source_package_uri}")
         if self.product_key_checker_pri:
             if os.path.isfile(self.product_key_checker_pri):
@@ -354,7 +353,7 @@ def prepare_qt_sources(options: IfwOptions) -> None:
 def prepare_compressed_package(src_pkg_uri: str, src_pkg_saveas: str, destination_dir: str) -> None:
     log.info("Fetching package from: %s", src_pkg_uri)
     if not os.path.isfile(src_pkg_saveas):
-        if not is_content_url_valid(src_pkg_uri):
+        if not uri_exists(src_pkg_uri):
             raise SystemExit("Src package uri is invalid! Abort!")
         retrieve_url(src_pkg_uri, src_pkg_saveas)
     else:
