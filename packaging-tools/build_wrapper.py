@@ -67,12 +67,14 @@ from bldinstallercommon import (
     git_archive_repo,
     safe_config_key_fetch,
 )
+from logging_util import init_logger
 from optionparser import get_pkg_options
 from read_remote_config import get_pkg_value
 from runner import do_execute_sub_process
 from threadedwork import Task, ThreadedWork
 
-# ----------------------------------------------------------------------
+log = init_logger(__name__, debug_mode=False)
+
 SCRIPT_ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 WORK_DIR = os.getenv('PKG_NODE_ROOT', os.path.abspath(os.path.join(__file__, '../../../')))
 LOCAL_MODE = os.getenv('LOCAL_MODE')  # if set, installers will be copied to a local directory
@@ -80,7 +82,7 @@ LOCAL_INSTALLER_DIR = os.getenv('LOCAL_INSTALLER_DIR', os.path.join(WORK_DIR, 'i
 
 if LOCAL_MODE:
     assert os.path.exists(LOCAL_INSTALLER_DIR), f"Local installer dest dir does not exist: {LOCAL_INSTALLER_DIR}"
-    print(f"Installer files will be copied to local directory: {LOCAL_INSTALLER_DIR}")
+    log.info("Installer files will be copied to local directory: %s", LOCAL_INSTALLER_DIR)
 
 
 ###############################
@@ -158,7 +160,7 @@ def handle_qt_licheck_build(option_dict: Dict[str, str]) -> None:
             do_execute_sub_process(cmd_args, exe_dir, True)
     else:
         # opensource, do nothing
-        print('*** opensource build, nothing to build ...')
+        log.info("Opensource build, nothing to build...")
 
 
 ###############################
@@ -166,7 +168,7 @@ def handle_qt_licheck_build(option_dict: Dict[str, str]) -> None:
 ###############################
 def move_files_to_parent_dir(source: str) -> None:
     destination = os.path.abspath(os.path.join(source, os.pardir))
-    print(f"Moving files from: [{source}] to: [{destination}]")
+    log.info("Moving files from: [%s] to: [%s]", source, destination)
     assert os.path.isdir(source), f"The given source is not a directory: {source}"
     assert os.path.isdir(destination), f"The destination is not a directory: {destination}"
     files_list = os.listdir(source)
@@ -181,7 +183,7 @@ def create_download_documentation_task(
     doc_base_url = base_url + "/doc"
 
     use_local = urlparse(doc_base_url).scheme == "file"
-    print(f"doc_base_url: {doc_base_url} use_local: {use_local}")
+    log.info("doc_base_url: %s use_local: %s", doc_base_url, use_local)
     if use_local:
         file_list = os.listdir(doc_base_url[len("file:///"):])
     else:
@@ -325,7 +327,7 @@ class BuildLog:
         try:
             self.file = open(self.log_filepath, 'w' if self.log_overwrite else 'a', encoding="utf-8")
         except Exception:
-            print(f"Failed to write log file '{self.log_filepath}'")
+            log.error("Failed to write log file '%s'", self.log_filepath)
             sys.stdout.flush()
             raise
         return self.file
@@ -334,8 +336,8 @@ class BuildLog:
         if self.file is not None:
             self.file.close()
         if exc_type:  # exception raised -> print the log and re-raise
-            with open(self.log_filepath, 'r', encoding="utf-8") as handle:
-                print(handle.read())
+            with open(self.log_filepath, "r", encoding="utf-8") as handle:
+                log.info(handle.read())
             return True  # re-raise
         return None
 
@@ -1258,7 +1260,7 @@ def main() -> None:
     elif args.command == archive_repository:
         do_git_archive_repo(option_dict, args.archive_repo)
     else:
-        print('Unsupported command')
+        log.info("Unsupported command: %s", args.command)
 
 
 if __name__ == '__main__':

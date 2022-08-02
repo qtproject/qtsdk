@@ -35,11 +35,13 @@ from typing import List
 from urllib.parse import urlparse
 
 from bldinstallercommon import config_section_map, is_content_url_valid, safe_config_key_fetch
+from logging_util import init_logger
 from pkg_constants import PKG_TEMPLATE_BASE_DIR_NAME
 
 SERVER_NAMESPACE = 'ArchiveRemoteLocation'
 PACKAGE_REMOTE_LOCATION_RELEASE = 'release'
 PACKAGE_ARCHIVE_TAG = 'ARCHIVE_TAG'
+log = init_logger(__name__, debug_mode=False)
 
 
 ###############################
@@ -163,9 +165,9 @@ class ArchiveLocationResolver:
     # Print out server list
     ###############################
     def print_server_list(self) -> None:
-        print('--------------------------------------------------')
-        print(' Server list:')
+        log.info("--------------------------------------------------")
+        log.info(" Server list:")
         for server in self.server_list:
-            print(' ---------------------------------------------')
-            print(f' Server name: {server.server_name}')
-            print(f' Server url: {server.server_url}')
+            log.info(" ---------------------------------------------")
+            log.info(" Server name: %s", server.server_name)
+            log.info(" Server url:  %s", server.server_url)

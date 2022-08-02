@@ -53,9 +53,10 @@ def exec_cmd(
     cmd: List[str], timeout: float = 60.0, env: Optional[Dict[str, str]] = None
 ) -> str:
     env = env if env else os.environ.copy()
-    log.info("Calling: %s", ' '.join(cmd))
-    output = check_output(' '.join(cmd), shell=True, env=env, timeout=timeout).decode("utf-8").strip()
-    print(output)
+    args = " ".join(cmd)
+    log.info("Calling: %s", args)
+    output = check_output(args, shell=True, env=env, timeout=timeout).decode("utf-8").strip()
+    log.info(output)
     return output
 
 
@@ -88,11 +89,11 @@ def do_execute_sub_process(
     args_log: Optional[str] = None,
 ) -> Tuple[int, str]:
     extra_env = extra_env or os.environ.copy()
-    _args_log = args_log or ' '.join([str(i) for i in args])
-    print('      --------------------------------------------------------------------')
-    print(f'      Executing:      [{_args_log}]')
-    print(f'      Execution path: [{execution_path}]')
-    print(f'      Abort on fail:  [{str(abort_on_fail)}]')
+    _args_log = args_log or " ".join([str(i) for i in args])
+    log.info("--------------------------------------------------------------------")
+    log.info("Executing:      [%s]", _args_log)
+    log.info("Execution path: [%s]", execution_path)
+    log.info("Abort on fail:  [%s]", str(abort_on_fail))
     sys.stdout.flush()
     theproc: Any
     return_code = -1
@@ -127,12 +128,12 @@ def do_execute_sub_process(
             return_code = theproc.returncode
             if output:
                 output = output[len(output) - MAX_DEBUG_PRINT_LENGTH:] if len(output) > MAX_DEBUG_PRINT_LENGTH else output
-                print(output)
+                log.info(output)
             else:
-                print('Note, no output from the sub process!')
+                log.info("Note, no output from the sub process!")
                 sys.stdout.flush()
             raise Exception(f"*** Execution failed with code: {theproc.returncode}")
-        print('      --------------------------------------------------------------------')
+        log.info("--------------------------------------------------------------------")
         sys.stdout.flush()
     except Exception:
         sys.stderr.write('      ERROR - ERROR - ERROR - ERROR - ERROR - ERROR !!!' + os.linesep)

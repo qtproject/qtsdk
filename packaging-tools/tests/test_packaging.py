@@ -141,8 +141,8 @@ class TestPackaging(unittest.TestCase):
 
             idx = 0
             for line in FileInput(temp_file, inplace=False):
-                print(f"Received data: [{line.strip()}] expected data: [{expected_data[idx]}]")
-                self.assertEqual(line.strip(), expected_data[idx], f"Received data: [{line}] differs from expected data: [{expected_data[idx]}]")
+                msg = f"Received data: [{line}] differs from expected data: [{expected_data[idx]}]"
+                self.assertEqual(line.strip(), expected_data[idx], msg)
                 idx += 1
         finally:
             rmtree(temp_dir)
