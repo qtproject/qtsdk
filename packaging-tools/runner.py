@@ -105,7 +105,9 @@ def do_execute_sub_process(args, execution_path, abort_on_fail=True, get_output=
                 theproc = Popen(args, shell=False, stdout=redirect_output, stderr=STDOUT, close_fds=False, env=extra_env, cwd=execution_path, universal_newlines=True)
                 theproc.communicate()
             else:
-                theproc = Popen(args, env=extra_env, cwd=execution_path, universal_newlines=True)
+                theproc = Popen(  # pylint: disable=R1732
+                    args, env=extra_env, cwd=execution_path, universal_newlines=True
+                )
                 theproc.communicate()
 
         if theproc.returncode:

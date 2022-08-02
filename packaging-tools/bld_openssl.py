@@ -60,15 +60,15 @@ def archive(install_dir, archive_prefix):
 
 
 def check_environment():
-    FNULL = open(os.devnull, 'w', encoding="utf-8")
+    with open(os.devnull, 'w', encoding="utf-8") as FNULL:
 
-    def check_cmd(cmd):
-        if subprocess.call(cmd, stdout=FNULL, stderr=FNULL) != 0:
-            print(f"*** Cannot execute {cmd[0]}")
-            exit(1)
-    check_cmd(['nasm', '-h'])
-    check_cmd(['nmake', '/?'])
-    check_cmd(['7z'])
+        def check_cmd(cmd):
+            if subprocess.call(cmd, stdout=FNULL, stderr=FNULL) != 0:
+                print(f"*** Cannot execute {cmd[0]}")
+                exit(1)
+        check_cmd(['nasm', '-h'])
+        check_cmd(['nmake', '/?'])
+        check_cmd(['7z'])
 
 
 def setup_argument_parser():

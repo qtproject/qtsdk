@@ -66,9 +66,9 @@ def is_content_url_valid(url):
         return True
     # throws error if url does not point to valid object
     try:
-        response = urlopen(url)
-        total_size = response.info().get('Content-Length').strip()
-        return int(total_size) > 0
+        with urlopen(url) as response:
+            total_size = response.info().get('Content-Length').strip()
+            return int(total_size) > 0
     except Exception:
         pass
     return False
@@ -248,7 +248,8 @@ def ensure_text_file_endings(filename):
     if os.path.isdir(filename):
         print(f'*** Warning, given file is directory? Did nothing for: {filename}')
         return
-    data = open(filename, "rb").read()
+    with open(filename, "rb") as f:
+        data = f.read()
     if b'\0' in data:
         print(f'*** Warning, given file is binary? Did nothing for: {filename}')
         return
@@ -256,9 +257,8 @@ def ensure_text_file_endings(filename):
         newdata = re.sub(b"\r?\n", b"\r\n", data)
         if newdata != data:
             print(f'File endings changed for: {filename}')
-            f = open(filename, "wb")
-            f.write(newdata)
-            f.close()
+            with open(filename, "wb") as f:
+                f.write(newdata)
     print('--------------------------------------------------------------------')
 
 
@@ -359,11 +359,9 @@ def requires_rpath(file_path):
     if is_linux():
         if not os.access(file_path, os.X_OK):
             return False
-        return (
-            re.search(r':*.R.*PATH=', Popen(
-                ['chrpath', '-l', file_path], stdout=PIPE
-            ).stdout.read().decode()) is not None
-        )
+        with Popen(["chrpath", "-l", file_path], stdout=PIPE) as proc:
+            if proc.stdout is not None:
+                return re.search(r":*.R.*PATH=", proc.stdout.read().decode()) is not None
     return False
 
 
@@ -374,19 +372,20 @@ def sanity_check_rpath_max_length(file_path, new_rpath):
     if is_linux():
         if not os.access(file_path, os.X_OK):
             return False
-        result = re.search(r':*.R.*PATH=.*', Popen(['chrpath', '-l', file_path], stdout=PIPE).stdout.read().decode())
-        if not result:
-            print(f'*** No RPath found from given file: {file_path}')
-        else:
-            rpath = result.group()
-            index = rpath.index('=')
-            rpath = rpath[index + 1:]
-            space_for_new_rpath = len(rpath)
-            if len(new_rpath) > space_for_new_rpath:
-                print(f'*** Warning - Not able to process RPath for file: {file_path}')
-                print(f'*** Required length for new RPath [{new_rpath}] is: {str(len(new_rpath))}')
-                print(f'*** Space available for new RPath inside the binary is: {str(space_for_new_rpath)}')
-                raise IOError()
+        with Popen(["chrpath", "-l", file_path], stdout=PIPE) as proc:
+            result = re.search(r':*.R.*PATH=.*', proc.stdout.read().decode())
+            if not result:
+                print(f'*** No RPath found from given file: {file_path}')
+            else:
+                rpath = result.group()
+                index = rpath.index('=')
+                rpath = rpath[index + 1:]
+                space_for_new_rpath = len(rpath)
+                if len(new_rpath) > space_for_new_rpath:
+                    print(f'*** Warning - Not able to process RPath for file: {file_path}')
+                    print(f'*** Required length for new RPath [{new_rpath}] is: {str(len(new_rpath))}')
+                    print(f'*** Space available for new RPath inside the binary is: {str(space_for_new_rpath)}')
+                    raise IOError()
     return True
 
 
@@ -470,15 +469,14 @@ def handle_component_rpath(component_root_path, destination_lib_paths):
                         rpaths.append(rp)
 
                     # look for existing $ORIGIN path in the binary
-                    origin_rpath = re.search(
-                        r'\$ORIGIN[^:\n]*',
-                        Popen(
-                            ['chrpath', '-l', file_full_path], stdout=PIPE
-                        ).stdout.read().decode()
-                    )
+                    with Popen(["chrpath", "-l", file_full_path], stdout=PIPE) as proc:
+                        origin_rpath = re.search(
+                            r'\$ORIGIN[^:\n]*',
+                            proc.stdout.read().decode()
+                        )
 
-                    if origin_rpath and origin_rpath.group() not in rpaths:
-                        rpaths.append(origin_rpath.group())
+                        if origin_rpath and origin_rpath.group() not in rpaths:
+                            rpaths.append(origin_rpath.group())
 
                     rp = ':'.join(rpaths)
                     if sanity_check_rpath_max_length(file_full_path, rp):
@@ -565,9 +563,8 @@ def git_archive_repo(repo_and_ref):
     # clone given repo to temp
     clone_repository(repository, ref, checkout_dir, full_clone=True, init_subrepos=True)
     # git archive repo with given name
-    archive_file = open(archive_name, 'w', encoding="utf-8")
-    check_call(f"git --no-pager archive {ref}", stdout=archive_file, stderr=STDOUT, shell=True, cwd=checkout_dir)
-    archive_file.close()
+    with open(archive_name, "w", encoding="utf-8") as archive_file:
+        check_call(f"git --no-pager archive {ref}", stdout=archive_file, stderr=STDOUT, shell=True, cwd=checkout_dir)
     print(f"Created archive: {archive_name}")
     shutil.rmtree(checkout_dir, ignore_errors=True)
     return archive_name
@@ -720,10 +717,9 @@ def patch_qt(qt5_path):
     print("##### patch Qt #####")
     qmake_binary = os.path.join(qt5_path, 'bin', 'qmake')
     # write qt.conf
-    qtConfFile = open(os.path.join(qt5_path, 'bin', 'qt.conf'), "w", encoding="utf-8")
-    qtConfFile.write("[Paths]" + os.linesep)
-    qtConfFile.write("Prefix=.." + os.linesep)
-    qtConfFile.close()
+    with open(os.path.join(qt5_path, 'bin', 'qt.conf'), "w", encoding="utf-8") as qtConfFile:
+        qtConfFile.write("[Paths]" + os.linesep)
+        qtConfFile.write("Prefix=.." + os.linesep)
     # fix rpaths
     if is_linux():
         handle_component_rpath(qt5_path, 'lib')

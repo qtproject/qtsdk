@@ -88,19 +88,19 @@ def get(env_cmd, initial=None, arguments=None):
     cmd = f'cmd.exe /s /c ""{env_cmd}" {arguments}&& echo "{tag}" && set"'
 
     # launch the process
-    proc = Popen(cmd, stdout=PIPE, env=initial, universal_newlines=True)
-    # parse the output sent to stdout
-    lines = proc.stdout
-    # consume whatever output occurs until the tag is reached
-    consume(takewhile(lambda line: tag not in line, lines))
-    # parse key/values into pairs
-    pairs = (line.rstrip().split('=', 1) for line in lines)
-    # make sure the pairs are valid
-    valid_pairs = (pair for pair in pairs if len(pair) == 2)
-    # construct a dictionary of the pairs
-    result = dict(valid_pairs)
-    # let the process finish
-    proc.communicate()
+    with Popen(cmd, stdout=PIPE, env=initial, universal_newlines=True) as proc:
+        # parse the output sent to stdout
+        lines = proc.stdout
+        # consume whatever output occurs until the tag is reached
+        consume(takewhile(lambda line: tag not in line, lines))
+        # parse key/values into pairs
+        pairs = (line.rstrip().split('=', 1) for line in lines)
+        # make sure the pairs are valid
+        valid_pairs = (pair for pair in pairs if len(pair) == 2)
+        # construct a dictionary of the pairs
+        result = dict(valid_pairs)
+        # let the process finish
+        proc.communicate()
     # check resulting env for duplicate path
     sanity_check_env(env_cmd, result)
     return result

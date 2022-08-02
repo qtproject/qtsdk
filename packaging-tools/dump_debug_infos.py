@@ -61,8 +61,9 @@ def file_with_debug_information_linux(file):
 
 
 def read_output(*args):
-    (stdout, _) = subprocess.Popen(args=args, stdout=subprocess.PIPE).communicate()
-    return stdout.rstrip()
+    with subprocess.Popen(args=args, stdout=subprocess.PIPE) as proc:
+        (stdout, _) = proc.communicate()
+        return stdout.rstrip()
 
 
 def dump_sym(dump_syms_path, architecture, absolute_path, sym_path, verbose):

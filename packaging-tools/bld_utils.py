@@ -116,22 +116,21 @@ def urllib2_response_read(response, file_path, block_size, total_size):
     total_size = int(total_size)
     bytes_count = 0
 
-    filename = open(file_path, 'wb')
-    old_percent = -1
-    while 1:
-        block = response.read(block_size)
-        filename.write(block)
-        bytes_count += len(block)
+    with open(file_path, "wb") as filename:
+        old_percent = -1
+        while 1:
+            block = response.read(block_size)
+            filename.write(block)
+            bytes_count += len(block)
 
-        if not block:
-            break
+            if not block:
+                break
 
-        percent = min(100, bytes_count * 100 / total_size)
-        if percent != old_percent:
-            sys.stdout.write(f"\r{percent}%")
-        old_percent = percent
+            percent = min(100, bytes_count * 100 / total_size)
+            if percent != old_percent:
+                sys.stdout.write(f"\r{percent}%")
+            old_percent = percent
 
-    filename.close()
     return bytes_count
 
 
@@ -174,11 +173,11 @@ def download(url, target, read_block_size=1048576):
 
         try:
             # use urlopen which raise an error if that file is not existing
-            response = urlopen(url)
-            total_size = response.info().get('Content-Length').strip()
-            print(f"Downloading file from '{url}' with size {total_size} bytes to {target}")
-            # run the download
-            received_size = urllib2_response_read(response, savefile_tmp, read_block_size, total_size)
+            with urlopen(url) as response:
+                total_size = response.info().get('Content-Length').strip()
+                print(f"Downloading file from '{url}' with size {total_size} bytes to {target}")
+                # run the download
+                received_size = urllib2_response_read(response, savefile_tmp, read_block_size, total_size)
             if received_size != int(total_size):
                 raise Exception(f"Broken download, got a wrong size after download from '{url}'(total size: {total_size}, but {received_size} received).")
         except HTTPError as error:
@@ -287,7 +286,7 @@ def runCommand(command, currentWorkingDirectory, extra_environment=None, onlyErr
             cwd=currentWorkingDirectory, bufsize=-1, env=environment
         )
     else:
-        process = Popen(
+        process = Popen(  # pylint: disable=R1732
             commandAsList, shell=useShell,
             stdout=PIPE, stderr=PIPE,
             cwd=currentWorkingDirectory, bufsize=-1, env=environment

@@ -41,7 +41,7 @@ repos:
         fail_fast: true
       - id: pylint
         name: Analyze code (pylint)
-        entry: bash -c 'for x in "$@"; do pipenv run python3 -m pylint --errors-only --enable=C0209,W1202,W1203,C0325,R1705,R1720,R1721,R1723,R1724,W0104,W0105,W0107,W0612,W0613,R0205,R1711,R1727,R1719,W1503,W0402,W1514 "$x"; done'
+        entry: bash -c 'for x in "$@"; do pipenv run python3 -m pylint --errors-only --enable=C0209,W1202,W1203,C0325,R1705,R1720,R1721,R1723,R1724,W0104,W0105,W0107,W0612,W0613,R0205,R1711,R1727,R1719,W1503,W0402,W1514,R1732 "$x"; done'
         language: system
         types: [python]
         fail_fast: true

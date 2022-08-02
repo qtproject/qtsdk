@@ -66,8 +66,8 @@ def readCsvFiles(filePaths):
     files = []
 
     for filePath in filePaths:
-        f = open(filePath, 'rt', encoding="utf-8")
-        reader = csv.reader(f, delimiter=Global.Delimiter, quoting=csv.QUOTE_NONE)
+        with open(filePath, 'rt', encoding="utf-8") as f:
+            reader = csv.reader(f, delimiter=Global.Delimiter, quoting=csv.QUOTE_NONE)
 
         values = []
         for row in reader:

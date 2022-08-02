@@ -150,7 +150,7 @@ class DebugView:
     def startAsync(self):
         args = [self.executable, '/accepteula', '/l', self.logFilePath]
         verboseStart(args)
-        self.proc = Popen(args, shell=False)
+        self.proc = Popen(args, shell=False)  # pylint: disable=R1732
         sleep(2)
 
     def stop(self):
@@ -179,25 +179,20 @@ def runSyncAndLogOutputWindows(args, batchFilePath, logFilePath):
     debugView.startAsync()
 
     verboseStart(args)
-    p = Popen(args, env=createEnvironment(batchFilePath))
-    p.communicate()
+    with Popen(args, env=createEnvironment(batchFilePath)) as p:
+        p.communicate()
 
-    debugView.stop()
+        debugView.stop()
 
-    checkExitCodeOrDie(p.returncode, args)
+        checkExitCodeOrDie(p.returncode, args)
 
 
 def runSyncAndLogOutputUnix(args, batchFilePath, logFilePath):
-    logFile = open(logFilePath, 'w', encoding="utf-8")
-
-    verboseStart(args)
-    p = Popen(args,
-              stdout=logFile,
-              stderr=STDOUT,
-              env=createEnvironment(batchFilePath))
-    p.communicate()
-
-    checkExitCodeOrDie(p.returncode, args)
+    with open(logFilePath, "w", encoding="utf-8") as logFile:
+        verboseStart(args)
+        with Popen(args, stdout=logFile, stderr=STDOUT, env=createEnvironment(batchFilePath)) as p:
+            p.communicate()
+            checkExitCodeOrDie(p.returncode, args)
 
 
 def runQtCreatorWithBatchFile(batchFilePath, logFilePath):
@@ -222,9 +217,8 @@ def convertLogFileToCsvFile(logFilePath, columnLabel):
     output = libclangtimings2csv.convert(logFilePath, columnLabel)
 
     csvFilePath = logFilePath + '.csv'
-    f = open(csvFilePath, 'w', encoding="utf-8")
-    f.write(output)
-    f.close()
+    with open(csvFilePath, 'w', encoding="utf-8") as f:
+        f.write(output)
 
     return csvFilePath
 

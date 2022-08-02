@@ -174,8 +174,8 @@ def create_download_documentation_task(base_url, download_path):
     if useLocal:
         file_list = os.listdir(doc_base_url[len("file:///"):])
     else:
-        urlpath = urlopen(doc_base_url)
-        string = urlpath.read().decode('utf-8')
+        with urlopen(doc_base_url) as urlpath:
+            string = urlpath.read().decode('utf-8')
         pattern = re.compile('[0-9a-zA-Z-]*.zip')
 
         file_list = pattern.findall(string)

@@ -232,7 +232,8 @@ def parse_component_data(task, configuration_file, configurations_base_path):
             file_full_path = locate_path(allos_conf_file_dir, [configuration_file], filters=[os.path.isfile])
     log.info("Reading target configuration file: %s", file_full_path)
     configuration = ConfigParser(interpolation=ExtendedInterpolation())
-    configuration.read_file(open(file_full_path, encoding="utf-8"))
+    with open(file_full_path, encoding="utf-8") as cfgfile:
+        configuration.read_file(cfgfile)
 
     # parse package ignore list first
     sdk_component_exclude_list = safe_config_key_fetch(configuration, 'PackageIgnoreList', 'packages')
@@ -920,7 +921,8 @@ class QtInstallerTask:
     def __init__(self, args):
         log.info("Parsing: %s", args.configuration_file)
         self.config = ConfigParser(interpolation=ExtendedInterpolation())
-        self.config.read_file(open(args.configuration_file, encoding="utf-8"))
+        with open(args.configuration_file, encoding="utf-8") as cfgfile:
+            self.config.read_file(cfgfile)
         self.configurations_dir = args.configurations_dir
         self.configuration_file = args.configuration_file
 
