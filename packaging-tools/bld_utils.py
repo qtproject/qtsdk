@@ -35,7 +35,6 @@ import sys
 from builtins import OSError
 from collections import deque
 from copy import deepcopy
-from distutils.spawn import find_executable  # runCommand method
 from socket import setdefaulttimeout
 from subprocess import PIPE, STDOUT, Popen
 from sys import platform
@@ -261,8 +260,9 @@ def runCommand(command, currentWorkingDirectory, extra_environment=None, onlyErr
 
     pathEnvironment = environment['PATH']
     # if we can not find the command, check the environment
-    if not os.path.lexists(commandAsList[0]) and find_executable(str(commandAsList[0]), str(pathEnvironment)):
-        commandAsList[0] = find_executable(str(commandAsList[0]), str(pathEnvironment))
+    found_executable = shutil.which(str(commandAsList[0]), path=str(pathEnvironment))
+    if not os.path.lexists(commandAsList[0]) and found_executable:
+        commandAsList[0] = found_executable
 
     if currentWorkingDirectory and not os.path.lexists(currentWorkingDirectory):
         os.makedirs(currentWorkingDirectory)

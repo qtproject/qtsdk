@@ -36,7 +36,6 @@ import re
 import shutil
 import sys
 from configparser import ConfigParser, ExtendedInterpolation
-from distutils.spawn import find_executable
 from logging import getLogger
 from multiprocessing import cpu_count
 from pathlib import Path
@@ -96,7 +95,7 @@ class CreateInstallerError(Exception):
 ##############################################################
 def check_required_tools():
     """Check that valid tools are present in the build environment."""
-    if not find_executable('7z'):
+    if not shutil.which("7z"):
         raise CreateInstallerError("7z tool not found in the PATH")
 
 
