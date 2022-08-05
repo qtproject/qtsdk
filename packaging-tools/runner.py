@@ -44,9 +44,19 @@ log = init_logger(__name__, debug_mode=False)
 
 MAX_DEBUG_PRINT_LENGTH = 10000
 
-if sys.platform == 'win32':
-    loop = asyncio.ProactorEventLoop()
-    asyncio.set_event_loop(loop)
+
+if is_windows():
+
+    class ProactorLoopPolicy36(asyncio.DefaultEventLoopPolicy):
+        """Windows Proactor Event Loop Policy for Python 3.6"""
+
+        _loop_factory = asyncio.ProactorEventLoop  # type: ignore
+
+    # Set ProactorLoop as the default policy on Windows in Python versions <3.8
+    if sys.version_info < (3, 7):
+        asyncio.set_event_loop_policy(ProactorLoopPolicy36())
+    elif sys.version_info < (3, 8):
+        asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 
 
 def exec_cmd(

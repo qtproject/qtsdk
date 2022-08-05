@@ -33,7 +33,6 @@ import argparse
 import os
 import platform
 import sys
-from asyncio import get_event_loop
 from shutil import rmtree
 from typing import Dict, Tuple
 
@@ -41,6 +40,11 @@ from bld_python import build_python
 from installer_utils import download_archive, is_valid_url_path
 from logging_util import init_logger
 from runner import async_exec_cmd, exec_cmd
+
+if sys.version_info < (3, 7):
+    import asyncio_backport as asyncio
+else:
+    import asyncio
 
 log = init_logger(__name__, debug_mode=False)
 
@@ -137,8 +141,7 @@ def main() -> None:
         help="Path to get-pip.py needed for installing pip on Windows",
     )
     args = parser.parse_args(sys.argv[1:])
-    loop = get_event_loop()
-    loop.run_until_complete(create_venv(args.python_src, args.get_pip_file))
+    asyncio.run(create_venv(args.python_src, args.get_pip_file))
 
 
 if __name__ == "__main__":

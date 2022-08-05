@@ -34,7 +34,6 @@ import os
 import platform
 import re
 import sys
-from asyncio import get_event_loop
 from multiprocessing import cpu_count
 from shutil import copytree, rmtree, which
 from subprocess import check_output
@@ -42,6 +41,11 @@ from subprocess import check_output
 from installer_utils import ch_dir, download_archive, extract_archive, is_valid_url_path
 from logging_util import init_logger
 from runner import async_exec_cmd, exec_cmd
+
+if sys.version_info < (3, 7):
+    import asyncio_backport as asyncio
+else:
+    import asyncio
 
 log = init_logger(__name__, debug_mode=False)
 
@@ -180,8 +184,7 @@ def main() -> None:
         if not which(tool):
             raise SystemExit(f"Could not find required tool '{tool}' from the system. Aborting..")
 
-    loop = get_event_loop()
-    loop.run_until_complete(build_python(args.src, args.prefix))
+    asyncio.run(build_python(args.src, args.prefix))
 
 
 if __name__ == "__main__":

@@ -33,7 +33,6 @@ import argparse
 import os
 import shutil
 import sys
-from asyncio import get_event_loop
 from datetime import datetime
 from pathlib import Path
 from time import time
@@ -43,6 +42,11 @@ from bldinstallercommon import locate_path
 from installer_utils import download_archive, extract_archive, is_valid_url_path
 from logging_util import init_logger
 from runner import exec_cmd
+
+if sys.version_info < (3, 7):
+    import asyncio_backport as asyncio
+else:
+    import asyncio
 
 log = init_logger(__name__, debug_mode=False)
 session_timestamp = datetime.fromtimestamp(time()).strftime('%Y-%m-%d--%H:%M:%S')
@@ -204,19 +208,18 @@ def scan_repositories(search_path: str) -> Tuple[List[str], List[str], List[str]
 
 
 def convert_repos(search_path: str, ifw_tools_url: str) -> None:
-    loop = get_event_loop()
-    repogen = loop.run_until_complete(fetch_repogen(ifw_tools_url))
+    repogen = asyncio.run(fetch_repogen(ifw_tools_url))
     log.info("Using repogen from: %s", repogen)
-    unconverted_repos = scan_repositories(search_path)[2]
-    successful_conversions, failed_conversions = loop.run_until_complete(create_converted_repositories(repogen, unconverted_repos))
-    operations_ok, operations_nok = swap_repositories(successful_conversions)
+    to_convert = scan_repositories(search_path)[2]
+    converted_repos, failed_repos = asyncio.run(create_converted_repositories(repogen, to_convert))
+    operations_ok, operations_nok = swap_repositories(converted_repos)
     for orig_repo, items in operations_ok.items():
         backup_repo_name = items[1]
         log.info("Converted repo: %s", orig_repo)
         log.info("  original backup: %s", backup_repo_name)
-    if failed_conversions:
+    if failed_repos:
         log.error("Some of the conversions failed -> aborting! Original repo(s) are in place. Cleanup tmp converted repo dirs!:")
-        for repo, expected_output_repo in failed_conversions.items():
+        for repo, expected_output_repo in failed_repos.items():
             log.error("  '%s' -> '%s'", repo, expected_output_repo)
     for orig_repo, items in operations_nok.items():
         backup_repo_name = items[1]
@@ -225,8 +228,7 @@ def convert_repos(search_path: str, ifw_tools_url: str) -> None:
 
 
 def revert_repos(search_path: str, ifw_tools_url: str, time_stamp: str, dry_run: bool) -> None:
-    loop = get_event_loop()
-    repogen = loop.run_until_complete(fetch_repogen(ifw_tools_url))
+    repogen = asyncio.run(fetch_repogen(ifw_tools_url))
     log.info("Using repogen from: %s", repogen)
     converted_repos = scan_repositories(search_path)[0]
 

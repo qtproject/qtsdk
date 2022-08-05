@@ -31,21 +31,25 @@
 
 import asyncio
 import subprocess
+import sys
 from subprocess import PIPE
 from typing import Any, Callable
 
 from bld_utils import is_windows
 from read_remote_config import get_pkg_value
 
+if sys.version_info < (3, 7):
+    from asyncio_backport import run as asyncio_run
+else:
+    from asyncio import run as asyncio_run
+
 if not is_windows():
     import sh  # type: ignore
-
-_asyncio_test_loop = asyncio.get_event_loop()
 
 
 def asyncio_test(func: Any) -> Any:
     assert asyncio.iscoroutinefunction(func)
-    return lambda *args, **kwargs: _asyncio_test_loop.run_until_complete(func(*args, **kwargs))
+    return lambda *args, **kwargs: asyncio_run(func(*args, **kwargs))
 
 
 def asyncio_test_parallel_data(*data_args, unpack: bool = True) -> Any:  # type: ignore
@@ -55,9 +59,10 @@ def asyncio_test_parallel_data(*data_args, unpack: bool = True) -> Any:  # type:
     def decorator(func: Callable[..., Any]) -> Callable[[Any], Any]:
         assert asyncio.iscoroutinefunction(func)
 
-        def wrapped(*args, **kwargs):  # type: ignore
-            calls = (func(*args, *data, **kwargs) for data in data_args)
-            _asyncio_test_loop.run_until_complete(asyncio.gather(*calls))
+        async def wrapped(*args, **kwargs):  # type: ignore
+            calls = (func(*args, *d, **kwargs) for d in data_args)
+            await asyncio.gather(*calls)
+
         return wrapped
     return decorator
 

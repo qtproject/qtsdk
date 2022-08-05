@@ -40,6 +40,11 @@ from typing import List
 from logging_util import init_logger
 from read_remote_config import get_pkg_value
 
+if sys.version_info < (3, 7):
+    from asyncio_backport import run as asyncio_run
+else:
+    from asyncio import run as asyncio_run
+
 log = init_logger(__name__, debug_mode=False)
 
 
@@ -162,8 +167,7 @@ def main() -> None:
     if not which("xcrun"):
         raise SystemExit("Could not find 'xcrun' from the system for notarization. Aborting..")
 
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(notarize(args))
+    asyncio_run(notarize(args))
 
 
 if __name__ == "__main__":

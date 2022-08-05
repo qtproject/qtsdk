@@ -37,7 +37,6 @@ import re
 import shutil
 import subprocess
 import sys
-from asyncio import get_event_loop
 from configparser import ConfigParser, ExtendedInterpolation
 from dataclasses import dataclass
 from datetime import datetime
@@ -59,6 +58,11 @@ from release_task_reader import ReleaseTask, parse_config
 from runner import async_exec_cmd, exec_cmd
 from sign_installer import create_mac_dmg, sign_mac_app
 from sign_windows_installer import sign_executable
+
+if sys.version_info < (3, 7):
+    import asyncio_backport as asyncio
+else:
+    import asyncio
 
 if is_linux():
     import sh  # type: ignore
@@ -897,32 +901,63 @@ def main() -> None:
 
     export_data = load_export_summary_data(Path(args.config)) if args.event_injector else {}
 
-    loop = get_event_loop()
     if args.build_offline:
         # get offline tasks
-        tasks = parse_config(args.config, task_filters=append_to_task_filters(args.task_filters, "offline"))
-        loop.run_until_complete(build_offline_tasks(args.staging_server, args.staging_server_root, tasks, args.license_,
-                                                    installer_config_base_dir, args.artifact_share_url, args.ifw_tools,
-                                                    args.offline_installer_id, args.update_staging,
-                                                    args.enable_oss_snapshots, args.event_injector, export_data))
+        tasks = parse_config(
+            config_file=args.config,
+            task_filters=append_to_task_filters(args.task_filters, "offline"),
+        )
+        asyncio.run(
+            build_offline_tasks(
+                staging_server=args.staging_server,
+                staging_server_root=args.staging_server_root,
+                tasks=tasks,
+                license_=args.license_,
+                installer_config_base_dir=installer_config_base_dir,
+                artifact_share_base_url=args.artifact_share_url,
+                ifw_tools=args.ifw_tools,
+                installer_build_id=args.offline_installer_id,
+                update_staging=args.update_staging,
+                enable_oss_snapshots=args.enable_oss_snapshots,
+                event_injector=args.event_injector,
+                export_data=export_data,
+            )
+        )
 
     else:  # this is either repository build or repository sync build
         # get repository tasks
-        tasks = parse_config(args.config, task_filters=append_to_task_filters(args.task_filters, "repository"))
-        update_strategy = RepoUpdateStrategy.get_strategy(args.staging_server_root,
-                                                          args.license_,
-                                                          args.repo_domain,
-                                                          args.build_repositories,
-                                                          RepoSource(args.update_source_type),
-                                                          args.update_staging,
-                                                          args.update_production)
-        loop.run_until_complete(handle_update(args.staging_server, args.staging_server_root,
-                                              args.license_, tasks, installer_config_base_dir,
-                                              args.artifact_share_url, update_strategy,
-                                              args.sync_s3, args.sync_ext, args.rta,
-                                              args.ifw_tools, args.build_repositories,
-                                              args.sync_s3 or args.sync_ext, args.event_injector,
-                                              export_data))
+        tasks = parse_config(
+            config_file=args.config,
+            task_filters=append_to_task_filters(args.task_filters, "repository")
+        )
+        update_strategy = RepoUpdateStrategy.get_strategy(
+            staging_server_root=args.staging_server_root,
+            license_=args.license_,
+            repo_domain=args.repo_domain,
+            build_repositories=args.build_repositories,
+            remote_repo_update_source=RepoSource(args.update_source_type),
+            update_staging=args.update_staging,
+            update_production=args.update_production,
+        )
+        asyncio.run(
+            handle_update(
+                staging_server=args.staging_server,
+                staging_server_root=args.staging_server_root,
+                license_=args.license_,
+                tasks=tasks,
+                installer_config_base_dir=installer_config_base_dir,
+                artifact_share_base_url=args.artifact_share_url,
+                update_strategy=update_strategy,
+                sync_s3=args.sync_s3,
+                sync_ext=args.sync_ext,
+                rta=args.rta or "",
+                ifw_tools=args.ifw_tools,
+                build_repositories=args.build_repositories,
+                sync_repositories=args.sync_s3 or args.sync_ext,
+                event_injector=args.event_injector,
+                export_data=export_data,
+            )
+        )
 
 
 if __name__ == "__main__":

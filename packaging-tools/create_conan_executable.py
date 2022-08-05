@@ -33,7 +33,6 @@ import argparse
 import os
 import platform
 import sys
-from asyncio import get_event_loop
 from pathlib import Path
 from shutil import rmtree
 from typing import Dict, List
@@ -42,6 +41,11 @@ from installer_utils import ch_dir, is_valid_url_path
 from logging_util import init_logger
 from python_env import create_venv
 from runner import async_exec_cmd
+
+if sys.version_info < (3, 7):
+    import asyncio_backport as asyncio
+else:
+    import asyncio
 
 log = init_logger(__name__, debug_mode=False)
 
@@ -211,8 +215,7 @@ def main() -> None:
 
     args = parser.parse_args(sys.argv[1:])
     hidden_imports = get_known_hidden_imports() + args.hidden_imports
-    loop = get_event_loop()
-    loop.run_until_complete(
+    asyncio.run(
         run(
             args.python_src,
             args.source_file,
