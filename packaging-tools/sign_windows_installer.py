@@ -42,7 +42,6 @@ from typing import List
 
 import pysftp  # type: ignore
 from cryptography.fernet import Fernet
-from paramiko import SSHException
 
 from installer_utils import PackagingError
 from logging_util import init_logger
@@ -121,7 +120,7 @@ def download_signing_tools(path_to_key: str):
         with pysftp.Connection(os.getenv("SFTP_ADDRESS"), username=os.getenv("SFTP_USER"), private_key=path_to_key, cnopts=cnopts) as sftp:
             sftp.get(os.getenv("WINDOWS_SIGNKEYS_PATH"))
             sftp.get(os.getenv("WINDOWS_SIGNTOOL_X64_PATH"))
-    except SSHException:
+    except pysftp.SSHException:
         raise PackagingError("FTP authentication failed!") from None
 
 
