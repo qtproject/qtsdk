@@ -40,7 +40,7 @@ from dataclasses import dataclass, field
 from multiprocessing import cpu_count
 from pathlib import Path
 from time import gmtime, strftime
-from typing import Any, Dict, Generator, List, Optional
+from typing import Any, Dict, Generator, Generic, List, Optional, Tuple, TypeVar
 
 from bld_utils import download, is_linux, is_macos, is_windows
 from bldinstallercommon import (
@@ -70,6 +70,8 @@ if is_windows():
 
 log = init_logger(__name__, debug_mode=False)
 
+QtInstallerTaskType = TypeVar("QtInstallerTaskType", bound="QtInstallerTask[Any]")
+
 # ----------------------------------------------------------------------
 TARGET_INSTALL_DIR_NAME_TAG = '%TARGET_INSTALL_DIR%'
 ARCHIVES_EXTRACT_DIR_NAME_TAG = '%ARCHIVES_EXTRACT_DIR%'
@@ -98,7 +100,7 @@ def check_required_tools() -> None:
 ##############################################################
 # Cleanup
 ##############################################################
-def clean_work_dirs(task: Any) -> None:
+def clean_work_dirs(task: QtInstallerTaskType) -> None:
     """Clean working directories."""
     log.info("Cleaning work environment")
     for item in [task.packages_full_path_dst, task.repo_output_dir, task.config_dir_dst]:
@@ -110,7 +112,7 @@ def clean_work_dirs(task: Any) -> None:
 ##############################################################
 # Set the config directory
 ##############################################################
-def set_config_directory(task: Any) -> None:
+def set_config_directory(task: QtInstallerTaskType) -> None:
     """Copy config directory into correct place."""
     log.info("Set config directory")
     config_dir_template = task.config.get('ConfigDir', 'template_name')
@@ -126,7 +128,7 @@ def set_config_directory(task: Any) -> None:
 ##############################################################
 # Set the config.xml
 ##############################################################
-def set_config_xml(task: Any) -> Any:
+def set_config_xml(task: QtInstallerTaskType) -> Any:
     """Copy config.xml template into correct place."""
     log.info("Set config.xml")
 
@@ -160,8 +162,9 @@ def set_config_xml(task: Any) -> Any:
 ##############################################################
 # Substitute common version numbers etc., match against tags
 ##############################################################
-def substitute_global_tags(task: Any) -> None:
-    """ Substitute common version numbers etc., match against tags """
+def substitute_global_tags(task: QtInstallerTaskType) -> None:
+    """Substitute common version numbers etc., match against tags """
+
     log.info("Substituting global tags:")
     log.info("%%PACKAGE_CREATION_DATE%% = %s", task.build_timestamp)
     log.info("%%VERSION_NUMBER_AUTO_INCREASE%% = %s", task.version_number_auto_increase_value)
@@ -216,7 +219,9 @@ def substitute_component_tags(tag_pair_list: List[List[str]], meta_dir_dest: str
 ##############################################################
 # Parse SDK components
 ##############################################################
-def parse_component_data(task: Any, configuration_file: str, configurations_base_path: str) -> None:
+def parse_component_data(
+    task: QtInstallerTaskType, configuration_file: str, configurations_base_path: str
+) -> None:
     """Parse SDK component data"""
     file_full_path = configuration_file
     if not os.path.isfile(file_full_path):
@@ -232,10 +237,10 @@ def parse_component_data(task: Any, configuration_file: str, configurations_base
         configuration.read_file(cfgfile)
 
     # parse package ignore list first
-    sdk_component_exclude_list = safe_config_key_fetch(configuration, 'PackageIgnoreList', 'packages')
+    sdk_component_exclude_list: str = safe_config_key_fetch(configuration, 'PackageIgnoreList', 'packages')
     if sdk_component_exclude_list:
         sdk_component_exclude_list = sdk_component_exclude_list.replace(' ', '')
-        pkg_list = sdk_component_exclude_list.split(',')
+        pkg_list: List[str] = sdk_component_exclude_list.split(',')
         for item in pkg_list:
             task.sdk_component_ignore_list.append(item)
     # parse sdk components
@@ -287,7 +292,7 @@ def parse_component_data(task: Any, configuration_file: str, configurations_base
 ##############################################################
 # Parse SDK components
 ##############################################################
-def parse_components(task: Any) -> None:
+def parse_components(task: QtInstallerTaskType) -> None:
     """Parse SDK all components"""
     log.info("Parse target configuration files")
     conf_base_path = task.configurations_dir + os.sep + task.platform_identifier + os.sep
@@ -317,125 +322,293 @@ def create_metadata_map(sdk_component: IfwSdkComponent) -> List[List[str]]:
     return component_metadata_tag_pair_list
 
 
-def get_component_sha1_file(sdk_component: IfwSdkComponent, sha1_file_dest: str) -> None:
-    """download component sha1 file"""
-    download(sdk_component.comp_sha1_uri, sha1_file_dest)
+def read_component_sha(sdk_comp: IfwSdkComponent, sha1_file_path: Path) -> None:
+    """
+    Read IfwSdkComponent's sha1 from the given file path and add it to the given component
 
+    Args:
+        sdk_comp: An instance of IfwSdkComponent with the component_sha1 attribute to be updated
+        sha1_file_path: A file system path to a text file where to read the SHA1 from
+
+    Raises:
+        CreateInstallerError: When SHA1 file doesn't exist, or SHA1 value is malformed
+    """
+    if sha1_file_path.exists():
+        with open(sha1_file_path, "r", encoding="utf-8") as sha1_file:
+            sdk_comp.component_sha1 = sha1_file.read().strip()
+        # Validate SHA1 hex characters and length
+        if re.fullmatch(r"\b[0-9a-f]{5,40}\b", sdk_comp.component_sha1) is None:
+            raise CreateInstallerError(f"Got invalid SHA1: '{sdk_comp.component_sha1}'")
+    else:
+        raise CreateInstallerError(f"Component SHA1 file not found: '{sha1_file_path}'")
+
+
+def get_component_sha1(sdk_comp: IfwSdkComponent, sha1_file_dest: Path) -> None:
+    """
+    Download sha1 file from URI specified in the component and add it to the same component
+
+    Args:
+        sdk_comp: An instance of IfwSdkComponent with the comp_sha1_uri URI to download from
+        sha1_file_dest: A file system path for the download target
+
+    Raises:
+        Exception: When downloading or saving the file in download() function fails
+        CreateInstallerError: When the downloaded SHA cannot be read in read_component_sha()
+    """
+    download(sdk_comp.comp_sha1_uri, str(sha1_file_dest))
     # read sha1 from the file
-    with open(sha1_file_dest, "r", encoding="utf-8") as sha1_file:
-        sdk_component.component_sha1 = sha1_file.read().strip()
+    read_component_sha(sdk_comp=sdk_comp, sha1_file_path=sha1_file_dest)
+
+
+def strip_dirs(iterations: int, install_dir: Path) -> None:
+    """
+    Strip out unnecessary folder structure based on the configuration
+
+    Args:
+        iterations: Specifies how many tree levels to remove (0=do nothing)
+        install_dir: A file system path to the folder to strip from
+
+    Raises:
+        IOError: When there are too many tree levels to be removed based on the structure
+    """
+    while iterations:
+        remove_one_tree_level(str(install_dir))  # TODO: use shutil.move here
+        iterations -= 1
+
+
+def delete_docs(directory: Path) -> None:
+    """
+    Delete doc directory from directory if exists
+
+    Args:
+        directory: A file system path to a directory to search from
+
+    Raises:
+        PackagingError: When no directory with the name 'doc' found from path, handled with warning
+    """
+    try:
+        doc_dir = locate_path(directory, ["doc"], filters=[os.path.isdir])
+        log.info("Erasing doc: %s", doc_dir)
+        shutil.rmtree(doc_dir)
+    except PackagingError:
+        log.warning("Skipping option 'delete_doc_directory': Directory doesn't contain 'doc' dir")
+
+
+def process_qml_examples(directory: Path) -> None:
+    """
+    Find qml examples directory from directory if it exists. Remove other content.
+
+    Args:
+        directory: A file system path to a directory to search from
+
+    Raises:
+        PackagingError: When no 'examples' directory found from path, handled with warning
+    """
+    try:
+        qml_examples_dir = locate_path(directory, ["examples"], filters=[os.path.isdir])
+        qml_examples_only(examples_dir=qml_examples_dir)
+    except PackagingError:
+        log.warning("Skipping option 'qml_examples_only': The 'examples' directory does not exist")
+
+
+def finalize_items(task: QtInstallerTaskType, items: str, install_dir: Path) -> None:
+    """
+    Perform package finalization tasks for the given archive
+
+    Args:
+        task: An instance of QtInstallerTask to get a build timestamp for 'set_licheck'
+        items: List of operations to perform as part of finalization
+        install_dir: A file system path for a folder containing the archive contents to patch
+    """
+    if not items:
+        return
+    if "delete_doc_directory" in items:
+        delete_docs(directory=install_dir)
+    if "cleanup_doc_directory" in items:
+        cleanup_docs(install_dir=str(install_dir))
+    if "qml_examples_only" in items:
+        process_qml_examples(directory=install_dir)
+    if "patch_qt" in items:
+        patch_files(str(install_dir), product="qt_framework")
+    if "set_executable" in items:
+        handle_set_executable(str(install_dir), items)
+    if "set_licheck" in items:
+        handle_set_licheck(task, str(install_dir), items)
+
+
+def exec_action_script(archive_action: Tuple[Path, str], input_dir: Path) -> None:
+    """
+    Perform a custom action script for the extracted archive.
+    An action script is a Python or a shell script that takes in at least the --input-dir argument.
+    Additional arguments can be specified alongside the script location.
+
+    Args:
+        archive_action: Contains a path to the action script to execute, as well as its arguments
+        input_dir: A file system path to pass onto the action script via --input-dir option
+
+    Raises:
+        CalledProcessError: When executing the script fails
+    """
+    script_path, script_args = archive_action
+    cmd = [str(script_path), "--input-dir=" + str(input_dir), script_args.strip()]
+    if script_path.suffix == ".py":
+        cmd.insert(0, sys.executable)
+    run_cmd(cmd=cmd)
+
+
+def process_debug_files_and_libs(
+    arch_name: str,
+    install_dir: Path,
+    pdb_files: bool = False,
+    debug_information_files: bool = False,
+    debug_libraries: bool = False,
+) -> None:
+    """
+    Remove debug information files and libraries when explicitly defined so
+
+    Args:
+        arch_name: Name of the archive file, used for filtering debug information archives
+        install_dir: A file system path to the directory to remove from
+        pdb_files: Whether to remove Windows-only pdb files (Obsolete)
+        debug_information_files: Whether to remove platform-specific debug information files
+        debug_libraries: Whether to remove all the debug libraries
+    """
+    if not pdb_files or not debug_information_files:
+        # don't remove debug information files from debug information archives
+        if not arch_name.endswith("debug-symbols.7z"):
+            # Check if debug information file types are defined
+            if pdb_files or debug_information_files:
+                # Remove debug information files according to host platform defaults
+                remove_all_debug_information_files(str(install_dir))
+    if debug_libraries:
+        remove_all_debug_libraries(str(install_dir))
+
+
+def extract_component_data(source_archive: Path, target_directory: Path) -> None:
+    """
+    Extract component payload to the specified directory and remove the old archive
+
+    Args:
+        source_archive: A file system path to the archive to extract
+        target_directory: A file system path to the target directory to create and extract to
+
+    Raises:
+        CreateInstallerError: When payload extraction is unsuccessful
+    """
+    # make sure the target resolves to a path and parent directories exist
+    target_directory = target_directory.resolve(strict=True)
+    target_directory.mkdir(parents=True, exist_ok=True)
+    # extract contents, raise error on unsuccessful extraction
+    if not extract_file(str(source_archive), str(target_directory)):
+        raise CreateInstallerError(f"Could not extract '{source_archive}' to '{target_directory}'")
+    # remove the original archive after extraction complete
+    source_archive.unlink()
+
+
+def patch_component_data(
+    task: QtInstallerTaskType,
+    archive: IfwPayloadItem,
+    install_dir: Path,
+) -> None:
+    """
+    Perform patching operations for component payload unpacked to install_dir.
+
+    Args:
+        task: An instance of QtInstallerTask, required for finalize_items
+        archive: An instance of IfwPayloadItem, containing the payload attributes
+        payload: An install directory for the payload, required for patching
+    """
+    if archive.archive_action:
+        exec_action_script(archive.archive_action, install_dir)
+    strip_dirs(archive.package_strip_dirs, install_dir)
+    finalize_items(task, archive.package_finalize_items, install_dir)
+    process_debug_files_and_libs(
+        archive.arch_name,
+        install_dir,
+        task.remove_pdb_files,
+        task.remove_debug_information_files,
+        task.remove_debug_libraries,
+    )
+    if archive.rpath_target and is_linux():
+        handle_component_rpath(str(install_dir), archive.rpath_target)
+
+
+def recompress_component(
+    task: QtInstallerTaskType, archive: IfwPayloadItem, destination_dir: Path, compress_dir: Path
+) -> None:
+    """
+    Recompress the patched component to a .7z archive
+
+    Args:
+        task: An instance of QtInstallerTask used for getting the archivegen tool
+        archive: An instance of IfwPayloadItem, containing the archive name
+        destination_dir: A directory for where to save the compressed archive
+        compress_dir: A directory containing the content to add to the archive
+
+    Raises:
+        CalledProcessError: When running the archivegen command fails
+    """
+    # change payload name to desired final archive format (.7z)
+    if not archive.arch_name.endswith(".7z"):
+        while Path(archive.arch_name).suffix in archive.supported_arch_formats:
+            archive.arch_name = Path(archive.arch_name).stem
+        archive.arch_name = Path(archive.arch_name + ".7z").name
+    # add compress_dir in front of every item to ensure correct install paths
+    content_list = [str(compress_dir / x) for x in os.listdir(compress_dir)]
+    saveas = Path(destination_dir, archive.arch_name)
+    run_cmd([task.archivegen_tool, "-f", ".7z", str(saveas)] + content_list, destination_dir)
+    if not saveas.exists():
+        raise CreateInstallerError(f"Generated archive doesn't exist: {saveas}")
 
 
 def get_component_data(
-    task: Any,
-    sdk_component: IfwSdkComponent,
+    task: QtInstallerTaskType,
+    sdk_comp: IfwSdkComponent,
     archive: IfwPayloadItem,
-    install_dir: str,
-    data_dir_dest: str,
-    compress_content_dir: str,
+    install_dir: Path,
+    data_dir_dest: Path,
+    compress_dir: Path,
 ) -> None:
-    """Download and create data for a component"""
+    """
+    Download and create data for a component's payload item including patching operations
+
+    Args:
+        task: An instance of QtInstallerTask
+        sdk_comp: An instance of IfwSdkComponent, specifies the component that the data is part of
+        archive: An instance of IfwPayloadItem, specifies the payload item to process
+        install_dir: A directory resembling the final installation directory structure
+        data_dir_dest: A directory location for the final component data
+        compress_dir: A directory containing the items to compress to the final archive
+    """
     # Continue if payload item has no data
     if not os.path.basename(archive.archive_uri):
+        log.info("[%s] Payload item has no data", archive.package_name)
         return
     # Download payload to data_dir_dest
     downloaded_file = Path(data_dir_dest, archive.arch_name)
+    log.info("[%s] Download: %s", archive.package_name, archive.arch_name)
     download(archive.archive_uri, str(downloaded_file))
     # For non-archive payload, move to install_dir for packing
     if not archive.archive_uri.endswith(archive.supported_arch_formats):
         shutil.move(str(downloaded_file), install_dir)
     # For payload already in IFW compatible format, use the raw artifact and continue
     elif not archive.requires_extraction and archive.archive_uri.endswith(archive.ifw_arch_formats):
+        log.info("[%s] Use raw artifact: %s", archive.package_name, archive.arch_name)
         return
     # Extract payload archive if it requires to be patched or recompressed to a compatible format
     else:
-        if not extract_file(str(downloaded_file), install_dir):
-            # Raise error on unsuccessful extraction
-            raise CreateInstallerError(f"Couldn't extract archive: {downloaded_file}")
-        # Remove original archive after extraction complete
-        os.remove(downloaded_file)
+        log.info("[%s] Extract: %s", archive.package_name, archive.arch_name)
+        extract_component_data(downloaded_file, install_dir)
     # If patching items are specified, execute them here
     if archive.requires_patching:
-        # perform custom action script for the extracted archive
-        if archive.archive_action:
-            script_file, script_args = archive.archive_action
-            script_args = script_args or ""
-            script_path = Path(__file__).parent.resolve() / script_file
-            if not script_path.exists():
-                raise CreateInstallerError(f"Custom archive action script missing: {script_path}")
-            cmd = [str(script_path), "--input-dir=" + install_dir, script_args.strip()]
-            if script_path.suffix == ".py":
-                cmd.insert(0, sys.executable)
-            run_cmd(cmd=cmd)
-
-        # strip out unnecessary folder structure based on the configuration
-        count = 0
-        iterations = int(archive.package_strip_dirs)
-        while count < iterations:
-            count = count + 1
-            remove_one_tree_level(install_dir)
-        # perform package finalization tasks for the given archive
-        if 'delete_doc_directory' in archive.package_finalize_items:
-            try:
-                doc_dir = locate_path(install_dir, ["doc"], filters=[os.path.isdir])
-                log.info("Erasing doc: %s", doc_dir)
-                shutil.rmtree(doc_dir)
-            except PackagingError:
-                pass
-        if 'cleanup_doc_directory' in archive.package_finalize_items:
-            cleanup_docs(install_dir)
-        if 'qml_examples_only' in archive.package_finalize_items:
-            try:
-                examples_dir = locate_path(install_dir, ["examples"], filters=[os.path.isdir])
-                qml_examples_only(examples_dir)
-            except PackagingError:
-                pass
-        if 'patch_qt' in archive.package_finalize_items:
-            patch_files(install_dir, product="qt_framework")
-        if 'set_executable' in archive.package_finalize_items:
-            handle_set_executable(install_dir, archive.package_finalize_items)
-        if 'set_licheck' in archive.package_finalize_items:
-            handle_set_licheck(task, install_dir, archive.package_finalize_items)
-
-        # remove debug information files when explicitly defined so
-        if not task.remove_pdb_files or not task.remove_debug_information_files:
-            # don't remove debug information files from debug information archives
-            if not archive.arch_name.endswith("debug-symbols.7z"):
-                # Check if debug information file types are defined
-                if task.remove_pdb_files or task.remove_debug_information_files:
-                    # Remove debug information files according to host platform defaults
-                    remove_all_debug_information_files(install_dir)
-
-        # remove debug libraries
-        if task.remove_debug_libraries:
-            remove_all_debug_libraries(install_dir)
-
-        if archive.rpath_target:
-            if not archive.rpath_target.startswith(os.sep):
-                archive.rpath_target = os.sep + archive.rpath_target
-            if is_linux():
-                handle_component_rpath(install_dir, archive.rpath_target)
-
+        log.info("[%s] Patch: %s", archive.package_name, archive.arch_name)
+        patch_component_data(task, archive, install_dir)
+    # Add SHA1 from payload to component if specified
     if archive.component_sha1:
-        # read sha1 from the file
-        sha1_file_path = install_dir + os.sep + archive.component_sha1
-        if os.path.exists(sha1_file_path):
-            with open(sha1_file_path, "r", encoding="utf-8") as sha1_file:
-                sdk_component.component_sha1 = sha1_file.read().strip()
-        else:
-            raise CreateInstallerError(
-                f"Component SHA1 file '{archive.component_sha1}' not found"
-            )
-    # Lastly, compress the component back to a 7z archive
-    if not archive.arch_name.endswith(".7z"):  # Remove old archive suffix
-        while Path(archive.arch_name).suffix in archive.supported_arch_formats:
-            archive.arch_name = Path(archive.arch_name).stem
-        archive.arch_name = Path(archive.arch_name + ".7z").name
-    content_list = os.listdir(compress_content_dir)
-    # Add compress_content_dir in front of every item
-    content_list = [(compress_content_dir + os.sep + x) for x in content_list]
-    save_as = os.path.normpath(os.path.join(data_dir_dest, archive.arch_name))
-    run_cmd(cmd=[task.archivegen_tool, save_as] + content_list, cwd=data_dir_dest)
+        read_component_sha(sdk_comp, install_dir / archive.component_sha1)
+    # Finally compress the content of the component to the final package
+    log.info("[%s] Compress: %s", archive.package_name, archive.arch_name)
+    recompress_component(task, archive, data_dir_dest, compress_dir)
 
 
 def handle_set_executable(base_dir: str, package_finalize_items: str) -> None:
@@ -447,7 +620,9 @@ def handle_set_executable(base_dir: str, package_finalize_items: str) -> None:
         log.info("Executable bit set for: %s", expected_path)
 
 
-def handle_set_licheck(task: Any, base_dir: str, package_finalize_items: str) -> None:
+def handle_set_licheck(
+    task: QtInstallerTaskType, base_dir: str, package_finalize_items: str
+) -> None:
     for licheck_file_name in parse_package_finalize_items(package_finalize_items, 'set_licheck'):
         licheck_file_path = os.path.join(base_dir, licheck_file_name)
         if not os.path.exists(licheck_file_path):
@@ -468,7 +643,7 @@ def parse_package_finalize_items(package_finalize_items: str, item_category: str
 ##############################################################
 # Substitute pkg template directory names
 ##############################################################
-def substitute_package_name(task: Any, package_name: str) -> str:
+def substitute_package_name(task: QtInstallerTaskType, package_name: str) -> str:
     for key, value in task.substitutions.items():
         package_name = package_name.replace(key, value)
 
@@ -556,7 +731,7 @@ def remove_all_debug_libraries(install_dir: str) -> None:
 ##############################################################
 # Create target components
 ##############################################################
-def create_target_components(task: Any) -> None:
+def create_target_components(task: QtInstallerTaskType) -> None:
     """Create target components."""
     Path(task.packages_full_path_dst).mkdir(parents=True, exist_ok=True)
 
@@ -576,24 +751,24 @@ def create_target_components(task: Any) -> None:
         # substitute pkg_template dir names and package_name
         package_name = substitute_package_name(task, sdk_comp.ifw_sdk_comp_name)
         sdk_comp.ifw_sdk_comp_name = package_name
-        dest_base = task.packages_full_path_dst + os.sep + package_name + os.sep
-        meta_dir_dest = os.path.normpath(dest_base + 'meta')
-        data_dir_dest = os.path.normpath(dest_base + 'data')
-        temp_data_dir = os.path.normpath(dest_base + 'tmp')
+        dest_base = Path(task.packages_full_path_dst) / package_name
+        meta_dir_dest = dest_base / "meta"
+        data_dir_dest = dest_base / "data"
+        temp_data_dir = dest_base / "tmp"
         # save path for later substitute_component_tags call
-        sdk_comp.meta_dir_dest = Path(meta_dir_dest)
+        sdk_comp.meta_dir_dest = meta_dir_dest
         # create meta destination folder
-        sdk_comp.meta_dir_dest.mkdir(parents=True, exist_ok=True)
+        meta_dir_dest.mkdir(parents=True, exist_ok=True)
         # Copy Meta data
         metadata_content_source_root = os.path.join(sdk_comp.pkg_template_folder, "meta")
-        copy_tree(metadata_content_source_root, meta_dir_dest)
+        copy_tree(metadata_content_source_root, str(meta_dir_dest))
         if os.path.isfile(os.path.join(task.script_root_dir, "lrelease")):
             # create translation binaries if translation source files exist for component
             update_script = os.path.join(task.script_root_dir, "update_component_translations.sh")
             lrelease_tool = os.path.join(task.script_root_dir, "lrelease")
-            run_cmd(cmd=[update_script, "-r", lrelease_tool, dest_base])
+            run_cmd(cmd=[update_script, "-r", lrelease_tool, str(dest_base)])
         # add files into tag substitution
-        task.directories_for_substitutions.append(meta_dir_dest)
+        task.directories_for_substitutions.append(str(meta_dir_dest))
         # handle archives
         if sdk_comp.downloadable_archives:
             # save path for later substitute_component_tags call
@@ -604,19 +779,15 @@ def create_target_components(task: Any) -> None:
                 # for online installer just handle the metadata
                 if task.offline_installer or task.create_repository:
                     # Create needed data dirs
-                    compress_content_dir = os.path.normpath(
-                        temp_data_dir + os.sep + archive.arch_name
-                    )
-                    install_dir = os.path.normpath(
-                        compress_content_dir + archive.get_archive_install_dir()
-                    )
+                    compress_dir = temp_data_dir / archive.arch_name
+                    install_dir = compress_dir / archive.get_archive_install_dir().strip("/")
                     # adding get_component_data task to our work queue
                     # Create needed data dirs before the threads start to work
-                    Path(install_dir).mkdir(parents=True, exist_ok=True)
-                    Path(data_dir_dest).mkdir(parents=True, exist_ok=True)
+                    install_dir.mkdir(parents=True, exist_ok=True)
+                    data_dir_dest.mkdir(parents=True, exist_ok=True)
                     if is_windows():
-                        install_dir = win32api.GetShortPathName(install_dir)
-                        data_dir_dest = win32api.GetShortPathName(data_dir_dest)
+                        install_dir = Path(win32api.GetShortPathName(str(install_dir)))
+                        data_dir_dest = Path(win32api.GetShortPathName(str(data_dir_dest)))
                     get_component_data_work.add_task(
                         f"adding {archive.arch_name} to {sdk_comp.ifw_sdk_comp_name}",
                         get_component_data,
@@ -625,14 +796,14 @@ def create_target_components(task: Any) -> None:
                         archive,
                         install_dir,
                         data_dir_dest,
-                        compress_content_dir,
+                        compress_dir,
                     )
         # handle component sha1 uri
         if sdk_comp.comp_sha1_uri:
-            sha1_file_dest = os.path.normpath(dest_base + 'SHA1')
+            sha1_file_dest = (dest_base / "SHA1")
             get_component_data_work.add_task(
                 f"getting component sha1 file for {sdk_comp.ifw_sdk_comp_name}",
-                get_component_sha1_file,
+                get_component_sha1,
                 sdk_comp,
                 sha1_file_dest,
             )
@@ -640,22 +811,24 @@ def create_target_components(task: Any) -> None:
         # maybe there is some static data
         data_content_source_root = os.path.normpath(sdk_comp.pkg_template_folder + os.sep + "data")
         if os.path.exists(data_content_source_root):
-            Path(data_dir_dest).mkdir(parents=True, exist_ok=True)
-            copy_tree(data_content_source_root, data_dir_dest)
+            data_dir_dest.mkdir(parents=True, exist_ok=True)
+            copy_tree(data_content_source_root, str(data_dir_dest))
 
     if not task.dry_run:
         # start the work threaded, more than 8 parallel downloads are not so useful
         get_component_data_work.run(min([task.max_cpu_count, cpu_count()]))
 
-    for sdk_component in task.sdk_component_list:
+    for sdk_comp in task.sdk_component_list:
         # substitute tags
-        substitute_component_tags(create_metadata_map(sdk_component), sdk_component.meta_dir_dest)
-        if sdk_component.temp_data_dir and os.path.exists(sdk_component.temp_data_dir):
-            # lastly remove temp dir after all data is prepared
-            if not remove_tree(str(sdk_component.temp_data_dir)):
-                raise CreateInstallerError(f"Unable to remove directory: {sdk_component.temp_data_dir}")
-            # substitute downloadable archive names in installscript.qs
-            substitute_component_tags(sdk_component.generate_downloadable_archive_list(), sdk_component.meta_dir_dest)
+        substitute_component_tags(create_metadata_map(sdk_comp), str(sdk_comp.meta_dir_dest))
+        if sdk_comp.temp_data_dir is None or not sdk_comp.temp_data_dir.exists():
+            continue
+        # lastly remove temp dir after all data is prepared
+        if not remove_tree(str(sdk_comp.temp_data_dir)):
+            raise CreateInstallerError(f"Unable to remove dir: {sdk_comp.temp_data_dir}")
+        # substitute downloadable archive names in installscript.qs
+        archive_list = sdk_comp.generate_downloadable_archive_list()
+        substitute_component_tags(archive_list, str(sdk_comp.meta_dir_dest))
 
 
 ##############################################################
@@ -727,7 +900,7 @@ def cleanup_docs(install_dir: str) -> None:
 ##############################################################
 # Create the final installer binary
 ##############################################################
-def create_installer_binary(task: Any) -> None:
+def create_installer_binary(task: QtInstallerTaskType) -> None:
     """Create installer binary files using binarycreator tool."""
     log.info("Create installer binary")
 
@@ -795,7 +968,7 @@ def create_installer_binary(task: Any) -> None:
 ##############################################################
 # Create the repository
 ##############################################################
-def create_online_repository(task: Any) -> None:
+def create_online_repository(task: QtInstallerTaskType) -> None:
     """Create online repository using repogen tool."""
     log.info("Create online repository")
 
@@ -822,7 +995,7 @@ def create_online_repository(task: Any) -> None:
 ##############################################################
 # Create MaintenanceTool resource file
 ##############################################################
-def create_maintenance_tool_resource_file(task: Any) -> None:
+def create_maintenance_tool_resource_file(task: QtInstallerTaskType) -> None:
     """Create MaintenanceTool resource file."""
     log.info("Create MaintenanceTool resource file")
     set_config_directory(task)
@@ -875,7 +1048,7 @@ def inject_update_rcc_to_archive(archive_file_path: str, file_to_be_injected: st
 ##############################################################
 # Create the final installer binary
 ##############################################################
-def create_mac_disk_image(task: Any) -> None:
+def create_mac_disk_image(task: QtInstallerTaskType) -> None:
     """Create Apple disk image."""
     log.info("Create Apple disk image")
     output_dir = INSTALLER_OUTPUT_DIR_NAME
@@ -889,7 +1062,7 @@ def create_mac_disk_image(task: Any) -> None:
 ##############################################################
 # All main build steps
 ##############################################################
-def create_installer(task: Any) -> None:
+def create_installer(task: QtInstallerTaskType) -> None:
     """Installer creation main steps."""
     log.info("Creating Qt Installer Framework based installer/online repository")
     # check required tools
@@ -929,7 +1102,7 @@ def str2bool(value: str) -> bool:
 
 
 @dataclass
-class QtInstallerTask:
+class QtInstallerTask(Generic[QtInstallerTaskType]):
     """QtInstallerTask dataclass"""
 
     config = ConfigParser(interpolation=ExtendedInterpolation())
@@ -1155,7 +1328,7 @@ def main() -> None:
                         help="Create resource file for Maintenance Tool")
     args = parser.parse_args(sys.argv[1:])
 
-    task: QtInstallerTask = QtInstallerTask(
+    task: QtInstallerTask[Any] = QtInstallerTask(
         configurations_dir=args.configurations_dir,
         configuration_file=args.configuration_file,
         offline_installer=args.offline_installer,

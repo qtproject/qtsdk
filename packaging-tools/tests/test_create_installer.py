@@ -33,13 +33,14 @@ import os
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Tuple
+from typing import Optional, Tuple
 
 from ddt import data, ddt  # type: ignore
 
 from bld_utils import is_macos, is_windows
 from bldinstallercommon import locate_paths
-from create_installer import remove_all_debug_libraries
+from create_installer import CreateInstallerError, read_component_sha, remove_all_debug_libraries
+from sdkcomponent import IfwSdkComponent
 
 
 @ddt
@@ -71,6 +72,39 @@ class TestCommon(unittest.TestCase):
                     self.assertCountEqual(result_rel, files)
                 else:
                     self.assertCountEqual(result_rel, remaining_files)
+
+    @data(  # type: ignore
+        ("8843d7f92416211de9ebb963ff4ce28125932878", "8843d7f92416211de9ebb963ff4ce28125932878"),
+        ("8843d", "8843d"),
+    )
+    def test_read_component_sha(self, test_data: Tuple[str, Optional[str]]) -> None:
+        sha, exp = test_data
+        sdk_comp = IfwSdkComponent("", "", "", "", "", "", "", "", "", "", "")  # type: ignore
+        with TemporaryDirectory(dir=Path.cwd()) as tmpdir:
+            test_sha = Path(tmpdir) / "test"
+            test_sha.write_text(sha, encoding="utf-8")
+            read_component_sha(sdk_comp, test_sha)
+            self.assertEqual(sdk_comp.component_sha1, exp)
+
+    @data(  # type: ignore
+        ("foobar"),
+        ("8843"),
+        ("8843d7f92416211de9ebb963ff4ce2812593287g"),
+        (""),
+    )
+    def test_read_component_sha_invalid_content(self, test_sha1: str) -> None:
+        sdk_comp = IfwSdkComponent("", "", "", "", "", "", "", "", "", "", "")  # type: ignore
+        with TemporaryDirectory(dir=Path.cwd()) as tmpdir:
+            test_sha = Path(tmpdir) / "test"
+            test_sha.write_text(test_sha1, encoding="utf-8")
+            with self.assertRaises(CreateInstallerError):
+                read_component_sha(sdk_comp, test_sha)
+
+    def test_read_component_sha_invalid_path(self) -> None:
+        sdk_comp = IfwSdkComponent("", "", "", "", "", "", "", "", "", "", "")  # type: ignore
+        with TemporaryDirectory(dir=Path.cwd()) as tmpdir:
+            with self.assertRaises(CreateInstallerError):
+                read_component_sha(sdk_comp, Path(tmpdir) / "invalid")
 
 
 if __name__ == "__main__":
