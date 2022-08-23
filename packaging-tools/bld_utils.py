@@ -93,14 +93,14 @@ class DirRenamer():
             os.rename(self.newName, self.oldName)
 
 
-def compress(path, directoryName, sevenZipTarget, callerArguments):
+def compress(path, directoryName, sevenZipTarget):
     sevenZipExtension = os.extsep + '7z'
     parentDirectoryPath = os.path.abspath(os.path.join(path, '..'))
     if os.path.splitext(sevenZipTarget)[1] != sevenZipExtension:
         sevenZipTarget = sevenZipTarget + sevenZipExtension
     sevenZipFileName = os.path.split(sevenZipTarget)[1]
     with DirRenamer(path, directoryName):
-        runCommand(' '.join(('7z a -mx9', sevenZipFileName, directoryName)), parentDirectoryPath, callerArguments)
+        runCommand(' '.join(('7z a -mx9', sevenZipFileName, directoryName)), parentDirectoryPath)
 
     currentSevenZipPath = os.path.join(parentDirectoryPath, sevenZipFileName)
     if currentSevenZipPath != sevenZipTarget:

@@ -200,7 +200,7 @@ if callerArguments.module_url != '':
 elif callerArguments.module7z != '':
     Path(MODULE_SRC_DIR).mkdir(parents=True, exist_ok=True)
     myGetQtModule = ThreadedWork("get and extract module src")
-    myGetQtModule.addTaskObject(create_download_and_extract_tasks(callerArguments.module7z, MODULE_SRC_DIR, tempPath, callerArguments))
+    myGetQtModule.addTaskObject(create_download_and_extract_tasks(callerArguments.module7z, MODULE_SRC_DIR, tempPath))
     myGetQtModule.run()
     qtModuleSourceDirectory = MODULE_SRC_DIR
 else:

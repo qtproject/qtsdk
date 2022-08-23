@@ -196,15 +196,14 @@ def mingw_training(base_path, qtcreator_path, environment, bitness):
     download_packages_work.addTaskObject(create_download_extract_task(
         'https://download.sysinternals.com/files/DebugView.zip',
         debugview_dir,
-        base_path,
-        None))
+        base_path))
 
     # Install CMake
     cmake_arch_suffix = 'win64-x64' if bitness == 64 else 'win32-x86'
     cmake_base_url = 'http://' + pkg_server + '/packages/jenkins/cmake/' \
         + cmake_version() + '/cmake-' + cmake_version() + '-' + cmake_arch_suffix + '.zip'
     download_packages_work.addTaskObject(create_download_extract_task(
-        cmake_base_url, cmake_dir, base_path, None))
+        cmake_base_url, cmake_dir, base_path))
 
     download_packages_work.run()
 
@@ -244,10 +243,10 @@ def mingw_training(base_path, qtcreator_path, environment, bitness):
                  '-S' + qtcreator_path,
                  '-B' + creator_build_dir]
 
-    runCommand(qtc_cmake, creator_build_dir, None, environment)
-    runCommand([cmake_command, '--build', creator_build_dir], creator_build_dir, None, environment)
-    runCommand([cmake_command, '--install', creator_build_dir, '--prefix', creator_install_dir], creator_build_dir, None, environment)
-    runCommand([cmake_command, '--install', creator_build_dir, '--prefix', creator_install_dir, '--component', 'Dependencies'], creator_build_dir, None, environment)
+    runCommand(qtc_cmake, creator_build_dir, environment)
+    runCommand([cmake_command, '--build', creator_build_dir], creator_build_dir, environment)
+    runCommand([cmake_command, '--install', creator_build_dir, '--prefix', creator_install_dir], creator_build_dir, environment)
+    runCommand([cmake_command, '--install', creator_build_dir, '--prefix', creator_install_dir, '--component', 'Dependencies'], creator_build_dir, environment)
 
     # Remove the regular libclang.dll which got deployed via 'Dependencies' qtcreator install target
     os.remove(os.path.join(creator_install_dir, 'bin', 'libclang.dll'))

@@ -198,14 +198,14 @@ def create_download_documentation_task(base_url, download_path):
         os.rename(source_path, dest_doc_path)
         # limit compression to 2 cores to limit memory footprint for 32bit Windows
         runCommand(['7z', 'a', '-mx1', '-mmt2', '-md32m', '-ms=1g', target_filepath, dest_doc_path],
-                   dest_doc_path, None)
+                   dest_doc_path)
 
     download_task = Task(f"downloading documentation from {base_url}")
     for item in file_list:
         url = base_url + '/doc/' + item
         download_filepath = os.path.join(download_path, item)
         download_task.addFunction(download, url, download_filepath)
-        download_task.addFunction(create_extract_function(download_filepath, extract_path, None))
+        download_task.addFunction(create_extract_function(download_filepath, extract_path))
         download_task.addFunction(create_remove_one_dir_level_function(os.path.join(extract_path, item.rstrip(".zip"))))
 
     repackage_task = Task(f"repackaging documentation as {target_filepath}")
@@ -238,12 +238,12 @@ def create_download_openssl_task(url, download_path):
             source_path = linuxdir
             pattern = '*.so*'
         runCommand(['7z', 'a', '-mmt2', target_filepath, pattern],
-                   source_path, None)
+                   source_path)
 
     download_task = Task(f"downloading openssl from {url}")
     download_task.addFunction(download, url, download_filepath)
     repackage_task = Task(f"repackaging openssl as {target_filepath}")
-    repackage_task.addFunction(create_extract_function(download_filepath, extract_path, None))
+    repackage_task.addFunction(create_extract_function(download_filepath, extract_path))
     repackage_task.addFunction(repackage)
     return (download_task, repackage_task, file_url(target_filepath))
 
@@ -630,7 +630,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
 
     def add_download_extract(url, target_path):
         (download, extract) = create_download_and_extract_tasks(
-            url, target_path, download_temp, None)
+            url, target_path, download_temp)
         download_work.addTaskObject(download)
         extract_work.addFunction(extract.do)
 
@@ -991,7 +991,7 @@ def handle_sdktool_build(optionDict):
         if python_url:
             python_path = os.path.join(download_temp, 'python')
             download_packages_work.addTaskObject(create_download_extract_task(
-                python_url, python_path, download_temp, None))
+                python_url, python_path, download_temp))
             cmd_args.extend(['--python-path', python_path])
 
         download_packages_work.run()

@@ -669,36 +669,36 @@ def rename_android_soname_files(qt5_base_path):
 ###############################
 # function
 ###############################
-def create_extract_function(file_path, target_path, caller_arguments=None):
+def create_extract_function(file_path, target_path):
     Path(target_path).mkdir(parents=True, exist_ok=True)
     working_dir = os.path.dirname(file_path)
     if file_path.endswith('.tar.gz'):
-        return lambda: runCommand(['tar', 'zxf', file_path, '-C', target_path], working_dir, caller_arguments)
-    return lambda: runCommand(['7z', 'x', '-y', file_path, '-o' + target_path], working_dir, caller_arguments)
+        return lambda: runCommand(['tar', 'zxf', file_path, '-C', target_path], working_dir)
+    return lambda: runCommand(['7z', 'x', '-y', file_path, '-o' + target_path], working_dir)
 
 
 ###############################
 # function
 ###############################
-def create_download_and_extract_tasks(url, target_path, temp_path, caller_arguments):
+def create_download_and_extract_tasks(url, target_path, temp_path):
     filename = os.path.basename(urlparse(url).path)
     sevenzip_file = os.path.join(temp_path, filename)
     download_task = Task(f"download '{url}' to '{sevenzip_file}'")
     download_task.addFunction(download, url, sevenzip_file)
     extract_task = Task(f"extract '{sevenzip_file}' to '{target_path}'")
-    extract_task.addFunction(create_extract_function(sevenzip_file, target_path, caller_arguments))
+    extract_task.addFunction(create_extract_function(sevenzip_file, target_path))
     return (download_task, extract_task)
 
 
 ###############################
 # function
 ###############################
-def create_download_extract_task(url, target_path, temp_path, caller_arguments):
+def create_download_extract_task(url, target_path, temp_path):
     filename = os.path.basename(urlparse(url).path)
     sevenzip_file = os.path.join(temp_path, filename)
     download_extract_task = Task(f"download {url} to {sevenzip_file} and extract it to {target_path}")
     download_extract_task.addFunction(download, url, sevenzip_file)
-    download_extract_task.addFunction(create_extract_function(sevenzip_file, target_path, caller_arguments))
+    download_extract_task.addFunction(create_extract_function(sevenzip_file, target_path))
     return download_extract_task
 
 
@@ -713,7 +713,7 @@ def create_qt_download_task(module_urls, target_qt5_path, temp_path, caller_argu
     for module_url in module_urls:
         if is_content_url_valid(module_url):
             (download_task, extract_task) = create_download_and_extract_tasks(
-                module_url, target_qt5_path, temp_path, caller_arguments
+                module_url, target_qt5_path, temp_path
             )
             download_work.addTaskObject(download_task)
             unzip_task.addFunction(extract_task.do)
@@ -723,26 +723,26 @@ def create_qt_download_task(module_urls, target_qt5_path, temp_path, caller_argu
     target_path = os.path.join(target_qt5_path, 'bin' if is_windows() else 'lib')
     if not is_macos() and hasattr(caller_arguments, 'icu7z') and caller_arguments.icu7z:
         (download_task, extract_task) = create_download_and_extract_tasks(
-            caller_arguments.icu7z, target_path, temp_path, caller_arguments
+            caller_arguments.icu7z, target_path, temp_path
         )
         download_work.addTaskObject(download_task)
         unzip_task.addFunction(extract_task.do)
     if is_windows():
         if hasattr(caller_arguments, 'd3dcompiler7z') and caller_arguments.d3dcompiler7z:
             (download_task, extract_task) = create_download_and_extract_tasks(
-                caller_arguments.d3dcompiler7z, target_path, temp_path, caller_arguments
+                caller_arguments.d3dcompiler7z, target_path, temp_path
             )
             download_work.addTaskObject(download_task)
             unzip_task.addFunction(extract_task.do)
         if hasattr(caller_arguments, 'opengl32sw7z') and caller_arguments.opengl32sw7z:
             (download_task, extract_task) = create_download_and_extract_tasks(
-                caller_arguments.opengl32sw7z, target_path, temp_path, caller_arguments
+                caller_arguments.opengl32sw7z, target_path, temp_path
             )
             download_work.addTaskObject(download_task)
             unzip_task.addFunction(extract_task.do)
         if hasattr(caller_arguments, 'openssl7z') and caller_arguments.openssl7z:
             (download_task, extract_task) = create_download_and_extract_tasks(
-                caller_arguments.openssl7z, target_path, temp_path, caller_arguments
+                caller_arguments.openssl7z, target_path, temp_path
             )
             download_work.addTaskObject(download_task)
             unzip_task.addFunction(extract_task.do)
