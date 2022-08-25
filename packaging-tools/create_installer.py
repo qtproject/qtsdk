@@ -34,12 +34,13 @@ import os
 import re
 import shutil
 import sys
-from argparse import ArgumentParser, ArgumentTypeError, Namespace
+from argparse import ArgumentParser, ArgumentTypeError
 from configparser import ConfigParser, ExtendedInterpolation
+from dataclasses import dataclass, field
 from multiprocessing import cpu_count
 from pathlib import Path
 from time import gmtime, strftime
-from typing import Any, Generator, List
+from typing import Any, Generator, List, Optional
 
 import pkg_constants
 from archiveresolver import ArchiveLocationResolver
@@ -153,7 +154,7 @@ def set_config_xml(task: Any) -> Any:
     fileslist = [config_template_dest]
     replace_in_files(fileslist, UPDATE_REPOSITORY_URL_TAG, update_repository_url)
     # substitute values also from global substitution list
-    for item in task.substitution_list:
+    for item in task.substitutions:
         replace_in_files(fileslist, item[0], item[1])
     return config_template_dest
 
@@ -166,7 +167,7 @@ def substitute_global_tags(task: Any) -> None:
     log.info("Substituting global tags:")
     log.info("%%PACKAGE_CREATION_DATE%% = %s", task.build_timestamp)
     log.info("%%VERSION_NUMBER_AUTO_INCREASE%% = %s", task.version_number_auto_increase_value)
-    for item in task.substitution_list:
+    for item in task.substitutions:
         log.info("%s = %s", item[0], item[1])
 
     # initialize the file list
@@ -182,7 +183,7 @@ def substitute_global_tags(task: Any) -> None:
     replace_in_files(fileslist, PACKAGE_CREATION_DATE_TAG, task.build_timestamp)
     if task.force_version_number_increase:
         replace_in_files(fileslist, VERSION_NUMBER_AUTO_INCREASE_TAG, task.version_number_auto_increase_value)
-    for item in task.substitution_list:
+    for item in task.substitutions:
         replace_in_files(fileslist, item[0], item[1])
 
 
@@ -249,7 +250,7 @@ def parse_component_data(task: Any, configuration_file: str, configurations_base
                     target_config=configuration,
                     packages_full_path_list=task.packages_dir_name_list,
                     archive_location_resolver=task.archive_location_resolver,
-                    key_value_substitution_list=task.substitution_list,
+                    key_value_substitution_list=task.substitutions,
                 )
                 if task.dry_run:
                     sdk_component.set_archive_skip(True)
@@ -482,7 +483,7 @@ def parse_package_finalize_items(package_finalize_items: str, item_category: str
 # Substitute pkg template directory names
 ##############################################################
 def substitute_package_name(task: Any, package_name: str) -> str:
-    for item in task.substitution_list:
+    for item in task.substitutions:
         package_name = package_name.replace(item[0], item[1])
 
     return package_name
@@ -919,95 +920,102 @@ def str2bool(value: str) -> bool:
     raise ArgumentTypeError('Boolean value expected.')
 
 
+@dataclass
 class QtInstallerTask:
+    """QtInstallerTask dataclass"""
 
-    def __init__(self, args: Namespace):
-        log.info("Parsing: %s", args.configuration_file)
-        self.config = ConfigParser(interpolation=ExtendedInterpolation())
-        with open(args.configuration_file, encoding="utf-8") as cfgfile:
+    config = ConfigParser(interpolation=ExtendedInterpolation())
+    configurations_dir: str = "configurations"
+    configuration_file: str = ""
+    script_root_dir: str = os.path.dirname(os.path.realpath(__file__))
+    ifw_tools_uri: str = ""
+    ifw_tools_dir: str = os.path.join(script_root_dir, "ifwt")
+    archivegen_tool: str = ""
+    binarycreator_tool: str = ""
+    installerbase_tool: str = ""
+    repogen_tool: str = ""
+    config_dir_dst: str = os.path.join(script_root_dir, "config")
+    packages_full_path_dst: str = os.path.join(script_root_dir, "pkg")
+    repo_output_dir: str = os.path.join(script_root_dir, "online_repository")
+    package_namespace: List[str] = field(default_factory=list)
+    platform_identifier: str = ""
+    installer_name: str = ""
+    packages_dir_name_list: List[str] = field(default_factory=list)
+    substitutions: List[List[str]] = field(default_factory=list)
+    directories_for_substitutions: List[str] = field(default_factory=list)
+    sdk_component_list: List[SdkComponent] = field(default_factory=list)
+    sdk_component_list_skipped: List[SdkComponent] = field(default_factory=list)
+    sdk_component_ignore_list: List[str] = field(default_factory=list)
+    archive_location_resolver: Optional[ArchiveLocationResolver] = None
+    archive_base_url: str = ""
+    remove_debug_information_files: bool = False
+    remove_debug_libraries: bool = False
+    remove_pdb_files: bool = False
+    offline_installer: bool = False
+    online_installer: bool = False
+    create_repository: bool = False
+    strict_mode: bool = True
+    dry_run: Optional[str] = None
+    license_type: str = "opensource"
+    build_timestamp: str = strftime("%Y-%m-%d", gmtime())
+    force_version_number_increase: bool = False
+    version_number_auto_increase_value: str = "-" + strftime("%Y%m%d%H%M", gmtime())
+    max_cpu_count: int = 8
+    create_maintenance_tool_resource_file: bool = bool(
+        os.environ.get("CREATE_MAINTENANCE_TOOL_RESOURCE_FILE")
+    )
+    substitution_list: List[str] = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        log.info("Parsing: %s", self.configuration_file)
+        with open(self.configuration_file, encoding="utf-8") as cfgfile:
             self.config.read_file(cfgfile)
-        self.configurations_dir = args.configurations_dir
-        self.configuration_file = args.configuration_file
+        package_namespace = self.config.get("PackageNamespace", "name").replace(" ", "")
+        self.package_namespace: List[str] = package_namespace.split(",")
+        self.platform_identifier = self.config.get("PlatformIdentifier", "identifier")
+        self.packages_dir_name_list = self.parse_ifw_pkg_template_dirs(
+            self.config.get("PackageTemplates", "template_dirs"), self.configurations_dir
+        )
+        self._parse_substitutions()
+        if self.archive_location_resolver is None:
+            self.archive_location_resolver = ArchiveLocationResolver(
+                self.config, self.archive_base_url, self.configurations_dir, self.substitutions
+            )
 
-        self.script_root_dir = os.path.dirname(os.path.realpath(__file__))
-        self.ifw_tools_uri = args.ifw_tools_uri
-        self.ifw_tools_dir = os.path.join(self.script_root_dir, "ifwt")
-        self.archivegen_tool: str = ""
-        self.binarycreator_tool: str = ""
-        self.installerbase_tool: str = ""
-        self.repogen_tool: str = ""
-        self.config_dir_dst = os.path.join(self.script_root_dir, "config")
-        self.packages_full_path_dst = os.path.join(self.script_root_dir, "pkg")
+    def __str__(self) -> str:
+        return f"""Installer task:
+  IFW tools: {self.ifw_tools_uri}
+  Archivegen: {self.archivegen_tool}
+  Binarycreator: {self.binarycreator_tool}
+  Installerbase: {self.installerbase_tool}
+  Repogen: {self.repogen_tool}
+  Working config dir: {self.config_dir_dst}
+  Working pkg dir: {self.packages_full_path_dst}
+  Package namespace: {self.package_namespace}
+  Platform identifier: {self.platform_identifier}
+  Installer name: {self.installer_name}
+  IFW pkg templates: {self.packages_dir_name_list}
+  Substitutions: {self.substitutions}
+  Remove debug information files: {self.remove_debug_information_files}
+  Remove debug libraries: {self.remove_debug_libraries}
+  Remove pdb files: {self.remove_pdb_files}
+  Online installer: {self.online_installer}
+  Offline installer: {self.offline_installer}
+  Create repository: {self.create_repository}
+  License: {self.license_type}
+  Build timestamp: {self.build_timestamp}
+  Force version number increase: {self.force_version_number_increase}
+  Version number auto increase value: {self.version_number_auto_increase_value}
+  Mac cpu count: {self.max_cpu_count}
+  Create MaintenanceTool resource file: {self.create_maintenance_tool_resource_file}"""
 
-        self.repo_output_dir = os.path.join(self.script_root_dir, 'online_repository')
-
-        self.package_namespace = self.config.get('PackageNamespace', 'name').replace(" ", "").split(",")
-        self.platform_identifier = self.config.get('PlatformIdentifier', 'identifier')
-        self.installer_name = args.preferred_installer_name
-        self.packages_dir_name_list = self.parse_ifw_pkg_template_dirs(self.config.get('PackageTemplates', 'template_dirs'),
-                                                                       args.configurations_dir)
-
-        self.substitution_list = self.parse_substitutions(args)
-        self.directories_for_substitutions: List[str] = []
-        self.sdk_component_list: List[SdkComponent] = []
-        self.sdk_component_list_skipped: List[SdkComponent] = []
-        self.sdk_component_ignore_list: List[SdkComponent] = []
-
-        self.archive_location_resolver = ArchiveLocationResolver(self.config, args.archive_base_url, args.configurations_dir,
-                                                                 self.substitution_list)
-
-        self.remove_debug_information_files = args.remove_debug_information_files
-        self.remove_debug_libraries = args.remove_debug_libraries
-        self.remove_pdb_files = args.remove_pdb_files
-
-        self.offline_installer = args.offline_installer
-        self.online_installer = args.online_installer
-        self.create_repository = args.create_repository
-        self.strict_mode = args.strict_mode
-        self.dry_run = args.dry_run
-        self.license_type = args.license_type
-        self.build_timestamp = args.build_timestamp
-        self.force_version_number_increase = args.force_version_number_increase
-        self.version_number_auto_increase_value = args.version_number_auto_increase_value
-        self.max_cpu_count = args.max_cpu_count
-        self.create_maintenance_tool_resource_file = args.create_maintenance_tool_resource_file
-
-    def verbose(self) -> None:
-        log.info("Installer task:")
-        log.info("  IFW tools: %s", self.ifw_tools_uri)
-        log.info("  Archivegen: %s", self.archivegen_tool)
-        log.info("  Binarycreator: %s", self.binarycreator_tool)
-        log.info("  Installerbase: %s", self.installerbase_tool)
-        log.info("  Repogen: %s", self.repogen_tool)
-        log.info("  Working config dir: %s", self.config_dir_dst)
-        log.info("  Working pkg dir: %s", self.packages_full_path_dst)
-        log.info("  Package namespace: %s", self.package_namespace)
-        log.info("  Platform identifier: %s", self.platform_identifier)
-        log.info("  Installer name: %s", self.installer_name)
-        log.info("  IFW pkg templates: %s", self.packages_dir_name_list)
-        log.info("  Substitutions: %s", self.substitution_list)
-        log.info("  Remove debug information files: %s", self.remove_debug_information_files)
-        log.info("  Remove debug libraries: %s", self.remove_debug_libraries)
-        log.info("  Remove pdb files: %s", self.remove_pdb_files)
-        log.info("  Online installer: %s", self.online_installer)
-        log.info("  Offline installer: %s", self.offline_installer)
-        log.info("  Create repository: %s", self.create_repository)
-        log.info("  License: %s", self.license_type)
-        log.info("  Build timestamp: %s", self.build_timestamp)
-        log.info("  Force version number increase: %s", self.force_version_number_increase)
-        log.info("  Version number autom increase value: %s", self.version_number_auto_increase_value)
-        log.info("  Mac cpu count: %s", self.max_cpu_count)
-        log.info("  Create MaintenanceTool resource file: %s", self.create_maintenance_tool_resource_file)
-
-    def parse_substitutions(self, args: Namespace) -> List[List[str]]:
-        substitution_list = []
-        for item in args.substitution_list:
+    def _parse_substitutions(self) -> None:
+        for item in self.substitution_list:
             key, value = item.split("=", maxsplit=1)
             if not value:
                 log.warning("Empty value for substitution string given, substituting anyway: %s", item)
-            substitution_list.append([key, value])
-        substitution_list.append(['%LICENSE%', args.license_type])
-        return substitution_list
+            self.substitutions.append([key, value])
+        self.substitutions.append(['%LICENSE%', self.license_type])
 
     def parse_ifw_pkg_template_dirs(self, template_list: str, configurations_dir: str) -> List[str]:
         ret = []
@@ -1144,8 +1152,29 @@ def main() -> None:
                         help="Create resource file for Maintenance Tool")
     args = parser.parse_args(sys.argv[1:])
 
-    task = QtInstallerTask(args)
-    task.verbose()
+    task: QtInstallerTask = QtInstallerTask(
+        configurations_dir=args.configurations_dir,
+        configuration_file=args.configuration_file,
+        offline_installer=args.offline_installer,
+        online_installer=args.online_installer,
+        create_repository=args.create_repository,
+        strict_mode=args.strict_mode,
+        dry_run=args.dry_run,
+        archive_base_url=args.archive_base_url,
+        ifw_tools_uri=args.ifw_tools_uri,
+        license_type=args.license_type,
+        installer_name=args.preferred_installer_name,
+        substitution_list=args.substitution_list,
+        build_timestamp=args.build_timestamp,
+        force_version_number_increase=args.force_version_number_increase,
+        version_number_auto_increase_value=args.version_number_auto_increase_value,
+        remove_debug_information_files=args.remove_debug_information_files,
+        remove_debug_libraries=args.remove_debug_libraries,
+        remove_pdb_files=args.remove_pdb_files,
+        max_cpu_count=args.max_cpu_count,
+        create_maintenance_tool_resource_file=args.create_maintenance_tool_resource_file,
+    )
+    log.info(str(task))
     create_installer(task)
 
 

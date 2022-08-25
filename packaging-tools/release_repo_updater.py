@@ -30,6 +30,7 @@
 #############################################################################
 
 import argparse
+import asyncio
 import json
 import os
 import platform
@@ -51,8 +52,10 @@ from urllib.request import urlopen, urlretrieve
 
 from bld_utils import is_linux
 from bldinstallercommon import locate_path
+from create_installer import QtInstallerTask, create_installer
 from installer_utils import PackagingError, download_archive, extract_archive, is_valid_url_path
 from logging_util import init_logger
+from notarize import notarize
 from read_remote_config import get_pkg_value
 from release_task_reader import ReleaseTask, parse_config
 from runner import run_cmd, run_cmd_async
@@ -60,9 +63,9 @@ from sign_installer import create_mac_dmg, sign_mac_app
 from sign_windows_installer import sign_executable
 
 if sys.version_info < (3, 7):
-    import asyncio_backport as asyncio
+    from asyncio_backport import run as asyncio_run
 else:
-    import asyncio
+    from asyncio import run as asyncio_run
 
 if is_linux():
     import sh  # type: ignore
@@ -501,12 +504,15 @@ async def build_online_repositories(tasks: List[ReleaseTask], license_: str, ins
     assert license_, "The 'license_' must be defined!"
     assert artifact_share_base_url, "The 'artifact_share_base_url' must be defined!"
     assert ifw_tools, "The 'ifw_tools' must be defined!"
-    # locate the repo build script
-    script_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "create_installer.py"))
-    assert os.path.isfile(script_path), f"Not a valid script path: {script_path}"
 
     # build online repositories first
     done_repositories = []  # type: List[str]
+    if sys.version_info < (3, 7):
+        loop = asyncio.get_event_loop()
+    else:
+        loop = asyncio.get_running_loop()
+    # use same timestamp for all built repos
+    job_timestamp = strftime("%Y-%m-%d", gmtime())
     for task in tasks:
         tmp_dir = os.path.join(tmp_base_dir, task.get_repo_path())
         task.source_online_repository_path = os.path.join(tmp_dir, "online_repository")
@@ -519,17 +525,26 @@ async def build_online_repositories(tasks: List[ReleaseTask], license_: str, ins
         if not os.path.isfile(installer_config_file):
             raise PackagingError(f"Invalid 'config_file' path: {installer_config_file}")
 
-        cmd = [sys.executable, script_path, "-c", installer_config_base_dir, "-f", installer_config_file]
-        cmd += ["--create-repo", "-l", license_, "-u", artifact_share_base_url, "--ifw-tools", ifw_tools]
-        cmd += ["--force-version-number-increase"]
-        for substitution in task.get_installer_string_replacement_list():
-            cmd += ["--add-substitution=" + substitution]
-
+        installer_task = QtInstallerTask(
+            configurations_dir=installer_config_base_dir,
+            configuration_file=installer_config_file,
+            create_repository=True,
+            license_type=license_,
+            archive_base_url=artifact_share_base_url,
+            ifw_tools_uri=ifw_tools,
+            force_version_number_increase=True,
+            substitution_list=task.get_installer_string_replacement_list(),
+            build_timestamp=job_timestamp,
+        )
+        log.info(str(installer_task))
         try:
-            await run_cmd_async(cmd=cmd, timeout=60 * 60 * 3)  # 3h for one repo build
-        except Exception as error:
-            log.error(str(error))
-            raise
+            await asyncio.wait_for(
+                loop.run_in_executor(None, create_installer, installer_task),
+                timeout=60 * 60 * 3  # 3h for one repo build
+            )
+        except Exception as exc:
+            log.exception("Repository build failed!")
+            raise PackagingError from exc
 
         online_repository_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "online_repository"))
         assert os.path.isdir(online_repository_path), f"Not a valid path: {online_repository_path}"
@@ -692,12 +707,10 @@ def sign_offline_installer(installer_path: str, installer_name: str) -> None:
 
 
 def notarize_dmg(dmg_path: str, installer_basename: str) -> None:
-    script_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "notarize.py"))
     # this is just a unique id without any special meaning, used to track the notarization progress
     bundle_id = installer_basename + "-" + strftime('%Y-%m-%d-%H-%M', gmtime())
     bundle_id = bundle_id.replace('_', '-').replace(' ', '')  # replace illegal chars for bundle_id
-    cmd = [sys.executable, script_path, '--dmg=' + dmg_path, '--bundle-id=' + bundle_id]
-    run_cmd(cmd=cmd, timeout=60 * 60 * 3)
+    asyncio_run(notarize(dmg=dmg_path, bundle_id=bundle_id))
 
 
 async def build_offline_tasks(staging_server: str, staging_server_root: str, tasks: List[ReleaseTask], license_: str,
@@ -718,27 +731,43 @@ async def _build_offline_tasks(staging_server: str, staging_server_root: str, ta
     assert artifact_share_base_url, "The 'artifact_share_base_url' must be defined!"
     assert ifw_tools, "The 'ifw_tools' must be defined!"
 
-    script_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "create_installer.py"))
-    assert os.path.isfile(script_path), f"Not a valid script path: {script_path}"
-    installer_output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "installer_output"))
+    curr_dir = os.path.dirname(__file__)
+    installer_output_dir = os.path.abspath(os.path.join(curr_dir, "installer_output"))
 
     # build installers
+    if sys.version_info < (3, 7):
+        loop = asyncio.get_event_loop()
+    else:
+        loop = asyncio.get_running_loop()
+    # use same timestamp for all installer tasks
+    job_timestamp = strftime("%Y-%m-%d", gmtime())
     for task in tasks:
         log.info("Building offline installer: %s", task.get_installer_name())
         installer_config_file = os.path.join(installer_config_base_dir, task.get_config_file())
         if not os.path.isfile(installer_config_file):
             raise PackagingError(f"Invalid 'config_file' path: {installer_config_file}")
 
-        cmd = [sys.executable, script_path, "-c", installer_config_base_dir, "-f", installer_config_file]
-        cmd += ["--offline", "-l", license_, "-u", artifact_share_base_url, "--ifw-tools", ifw_tools]
-        cmd += ["--preferred-installer-name", task.get_installer_name()]
-        cmd += ["--force-version-number-increase"]
-        cmd.extend(["--add-substitution=" + s for s in task.get_installer_string_replacement_list()])
+        installer_task = QtInstallerTask(
+            configurations_dir=installer_config_base_dir,
+            configuration_file=installer_config_file,
+            offline_installer=True,
+            license_type=license_,
+            archive_base_url=artifact_share_base_url,
+            ifw_tools_uri=ifw_tools,
+            installer_name=task.get_installer_name(),
+            force_version_number_increase=True,
+            substitution_list=task.get_installer_string_replacement_list(),
+            build_timestamp=job_timestamp,
+        )
+        log.info(str(installer_task))
         try:
-            await run_cmd_async(cmd=cmd, timeout=60 * 60 * 3)  # 3h
-        except Exception as error:
-            log.error(str(error))
-            raise
+            await asyncio.wait_for(
+                loop.run_in_executor(None, create_installer, installer_task),
+                timeout=60 * 60 * 3  # 3h
+            )
+        except Exception as exc:
+            log.exception("Installer build failed!")
+            raise PackagingError from exc
 
         sign_offline_installer(installer_output_dir, task.get_installer_name())
         if update_staging:
@@ -909,7 +938,7 @@ def main() -> None:
             config_file=args.config,
             task_filters=append_to_task_filters(args.task_filters, "offline"),
         )
-        asyncio.run(
+        asyncio_run(
             build_offline_tasks(
                 staging_server=args.staging_server,
                 staging_server_root=args.staging_server_root,
@@ -941,7 +970,7 @@ def main() -> None:
             update_staging=args.update_staging,
             update_production=args.update_production,
         )
-        asyncio.run(
+        asyncio_run(
             handle_update(
                 staging_server=args.staging_server,
                 staging_server_root=args.staging_server_root,

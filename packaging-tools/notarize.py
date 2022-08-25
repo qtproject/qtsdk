@@ -33,7 +33,7 @@ import argparse
 import asyncio
 import sys
 from shutil import which
-from subprocess import STDOUT, CalledProcessError, TimeoutExpired
+from subprocess import PIPE, STDOUT, CalledProcessError, TimeoutExpired
 from time import gmtime, sleep, strftime
 from typing import List
 
@@ -59,16 +59,16 @@ def parse_value_from_data(key: str, data: str) -> str:
     return ""
 
 
-async def request_cmd(args: argparse.Namespace, cmd: List[str]) -> str:
-    proc = await asyncio.create_subprocess_exec(*cmd, stdout=asyncio.subprocess.PIPE, stderr=STDOUT)
+async def request_cmd(timeout: float, cmd: List[str]) -> str:
+    proc = await asyncio.create_subprocess_exec(*cmd, stdout=PIPE, stderr=STDOUT)
     attempts = 3
 
     while attempts:
         try:
-            data = await asyncio.wait_for(proc.communicate(), timeout=args.timeout)
+            data = await asyncio.wait_for(proc.communicate(), timeout=timeout)
             break
         except (asyncio.TimeoutError, TimeoutExpired):
-            log.warning("Timeout (%ss)", str(args.timeout))
+            log.warning("Timeout (%ss)", str(timeout))
             attempts -= 1
             if attempts:
                 log.info("Waiting a bit before next attempt..")
@@ -83,35 +83,39 @@ async def request_cmd(args: argparse.Namespace, cmd: List[str]) -> str:
     return data[0].decode('utf-8')
 
 
-async def request_notarization(args: argparse.Namespace) -> str:
+async def request_notarization(
+    user: str, passwd: str, bundle_id: str, dmg: str, timeout: float
+) -> str:
     # long lasting command, it uploads the binary to Apple server
-    cmd = ['xcrun', 'altool', '-u', args.user, '-p', args.passwd, '--notarize-app', '-t', 'osx']
-    cmd += ['--primary-bundle-id', args.bundle_id, '-f', args.dmg]
+    cmd = ["xcrun", "altool", "-u", user, "-p", passwd, "--notarize-app", "-t", "osx"]
+    cmd += ["--primary-bundle-id", bundle_id, "-f", dmg]
 
-    data = await request_cmd(args, cmd)
+    data = await request_cmd(timeout, cmd)
     request_uuid = parse_value_from_data("RequestUUID", data)
     if not request_uuid:
         raise NotarizationError(f"Failed to notarize app:\n\n{data}")
     return request_uuid.split("=")[-1].strip()
 
 
-async def poll_notarization_completed(args: argparse.Namespace, uuid: str) -> bool:
-    cmd = ['xcrun', 'altool', '-u', args.user, '-p', args.passwd, '--notarization-info', uuid]
+async def poll_notarization_completed(
+    user: str, passwd: str, dmg: str, timeout: float, uuid: str
+) -> bool:
+    cmd = ["xcrun", "altool", "-u", user, "-p", passwd, "--notarization-info", uuid]
 
     attempts = 180
     poll_interval = 60  # attempts * poll_interval = 3h
     while attempts:
-        data = await request_cmd(args, cmd)
+        data = await request_cmd(timeout, cmd)
         status_code = parse_value_from_data("Status Code:", data)
 
         if status_code == "0":
-            log.info("Notarization succeeded for: %s", args.dmg)
+            log.info("Notarization succeeded for: %s", dmg)
             log.info("%s", data)
             return True
         if status_code == "2":
-            log.info("Notarization failed for: %s", args.dmg)
+            log.info("Notarization failed for: %s", dmg)
             raise NotarizationError(f"Notarization failed:\n\n{data}")
-        log.info("Notarization not ready yet for: %s", args.dmg)
+        log.info("Notarization not ready yet for: %s", dmg)
         log.info("%s", data)
 
         attempts -= 1
@@ -122,21 +126,21 @@ async def poll_notarization_completed(args: argparse.Namespace, uuid: str) -> bo
     return False
 
 
-async def embed_notarization(args: argparse.Namespace) -> None:
+async def embed_notarization(dmg: str, timeout: float) -> None:
     # Embed the notarization in the dmg package
-    cmd = ['xcrun', 'stapler', 'staple', args.dmg]
+    cmd = ["xcrun", "stapler", "staple", dmg]
     retry_count = 10
     delay: float = 60
     while retry_count:
         retry_count -= 1
-        data = await request_cmd(args, cmd)
+        data = await request_cmd(timeout, cmd)
         status = parse_value_from_data("The staple and validate action", data)
 
         if status.lower().startswith("worked"):
-            log.info("The [%s] was notirized successfully!", args.dmg)
+            log.info("The [%s] was notirized successfully!", dmg)
             break
 
-        log.error("Failed to 'staple' the %s - Reason:\n\n%s", args.dmg, data)
+        log.error("Failed to 'staple' the %s - Reason:\n\n%s", dmg, data)
 
         if retry_count:
             log.warning("Trying again after %ss", delay)
@@ -144,14 +148,23 @@ async def embed_notarization(args: argparse.Namespace) -> None:
             delay = delay + delay / 2  # 60, 90, 135, 202, 303
         else:
             log.critical("Execution of the remote script probably failed!")
-            raise NotarizationError(f"Failed to 'staple' the: {args.dmg}")
+            raise NotarizationError(f"Failed to 'staple' the: {dmg}")
 
 
-async def notarize(args: argparse.Namespace) -> None:
-    uuid = await request_notarization(args)
-    if not await poll_notarization_completed(args, uuid):
-        raise NotarizationError(f"Notarization failed for: {args.dmg}")
-    await embed_notarization(args)
+async def notarize(
+    dmg: str,
+    user: str = "",
+    passwd: str = "",
+    bundle_id: str = strftime("%Y-%m-%d-%H-%M-%S", gmtime()),
+    timeout: float = 60 * 60 * 3,
+) -> None:
+    """Notarize"""
+    user = user or get_pkg_value("AC_USERNAME")
+    passwd = passwd or get_pkg_value("AC_PASSWORD")
+    uuid = await request_notarization(user, passwd, bundle_id, dmg, timeout)
+    if not await poll_notarization_completed(user, passwd, dmg, timeout, uuid):
+        raise NotarizationError(f"Notarization failed for: {dmg}")
+    await embed_notarization(dmg, timeout)
 
 
 def main() -> None:
@@ -167,7 +180,15 @@ def main() -> None:
     if not which("xcrun"):
         raise SystemExit("Could not find 'xcrun' from the system for notarization. Aborting..")
 
-    asyncio_run(notarize(args))
+    asyncio_run(
+        notarize(
+            dmg=args.dmg,
+            user=args.user,
+            passwd=args.passwd,
+            bundle_id=args.bundle_id,
+            timeout=args.timeout,
+        )
+    )
 
 
 if __name__ == "__main__":

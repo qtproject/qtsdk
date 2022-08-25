@@ -68,11 +68,19 @@ from bldinstallercommon import (
     git_archive_repo,
     safe_config_key_fetch,
 )
+from install_qt import install_qt
+from installer_utils import ch_dir
 from logging_util import init_logger
+from notarize import notarize
 from optionparser import get_pkg_options
 from read_remote_config import get_pkg_value
 from runner import run_cmd
 from threadedwork import Task, ThreadedWork
+
+if sys.version_info < (3, 7):
+    from asyncio_backport import run as asyncio_run
+else:
+    from asyncio import run as asyncio_run
 
 log = init_logger(__name__, debug_mode=False)
 
@@ -434,15 +442,13 @@ def build_qtcreator_plugins(
             cmd_arguments += ['--add-config=' + value for value in additional_config]
 
         # install qt
-        qt_install_args = [sys.executable, '-u', os.path.join(SCRIPT_ROOT_DIR, 'install_qt.py'),
-                           '--qt-path', qt_path, '--temp-path', os.path.join(build_path, 'temp')]
-        for module in modules:
-            qt_install_args.extend(['--qt-module', module])
-        if is_linux() and icu_url:
-            qt_install_args.extend(['--icu7z', icu_url])
-        if openssl_url:
-            qt_install_args.extend(['--openssl7z', openssl_url])
-        check_call_log(qt_install_args, work_dir)
+        with ch_dir(work_dir):
+            install_qt(
+                qt_path=qt_path,
+                qt_modules=modules,
+                icu_url=icu_url if is_linux() else None,
+                openssl_url=openssl_url,
+            )
 
         check_call_log(cmd_arguments, work_dir, log_filepath=log_filepath)
         create_qtcreator_source_package(option_dict, os.path.join(work_dir, plugin.path), plugin.name, plugin.version,
@@ -655,7 +661,7 @@ def handle_qt_creator_build(option_dict: Dict[str, str], qtcreator_plugins: List
     # from 4.4 on we use external elfutil builds and also build on Windows
     elfutils_url = option_dict.get('ELFUTILS_URL')
     log_filepath = os.path.join(work_dir, 'build_log.txt')
-    notarize = option_dict.get('NOTARIZE')
+    do_notarize = option_dict.get('NOTARIZE')
     usp_server_url = option_dict.get('USP_SERVER_URL')
     usp_auth_key = option_dict.get('USP_AUTH_KEY')
     qtc_additional_cfg: str = option_dict.get('QTC_ADDITIONAL_CONFIG', '')  # optional
@@ -761,21 +767,15 @@ def handle_qt_creator_build(option_dict: Dict[str, str], qtcreator_plugins: List
     qt_path = os.path.join(work_dir, 'qt_install_dir')
     src_path = os.path.join(work_dir, 'qt-creator')
     build_path = os.path.join(work_dir, 'qt-creator_build')
-    qt_install_args = [sys.executable, '-u', os.path.join(SCRIPT_ROOT_DIR, 'install_qt.py'),
-                       '--qt-path', qt_path, '--temp-path', qt_temp]
-    for module_url in qt_module_urls:
-        qt_install_args.extend(['--qt-module', module_url])
-    if is_linux() and icu_libs:
-        qt_install_args.extend(['--icu7z', icu_libs])
-    if is_windows():
-        d3d_url = option_dict['D3D_URL']
-        opengl_url = option_dict['OPENGLSW_URL']
-        qt_install_args.extend(['--d3dcompiler7z', d3d_url,
-                                '--opengl32sw7z', opengl_url])
-    if openssl_local_url:
-        qt_install_args.extend(['--openssl7z', openssl_local_url])
-    check_call_log(qt_install_args,
-                   work_dir)
+    with ch_dir(work_dir):
+        install_qt(
+            qt_path=qt_path,
+            qt_modules=qt_module_urls,
+            icu_url=icu_libs if is_linux() else None,
+            d3d_url=option_dict["D3D_URL"] if is_windows() else None,
+            opengl_url=option_dict["OPENGLSW_URL"] if is_windows() else None,
+            openssl_url=openssl_local_url if openssl_local_url else None,
+        )
     # Define Qt Creator build script arguments
     cmd_args = [sys.executable, '-u']
     cmd_args += [os.path.join(src_path, 'scripts', 'build.py'),
@@ -918,7 +918,7 @@ def handle_qt_creator_build(option_dict: Dict[str, str], qtcreator_plugins: List
                                      additional_plugins=additional_plugins)
 
     # notarize
-    if is_macos() and notarize:
+    if is_macos() and do_notarize:
         notarize_dmg(os.path.join(work_dir, 'qt-creator_build', 'qt-creator.dmg'), 'Qt Creator')
 
     # Upload
@@ -1077,8 +1077,8 @@ def notarize_dmg(dmg_path: str, installer_name_base: str) -> None:
     # this is just a unique id without any special meaning, used to track the notarization progress
     bundle_id = installer_name_base + "-" + strftime('%Y-%m-%d', gmtime())
     bundle_id = bundle_id.replace('_', '-').replace(' ', '')  # replace illegal chars for bundle_id
-    args = [sys.executable, 'notarize.py', '--dmg=' + dmg_path, '--bundle-id=' + bundle_id]
-    run_cmd(cmd=args, cwd=SCRIPT_ROOT_DIR)
+    with ch_dir(SCRIPT_ROOT_DIR):
+        asyncio_run(notarize(dmg=dmg_path, bundle_id=bundle_id))
 
 
 ###############################

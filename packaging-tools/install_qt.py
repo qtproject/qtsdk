@@ -31,6 +31,9 @@
 
 import argparse
 import os
+import sys
+from tempfile import TemporaryDirectory
+from typing import List, Optional
 
 from bldinstallercommon import create_qt_download_task, patch_qt
 from logging_util import init_logger
@@ -43,8 +46,7 @@ def get_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Build Qt Creator')
     parser.add_argument('--qt-path', help='path to Qt', required=True)
     parser.add_argument('--qt-module', help='Qt module package url (.7z) needed for building',
-                        action='append', dest='qt_modules')
-    parser.add_argument('--temp-path', help='temporary path for downloads', required=True)
+                        action='append', dest='qt_modules', default=[])
 
     parser.add_argument('--base-url', help='Base URL for given module_name(s)')
     parser.add_argument('module_name', help='Name of Qt module to install, based on --base-url and --base-url-postfix',
@@ -58,40 +60,80 @@ def get_arguments() -> argparse.Namespace:
 
     # Windows
     parser.add_argument('--d3dcompiler7z', help='a file or url where it get d3dcompiler lib')
-    parser.add_argument('--opengl32sw7z', help='a file or url where it get d3dcompiler lib')
+    parser.add_argument('--opengl32sw7z', help='a file or url where it get opengl32sw lib')
     parser.add_argument('--openssl7z', help='a file or url where to get the openssl libs as 7z')
 
-    args = parser.parse_args()
-    args.qt_path = os.path.abspath(args.qt_path)
-    args.temp_path = os.path.abspath(args.temp_path)
-
-    if not args.qt_modules or args.base_url or args.module_name:
-        if not args.base_url or not args.module_name:
-            raise SystemExit("either --qt-module or --base-url and module_name(s) are required")
-
-    args.qt_modules = args.qt_modules if args.qt_modules else []  # ensure list
-    args.qt_modules += [args.base_url + '/' + module + '/' + module + args.base_url_postfix
-                        for module in args.module_name]
+    args = parser.parse_args(sys.argv[1:])
 
     return args
 
 
-def install_qt(args: argparse.Namespace) -> None:
-    download_packages_work = ThreadedWork('get and extract Qt 5 binaries')
-    need_to_install_qt = not os.path.lexists(args.qt_path)
+def install_qt(
+    qt_path: str,
+    qt_modules: List[str],
+    icu_url: Optional[str] = None,
+    d3d_url: Optional[str] = None,
+    opengl_url: Optional[str] = None,
+    openssl_url: Optional[str] = None,
+) -> None:
+    """
+    Install Qt to directory qt_path with the specified module and library packages.
+
+    Args:
+        qt_path: File system path to Qt (target install directory)
+        qt_modules: List of Qt module package URLs (.7z)
+        icu_url: Local or remote URI to Linux ICU libraries (.7z)
+        d3d_url: Local or remote URI to Windows d3dcompiler libraries (.7z)
+        opengl_url: Local or remote URI to Windows OpenGL libraries (.7z)
+        openssl_url: Local or remote URI to Windows OpenSSL libraries (.7z)
+
+    Raises:
+        SystemExit: When qt_modules list is empty
+
+    """
+    if not qt_modules:
+        raise SystemExit("No modules specified in qt_modules")
+    qt_path = os.path.abspath(qt_path)
+    dl_pkgs_work = ThreadedWork("get and extract Qt 5 binaries")
+    need_to_install_qt = not os.path.lexists(qt_path)
     if need_to_install_qt:
-        download_packages_work.add_task_object(create_qt_download_task(
-            args.qt_modules, args.qt_path, args.temp_path, args))
+        opts = argparse.Namespace(
+            icu7z=icu_url,
+            d3dcompiler7z=d3d_url,
+            opengl32sw7z=opengl_url,
+            openssl7z=openssl_url,
+        )
+        with TemporaryDirectory() as temp_path:
+            dl_pkgs_work.add_task_object(
+                create_qt_download_task(qt_modules, qt_path, temp_path, opts)
+            )
 
     # run task if needed
-    if download_packages_work.task_number != 0:
-        download_packages_work.run()
-        patch_qt(args.qt_path)
+    if dl_pkgs_work.task_number != 0:
+        dl_pkgs_work.run()
+        patch_qt(qt_path)
 
 
 def main() -> None:
-    args = get_arguments()
-    install_qt(args)
+    """Main"""
+    args: argparse.Namespace = get_arguments()
+    # Check that qt_module(s) or base-url/module_name(s) combo is specified
+    if not args.qt_modules and not (args.base_url and args.module_name):
+        raise SystemExit("'qt-module(s)' and/or 'base-url' with 'module_name(s)' required")
+    # Create the list of modules from qt_modules + module_names with base_url and postfix
+    qt_modules: List[str] = args.qt_modules
+    if args.base_url and args.module_name:
+        for module in args.module_name:
+            qt_modules += [args.base_url + "/" + module + "/" + module + args.base_url_postfix]
+
+    install_qt(
+        qt_path=args.qt_path,
+        qt_modules=qt_modules,
+        icu_url=args.icu7z,
+        d3d_url=args.d3dcompiler7z,
+        opengl_url=args.opengl32sw7z,
+        openssl_url=args.openssl7z,
+    )
 
 
 if __name__ == '__main__':
