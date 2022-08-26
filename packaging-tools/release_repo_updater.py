@@ -30,6 +30,7 @@
 #############################################################################
 
 import argparse
+from dataclasses import dataclass
 import json
 import os
 import platform
@@ -47,6 +48,7 @@ from time import gmtime, sleep, strftime, time
 from typing import Dict, List, Optional, Tuple
 from urllib.error import HTTPError, URLError
 from urllib.request import urlopen, urlretrieve
+from enum import Enum
 
 from bld_utils import is_linux
 from bldinstallercommon import locate_path
@@ -119,15 +121,21 @@ class EventRegister():
             log.warning("Failed to register event - stderr: %s", ret.stdout)
 
 
+class RepoSource(Enum):
+    PENDING = "pending"
+    STAGING = "staging"
+    PRODUCTION = "production"
+
+
 class QtRepositoryLayout:
 
     def __init__(self, root_path: str, license_: str, repo_domain: str) -> None:
         self.root_path = root_path
         self.license_ = license_
         self.repo_domain = repo_domain
-        self.pending = "pending"
-        self.staging = "staging"
-        self.production = "production"
+        self.pending = RepoSource.PENDING.value
+        self.staging = RepoSource.STAGING.value
+        self.production = RepoSource.PRODUCTION.value
         # <root_path>/<license>/<pending|staging|production>/<repo_domain>/
         # /data/online_repositories/opensource/pending|staging|production/qtsdkrepository/
         log.info("self.root_path %s", self.root_path)
@@ -153,6 +161,55 @@ class QtRepositoryLayout:
 
     def get_production_path(self) -> str:
         return os.path.join(self.base_repo_path, self.production, self.repo_domain)
+
+
+@dataclass
+class RepoUpdateStrategy:
+    """Encapsulates instructions how the repository update should be performed on the remote."""
+
+    local_repo_build: bool
+    remote_repo_layout: QtRepositoryLayout
+    remote_repo_update_source: RepoSource
+    remote_repo_update_destinations: List[str]
+
+    @staticmethod
+    def get_strategy(staging_server_root: str, license: str, repo_domain: str,
+                     build_repositories: bool, remote_repo_update_source: RepoSource,
+                     update_staging: bool, update_production: bool) -> 'RepoUpdateStrategy':
+        if build_repositories and remote_repo_update_source != RepoSource.PENDING:
+            raise PackagingError("You are building repositories and want to update repositories "
+                                 "not using this build as the update source? Check cmd args.")
+        if not build_repositories and update_staging:
+            raise PackagingError("Can not update staging if you are not building the repo "
+                                 "locally. The pending area would be empty. Check cmd args.")
+        # get repository layout
+        repo_layout = QtRepositoryLayout(staging_server_root, license, repo_domain)
+        repo_update_destinations = []
+        if update_staging:
+            repo_update_destinations.append(repo_layout.get_staging_path())
+        if update_production:
+            repo_update_destinations.append(repo_layout.get_production_path())
+        return RepoUpdateStrategy(build_repositories, repo_layout, remote_repo_update_source,
+                                  repo_update_destinations)
+
+    def get_remote_source_repo_path(self, task: ReleaseTask) -> str:
+        if self.remote_repo_update_source == RepoSource.PENDING:
+            return os.path.join(str(self.remote_repo_layout.get_pending_path()),
+                                task.get_repo_path(), "repository")
+        if self.remote_repo_update_source == RepoSource.STAGING:
+            return os.path.join(str(self.remote_repo_layout.get_staging_path()),
+                                task.get_repo_path())
+        raise PackagingError("Invalid remote source repo defined: "
+                             f"{self.remote_repo_update_source}")
+
+    def requires_remote_update(self) -> bool:
+        return bool(self.remote_repo_update_destinations)
+
+    def requires_local_source_repo_upload(self) -> bool:
+        return self.local_repo_build
+
+    def purge_remote_source_repo(self) -> bool:
+        return self.remote_repo_update_source == RepoSource.PENDING
 
 
 def has_connection_error(output: str) -> bool:
@@ -387,32 +444,35 @@ def spawn_remote_background_task(server: str, server_home: str, remote_cmd: List
     execute_remote_cmd(server, server_home, cmd, remote_script_file_name, timeout=60 * 60 * 2)  # 2h timeout for uploading data to CDN
 
 
-async def update_repository(staging_server: str, repo_layout: QtRepositoryLayout, task: ReleaseTask,
-                            update_staging: bool, update_production: bool, rta: str) -> None:
-    assert task.get_source_online_repository_path(), f"Can not update repository: [{task.get_repo_path()}] because source repo is missing"
+async def update_repository(staging_server: str, update_strategy: RepoUpdateStrategy,
+                            task: ReleaseTask, rta: str) -> None:
     # ensure the repository paths exists at server
     log.info("Starting repository update: %s", task.get_repo_path())
-    create_remote_paths(staging_server, repo_layout.get_repo_layout())
+    create_remote_paths(staging_server, update_strategy.remote_repo_layout.get_repo_layout())
 
-    remote_pending_path = os.path.join(repo_layout.get_pending_path(), task.get_repo_path())
-    remote_pending_path_repository = os.path.join(remote_pending_path, "repository")
+    # this is the repo path on remote which will act as the 'source' for remote updates
+    # on the remote machine
+    remote_repo_source_path = update_strategy.get_remote_source_repo_path(task)
 
-    remote_staging_destination_repository_path = os.path.join(repo_layout.get_staging_path(), task.get_repo_path())
-    remote_production_destination_repository_path = os.path.join(repo_layout.get_production_path(), task.get_repo_path())
-
-    # We always replace existing repository if previous version should exist.
-    # Previous version is moved as backup
-    upload_pending_repository_content(staging_server, task.get_source_online_repository_path(), remote_pending_path_repository)
+    if update_strategy.requires_local_source_repo_upload():
+        # this is the repo path from local repo build which will act as the 'source' which to
+        # upload to the remote
+        local_repo_source_path = task.get_source_online_repository_path()
+        # We always replace existing repository if previous version should exist.
+        # Previous version is moved as backup
+        upload_pending_repository_content(staging_server, local_repo_source_path,
+                                          remote_repo_source_path)
 
     # Now we can run the updates on the remote
-    if update_staging:
-        reset_new_remote_repository(staging_server, remote_pending_path_repository, remote_staging_destination_repository_path)
-    if update_production:
-        reset_new_remote_repository(staging_server, remote_pending_path_repository, remote_production_destination_repository_path)
-
+    for update_destination in update_strategy.remote_repo_update_destinations:
+        remote_repo_destination_path = os.path.join(update_destination, task.get_repo_path())
+        reset_new_remote_repository(staging_server, remote_repo_source_path,
+                                    remote_repo_destination_path)
     log.info("Update done: %s", task.get_repo_path())
-    # Now we can delete pending content
-    delete_remote_paths(staging_server, [remote_pending_path_repository])
+
+    # Delete pending content
+    if update_strategy.purge_remote_source_repo():
+        delete_remote_paths(staging_server, [remote_repo_source_path])
     # trigger RTA cases for the task if specified
     if rta:
         trigger_rta(rta, task)
@@ -468,13 +528,13 @@ async def build_online_repositories(tasks: List[ReleaseTask], license_: str, ins
     return done_repositories
 
 
-async def update_repositories(tasks: List[ReleaseTask], staging_server: str, staging_server_root: str, repo_layout: QtRepositoryLayout,
-                              update_staging: bool, update_production: bool, rta: str, ifw_tools: str) -> None:
+async def update_repositories(tasks: List[ReleaseTask], staging_server: str, staging_server_root: str,
+                              update_strategy: RepoUpdateStrategy, rta: str, ifw_tools: str) -> None:
     # upload ifw tools to remote
     remote_repogen = await upload_ifw_to_remote(ifw_tools, staging_server, staging_server_root)
     try:
         for task in tasks:
-            await update_repository(staging_server, repo_layout, task, update_staging, update_production, rta)
+            await update_repository(staging_server, update_strategy, task, rta)
     except PackagingError as error:
         log.error("Aborting online repository update: %s", str(error))
         raise
@@ -508,29 +568,27 @@ async def sync_production(tasks: List[ReleaseTask], repo_layout: QtRepositoryLay
 
 
 async def handle_update(staging_server: str, staging_server_root: str, license_: str, tasks: List[ReleaseTask],
-                        repo_domain: str, installer_config_base_dir: str, artifact_share_base_url: str,
-                        update_staging: bool, update_production: bool, sync_s3: str, sync_ext: str, rta: str, ifw_tools: str,
-                        build_repositories: bool, do_update_repositories: bool, sync_repositories: bool,
-                        event_injector: str, export_data: Dict[str, str]) -> List[str]:
+                        installer_config_base_dir: str, artifact_share_base_url: str,
+                        update_strategy: RepoUpdateStrategy,
+                        sync_s3: str, sync_ext: str, rta: str, ifw_tools: str,
+                        build_repositories: bool, sync_repositories: bool,
+                        event_injector: str, export_data: Dict[str, str]) -> None:
     """Build all online repositories, update those to staging area and sync to production."""
     log.info("Starting repository update for %i tasks..", len(tasks))
-    # get repository layout
-    repo_layout = QtRepositoryLayout(staging_server_root, license_, repo_domain)
-    # this may take a while depending on how big the repositories are
-    async with EventRegister(f"{license_}: repo build", event_injector, export_data):
-        ret = await build_online_repositories(tasks, license_, installer_config_base_dir, artifact_share_base_url, ifw_tools,
-                                              build_repositories)
-
-    if do_update_repositories:
-        async with EventRegister(f"{license_}: repo update", event_injector, export_data):
-            await update_repositories(tasks, staging_server, staging_server_root, repo_layout, update_staging, update_production,
+    if build_repositories:
+        # this may take a while depending on how big the repositories are
+        async with EventRegister(f"{license}: repo build", event_injector, export_data):
+            await build_online_repositories(tasks, license_, installer_config_base_dir,
+                                            artifact_share_base_url, ifw_tools,
+                                            build_repositories)
+    if update_strategy.requires_remote_update():
+        async with EventRegister(f"{license}: repo update", event_injector, export_data):
+            await update_repositories(tasks, staging_server, staging_server_root, update_strategy,
                                       rta, ifw_tools)
     if sync_repositories:
-        await sync_production(tasks, repo_layout, sync_s3, sync_ext, staging_server, staging_server_root, license_,
-                              event_injector, export_data)
-
+        await sync_production(tasks, update_strategy.remote_repo_layout, sync_s3, sync_ext, staging_server,
+                              staging_server_root, license_, event_injector, export_data)
     log.info("Repository updates done!")
-    return ret
 
 
 def string_to_bool(value: str) -> bool:
@@ -786,6 +844,7 @@ def main() -> None:
 
     parser.add_argument("--build-repositories", dest="build_repositories", type=string_to_bool, nargs='?', default=False,
                         help="Build online repositories defined by '--config' file on current machine")
+
     parser.add_argument("--build-offline", dest="build_offline", type=string_to_bool, nargs='?', default=False,
                         help="Build offline installers defined by '--config' file")
     parser.add_argument("--offline-installer-build-id", dest="offline_installer_id", type=str, default=os.getenv('BUILD_NUMBER', timestamp),
@@ -795,6 +854,11 @@ def main() -> None:
                         help="Should the staging repository be updated?")
     parser.add_argument("--update-production", dest="update_production", action='store_true', default=os.getenv("DO_UPDATE_PRODUCTION_REPOSITORY", False),
                         help="Should the production repository be updated?")
+    parser.add_argument("--update-source", dest="update_source_type", type=str,
+                        choices=[RepoSource.PENDING.value, RepoSource.STAGING.value],
+                        default=RepoSource.PENDING.value,
+                        help="Which origin to use for the remote updates. E.g. possible to "
+                             "update production with content from staging")
     parser.add_argument("--enable-oss-snapshots", dest="enable_oss_snapshots", action='store_true', default=False,
                         help="Upload snapshot to opensource file server")
 
@@ -810,9 +874,6 @@ def main() -> None:
                              "The --config file must point to export summary file.")
     parser.set_defaults(**defaults)  # these are from provided --config file
     args = parser.parse_args(sys.argv[1:])
-
-    do_update_repositories = args.update_staging or args.update_production
-    do_sync_repositories = args.sync_s3 or args.sync_ext
 
     assert args.config, "'--config' was not given!"
     assert args.staging_server_root, "'--staging-server-root' was not given!"
@@ -844,14 +905,20 @@ def main() -> None:
     else:  # this is either repository build or repository sync build
         # get repository tasks
         tasks = parse_config(args.config, task_filters=append_to_task_filters(args.task_filters, "repository"))
-        ret = loop.run_until_complete(handle_update(args.staging_server, args.staging_server_root, args.license_, tasks,
-                                      args.repo_domain, installer_config_base_dir, args.artifact_share_url,
-                                      args.update_staging, args.update_production, args.sync_s3, args.sync_ext,
-                                      args.rta, args.ifw_tools,
-                                      args.build_repositories, do_update_repositories, do_sync_repositories,
-                                      args.event_injector, export_data))
-        for repo in ret:
-            log.info("%s", repo)
+        update_strategy = RepoUpdateStrategy.get_strategy(args.staging_server_root,
+                                                          args.license_,
+                                                          args.repo_domain,
+                                                          args.build_repositories,
+                                                          RepoSource(args.update_source_type),
+                                                          args.update_staging,
+                                                          args.update_production)
+        loop.run_until_complete(handle_update(args.staging_server, args.staging_server_root,
+                                              args.license_, tasks, installer_config_base_dir,
+                                              args.artifact_share_url, update_strategy,
+                                              args.sync_s3, args.sync_ext, args.rta,
+                                              args.ifw_tools, args.build_repositories,
+                                              args.sync_s3 or args.sync_ext, args.event_injector,
+                                              export_data))
 
 
 if __name__ == "__main__":
