@@ -38,7 +38,7 @@ from typing import List
 
 from ddt import ddt  # type: ignore
 
-from installer_utils import PackagingError
+from installer_utils import PackagingError, cd
 from read_remote_config import get_pkg_value
 from release_repo_updater import (
     append_to_task_filters,
@@ -110,7 +110,9 @@ async def _get_repogen() -> str:
     )
     server = "127.0.0.1"
     serverHome = os.path.expanduser("~")
-    return await upload_ifw_to_remote(ifwTools, server, serverHome)
+    with TemporaryDirectory(dir=os.getcwd()) as temp_dir:
+        with cd(temp_dir):
+            return await upload_ifw_to_remote(ifwTools, server, serverHome)
 
 
 @ddt
