@@ -38,6 +38,7 @@ from ddt import data, ddt  # type: ignore
 
 from bld_utils import is_windows
 from bldinstallercommon import (
+    calculate_relpath,
     locate_executable,
     locate_path,
     locate_paths,
@@ -203,6 +204,37 @@ class TestCommon(unittest.TestCase):
             self.assertEqual(
                 locate_executable(tmp_base_dir, ["test_file2"]),
                 tmp_base_dir + "/test_file2")
+
+    @data(
+        ("/home/qt/bin/foo/bar", "/home/qt/lib", "../../../lib"),
+        ("/home/qt/bin/foo/", "/home/qt/lib", "/home/qt/lib"),
+        ("/home/qt/bin", "/home/qt/lib", "../lib"),
+        ("/home/qt/bin", "lib", "../../../../lib"),
+        ("/home/qt/bin", "/lib", "../../../lib"),
+        ("/home/qt", "./lib", "../../.././lib"),
+        ("bin", "/home/qt/lib", "/home/qt/lib"),
+        ("/home/qt/", "/home/qt", "/home/qt"),
+        ("/home/qt", "/home/qt/", "/home/qt"),
+        ("/home/qt", "/home/qt/", "/home/qt"),
+        ("/", "/home/qt", "home/qt"),
+        ("/home/qt", "", "../../../"),
+        ("", "/home/qt", "/home/qt"),
+    )
+    def test_calculate_relpath(self, test_data) -> None:
+        path1, path2, expected = test_data
+        result = calculate_relpath(path1, path2)
+        self.assertEqual(result, expected)
+
+    @data(
+        ("/home/qt", "/home/qt"),
+        ("/", "/"),
+        ("lib", "lib"),
+        ("", ""),
+    )
+    def test_calculate_relpath_invalid(self, test_data) -> None:
+        path1, path2 = test_data
+        with self.assertRaises(TypeError):
+            calculate_relpath(path1, path2)
 
 
 if __name__ == "__main__":
