@@ -108,7 +108,8 @@ def remove_content(input_dir: str, remove_rules: List[str]) -> None:
     remove_empty_directories(input_dir)
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Main"""
     parser = argparse.ArgumentParser(
         prog="Clean all files from the --input-dir directory except those defined by --glob-rule"
     )
@@ -133,3 +134,7 @@ if __name__ == "__main__":
         remove_content(args.input_dir, args.remove_rules)
     else:
         sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

@@ -85,7 +85,8 @@ def setup_argument_parser():
     return parser
 
 
-if __name__ == '__main__':
+def main() -> None:
+    """Main"""
     if not platform.system().lower().startswith('win'):
         print('*** Only Windows builds are supported.')
         sys.exit(1)
@@ -101,3 +102,7 @@ if __name__ == '__main__':
 
     build(args.sourcedir, args.installdir, args.toolset)
     archive(args.installdir, args.archive_prefix)
+
+
+if __name__ == '__main__':
+    main()

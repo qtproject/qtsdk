@@ -272,7 +272,8 @@ def scan_repos(search_path: str) -> None:
         log.error("%s", repo)
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Main"""
     parser = argparse.ArgumentParser(prog="Script to update split metadata to unified metadata in online repositories.")
     parser.add_argument("--search-path", dest="search_path", type=str, required=True, help="Path to scan for online repositories")
     parser.add_argument("--ifw-tools", dest="ifw_tools_url", type=str, required=True, help="Archive containing repogen(.exe)")
@@ -289,3 +290,7 @@ if __name__ == "__main__":
         revert_repos(args.search_path, args.ifw_tools_url, args.revert_timestamp, args.dry_run)
     else:
         log.error("Invalid command given: %s", args.command)
+
+
+if __name__ == "__main__":
+    main()

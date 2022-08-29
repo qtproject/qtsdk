@@ -151,7 +151,8 @@ def get_known_hidden_imports() -> List[str]:
     return hidden_imports
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Main"""
     parser = argparse.ArgumentParser(
         prog="Create executable file from given Python file in virtualenv using pyinstaller."
     )
@@ -221,3 +222,7 @@ if __name__ == "__main__":
             args.get_pip_file,
         )
     )
+
+
+if __name__ == "__main__":
+    main()

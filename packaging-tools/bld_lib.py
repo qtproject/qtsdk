@@ -121,7 +121,7 @@ def extractArchive(saveAs: str, currentDir: str) -> str:
     return qtDestDir
 
 
-def build(qtDestDir: str, currentDir: str) -> str:
+def build(args: argparse.Namespace, qtDestDir: str, currentDir: str) -> str:
     if is_windows():
         qmakeToolName = "qmake.exe"
         makeToolName = "nmake"
@@ -200,7 +200,7 @@ def handleBuild(args: argparse.Namespace) -> None:
 
     saveAs, qtVersion = downloadQtPkg(args, currentDir)
     qtDestDir = extractArchive(saveAs, currentDir)
-    installRootDir = build(qtDestDir, currentDir)
+    installRootDir = build(args, qtDestDir, currentDir)
     artifactsFilePath = archive(args, installRootDir, currentDir)
 
     remoteUploader = RemoteUploader(False, args.remote_server, args.username, args.remote_base_path)
@@ -209,7 +209,8 @@ def handleBuild(args: argparse.Namespace) -> None:
     remoteUploader.updateLatestSymlink()
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Main"""
     parser = argparse.ArgumentParser(prog="Helper script to build a lib against qtbase artifact.")
     parser.add_argument("--qtpkg", dest="qtpkg", type=str, default=os.getenv("QT_PKG_URL"), help="URL pointing to pre-built Qt bin package.")
     parser.add_argument("--src-path", dest="src_path", type=str, default=os.getenv("SRC_PATH"), help="Path to sources")
@@ -231,3 +232,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     handleBuild(args)
+
+
+if __name__ == "__main__":
+    main()

@@ -117,7 +117,8 @@ class RemoteUploader:
             raise
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Main"""
     parser = argparse.ArgumentParser(prog="Copy given file or directory contents to remote.")
     parser.add_argument("--dry-run", dest="dry_run", action='store_true', help="Dry-run the command.")
     parser.add_argument("--source", dest="source", type=str, required=True, help="What to copy to remote. Can be a file or a directory")
@@ -135,3 +136,7 @@ if __name__ == "__main__":
     uploader.init_snapshot_upload_path(args.project_name, args.project_version, args.project_snapshot_id)
     uploader.copyToRemote(args.source, args.subdir_name)
     uploader.updateLatestSymlink()
+
+
+if __name__ == "__main__":
+    main()

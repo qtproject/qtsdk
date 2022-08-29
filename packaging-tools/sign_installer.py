@@ -82,7 +82,8 @@ def sign_windows_executable(file_path: str):
     log.info("Successfully signed: %s", file_path)
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Main"""
     parser = argparse.ArgumentParser(prog="Helper script to sign macOS .app bundle and create .dmg from it or sign a Windows .exe")
     subparsers = parser.add_subparsers(dest='command')
 
@@ -103,3 +104,7 @@ if __name__ == "__main__":
         create_mac_dmg(args.file_path)
     if args.command == 'win':
         sign_windows_executable(args.file_path)
+
+
+if __name__ == "__main__":
+    main()

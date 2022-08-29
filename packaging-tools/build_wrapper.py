@@ -329,7 +329,7 @@ def check_call_log(args, execution_path, extra_env=dict(os.environ),
             )
 
 
-def create_qtcreator_source_package(source_path, plugin_name, version, edition, target_path, log_filepath):
+def create_qtcreator_source_package(optionDict, source_path, plugin_name, version, edition, target_path, log_filepath):
     namepart = '-' + plugin_name if plugin_name else ''
     file_base = 'qt-creator-' + edition + namepart + '-src-' + version
     target_base = os.path.join(target_path, file_base)
@@ -361,7 +361,7 @@ def qtcreator_build_plugin_script(qtcreator_dev_path):
     return path if os.path.exists(path) else os.path.join(qtcreator_dev_path, 'scripts', 'build_plugin.py')
 
 
-def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url=None,
+def build_qtcreator_plugins(optionDict, plugins, qtcreator_path, qtcreator_dev_path, icu_url=None,
                             openssl_url=None, additional_config=None, log_filepath=None):
     work_dir = optionDict['WORK_DIR']
     for plugin in plugins:
@@ -407,7 +407,7 @@ def build_qtcreator_plugins(plugins, qtcreator_path, qtcreator_dev_path, icu_url
         check_call_log(qt_install_args, work_dir)
 
         check_call_log(cmd_arguments, work_dir, log_filepath=log_filepath)
-        create_qtcreator_source_package(os.path.join(work_dir, plugin.path), plugin.name, plugin.version,
+        create_qtcreator_source_package(optionDict, os.path.join(work_dir, plugin.path), plugin.name, plugin.version,
                                         'enterprise', work_dir, log_filepath)
 
 
@@ -460,7 +460,7 @@ def parse_qt_creator_plugin_conf(plugin_conf_file_path, optionDict):
     return [fixup_plugin(make_QtcPlugin_from_json(plugin)) for plugin in plugins_json if valid_for_platform(plugin)]
 
 
-def collect_qt_creator_plugin_sha1s(plugins):
+def collect_qt_creator_plugin_sha1s(optionDict, plugins):
     work_dir = optionDict['WORK_DIR']
     sha1s = []
     for name in [p.name for p in plugins if p.build and os.path.isdir(os.path.join(work_dir, p.path))]:
@@ -805,7 +805,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                    work_dir, log_filepath=log_filepath)
     check_call_log(['7z', 'x', '-y', os.path.join(work_dir, 'qt-creator_build', 'qtcreator_dev.7z'), '-o' + qtcreator_path],
                    work_dir, log_filepath=log_filepath)
-    build_qtcreator_plugins(additional_plugins, qtcreator_path, qtcreator_path, icu_url=icu_local_url,
+    build_qtcreator_plugins(optionDict, additional_plugins, qtcreator_path, qtcreator_path, icu_url=icu_local_url,
                             openssl_url=openssl_local_url, additional_config=qtc_additional_config,
                             log_filepath=log_filepath)
 
@@ -815,7 +815,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
 
     if is_linux():
         # summary of git SHA1s
-        sha1s = collect_qt_creator_plugin_sha1s(additional_plugins)
+        sha1s = collect_qt_creator_plugin_sha1s(optionDict, additional_plugins)
         licensemanaging_source = os.path.join(work_dir, 'license-managing')
         if os.path.exists(licensemanaging_source):
             sha1s.append('license-managing: ' + get_commit_SHA(licensemanaging_source))
@@ -824,13 +824,13 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
             f.writelines([sha + '\n' for sha in sha1s])
 
     # Create opensource source package
-    create_qtcreator_source_package(os.path.join(work_dir, 'qt-creator'), None, qtcreator_version,
+    create_qtcreator_source_package(optionDict, os.path.join(work_dir, 'qt-creator'), None, qtcreator_version,
                                     'opensource', work_dir, log_filepath)
     # Create enterprise source package
     if installer_patch:
         check_call_log(['git', 'apply', installer_patch],
                        os.path.join(work_dir, 'qt-creator'), log_filepath=log_filepath)
-        create_qtcreator_source_package(os.path.join(work_dir, 'qt-creator'), None, qtcreator_version,
+        create_qtcreator_source_package(optionDict, os.path.join(work_dir, 'qt-creator'), None, qtcreator_version,
                                         'enterprise', work_dir, log_filepath)
 
     # Build sdktool
@@ -1141,7 +1141,8 @@ def initPkgOptions(args):
     return optionDict
 
 
-if __name__ == '__main__':
+def main() -> None:
+    """Main"""
     # Define supported build steps
     bld_qtcreator = 'build_creator'
     bld_qtc_sdktool = 'build_sdktool'
@@ -1185,3 +1186,7 @@ if __name__ == '__main__':
         do_git_archive_repo(optionDict, args.archive_repo)
     else:
         print('Unsupported command')
+
+
+if __name__ == '__main__':
+    main()

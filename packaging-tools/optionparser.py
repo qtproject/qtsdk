@@ -81,7 +81,8 @@ def getPkgOptions(confFilePath):
     return PackagingOptions(confFilePath)
 
 
-if __name__ == '__main__':
+def main() -> None:
+    """Main"""
     parser = argparse.ArgumentParser(prog="Parse packaging related options from config file.")
     parser.add_argument("--conf-file", dest="conf_file", required=True, type=str,
                         help="Absolute path pointing into configuration file which contains all required options for packaging.")
@@ -90,3 +91,7 @@ if __name__ == '__main__':
     options = getPkgOptions(args.conf_file)
     configMap = options.configMap()
     print(configMap)
+
+
+if __name__ == '__main__':
+    main()

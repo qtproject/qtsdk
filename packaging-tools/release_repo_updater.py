@@ -727,7 +727,8 @@ def load_export_summary_data(config_file: Path) -> Dict[str, str]:
     return ret
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Main"""
     args_from_file_parser = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -851,3 +852,7 @@ if __name__ == "__main__":
                                       args.event_injector, export_data))
         for repo in ret:
             log.info("%s", repo)
+
+
+if __name__ == "__main__":
+    main()

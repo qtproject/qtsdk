@@ -165,7 +165,8 @@ def parse_config(configFile: str, task_filters: List[str]) -> List[ReleaseTask]:
     return parse_data(settings, task_filters)
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Main"""
     parser = argparse.ArgumentParser(prog="Script to parse top level release config file")
     parser.add_argument("--config", dest="config", type=str, default=os.getenv("RELEASE_DESCRIPTION_FILE"),
                         help="Path to top level release config file")
@@ -176,3 +177,7 @@ if __name__ == "__main__":
 
     assert os.path.isfile(args.config), f"Not a valid file: {args.config}"
     parse_config(args.config, args.task_filters)
+
+
+if __name__ == "__main__":
+    main()

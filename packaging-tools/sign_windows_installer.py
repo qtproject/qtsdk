@@ -138,8 +138,13 @@ def sign_executable(file_path: str):
         os.remove(os.path.basename(os.environ["WINDOWS_SIGNTOOL_X64_PATH"]))
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Main"""
     parser = argparse.ArgumentParser(prog="Codesign Windows executables")
     parser.add_argument("--file", dest="file_to_sign", required=True, help="File to sign")
     args = parser.parse_args(sys.argv[1:])
     sign_executable(args.file_to_sign)
+
+
+if __name__ == "__main__":
+    main()

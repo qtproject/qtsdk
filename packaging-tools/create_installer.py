@@ -1079,7 +1079,8 @@ class QtInstallerTask:
         log.info("IFW tools extracted into: %s", self.ifw_tools_dir)
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Main"""
     parser = argparse.ArgumentParser(prog="Script to create Qt Installer Framework based installers.")
     parser.add_argument("-c", "--configurations-dir", dest="configurations_dir", type=str, default="configurations",
                         help="define configurations directory where to read installer configuration files")
@@ -1142,3 +1143,7 @@ if __name__ == "__main__":
     task = QtInstallerTask(args)
     task.verbose()
     create_installer(task)
+
+
+if __name__ == "__main__":
+    main()

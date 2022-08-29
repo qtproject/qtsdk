@@ -802,10 +802,8 @@ def setup_argument_parser():
     return parser
 
 
-###############################
-# Main
-###############################
-if __name__ == "__main__":
+def main() -> None:
+    """Main"""
     # init things
     PARSER = setup_argument_parser()
     # parse args
@@ -842,3 +840,7 @@ if __name__ == "__main__":
         build_and_archive_qt(OPTIONS)
     else:
         build_ifw(OPTIONS, CARGS.create_installer, CARGS.build_ifw_examples)
+
+
+if __name__ == "__main__":
+    main()

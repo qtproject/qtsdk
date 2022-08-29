@@ -153,14 +153,15 @@ async def embedNotarization(args):
             raise NotarizationError(f"Failed to 'staple' the: {args.dmg}")
 
 
-async def main(args):
+async def notarize(args):
     uuid = await requestNotarization(args)
     if not await pollNotarizationCompleted(args, uuid):
         raise NotarizationError(f"Notarization failed for: {args.dmg}")
     await embedNotarization(args)
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Main"""
     parser = argparse.ArgumentParser(prog="Helper script to notarize given macOS disk image (.dmg)")
     parser.add_argument("--dmg", dest="dmg", required=True, type=str, help=".dmg file")
     parser.add_argument("--user", dest="user", type=str, default=get_pkg_value("AC_USERNAME"), help="App Store Connect Username")
@@ -174,4 +175,8 @@ if __name__ == "__main__":
         sys.exit(1)
 
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(main(args))
+    loop.run_until_complete(notarize(args))
+
+
+if __name__ == "__main__":
+    main()

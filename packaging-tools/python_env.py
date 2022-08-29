@@ -119,7 +119,8 @@ async def create_venv(pythonSrc: str, getPipFile: str) -> Tuple[str, str, Dict[s
     return (venv_folder, pipenv, env)
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Main"""
     parser = argparse.ArgumentParser(prog="Create Python virtual env")
     parser.add_argument(
         "--python-src",
@@ -138,3 +139,7 @@ if __name__ == "__main__":
     args = parser.parse_args(sys.argv[1:])
     loop = get_event_loop()
     loop.run_until_complete(create_venv(args.python_src, args.get_pip_file))
+
+
+if __name__ == "__main__":
+    main()

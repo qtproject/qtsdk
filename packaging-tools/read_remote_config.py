@@ -64,7 +64,8 @@ def get_pkg_value(key, section="packaging", url=os.getenv("PACKAGING_KEYS_CONFIG
     return _pkg_remote_settings.get(section, key)
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Main"""
     parser = argparse.ArgumentParser(prog="Read values from remote config .ini file")
     parser.add_argument("--url", dest="url", type=str, default=os.getenv("PACKAGING_KEYS_CONFIG_URL"),
                         help="Url pointing to file to be read")
@@ -76,3 +77,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     print(f"{args.key}: '{get_pkg_value(args.key, args.section, args.url)}'")
+
+
+if __name__ == "__main__":
+    main()

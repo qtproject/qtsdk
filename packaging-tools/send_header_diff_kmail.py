@@ -75,7 +75,8 @@ def send_headers(version, message_id, simulate):
                 check_call(args)
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Main"""
     parser = argparse.ArgumentParser(prog="send_header_diff_kmail")
 
     parser.add_argument('--message', type=str, dest="message_id", required=True,
@@ -87,3 +88,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args(sys.argv[1:])
     send_headers(version=args.version, message_id=args.message_id, simulate=args.simulate)
+
+
+if __name__ == "__main__":
+    main()

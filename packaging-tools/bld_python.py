@@ -169,7 +169,8 @@ async def build_python(src: str, prefix: str) -> str:
     return await _build_python(sourceRootDir, bldDir, prefix)
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Main"""
     parser = argparse.ArgumentParser(prog="Script to build Python from sources")
     parser.add_argument("--src", dest="src", type=str, default=os.getenv("PYTHON_SRC"), help="Path to local checkout or .zip/.7z/.tar.gz")
     parser.add_argument("--prefix", dest="prefix", type=str, default=os.path.join(os.path.expanduser("~"), "_python_bld"))
@@ -182,3 +183,7 @@ if __name__ == "__main__":
 
     loop = get_event_loop()
     loop.run_until_complete(build_python(args.src, args.prefix))
+
+
+if __name__ == "__main__":
+    main()
