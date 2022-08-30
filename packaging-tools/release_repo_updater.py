@@ -448,9 +448,8 @@ async def build_online_repositories(tasks: List[ReleaseTask], license: str, inst
         if not os.path.isfile(installerConfigFile):
             raise PackagingError(f"Invalid 'config_file' path: {installerConfigFile}")
 
-        # TODO: license
         cmd = [sys.executable, scriptPath, "-c", installerConfigBaseDir, "-f", installerConfigFile]
-        cmd += ["--create-repo", "-l", license, "--license-type", license, "-u", artifactShareBaseUrl, "--ifw-tools", ifwTools]
+        cmd += ["--create-repo", "-l", license, "-u", artifactShareBaseUrl, "--ifw-tools", ifwTools]
         cmd += ["--force-version-number-increase"]
         for substitution in task.get_installer_string_replacement_list():
             cmd += ["--add-substitution=" + substitution]
@@ -664,7 +663,7 @@ async def _build_offline_tasks(stagingServer: str, stagingServerRoot: str, tasks
             raise PackagingError(f"Invalid 'config_file' path: {installerConfigFile}")
 
         cmd = [sys.executable, scriptPath, "-c", installerConfigBaseDir, "-f", installerConfigFile]
-        cmd += ["--offline", "-l", license, "--license-type", license, "-u", artifactShareBaseUrl, "--ifw-tools", ifwTools]
+        cmd += ["--offline", "-l", license, "-u", artifactShareBaseUrl, "--ifw-tools", ifwTools]
         cmd += ["--preferred-installer-name", task.get_installer_name()]
         cmd += ["--force-version-number-increase"]
         cmd.extend(["--add-substitution=" + s for s in task.get_installer_string_replacement_list()])
