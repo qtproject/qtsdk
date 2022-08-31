@@ -246,28 +246,6 @@ def replace_in_files(filelist: List[str], regexp: str, replacement_string: str) 
 ###############################
 # function
 ###############################
-def ensure_text_file_endings(filename: str) -> None:
-    print('------------ ensure_text_file_endings ----------------')
-    if os.path.isdir(filename):
-        print(f'*** Warning, given file is directory? Did nothing for: {filename}')
-        return
-    with open(filename, "rb") as handle:
-        data = handle.read()
-    if b'\0' in data:
-        print(f'*** Warning, given file is binary? Did nothing for: {filename}')
-        return
-    if is_windows():
-        newdata = re.sub(b"\r?\n", b"\r\n", data)
-        if newdata != data:
-            print(f'File endings changed for: {filename}')
-            with open(filename, "wb") as handle:
-                handle.write(newdata)
-    print('--------------------------------------------------------------------')
-
-
-###############################
-# function
-###############################
 def safe_config_key_fetch(conf: ConfigParser, section: str, key: str) -> Any:
     if not conf.has_section(section):
         return ''
@@ -321,34 +299,6 @@ def locate_paths(search_dir: Union[str, Path], patterns: List[str],
     patterns = patterns if patterns else ["*"]
     paths = [p for p in Path(search_dir).rglob("*") if any(p.match(ptn) for ptn in patterns)]
     return [str(p) for p in paths if all(f(p) for f in filters)]
-
-
-def is_text(data: Union[str, bytes]) -> bool:
-    # original snippet:
-    # http://code.activestate.com/recipes/173220-test-if-a-file-or-string-is-text-or-binary/
-    data = str(data)
-    if isinstance(data, str) and "\0" in data or isinstance(data, bytes) and b"\0" in data:
-        return False
-    if not data:  # Empty files are considered text
-        return True
-    # Get the non-text characters (maps a character to itself then
-    # use the 'remove' option to get rid of the text characters.)
-    text_characters = "".join(list(map(chr, list(range(32, 127)))) + list("\n\r\t\b"))
-    non_text = data
-    for char in text_characters:
-        non_text = non_text.replace(char, "")
-    # If more than 30% non-text characters, then
-    # this is considered a binary file
-    if len(non_text) / len(data) > 0.30:
-        return False
-    return True
-
-
-def is_text_file(filename: Union[str, Path], blocksize: int = 512) -> bool:
-    try:
-        return is_text(open(filename, encoding="utf-8").read(blocksize))
-    except UnicodeDecodeError:
-        return is_text(open(filename, 'rb').read(blocksize))
 
 
 ###############################

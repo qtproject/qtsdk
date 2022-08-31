@@ -48,11 +48,9 @@ from archiveresolver import ArchiveLocationResolver
 from bld_utils import download, is_linux, is_macos, is_windows
 from bldinstallercommon import (
     copy_tree,
-    ensure_text_file_endings,
     extract_file,
     handle_component_rpath,
     is_content_url_valid,
-    is_text_file,
     locate_executable,
     locate_path,
     locate_paths,
@@ -371,14 +369,9 @@ def get_component_data(
     # extract contents
     if archive.extract_archive == 'yes':
         extracted = extract_file(downloaded_archive, install_dir)
-        # remove old package
+        # remove old package if extraction was successful, else keep it
         if extracted:
             os.remove(downloaded_archive)
-        else:
-            # ok we could not extract the file, so propably not even archived file,
-            # check the case if we downloaded a text file, must ensure proper file endings
-            if is_text_file(downloaded_archive):
-                ensure_text_file_endings(downloaded_archive)
 
         # perform custom action script for the extracted archive
         if archive.archive_action:
