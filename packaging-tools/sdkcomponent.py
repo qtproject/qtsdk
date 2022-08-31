@@ -114,7 +114,6 @@ class SdkComponent:
         packages_full_path_list: List[str],
         archive_location_resolver: ArchiveLocationResolver,
         key_value_substitution_list: List[str],
-        is_offline_build: bool,
     ):
         self.static_component = safe_config_key_fetch(target_config, section_name, 'static_component')
         self.root_component = safe_config_key_fetch(target_config, section_name, 'root_component')
@@ -136,16 +135,9 @@ class SdkComponent:
         self.component_sha1_uri = safe_config_key_fetch(target_config, section_name, 'component_sha1_uri')
         if self.component_sha1_uri:
             self.component_sha1_uri = archive_location_resolver.resolve_full_uri(self.package_name, self.archive_server_name, self.component_sha1_uri)
-        self.optional_for_offline = False
         self.key_value_substitution_list = key_value_substitution_list
         self.archive_skip = False
         self.include_filter = safe_config_key_fetch(target_config, section_name, 'include_filter')
-        if is_offline_build:
-            tmp = safe_config_key_fetch(target_config, section_name, 'optional_for_offline')
-            for item in self.key_value_substitution_list:
-                tmp = tmp.replace(item[0], item[1])
-            if tmp.lower() in ['yes', 'true', '1']:
-                self.optional_for_offline = True
         self.downloadable_arch_list_qs: List[Any] = []
         self.pkg_template_dir = ''
         self.sanity_check_error_msg = ''
@@ -217,10 +209,6 @@ class SdkComponent:
             for archive in self.downloadable_archive_list:
                 error_msg = archive.check_archive_data()
                 if error_msg:
-                    if self.optional_for_offline:
-                        print(f'!!! Package: [{self.package_name}] Given data archive not found: [{archive.archive_uri}] But this component was marked optional -> keep going')
-                        self.sanity_check_fail(self.package_name, f'Given data archive not found: [{archive.archive_uri}] But this component was marked optional')
-                        return
                     self.sanity_check_fail(self.package_name, error_msg)
                     return
 
@@ -234,9 +222,6 @@ class SdkComponent:
 
     def error_msg(self) -> str:
         return self.sanity_check_error_msg
-
-    def optional_for_offline_installer(self) -> bool:
-        return self.optional_for_offline
 
     def parse_archives(self, target_config: ConfigParser, archive_location_resolver: ArchiveLocationResolver) -> None:
         if self.archives:

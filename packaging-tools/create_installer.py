@@ -246,8 +246,13 @@ def parse_component_data(task: Any, configuration_file: str, configurations_base
         section_namespace = section.split(".")[0]
         if section_namespace in task.package_namespace:
             if section not in task.sdk_component_ignore_list:
-                sdk_component = SdkComponent(section, configuration, task.packages_dir_name_list,
-                                             task.archive_location_resolver, task.substitution_list, task.offline_installer)
+                sdk_component = SdkComponent(
+                    section_name=section,
+                    target_config=configuration,
+                    packages_full_path_list=task.packages_dir_name_list,
+                    archive_location_resolver=task.archive_location_resolver,
+                    key_value_substitution_list=task.substitution_list,
+                )
                 if task.dry_run:
                     sdk_component.set_archive_skip(True)
                 # validate component
@@ -261,13 +266,10 @@ def parse_component_data(task: Any, configuration_file: str, configurations_base
                     elif not sdk_component.include_filter:
                         task.sdk_component_list.append(sdk_component)
                 else:
-                    if task.offline_installer and sdk_component.optional_for_offline_installer():
-                        log.warning("The [%s] was not valid but it was marked optional for offline installers so skipping it.", sdk_component.package_name)
-                    else:
-                        if task.strict_mode:
-                            raise CreateInstallerError(f"{sdk_component.error_msg()}")
-                        log.warning("Ignored component in non-strict mode (missing archive data or metadata?): %s", section)
-                        task.sdk_component_list_skipped.append(sdk_component)
+                    if task.strict_mode:
+                        raise CreateInstallerError(f"{sdk_component.error_msg()}")
+                    log.warning("Ignore invalid component (missing payload/metadata?): %s", section)
+                    task.sdk_component_list_skipped.append(sdk_component)
     # check for extra configuration files if defined
     extra_conf_list = safe_config_key_fetch(configuration, 'PackageConfigurationFiles', 'file_list')
     if extra_conf_list:
