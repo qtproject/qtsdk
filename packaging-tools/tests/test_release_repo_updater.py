@@ -69,7 +69,7 @@ def _write_dummy_file(path: str) -> None:
         f.write("\n")
 
 
-def _write_package_xml(path: str, version: str, releaseDate: str) -> None:
+def _write_package_xml(path: str, version: str, release_date: str) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, 'w+', encoding="utf-8") as f:
         f.write("<?xml version=\"1.0\"?>\n")
@@ -78,11 +78,11 @@ def _write_package_xml(path: str, version: str, releaseDate: str) -> None:
         f.write("  <DisplayName>Test</DisplayName>\n")
         f.write("  <Description>Test</Description>\n")
         f.write(f"  <Version>{version}</Version>\n")
-        f.write(f"  <ReleaseDate>{releaseDate}</ReleaseDate>\n")
+        f.write(f"  <ReleaseDate>{release_date}</ReleaseDate>\n")
         f.write("</Package>\n")
 
 
-def _write_updates_xml(path: str, version: str, releaseDate: str) -> None:
+def _write_updates_xml(path: str, version: str, release_date: str) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, 'w+', encoding="utf-8") as f:
         f.write("<Updates>\n")
@@ -94,7 +94,7 @@ def _write_updates_xml(path: str, version: str, releaseDate: str) -> None:
         f.write("    <DisplayName>Foo bar</DisplayName>\n")
         f.write("    <Description>Foo and bar</Description>\n")
         f.write(f"    <Version>{version}</Version>\n")
-        f.write(f"    <ReleaseDate>{releaseDate}</ReleaseDate>\n")
+        f.write(f"    <ReleaseDate>{release_date}</ReleaseDate>\n")
         f.write("    <DownloadableArchives/>\n")
         f.write("    <UpdateFile CompressedSize=\"0\" OS=\"Any\" UncompressedSize=\"0\"/>\n")
         f.write("    <SHA1>c1559cbb0f0983909f7229dc79dfdf7eab46cd52</SHA1>\n")
@@ -185,8 +185,8 @@ class TestReleaseRepoUpdater(unittest.TestCase):
 
     @asyncio_test_parallel_data((True, True), (False, False), ("yes", True), ("1", True), ("y", True),
                                 ("false", False), ("n", False), ("0", False), ("no", False))
-    async def test_string_to_bool(self, value: str, expectedResult: bool) -> None:
-        self.assertEqual(string_to_bool(value), expectedResult)
+    async def test_string_to_bool(self, value: str, expected_result: bool) -> None:
+        self.assertEqual(string_to_bool(value), expected_result)
 
     @asyncio_test
     async def test_build_online_repositories_dryrun(self) -> None:
@@ -200,8 +200,8 @@ class TestReleaseRepoUpdater(unittest.TestCase):
 
         # parse all tasks i.e. no filters
         tasks = parse_data(config, task_filters=[])
-        await build_online_repositories(tasks=tasks, license_="opensource", installerConfigBaseDir="foo", artifactShareBaseUrl="foo",
-                                        ifwTools="foo", buildRepositories=False)
+        await build_online_repositories(tasks=tasks, license_="opensource", installer_config_base_dir="foo", artifact_share_base_url="foo",
+                                        ifw_tools="foo", build_repositories=False)
         task = tasks.pop()
         self.assertTrue(task.source_online_repository_path.endswith("foo/bar/path_1/online_repository"))
 

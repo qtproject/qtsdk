@@ -63,36 +63,36 @@ handler.setFormatter(formatter)
 log.addHandler(handler)
 
 
-def find_file(searchPath: str, fileName: str) -> str:
-    for root, _, files in os.walk(searchPath):
-        if fileName in files:
-            return os.path.join(root, fileName)
-    assert False, f"Unable to find: {fileName} from: {searchPath}"
+def find_file(search_path: str, file_name: str) -> str:
+    for root, _, files in os.walk(search_path):
+        if file_name in files:
+            return os.path.join(root, file_name)
+    assert False, f"Unable to find: {file_name} from: {search_path}"
 
 
-def collect_libs(searchPath: str) -> List[str]:
-    for root, dirs, _ in os.walk(searchPath):
+def collect_libs(search_path: str) -> List[str]:
+    for root, dirs, _ in os.walk(search_path):
         for dir_name in dirs:
             if dir_name == "lib":
                 return [str(Path(root, dir_name, x)) for x in os.listdir(Path(root, dir_name))]
-    assert False, f"Unable to find: 'lib' from: {searchPath}"
+    assert False, f"Unable to find: 'lib' from: {search_path}"
 
 
-def parse_qt_version(downloadUrlPath: str) -> str:
+def parse_qt_version(download_url_path: str) -> str:
     regex = re.compile(r'([\d.]+)')
-    for item in downloadUrlPath.split("/"):
+    for item in download_url_path.split("/"):
         m = regex.search(item)
         if m:
             return m.groups()[0]
-    assert False, f"Could not parse Qt version number from: {downloadUrlPath}"
+    assert False, f"Could not parse Qt version number from: {download_url_path}"
 
 
-def download_qt_pkg(args: argparse.Namespace, currentDir: str) -> Tuple[str, str]:
+def download_qt_pkg(args: argparse.Namespace, current_dir: str) -> Tuple[str, str]:
     urlRes = urlparse(args.qtpkg)
     assert urlRes.scheme and urlRes.netloc and urlRes.path, f"Invalid URL: {args.qtpkg}"
     qtVersion = parse_qt_version(urlRes.path)
 
-    saveAs = os.path.join(currentDir, os.path.basename(urlRes.path))
+    saveAs = os.path.join(current_dir, os.path.basename(urlRes.path))
     if os.path.exists(saveAs):
         log.info("Using existing: %s", saveAs)
     else:
@@ -102,27 +102,27 @@ def download_qt_pkg(args: argparse.Namespace, currentDir: str) -> Tuple[str, str
     return saveAs, qtVersion
 
 
-def extract_archive(saveAs: str, currentDir: str) -> str:
-    qtDestDir = os.path.join(currentDir, "qt_pkg")
+def extract_archive(save_as: str, current_dir: str) -> str:
+    qtDestDir = os.path.join(current_dir, "qt_pkg")
     if not os.path.exists(qtDestDir):
         os.makedirs(qtDestDir)
         log.info("Extracting to: %s", qtDestDir)
-        if saveAs.endswith("tar.gz"):
-            with tarfile.open(saveAs, "r:gz") as tar:
+        if save_as.endswith("tar.gz"):
+            with tarfile.open(save_as, "r:gz") as tar:
                 tar.extractall(qtDestDir)
-        elif saveAs.endswith(".7z"):
+        elif save_as.endswith(".7z"):
             try:
                 os.chdir(qtDestDir)
-                check_call(['7z', 'x', saveAs])
+                check_call(['7z', 'x', save_as])
             except Exception as e:
                 log.error("Extracting 7z file failed: %s", str(e))
                 raise
             finally:
-                os.chdir(currentDir)
+                os.chdir(current_dir)
     return qtDestDir
 
 
-def build(args: argparse.Namespace, qtDestDir: str, currentDir: str) -> str:
+def build(args: argparse.Namespace, qt_dest_dir: str, current_dir: str) -> str:
     if is_windows():
         qmakeToolName = "qmake.exe"
         makeToolName = "nmake"
@@ -130,8 +130,8 @@ def build(args: argparse.Namespace, qtDestDir: str, currentDir: str) -> str:
         qmakeToolName = "qmake"
         makeToolName = "make"
 
-    qmakeTool = find_file(qtDestDir, qmakeToolName)
-    assert qmakeTool, f"Could not find: {qmakeToolName} from: {qtDestDir}"
+    qmakeTool = find_file(qt_dest_dir, qmakeToolName)
+    assert qmakeTool, f"Could not find: {qmakeToolName} from: {qt_dest_dir}"
 
     # patch
     with open(os.path.join(os.path.dirname(qmakeTool), "qt.conf"), "w+", encoding="utf-8") as f:
@@ -143,11 +143,11 @@ def build(args: argparse.Namespace, qtDestDir: str, currentDir: str) -> str:
     proFile = pro_files_list[0]
     log.info("Using .pro file: %s", proFile)
 
-    installRootDir = os.path.join(currentDir, "lib_install_root")
+    installRootDir = os.path.join(current_dir, "lib_install_root")
     shutil.rmtree(installRootDir, ignore_errors=True)
     os.makedirs(installRootDir)
 
-    bldDir = os.path.join(currentDir, "lib_bld")
+    bldDir = os.path.join(current_dir, "lib_bld")
     shutil.rmtree(bldDir, ignore_errors=True)  # ignore if path did not exist
     os.makedirs(bldDir)
 
@@ -165,24 +165,24 @@ def build(args: argparse.Namespace, qtDestDir: str, currentDir: str) -> str:
         log.error("Something bad happened: %s", str(e))
         raise
     finally:
-        os.chdir(currentDir)
+        os.chdir(current_dir)
 
     return installRootDir
 
 
-def archive(args: argparse.Namespace, installRootDir: str, currentDir: str) -> str:
+def archive(args: argparse.Namespace, install_root_dir: str, current_dir: str) -> str:
     # strip out drive letter on Windows e.g. 'C:'
     srcPath = args.src_path[2:] if is_windows() else args.src_path
-    archivePath = os.path.join(installRootDir, srcPath.lstrip(os.path.sep))
+    archivePath = os.path.join(install_root_dir, srcPath.lstrip(os.path.sep))
     log.info("Archiving from: %s", archivePath)
 
-    libs = collect_libs(installRootDir)
+    libs = collect_libs(install_root_dir)
     for lib in libs:
         shutil.copy2(lib, archivePath)
 
     arch = "x86_64" if sys.maxsize > 2**32 else "x86"
     artifactsFileName = "artifacts-" + plat.system().lower() + "-" + arch + ".7z"
-    artifactsFilePath = os.path.join(currentDir, artifactsFileName)
+    artifactsFilePath = os.path.join(current_dir, artifactsFileName)
     try:
         os.chdir(archivePath)
         check_call(['7z', 'a', '-m0=lzma2', '-mmt=16', artifactsFilePath, '*'])
@@ -190,7 +190,7 @@ def archive(args: argparse.Namespace, installRootDir: str, currentDir: str) -> s
         print(str(e))
         raise
     finally:
-        os.chdir(currentDir)
+        os.chdir(current_dir)
 
     log.info("Created artifact: %s", artifactsFilePath)
     return artifactsFilePath

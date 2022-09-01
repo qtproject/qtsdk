@@ -65,10 +65,10 @@ def is_valid_url_path(url: str) -> bool:
         return False
 
 
-def download_archive(url: str, destDir: str) -> str:
+def download_archive(url: str, dest_dir: str) -> str:
     parts = urlparse(url)
     fileName = os.path.basename(parts.path)
-    destFile = os.path.join(destDir, fileName)
+    destFile = os.path.join(dest_dir, fileName)
     if os.path.isfile(destFile):
         log.info("Using existing downloaded file: %s", destFile)
     else:
@@ -84,13 +84,13 @@ def get_extract_cmd(artifact: str) -> List[str]:
     raise PackagingError(f"Could not find suitable extractor for: {artifact}")
 
 
-async def extract_archive(artifact: str, destinationDir: str) -> None:
-    log.info("Extracting file: %s into: %s", artifact, destinationDir)
+async def extract_archive(artifact: str, destination_dir: str) -> None:
+    log.info("Extracting file: %s into: %s", artifact, destination_dir)
     extractCmd = get_extract_cmd(artifact)
     try:
-        os.makedirs(destinationDir, exist_ok=True)
-        with cd(destinationDir):
+        os.makedirs(destination_dir, exist_ok=True)
+        with cd(destination_dir):
             await async_exec_cmd(extractCmd)
     except Exception:
-        log.exception("Could not extact a file %s to %s", artifact, destinationDir)
+        log.exception("Could not extact a file %s to %s", artifact, destination_dir)
         raise

@@ -97,13 +97,13 @@ org_stdout = sys.stdout
 org_sterr = sys.stderr
 
 
-def enable_threaded_print(enable=True, threadCount=cpu_count()):
+def enable_threaded_print(enable=True, thread_count=cpu_count()):
     if enable:
         global output_states
         global output_format_string
-        output_states = [""] * (threadCount)
+        output_states = [""] * (thread_count)
         output_format_string = ""
-        for x in range(threadCount):
+        for x in range(thread_count):
             output_format_string = output_format_string + "{" + str(x) + ":10}"
         sys.stdout = StdOutHook()
         sys.stderr = StdErrHook()
@@ -191,16 +191,16 @@ class ThreadedWork():
         self.queue.put(task)
         self.taskNumber = self.taskNumber + 1
 
-    def run(self, maxThreads=None):
-        if not maxThreads:
-            maxThreads = min(cpu_count(), self.taskNumber)
+    def run(self, max_threads=None):
+        if not max_threads:
+            max_threads = min(cpu_count(), self.taskNumber)
         print(self.description)
         print(os.linesep.join(self.legend))
 
-        if maxThreads > 1:
-            enable_threaded_print(True, maxThreads)
+        if max_threads > 1:
+            enable_threaded_print(True, max_threads)
         listOfConsumers = []
-        for i in range(maxThreads):
+        for i in range(max_threads):
             # every Consumer needs a stop/none item
             self.queue.put(None)
             newConsumer = Consumer(self.queue, i)
@@ -218,20 +218,20 @@ class ThreadedWork():
                     # catch the KeyboardInterrupt exception
                     sys.exit(0)
         # self.queue.join() <- this ignoring the KeyboardInterrupt
-        if maxThreads > 1:
+        if max_threads > 1:
             enable_threaded_print(False)
         print(f"\n{self.description} ... done")
 
 
 class Consumer(threading.Thread):
 
-    def __init__(self, queue, workerThreadId):
+    def __init__(self, queue, worker_thread_id):
         self.queue = queue
-        self.workerThreadId = workerThreadId
+        self.workerThreadId = worker_thread_id
         threading.Thread.__init__(self)
 
-    def run(self, stableRunIndicator=True):
-        if stableRunIndicator:
+    def run(self, stable_run_indicator=True):
+        if stable_run_indicator:
             thread_data.progressIndicator = itertools.cycle(['..'])
         else:
             thread_data.progressIndicator = itertools.cycle(['|', '/', '-', '\\'])

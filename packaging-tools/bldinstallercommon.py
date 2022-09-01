@@ -80,15 +80,15 @@ def is_content_url_valid(url):
 CURRENT_DOWNLOAD_PERCENT = 0
 
 
-def dl_progress(count, blockSize, totalSize):
+def dl_progress(count, block_size, total_size):
     global CURRENT_DOWNLOAD_PERCENT
-    percent = int(count * blockSize * 100 / totalSize)
+    percent = int(count * block_size * 100 / total_size)
     # produce only reasonable amount of prints into stdout
     if percent > CURRENT_DOWNLOAD_PERCENT:
         CURRENT_DOWNLOAD_PERCENT = percent
         sys.stdout.write("\r" + f"     Downloading: {percent}%")
         sys.stdout.flush()
-    if count * blockSize >= totalSize:
+    if count * block_size >= total_size:
         CURRENT_DOWNLOAD_PERCENT = 0
         print('\n')
 
@@ -214,12 +214,12 @@ def remove_tree(path):
             path = win32api.GetShortPathName(path.replace('/', '\\'))
             # a funny thing is that rmdir does not set an exitcode it is just using the last set one
             try:
-                run_command(['rmdir', path, '/S', '/Q'], os.getcwd(), onlyErrorCaseOutput=True)
+                run_command(['rmdir', path, '/S', '/Q'], os.getcwd(), only_error_case_output=True)
             except Exception:
                 print_exc()
         else:
             # shutil.rmtree(path)
-            run_command(['rm', '-rf', path], os.getcwd(), onlyErrorCaseOutput=True)
+            run_command(['rm', '-rf', path], os.getcwd(), only_error_case_output=True)
     return not os.path.exists(path)
 
 
@@ -589,7 +589,7 @@ def extract_file(path, to_directory='.'):
         print(f'Did not extract the file! Not archived or no appropriate extractor was found: {path}')
         return False
 
-    ret = run_command(cmd_args, currentWorkingDirectory=to_directory, onlyErrorCaseOutput=True)
+    ret = run_command(cmd_args, cwd=to_directory, only_error_case_output=True)
     if ret:
         raise RuntimeError(f"Failure running the last command: {ret}")
     return True

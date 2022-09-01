@@ -138,8 +138,8 @@ class SdkComponent:
             return True
         return False
 
-    def set_archive_skip(self, doSkip):
-        self.archive_skip = doSkip
+    def set_archive_skip(self, do_skip):
+        self.archive_skip = do_skip
 
     def validate(self):
         # look up correct package template directory from list

@@ -46,24 +46,24 @@ from runner import async_exec_cmd
 log = init_logger(__name__, debug_mode=False)
 
 
-def locate_file_from_venv(venv_folder: str, fileName: str) -> str:
-    log.info("Locating file '%s' from: %s", fileName, venv_folder)
-    matches = list(Path(venv_folder).resolve(strict=True).rglob(fileName))
+def locate_file_from_venv(venv_folder: str, file_name: str) -> str:
+    log.info("Locating file '%s' from: %s", file_name, venv_folder)
+    matches = list(Path(venv_folder).resolve(strict=True).rglob(file_name))
     assert len(matches) == 1, f"Found != 1 matches: {matches}"
     return str(matches.pop())
 
 
-async def clone_repo(url: str, destinationDir: str, env: Dict[str, str]) -> None:
-    assert not os.path.isdir(destinationDir), f"Destination dir already exists: {destinationDir}"
-    os.makedirs(os.path.dirname(destinationDir), exist_ok=True)
-    log.info("Cloning repo: %s -> %s", url, destinationDir)
-    cmd = ["git", "clone", url, destinationDir]
+async def clone_repo(url: str, destination_dir: str, env: Dict[str, str]) -> None:
+    assert not os.path.isdir(destination_dir), f"Destination dir already exists: {destination_dir}"
+    os.makedirs(os.path.dirname(destination_dir), exist_ok=True)
+    log.info("Cloning repo: %s -> %s", url, destination_dir)
+    cmd = ["git", "clone", url, destination_dir]
     await async_exec_cmd(cmd=cmd, timeout=60 * 15, env=env)  # give it 15 mins
 
 
-async def pip_install_from_checkout(pipenv: str, checkoutDir: str, env: Dict[str, str]) -> None:
-    log.info("Installing pip package from git checkout: %s", checkoutDir)
-    cmd = [pipenv, "run", "pip", "install", "-e", checkoutDir]
+async def pip_install_from_checkout(pipenv: str, checkout_dir: str, env: Dict[str, str]) -> None:
+    log.info("Installing pip package from git checkout: %s", checkout_dir)
+    cmd = [pipenv, "run", "pip", "install", "-e", checkout_dir]
     await async_exec_cmd(cmd=cmd, timeout=60 * 60, env=env)  # give it 60 mins
 
 
@@ -119,12 +119,12 @@ async def generate_executable(
 
 
 async def run(
-    pythonSrc: str,
+    python_src: str,
     source_file: str,
     hidden_imports: List[str],
     url_pip_packages: List[str],
     pip_packages: List[str],
-    getPipFile: str,
+    get_pip_file: str,
 ) -> str:
     work_dir = Path().home() / "_tmp_work_dir_"
     if work_dir.exists():
@@ -132,7 +132,7 @@ async def run(
     work_dir.mkdir(parents=True)
 
     with cd(str(work_dir)):
-        venv_folder, pipenv, env = await create_venv(pythonSrc, getPipFile)
+        venv_folder, pipenv, env = await create_venv(python_src, get_pip_file)
         await pip_install_url(pipenv, url_pip_packages, env)
         await pip_install_pkg(pipenv, pip_packages, env)
         return await generate_executable(pipenv, env, venv_folder, source_file, hidden_imports)

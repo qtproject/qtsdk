@@ -448,28 +448,28 @@ def get_component_data(task, sdk_component, archive, install_dir, data_dir_dest,
     do_execute_sub_process(cmd_args, data_dir_dest)
 
 
-def handle_set_executable(baseDir, packageFinalizeItems):
-    for item in parse_package_finalize_items(packageFinalizeItems, 'set_executable'):
-        expectedPath = os.path.join(baseDir, item)
+def handle_set_executable(base_dir, package_finalize_items):
+    for item in parse_package_finalize_items(package_finalize_items, 'set_executable'):
+        expectedPath = os.path.join(base_dir, item)
         if not os.path.exists(expectedPath):
             raise CreateInstallerError(f'Can not set executable bit as path not found: "{expectedPath}"')
         os.chmod(expectedPath, 0o755)
         log.info("Executable bit set for: %s", expectedPath)
 
 
-def handle_set_licheck(task, baseDir, packageFinalizeItems):
-    for licheckFileName in parse_package_finalize_items(packageFinalizeItems, 'set_licheck'):
-        licheckFilePath = os.path.join(baseDir, licheckFileName)
+def handle_set_licheck(task, base_dir, package_finalize_items):
+    for licheckFileName in parse_package_finalize_items(package_finalize_items, 'set_licheck'):
+        licheckFilePath = os.path.join(base_dir, licheckFileName)
         if not os.path.exists(licheckFilePath):
             raise CreateInstallerError(f'Can not set licheck as path not found: "{licheckFilePath}"')
-        patch_qt_edition(baseDir, licheckFileName, task.build_timestamp)
+        patch_qt_edition(base_dir, licheckFileName, task.build_timestamp)
         log.info("Licheck set for: %s", licheckFilePath)
         break
 
 
-def parse_package_finalize_items(packageFinalizeItems, itemCategory):
-    for item in packageFinalizeItems.split(","):
-        if itemCategory not in item:
+def parse_package_finalize_items(package_finalize_items, item_category):
+    for item in package_finalize_items.split(","):
+        if item_category not in item:
             continue
         parts = item.split("=")
         yield parts[-1].strip()

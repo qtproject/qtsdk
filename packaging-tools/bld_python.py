@@ -50,9 +50,9 @@ class BldPythonError(Exception):
     pass
 
 
-async def prepare_sources(src: str, tmpBaseDir: str) -> str:
+async def prepare_sources(src: str, tmp_base_dir: str) -> str:
     log.info("Preparing sources: %s", src)
-    srcTmpDir = os.path.join(tmpBaseDir, "src_dir")
+    srcTmpDir = os.path.join(tmp_base_dir, "src_dir")
     rmtree(srcTmpDir, ignore_errors=True)
     if os.path.isdir(src):
         if "windows" in platform.system().lower():
@@ -64,45 +64,45 @@ async def prepare_sources(src: str, tmpBaseDir: str) -> str:
         await extract_archive(src, srcTmpDir)
     elif is_valid_url_path(src):
         os.makedirs(srcTmpDir)
-        destFile = download_archive(src, tmpBaseDir)
+        destFile = download_archive(src, tmp_base_dir)
         await extract_archive(destFile, srcTmpDir)
     else:
         raise BldPythonError(f"Could not prepare sources from: {src}")
     return srcTmpDir
 
 
-def locate_source_root(searchDir: str) -> str:
-    for root, _, files in os.walk(searchDir):
+def locate_source_root(search_dir: str) -> str:
+    for root, _, files in os.walk(search_dir):
         if "configure" in files and os.path.isfile(os.path.join(root, "configure")):
             return root
-    raise BldPythonError(f"Could not find source root directory from: {searchDir}")
+    raise BldPythonError(f"Could not find source root directory from: {search_dir}")
 
 
-async def create_symlink(pythonDir: str):
-    pythonExe = os.path.join(pythonDir, 'python.exe')
+async def create_symlink(python_dir: str):
+    pythonExe = os.path.join(python_dir, 'python.exe')
     assert os.path.isfile(pythonExe), f"The 'python' executable did not exist: {pythonExe}"
     versionCmd = [pythonExe, '--version']
     versionOutput = check_output(versionCmd, shell=True).decode("utf-8")
     match = re.search(r'(\d+)\.(\d+)\.(\d+)', versionOutput)
     if match:
-        destination = os.path.join(pythonDir, 'python' + match.group(1) + match.group(2) + '.exe')
+        destination = os.path.join(python_dir, 'python' + match.group(1) + match.group(2) + '.exe')
         os.symlink(pythonExe, destination)
         log.info("Symbolic link created from %s to %s", pythonExe, destination)
     else:
         raise BldPythonError(f"Could not parse version output: {versionOutput}")
 
 
-async def _build_python_win(srcDir: str) -> str:
+async def _build_python_win(src_dir: str) -> str:
     log.info("Building..")
-    log.info("Source dir: %s", srcDir)
-    buildBat = os.path.join(srcDir, 'PCbuild', 'build.bat')
+    log.info("Source dir: %s", src_dir)
+    buildBat = os.path.join(src_dir, 'PCbuild', 'build.bat')
     assert os.path.isfile(buildBat), f"The 'build.bat' batch file did not exist: {buildBat}"
     await async_exec_cmd([buildBat])
-    destDir = os.path.join(srcDir, 'PCbuild', 'amd64')
+    destDir = os.path.join(src_dir, 'PCbuild', 'amd64')
     assert os.path.isdir(destDir), f"The build destination directory did not exist: {destDir}"
     await create_symlink(destDir)
     log.info("Python built successfully and installed to: %s", destDir)
-    return srcDir
+    return src_dir
 
 
 async def build_python_win(src: str) -> str:
@@ -113,10 +113,10 @@ async def build_python_win(src: str) -> str:
     return await _build_python_win(sourceRootDir)
 
 
-async def _build_python(srcDir: str, bldDir: str, prefix: str) -> str:
+async def _build_python(src_dir: str, bld_dir: str, prefix: str) -> str:
     log.info("Building..")
-    log.info("  Source dir: %s", srcDir)
-    log.info("  Build dir: %s", bldDir)
+    log.info("  Source dir: %s", src_dir)
+    log.info("  Build dir: %s", bld_dir)
     log.info("  Prefix: %s", prefix)
     system = platform.system().lower()
     cpuCount = str(cpu_count())
@@ -128,7 +128,7 @@ async def _build_python(srcDir: str, bldDir: str, prefix: str) -> str:
                 "Could not find OpenSSL path. Please check that the required brew formula is installed."
             )
         configureCmd = [
-            os.path.join(srcDir, 'configure'),
+            os.path.join(src_dir, 'configure'),
             '--enable-framework',
             '--with-openssl=' + opensslPath,
             '--prefix=' + prefix
@@ -137,17 +137,17 @@ async def _build_python(srcDir: str, bldDir: str, prefix: str) -> str:
         makeInstallCmd = ['make', 'install']
     else:
         configureCmd = [
-            os.path.join(srcDir, 'configure'),
+            os.path.join(src_dir, 'configure'),
             '--enable-shared',
             '--prefix=' + prefix
         ]
         makeCmd = ['make', '-j' + cpuCount]
         makeInstallCmd = ['make', 'install']
 
-    rmtree(bldDir, ignore_errors=True)
-    os.makedirs(bldDir)
+    rmtree(bld_dir, ignore_errors=True)
+    os.makedirs(bld_dir)
 
-    with cd(bldDir):
+    with cd(bld_dir):
         await async_exec_cmd(configureCmd)
         await async_exec_cmd(makeCmd)
         await async_exec_cmd(makeInstallCmd)

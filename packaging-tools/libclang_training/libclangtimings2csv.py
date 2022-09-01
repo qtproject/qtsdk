@@ -70,14 +70,14 @@ def csv_line(values):
     return ','.join(values) + '\n'
 
 
-def extract_records(fileContent):
+def extract_records(file_content):
     recordMatcher = construct_record_matcher()
     timeNeededMatcher = construct_time_needed_matcher()
 
     records = []
     previousTimeMatchEnd = -1
 
-    for recordStartMatch in recordMatcher.finditer(fileContent):
+    for recordStartMatch in recordMatcher.finditer(file_content):
         timeNeededInMs = False
         if previousTimeMatchEnd >= recordStartMatch.start():
             # Ops, we've detected a missing time record.
@@ -86,7 +86,7 @@ def extract_records(fileContent):
             timeNeededInMs = previousRecord[1]
 
         if not timeNeededInMs:
-            timeMatch = next(timeNeededMatcher.finditer(fileContent, recordStartMatch.end()))
+            timeMatch = next(timeNeededMatcher.finditer(file_content, recordStartMatch.end()))
             previousTimeMatchEnd = timeMatch.end()
             timeNeededInMs = timeMatch.group(2)
 
@@ -106,11 +106,11 @@ def records_to_string(records):
     return string
 
 
-def convert(inputFile, columnLabel=None):
-    if not columnLabel:
-        columnLabel = os.path.basename(inputFile)
-    with open(inputFile, 'r', encoding="utf-8") as fileContent:
-        records = [[columnLabel, columnLabel]] + extract_records(fileContent.read())
+def convert(input_file, column_label=None):
+    if not column_label:
+        column_label = os.path.basename(input_file)
+    with open(input_file, 'r', encoding="utf-8") as fileContent:
+        records = [[column_label, column_label]] + extract_records(fileContent.read())
 
     return records_to_string(records)
 

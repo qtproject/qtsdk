@@ -307,16 +307,16 @@ def main() -> None:
             generateCommand.append(os.environ["EXTRA_QMAKE_ARGS"])
         generateCommand.append(qtModuleProFile)
 
-    run_command(generateCommand, currentWorkingDirectory=qtModuleBuildDirectory, extra_environment=environment)
+    run_command(generateCommand, cwd=qtModuleBuildDirectory, extra_environment=environment)
 
-    ret = run_build_command(currentWorkingDirectory=qtModuleBuildDirectory, callerArguments=callerArguments)
+    ret = run_build_command(cwd=qtModuleBuildDirectory, caller_arguments=callerArguments)
     if ret:
         raise RuntimeError(f"Failure running the last command: {ret}")
 
     ret = run_install_command(
         ['install', 'INSTALL_ROOT=' + qtModuleInstallDirectory],
-        currentWorkingDirectory=qtModuleBuildDirectory,
-        callerArguments=callerArguments, extra_environment=environment
+        cwd=qtModuleBuildDirectory,
+        caller_arguments=callerArguments, extra_environment=environment
     )
     if ret:
         raise RuntimeError(f"Failure running the last command: {ret}")
@@ -333,16 +333,16 @@ def main() -> None:
     if callerArguments.makeDocs:
         # build docs first
         ret = run_install_command(
-            'docs', currentWorkingDirectory=qtModuleBuildDirectory,
-            callerArguments=callerArguments, extra_environment=environment
+            'docs', cwd=qtModuleBuildDirectory,
+            caller_arguments=callerArguments, extra_environment=environment
         )
         if ret:
             raise RuntimeError(f"Failure running the last command: {ret}")
         # then make install those
         ret = run_install_command(
             ['install_docs', 'INSTALL_ROOT=' + qtModuleInstallDirectory],
-            currentWorkingDirectory=qtModuleBuildDirectory,
-            callerArguments=callerArguments, extra_environment=environment
+            cwd=qtModuleBuildDirectory,
+            caller_arguments=callerArguments, extra_environment=environment
         )
         if ret:
             raise RuntimeError(f"Failure running the last command: {ret}")
@@ -351,7 +351,7 @@ def main() -> None:
         archive_name = callerArguments.module_name + '-' + os.environ['LICENSE'] + '-doc-' + os.environ['MODULE_VERSION'] + '.7z'
         ret = run_command(
             ['7z', 'a', os.path.join('doc_archives', archive_name), doc_dir],
-            currentWorkingDirectory=os.path.dirname(os.path.realpath(__file__))
+            cwd=os.path.dirname(os.path.realpath(__file__))
         )
         if ret:
             raise RuntimeError(f"Failure running the last command: {ret}")
@@ -379,7 +379,7 @@ def main() -> None:
         archive_cmd.append(os.path.join(dir_to_archive, '*'))
     else:
         archive_cmd.append(dir_to_archive)
-    ret = run_command(archive_cmd, currentWorkingDirectory=os.path.dirname(os.path.realpath(__file__)))
+    ret = run_command(archive_cmd, cwd=os.path.dirname(os.path.realpath(__file__)))
     if ret:
         raise RuntimeError(f"Failure running the last command: {ret}")
 

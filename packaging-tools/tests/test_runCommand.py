@@ -71,8 +71,8 @@ def print_lines(count):
         print(f"{lineNumber} printed line")
 
 
-def use_run_command(testArguments, *arguments):
-    return run_command(f"{base_command()} {testArguments}", *arguments)
+def use_run_command(test_arguments, *arguments):
+    return run_command(f"{base_command()} {test_arguments}", *arguments)
 
 
 class TestRunCommand(unittest.TestCase):
@@ -95,9 +95,9 @@ class TestRunCommand(unittest.TestCase):
                 "--print_lines 10 --crash", os.getcwd(),
                 # extra_environment=
                 None,
-                # onlyErrorCaseOutput=
+                # only_error_case_output=
                 True,
-                # expectedExitCodes=
+                # expected_exit_codes=
                 [0]
             )
         self.assertIsNotNone(contextManager)
@@ -115,9 +115,9 @@ class TestRunCommand(unittest.TestCase):
                 "--print_lines 10 --exitCode 5", os.getcwd(),
                 # extra_environment=
                 None,
-                # onlyErrorCaseOutput=
+                # only_error_case_output=
                 True,
-                # expectedExitCodes=
+                # expected_exit_codes=
                 [0, 5]
             ), 5
         )

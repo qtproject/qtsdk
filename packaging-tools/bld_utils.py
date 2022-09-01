@@ -77,9 +77,9 @@ def deep_copy_arguments(to_call):
 
 class DirRenamer():
 
-    def __init__(self, path, newName):
+    def __init__(self, path, new_name):
         self.oldName = path
-        self.newName = os.path.join(os.path.split(path)[0], newName)
+        self.newName = os.path.join(os.path.split(path)[0], new_name)
         print(f"self.oldName: {self.oldName}")
         print(f"self.newName: {self.newName}")
 
@@ -92,18 +92,18 @@ class DirRenamer():
             os.rename(self.newName, self.oldName)
 
 
-def compress(path, directoryName, sevenZipTarget):
+def compress(path, directory_name, sevenzip_target):
     sevenZipExtension = os.extsep + '7z'
     parentDirectoryPath = os.path.abspath(os.path.join(path, '..'))
-    if os.path.splitext(sevenZipTarget)[1] != sevenZipExtension:
-        sevenZipTarget = sevenZipTarget + sevenZipExtension
-    sevenZipFileName = os.path.split(sevenZipTarget)[1]
-    with DirRenamer(path, directoryName):
-        run_command(' '.join(('7z a -mx9', sevenZipFileName, directoryName)), parentDirectoryPath)
+    if os.path.splitext(sevenzip_target)[1] != sevenZipExtension:
+        sevenzip_target = sevenzip_target + sevenZipExtension
+    sevenZipFileName = os.path.split(sevenzip_target)[1]
+    with DirRenamer(path, directory_name):
+        run_command(' '.join(('7z a -mx9', sevenZipFileName, directory_name)), parentDirectoryPath)
 
     currentSevenZipPath = os.path.join(parentDirectoryPath, sevenZipFileName)
-    if currentSevenZipPath != sevenZipTarget:
-        shutil.move(currentSevenZipPath, sevenZipTarget)
+    if currentSevenZipPath != sevenzip_target:
+        shutil.move(currentSevenZipPath, sevenzip_target)
 
 
 def strip_vars(sobject, chars):
@@ -142,14 +142,14 @@ def download(url, target, read_block_size=1048576):
         if os.path.lexists(target):
             raise Exception(f"Can not download '{url}' to '{target}' as target. The file already exists.")
 
-        def local_download(localFilePath, targtFilePath):
-            if os.path.isfile(localFilePath):
-                print(f"copying file from '{localFilePath}' to '{targtFilePath}'")
+        def local_download(local_file_path, target_file_path):
+            if os.path.isfile(local_file_path):
+                print(f"copying file from '{local_file_path}' to '{target_file_path}'")
                 try:
-                    os.makedirs(os.path.dirname(targtFilePath))
+                    os.makedirs(os.path.dirname(target_file_path))
                 except Exception:
                     pass
-                shutil.copy2(localFilePath, target)
+                shutil.copy2(local_file_path, target)
                 print("Done" + os.linesep)
 
         if os.path.lexists(url[len("file:///"):]):
@@ -239,11 +239,11 @@ def get_environment(extra_environment=None):
 
 
 @deep_copy_arguments
-def run_command(command, currentWorkingDirectory, extra_environment=None, onlyErrorCaseOutput=False, expectedExitCodes=[0]):
-    if type(expectedExitCodes) is not list:
-        raise TypeError(f"expectedExitCodes({type(expectedExitCodes)}) is not {list}")
-    if type(onlyErrorCaseOutput) is not bool:
-        raise TypeError(f"onlyErrorCaseOutput({type(onlyErrorCaseOutput)}) is not {bool}")
+def run_command(command, cwd, extra_environment=None, only_error_case_output=False, expected_exit_codes=[0]):
+    if type(expected_exit_codes) is not list:
+        raise TypeError(f"expected_exit_codes({type(expected_exit_codes)}) is not {list}")
+    if type(only_error_case_output) is not bool:
+        raise TypeError(f"only_error_case_output({type(only_error_case_output)}) is not {bool}")
 
     if type(command) is list:
         commandAsList = command
@@ -253,9 +253,9 @@ def run_command(command, currentWorkingDirectory, extra_environment=None, onlyEr
     environment = get_environment(extra_environment)
 
     # if we can not find the command, just check the current working dir
-    if (not os.path.lexists(commandAsList[0]) and currentWorkingDirectory
-            and os.path.isfile(os.path.abspath(os.path.join(currentWorkingDirectory, commandAsList[0])))):
-        commandAsList[0] = os.path.abspath(os.path.join(currentWorkingDirectory, commandAsList[0]))
+    if (not os.path.lexists(commandAsList[0]) and cwd
+            and os.path.isfile(os.path.abspath(os.path.join(cwd, commandAsList[0])))):
+        commandAsList[0] = os.path.abspath(os.path.join(cwd, commandAsList[0]))
 
     pathEnvironment = environment['PATH']
     # if we can not find the command, check the environment
@@ -263,33 +263,33 @@ def run_command(command, currentWorkingDirectory, extra_environment=None, onlyEr
     if not os.path.lexists(commandAsList[0]) and found_executable:
         commandAsList[0] = found_executable
 
-    if currentWorkingDirectory and not os.path.lexists(currentWorkingDirectory):
-        os.makedirs(currentWorkingDirectory)
+    if cwd and not os.path.lexists(cwd):
+        os.makedirs(cwd)
 
     print('\n========================== do ... ==========================')
-    if currentWorkingDirectory:
-        print(f"Working Directory: {currentWorkingDirectory}")
+    if cwd:
+        print(f"Working Directory: {cwd}")
     else:
-        print("No currentWorkingDirectory set!")
+        print("No cwd set!")
     print("Last command:      ", ' '.join(commandAsList))
     sys.stdout.flush()
 
-    if currentWorkingDirectory and not os.path.lexists(currentWorkingDirectory):
-        raise Exception(f"The current working directory is not existing: {currentWorkingDirectory}")
+    if cwd and not os.path.lexists(cwd):
+        raise Exception(f"The current working directory is not existing: {cwd}")
 
     useShell = is_windows()
     lastStdOutLines = []
     lastStdErrLines = []
-    if currentThread().name == "MainThread" and not onlyErrorCaseOutput:
+    if currentThread().name == "MainThread" and not only_error_case_output:
         process = Popen(
             commandAsList, shell=useShell,
-            cwd=currentWorkingDirectory, bufsize=-1, env=environment
+            cwd=cwd, bufsize=-1, env=environment
         )
     else:
         process = Popen(  # pylint: disable=R1732
             commandAsList, shell=useShell,
             stdout=PIPE, stderr=PIPE,
-            cwd=currentWorkingDirectory, bufsize=-1, env=environment
+            cwd=cwd, bufsize=-1, env=environment
         )
 
         maxSavedLineNumbers = 1000
@@ -334,30 +334,30 @@ def run_command(command, currentWorkingDirectory, extra_environment=None, onlyEr
     # if environment:
     #     for key in sorted(environment):
     #         sys.stderr.write("set " + key + "=" + environment[key] + os.linesep)
-    if exitCode not in expectedExitCodes:
+    if exitCode not in expected_exit_codes:
         lastOutput = ""
         exit_type = ""
-        if currentThread().name != "MainThread" or onlyErrorCaseOutput:
+        if currentThread().name != "MainThread" or only_error_case_output:
             if len(lastStdErrLines) != 0:
                 lastOutput += "".join(str(lastStdErrLines))
                 exit_type = "error "
             elif len(lastStdOutLines) != 0:
                 lastOutput += "".join(str(lastStdOutLines))
         prettyLastOutput = os.linesep + '======================= error =======================' + os.linesep
-        prettyLastOutput += "Working Directory: " + currentWorkingDirectory + os.linesep
+        prettyLastOutput += "Working Directory: " + cwd + os.linesep
         prettyLastOutput += "Last command:      " + ' '.join(commandAsList) + os.linesep
         if lastOutput:
             prettyLastOutput += f"last {exit_type}output:{os.linesep}{lastOutput}"
         else:
             prettyLastOutput += " - no process output caught - "
-        raise Exception(f"Different exit code then expected({expectedExitCodes}): {exitCode}{prettyLastOutput}")
+        raise Exception(f"Different exit code then expected({expected_exit_codes}): {exitCode}{prettyLastOutput}")
     return exitCode
 
 
 @deep_copy_arguments
-def run_install_command(arguments=['install'], currentWorkingDirectory=None, callerArguments=None, extra_environment=None, onlyErrorCaseOutput=False):
-    if hasattr(callerArguments, 'installcommand') and callerArguments.installcommand:
-        installcommand = callerArguments.installcommand.split()
+def run_install_command(arguments=['install'], cwd=None, caller_arguments=None, extra_environment=None, only_error_case_output=False):
+    if hasattr(caller_arguments, 'installcommand') and caller_arguments.installcommand:
+        installcommand = caller_arguments.installcommand.split()
     else:
         installcommand = ['make', '-j1']
         # had the case that the -j1 on the make command was ignored if there is a MAKEFLAGS variable
@@ -368,33 +368,33 @@ def run_install_command(arguments=['install'], currentWorkingDirectory=None, cal
 
     if arguments:
         installcommand.extend(arguments if type(arguments) is list else arguments.split())
-    return run_command(installcommand, currentWorkingDirectory, extra_environment, onlyErrorCaseOutput=onlyErrorCaseOutput)
+    return run_command(installcommand, cwd, extra_environment, only_error_case_output=only_error_case_output)
 
 
 @deep_copy_arguments
-def run_build_command(arguments=None, currentWorkingDirectory=None, callerArguments=None, extra_environment=None, onlyErrorCaseOutput=False, expectedExitCodes=[0]):
+def run_build_command(arguments=None, cwd=None, caller_arguments=None, extra_environment=None, only_error_case_output=False, expected_exit_codes=[0]):
     buildcommand = ['make']
-    if hasattr(callerArguments, 'buildcommand') and callerArguments.buildcommand:
-        buildcommand = callerArguments.buildcommand.split()
+    if hasattr(caller_arguments, 'buildcommand') and caller_arguments.buildcommand:
+        buildcommand = caller_arguments.buildcommand.split()
 
     if arguments:
         buildcommand.extend(arguments if type(arguments) is list else arguments.split())
-    return run_command(buildcommand, currentWorkingDirectory, extra_environment, onlyErrorCaseOutput=onlyErrorCaseOutput, expectedExitCodes=expectedExitCodes)
+    return run_command(buildcommand, cwd, extra_environment, only_error_case_output=only_error_case_output, expected_exit_codes=expected_exit_codes)
 
 
 @deep_copy_arguments
-def get_return_value(command, currentWorkingDirectory=None, extra_environment=None):
+def get_return_value(command, cwd=None, extra_environment=None):
     commandAsList = command[:].split(' ')
     return Popen(
         commandAsList, stdout=PIPE, stderr=STDOUT,
-        cwd=currentWorkingDirectory, env=get_environment(extra_environment)
+        cwd=cwd, env=get_environment(extra_environment)
     ).communicate()[0].strip()
 
 
 def git_sha(path):
     gitBinary = "git"
     if is_git_directory(path):
-        return get_return_value(gitBinary + " rev-list -n1 HEAD", currentWorkingDirectory=path).strip()
+        return get_return_value(gitBinary + " rev-list -n1 HEAD", cwd=path).strip()
     return ''
 
 

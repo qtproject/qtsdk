@@ -41,15 +41,15 @@ class Global:
 
 
 class FileWithValues:
-    def __init__(self, filePath, tag, values):
-        self.filePath = filePath
+    def __init__(self, file_path, tag, values):
+        self.filePath = file_path
         self.tag = tag
         self.values = values
 
 
-def read_csv(filePath, delimiter):
+def read_csv(file_path, delimiter):
     lines = []
-    with open(filePath, 'rt', encoding="utf-8") as f:
+    with open(file_path, 'rt', encoding="utf-8") as f:
         lines = f.readlines()
 
     records = []
@@ -62,10 +62,10 @@ def read_csv(filePath, delimiter):
     return records
 
 
-def read_csv_files(filePaths):
+def read_csv_files(file_paths):
     files = []
 
-    for filePath in filePaths:
+    for filePath in file_paths:
         with open(filePath, 'rt', encoding="utf-8") as f:
             reader = csv.reader(f, delimiter=Global.Delimiter, quoting=csv.QUOTE_NONE)
 
@@ -103,8 +103,8 @@ def check_consistency(files):
     return referenceEntryIdentifiers
 
 
-def merge_files_helper(outputFilePath, referenceIdentifiers, files):
-    with open(outputFilePath, 'wt', encoding="utf-8") as csvfile:
+def merge_files_helper(output_file_path, reference_identifiers, files):
+    with open(output_file_path, 'wt', encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile, delimiter=Global.Delimiter, quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
         # Write header row
@@ -113,15 +113,15 @@ def merge_files_helper(outputFilePath, referenceIdentifiers, files):
 
         # Write values
         columns = [[v[1] for v in f.values] for f in files]
-        rows = list(zip(referenceIdentifiers, *columns))
+        rows = list(zip(reference_identifiers, *columns))
         for row in rows:
             writer.writerow(row)
 
 
-def merge_files(outputFilePath, filesToMerge):
-    files = read_csv_files(filesToMerge)
+def merge_files(output_file_path, files_to_merge):
+    files = read_csv_files(files_to_merge)
     referenceIdentifiers = check_consistency(files)
-    merge_files_helper(outputFilePath, referenceIdentifiers, files)
+    merge_files_helper(output_file_path, referenceIdentifiers, files)
 
 
 def print_help_and_exit():

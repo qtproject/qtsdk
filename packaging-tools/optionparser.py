@@ -36,12 +36,12 @@ from configparser import ConfigParser
 
 class PackagingOptions:
     """Utility class to read options from configuration file that follows .ini file format."""
-    def __init__(self, confFile):
-        if not os.path.isfile(confFile):
-            raise IOError(f"Not a valid file: {confFile}")
+    def __init__(self, conf_file):
+        if not os.path.isfile(conf_file):
+            raise IOError(f"Not a valid file: {conf_file}")
         self.config = ConfigParser(os.environ)
         self.config.optionxform = str
-        self.config.read(confFile)
+        self.config.read(conf_file)
 
     def config_section_map(self, section):
         dict1 = {}
@@ -77,8 +77,8 @@ class PackagingOptions:
             print()
 
 
-def get_pkg_options(confFilePath):
-    return PackagingOptions(confFilePath)
+def get_pkg_options(conf_file_path):
+    return PackagingOptions(conf_file_path)
 
 
 def main() -> None:

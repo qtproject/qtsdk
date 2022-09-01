@@ -256,7 +256,7 @@ def mingw_training(base_path, qtcreator_path, environment, bitness):
     for batchFile in ['qtc.openProject.batch', 'qtc.fileTextEditorCpp.batch']:
         run_command(
             [os.path.join(training_dir, 'runBatchFiles.bat'), msvc_version(), 'x64' if bitness == 64 else 'x86', batchFile],
-            base_path, extra_environment=None, onlyErrorCaseOutput=False, expectedExitCodes=[0, 1]
+            base_path, extra_environment=None, only_error_case_output=False, expected_exit_codes=[0, 1]
         )
 
 

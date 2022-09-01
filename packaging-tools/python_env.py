@@ -49,13 +49,13 @@ class PythonEnvError(Exception):
     pass
 
 
-def get_env(pythonInstallation: str) -> Dict[str, str]:
+def get_env(python_installation: str) -> Dict[str, str]:
     env: Dict[str, str] = {}
     system = platform.system().lower()
-    libDir = os.path.join(pythonInstallation, "lib")
-    binDir = os.path.join(pythonInstallation, "bin")
+    libDir = os.path.join(python_installation, "lib")
+    binDir = os.path.join(python_installation, "bin")
     if "windows" in system:
-        binDir = os.path.join(pythonInstallation, "PCbuild", "amd64")
+        binDir = os.path.join(python_installation, "PCbuild", "amd64")
         assert os.path.isdir(binDir), f"The python binary directory did not exist: {binDir}"
         env["LIB_PATH"] = binDir
         env["PATH"] = binDir + ";" + os.environ.get("PATH", "")
@@ -75,31 +75,31 @@ def locate_venv(pipenv: str, env: Dict[str, str]) -> str:
     return output.splitlines()[0].strip()
 
 
-async def install_pip(getPipFile: str, pythonInstallation: str) -> str:
+async def install_pip(get_pip_file: str, python_installation: str) -> str:
     log.info("Installing pip...")
-    if is_valid_url_path(getPipFile):
+    if is_valid_url_path(get_pip_file):
         pipTmpDir = os.path.join(os.getcwd(), "pip_install_tmp")
         rmtree(pipTmpDir, ignore_errors=True)
         os.makedirs(pipTmpDir)
-        getPipFile = download_archive(getPipFile, pipTmpDir)
-    elif not (getPipFile and os.path.isfile(getPipFile)):
-        raise PythonEnvError(f"Could not install pip from: {getPipFile}")
+        get_pip_file = download_archive(get_pip_file, pipTmpDir)
+    elif not (get_pip_file and os.path.isfile(get_pip_file)):
+        raise PythonEnvError(f"Could not install pip from: {get_pip_file}")
 
-    pythonExe = os.path.join(pythonInstallation, "PCBuild", "amd64", "python.exe")
+    pythonExe = os.path.join(python_installation, "PCBuild", "amd64", "python.exe")
     assert os.path.isfile(pythonExe), f"The 'python' executable did not exist: {pythonExe}"
-    installPipCmd = [pythonExe, getPipFile]
+    installPipCmd = [pythonExe, get_pip_file]
     await async_exec_cmd(installPipCmd)
-    return os.path.join(pythonInstallation, "Scripts", "pip3.exe")
+    return os.path.join(python_installation, "Scripts", "pip3.exe")
 
 
-async def create_venv(pythonSrc: str, getPipFile: str) -> Tuple[str, str, Dict[str, str]]:
+async def create_venv(python_src: str, get_pip_file: str) -> Tuple[str, str, Dict[str, str]]:
     log.info("Creating Python virtual env..")
     system = platform.system().lower()
     prefix = os.path.join(os.path.expanduser("~"), "_python_bld")
-    await build_python(pythonSrc, prefix)
+    await build_python(python_src, prefix)
     env = get_env(prefix)
     if "windows" in system:
-        pip3 = await install_pip(getPipFile, prefix)
+        pip3 = await install_pip(get_pip_file, prefix)
     else:
         pip3 = os.path.join(prefix, "bin", "pip3")
     assert os.path.isfile(pip3), f"The 'pip3' executable did not exist: {pip3}"
