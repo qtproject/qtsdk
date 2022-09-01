@@ -47,7 +47,7 @@ class FileWithValues:
         self.values = values
 
 
-def readCsv(filePath, delimiter):
+def read_csv(filePath, delimiter):
     lines = []
     with open(filePath, 'rt', encoding="utf-8") as f:
         lines = f.readlines()
@@ -62,7 +62,7 @@ def readCsv(filePath, delimiter):
     return records
 
 
-def readCsvFiles(filePaths):
+def read_csv_files(filePaths):
     files = []
 
     for filePath in filePaths:
@@ -82,7 +82,7 @@ def readCsvFiles(filePaths):
     return files
 
 
-def checkConsistency(files):
+def check_consistency(files):
     referenceEntry = files[0]
     referenceEntrySize = len(referenceEntry.values)
     referenceEntryIdentifiers = [v[0] for v in referenceEntry.values]
@@ -103,7 +103,7 @@ def checkConsistency(files):
     return referenceEntryIdentifiers
 
 
-def mergeFilesHelper(outputFilePath, referenceIdentifiers, files):
+def merge_files_helper(outputFilePath, referenceIdentifiers, files):
     with open(outputFilePath, 'wt', encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile, delimiter=Global.Delimiter, quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
@@ -118,13 +118,13 @@ def mergeFilesHelper(outputFilePath, referenceIdentifiers, files):
             writer.writerow(row)
 
 
-def mergeFiles(outputFilePath, filesToMerge):
-    files = readCsvFiles(filesToMerge)
-    referenceIdentifiers = checkConsistency(files)
-    mergeFilesHelper(outputFilePath, referenceIdentifiers, files)
+def merge_files(outputFilePath, filesToMerge):
+    files = read_csv_files(filesToMerge)
+    referenceIdentifiers = check_consistency(files)
+    merge_files_helper(outputFilePath, referenceIdentifiers, files)
 
 
-def printHelpAndExit():
+def print_help_and_exit():
     print(__doc__)
     sys.exit(0)
 
@@ -139,13 +139,13 @@ def main():
 
     for o, _ in opts:
         if o in ("-h", "--help"):
-            printHelpAndExit()
+            print_help_and_exit()
     if len(args) <= 2:
-        printHelpAndExit()
+        print_help_and_exit()
 
     outputFile = args[0]
     filesToMerge = args[1:]
-    mergeFiles(outputFile, filesToMerge)
+    merge_files(outputFile, filesToMerge)
 
 
 if __name__ == "__main__":

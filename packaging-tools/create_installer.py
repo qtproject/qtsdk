@@ -62,7 +62,7 @@ from bldinstallercommon import (
     safe_config_key_fetch,
 )
 from installer_utils import PackagingError
-from patch_qt import patchFiles, patchQtEdition
+from patch_qt import patch_files, patch_qt_edition
 from pkg_constants import INSTALLER_OUTPUT_DIR_NAME
 from runner import do_execute_sub_process
 from sdkcomponent import SdkComponent
@@ -250,7 +250,7 @@ def parse_component_data(task, configuration_file, configurations_base_path):
                 sdk_component = SdkComponent(section, configuration, task.packages_dir_name_list,
                                              task.archive_location_resolver, task.substitution_list, task.offline_installer)
                 if task.dry_run:
-                    sdk_component.setArchiveSkip(True)
+                    sdk_component.set_archive_skip(True)
                 # validate component
                 sdk_component.validate()
                 if sdk_component.is_valid():
@@ -404,7 +404,7 @@ def get_component_data(task, sdk_component, archive, install_dir, data_dir_dest,
             except PackagingError:
                 pass
         if 'patch_qt' in archive.package_finalize_items:
-            patchFiles(install_dir, product='qt_framework')
+            patch_files(install_dir, product='qt_framework')
         if 'set_executable' in archive.package_finalize_items:
             handle_set_executable(install_dir, archive.package_finalize_items)
         if 'set_licheck' in archive.package_finalize_items:
@@ -449,7 +449,7 @@ def get_component_data(task, sdk_component, archive, install_dir, data_dir_dest,
 
 
 def handle_set_executable(baseDir, packageFinalizeItems):
-    for item in parsePackageFinalizeItems(packageFinalizeItems, 'set_executable'):
+    for item in parse_package_finalize_items(packageFinalizeItems, 'set_executable'):
         expectedPath = os.path.join(baseDir, item)
         if not os.path.exists(expectedPath):
             raise CreateInstallerError(f'Can not set executable bit as path not found: "{expectedPath}"')
@@ -458,16 +458,16 @@ def handle_set_executable(baseDir, packageFinalizeItems):
 
 
 def handle_set_licheck(task, baseDir, packageFinalizeItems):
-    for licheckFileName in parsePackageFinalizeItems(packageFinalizeItems, 'set_licheck'):
+    for licheckFileName in parse_package_finalize_items(packageFinalizeItems, 'set_licheck'):
         licheckFilePath = os.path.join(baseDir, licheckFileName)
         if not os.path.exists(licheckFilePath):
             raise CreateInstallerError(f'Can not set licheck as path not found: "{licheckFilePath}"')
-        patchQtEdition(baseDir, licheckFileName, task.build_timestamp)
+        patch_qt_edition(baseDir, licheckFileName, task.build_timestamp)
         log.info("Licheck set for: %s", licheckFilePath)
         break
 
 
-def parsePackageFinalizeItems(packageFinalizeItems, itemCategory):
+def parse_package_finalize_items(packageFinalizeItems, itemCategory):
     for item in packageFinalizeItems.split(","):
         if itemCategory not in item:
             continue
@@ -615,13 +615,13 @@ def create_target_components(task):
                     if is_windows():
                         install_dir = win32api.GetShortPathName(install_dir)
                         data_dir_dest = win32api.GetShortPathName(data_dir_dest)
-                    getComponentDataWork.addTask(f"adding {archive.archive_name} to {sdk_component.package_name}",
-                                                 get_component_data, task, sdk_component, archive, install_dir, data_dir_dest, compress_content_dir)
+                    getComponentDataWork.add_task(f"adding {archive.archive_name} to {sdk_component.package_name}",
+                                                  get_component_data, task, sdk_component, archive, install_dir, data_dir_dest, compress_content_dir)
         # handle component sha1 uri
         if sdk_component.component_sha1_uri:
             sha1_file_dest = os.path.normpath(dest_base + 'SHA1')
-            getComponentDataWork.addTask(f"getting component sha1 file for {sdk_component.package_name}",
-                                         get_component_sha1_file, sdk_component, sha1_file_dest)
+            getComponentDataWork.add_task(f"getting component sha1 file for {sdk_component.package_name}",
+                                          get_component_sha1_file, sdk_component, sha1_file_dest)
 
         # maybe there is some static data
         data_content_source_root = os.path.normpath(sdk_component.pkg_template_dir + os.sep + 'data')

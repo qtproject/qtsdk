@@ -63,14 +63,14 @@ handler.setFormatter(formatter)
 log.addHandler(handler)
 
 
-def findFile(searchPath: str, fileName: str) -> str:
+def find_file(searchPath: str, fileName: str) -> str:
     for root, _, files in os.walk(searchPath):
         if fileName in files:
             return os.path.join(root, fileName)
     assert False, f"Unable to find: {fileName} from: {searchPath}"
 
 
-def collectLibs(searchPath: str) -> List[str]:
+def collect_libs(searchPath: str) -> List[str]:
     for root, dirs, _ in os.walk(searchPath):
         for dir_name in dirs:
             if dir_name == "lib":
@@ -78,7 +78,7 @@ def collectLibs(searchPath: str) -> List[str]:
     assert False, f"Unable to find: 'lib' from: {searchPath}"
 
 
-def parseQtVersion(downloadUrlPath: str) -> str:
+def parse_qt_version(downloadUrlPath: str) -> str:
     regex = re.compile(r'([\d.]+)')
     for item in downloadUrlPath.split("/"):
         m = regex.search(item)
@@ -87,10 +87,10 @@ def parseQtVersion(downloadUrlPath: str) -> str:
     assert False, f"Could not parse Qt version number from: {downloadUrlPath}"
 
 
-def downloadQtPkg(args: argparse.Namespace, currentDir: str) -> Tuple[str, str]:
+def download_qt_pkg(args: argparse.Namespace, currentDir: str) -> Tuple[str, str]:
     urlRes = urlparse(args.qtpkg)
     assert urlRes.scheme and urlRes.netloc and urlRes.path, f"Invalid URL: {args.qtpkg}"
-    qtVersion = parseQtVersion(urlRes.path)
+    qtVersion = parse_qt_version(urlRes.path)
 
     saveAs = os.path.join(currentDir, os.path.basename(urlRes.path))
     if os.path.exists(saveAs):
@@ -102,7 +102,7 @@ def downloadQtPkg(args: argparse.Namespace, currentDir: str) -> Tuple[str, str]:
     return saveAs, qtVersion
 
 
-def extractArchive(saveAs: str, currentDir: str) -> str:
+def extract_archive(saveAs: str, currentDir: str) -> str:
     qtDestDir = os.path.join(currentDir, "qt_pkg")
     if not os.path.exists(qtDestDir):
         os.makedirs(qtDestDir)
@@ -130,7 +130,7 @@ def build(args: argparse.Namespace, qtDestDir: str, currentDir: str) -> str:
         qmakeToolName = "qmake"
         makeToolName = "make"
 
-    qmakeTool = findFile(qtDestDir, qmakeToolName)
+    qmakeTool = find_file(qtDestDir, qmakeToolName)
     assert qmakeTool, f"Could not find: {qmakeToolName} from: {qtDestDir}"
 
     # patch
@@ -176,7 +176,7 @@ def archive(args: argparse.Namespace, installRootDir: str, currentDir: str) -> s
     archivePath = os.path.join(installRootDir, srcPath.lstrip(os.path.sep))
     log.info("Archiving from: %s", archivePath)
 
-    libs = collectLibs(installRootDir)
+    libs = collect_libs(installRootDir)
     for lib in libs:
         shutil.copy2(lib, archivePath)
 
@@ -196,18 +196,18 @@ def archive(args: argparse.Namespace, installRootDir: str, currentDir: str) -> s
     return artifactsFilePath
 
 
-def handleBuild(args: argparse.Namespace) -> None:
+def handle_build(args: argparse.Namespace) -> None:
     currentDir = os.getcwd()
 
-    saveAs, qtVersion = downloadQtPkg(args, currentDir)
-    qtDestDir = extractArchive(saveAs, currentDir)
+    saveAs, qtVersion = download_qt_pkg(args, currentDir)
+    qtDestDir = extract_archive(saveAs, currentDir)
     installRootDir = build(args, qtDestDir, currentDir)
     artifactsFilePath = archive(args, installRootDir, currentDir)
 
     remoteUploader = RemoteUploader(False, args.remote_server, args.username, args.remote_base_path)
     remoteUploader.init_snapshot_upload_path(args.project_name, qtVersion, args.build_id)
-    remoteUploader.copyToRemote(artifactsFilePath)
-    remoteUploader.updateLatestSymlink()
+    remoteUploader.copy_to_remote(artifactsFilePath)
+    remoteUploader.update_latest_symlink()
 
 
 def main() -> None:
@@ -232,7 +232,7 @@ def main() -> None:
         log.error("Could not find '7z' from the system. This tool is needed for notarization. Aborting..")
         sys.exit(1)
 
-    handleBuild(args)
+    handle_build(args)
 
 
 if __name__ == "__main__":

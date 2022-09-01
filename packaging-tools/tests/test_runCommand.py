@@ -36,7 +36,7 @@ import sys
 import unittest
 from time import sleep
 
-from bld_utils import runCommand
+from bld_utils import run_command
 from threadedwork import ThreadedWork
 
 if sys.platform.startswith("win"):
@@ -50,7 +50,7 @@ if sys.platform.startswith("win"):
     subprocess_flags = 0x8000000  # win32con.CREATE_NO_WINDOW?
 
 
-def baseCommand():
+def base_command():
     return " ".join([sys.executable, os.path.abspath(__file__)])
 
 
@@ -66,22 +66,22 @@ def crash():
         c += 1
 
 
-def printLines(count):
+def print_lines(count):
     for lineNumber in range(count):
         print(f"{lineNumber} printed line")
 
 
-def useRunCommand(testArguments, *arguments):
-    return runCommand(f"{baseCommand()} {testArguments}", *arguments)
+def use_run_command(testArguments, *arguments):
+    return run_command(f"{base_command()} {testArguments}", *arguments)
 
 
 class TestRunCommand(unittest.TestCase):
-    def test_ExitValue_0(self):
-        self.assertEqual(useRunCommand("--printLines 10", os.getcwd()), 0)
+    def test_exit_value_0(self):
+        self.assertEqual(use_run_command("--print_lines 10", os.getcwd()), 0)
 
-    def test_Crash(self):
+    def test_crash(self):
         with self.assertRaises(Exception) as contextManager:
-            useRunCommand("--printLines 10 --crash", os.getcwd())
+            use_run_command("--print_lines 10 --crash", os.getcwd())
 
         self.assertIsNotNone(contextManager)
         self.assertIsNotNone(contextManager.exception)
@@ -89,10 +89,10 @@ class TestRunCommand(unittest.TestCase):
         messageStart = str(contextManager.exception)[:len(expectedMessageStart)]
         self.assertEqual(expectedMessageStart, messageStart)
 
-    def test_Crash_onlyErrorCaseOutput(self):
+    def test_crash_only_error_case_output(self):
         with self.assertRaises(Exception) as contextManager:
-            useRunCommand(
-                "--printLines 10 --crash", os.getcwd(),
+            use_run_command(
+                "--print_lines 10 --crash", os.getcwd(),
                 # extra_environment=
                 None,
                 # onlyErrorCaseOutput=
@@ -109,10 +109,10 @@ class TestRunCommand(unittest.TestCase):
         messageEnd = str(contextManager.exception).splitlines()[-1]
         self.assertTrue(messageEnd.__contains__(expectedMessageEnd))
 
-    def test_differentExitCode_onlyErrorCaseOutput(self):
+    def test_different_exit_code_only_error_case_output(self):
         self.assertEqual(
-            useRunCommand(
-                "--printLines 10 --exitCode 5", os.getcwd(),
+            use_run_command(
+                "--print_lines 10 --exitCode 5", os.getcwd(),
                 # extra_environment=
                 None,
                 # onlyErrorCaseOutput=
@@ -122,51 +122,51 @@ class TestRunCommand(unittest.TestCase):
             ), 5
         )
 
-    def test_withThreadedWork(self):
+    def test_with_threadedwork(self):
         currentMethodName = sys._getframe().f_code.co_name
         testWork = ThreadedWork(f"{currentMethodName} - run some command threaded")
         taskStringList = []
-        taskStringList.append("--sleep 1 --printLines 10")
-        taskStringList.append("--sleep 2 --printLines 30")
-        taskStringList.append("--sleep 1 --printLines 40")
-        taskStringList.append("--sleep 2 --printLines 50")
-        taskStringList.append("--sleep 1 --printLines 100")
+        taskStringList.append("--sleep 1 --print_lines 10")
+        taskStringList.append("--sleep 2 --print_lines 30")
+        taskStringList.append("--sleep 1 --print_lines 40")
+        taskStringList.append("--sleep 2 --print_lines 50")
+        taskStringList.append("--sleep 1 --print_lines 100")
         for taskString in taskStringList:
-            testWork.addTask(taskString, useRunCommand, taskString, os.getcwd())
+            testWork.add_task(taskString, use_run_command, taskString, os.getcwd())
         testWork.run()
 
-    def test_withThreadedWork_unexpected_exitCode(self):
+    def test_with_threadedwork_unexpected_exit_code(self):
         currentMethodName = sys._getframe().f_code.co_name
         testWork = ThreadedWork(f"{currentMethodName} - run some command threaded")
         # this exchange the current os._exit(-1) implementation only for this testing case
         separatorLine = f"{os.linesep}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>{os.linesep}"
         separatorText = "the complete python application would stop here"
-        testWork.setExitFailFunction(sys.__stdout__.write, ''.join([separatorLine, separatorText, separatorLine]))
+        testWork.set_exit_fail_function(sys.__stdout__.write, ''.join([separatorLine, separatorText, separatorLine]))
         taskStringList = []
-        taskStringList.append("--sleep 1 --printLines 10")
-        taskStringList.append("--sleep 2 --printLines 30")
-        taskStringList.append("--sleep 1 --printLines 40")
-        taskStringList.append("--sleep 2 --printLines 3 --exitCode 5")
-        taskStringList.append("--sleep 1 --printLines 100")
+        taskStringList.append("--sleep 1 --print_lines 10")
+        taskStringList.append("--sleep 2 --print_lines 30")
+        taskStringList.append("--sleep 1 --print_lines 40")
+        taskStringList.append("--sleep 2 --print_lines 3 --exitCode 5")
+        taskStringList.append("--sleep 1 --print_lines 100")
         for taskString in taskStringList:
-            testWork.addTask(taskString, useRunCommand, taskString, os.getcwd())
+            testWork.add_task(taskString, use_run_command, taskString, os.getcwd())
         testWork.run()
 
-    def test_withThreadedWork_crash(self):
+    def test_with_threadedwork_crash(self):
         currentMethodName = sys._getframe().f_code.co_name
         testWork = ThreadedWork(f"{currentMethodName} - run some command threaded")
         # this exchange the current os._exit(-1) implementation only for this testing case
         separatorLine = f"{os.linesep}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>{os.linesep}"
         separatorText = "the complete python application would stop here"
-        testWork.setExitFailFunction(sys.__stdout__.write, ''.join([separatorLine, separatorText, separatorLine]))
+        testWork.set_exit_fail_function(sys.__stdout__.write, ''.join([separatorLine, separatorText, separatorLine]))
         taskStringList = []
-        taskStringList.append("--sleep 1 --printLines 10")
-        taskStringList.append("--sleep 2 --printLines 30")
-        taskStringList.append("--sleep 1 --printLines 40")
-        taskStringList.append("--sleep 2 --printLines 3 --crash")
-        taskStringList.append("--sleep 1 --printLines 100")
+        taskStringList.append("--sleep 1 --print_lines 10")
+        taskStringList.append("--sleep 2 --print_lines 30")
+        taskStringList.append("--sleep 1 --print_lines 40")
+        taskStringList.append("--sleep 2 --print_lines 3 --crash")
+        taskStringList.append("--sleep 1 --print_lines 100")
         for taskString in taskStringList:
-            testWork.addTask(taskString, useRunCommand, taskString, os.getcwd())
+            testWork.add_task(taskString, use_run_command, taskString, os.getcwd())
         testWork.run()
 
 
@@ -177,15 +177,15 @@ if __name__ == '__main__':
     else:
         parser = argparse.ArgumentParser(prog=os.path.basename(sys.argv[0]))
         parser.add_argument('--sleep', type=int)
-        parser.add_argument('--printLines', type=int)
+        parser.add_argument('--print_lines', type=int)
         parser.add_argument('--crash', action='store_true', default=False)
         parser.add_argument('--exitCode', type=int)
         parser.add_argument('--testMethod')
         caller_arguments = parser.parse_args()
         if caller_arguments.sleep:
             sleep(caller_arguments.sleep)
-        if caller_arguments.printLines:
-            printLines(caller_arguments.printLines)
+        if caller_arguments.print_lines:
+            print_lines(caller_arguments.print_lines)
         if caller_arguments.crash:
             sys.__stdout__.flush()
             sys.__stderr__.flush()
@@ -193,5 +193,5 @@ if __name__ == '__main__':
         if caller_arguments.exitCode:
             os._exit(caller_arguments.exitCode)
         if caller_arguments.testMethod:
-            # python test_runCommand.py --testMethod test_Crash_onlyErrorCaseOutput
+            # python test_runCommand.py --testMethod test_crash_only_error_case_output
             TestRunCommand(methodName=caller_arguments.testMethod).debug()

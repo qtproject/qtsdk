@@ -78,7 +78,7 @@ def install_qt(args):
     download_packages_work = ThreadedWork('get and extract Qt 5 binaries')
     need_to_install_qt = not os.path.lexists(args.qt_path)
     if need_to_install_qt:
-        download_packages_work.addTaskObject(create_qt_download_task(
+        download_packages_work.add_task_object(create_qt_download_task(
             args.qt_modules, args.qt_path, args.temp_path, args))
 
     # run task if needed

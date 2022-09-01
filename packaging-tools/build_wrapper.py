@@ -50,11 +50,11 @@ from bld_sdktool import build_sdktool, zip_sdktool
 from bld_utils import (
     download,
     file_url,
-    get_commit_SHA,
+    get_commit_sha,
     is_linux,
     is_macos,
     is_windows,
-    runCommand,
+    run_command,
 )
 from bldinstallercommon import (
     clone_repository,
@@ -65,7 +65,7 @@ from bldinstallercommon import (
     git_archive_repo,
     safe_config_key_fetch,
 )
-from optionparser import getPkgOptions
+from optionparser import get_pkg_options
 from read_remote_config import get_pkg_value
 from runner import do_execute_sub_process
 from threadedwork import Task, ThreadedWork
@@ -197,19 +197,19 @@ def create_download_documentation_task(base_url, download_path):
         dest_doc_path = os.path.join(download_path, 'doc')
         os.rename(source_path, dest_doc_path)
         # limit compression to 2 cores to limit memory footprint for 32bit Windows
-        runCommand(['7z', 'a', '-mx1', '-mmt2', '-md32m', '-ms=1g', target_filepath, dest_doc_path],
-                   dest_doc_path)
+        run_command(['7z', 'a', '-mx1', '-mmt2', '-md32m', '-ms=1g', target_filepath, dest_doc_path],
+                    dest_doc_path)
 
     download_task = Task(f"downloading documentation from {base_url}")
     for item in file_list:
         url = base_url + '/doc/' + item
         download_filepath = os.path.join(download_path, item)
-        download_task.addFunction(download, url, download_filepath)
-        download_task.addFunction(create_extract_function(download_filepath, extract_path))
-        download_task.addFunction(create_remove_one_dir_level_function(os.path.join(extract_path, item.rstrip(".zip"))))
+        download_task.add_function(download, url, download_filepath)
+        download_task.add_function(create_extract_function(download_filepath, extract_path))
+        download_task.add_function(create_remove_one_dir_level_function(os.path.join(extract_path, item.rstrip(".zip"))))
 
     repackage_task = Task(f"repackaging documentation as {target_filepath}")
-    repackage_task.addFunction(repackage)
+    repackage_task.add_function(repackage)
     return (download_task, repackage_task, file_url(target_filepath))
 
 
@@ -237,36 +237,36 @@ def create_download_openssl_task(url, download_path):
         else:
             source_path = linuxdir
             pattern = '*.so*'
-        runCommand(['7z', 'a', '-mmt2', target_filepath, pattern],
-                   source_path)
+        run_command(['7z', 'a', '-mmt2', target_filepath, pattern],
+                    source_path)
 
     download_task = Task(f"downloading openssl from {url}")
-    download_task.addFunction(download, url, download_filepath)
+    download_task.add_function(download, url, download_filepath)
     repackage_task = Task(f"repackaging openssl as {target_filepath}")
-    repackage_task.addFunction(create_extract_function(download_filepath, extract_path))
-    repackage_task.addFunction(repackage)
+    repackage_task.add_function(create_extract_function(download_filepath, extract_path))
+    repackage_task.add_function(repackage)
     return (download_task, repackage_task, file_url(target_filepath))
 
 
 PluginConf = namedtuple('PluginConf', ['git_url', 'branch_or_tag', 'checkout_dir'])
 
 
-def parseQtCreatorPlugins(pkgConfFile):
+def parse_qtcreator_plugins(pkgConfFile):
     """Parse available Qt Creator plugins from configuration file"""
     pluginList = []
     if not pkgConfFile:
         return pluginList
-    pluginOptions = getPkgOptions(pkgConfFile)
+    pluginOptions = get_pkg_options(pkgConfFile)
     sectionName = "QtCreator.Build.Plugin"
     keyName = "plugins"
-    if not pluginOptions.optionExists(sectionName, keyName):
+    if not pluginOptions.option_exists(sectionName, keyName):
         return pluginList
-    pluginConfList = pluginOptions.configSectionMap(sectionName)[keyName]
+    pluginConfList = pluginOptions.config_section_map(sectionName)[keyName]
     for pluginName in pluginConfList.replace(" ", "").replace("\n", "").split(","):
         section = "QtCreator.Build.Plugin." + pluginName
-        pluginUrl = pluginOptions.configSectionMap(section)["QTC_PLUGIN_GIT_URL"]
-        branchOrTag = pluginOptions.configSectionMap(section)["QTC_PLUGIN_GIT_BRANCH_OR_TAG"]
-        checkoutDirName = pluginOptions.configSectionMap(section)["QTC_PLUGIN_CHECKOUT_DIR_NAME"]
+        pluginUrl = pluginOptions.config_section_map(section)["QTC_PLUGIN_GIT_URL"]
+        branchOrTag = pluginOptions.config_section_map(section)["QTC_PLUGIN_GIT_BRANCH_OR_TAG"]
+        checkoutDirName = pluginOptions.config_section_map(section)["QTC_PLUGIN_CHECKOUT_DIR_NAME"]
         plugin = PluginConf(git_url=pluginUrl, branch_or_tag=branchOrTag, checkout_dir=checkoutDirName)
         pluginList.extend([plugin])
     return pluginList
@@ -282,7 +282,7 @@ QtcPlugin = namedtuple('QtcPlugin', ['name',
                                      'package_commercial'])
 
 
-def make_QtcPlugin(name, path, version, dependencies=None, modules=None,
+def make_qtcplugin(name, path, version, dependencies=None, modules=None,
                    additional_arguments=None, build=True,
                    package_commercial=False):
     return QtcPlugin(name=name, path=path, version=version,
@@ -426,7 +426,7 @@ def get_qtcreator_version(path_to_qtcreator_src, optionDict):
     return None
 
 
-def make_QtcPlugin_from_json(plugin_json):
+def make_qtcplugin_from_json(plugin_json):
     return QtcPlugin(name=plugin_json['Name'],
                      path=plugin_json['Path'],
                      version=plugin_json.get('Version'),
@@ -457,7 +457,7 @@ def parse_qt_creator_plugin_conf(plugin_conf_file_path, optionDict):
         plugin = plugin._replace(modules=[module % optionDict for module in plugin.modules])
         plugin = plugin._replace(additional_arguments=[arg % optionDict for arg in plugin.additional_arguments])
         return plugin
-    return [fixup_plugin(make_QtcPlugin_from_json(plugin)) for plugin in plugins_json if valid_for_platform(plugin)]
+    return [fixup_plugin(make_qtcplugin_from_json(plugin)) for plugin in plugins_json if valid_for_platform(plugin)]
 
 
 def collect_qt_creator_plugin_sha1s(optionDict, plugins):
@@ -631,8 +631,8 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     def add_download_extract(url, target_path):
         (dl_task, extract) = create_download_and_extract_tasks(
             url, target_path, download_temp)
-        download_work.addTaskObject(dl_task)
-        extract_work.addFunction(extract.do)
+        download_work.add_task_object(dl_task)
+        extract_work.add_function(extract.do)
 
     # clang package
     use_optimized_libclang = False
@@ -670,17 +670,17 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     # We have to download, unpack, and repack renaming the toplevel directory.
     (dl_task, repackage, documentation_local_url) = create_download_documentation_task(
         pkg_base_path + '/' + qt_base_path, os.path.join(download_temp, 'qtdocumentation'))
-    download_work.addTaskObject(dl_task)
-    extract_work.addFunction(repackage.do)
+    download_work.add_task_object(dl_task)
+    extract_work.add_function(repackage.do)
 
     if openssl_libs:
         (dl_task, repackage, openssl_local_url) = create_download_openssl_task(openssl_libs, os.path.join(download_temp, 'openssl'))
-        download_work.addTaskObject(dl_task)
-        extract_work.addFunction(repackage.do)
+        download_work.add_task_object(dl_task)
+        extract_work.add_function(repackage.do)
 
     download_packages_work = Task('Get and extract all needed packages')
-    download_packages_work.addFunction(download_work.run)
-    download_packages_work.addFunction(extract_work.do)
+    download_packages_work.add_function(download_work.run)
+    download_packages_work.add_function(extract_work.do)
     download_packages_work.do()
 
     # copy optimized clang package
@@ -770,22 +770,22 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
 
     if os.path.isdir(os.path.join(work_dir, "licensechecker")):
         add_args = ['--add-path', os.path.join(work_dir, 'license-managing')]
-        additional_plugins.extend([make_QtcPlugin('licensechecker', 'licensechecker', qtcreator_version,
+        additional_plugins.extend([make_qtcplugin('licensechecker', 'licensechecker', qtcreator_version,
                                                   modules=qt_module_local_urls,
                                                   additional_arguments=add_args,
                                                   package_commercial=True)])
         plugin_dependencies = ['licensechecker']
-    additional_plugins.extend([make_QtcPlugin('vxworks-qtcreator-plugin', 'vxworks-qtcreator-plugin', qtcreator_version,
+    additional_plugins.extend([make_qtcplugin('vxworks-qtcreator-plugin', 'vxworks-qtcreator-plugin', qtcreator_version,
                                               modules=qt_module_local_urls, dependencies=plugin_dependencies,
                                               package_commercial=True)])
-    additional_plugins.extend([make_QtcPlugin('isoiconbrowser', 'qtquickdesigner', qtcreator_version,
+    additional_plugins.extend([make_qtcplugin('isoiconbrowser', 'qtquickdesigner', qtcreator_version,
                                               modules=qt_module_local_urls, dependencies=plugin_dependencies,
                                               package_commercial=True)])
-    additional_plugins.extend([make_QtcPlugin('gammarayintegration', 'gammarayintegration', qtcreator_version,
+    additional_plugins.extend([make_qtcplugin('gammarayintegration', 'gammarayintegration', qtcreator_version,
                                               modules=qt_module_local_urls + [kdsme_url, gammaray_url] + module_urls(['qt3d', 'qtgamepad']),
                                               dependencies=plugin_dependencies,
                                               additional_arguments=['--deploy'])])
-    additional_plugins.extend([make_QtcPlugin('appmanagerintegration', 'pcore-plugin-appman', qtcreator_version,
+    additional_plugins.extend([make_qtcplugin('appmanagerintegration', 'pcore-plugin-appman', qtcreator_version,
                                               modules=qt_module_local_urls,
                                               dependencies=plugin_dependencies,
                                               additional_arguments=['--with-docs'])]),
@@ -793,7 +793,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
     if usp_server_url and usp_auth_key:
         plugin_telemetry_args = ['--add-config=-DUSP_SERVER_URL=' + optionDict['USP_SERVER_URL'],
                                  '--add-config=-DUSP_AUTH_KEY=' + optionDict['USP_AUTH_KEY']]
-    additional_plugins.extend([make_QtcPlugin('plugin-telemetry', 'plugin-telemetry', qtcreator_version,
+    additional_plugins.extend([make_qtcplugin('plugin-telemetry', 'plugin-telemetry', qtcreator_version,
                                               modules=qt_module_local_urls,
                                               additional_arguments=plugin_telemetry_args)]),
 
@@ -809,7 +809,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
                             openssl_url=openssl_local_url, additional_config=qtc_additional_config,
                             log_filepath=log_filepath)
 
-    qtcreator_sha = get_commit_SHA(qtcreator_source)
+    qtcreator_sha = get_commit_sha(qtcreator_source)
     with open(os.path.join(work_dir, 'QTC_SHA1'), 'w', encoding="utf-8") as f:
         f.write(qtcreator_sha + '\n')
 
@@ -818,7 +818,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
         sha1s = collect_qt_creator_plugin_sha1s(optionDict, additional_plugins)
         licensemanaging_source = os.path.join(work_dir, 'license-managing')
         if os.path.exists(licensemanaging_source):
-            sha1s.append('license-managing: ' + get_commit_SHA(licensemanaging_source))
+            sha1s.append('license-managing: ' + get_commit_sha(licensemanaging_source))
         sha1s.append('qt-creator: ' + qtcreator_sha)
         with open(os.path.join(work_dir, 'SHA1'), 'w', encoding="utf-8") as f:
             f.writelines([sha + '\n' for sha in sha1s])
@@ -864,7 +864,7 @@ def handle_qt_creator_build(optionDict, qtCreatorPlugins):
 
     # notarize
     if is_macos() and notarize:
-        notarizeDmg(os.path.join(work_dir, 'qt-creator_build', 'qt-creator.dmg'), 'Qt Creator')
+        notarize_dmg(os.path.join(work_dir, 'qt-creator_build', 'qt-creator.dmg'), 'Qt Creator')
 
     # Upload
     file_upload_list = []  # pairs (source, dest), source relative to WORK_DIR, dest relative to server + dir_path
@@ -990,7 +990,7 @@ def handle_sdktool_build(optionDict):
         python_url = optionDict.get('PYTHON_URL')
         if python_url:
             python_path = os.path.join(download_temp, 'python')
-            download_packages_work.addTaskObject(create_download_extract_task(
+            download_packages_work.add_task_object(create_download_extract_task(
                 python_url, python_path, download_temp))
             cmd_args.extend(['--python-path', python_path])
 
@@ -1004,7 +1004,7 @@ def handle_sdktool_build(optionDict):
     update_job_link(unversioned_base_path, base_path, optionDict)
 
 
-def notarizeDmg(dmgPath, installer_name_base):
+def notarize_dmg(dmgPath, installer_name_base):
     # bundle-id is just a unique identifier without any special meaning, used to track the notarization progress
     bundleId = installer_name_base + "-" + strftime('%Y-%m-%d', gmtime())
     bundleId = bundleId.replace('_', '-').replace(' ', '')  # replace illegal characters for bundleId
@@ -1046,14 +1046,14 @@ def do_git_archive_repo(optionDict, repo_and_ref):
     do_execute_sub_process(cmd_args, SCRIPT_ROOT_DIR)
 
 
-def initPkgOptions(args):
-    def mergeTwoDicts(x, y):
+def init_pkg_options(args):
+    def merge_two_dicts(x, y):
         """Given two dicts, merge them into a new dict as a shallow copy."""
         z = x.copy()
         z.update(y)
         return z
 
-    def getDefaultTargetEnv():
+    def get_default_target_env():
         """For local builds define default build target"""
         if is_windows():
             return "win-msvc2015-Windows10-x64"
@@ -1066,9 +1066,9 @@ def initPkgOptions(args):
     optionDict = {}
     # Are we using local conf file for pkg options?
     if args.pkg_conf_file:
-        options = getPkgOptions(args.pkg_conf_file)
-        optionDict = mergeTwoDicts(optionDict, options.configMap())
-        optionDict['TARGET_ENV'] = args.target_env if args.target_env else getDefaultTargetEnv()
+        options = get_pkg_options(args.pkg_conf_file)
+        optionDict = merge_two_dicts(optionDict, options.config_map())
+        optionDict['TARGET_ENV'] = args.target_env if args.target_env else get_default_target_env()
         optionDict['BUILD_NUMBER'] = str(strftime('%Y%m%d%H%M%S', gmtime()))
         optionDict['PACKAGE_STORAGE_SERVER_ADDR'] = optionDict['PACKAGE_STORAGE_SERVER_USER'] + '@' + optionDict['PACKAGE_STORAGE_SERVER']
     else:
@@ -1170,12 +1170,12 @@ def main() -> None:
     args = parser.parse_args(sys.argv[1:])
 
     # Init configuration options first
-    optionDict = initPkgOptions(args)
+    optionDict = init_pkg_options(args)
 
     # Execute given command
     # QtCreator specific
     if args.command == bld_qtcreator:
-        handle_qt_creator_build(optionDict, parseQtCreatorPlugins(args.pkg_conf_file))
+        handle_qt_creator_build(optionDict, parse_qtcreator_plugins(args.pkg_conf_file))
     # sdktool
     elif args.command == bld_qtc_sdktool:
         handle_sdktool_build(optionDict)

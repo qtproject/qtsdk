@@ -44,7 +44,7 @@ from typing import Callable, List, Union
 from urllib.parse import urlparse
 from urllib.request import urlcleanup, urlopen, urlretrieve
 
-from bld_utils import download, is_linux, is_macos, is_windows, runCommand
+from bld_utils import download, is_linux, is_macos, is_windows, run_command
 from installer_utils import PackagingError
 from runner import do_execute_sub_process
 from threadedwork import Task, ThreadedWork
@@ -80,7 +80,7 @@ def is_content_url_valid(url):
 CURRENT_DOWNLOAD_PERCENT = 0
 
 
-def dlProgress(count, blockSize, totalSize):
+def dl_progress(count, blockSize, totalSize):
     global CURRENT_DOWNLOAD_PERCENT
     percent = int(count * blockSize * 100 / totalSize)
     # produce only reasonable amount of prints into stdout
@@ -100,7 +100,7 @@ def retrieve_url(url, savefile):
     try:
         savefile_tmp = savefile + '.tmp'
         urlcleanup()
-        urlretrieve(url, savefile_tmp, reporthook=dlProgress)
+        urlretrieve(url, savefile_tmp, reporthook=dl_progress)
         shutil.move(savefile_tmp, savefile)
     except Exception:
         exc = sys.exc_info()[0]
@@ -214,12 +214,12 @@ def remove_tree(path):
             path = win32api.GetShortPathName(path.replace('/', '\\'))
             # a funny thing is that rmdir does not set an exitcode it is just using the last set one
             try:
-                runCommand(['rmdir', path, '/S', '/Q'], os.getcwd(), onlyErrorCaseOutput=True)
+                run_command(['rmdir', path, '/S', '/Q'], os.getcwd(), onlyErrorCaseOutput=True)
             except Exception:
                 print_exc()
         else:
             # shutil.rmtree(path)
-            runCommand(['rm', '-rf', path], os.getcwd(), onlyErrorCaseOutput=True)
+            run_command(['rm', '-rf', path], os.getcwd(), onlyErrorCaseOutput=True)
     return not os.path.exists(path)
 
 
@@ -589,7 +589,7 @@ def extract_file(path, to_directory='.'):
         print(f'Did not extract the file! Not archived or no appropriate extractor was found: {path}')
         return False
 
-    ret = runCommand(cmd_args, currentWorkingDirectory=to_directory, onlyErrorCaseOutput=True)
+    ret = run_command(cmd_args, currentWorkingDirectory=to_directory, onlyErrorCaseOutput=True)
     if ret:
         raise RuntimeError(f"Failure running the last command: {ret}")
     return True
@@ -635,8 +635,8 @@ def create_extract_function(file_path, target_path):
     Path(target_path).mkdir(parents=True, exist_ok=True)
     working_dir = os.path.dirname(file_path)
     if file_path.endswith('.tar.gz'):
-        return lambda: runCommand(['tar', 'zxf', file_path, '-C', target_path], working_dir)
-    return lambda: runCommand(['7z', 'x', '-y', file_path, '-o' + target_path], working_dir)
+        return lambda: run_command(['tar', 'zxf', file_path, '-C', target_path], working_dir)
+    return lambda: run_command(['7z', 'x', '-y', file_path, '-o' + target_path], working_dir)
 
 
 ###############################
@@ -646,9 +646,9 @@ def create_download_and_extract_tasks(url, target_path, temp_path):
     filename = os.path.basename(urlparse(url).path)
     sevenzip_file = os.path.join(temp_path, filename)
     download_task = Task(f"download '{url}' to '{sevenzip_file}'")
-    download_task.addFunction(download, url, sevenzip_file)
+    download_task.add_function(download, url, sevenzip_file)
     extract_task = Task(f"extract '{sevenzip_file}' to '{target_path}'")
-    extract_task.addFunction(create_extract_function(sevenzip_file, target_path))
+    extract_task.add_function(create_extract_function(sevenzip_file, target_path))
     return (download_task, extract_task)
 
 
@@ -659,8 +659,8 @@ def create_download_extract_task(url, target_path, temp_path):
     filename = os.path.basename(urlparse(url).path)
     sevenzip_file = os.path.join(temp_path, filename)
     download_extract_task = Task(f"download {url} to {sevenzip_file} and extract it to {target_path}")
-    download_extract_task.addFunction(download, url, sevenzip_file)
-    download_extract_task.addFunction(create_extract_function(sevenzip_file, target_path))
+    download_extract_task.add_function(download, url, sevenzip_file)
+    download_extract_task.add_function(create_extract_function(sevenzip_file, target_path))
     return download_extract_task
 
 
@@ -677,8 +677,8 @@ def create_qt_download_task(module_urls, target_qt5_path, temp_path, caller_argu
             (download_task, extract_task) = create_download_and_extract_tasks(
                 module_url, target_qt5_path, temp_path
             )
-            download_work.addTaskObject(download_task)
-            unzip_task.addFunction(extract_task.do)
+            download_work.add_task_object(download_task)
+            unzip_task.add_function(extract_task.do)
         else:
             print(f"warning: could not find '{module_url}' for download")
     # add icu, d3dcompiler, opengl32, openssl
@@ -687,29 +687,29 @@ def create_qt_download_task(module_urls, target_qt5_path, temp_path, caller_argu
         (download_task, extract_task) = create_download_and_extract_tasks(
             caller_arguments.icu7z, target_path, temp_path
         )
-        download_work.addTaskObject(download_task)
-        unzip_task.addFunction(extract_task.do)
+        download_work.add_task_object(download_task)
+        unzip_task.add_function(extract_task.do)
     if is_windows():
         if hasattr(caller_arguments, 'd3dcompiler7z') and caller_arguments.d3dcompiler7z:
             (download_task, extract_task) = create_download_and_extract_tasks(
                 caller_arguments.d3dcompiler7z, target_path, temp_path
             )
-            download_work.addTaskObject(download_task)
-            unzip_task.addFunction(extract_task.do)
+            download_work.add_task_object(download_task)
+            unzip_task.add_function(extract_task.do)
         if hasattr(caller_arguments, 'opengl32sw7z') and caller_arguments.opengl32sw7z:
             (download_task, extract_task) = create_download_and_extract_tasks(
                 caller_arguments.opengl32sw7z, target_path, temp_path
             )
-            download_work.addTaskObject(download_task)
-            unzip_task.addFunction(extract_task.do)
+            download_work.add_task_object(download_task)
+            unzip_task.add_function(extract_task.do)
         if hasattr(caller_arguments, 'openssl7z') and caller_arguments.openssl7z:
             (download_task, extract_task) = create_download_and_extract_tasks(
                 caller_arguments.openssl7z, target_path, temp_path
             )
-            download_work.addTaskObject(download_task)
-            unzip_task.addFunction(extract_task.do)
-    qt_task.addFunction(download_work.run)
-    qt_task.addFunction(unzip_task.do)
+            download_work.add_task_object(download_task)
+            unzip_task.add_function(extract_task.do)
+    qt_task.add_function(download_work.run)
+    qt_task.add_function(unzip_task.do)
     return qt_task
 
 
@@ -724,4 +724,4 @@ def patch_qt(qt5_path):
     if is_linux():
         handle_component_rpath(qt5_path, 'lib')
     print("##### patch Qt ##### ... done")
-    runCommand(qmake_binary + " -query", qt5_path)
+    run_command(qmake_binary + " -query", qt5_path)

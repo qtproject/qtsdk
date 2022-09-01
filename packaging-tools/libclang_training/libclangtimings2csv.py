@@ -40,7 +40,7 @@ import re
 import sys
 
 
-def constructRecordMatcher():
+def construct_record_matcher():
     regex = (
         '( Parsing)'
         + '|( Precompiling preamble)'
@@ -52,7 +52,7 @@ def constructRecordMatcher():
     return re.compile(regex)
 
 
-def constructTimeNeededMatcher():
+def construct_time_needed_matcher():
     # An output line looks like:
     #   :   2.5625 (100.0%)   0.1563 (100.0%)   2.7188 (100.0%)   2.7813 (100.0%)
     # Note: There is always at least the wall clock time at the utmost right,
@@ -66,13 +66,13 @@ def constructTimeNeededMatcher():
     return re.compile(regex)
 
 
-def csvLine(values):
+def csv_line(values):
     return ','.join(values) + '\n'
 
 
-def extractRecords(fileContent):
-    recordMatcher = constructRecordMatcher()
-    timeNeededMatcher = constructTimeNeededMatcher()
+def extract_records(fileContent):
+    recordMatcher = construct_record_matcher()
+    timeNeededMatcher = construct_time_needed_matcher()
 
     records = []
     previousTimeMatchEnd = -1
@@ -98,10 +98,10 @@ def extractRecords(fileContent):
     return records
 
 
-def recordsToString(records):
+def records_to_string(records):
     string = ""
     for record in records:
-        string += csvLine(record)
+        string += csv_line(record)
 
     return string
 
@@ -110,12 +110,12 @@ def convert(inputFile, columnLabel=None):
     if not columnLabel:
         columnLabel = os.path.basename(inputFile)
     with open(inputFile, 'r', encoding="utf-8") as fileContent:
-        records = [[columnLabel, columnLabel]] + extractRecords(fileContent.read())
+        records = [[columnLabel, columnLabel]] + extract_records(fileContent.read())
 
-    return recordsToString(records)
+    return records_to_string(records)
 
 
-def printUsageAndExit():
+def print_usage_and_exit():
     print(__doc__)
     sys.exit(0)
 
@@ -132,11 +132,11 @@ def main():
     # process options
     for o, _ in opts:
         if o in ("-h", "--help"):
-            printUsageAndExit()
+            print_usage_and_exit()
 
     # process arguments
     if not args:
-        printUsageAndExit()
+        print_usage_and_exit()
     for arg in args:
         print(convert(arg))
 

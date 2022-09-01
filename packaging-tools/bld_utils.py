@@ -99,14 +99,14 @@ def compress(path, directoryName, sevenZipTarget):
         sevenZipTarget = sevenZipTarget + sevenZipExtension
     sevenZipFileName = os.path.split(sevenZipTarget)[1]
     with DirRenamer(path, directoryName):
-        runCommand(' '.join(('7z a -mx9', sevenZipFileName, directoryName)), parentDirectoryPath)
+        run_command(' '.join(('7z a -mx9', sevenZipFileName, directoryName)), parentDirectoryPath)
 
     currentSevenZipPath = os.path.join(parentDirectoryPath, sevenZipFileName)
     if currentSevenZipPath != sevenZipTarget:
         shutil.move(currentSevenZipPath, sevenZipTarget)
 
 
-def stripVars(sobject, chars):
+def strip_vars(sobject, chars):
     for key, value in vars(sobject).items():
         if isinstance(value, str):
             setattr(sobject, key, value.strip(chars))
@@ -142,7 +142,7 @@ def download(url, target, read_block_size=1048576):
         if os.path.lexists(target):
             raise Exception(f"Can not download '{url}' to '{target}' as target. The file already exists.")
 
-        def localDownload(localFilePath, targtFilePath):
+        def local_download(localFilePath, targtFilePath):
             if os.path.isfile(localFilePath):
                 print(f"copying file from '{localFilePath}' to '{targtFilePath}'")
                 try:
@@ -155,14 +155,14 @@ def download(url, target, read_block_size=1048576):
         if os.path.lexists(url[len("file:///"):]):
             # because scheme of a absolute windows path is the drive letter in python 2,
             # we need to use file:// as a work around in urls
-            localDownload(url[len("file:///"):], target)
+            local_download(url[len("file:///"):], target)
             return
         # there is code which only have two slashes - protocol://host/path <- localhost can be omitted
         if os.path.lexists(url[len("file://"):]):
-            localDownload(url[len("file://"):], target)
+            local_download(url[len("file://"):], target)
             return
         if os.path.lexists(url):
-            localDownload(url, target)
+            local_download(url, target)
             return
 
         savefile_tmp = os.extsep.join((target, 'tmp'))
@@ -211,7 +211,7 @@ def download(url, target, read_block_size=1048576):
             pass
 
 
-def setValueOnEnvironmentDict(environment, key, value):
+def set_value_on_environment_dict(environment, key, value):
     if key in environment:
         # if the data already contains the value stop here
         if value in environment[key].split(os.pathsep):
@@ -222,7 +222,7 @@ def setValueOnEnvironmentDict(environment, key, value):
 
 
 @deep_copy_arguments
-def getEnvironment(extra_environment=None):
+def get_environment(extra_environment=None):
     # first take the one from the system and use the plain dictionary data for that
     environment = dict(os.environ)
 
@@ -232,14 +232,14 @@ def getEnvironment(extra_environment=None):
     for key in extra_environment.keys():
         keyUpper = key.upper()
         if any((keyUpper == 'PATH', keyUpper == 'INCLUDE', keyUpper == 'LIB')):
-            setValueOnEnvironmentDict(environment, key, extra_environment[key])
+            set_value_on_environment_dict(environment, key, extra_environment[key])
         else:
             environment[key] = extra_environment[key]
     return environment
 
 
 @deep_copy_arguments
-def runCommand(command, currentWorkingDirectory, extra_environment=None, onlyErrorCaseOutput=False, expectedExitCodes=[0]):
+def run_command(command, currentWorkingDirectory, extra_environment=None, onlyErrorCaseOutput=False, expectedExitCodes=[0]):
     if type(expectedExitCodes) is not list:
         raise TypeError(f"expectedExitCodes({type(expectedExitCodes)}) is not {list}")
     if type(onlyErrorCaseOutput) is not bool:
@@ -250,7 +250,7 @@ def runCommand(command, currentWorkingDirectory, extra_environment=None, onlyErr
     else:
         commandAsList = command[:].split(' ')
 
-    environment = getEnvironment(extra_environment)
+    environment = get_environment(extra_environment)
 
     # if we can not find the command, just check the current working dir
     if (not os.path.lexists(commandAsList[0]) and currentWorkingDirectory
@@ -355,7 +355,7 @@ def runCommand(command, currentWorkingDirectory, extra_environment=None, onlyErr
 
 
 @deep_copy_arguments
-def runInstallCommand(arguments=['install'], currentWorkingDirectory=None, callerArguments=None, extra_environment=None, onlyErrorCaseOutput=False):
+def run_install_command(arguments=['install'], currentWorkingDirectory=None, callerArguments=None, extra_environment=None, onlyErrorCaseOutput=False):
     if hasattr(callerArguments, 'installcommand') and callerArguments.installcommand:
         installcommand = callerArguments.installcommand.split()
     else:
@@ -368,39 +368,39 @@ def runInstallCommand(arguments=['install'], currentWorkingDirectory=None, calle
 
     if arguments:
         installcommand.extend(arguments if type(arguments) is list else arguments.split())
-    return runCommand(installcommand, currentWorkingDirectory, extra_environment, onlyErrorCaseOutput=onlyErrorCaseOutput)
+    return run_command(installcommand, currentWorkingDirectory, extra_environment, onlyErrorCaseOutput=onlyErrorCaseOutput)
 
 
 @deep_copy_arguments
-def runBuildCommand(arguments=None, currentWorkingDirectory=None, callerArguments=None, extra_environment=None, onlyErrorCaseOutput=False, expectedExitCodes=[0]):
+def run_build_command(arguments=None, currentWorkingDirectory=None, callerArguments=None, extra_environment=None, onlyErrorCaseOutput=False, expectedExitCodes=[0]):
     buildcommand = ['make']
     if hasattr(callerArguments, 'buildcommand') and callerArguments.buildcommand:
         buildcommand = callerArguments.buildcommand.split()
 
     if arguments:
         buildcommand.extend(arguments if type(arguments) is list else arguments.split())
-    return runCommand(buildcommand, currentWorkingDirectory, extra_environment, onlyErrorCaseOutput=onlyErrorCaseOutput, expectedExitCodes=expectedExitCodes)
+    return run_command(buildcommand, currentWorkingDirectory, extra_environment, onlyErrorCaseOutput=onlyErrorCaseOutput, expectedExitCodes=expectedExitCodes)
 
 
 @deep_copy_arguments
-def getReturnValue(command, currentWorkingDirectory=None, extra_environment=None):
+def get_return_value(command, currentWorkingDirectory=None, extra_environment=None):
     commandAsList = command[:].split(' ')
     return Popen(
         commandAsList, stdout=PIPE, stderr=STDOUT,
-        cwd=currentWorkingDirectory, env=getEnvironment(extra_environment)
+        cwd=currentWorkingDirectory, env=get_environment(extra_environment)
     ).communicate()[0].strip()
 
 
-def gitSHA(path):
+def git_sha(path):
     gitBinary = "git"
-    if isGitDirectory(path):
-        return getReturnValue(gitBinary + " rev-list -n1 HEAD", currentWorkingDirectory=path).strip()
+    if is_git_directory(path):
+        return get_return_value(gitBinary + " rev-list -n1 HEAD", currentWorkingDirectory=path).strip()
     return ''
 
 
 # get commit SHA either directly from git, or from a .tag file in the source directory
-def get_commit_SHA(source_path):
-    buildGitSHA = gitSHA(source_path)
+def get_commit_sha(source_path):
+    buildGitSHA = git_sha(source_path)
     if not buildGitSHA:
         tagfile = os.path.join(source_path, '.tag')
         if os.path.exists(tagfile):
@@ -409,7 +409,7 @@ def get_commit_SHA(source_path):
     return buildGitSHA
 
 
-def isGitDirectory(repository_path):
+def is_git_directory(repository_path):
     if not repository_path:
         return False
     gitConfigDir = os.path.abspath(os.path.join(repository_path, '.git'))

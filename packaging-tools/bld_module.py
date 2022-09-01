@@ -42,10 +42,10 @@ from bld_utils import (
     is_linux,
     is_macos,
     is_windows,
-    runBuildCommand,
-    runCommand,
-    runInstallCommand,
-    stripVars,
+    run_build_command,
+    run_command,
+    run_install_command,
+    strip_vars,
 )
 from bldinstallercommon import (
     clone_repository,
@@ -182,7 +182,7 @@ def main() -> None:
     callerArguments = parser.parse_args()
 
     # cleanup some values inside the callerArguments object
-    stripVars(callerArguments, "\"")
+    strip_vars(callerArguments, "\"")
     if callerArguments.qt5path != os.path.abspath(callerArguments.qt5path):
         print(f"changing the value of --qt5path from {callerArguments.qt5path} to {os.path.abspath(callerArguments.qt5path)}")
         callerArguments.qt5path = os.path.abspath(callerArguments.qt5path)
@@ -200,7 +200,7 @@ def main() -> None:
     elif callerArguments.module7z != '':
         Path(MODULE_SRC_DIR).mkdir(parents=True, exist_ok=True)
         myGetQtModule = ThreadedWork("get and extract module src")
-        myGetQtModule.addTaskObject(create_download_and_extract_tasks(callerArguments.module7z, MODULE_SRC_DIR, tempPath))
+        myGetQtModule.add_task_object(create_download_and_extract_tasks(callerArguments.module7z, MODULE_SRC_DIR, tempPath))
         myGetQtModule.run()
         qtModuleSourceDirectory = MODULE_SRC_DIR
     else:
@@ -234,7 +234,7 @@ def main() -> None:
     if not os.path.lexists(callerArguments.qt5path):
         # get Qt
         myGetQtBinaryWork = ThreadedWork("get and extract Qt 5 binary")
-        myGetQtBinaryWork.addTaskObject(
+        myGetQtBinaryWork.add_task_object(
             create_qt_download_task(
                 callerArguments.qt5_module_urls,
                 callerArguments.qt5path, tempPath, callerArguments
@@ -307,13 +307,13 @@ def main() -> None:
             generateCommand.append(os.environ["EXTRA_QMAKE_ARGS"])
         generateCommand.append(qtModuleProFile)
 
-    runCommand(generateCommand, currentWorkingDirectory=qtModuleBuildDirectory, extra_environment=environment)
+    run_command(generateCommand, currentWorkingDirectory=qtModuleBuildDirectory, extra_environment=environment)
 
-    ret = runBuildCommand(currentWorkingDirectory=qtModuleBuildDirectory, callerArguments=callerArguments)
+    ret = run_build_command(currentWorkingDirectory=qtModuleBuildDirectory, callerArguments=callerArguments)
     if ret:
         raise RuntimeError(f"Failure running the last command: {ret}")
 
-    ret = runInstallCommand(
+    ret = run_install_command(
         ['install', 'INSTALL_ROOT=' + qtModuleInstallDirectory],
         currentWorkingDirectory=qtModuleBuildDirectory,
         callerArguments=callerArguments, extra_environment=environment
@@ -332,14 +332,14 @@ def main() -> None:
     # enginio etc. docs creation
     if callerArguments.makeDocs:
         # build docs first
-        ret = runInstallCommand(
+        ret = run_install_command(
             'docs', currentWorkingDirectory=qtModuleBuildDirectory,
             callerArguments=callerArguments, extra_environment=environment
         )
         if ret:
             raise RuntimeError(f"Failure running the last command: {ret}")
         # then make install those
-        ret = runInstallCommand(
+        ret = run_install_command(
             ['install_docs', 'INSTALL_ROOT=' + qtModuleInstallDirectory],
             currentWorkingDirectory=qtModuleBuildDirectory,
             callerArguments=callerArguments, extra_environment=environment
@@ -349,7 +349,7 @@ def main() -> None:
         # make separate "doc.7z" for later use if needed
         doc_dir = locate_path(qtModuleInstallDirectory, ["doc"], filters=[os.path.isdir])
         archive_name = callerArguments.module_name + '-' + os.environ['LICENSE'] + '-doc-' + os.environ['MODULE_VERSION'] + '.7z'
-        ret = runCommand(
+        ret = run_command(
             ['7z', 'a', os.path.join('doc_archives', archive_name), doc_dir],
             currentWorkingDirectory=os.path.dirname(os.path.realpath(__file__))
         )
@@ -379,7 +379,7 @@ def main() -> None:
         archive_cmd.append(os.path.join(dir_to_archive, '*'))
     else:
         archive_cmd.append(dir_to_archive)
-    ret = runCommand(archive_cmd, currentWorkingDirectory=os.path.dirname(os.path.realpath(__file__)))
+    ret = run_command(archive_cmd, currentWorkingDirectory=os.path.dirname(os.path.realpath(__file__)))
     if ret:
         raise RuntimeError(f"Failure running the last command: {ret}")
 

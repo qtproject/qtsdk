@@ -63,7 +63,7 @@ def asyncio_test_parallel_data(*data_args, unpack=True):
     return decorator
 
 
-def isInternalFileServerReachable() -> bool:
+def is_internal_file_server_reachable() -> bool:
     try:
         packageServer = get_pkg_value("PACKAGE_STORAGE_SERVER")
         ping = sh.which("ping")

@@ -429,7 +429,7 @@ def prepare_installer_framework(options):
         prepare_compressed_package(options.qt_installer_framework_uri, options.qt_installer_framework_uri_saveas, options.installer_framework_source_dir)
 
 
-def start_IFW_build(options, cmd_args, installer_framework_build_dir):
+def start_ifw_build(options, cmd_args, installer_framework_build_dir):
     print(f"cmd_args: {list_as_string(cmd_args)}")
     do_execute_sub_process(cmd_args, installer_framework_build_dir)
     cmd_args = options.make_cmd
@@ -459,7 +459,7 @@ def build_installer_framework(options):
     cmd_args = [qmake_bin]
     cmd_args += options.qt_installer_framework_qmake_args
     cmd_args += [options.installer_framework_source_dir]
-    start_IFW_build(options, cmd_args, options.installer_framework_build_dir)
+    start_ifw_build(options, cmd_args, options.installer_framework_build_dir)
 
 
 def build_installer_framework_examples(options):

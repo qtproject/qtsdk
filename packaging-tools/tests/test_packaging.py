@@ -37,19 +37,19 @@ from fileinput import FileInput
 from shutil import rmtree
 from tempfile import mkdtemp
 
-from create_installer import parsePackageFinalizeItems
+from create_installer import parse_package_finalize_items
 from patch_qt import (
-    patchAbsoluteLibPathsFromLine,
-    patchQConfigPriFromLine,
-    patchQmakePrlBuildDirFromLine,
-    patchQtEdition,
+    patch_absolute_lib_paths_from_line,
+    patch_qconfig_pri_from_line,
+    patch_qmake_prl_build_dir_from_line,
+    patch_qt_edition,
 )
 from runner import do_execute_sub_process
 
 
 class TestPackaging(unittest.TestCase):
 
-    def test_patchAbsoluteLibPaths(self):
+    def test_patch_absolute_lib_paths(self):
         testData = (("QMAKE_LIBS_ZLIB = /opt/android/android-ndk-r18b/platforms/android-21/arch-arm64/usr/lib/libz.so",
                      "QMAKE_LIBS_ZLIB = -lz",
                      "pri"),
@@ -85,40 +85,40 @@ class TestPackaging(unittest.TestCase):
                      "prl"))
 
         for data in testData:
-            result = patchAbsoluteLibPathsFromLine(data[0], data[2])
+            result = patch_absolute_lib_paths_from_line(data[0], data[2])
             self.assertEqual(result, data[1], f"Failed to patch: [{data[0]}] as: [{data[1]}]")
 
-    def test_patchQmakePrlBuildDirFromLine(self):
+    def test_patch_qmake_prl_build_dir_from_line(self):
         testData = (("QMAKE_PRL_BUILD_DIR = /foo/bar", ""),
                     ("QMAKE_PRL_BUILD_DIR=   /foo/bar", ""),
                     ("foo bar = /foo/bar", "foo bar = /foo/bar"))
 
         for data in testData:
-            result = patchQmakePrlBuildDirFromLine(data[0])
+            result = patch_qmake_prl_build_dir_from_line(data[0])
             self.assertEqual(result, data[1], f"Failed to patch: [{data[0]}] as: [{data[1]}]")
 
-    def test_patchQConfigPriFromLine(self):
+    def test_patch_qconfig_pri_from_line(self):
         testData = (("QMAKE_DEFAULT_LIBDIRS = /foo/bar", "QMAKE_DEFAULT_LIBDIRS ="),
                     ("QMAKE_DEFAULT_INCDIRS =   /foo/bar", "QMAKE_DEFAULT_INCDIRS ="),
                     ("foo bar = /foo/bar", "foo bar = /foo/bar"))
 
         for data in testData:
-            result = patchQConfigPriFromLine(data[0])
+            result = patch_qconfig_pri_from_line(data[0])
             self.assertEqual(result, data[1], f"Failed to patch: [{data[0]}] as: [{data[1]}]. Got: [{result}]")
 
-    def test_parsePackageFinalizeItems(self):
+    def test_parse_package_finalize_items(self):
         testData = (("set_executable=licheck64, foo=bar, set_executable=something", "set_executable", ["licheck64", "something"]),
                     ("set_executable=licheck64,foo=bar,   set_executable = something", "set_executable", ["licheck64", "something"]),
                     ("set_executable=licheck64", "set_executable", ["licheck64"]))
 
         for data in testData:
             matchCount = 0
-            for item in parsePackageFinalizeItems(data[0], data[1]):
+            for item in parse_package_finalize_items(data[0], data[1]):
                 self.assertIn(item, data[2])
                 matchCount += 1
             self.assertEqual(matchCount, len(data[2]))
 
-    def test_patchQtEdition(self):
+    def test_patch_qt_edition(self):
         tempDir = mkdtemp(dir=os.getcwd())
         tempFile = os.path.join(tempDir, "qconfig.pri")
 
@@ -130,7 +130,7 @@ class TestPackaging(unittest.TestCase):
 
             licheckName = "licheck_foo"
             releaseTimeStamp = "11223344"
-            patchQtEdition(tempDir, licheckName, releaseTimeStamp)
+            patch_qt_edition(tempDir, licheckName, releaseTimeStamp)
 
             expectedData = []
             expectedData.append("something foo")
@@ -150,7 +150,7 @@ class TestPackaging(unittest.TestCase):
     @unittest.skipUnless(os.environ.get("PKG_TEST_QT_CONFIG_BASE_PATH"), "Skipping because 'PKG_TEST_QT_CONFIG_BASE_PATH' is not set")
     @unittest.skipUnless(os.environ.get("PKG_TEST_QT_ARTIFACTS_URL"), "Skipping because 'PKG_TEST_QT_CONFIG_BASE_PATH' is not set")
     @unittest.skipUnless(os.environ.get("PKG_TEST_QT_IFW_TOOL_URL"), "Skipping because 'PKG_TEST_QT_IFW_TOOL_URL' is not set")
-    def test_createInstaller(self):
+    def test_create_installer(self):
         extension = '.run' if platform.system().lower().startswith('linux') else ''
         testsDir = os.path.dirname(os.path.abspath(__file__))
         path = os.path.join(os.environ.get("PKG_TEST_QT_CONFIG_BASE_PATH"), "offline_installer_jobs", "5.9.3")

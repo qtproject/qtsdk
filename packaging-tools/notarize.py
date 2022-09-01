@@ -58,14 +58,14 @@ class NotarizationError(Exception):
     pass
 
 
-def parseValueFromData(key, data):
+def parse_value_from_data(key, data):
     for line in data.split("\n"):
         if line.strip().startswith(key):
             return line.split(key)[-1].strip()
     return ""
 
 
-async def requestCmd(args, cmd):
+async def request_cmd(args, cmd):
     p = await asyncio.create_subprocess_exec(*cmd, stdout=asyncio.subprocess.PIPE, stderr=STDOUT)
     attempts = 3
 
@@ -89,26 +89,26 @@ async def requestCmd(args, cmd):
     return data[0].decode('utf-8')
 
 
-async def requestNotarization(args):
+async def request_notarization(args):
     # long lasting command, it uploads the binary to Apple server
     cmd = ['xcrun', 'altool', '-u', args.user, '-p', args.passwd, '--notarize-app', '-t', 'osx']
     cmd += ['--primary-bundle-id', args.bundle_id, '-f', args.dmg]
 
-    data = await requestCmd(args, cmd)
-    requestUUID = parseValueFromData("RequestUUID", data)
+    data = await request_cmd(args, cmd)
+    requestUUID = parse_value_from_data("RequestUUID", data)
     if not requestUUID:
         raise NotarizationError(f"Failed to notarize app:\n\n{data}")
     return requestUUID.split("=")[-1].strip()
 
 
-async def pollNotarizationCompleted(args, uuid):
+async def poll_notarization_completed(args, uuid):
     cmd = ['xcrun', 'altool', '-u', args.user, '-p', args.passwd, '--notarization-info', uuid]
 
     attempts = 180
     pollInterval = 60  # attempts * pollInterval = 3h
     while attempts:
-        data = await requestCmd(args, cmd)
-        statusCode = parseValueFromData("Status Code:", data)
+        data = await request_cmd(args, cmd)
+        statusCode = parse_value_from_data("Status Code:", data)
 
         if statusCode == "0":
             log.info("Notarization succeeded for: %s", args.dmg)
@@ -128,15 +128,15 @@ async def pollNotarizationCompleted(args, uuid):
     return False
 
 
-async def embedNotarization(args):
+async def embed_notarization(args):
     # Embed the notarization in the dmg package
     cmd = ['xcrun', 'stapler', 'staple', args.dmg]
     retry_count = 10
     delay = 60
     while retry_count:
         retry_count -= 1
-        data = await requestCmd(args, cmd)
-        status = parseValueFromData("The staple and validate action", data)
+        data = await request_cmd(args, cmd)
+        status = parse_value_from_data("The staple and validate action", data)
 
         if status.lower().startswith("worked"):
             log.info("The [%s] was notirized successfully!", args.dmg)
@@ -154,10 +154,10 @@ async def embedNotarization(args):
 
 
 async def notarize(args):
-    uuid = await requestNotarization(args)
-    if not await pollNotarizationCompleted(args, uuid):
+    uuid = await request_notarization(args)
+    if not await poll_notarization_completed(args, uuid):
         raise NotarizationError(f"Notarization failed for: {args.dmg}")
-    await embedNotarization(args)
+    await embed_notarization(args)
 
 
 def main() -> None:

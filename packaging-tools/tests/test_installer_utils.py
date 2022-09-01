@@ -47,7 +47,7 @@ from read_remote_config import get_pkg_value
 from tests.testhelpers import (
     asyncio_test,
     asyncio_test_parallel_data,
-    isInternalFileServerReachable,
+    is_internal_file_server_reachable,
 )
 
 
@@ -111,7 +111,7 @@ class TestInstallerUtils(unittest.TestCase):
             await extract_archive(tarArchivePath, destDir)
             self.assertTrue(os.path.isfile(os.path.join(destDir, tempPath, "foobar.txt")))
 
-    @unittest.skipUnless(isInternalFileServerReachable(),
+    @unittest.skipUnless(is_internal_file_server_reachable(),
                          "Skipping because file server is not accessible")
     @asyncio_test
     async def test_download_archive(self) -> None:

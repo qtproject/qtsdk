@@ -59,7 +59,7 @@ from release_task_reader import parse_data
 from tests.testhelpers import (
     asyncio_test,
     asyncio_test_parallel_data,
-    isInternalFileServerReachable,
+    is_internal_file_server_reachable,
 )
 
 
@@ -128,7 +128,7 @@ class TestReleaseRepoUpdater(unittest.TestCase):
         self.assertTrue(remote_file_exists(self.server, os.path.abspath(__file__)))
         self.assertFalse(remote_file_exists(self.server, "/some/bogus/directory/foo.txt"))
 
-    @unittest.skipUnless(isInternalFileServerReachable(), "Skipping because file server is not accessible")
+    @unittest.skipUnless(is_internal_file_server_reachable(), "Skipping because file server is not accessible")
     @asyncio_test
     async def test_upload_ifw_to_remote(self) -> None:
         repogen = ""

@@ -38,7 +38,7 @@ from queue import Queue
 from time import sleep
 from traceback import format_exc
 
-# we are using RLock, because threadedPrint is using the same lock
+# we are using RLock, because threaded_print is using the same lock
 output_lock = threading.RLock()
 output_states = None
 output_format_string = ''
@@ -55,7 +55,7 @@ class StdOutHook:
         global output_format_string
         localProgressIndicator = None
         if len(strippedText) > 6:
-            localProgressIndicator = nextProgressIndicator()
+            localProgressIndicator = next_progress_indicator()
         else:
             localProgressIndicator = strippedText
 
@@ -86,7 +86,7 @@ class StdErrHook:
 
 
 # builtin print() isn't threadsafe, lets make it threadsafe
-def threadedPrint(*a, **b):
+def threaded_print(*a, **b):
     with output_lock:
         org_print(*a, **b)
 
@@ -97,7 +97,7 @@ org_stdout = sys.stdout
 org_sterr = sys.stderr
 
 
-def enableThreadedPrint(enable=True, threadCount=cpu_count()):
+def enable_threaded_print(enable=True, threadCount=cpu_count()):
     if enable:
         global output_states
         global output_format_string
@@ -107,7 +107,7 @@ def enableThreadedPrint(enable=True, threadCount=cpu_count()):
             output_format_string = output_format_string + "{" + str(x) + ":10}"
         sys.stdout = StdOutHook()
         sys.stderr = StdErrHook()
-        builtins.print = threadedPrint
+        builtins.print = threaded_print
     else:
         sys.stdout = org_stdout
         sys.stderr = org_sterr
@@ -117,7 +117,7 @@ def enableThreadedPrint(enable=True, threadCount=cpu_count()):
 thread_data = threading.local()
 
 
-def nextProgressIndicator():
+def next_progress_indicator():
     return next(thread_data.progressIndicator)
 
 
@@ -144,7 +144,7 @@ class Task():
         self.exitFunction = os._exit
         self.exitFunctionArguments = [-1]
 
-    def addFunction(self, function, *arguments):
+    def add_function(self, function, *arguments):
         aFunction = TaskFunction(function, *arguments)
         self.listOfFunctions.append(aFunction)
 
@@ -175,14 +175,14 @@ class ThreadedWork():
         self.taskNumber = 0
         self.exitFunction = None
 
-    def setExitFailFunction(self, function, *arguments):
+    def set_exit_fail_function(self, function, *arguments):
         self.exitFunction = function
         self.exitFunctionArguments = arguments
 
-    def addTask(self, description, function, *arguments):
-        self.addTaskObject(Task(description, function, *arguments))
+    def add_task(self, description, function, *arguments):
+        self.add_task_object(Task(description, function, *arguments))
 
-    def addTaskObject(self, task):
+    def add_task_object(self, task):
         task.taskNumber = self.taskNumber
         if self.exitFunction:
             task.exitFunction = self.exitFunction
@@ -198,7 +198,7 @@ class ThreadedWork():
         print(os.linesep.join(self.legend))
 
         if maxThreads > 1:
-            enableThreadedPrint(True, maxThreads)
+            enable_threaded_print(True, maxThreads)
         listOfConsumers = []
         for i in range(maxThreads):
             # every Consumer needs a stop/none item
@@ -219,7 +219,7 @@ class ThreadedWork():
                     sys.exit(0)
         # self.queue.join() <- this ignoring the KeyboardInterrupt
         if maxThreads > 1:
-            enableThreadedPrint(False)
+            enable_threaded_print(False)
         print(f"\n{self.description} ... done")
 
 

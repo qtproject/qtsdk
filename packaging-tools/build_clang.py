@@ -33,7 +33,7 @@ import os
 from shutil import rmtree
 
 import environmentfrombatchfile
-from bld_utils import is_linux, is_macos, is_windows, runCommand
+from bld_utils import is_linux, is_macos, is_windows, run_command
 from bldinstallercommon import create_download_extract_task, create_qt_download_task
 from read_remote_config import get_pkg_value
 from runner import do_execute_sub_process
@@ -41,13 +41,13 @@ from threadedwork import ThreadedWork
 
 
 def git_clone_and_checkout(base_path, remote_repository_url, directory, revision):
-    runCommand(['git', 'clone',
-                '--depth', '1',
-                '--config', 'core.eol=lf',
-                '--config', 'core.autocrlf=input',
-                '--branch', revision,
-                '--recursive',
-                remote_repository_url, directory], base_path)
+    run_command(['git', 'clone',
+                 '--depth', '1',
+                 '--config', 'core.eol=lf',
+                 '--config', 'core.autocrlf=input',
+                 '--branch', revision,
+                 '--recursive',
+                 remote_repository_url, directory], base_path)
 
 
 def get_clang(base_path, llvm_repository_url, llvm_revision):
@@ -190,10 +190,10 @@ def mingw_training(base_path, qtcreator_path, environment, bitness):
     qt_temp = os.path.join(base_path, 'qt_download')
     qt_mingw_temp = os.path.join(base_path, 'qt_download_mingw')
     download_packages_work = ThreadedWork("get and extract Qt")
-    download_packages_work.addTaskObject(create_qt_download_task(qt_module_urls, qt_dir, qt_temp, None))
-    download_packages_work.addTaskObject(create_qt_download_task(qt_mingw_module_urls, qt_mingw_dir, qt_mingw_temp, None))
+    download_packages_work.add_task_object(create_qt_download_task(qt_module_urls, qt_dir, qt_temp, None))
+    download_packages_work.add_task_object(create_qt_download_task(qt_mingw_module_urls, qt_mingw_dir, qt_mingw_temp, None))
 
-    download_packages_work.addTaskObject(create_download_extract_task(
+    download_packages_work.add_task_object(create_download_extract_task(
         'https://download.sysinternals.com/files/DebugView.zip',
         debugview_dir,
         base_path))
@@ -202,7 +202,7 @@ def mingw_training(base_path, qtcreator_path, environment, bitness):
     cmake_arch_suffix = 'win64-x64' if bitness == 64 else 'win32-x86'
     cmake_base_url = 'http://' + pkg_server + '/packages/jenkins/cmake/' \
         + cmake_version() + '/cmake-' + cmake_version() + '-' + cmake_arch_suffix + '.zip'
-    download_packages_work.addTaskObject(create_download_extract_task(
+    download_packages_work.add_task_object(create_download_extract_task(
         cmake_base_url, cmake_dir, base_path))
 
     download_packages_work.run()
@@ -243,10 +243,10 @@ def mingw_training(base_path, qtcreator_path, environment, bitness):
                  '-S' + qtcreator_path,
                  '-B' + creator_build_dir]
 
-    runCommand(qtc_cmake, creator_build_dir, environment)
-    runCommand([cmake_command, '--build', creator_build_dir], creator_build_dir, environment)
-    runCommand([cmake_command, '--install', creator_build_dir, '--prefix', creator_install_dir], creator_build_dir, environment)
-    runCommand([cmake_command, '--install', creator_build_dir, '--prefix', creator_install_dir, '--component', 'Dependencies'], creator_build_dir, environment)
+    run_command(qtc_cmake, creator_build_dir, environment)
+    run_command([cmake_command, '--build', creator_build_dir], creator_build_dir, environment)
+    run_command([cmake_command, '--install', creator_build_dir, '--prefix', creator_install_dir], creator_build_dir, environment)
+    run_command([cmake_command, '--install', creator_build_dir, '--prefix', creator_install_dir, '--component', 'Dependencies'], creator_build_dir, environment)
 
     # Remove the regular libclang.dll which got deployed via 'Dependencies' qtcreator install target
     os.remove(os.path.join(creator_install_dir, 'bin', 'libclang.dll'))
@@ -254,7 +254,7 @@ def mingw_training(base_path, qtcreator_path, environment, bitness):
     # Train mingw libclang library with build QtCreator
     # First time open the project, then close it. This will generate initial settings and .user files. Second time do the actual training.
     for batchFile in ['qtc.openProject.batch', 'qtc.fileTextEditorCpp.batch']:
-        runCommand(
+        run_command(
             [os.path.join(training_dir, 'runBatchFiles.bat'), msvc_version(), 'x64' if bitness == 64 else 'x86', batchFile],
             base_path, extra_environment=None, onlyErrorCaseOutput=False, expectedExitCodes=[0, 1]
         )
@@ -434,14 +434,14 @@ def check_clang(toolchain, build_path, environment):
 def package_clang(install_path, result_file_path):
     (basepath, dirname) = os.path.split(install_path)
     zip_command = ['7z', 'a', '-mmt4', result_file_path, dirname]
-    runCommand(zip_command, basepath)
+    run_command(zip_command, basepath)
 
 
 def upload_clang(file_path, remote_path):
     (path, filename) = os.path.split(file_path)
     scp_bin = '%SCP%' if is_windows() else 'scp'
     scp_command = [scp_bin, filename, remote_path]
-    runCommand(scp_command, path)
+    run_command(scp_command, path)
 
 
 def profile_data(toolchain):

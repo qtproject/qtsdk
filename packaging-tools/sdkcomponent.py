@@ -138,7 +138,7 @@ class SdkComponent:
             return True
         return False
 
-    def setArchiveSkip(self, doSkip):
+    def set_archive_skip(self, doSkip):
         self.archive_skip = doSkip
 
     def validate(self):

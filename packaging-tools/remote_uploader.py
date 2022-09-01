@@ -68,15 +68,15 @@ class RemoteUploader:
         self.remoteTargetDir = self.remoteTargetBaseDir + "/" + projectName + "/" + version + "/" + snapshotId
         self.remoteLatestLink = self.remoteTargetBaseDir + "/" + projectName + "/" + version + "/latest"
         self.init_finished = True
-        self.ensureRemoteDir(self.remoteTargetDir)
+        self.ensure_remote_dir(self.remoteTargetDir)
 
     def init_upload_path(self, remotePath):
         assert not self.init_finished, f"Already initialized as: {self.remoteTargetDir}"
         self.remoteTargetDir = self.remoteTargetBaseDir + "/" + remotePath
         self.init_finished = True
-        self.ensureRemoteDir(self.remoteTargetDir)
+        self.ensure_remote_dir(self.remoteTargetDir)
 
-    def ensureRemoteDir(self, remoteDir):
+    def ensure_remote_dir(self, remoteDir):
         assert self.init_finished, "RemoteUploader not initialized!"
         print(f"Creating remote directory: {remoteDir}")
         cmd = self.ssh_cmd + ['mkdir', '-p', remoteDir]
@@ -84,26 +84,26 @@ class RemoteUploader:
         if not self.dryRun:
             check_call(cmd, timeout=60)  # give it 60s
 
-    def _copyToRemote(self, fileName, destDirName):
+    def _copy_to_remote(self, fileName, destDirName):
         """Copy the given file to destDirName which is relative to remoteBasePath."""
         assert self.init_finished, "RemoteUploader not initialized!"
         remoteDestination = self.remoteLogin + ':' + self.remoteTargetDir
         if destDirName:
             remoteDestination = remoteDestination + '/' + destDirName + '/'
             if "windows" in platform.system().lower():
-                self.ensureRemoteDir(self.remoteTargetDir + '/' + destDirName + '/')
+                self.ensure_remote_dir(self.remoteTargetDir + '/' + destDirName + '/')
         print(f"Copying [{fileName}] to [{remoteDestination}]")
         cmd = self.copy_cmd + [fileName, remoteDestination]
         print("Executing: ", ' '.join(cmd))
         if not self.dryRun:
             check_call(cmd, timeout=60 * 10)  # give it 10 mins
 
-    def copyToRemote(self, path: str, destDirName=""):
+    def copy_to_remote(self, path: str, destDirName=""):
         items = [path] if os.path.isfile(path) else [os.path.join(path, x) for x in os.listdir(path)]
         for item in items:
-            self._copyToRemote(item, destDirName)
+            self._copy_to_remote(item, destDirName)
 
-    def updateLatestSymlink(self, forceUpdate=True):
+    def update_latest_symlink(self, forceUpdate=True):
         assert self.init_finished, "RemoteUploader not initialized!"
         print(f"Creating remote symlink: [{self.remoteLatestLink}] -> [{self.remoteTargetDir}]")
         options = ["-sfn"] if forceUpdate else ["-sn"]
@@ -134,8 +134,8 @@ def main() -> None:
 
     uploader = RemoteUploader(args.dry_run, args.remote_server, args.remote_server_user, args.remote_server_base_path)
     uploader.init_snapshot_upload_path(args.project_name, args.project_version, args.project_snapshot_id)
-    uploader.copyToRemote(args.source, args.subdir_name)
-    uploader.updateLatestSymlink()
+    uploader.copy_to_remote(args.source, args.subdir_name)
+    uploader.update_latest_symlink()
 
 
 if __name__ == "__main__":

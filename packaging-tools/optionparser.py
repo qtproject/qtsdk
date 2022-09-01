@@ -43,7 +43,7 @@ class PackagingOptions:
         self.config.optionxform = str
         self.config.read(confFile)
 
-    def configSectionMap(self, section):
+    def config_section_map(self, section):
         dict1 = {}
         options = self.config.options(section)
         for option in options:
@@ -56,16 +56,16 @@ class PackagingOptions:
                 dict1[option] = None
         return dict1
 
-    def sectionExists(self, section):
+    def section_exists(self, section):
         return self.config.has_section(section)
 
-    def optionExists(self, section, option):
-        return self.sectionExists(section) and self.config.has_option(section, option)
+    def option_exists(self, section, option):
+        return self.section_exists(section) and self.config.has_option(section, option)
 
-    def configMap(self):
+    def config_map(self):
         dict1 = {}
         for section in self.config.sections():
-            dict1.update(self.configSectionMap(section))
+            dict1.update(self.config_section_map(section))
         return dict1
 
     def verbose(self):
@@ -77,7 +77,7 @@ class PackagingOptions:
             print()
 
 
-def getPkgOptions(confFilePath):
+def get_pkg_options(confFilePath):
     return PackagingOptions(confFilePath)
 
 
@@ -88,9 +88,9 @@ def main() -> None:
                         help="Absolute path pointing into configuration file which contains all required options for packaging.")
     args = parser.parse_args(sys.argv[1:])
     # Print out all options
-    options = getPkgOptions(args.conf_file)
-    configMap = options.configMap()
-    print(configMap)
+    options = get_pkg_options(args.conf_file)
+    config_map = options.config_map()
+    print(config_map)
 
 
 if __name__ == '__main__':
