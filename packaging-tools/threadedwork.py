@@ -39,9 +39,9 @@ from time import sleep
 from traceback import format_exc
 
 # we are using RLock, because threadedPrint is using the same lock
-outputLock = threading.RLock()
-outputStates = None
-outputFormatString = ''
+output_lock = threading.RLock()
+output_states = None
+output_format_string = ''
 
 
 # prepare our std output hooks
@@ -51,20 +51,20 @@ class StdOutHook:
         strippedText = text.strip()
         if strippedText == "":
             return
-        global outputStates
-        global outputFormatString
+        global output_states
+        global output_format_string
         localProgressIndicator = None
         if len(strippedText) > 6:
             localProgressIndicator = nextProgressIndicator()
         else:
             localProgressIndicator = strippedText
 
-        newValue = f"{threadData.taskNumber}: {localProgressIndicator}"
-        with outputLock:
-            if newValue != outputStates[threadData.workerThreadId]:
-                oldOutput = "\r" + outputFormatString.format(*outputStates).strip()
-                outputStates[threadData.workerThreadId] = newValue
-                newOutput = "\r" + outputFormatString.format(*outputStates).strip()
+        newValue = f"{thread_data.taskNumber}: {localProgressIndicator}"
+        with output_lock:
+            if newValue != output_states[thread_data.workerThreadId]:
+                oldOutput = "\r" + output_format_string.format(*output_states).strip()
+                output_states[thread_data.workerThreadId] = newValue
+                newOutput = "\r" + output_format_string.format(*output_states).strip()
                 # cleanup old output if the new line is shorter
                 cleanerString = ""
                 if len(oldOutput) > len(newOutput):
@@ -78,7 +78,7 @@ class StdOutHook:
 
 class StdErrHook:
     def write(self, text):
-        with outputLock:
+        with output_lock:
             sys.__stderr__.write(text)
 
     def flush(self):
@@ -87,7 +87,7 @@ class StdErrHook:
 
 # builtin print() isn't threadsafe, lets make it threadsafe
 def threadedPrint(*a, **b):
-    with outputLock:
+    with output_lock:
         org_print(*a, **b)
 
 
@@ -99,12 +99,12 @@ org_sterr = sys.stderr
 
 def enableThreadedPrint(enable=True, threadCount=cpu_count()):
     if enable:
-        global outputStates
-        global outputFormatString
-        outputStates = [""] * (threadCount)
-        outputFormatString = ""
+        global output_states
+        global output_format_string
+        output_states = [""] * (threadCount)
+        output_format_string = ""
         for x in range(threadCount):
-            outputFormatString = outputFormatString + "{" + str(x) + ":10}"
+            output_format_string = output_format_string + "{" + str(x) + ":10}"
         sys.stdout = StdOutHook()
         sys.stderr = StdErrHook()
         builtins.print = threadedPrint
@@ -114,11 +114,11 @@ def enableThreadedPrint(enable=True, threadCount=cpu_count()):
         builtins.print = org_print
 
 
-threadData = threading.local()
+thread_data = threading.local()
 
 
 def nextProgressIndicator():
-    return next(threadData.progressIndicator)
+    return next(thread_data.progressIndicator)
 
 
 class TaskFunction():
@@ -154,7 +154,7 @@ class Task():
                 taskFunction.function(*(taskFunction.arguments))
         except Exception:
             print("FAIL")
-            with outputLock:
+            with output_lock:
                 # there is no clean exit so we adding linesep here
                 sys.__stdout__.write(os.linesep)
                 sys.__stdout__.flush()
@@ -232,10 +232,10 @@ class Consumer(threading.Thread):
 
     def run(self, stableRunIndicator=True):
         if stableRunIndicator:
-            threadData.progressIndicator = itertools.cycle(['..'])
+            thread_data.progressIndicator = itertools.cycle(['..'])
         else:
-            threadData.progressIndicator = itertools.cycle(['|', '/', '-', '\\'])
-        threadData.workerThreadId = self.workerThreadId
+            thread_data.progressIndicator = itertools.cycle(['|', '/', '-', '\\'])
+        thread_data.workerThreadId = self.workerThreadId
         # run as long we have something in that queue
         while True:
             task = self.queue.get()
@@ -243,6 +243,6 @@ class Consumer(threading.Thread):
                 self.queue.task_done()
                 break
             # we like to know which task get the progress -> see std handling
-            threadData.taskNumber = task.taskNumber
+            thread_data.taskNumber = task.taskNumber
             task.do()
             self.queue.task_done()

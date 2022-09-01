@@ -65,7 +65,7 @@ log = init_logger(__name__, debug_mode=False)
 timestamp = datetime.fromtimestamp(time()).strftime('%Y-%m-%d--%H:%M:%S')
 
 
-class event_register():
+class EventRegister():
     event_injector: Optional[Path] = None
     python_path: str = ""
 
@@ -86,8 +86,8 @@ class event_register():
         if event_injector_path:
             cls.event_injector = Path(event_injector_path).resolve(strict=True)
 
-    async def __aenter__(self) -> 'event_register':
-        if event_register.event_injector:
+    async def __aenter__(self) -> 'EventRegister':
+        if EventRegister.event_injector:
             self.register_event(self.event_name, "START", self.summary_data, message="")
         return self
 
@@ -97,15 +97,15 @@ class event_register():
         if traceback:
             ret = False  # will cause the exception to be propagated
             event_type = "ABORT"
-        if event_register.event_injector:
+        if EventRegister.event_injector:
             self.register_event(self.event_name, event_type, self.summary_data, message=exc_val)
         return ret
 
     def register_event(self, event_name: str, event_type: str, export_summary: Dict[str, str], message: str) -> None:
-        if not event_register.event_injector:
+        if not EventRegister.event_injector:
             log.warning("Unable to register event as injector not found!")
             return
-        cmd = [str(event_register.python_path), str(event_register.event_injector), f"--event={event_type}", f"--task={event_name}",
+        cmd = [str(EventRegister.python_path), str(EventRegister.event_injector), f"--event={event_type}", f"--task={event_name}",
                f"--project-name={export_summary.get('project', '')}",
                f"--project-version={export_summary.get('version', '')}",
                f"--destination-branch={export_summary.get('destination_branch', '')}",
@@ -497,11 +497,11 @@ async def sync_production(tasks: List[ReleaseTask], repoLayout: QtRepositoryLayo
 
     # if _all_ repository updates to production were successful then we can sync to production
     if syncS3:
-        async with event_register(f"{license_}: repo sync s3", event_injector, export_data):
+        async with EventRegister(f"{license_}: repo sync s3", event_injector, export_data):
             sync_production_repositories_to_s3(stagingServer, syncS3, updatedProductionRepositories,
                                                stagingServerRoot, license_)
     if syncExt:
-        async with event_register(f"{license_}: repo sync ext", event_injector, export_data):
+        async with EventRegister(f"{license_}: repo sync ext", event_injector, export_data):
             await sync_production_repositories_to_ext(stagingServer, syncExt, updatedProductionRepositories,
                                                       stagingServerRoot, license_)
     log.info("Production sync trigger done!")
@@ -517,12 +517,12 @@ async def handle_update(stagingServer: str, stagingServerRoot: str, license_: st
     # get repository layout
     repoLayout = QtRepositoryLayout(stagingServerRoot, license_, repoDomain)
     # this may take a while depending on how big the repositories are
-    async with event_register(f"{license_}: repo build", event_injector, export_data):
+    async with EventRegister(f"{license_}: repo build", event_injector, export_data):
         ret = await build_online_repositories(tasks, license_, installerConfigBaseDir, artifactShareBaseUrl, ifwTools,
                                               buildRepositories)
 
     if updateRepositories:
-        async with event_register(f"{license_}: repo update", event_injector, export_data):
+        async with EventRegister(f"{license_}: repo update", event_injector, export_data):
             await update_repositories(tasks, stagingServer, stagingServerRoot, repoLayout, updateStaging, updateProduction,
                                       rta, ifwTools)
     if syncRepositories:
@@ -637,7 +637,7 @@ async def build_offline_tasks(stagingServer: str, stagingServerRoot: str, tasks:
                               installerConfigBaseDir: str, artifactShareBaseUrl: str,
                               ifwTools: str, installerBuildId: str, updateStaging: bool,
                               enable_oss_snapshots: bool, event_injector: str, export_data: Dict[str, str]) -> None:
-    async with event_register(f"{license_}: offline", event_injector, export_data):
+    async with EventRegister(f"{license_}: offline", event_injector, export_data):
         await _build_offline_tasks(stagingServer, stagingServerRoot, tasks, license_, installerConfigBaseDir,
                                    artifactShareBaseUrl, ifwTools, installerBuildId, updateStaging, enable_oss_snapshots)
 

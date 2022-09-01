@@ -181,17 +181,17 @@ if __name__ == '__main__':
         parser.add_argument('--crash', action='store_true', default=False)
         parser.add_argument('--exitCode', type=int)
         parser.add_argument('--testMethod')
-        callerArguments = parser.parse_args()
-        if callerArguments.sleep:
-            sleep(callerArguments.sleep)
-        if callerArguments.printLines:
-            printLines(callerArguments.printLines)
-        if callerArguments.crash:
+        caller_arguments = parser.parse_args()
+        if caller_arguments.sleep:
+            sleep(caller_arguments.sleep)
+        if caller_arguments.printLines:
+            printLines(caller_arguments.printLines)
+        if caller_arguments.crash:
             sys.__stdout__.flush()
             sys.__stderr__.flush()
             crash()
-        if callerArguments.exitCode:
-            os._exit(callerArguments.exitCode)
-        if callerArguments.testMethod:
+        if caller_arguments.exitCode:
+            os._exit(caller_arguments.exitCode)
+        if caller_arguments.testMethod:
             # python test_runCommand.py --testMethod test_Crash_onlyErrorCaseOutput
-            TestRunCommand(methodName=callerArguments.testMethod).debug()
+            TestRunCommand(methodName=caller_arguments.testMethod).debug()

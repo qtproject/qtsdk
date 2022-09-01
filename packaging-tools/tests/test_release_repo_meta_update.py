@@ -55,8 +55,8 @@ class TestReleaseRepoMetaUpdate(unittest.TestCase):
     mixed_migrated_paths = None  # type: List[str]
 
     @classmethod
-    def setUpClass(self) -> None:
-        self.paths = [
+    def setUpClass(cls) -> None:
+        cls.paths = [
             "repo1/Updates.xml",
             "repo2/Updates.xml",
             "repo2" + convert_suffix + "/Updates.xml",
@@ -78,14 +78,14 @@ class TestReleaseRepoMetaUpdate(unittest.TestCase):
             "repo9" + convert_suffix + "/",  # meta.7z missing
             "repo10" + backup_suffix + "123456"
         ]
-        self.non_migrated_paths = [
+        cls.non_migrated_paths = [
             "repo1/Updates.xml",
             "repo2/sub2/Updates.xml",
             "repo3/sub3/subsub3/Updates.xml",
             "repo4/Updates.xml",
             "repo5/Updates.xml",
         ]
-        self.mixed_migrated_paths = [
+        cls.mixed_migrated_paths = [
             "repo1/Updates.xml",
             "repo1" + convert_suffix + "/Updates.xml",
             "repo2/sub2/Updates.xml",
