@@ -105,46 +105,46 @@ class TestReleaseRepoMetaUpdate(unittest.TestCase):
 
     @asyncio_test
     async def test_scan_repositories(self) -> None:
-        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
-            self._write_test_repo(tmpBaseDir, self.paths)
+        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmp_base_dir:
+            self._write_test_repo(tmp_base_dir, self.paths)
 
-            done_repos, pending_repos, unconverted_repos, broken_repos = scan_repositories(tmpBaseDir)
-            self.assertListEqual(sorted([repo.split(tmpBaseDir)[-1] for repo in broken_repos]),
+            done_repos, pending_repos, unconverted_repos, broken_repos = scan_repositories(tmp_base_dir)
+            self.assertListEqual(sorted([repo.split(tmp_base_dir)[-1] for repo in broken_repos]),
                                  sorted(["/repo9" + convert_suffix]))
-            self.assertListEqual(sorted([repo.split(tmpBaseDir)[-1] for repo in unconverted_repos]),
+            self.assertListEqual(sorted([repo.split(tmp_base_dir)[-1] for repo in unconverted_repos]),
                                  sorted(["/repo1", "/repo2", "/repo3", "/repo4", "/repo6", "/repo8", "/repo9"]))
-            self.assertListEqual(sorted([repo.split(tmpBaseDir)[-1] for repo in pending_repos]),
+            self.assertListEqual(sorted([repo.split(tmp_base_dir)[-1] for repo in pending_repos]),
                                  sorted(["/repo2" + convert_suffix, "/repo3" + convert_suffix,
                                          "/repo7" + convert_suffix]))
-            self.assertListEqual(sorted([repo.split(tmpBaseDir)[-1] for repo in done_repos]),
+            self.assertListEqual(sorted([repo.split(tmp_base_dir)[-1] for repo in done_repos]),
                                  sorted(["/repo5", "/repo7"]))
 
     @asyncio_test
     async def test_check_repos_which_can_be_updated(self) -> None:
-        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
-            self._write_test_repo(tmpBaseDir, self.paths)
-            done_repos, pending_repos, unconverted_repos, _ = scan_repositories(tmpBaseDir)
+        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmp_base_dir:
+            self._write_test_repo(tmp_base_dir, self.paths)
+            done_repos, pending_repos, unconverted_repos, _ = scan_repositories(tmp_base_dir)
 
             updatable_repos, existing_pending_repos = check_repos_which_can_be_updated(done_repos + pending_repos + unconverted_repos)
-            self.assertListEqual(sorted([repo.split(tmpBaseDir)[-1] for repo in updatable_repos]),
+            self.assertListEqual(sorted([repo.split(tmp_base_dir)[-1] for repo in updatable_repos]),
                                  sorted(["/repo1", "/repo4", "/repo5", "/repo6", "/repo8"]))
-            self.assertListEqual(sorted([repo.split(tmpBaseDir)[-1] for repo in existing_pending_repos]),
+            self.assertListEqual(sorted([repo.split(tmp_base_dir)[-1] for repo in existing_pending_repos]),
                                  sorted(["/repo2", "/repo3", "/repo7", "/repo9"]))
 
     @asyncio_test
     async def test_swap_repositories_invalid(self) -> None:
-        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
-            self._write_test_repo(tmpBaseDir, self.paths)
-            unconverted_repos = scan_repositories(tmpBaseDir)[2]
+        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmp_base_dir:
+            self._write_test_repo(tmp_base_dir, self.paths)
+            unconverted_repos = scan_repositories(tmp_base_dir)[2]
             with self.assertRaises(IfwRepoUpdateError):
                 await create_converted_repositories(repogen="foobar-repogen", repositories_to_migrate=unconverted_repos,
                                                     dry_run=True)
 
     @asyncio_test
     async def test_swap_repositories_valid(self) -> None:
-        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
-            self._write_test_repo(tmpBaseDir, self.non_migrated_paths)
-            unconverted_repos = scan_repositories(tmpBaseDir)[2]
+        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmp_base_dir:
+            self._write_test_repo(tmp_base_dir, self.non_migrated_paths)
+            unconverted_repos = scan_repositories(tmp_base_dir)[2]
             successful_conversions, failed_conversions = await create_converted_repositories(repogen="foobar-repogen",
                                                                                              repositories_to_migrate=unconverted_repos,
                                                                                              dry_run=True)

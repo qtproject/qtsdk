@@ -23,9 +23,7 @@ repos:
         name: Check PEP8 compliance (flake8)
         # Disable E203 for compatibility with blackformatter, and W503 as it goes against PEP8
         # Disable checks that are not relevant to this patch, they will be introduced later
-        # Disable pep8-naming checks that will be introduced later:
-        # - N806 variable in function should be lowercase
-        entry: bash -c 'pipenv run python3 -m flake8 --max-line-length=99 --ignore=E203,E501,W503,N806 "$@"'
+        entry: bash -c 'pipenv run python3 -m flake8 --max-line-length=99 --ignore=E203,E501,W503 "$@"'
         language: system
         types: [python]
         fail_fast: true

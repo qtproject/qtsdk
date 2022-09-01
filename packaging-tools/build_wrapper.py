@@ -169,9 +169,9 @@ def move_files_to_parent_dir(source):
 def create_download_documentation_task(base_url, download_path):
     doc_base_url = base_url + "/doc"
 
-    useLocal = urlparse(doc_base_url).scheme == "file"
-    print(f"doc_base_url: {doc_base_url} useLocal: {useLocal}")
-    if useLocal:
+    use_local = urlparse(doc_base_url).scheme == "file"
+    print(f"doc_base_url: {doc_base_url} use_local: {use_local}")
+    if use_local:
         file_list = os.listdir(doc_base_url[len("file:///"):])
     else:
         with urlopen(doc_base_url) as urlpath:
@@ -253,23 +253,23 @@ PluginConf = namedtuple('PluginConf', ['git_url', 'branch_or_tag', 'checkout_dir
 
 def parse_qtcreator_plugins(pkg_conf_file):
     """Parse available Qt Creator plugins from configuration file"""
-    pluginList = []
+    plugin_list = []
     if not pkg_conf_file:
-        return pluginList
-    pluginOptions = get_pkg_options(pkg_conf_file)
-    sectionName = "QtCreator.Build.Plugin"
-    keyName = "plugins"
-    if not pluginOptions.option_exists(sectionName, keyName):
-        return pluginList
-    pluginConfList = pluginOptions.config_section_map(sectionName)[keyName]
-    for pluginName in pluginConfList.replace(" ", "").replace("\n", "").split(","):
-        section = "QtCreator.Build.Plugin." + pluginName
-        pluginUrl = pluginOptions.config_section_map(section)["QTC_PLUGIN_GIT_URL"]
-        branchOrTag = pluginOptions.config_section_map(section)["QTC_PLUGIN_GIT_BRANCH_OR_TAG"]
-        checkoutDirName = pluginOptions.config_section_map(section)["QTC_PLUGIN_CHECKOUT_DIR_NAME"]
-        plugin = PluginConf(git_url=pluginUrl, branch_or_tag=branchOrTag, checkout_dir=checkoutDirName)
-        pluginList.extend([plugin])
-    return pluginList
+        return plugin_list
+    plugin_options = get_pkg_options(pkg_conf_file)
+    section_name = "QtCreator.Build.Plugin"
+    key_name = "plugins"
+    if not plugin_options.option_exists(section_name, key_name):
+        return plugin_list
+    plugin_conf_list = plugin_options.config_section_map(section_name)[key_name]
+    for plugin_name in plugin_conf_list.replace(" ", "").replace("\n", "").split(","):
+        section = "QtCreator.Build.Plugin." + plugin_name
+        plugin_url = plugin_options.config_section_map(section)["QTC_PLUGIN_GIT_URL"]
+        branch_or_tag = plugin_options.config_section_map(section)["QTC_PLUGIN_GIT_BRANCH_OR_TAG"]
+        checkout_dir_name = plugin_options.config_section_map(section)["QTC_PLUGIN_CHECKOUT_DIR_NAME"]
+        plugin = PluginConf(git_url=plugin_url, branch_or_tag=branch_or_tag, checkout_dir=checkout_dir_name)
+        plugin_list.extend([plugin])
+    return plugin_list
 
 
 QtcPlugin = namedtuple('QtcPlugin', ['name',
@@ -552,20 +552,20 @@ def handle_qt_creator_build(option_dict, qtcreator_plugins):
 
     # Get Qt Creator sources if not present yet
     if 'QT_CREATOR_GIT_URL' in option_dict:
-        qtCreatorSourceDirectory = os.path.join(work_dir, 'qt-creator')
-        if os.path.exists(qtCreatorSourceDirectory):
-            shutil.rmtree(qtCreatorSourceDirectory)
-        os.makedirs(qtCreatorSourceDirectory)
+        qtcreator_source_directory = os.path.join(work_dir, 'qt-creator')
+        if os.path.exists(qtcreator_source_directory):
+            shutil.rmtree(qtcreator_source_directory)
+        os.makedirs(qtcreator_source_directory)
         clone_repository(option_dict['QT_CREATOR_GIT_URL'], option_dict['QT_CREATOR_GIT_BRANCH'],
-                         qtCreatorSourceDirectory, full_clone=True, init_subrepos=True)
+                         qtcreator_source_directory, full_clone=True, init_subrepos=True)
     # Get Qt Creator plugin sources if not present yet
-    for pluginConf in qtcreator_plugins:
-        checkoutDir = os.path.join(work_dir, pluginConf.checkout_dir)
-        if pluginConf.git_url:
-            if os.path.exists(checkoutDir):
-                shutil.rmtree(checkoutDir)
-            os.makedirs(checkoutDir)
-            clone_repository(pluginConf.git_url, pluginConf.branch_or_tag, checkoutDir, full_clone=True)
+    for plugin_conf in qtcreator_plugins:
+        checkout_dir = os.path.join(work_dir, plugin_conf.checkout_dir)
+        if plugin_conf.git_url:
+            if os.path.exists(checkout_dir):
+                shutil.rmtree(checkout_dir)
+            os.makedirs(checkout_dir)
+            clone_repository(plugin_conf.git_url, plugin_conf.branch_or_tag, checkout_dir, full_clone=True)
 
     # Build time variables
     qtcreator_source = os.path.join(work_dir, 'qt-creator')
@@ -1006,9 +1006,9 @@ def handle_sdktool_build(option_dict):
 
 def notarize_dmg(dmg_path, installer_name_base):
     # bundle-id is just a unique identifier without any special meaning, used to track the notarization progress
-    bundleId = installer_name_base + "-" + strftime('%Y-%m-%d', gmtime())
-    bundleId = bundleId.replace('_', '-').replace(' ', '')  # replace illegal characters for bundleId
-    args = [sys.executable, 'notarize.py', '--dmg=' + dmg_path, '--bundle-id=' + bundleId]
+    bundle_id = installer_name_base + "-" + strftime('%Y-%m-%d', gmtime())
+    bundle_id = bundle_id.replace('_', '-').replace(' ', '')  # replace illegal characters for bundle_id
+    args = [sys.executable, 'notarize.py', '--dmg=' + dmg_path, '--bundle-id=' + bundle_id]
     do_execute_sub_process(args, SCRIPT_ROOT_DIR)
 
 
@@ -1063,71 +1063,71 @@ def init_pkg_options(args):
             return "mac-clang-10.11-x64"
         raise RuntimeError("Unsupported host platform")
 
-    optionDict = {}
+    option_dict = {}
     # Are we using local conf file for pkg options?
     if args.pkg_conf_file:
         options = get_pkg_options(args.pkg_conf_file)
-        optionDict = merge_two_dicts(optionDict, options.config_map())
-        optionDict['TARGET_ENV'] = args.target_env if args.target_env else get_default_target_env()
-        optionDict['BUILD_NUMBER'] = str(strftime('%Y%m%d%H%M%S', gmtime()))
-        optionDict['PACKAGE_STORAGE_SERVER_ADDR'] = optionDict['PACKAGE_STORAGE_SERVER_USER'] + '@' + optionDict['PACKAGE_STORAGE_SERVER']
+        option_dict = merge_two_dicts(option_dict, options.config_map())
+        option_dict['TARGET_ENV'] = args.target_env if args.target_env else get_default_target_env()
+        option_dict['BUILD_NUMBER'] = str(strftime('%Y%m%d%H%M%S', gmtime()))
+        option_dict['PACKAGE_STORAGE_SERVER_ADDR'] = option_dict['PACKAGE_STORAGE_SERVER_USER'] + '@' + option_dict['PACKAGE_STORAGE_SERVER']
     else:
-        optionDict = dict(os.environ)
+        option_dict = dict(os.environ)
         # Check for command line overrides
-        optionDict['LICENSE'] = args.license_
-        optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] = args.path
-        optionDict['OPENSSL_LIBS'] = args.openssl_libs
-        optionDict['SNAPSHOT_SERVER_PATH'] = args.snapshot_path
-        optionDict['TARGET_ENV'] = args.target_env if args.target_env else os.environ.get('cfg')
-        optionDict['BUILD_NUMBER'] = args.build_number if args.build_number else os.environ.get('BUILD_NUMBER')
+        option_dict['LICENSE'] = args.license_
+        option_dict['PACKAGE_STORAGE_SERVER_BASE_DIR'] = args.path
+        option_dict['OPENSSL_LIBS'] = args.openssl_libs
+        option_dict['SNAPSHOT_SERVER_PATH'] = args.snapshot_path
+        option_dict['TARGET_ENV'] = args.target_env if args.target_env else os.environ.get('cfg')
+        option_dict['BUILD_NUMBER'] = args.build_number if args.build_number else os.environ.get('BUILD_NUMBER')
 
-        optionDict['SIGNING_SERVER'] = get_pkg_value("SIGNING_SERVER")
-        optionDict['SIGNING_PASSWORD'] = get_pkg_value("SIGNING_PASSWORD")
-        optionDict['USP_SERVER_URL'] = get_pkg_value("USP_SERVER_URL")
-        optionDict['USP_AUTH_KEY'] = get_pkg_value("USP_AUTH_KEY")
-        optionDict['PACKAGE_STORAGE_SERVER_USER'] = get_pkg_value("PACKAGE_STORAGE_SERVER_USER")
-        optionDict['PACKAGE_STORAGE_SERVER'] = get_pkg_value("PACKAGE_STORAGE_SERVER")
-        optionDict['PACKAGE_STORAGE_SERVER_ADDR'] = args.server or get_pkg_value("PACKAGE_STORAGE_SERVER_ADDR")
-        optionDict['PACKAGE_STORAGE_SERVER_PATH_HTTP'] = args.override_server_path_http or get_pkg_value("PACKAGE_STORAGE_SERVER_PATH_HTTP")
-        optionDict['SNAPSHOT_SERVER'] = args.snapshot_server or get_pkg_value("SNAPSHOT_SERVER")
-        optionDict['EXT_SERVER_BASE_URL'] = get_pkg_value("EXT_SERVER_BASE_URL")
-        optionDict['RTA_SERVER_BASE_URL'] = get_pkg_value("RTA_SERVER_BASE_URL")
-        optionDict['PKG_STAGING_SERVER'] = get_pkg_value("PKG_STAGING_SERVER")
-        optionDict['PKG_STAGING_SERVER_UNAME'] = get_pkg_value("PKG_STAGING_SERVER_UNAME")
-        optionDict['PROD_USER'] = get_pkg_value("PROD_USER")
-        optionDict['PROD_ADDR'] = get_pkg_value("PROD_ADDR")
+        option_dict['SIGNING_SERVER'] = get_pkg_value("SIGNING_SERVER")
+        option_dict['SIGNING_PASSWORD'] = get_pkg_value("SIGNING_PASSWORD")
+        option_dict['USP_SERVER_URL'] = get_pkg_value("USP_SERVER_URL")
+        option_dict['USP_AUTH_KEY'] = get_pkg_value("USP_AUTH_KEY")
+        option_dict['PACKAGE_STORAGE_SERVER_USER'] = get_pkg_value("PACKAGE_STORAGE_SERVER_USER")
+        option_dict['PACKAGE_STORAGE_SERVER'] = get_pkg_value("PACKAGE_STORAGE_SERVER")
+        option_dict['PACKAGE_STORAGE_SERVER_ADDR'] = args.server or get_pkg_value("PACKAGE_STORAGE_SERVER_ADDR")
+        option_dict['PACKAGE_STORAGE_SERVER_PATH_HTTP'] = args.override_server_path_http or get_pkg_value("PACKAGE_STORAGE_SERVER_PATH_HTTP")
+        option_dict['SNAPSHOT_SERVER'] = args.snapshot_server or get_pkg_value("SNAPSHOT_SERVER")
+        option_dict['EXT_SERVER_BASE_URL'] = get_pkg_value("EXT_SERVER_BASE_URL")
+        option_dict['RTA_SERVER_BASE_URL'] = get_pkg_value("RTA_SERVER_BASE_URL")
+        option_dict['PKG_STAGING_SERVER'] = get_pkg_value("PKG_STAGING_SERVER")
+        option_dict['PKG_STAGING_SERVER_UNAME'] = get_pkg_value("PKG_STAGING_SERVER_UNAME")
+        option_dict['PROD_USER'] = get_pkg_value("PROD_USER")
+        option_dict['PROD_ADDR'] = get_pkg_value("PROD_ADDR")
 
         if LOCAL_MODE:
-            optionDict['PACKAGE_STORAGE_SERVER_USER'] = getuser()  # current user
-            optionDict['PACKAGE_STORAGE_SERVER'] = "127.0.0.1"
-            optionDict['PACKAGE_STORAGE_SERVER_ADDR'] = optionDict['PACKAGE_STORAGE_SERVER_USER'] + "@" + optionDict['PACKAGE_STORAGE_SERVER']
-            optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] = LOCAL_INSTALLER_DIR
-            optionDict['SNAPSHOT_SERVER'] = optionDict['PACKAGE_STORAGE_SERVER_ADDR']
-            optionDict['SNAPSHOT_SERVER_PATH'] = LOCAL_INSTALLER_DIR
+            option_dict['PACKAGE_STORAGE_SERVER_USER'] = getuser()  # current user
+            option_dict['PACKAGE_STORAGE_SERVER'] = "127.0.0.1"
+            option_dict['PACKAGE_STORAGE_SERVER_ADDR'] = option_dict['PACKAGE_STORAGE_SERVER_USER'] + "@" + option_dict['PACKAGE_STORAGE_SERVER']
+            option_dict['PACKAGE_STORAGE_SERVER_BASE_DIR'] = LOCAL_INSTALLER_DIR
+            option_dict['SNAPSHOT_SERVER'] = option_dict['PACKAGE_STORAGE_SERVER_ADDR']
+            option_dict['SNAPSHOT_SERVER_PATH'] = LOCAL_INSTALLER_DIR
 
     if is_linux():
-        optionDict['HOST_PLATFORM'] = 'linux'
+        option_dict['HOST_PLATFORM'] = 'linux'
     elif is_macos():
-        optionDict['HOST_PLATFORM'] = 'mac'
+        option_dict['HOST_PLATFORM'] = 'mac'
     else:
-        optionDict['HOST_PLATFORM'] = 'windows'
+        option_dict['HOST_PLATFORM'] = 'windows'
 
-    optionDict['CURL_COMMAND'] = '%CURL%' if is_windows() else 'curl'
-    optionDict['RM_COMMAND'] = '%RM%' if is_windows() else 'rm'
-    optionDict['SSH_COMMAND'] = '%SSH%' if is_windows() else 'ssh'
-    optionDict['SCP_COMMAND'] = '%SCP%' if is_windows() else 'scp'
-    optionDict['WORK_DIR'] = WORK_DIR
+    option_dict['CURL_COMMAND'] = '%CURL%' if is_windows() else 'curl'
+    option_dict['RM_COMMAND'] = '%RM%' if is_windows() else 'rm'
+    option_dict['SSH_COMMAND'] = '%SSH%' if is_windows() else 'ssh'
+    option_dict['SCP_COMMAND'] = '%SCP%' if is_windows() else 'scp'
+    option_dict['WORK_DIR'] = WORK_DIR
 
     # Parse version number info if this build utilizes release description file
-    if 'RELEASE_DESCRIPTION_FILE' in optionDict:
+    if 'RELEASE_DESCRIPTION_FILE' in option_dict:
         # Path relative to script or absolute file path
-        path = optionDict['RELEASE_DESCRIPTION_FILE']
-        path = path if (os.path.isabs(path) and os.path.isfile(path)) else os.path.join(optionDict['WORK_DIR'], path)
-        optionDict['RELEASE_DESCRIPTION_FILE'] = path
+        path = option_dict['RELEASE_DESCRIPTION_FILE']
+        path = path if (os.path.isabs(path) and os.path.isfile(path)) else os.path.join(option_dict['WORK_DIR'], path)
+        option_dict['RELEASE_DESCRIPTION_FILE'] = path
         # resolve configuration files base dir
-        confBaseDir = optionDict['CONFIGURATIONS_FILE_BASE_DIR']
-        confBaseDir = confBaseDir if (os.path.isabs(confBaseDir) and os.path.isdir(confBaseDir)) else os.path.join(optionDict['WORK_DIR'], confBaseDir)
-        optionDict['CONFIGURATIONS_FILE_BASE_DIR'] = confBaseDir
+        conf_base_dir = option_dict['CONFIGURATIONS_FILE_BASE_DIR']
+        conf_base_dir = conf_base_dir if (os.path.isabs(conf_base_dir) and os.path.isdir(conf_base_dir)) else os.path.join(option_dict['WORK_DIR'], conf_base_dir)
+        option_dict['CONFIGURATIONS_FILE_BASE_DIR'] = conf_base_dir
 
         parser = ConfigParser()
         parser.read(path)
@@ -1135,10 +1135,10 @@ def init_pkg_options(args):
             if s == 'release.global':
                 version = safe_config_key_fetch(parser, s, 'version')
                 version_tag = safe_config_key_fetch(parser, s, 'version_tag')
-                optionDict['VERSION'] = version
-                optionDict['VERSION_TAG'] = version_tag
-                optionDict['VERSION_FULL'] = version if not version_tag else version + '-' + version_tag
-    return optionDict
+                option_dict['VERSION'] = version
+                option_dict['VERSION_TAG'] = version_tag
+                option_dict['VERSION_FULL'] = version if not version_tag else version + '-' + version_tag
+    return option_dict
 
 
 def main() -> None:
@@ -1148,10 +1148,10 @@ def main() -> None:
     bld_qtc_sdktool = 'build_sdktool'
     bld_licheck = 'licheck_bld'
     archive_repository = 'archive_repo'
-    CMD_LIST = (bld_qtcreator, bld_qtc_sdktool, bld_licheck, archive_repository)
+    cmd_list = (bld_qtcreator, bld_qtc_sdktool, bld_licheck, archive_repository)
 
     parser = argparse.ArgumentParser(prog="Build Wrapper", description="Manage all packaging related build steps.")
-    parser.add_argument("-c", "--command", dest="command", required=True, choices=CMD_LIST, help=str(CMD_LIST))
+    parser.add_argument("-c", "--command", dest="command", required=True, choices=cmd_list, help=str(cmd_list))
     parser.add_argument("--pkg-conf-file", dest="pkg_conf_file", default="", help="instead of reading various config options from env variables read them from the given file.")
     parser.add_argument("-l", "--license", dest="license_", default="", help="license type: enterprise or opensource")
     parser.add_argument("-b", "--build_number", dest="build_number", default="", help="Unique build number identifier")
@@ -1170,20 +1170,20 @@ def main() -> None:
     args = parser.parse_args(sys.argv[1:])
 
     # Init configuration options first
-    optionDict = init_pkg_options(args)
+    option_dict = init_pkg_options(args)
 
     # Execute given command
     # QtCreator specific
     if args.command == bld_qtcreator:
-        handle_qt_creator_build(optionDict, parse_qtcreator_plugins(args.pkg_conf_file))
+        handle_qt_creator_build(option_dict, parse_qtcreator_plugins(args.pkg_conf_file))
     # sdktool
     elif args.command == bld_qtc_sdktool:
-        handle_sdktool_build(optionDict)
+        handle_sdktool_build(option_dict)
     # Qt Installer-Framework specific
     elif args.command == bld_licheck:
-        handle_qt_licheck_build(optionDict)
+        handle_qt_licheck_build(option_dict)
     elif args.command == archive_repository:
-        do_git_archive_repo(optionDict, args.archive_repo)
+        do_git_archive_repo(option_dict, args.archive_repo)
     else:
         print('Unsupported command')
 

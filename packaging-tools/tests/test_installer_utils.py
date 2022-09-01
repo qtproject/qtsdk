@@ -56,9 +56,9 @@ class TestInstallerUtils(unittest.TestCase):
     @asyncio_test
     async def test_cd(self) -> None:
         cwd = os.getcwd()
-        with TemporaryDirectory(dir=cwd) as tmpBaseDir:
-            with cd(tmpBaseDir):
-                self.assertEqual(tmpBaseDir, os.getcwd())
+        with TemporaryDirectory(dir=cwd) as tmp_base_dir:
+            with cd(tmp_base_dir):
+                self.assertEqual(tmp_base_dir, os.getcwd())
         self.assertEqual(cwd, os.getcwd())
 
     @asyncio_test_parallel_data(
@@ -78,8 +78,8 @@ class TestInstallerUtils(unittest.TestCase):
         ("https://www.qt.io/some/file.tgz", "tar")
     )
     async def test_valid_extractor(self, archive: str, expected_extractor: str) -> None:
-        extractCmd = get_extract_cmd(archive)
-        self.assertEqual(extractCmd[0], expected_extractor, f"Not a valid extractor Callable obtained for: {archive}")
+        extract_cmd = get_extract_cmd(archive)
+        self.assertEqual(extract_cmd[0], expected_extractor, f"Not a valid extractor Callable obtained for: {archive}")
 
     @asyncio_test
     async def test_invalid_extractor(self) -> None:
@@ -88,38 +88,38 @@ class TestInstallerUtils(unittest.TestCase):
 
     @asyncio_test
     async def test_extract_archive(self) -> None:
-        with TemporaryDirectory(dir=os.getcwd()) as tmpBaseDir:
+        with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
             # create some test paths
-            tempPath = os.path.join("foo", "bar")
-            absoluteTempPath = os.path.join(tmpBaseDir, tempPath)
-            os.makedirs(absoluteTempPath)
+            temp_path = os.path.join("foo", "bar")
+            absolute_temp_path = os.path.join(tmp_base_dir, temp_path)
+            os.makedirs(absolute_temp_path)
             # create tmp file
-            tempFileName = "foobar.txt"
-            tempFilePath = os.path.join(absoluteTempPath, tempFileName)
-            with open(tempFilePath, 'w+', encoding="utf-8") as f:
+            temp_file_name = "foobar.txt"
+            temp_file_path = os.path.join(absolute_temp_path, temp_file_name)
+            with open(temp_file_path, 'w+', encoding="utf-8") as f:
                 f.write("\n")
-            self.assertTrue(os.path.isfile(tempFilePath))
+            self.assertTrue(os.path.isfile(temp_file_path))
 
             # create fake tar archive
-            tarArchivePath = os.path.join(tmpBaseDir, "foobar.tar")
-            with tarfile.open(tarArchivePath, "w") as tarFile:
-                with open(tempFilePath, mode='rb') as _tempFile:
-                    fileData = _tempFile.read()
-                    tarFile.addfile(tarfile.TarInfo(os.path.join(tempPath, tempFileName)), io.BytesIO(fileData))
+            tar_archive_path = os.path.join(tmp_base_dir, "foobar.tar")
+            with tarfile.open(tar_archive_path, "w") as tar_file:
+                with open(temp_file_path, mode='rb') as _temp_file:
+                    file_data = _temp_file.read()
+                    tar_file.addfile(tarfile.TarInfo(os.path.join(temp_path, temp_file_name)), io.BytesIO(file_data))
 
-            destDir = os.path.join(tmpBaseDir, "dest_dir")
-            await extract_archive(tarArchivePath, destDir)
-            self.assertTrue(os.path.isfile(os.path.join(destDir, tempPath, "foobar.txt")))
+            dest_dir = os.path.join(tmp_base_dir, "dest_dir")
+            await extract_archive(tar_archive_path, dest_dir)
+            self.assertTrue(os.path.isfile(os.path.join(dest_dir, temp_path, "foobar.txt")))
 
     @unittest.skipUnless(is_internal_file_server_reachable(),
                          "Skipping because file server is not accessible")
     @asyncio_test
     async def test_download_archive(self) -> None:
-        with TemporaryDirectory(dir=os.getcwd()) as tmpBaseDir:
+        with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
             pkg_srv = get_pkg_value("PACKAGE_STORAGE_SERVER_PATH_HTTP")
             test_file_url = pkg_srv + "/archive/packaging/qtsdk_testing.txt"
-            downloadedFile = download_archive(test_file_url, tmpBaseDir)
-            self.assertTrue(os.path.isfile(downloadedFile))
+            downloaded_file = download_archive(test_file_url, tmp_base_dir)
+            self.assertTrue(os.path.isfile(downloaded_file))
 
 
 if __name__ == '__main__':

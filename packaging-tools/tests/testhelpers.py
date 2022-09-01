@@ -65,9 +65,9 @@ def asyncio_test_parallel_data(*data_args, unpack=True):
 
 def is_internal_file_server_reachable() -> bool:
     try:
-        packageServer = get_pkg_value("PACKAGE_STORAGE_SERVER")
+        package_server = get_pkg_value("PACKAGE_STORAGE_SERVER")
         ping = sh.which("ping")
-        ret = subprocess.run(args=[ping, "-c", "1", packageServer], timeout=5, stdout=PIPE, stderr=PIPE)
+        ret = subprocess.run(args=[ping, "-c", "1", package_server], timeout=5, stdout=PIPE, stderr=PIPE)
         return ret.returncode == 0
     except Exception:
         pass

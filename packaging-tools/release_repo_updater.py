@@ -165,22 +165,22 @@ def has_connection_error(output: str) -> bool:
 
 
 def execute_remote_cmd(remote_server: str, remote_server_home: str, cmd: List[str], script_file_name: str, timeout=60 * 60) -> None:
-    remoteTmpDir = os.path.join(remote_server_home, "remote_scripts", timestamp)
-    create_remote_paths(remote_server, [remoteTmpDir])
-    remoteScript = create_remote_script(remote_server, cmd, remoteTmpDir, script_file_name)
-    log.info("Created remote script: [%s] with contents: %s", remoteScript, ' '.join(cmd))
-    execute_remote_script(remote_server, remoteScript, timeout)
+    remote_tmp_dir = os.path.join(remote_server_home, "remote_scripts", timestamp)
+    create_remote_paths(remote_server, [remote_tmp_dir])
+    remote_script = create_remote_script(remote_server, cmd, remote_tmp_dir, script_file_name)
+    log.info("Created remote script: [%s] with contents: %s", remote_script, ' '.join(cmd))
+    execute_remote_script(remote_server, remote_script, timeout)
 
 
 def create_remote_script(server: str, cmd: List[str], remote_script_path: str, script_file_name: str) -> str:
-    with TemporaryDirectory(dir=os.getcwd()) as tmpBaseDir:
-        tempFilePath = os.path.join(tmpBaseDir, script_file_name)
-        with open(tempFilePath, 'w+', encoding="utf-8") as f:
+    with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
+        temp_file_path = os.path.join(tmp_base_dir, script_file_name)
+        with open(temp_file_path, 'w+', encoding="utf-8") as f:
             f.write("#!/usr/bin/env bash\n")
             f.write(' '.join(cmd))
-        os.chmod(tempFilePath, 0o755)
+        os.chmod(temp_file_path, 0o755)
         create_remote_paths(server, [remote_script_path])
-        cmd = ['rsync', '-avzh', tempFilePath, server + ":" + remote_script_path]
+        cmd = ['rsync', '-avzh', temp_file_path, server + ":" + remote_script_path]
         exec_cmd(cmd, timeout=60 * 60)
         return os.path.join(remote_script_path, script_file_name)
 
@@ -205,23 +205,23 @@ async def upload_ifw_to_remote(ifw_tools: str, remote_server: str, remote_server
     assert is_valid_url_path(ifw_tools)
     log.info("Preparing ifw tools: %s", ifw_tools)
     # fetch the tool first
-    currentDir = os.getcwd()
-    ifwToolsDir = os.path.join(currentDir, "ifw_tools")
-    if not os.path.isdir(ifwToolsDir):
-        os.makedirs(ifwToolsDir)
-        destFile = download_archive(ifw_tools, ifwToolsDir)
-        await extract_archive(destFile, ifwToolsDir)
-    repogen = locate_path(ifwToolsDir, ["repogen"], filters=[os.path.isfile])
-    repogenDir = os.path.dirname(repogen)
+    current_dir = os.getcwd()
+    ifw_tools_dir = os.path.join(current_dir, "ifw_tools")
+    if not os.path.isdir(ifw_tools_dir):
+        os.makedirs(ifw_tools_dir)
+        dest_file = download_archive(ifw_tools, ifw_tools_dir)
+        await extract_archive(dest_file, ifw_tools_dir)
+    repogen = locate_path(ifw_tools_dir, ["repogen"], filters=[os.path.isfile])
+    repogen_dir = os.path.dirname(repogen)
     # upload to server
-    remoteTmpDir = os.path.join(remote_server_home, "ifw_tools", timestamp)
+    remote_tmp_dir = os.path.join(remote_server_home, "ifw_tools", timestamp)
     # create tmp dir at remote
-    create_remote_paths(remote_server, [remoteTmpDir])
+    create_remote_paths(remote_server, [remote_tmp_dir])
     # upload content
-    cmd = ['rsync', '-avzh', repogenDir + "/", remote_server + ":" + remoteTmpDir]
+    cmd = ['rsync', '-avzh', repogen_dir + "/", remote_server + ":" + remote_tmp_dir]
     exec_cmd(cmd, timeout=60 * 60)
     # return path on remote poiting to repogen
-    return os.path.join(remoteTmpDir, "repogen")
+    return os.path.join(remote_tmp_dir, "repogen")
 
 
 def check_repogen_output(output: str) -> None:
@@ -270,9 +270,9 @@ def is_safe_directory(paths: List[str]) -> None:
         path = os.path.abspath(_path)
         if path == "/":
             raise PackagingError(f"You should not make modifications directly to root: {path}")
-        illegalDirectories = ("/bin", "/boot", "/sys", "/sbin", "/root", "/lib", "/dev")
-        if path.startswith(illegalDirectories):
-            raise PackagingError(f"You should not make modifications ('{path}') under these directories: {illegalDirectories}")
+        illegal_directories = ("/bin", "/boot", "/sys", "/sbin", "/root", "/lib", "/dev")
+        if path.startswith(illegal_directories):
+            raise PackagingError(f"You should not make modifications ('{path}') under these directories: {illegal_directories}")
         if path in ["~", os.path.expanduser("~"), "/home"]:
             raise PackagingError(f"You should not make modifications directly to home directory: {path}")
 
@@ -328,20 +328,20 @@ def create_remote_repository_backup(server: str, remote_repo_path: str) -> str:
 
 def sync_production_repositories_to_s3(server: str, s3: str, updated_production_repositories: Dict[str, str],
                                        remote_root_path: str, license_: str) -> None:
-    remoteLogsBasePath = os.path.join(remote_root_path, license_, "s3_sync_logs")
-    create_remote_paths(server, [remoteLogsBasePath])
+    remote_logs_base_path = os.path.join(remote_root_path, license_, "s3_sync_logs")
+    create_remote_paths(server, [remote_logs_base_path])
 
-    for repo, remoteProductionRepoFullPath in updated_production_repositories.items():
-        remoteLogFileBase = os.path.join(remoteLogsBasePath, repo, "log-s3-" + timestamp)
-        create_remote_paths(server, [os.path.dirname(remoteLogFileBase)])
+    for repo, remote_production_repo_full_path in updated_production_repositories.items():
+        remote_log_file_base = os.path.join(remote_logs_base_path, repo, "log-s3-" + timestamp)
+        create_remote_paths(server, [os.path.dirname(remote_log_file_base)])
 
-        s3RepoPath = os.path.join(s3, repo)
-        tipPrefix = repo.replace("/", "-") + "-"
+        s3_repo_path = os.path.join(s3, repo)
+        tip_prefix = repo.replace("/", "-") + "-"
 
-        remoteLogFile = remoteLogFileBase + "-7z.txt"
-        sync_production_7z_to_s3(server, remote_root_path, remoteProductionRepoFullPath, s3RepoPath, remoteLogFile, tipPrefix)
-        remoteLogFile = remoteLogFileBase + "-xml.txt"
-        sync_production_xml_to_s3(server, remote_root_path, remoteProductionRepoFullPath, s3RepoPath, remoteLogFile, tipPrefix)
+        remote_log_file = remote_log_file_base + "-7z.txt"
+        sync_production_7z_to_s3(server, remote_root_path, remote_production_repo_full_path, s3_repo_path, remote_log_file, tip_prefix)
+        remote_log_file = remote_log_file_base + "-xml.txt"
+        sync_production_xml_to_s3(server, remote_root_path, remote_production_repo_full_path, s3_repo_path, remote_log_file, tip_prefix)
 
 
 def sync_production_7z_to_s3(server: str, server_home: str, production_repo_path: str, s3_repo_path: str, remote_log_file: str, tip: str) -> None:
@@ -362,29 +362,29 @@ def sync_production_xml_to_s3(server: str, server_home: str, production_repo_pat
 
 async def sync_production_repositories_to_ext(server: str, ext: str, updated_production_repositories: Dict[str, str],
                                               remote_root_path: str, license_: str) -> None:
-    remoteLogsBasePath = os.path.join(remote_root_path, license_, "ext_sync_logs")
-    create_remote_paths(server, [remoteLogsBasePath])
+    remote_logs_base_path = os.path.join(remote_root_path, license_, "ext_sync_logs")
+    create_remote_paths(server, [remote_logs_base_path])
 
-    extServer, extBasePath = parse_ext(ext)
+    ext_server, ext_base_path = parse_ext(ext)
 
-    for repo, remoteProductionRepoFullPath in updated_production_repositories.items():
-        remoteLogFile = os.path.join(remoteLogsBasePath, repo, "log-ext-" + timestamp + ".txt")
-        create_remote_paths(server, [os.path.dirname(remoteLogFile)])
+    for repo, remote_production_repo_full_path in updated_production_repositories.items():
+        remote_log_file = os.path.join(remote_logs_base_path, repo, "log-ext-" + timestamp + ".txt")
+        create_remote_paths(server, [os.path.dirname(remote_log_file)])
 
-        extRepoPath = os.path.join(extBasePath, repo)
-        tipPrefix = repo.replace("/", "-") + "-"
+        ext_repo_path = os.path.join(ext_base_path, repo)
+        tip_prefix = repo.replace("/", "-") + "-"
 
-        await ensure_ext_repo_paths(server, extServer, extRepoPath)  # rsync can not create missing nested directories
-        cmd = ["rsync", "-r", "--omit-dir-times", "--delete-delay", "--progress", remoteProductionRepoFullPath + "/", extServer + ":" + extRepoPath]
-        spawn_remote_background_task(server, remote_root_path, cmd, remoteLogFile, tip=tipPrefix + "ext")
+        await ensure_ext_repo_paths(server, ext_server, ext_repo_path)  # rsync can not create missing nested directories
+        cmd = ["rsync", "-r", "--omit-dir-times", "--delete-delay", "--progress", remote_production_repo_full_path + "/", ext_server + ":" + ext_repo_path]
+        spawn_remote_background_task(server, remote_root_path, cmd, remote_log_file, tip=tip_prefix + "ext")
 
 
 def spawn_remote_background_task(server: str, server_home: str, remote_cmd: List[str], remote_log_file: str, tip: str) -> None:
     if not tip:
         tip = ""
     cmd = remote_cmd + ["2>&1", "|", "tee", remote_log_file]
-    remoteScriptFileName = "sync-production-" + tip + "-" + timestamp + ".sh"
-    execute_remote_cmd(server, server_home, cmd, remoteScriptFileName, timeout=60 * 60 * 2)  # 2h timeout for uploading data to CDN
+    remote_script_file_name = "sync-production-" + tip + "-" + timestamp + ".sh"
+    execute_remote_cmd(server, server_home, cmd, remote_script_file_name, timeout=60 * 60 * 2)  # 2h timeout for uploading data to CDN
 
 
 async def update_repository(staging_server: str, repo_layout: QtRepositoryLayout, task: ReleaseTask,
@@ -394,25 +394,25 @@ async def update_repository(staging_server: str, repo_layout: QtRepositoryLayout
     log.info("Starting repository update: %s", task.get_repo_path())
     create_remote_paths(staging_server, repo_layout.get_repo_layout())
 
-    remotePendingPath = os.path.join(repo_layout.get_pending_path(), task.get_repo_path())
-    remotePendingPathRepository = os.path.join(remotePendingPath, "repository")
+    remote_pending_path = os.path.join(repo_layout.get_pending_path(), task.get_repo_path())
+    remote_pending_path_repository = os.path.join(remote_pending_path, "repository")
 
-    remoteStagingDestinationRepositoryPath = os.path.join(repo_layout.get_staging_path(), task.get_repo_path())
-    remoteProductionDestinationRepositoryPath = os.path.join(repo_layout.get_production_path(), task.get_repo_path())
+    remote_staging_destination_repository_path = os.path.join(repo_layout.get_staging_path(), task.get_repo_path())
+    remote_production_destination_repository_path = os.path.join(repo_layout.get_production_path(), task.get_repo_path())
 
     # We always replace existing repository if previous version should exist.
     # Previous version is moved as backup
-    upload_pending_repository_content(staging_server, task.get_source_online_repository_path(), remotePendingPathRepository)
+    upload_pending_repository_content(staging_server, task.get_source_online_repository_path(), remote_pending_path_repository)
 
     # Now we can run the updates on the remote
     if update_staging:
-        reset_new_remote_repository(staging_server, remotePendingPathRepository, remoteStagingDestinationRepositoryPath)
+        reset_new_remote_repository(staging_server, remote_pending_path_repository, remote_staging_destination_repository_path)
     if update_production:
-        reset_new_remote_repository(staging_server, remotePendingPathRepository, remoteProductionDestinationRepositoryPath)
+        reset_new_remote_repository(staging_server, remote_pending_path_repository, remote_production_destination_repository_path)
 
     log.info("Update done: %s", task.get_repo_path())
     # Now we can delete pending content
-    delete_remote_paths(staging_server, [remotePendingPathRepository])
+    delete_remote_paths(staging_server, [remote_pending_path_repository])
     # trigger RTA cases for the task if specified
     if rta:
         trigger_rta(rta, task)
@@ -422,33 +422,33 @@ async def build_online_repositories(tasks: List[ReleaseTask], license_: str, ins
                                     ifw_tools: str, build_repositories: bool) -> List[str]:
     log.info("Building online repositories: %i", len(tasks))
     # create base tmp dir
-    tmpBaseDir = os.path.join(os.getcwd(), "_repo_update_jobs")
+    tmp_base_dir = os.path.join(os.getcwd(), "_repo_update_jobs")
     if build_repositories:
-        shutil.rmtree(tmpBaseDir, ignore_errors=True)
-    os.makedirs(tmpBaseDir, exist_ok=True)
+        shutil.rmtree(tmp_base_dir, ignore_errors=True)
+    os.makedirs(tmp_base_dir, exist_ok=True)
 
     assert license_, "The 'license_' must be defined!"
     assert artifact_share_base_url, "The 'artifact_share_base_url' must be defined!"
     assert ifw_tools, "The 'ifw_tools' must be defined!"
     # locate the repo build script
-    scriptPath = os.path.abspath(os.path.join(os.path.dirname(__file__), "create_installer.py"))
-    assert os.path.isfile(scriptPath), f"Not a valid script path: {scriptPath}"
+    script_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "create_installer.py"))
+    assert os.path.isfile(script_path), f"Not a valid script path: {script_path}"
 
     # build online repositories first
     done_repositories = []  # type: List[str]
     for task in tasks:
-        tmpDir = os.path.join(tmpBaseDir, task.get_repo_path())
-        task.source_online_repository_path = os.path.join(tmpDir, "online_repository")
+        tmp_dir = os.path.join(tmp_base_dir, task.get_repo_path())
+        task.source_online_repository_path = os.path.join(tmp_dir, "online_repository")
         if not build_repositories:
             # this is usually for testing purposes in env where repositories are already built, we just update task objects
             continue
 
         log.info("Building repository: %s", task.get_repo_path())
-        installerConfigFile = os.path.join(installer_config_base_dir, task.get_config_file())
-        if not os.path.isfile(installerConfigFile):
-            raise PackagingError(f"Invalid 'config_file' path: {installerConfigFile}")
+        installer_config_file = os.path.join(installer_config_base_dir, task.get_config_file())
+        if not os.path.isfile(installer_config_file):
+            raise PackagingError(f"Invalid 'config_file' path: {installer_config_file}")
 
-        cmd = [sys.executable, scriptPath, "-c", installer_config_base_dir, "-f", installerConfigFile]
+        cmd = [sys.executable, script_path, "-c", installer_config_base_dir, "-f", installer_config_file]
         cmd += ["--create-repo", "-l", license_, "-u", artifact_share_base_url, "--ifw-tools", ifw_tools]
         cmd += ["--force-version-number-increase"]
         for substitution in task.get_installer_string_replacement_list():
@@ -460,9 +460,9 @@ async def build_online_repositories(tasks: List[ReleaseTask], license_: str, ins
             log.error(str(e))
             raise
 
-        onlineRepositoryPath = os.path.abspath(os.path.join(os.path.dirname(__file__), "online_repository"))
-        assert os.path.isdir(onlineRepositoryPath), f"Not a valid path: {onlineRepositoryPath}"
-        shutil.move(onlineRepositoryPath, task.source_online_repository_path)
+        online_repository_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "online_repository"))
+        assert os.path.isdir(online_repository_path), f"Not a valid path: {online_repository_path}"
+        shutil.move(online_repository_path, task.source_online_repository_path)
         log.info("Repository created at: %s", task.source_online_repository_path)
         done_repositories.append(task.source_online_repository_path)
     return done_repositories
@@ -471,7 +471,7 @@ async def build_online_repositories(tasks: List[ReleaseTask], license_: str, ins
 async def update_repositories(tasks: List[ReleaseTask], staging_server: str, staging_server_root: str, repo_layout: QtRepositoryLayout,
                               update_staging: bool, update_production: bool, rta: str, ifw_tools: str) -> None:
     # upload ifw tools to remote
-    remoteRepogen = await upload_ifw_to_remote(ifw_tools, staging_server, staging_server_root)
+    remote_repogen = await upload_ifw_to_remote(ifw_tools, staging_server, staging_server_root)
     try:
         for task in tasks:
             await update_repository(staging_server, repo_layout, task, update_staging, update_production, rta)
@@ -480,7 +480,7 @@ async def update_repositories(tasks: List[ReleaseTask], staging_server: str, sta
         raise
     finally:
         # Now we can delete the ifw tools at remote
-        delete_remote_paths(staging_server, [os.path.dirname(os.path.dirname(remoteRepogen))])
+        delete_remote_paths(staging_server, [os.path.dirname(os.path.dirname(remote_repogen))])
 
 
 async def sync_production(tasks: List[ReleaseTask], repo_layout: QtRepositoryLayout, sync_s3: str, sync_ext: str,
@@ -488,21 +488,21 @@ async def sync_production(tasks: List[ReleaseTask], repo_layout: QtRepositoryLay
                           export_data: Dict[str, str]) -> None:
     log.info("triggering production sync..")
     # collect production sync jobs
-    updatedProductionRepositories = {}  # type: Dict[str, str]
+    updated_production_repositories = {}  # type: Dict[str, str]
     for task in tasks:
         key = os.path.join(repo_layout.get_repo_domain(), task.get_repo_path())
-        if key in updatedProductionRepositories:
+        if key in updated_production_repositories:
             raise PackagingError(f"Duplicate repository path found: {key}")
-        updatedProductionRepositories[key] = os.path.join(repo_layout.get_production_path(), task.get_repo_path())
+        updated_production_repositories[key] = os.path.join(repo_layout.get_production_path(), task.get_repo_path())
 
     # if _all_ repository updates to production were successful then we can sync to production
     if sync_s3:
         async with EventRegister(f"{license_}: repo sync s3", event_injector, export_data):
-            sync_production_repositories_to_s3(staging_server, sync_s3, updatedProductionRepositories,
+            sync_production_repositories_to_s3(staging_server, sync_s3, updated_production_repositories,
                                                staging_server_root, license_)
     if sync_ext:
         async with EventRegister(f"{license_}: repo sync ext", event_injector, export_data):
-            await sync_production_repositories_to_ext(staging_server, sync_ext, updatedProductionRepositories,
+            await sync_production_repositories_to_ext(staging_server, sync_ext, updated_production_repositories,
                                                       staging_server_root, license_)
     log.info("Production sync trigger done!")
 
@@ -515,7 +515,7 @@ async def handle_update(staging_server: str, staging_server_root: str, license_:
     """Build all online repositories, update those to staging area and sync to production."""
     log.info("Starting repository update for %i tasks..", len(tasks))
     # get repository layout
-    repoLayout = QtRepositoryLayout(staging_server_root, license_, repo_domain)
+    repo_layout = QtRepositoryLayout(staging_server_root, license_, repo_domain)
     # this may take a while depending on how big the repositories are
     async with EventRegister(f"{license_}: repo build", event_injector, export_data):
         ret = await build_online_repositories(tasks, license_, installer_config_base_dir, artifact_share_base_url, ifw_tools,
@@ -523,10 +523,10 @@ async def handle_update(staging_server: str, staging_server_root: str, license_:
 
     if do_update_repositories:
         async with EventRegister(f"{license_}: repo update", event_injector, export_data):
-            await update_repositories(tasks, staging_server, staging_server_root, repoLayout, update_staging, update_production,
+            await update_repositories(tasks, staging_server, staging_server_root, repo_layout, update_staging, update_production,
                                       rta, ifw_tools)
     if sync_repositories:
-        await sync_production(tasks, repoLayout, sync_s3, sync_ext, staging_server, staging_server_root, license_,
+        await sync_production(tasks, repo_layout, sync_s3, sync_ext, staging_server, staging_server_root, license_,
                               event_injector, export_data)
 
     log.info("Repository updates done!")
@@ -627,9 +627,9 @@ def sign_offline_installer(installer_path: str, installer_name: str) -> None:
 def notarize_dmg(dmg_path, installer_basename) -> None:
     script_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "notarize.py"))
     # bundle-id is just a unique identifier without any special meaning, used to track the notarization progress
-    bundleId = installer_basename + "-" + strftime('%Y-%m-%d-%H-%M', gmtime())
-    bundleId = bundleId.replace('_', '-').replace(' ', '')  # replace illegal characters for bundleId
-    cmd = [sys.executable, script_path, '--dmg=' + dmg_path, '--bundle-id=' + bundleId]
+    bundle_id = installer_basename + "-" + strftime('%Y-%m-%d-%H-%M', gmtime())
+    bundle_id = bundle_id.replace('_', '-').replace(' ', '')  # replace illegal characters for bundle_id
+    cmd = [sys.executable, script_path, '--dmg=' + dmg_path, '--bundle-id=' + bundle_id]
     exec_cmd(cmd, timeout=60 * 60 * 3)
 
 
@@ -651,18 +651,18 @@ async def _build_offline_tasks(staging_server: str, staging_server_root: str, ta
     assert artifact_share_base_url, "The 'artifact_share_base_url' must be defined!"
     assert ifw_tools, "The 'ifw_tools' must be defined!"
 
-    scriptPath = os.path.abspath(os.path.join(os.path.dirname(__file__), "create_installer.py"))
-    assert os.path.isfile(scriptPath), f"Not a valid script path: {scriptPath}"
+    script_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "create_installer.py"))
+    assert os.path.isfile(script_path), f"Not a valid script path: {script_path}"
     installer_output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "installer_output"))
 
     # build installers
     for task in tasks:
         log.info("Building offline installer: %s", task.get_installer_name())
-        installerConfigFile = os.path.join(installer_config_base_dir, task.get_config_file())
-        if not os.path.isfile(installerConfigFile):
-            raise PackagingError(f"Invalid 'config_file' path: {installerConfigFile}")
+        installer_config_file = os.path.join(installer_config_base_dir, task.get_config_file())
+        if not os.path.isfile(installer_config_file):
+            raise PackagingError(f"Invalid 'config_file' path: {installer_config_file}")
 
-        cmd = [sys.executable, scriptPath, "-c", installer_config_base_dir, "-f", installerConfigFile]
+        cmd = [sys.executable, script_path, "-c", installer_config_base_dir, "-f", installer_config_file]
         cmd += ["--offline", "-l", license_, "-u", artifact_share_base_url, "--ifw-tools", ifw_tools]
         cmd += ["--preferred-installer-name", task.get_installer_name()]
         cmd += ["--force-version-number-increase"]
@@ -827,8 +827,8 @@ def main() -> None:
     # format task string in case full task section string is used
     args.task_filters = format_task_filters(args.task_filters)
     # installer configuration files are relative to the given top level release description file
-    installerConfigBaseDir = os.path.abspath(os.path.join(os.path.dirname(args.config), os.pardir))
-    assert os.path.isdir(installerConfigBaseDir), f"Not able to figure out 'configurations/' directory correctly: {installerConfigBaseDir}"
+    installer_config_base_dir = os.path.abspath(os.path.join(os.path.dirname(args.config), os.pardir))
+    assert os.path.isdir(installer_config_base_dir), f"Not able to figure out 'configurations/' directory correctly: {installer_config_base_dir}"
 
     export_data = load_export_summary_data(Path(args.config)) if args.event_injector else {}
 
@@ -837,7 +837,7 @@ def main() -> None:
         # get offline tasks
         tasks = parse_config(args.config, task_filters=append_to_task_filters(args.task_filters, "offline"))
         loop.run_until_complete(build_offline_tasks(args.staging_server, args.staging_server_root, tasks, args.license_,
-                                                    installerConfigBaseDir, args.artifact_share_url, args.ifw_tools,
+                                                    installer_config_base_dir, args.artifact_share_url, args.ifw_tools,
                                                     args.offline_installer_id, args.update_staging,
                                                     args.enable_oss_snapshots, args.event_injector, export_data))
 
@@ -845,7 +845,7 @@ def main() -> None:
         # get repository tasks
         tasks = parse_config(args.config, task_filters=append_to_task_filters(args.task_filters, "repository"))
         ret = loop.run_until_complete(handle_update(args.staging_server, args.staging_server_root, args.license_, tasks,
-                                      args.repo_domain, installerConfigBaseDir, args.artifact_share_url,
+                                      args.repo_domain, installer_config_base_dir, args.artifact_share_url,
                                       args.update_staging, args.update_production, args.sync_s3, args.sync_ext,
                                       args.rta, args.ifw_tools,
                                       args.build_repositories, do_update_repositories, do_sync_repositories,

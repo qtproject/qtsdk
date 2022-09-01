@@ -64,21 +64,21 @@ def create_mac_dmg(app_path: str) -> None:
 
 
 def sign_windows_executable(file_path: str):
-    signTools = ["signtool32.exe", "keys.pfx", "capicom.dll"]
-    signToolsTempDir = r'C:\Utils\sign_tools_temp'
-    for item in signTools:
-        dst = os.path.join(signToolsTempDir, item)
+    sign_tools = ["signtool32.exe", "keys.pfx", "capicom.dll"]
+    sign_tools_temp_dir = r'C:\Utils\sign_tools_temp'
+    for item in sign_tools:
+        dst = os.path.join(sign_tools_temp_dir, item)
         curl_cmd_args = ['curl', "--fail", "-L", "--retry", "5", "--retry-delay", "30", "-o", dst,
                          '--create-dirs', get_pkg_value("SIGN_TOOLS_ADDR") + item]
         check_call(curl_cmd_args)
-    cmd_args = [os.path.join(signToolsTempDir, 'signtool32.exe'), 'sign', '/v', '/du', get_pkg_value("SIGNING_SERVER"), '/p', get_pkg_value("SIGNING_PASSWORD")]
-    cmd_args += ['/tr', get_pkg_value("TIMESTAMP_SERVER"), '/f', os.path.join(signToolsTempDir, 'keys.pfx'), '/td', "sha256", '/fd', "sha256", file_path]
+    cmd_args = [os.path.join(sign_tools_temp_dir, 'signtool32.exe'), 'sign', '/v', '/du', get_pkg_value("SIGNING_SERVER"), '/p', get_pkg_value("SIGNING_PASSWORD")]
+    cmd_args += ['/tr', get_pkg_value("TIMESTAMP_SERVER"), '/f', os.path.join(sign_tools_temp_dir, 'keys.pfx'), '/td', "sha256", '/fd', "sha256", file_path]
     log_entry = cmd_args[:]
     log_entry[4] = "****"
     log_entry[6] = "****"
     log.info("Calling: %s", " ".join(log_entry))
     check_call(cmd_args, stdout=DEVNULL, stderr=DEVNULL)
-    rmtree(signToolsTempDir)
+    rmtree(sign_tools_temp_dir)
     log.info("Successfully signed: %s", file_path)
 
 

@@ -253,9 +253,9 @@ def mingw_training(base_path, qtcreator_path, environment, bitness):
 
     # Train mingw libclang library with build QtCreator
     # First time open the project, then close it. This will generate initial settings and .user files. Second time do the actual training.
-    for batchFile in ['qtc.openProject.batch', 'qtc.fileTextEditorCpp.batch']:
+    for batch_file in ['qtc.openProject.batch', 'qtc.fileTextEditorCpp.batch']:
         run_command(
-            [os.path.join(training_dir, 'runBatchFiles.bat'), msvc_version(), 'x64' if bitness == 64 else 'x86', batchFile],
+            [os.path.join(training_dir, 'runBatchFiles.bat'), msvc_version(), 'x64' if bitness == 64 else 'x86', batch_file],
             base_path, extra_environment=None, only_error_case_output=False, expected_exit_codes=[0, 1]
         )
 

@@ -52,18 +52,18 @@ class TestBuildWrapper(unittest.TestCase):
     @unpack
     def test_init_snapshot_dir_and_upload_files(self, project_name, version_branch, build_number, subdir=""):
         temp_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'build_wrapper_test')
-        optionDict = {}
-        optionDict['WORK_DIR'] = os.getcwd()
-        optionDict['SSH_COMMAND'] = 'ssh'
-        optionDict['SCP_COMMAND'] = 'scp'
+        option_dict = {}
+        option_dict['WORK_DIR'] = os.getcwd()
+        option_dict['SSH_COMMAND'] = 'ssh'
+        option_dict['SCP_COMMAND'] = 'scp'
         user = getuser()
-        optionDict['PACKAGE_STORAGE_SERVER_ADDR'] = user + '@127.0.0.1'
-        optionDict['PACKAGE_STORAGE_SERVER_BASE_DIR'] = temp_dir
-        filesToUpload = [os.path.basename(x) for x in glob('./*.sh')]
+        option_dict['PACKAGE_STORAGE_SERVER_ADDR'] = user + '@127.0.0.1'
+        option_dict['PACKAGE_STORAGE_SERVER_BASE_DIR'] = temp_dir
+        files_to_upload = [os.path.basename(x) for x in glob('./*.sh')]
         if subdir:
-            init_snapshot_dir_and_upload_files(optionDict, project_name, version_branch, build_number, filesToUpload, subdir)
+            init_snapshot_dir_and_upload_files(option_dict, project_name, version_branch, build_number, files_to_upload, subdir)
         else:
-            init_snapshot_dir_and_upload_files(optionDict, project_name, version_branch, build_number, filesToUpload)
+            init_snapshot_dir_and_upload_files(option_dict, project_name, version_branch, build_number, files_to_upload)
 
         remote_path_base = os.path.join(temp_dir, project_name, version_branch)
         remote_path_snapshot_dir = os.path.join(remote_path_base, build_number)
@@ -73,9 +73,9 @@ class TestBuildWrapper(unittest.TestCase):
         self.assertTrue(os.path.isdir(remote_path_snapshot_dir))
         self.assertTrue(os.path.islink(remote_path_latest_link))
 
-        searchDir = os.path.join(remote_path_latest_link, subdir, '*.sh')
-        uploadedFiles = [os.path.basename(x) for x in glob(searchDir)]
-        self.assertListEqual(sorted(filesToUpload), sorted(uploadedFiles))
+        search_dir = os.path.join(remote_path_latest_link, subdir, '*.sh')
+        uploaded_files = [os.path.basename(x) for x in glob(search_dir)]
+        self.assertListEqual(sorted(files_to_upload), sorted(uploaded_files))
 
         rmtree(remote_path_base)
 

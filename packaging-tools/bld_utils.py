@@ -93,17 +93,17 @@ class DirRenamer():
 
 
 def compress(path, directory_name, sevenzip_target):
-    sevenZipExtension = os.extsep + '7z'
-    parentDirectoryPath = os.path.abspath(os.path.join(path, '..'))
-    if os.path.splitext(sevenzip_target)[1] != sevenZipExtension:
-        sevenzip_target = sevenzip_target + sevenZipExtension
-    sevenZipFileName = os.path.split(sevenzip_target)[1]
+    sevenzip_extension = os.extsep + '7z'
+    parent_directory_path = os.path.abspath(os.path.join(path, '..'))
+    if os.path.splitext(sevenzip_target)[1] != sevenzip_extension:
+        sevenzip_target = sevenzip_target + sevenzip_extension
+    sevenzip_filename = os.path.split(sevenzip_target)[1]
     with DirRenamer(path, directory_name):
-        run_command(' '.join(('7z a -mx9', sevenZipFileName, directory_name)), parentDirectoryPath)
+        run_command(' '.join(('7z a -mx9', sevenzip_filename, directory_name)), parent_directory_path)
 
-    currentSevenZipPath = os.path.join(parentDirectoryPath, sevenZipFileName)
-    if currentSevenZipPath != sevenzip_target:
-        shutil.move(currentSevenZipPath, sevenzip_target)
+    current_sevenzip_path = os.path.join(parent_directory_path, sevenzip_filename)
+    if current_sevenzip_path != sevenzip_target:
+        shutil.move(current_sevenzip_path, sevenzip_target)
 
 
 def strip_vars(sobject, chars):
@@ -184,12 +184,12 @@ def download(url, target, read_block_size=1048576):
             raise Exception(f"Can not download '{url}' to '{target}' as target(error code: '{error.code}').")
 
         renamed = False
-        tryRenameCounter = 0
+        try_rename_counter = 0
         while renamed is False :
-            tryRenameCounter = tryRenameCounter + 1
+            try_rename_counter = try_rename_counter + 1
             try:
-                if tryRenameCounter > 5 :
-                    sys.stdout.write(f"r{tryRenameCounter}")
+                if try_rename_counter > 5 :
+                    sys.stdout.write(f"r{try_rename_counter}")
                 if os.path.lexists(target):
                     raise Exception(f"Please remove savefile first: {target}")
                 os.rename(savefile_tmp, target)
@@ -199,7 +199,7 @@ def download(url, target, read_block_size=1048576):
                     sys.stdout.write(os.linesep)
             except OSError as e:
                 # if it still exists just try that after a microsleep and stop this after 720 tries
-                if os.path.lexists(savefile_tmp) and tryRenameCounter < 720:
+                if os.path.lexists(savefile_tmp) and try_rename_counter < 720:
                     sleep(2)
                     continue
                 if not os.path.lexists(target):
@@ -230,8 +230,8 @@ def get_environment(extra_environment=None):
         return environment
 
     for key in extra_environment.keys():
-        keyUpper = key.upper()
-        if any((keyUpper == 'PATH', keyUpper == 'INCLUDE', keyUpper == 'LIB')):
+        key_upper = key.upper()
+        if any((key_upper == 'PATH', key_upper == 'INCLUDE', key_upper == 'LIB')):
             set_value_on_environment_dict(environment, key, extra_environment[key])
         else:
             environment[key] = extra_environment[key]
@@ -246,22 +246,22 @@ def run_command(command, cwd, extra_environment=None, only_error_case_output=Fal
         raise TypeError(f"only_error_case_output({type(only_error_case_output)}) is not {bool}")
 
     if type(command) is list:
-        commandAsList = command
+        command_as_list = command
     else:
-        commandAsList = command[:].split(' ')
+        command_as_list = command[:].split(' ')
 
     environment = get_environment(extra_environment)
 
     # if we can not find the command, just check the current working dir
-    if (not os.path.lexists(commandAsList[0]) and cwd
-            and os.path.isfile(os.path.abspath(os.path.join(cwd, commandAsList[0])))):
-        commandAsList[0] = os.path.abspath(os.path.join(cwd, commandAsList[0]))
+    if (not os.path.lexists(command_as_list[0]) and cwd
+            and os.path.isfile(os.path.abspath(os.path.join(cwd, command_as_list[0])))):
+        command_as_list[0] = os.path.abspath(os.path.join(cwd, command_as_list[0]))
 
-    pathEnvironment = environment['PATH']
+    path_environment = environment['PATH']
     # if we can not find the command, check the environment
-    found_executable = shutil.which(str(commandAsList[0]), path=str(pathEnvironment))
-    if not os.path.lexists(commandAsList[0]) and found_executable:
-        commandAsList[0] = found_executable
+    found_executable = shutil.which(str(command_as_list[0]), path=str(path_environment))
+    if not os.path.lexists(command_as_list[0]) and found_executable:
+        command_as_list[0] = found_executable
 
     if cwd and not os.path.lexists(cwd):
         os.makedirs(cwd)
@@ -271,30 +271,30 @@ def run_command(command, cwd, extra_environment=None, only_error_case_output=Fal
         print(f"Working Directory: {cwd}")
     else:
         print("No cwd set!")
-    print("Last command:      ", ' '.join(commandAsList))
+    print("Last command:      ", ' '.join(command_as_list))
     sys.stdout.flush()
 
     if cwd and not os.path.lexists(cwd):
         raise Exception(f"The current working directory is not existing: {cwd}")
 
-    useShell = is_windows()
-    lastStdOutLines = []
-    lastStdErrLines = []
+    use_shell = is_windows()
+    last_stdout_lines = []
+    last_stderr_lines = []
     if currentThread().name == "MainThread" and not only_error_case_output:
         process = Popen(
-            commandAsList, shell=useShell,
+            command_as_list, shell=use_shell,
             cwd=cwd, bufsize=-1, env=environment
         )
     else:
         process = Popen(  # pylint: disable=R1732
-            commandAsList, shell=useShell,
+            command_as_list, shell=use_shell,
             stdout=PIPE, stderr=PIPE,
             cwd=cwd, bufsize=-1, env=environment
         )
 
-        maxSavedLineNumbers = 1000
-        lastStdOutLines = deque(maxlen=maxSavedLineNumbers)
-        lastStdErrLines = deque(maxlen=maxSavedLineNumbers)
+        max_saved_line_numbers = 1000
+        last_stdout_lines = deque(maxlen=max_saved_line_numbers)
+        last_stderr_lines = deque(maxlen=max_saved_line_numbers)
 
         # Launch the asynchronous readers of the process' stdout and stderr.
         stdout = AsynchronousFileReader(process.stdout)
@@ -305,14 +305,14 @@ def run_command(command, cwd, extra_environment=None, only_error_case_output=Fal
             # Show what we received from standard output.
             for line in stdout.readlines():
                 line = line.decode()
-                lastStdOutLines.append(line)
+                last_stdout_lines.append(line)
                 if currentThread().name != "MainThread":
                     sys.stdout.write(line)
 
             # Show what we received from standard error.
             for line in stderr.readlines():
                 line = line.decode()
-                lastStdErrLines.append(line)
+                last_stderr_lines.append(line)
                 if currentThread().name != "MainThread":
                     sys.stdout.write(line)
 
@@ -328,30 +328,30 @@ def run_command(command, cwd, extra_environment=None, only_error_case_output=Fal
         process.stderr.close()
 
     process.wait()
-    exitCode = process.returncode
+    exit_code = process.returncode
 
     # lets keep that for debugging
     # if environment:
     #     for key in sorted(environment):
     #         sys.stderr.write("set " + key + "=" + environment[key] + os.linesep)
-    if exitCode not in expected_exit_codes:
-        lastOutput = ""
+    if exit_code not in expected_exit_codes:
+        last_output = ""
         exit_type = ""
         if currentThread().name != "MainThread" or only_error_case_output:
-            if len(lastStdErrLines) != 0:
-                lastOutput += "".join(str(lastStdErrLines))
+            if len(last_stderr_lines) != 0:
+                last_output += "".join(str(last_stderr_lines))
                 exit_type = "error "
-            elif len(lastStdOutLines) != 0:
-                lastOutput += "".join(str(lastStdOutLines))
-        prettyLastOutput = os.linesep + '======================= error =======================' + os.linesep
-        prettyLastOutput += "Working Directory: " + cwd + os.linesep
-        prettyLastOutput += "Last command:      " + ' '.join(commandAsList) + os.linesep
-        if lastOutput:
-            prettyLastOutput += f"last {exit_type}output:{os.linesep}{lastOutput}"
+            elif len(last_stdout_lines) != 0:
+                last_output += "".join(str(last_stdout_lines))
+        pretty_last_output = os.linesep + '======================= error =======================' + os.linesep
+        pretty_last_output += "Working Directory: " + cwd + os.linesep
+        pretty_last_output += "Last command:      " + ' '.join(command_as_list) + os.linesep
+        if last_output:
+            pretty_last_output += f"last {exit_type}output:{os.linesep}{last_output}"
         else:
-            prettyLastOutput += " - no process output caught - "
-        raise Exception(f"Different exit code then expected({expected_exit_codes}): {exitCode}{prettyLastOutput}")
-    return exitCode
+            pretty_last_output += " - no process output caught - "
+        raise Exception(f"Different exit code then expected({expected_exit_codes}): {exit_code}{pretty_last_output}")
+    return exit_code
 
 
 @deep_copy_arguments
@@ -384,36 +384,36 @@ def run_build_command(arguments=None, cwd=None, caller_arguments=None, extra_env
 
 @deep_copy_arguments
 def get_return_value(command, cwd=None, extra_environment=None):
-    commandAsList = command[:].split(' ')
+    command_as_list = command[:].split(' ')
     return Popen(
-        commandAsList, stdout=PIPE, stderr=STDOUT,
+        command_as_list, stdout=PIPE, stderr=STDOUT,
         cwd=cwd, env=get_environment(extra_environment)
     ).communicate()[0].strip()
 
 
 def git_sha(path):
-    gitBinary = "git"
+    git_binary = "git"
     if is_git_directory(path):
-        return get_return_value(gitBinary + " rev-list -n1 HEAD", cwd=path).strip()
+        return get_return_value(git_binary + " rev-list -n1 HEAD", cwd=path).strip()
     return ''
 
 
 # get commit SHA either directly from git, or from a .tag file in the source directory
 def get_commit_sha(source_path):
-    buildGitSHA = git_sha(source_path)
-    if not buildGitSHA:
+    build_git_sha = git_sha(source_path)
+    if not build_git_sha:
         tagfile = os.path.join(source_path, '.tag')
         if os.path.exists(tagfile):
             with open(tagfile, 'r', encoding="utf-8") as f:
-                buildGitSHA = f.read().strip()
-    return buildGitSHA
+                build_git_sha = f.read().strip()
+    return build_git_sha
 
 
 def is_git_directory(repository_path):
     if not repository_path:
         return False
-    gitConfigDir = os.path.abspath(os.path.join(repository_path, '.git'))
-    return os.path.lexists(gitConfigDir)
+    git_config_dir = os.path.abspath(os.path.join(repository_path, '.git'))
+    return os.path.lexists(git_config_dir)
 
 
 def file_url(file_path):

@@ -717,9 +717,9 @@ def patch_qt(qt5_path):
     print("##### patch Qt #####")
     qmake_binary = os.path.join(qt5_path, 'bin', 'qmake')
     # write qt.conf
-    with open(os.path.join(qt5_path, 'bin', 'qt.conf'), "w", encoding="utf-8") as qtConfFile:
-        qtConfFile.write("[Paths]" + os.linesep)
-        qtConfFile.write("Prefix=.." + os.linesep)
+    with open(os.path.join(qt5_path, 'bin', 'qt.conf'), "w", encoding="utf-8") as qt_conf_file:
+        qt_conf_file.write("[Paths]" + os.linesep)
+        qt_conf_file.write("Prefix=.." + os.linesep)
     # fix rpaths
     if is_linux():
         handle_component_rpath(qt5_path, 'lib')

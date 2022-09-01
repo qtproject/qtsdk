@@ -79,8 +79,8 @@ async def request_cmd(args, cmd):
             if attempts:
                 log.info("Waiting a bit before next attempt..")
                 await asyncio.sleep(60)
-        except CalledProcessError as commandErr:
-            log.critical("Failed to run command: %s", str(commandErr))
+        except CalledProcessError as command_err:
+            log.critical("Failed to run command: %s", str(command_err))
             raise
         except Exception as e:
             log.critical("Something failed: %s", str(e))
@@ -95,34 +95,34 @@ async def request_notarization(args):
     cmd += ['--primary-bundle-id', args.bundle_id, '-f', args.dmg]
 
     data = await request_cmd(args, cmd)
-    requestUUID = parse_value_from_data("RequestUUID", data)
-    if not requestUUID:
+    request_uuid = parse_value_from_data("RequestUUID", data)
+    if not request_uuid:
         raise NotarizationError(f"Failed to notarize app:\n\n{data}")
-    return requestUUID.split("=")[-1].strip()
+    return request_uuid.split("=")[-1].strip()
 
 
 async def poll_notarization_completed(args, uuid):
     cmd = ['xcrun', 'altool', '-u', args.user, '-p', args.passwd, '--notarization-info', uuid]
 
     attempts = 180
-    pollInterval = 60  # attempts * pollInterval = 3h
+    poll_interval = 60  # attempts * poll_interval = 3h
     while attempts:
         data = await request_cmd(args, cmd)
-        statusCode = parse_value_from_data("Status Code:", data)
+        status_code = parse_value_from_data("Status Code:", data)
 
-        if statusCode == "0":
+        if status_code == "0":
             log.info("Notarization succeeded for: %s", args.dmg)
             log.info("%s", data)
             return True
-        if statusCode == "2":
+        if status_code == "2":
             log.info("Notarization failed for: %s", args.dmg)
             raise NotarizationError(f"Notarization failed:\n\n{data}")
         log.info("Notarization not ready yet for: %s", args.dmg)
         log.info("%s", data)
 
         attempts -= 1
-        log.info("Sleeping %is before next poll attempt (attempts left: %i)", pollInterval, attempts)
-        await asyncio.sleep(pollInterval)
+        log.info("Sleeping %is before next poll attempt (attempts left: %i)", poll_interval, attempts)
+        await asyncio.sleep(poll_interval)
 
     log.warning("Notarization poll timeout..")
     return False

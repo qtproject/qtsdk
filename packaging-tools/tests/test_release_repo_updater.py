@@ -104,15 +104,15 @@ def _write_updates_xml(path: str, version: str, release_date: str) -> None:
 
 async def _get_repogen() -> str:
     pkgsrv = get_pkg_value("PACKAGE_STORAGE_SERVER_PATH_HTTP")
-    ifwTools = (
+    ifw_tools = (
         f"{pkgsrv}/archive/ifw/enterprise/unifiedqt/4.3.0/tqtc-installer-framework-Linux-RHEL_7_6-"
         "GCC-Linux-RHEL_7_6-X86_64.7z"
     )
     server = "127.0.0.1"
-    serverHome = os.path.expanduser("~")
+    server_home = os.path.expanduser("~")
     with TemporaryDirectory(dir=os.getcwd()) as temp_dir:
         with cd(temp_dir):
-            return await upload_ifw_to_remote(ifwTools, server, serverHome)
+            return await upload_ifw_to_remote(ifw_tools, server, server_home)
 
 
 @ddt
@@ -140,48 +140,48 @@ class TestReleaseRepoUpdater(unittest.TestCase):
 
     @asyncio_test
     async def test_upload_pending_repository_content(self) -> None:
-        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
-            sourceRepo = os.path.join(tmpBaseDir, "repository")
-            destinationRepo = os.path.join(tmpBaseDir, "destination_online_repository")
+        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmp_base_dir:
+            source_repo = os.path.join(tmp_base_dir, "repository")
+            destination_repo = os.path.join(tmp_base_dir, "destination_online_repository")
 
-            _write_dummy_file(os.path.join(sourceRepo, "qt.foo.bar1", "meta", "package.xml"))
-            _write_dummy_file(os.path.join(sourceRepo, "qt.foo.bar2", "meta", "package.xml"))
-            _write_dummy_file(os.path.join(sourceRepo, "Updates.xml"))
+            _write_dummy_file(os.path.join(source_repo, "qt.foo.bar1", "meta", "package.xml"))
+            _write_dummy_file(os.path.join(source_repo, "qt.foo.bar2", "meta", "package.xml"))
+            _write_dummy_file(os.path.join(source_repo, "Updates.xml"))
 
-            upload_pending_repository_content(self.server, sourceRepo, destinationRepo)
-            self.assertListEqual(sorted(os.listdir(sourceRepo)), sorted(os.listdir(destinationRepo)))
+            upload_pending_repository_content(self.server, source_repo, destination_repo)
+            self.assertListEqual(sorted(os.listdir(source_repo)), sorted(os.listdir(destination_repo)))
 
     @asyncio_test
     async def test_reset_new_remote_repository(self) -> None:
-        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
-            remoteSourceRepoPath = os.path.join(tmpBaseDir, "repository")
-            remoteTargetRepoPath = os.path.join(tmpBaseDir, "destination_online_repository")
+        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmp_base_dir:
+            remote_source_repo_path = os.path.join(tmp_base_dir, "repository")
+            remote_target_repo_path = os.path.join(tmp_base_dir, "destination_online_repository")
 
-            _write_dummy_file(os.path.join(remoteSourceRepoPath, "qt.foo.bar1", "meta", "package.xml"))
-            _write_dummy_file(os.path.join(remoteSourceRepoPath, "qt.foo.bar2", "meta", "package.xml"))
-            _write_dummy_file(os.path.join(remoteSourceRepoPath, "Updates.xml"))
+            _write_dummy_file(os.path.join(remote_source_repo_path, "qt.foo.bar1", "meta", "package.xml"))
+            _write_dummy_file(os.path.join(remote_source_repo_path, "qt.foo.bar2", "meta", "package.xml"))
+            _write_dummy_file(os.path.join(remote_source_repo_path, "Updates.xml"))
 
-            reset_new_remote_repository(self.server, remoteSourceRepoPath, remoteTargetRepoPath)
-            self.assertTrue(os.path.isfile(os.path.join(remoteTargetRepoPath, "qt.foo.bar1", "meta", "package.xml")))
-            self.assertTrue(os.path.isfile(os.path.join(remoteTargetRepoPath, "qt.foo.bar2", "meta", "package.xml")))
-            self.assertTrue(os.path.isfile(os.path.join(remoteTargetRepoPath, "Updates.xml")))
+            reset_new_remote_repository(self.server, remote_source_repo_path, remote_target_repo_path)
+            self.assertTrue(os.path.isfile(os.path.join(remote_target_repo_path, "qt.foo.bar1", "meta", "package.xml")))
+            self.assertTrue(os.path.isfile(os.path.join(remote_target_repo_path, "qt.foo.bar2", "meta", "package.xml")))
+            self.assertTrue(os.path.isfile(os.path.join(remote_target_repo_path, "Updates.xml")))
 
             # existing repository should be automatically be moved as backup
-            reset_new_remote_repository(self.server, remoteSourceRepoPath, remoteTargetRepoPath)
-            self.assertTrue(os.path.exists(remoteTargetRepoPath + "____snapshot_backup"))
+            reset_new_remote_repository(self.server, remote_source_repo_path, remote_target_repo_path)
+            self.assertTrue(os.path.exists(remote_target_repo_path + "____snapshot_backup"))
 
     @asyncio_test
     async def test_create_remote_repository_backup(self) -> None:
-        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
-            remoteSourceRepoPath = os.path.join(tmpBaseDir, "repository")
+        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmp_base_dir:
+            remote_source_repo_path = os.path.join(tmp_base_dir, "repository")
 
-            _write_dummy_file(os.path.join(remoteSourceRepoPath, "qt.foo.bar1", "meta", "package.xml"))
-            _write_dummy_file(os.path.join(remoteSourceRepoPath, "qt.foo.bar2", "meta", "package.xml"))
-            _write_dummy_file(os.path.join(remoteSourceRepoPath, "Updates.xml"))
+            _write_dummy_file(os.path.join(remote_source_repo_path, "qt.foo.bar1", "meta", "package.xml"))
+            _write_dummy_file(os.path.join(remote_source_repo_path, "qt.foo.bar2", "meta", "package.xml"))
+            _write_dummy_file(os.path.join(remote_source_repo_path, "Updates.xml"))
 
-            remoteRepoBackupPath = create_remote_repository_backup(self.server, remoteSourceRepoPath)
-            self.assertFalse(os.path.exists(remoteSourceRepoPath))
-            self.assertListEqual(sorted(["Updates.xml", "qt.foo.bar1", "qt.foo.bar2"]), sorted(os.listdir(remoteRepoBackupPath)))
+            remote_repo_backup_path = create_remote_repository_backup(self.server, remote_source_repo_path)
+            self.assertFalse(os.path.exists(remote_source_repo_path))
+            self.assertListEqual(sorted(["Updates.xml", "qt.foo.bar1", "qt.foo.bar2"]), sorted(os.listdir(remote_repo_backup_path)))
 
     @asyncio_test_parallel_data((True, True), (False, False), ("yes", True), ("1", True), ("y", True),
                                 ("false", False), ("n", False), ("0", False), ("no", False))
@@ -207,10 +207,10 @@ class TestReleaseRepoUpdater(unittest.TestCase):
 
     @asyncio_test
     async def test_ensure_ext_repo_paths(self) -> None:
-        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmpBaseDir:
-            expectedRepo = os.path.join(tmpBaseDir, "some", "test", "path")
-            await ensure_ext_repo_paths(self.server, self.server, expectedRepo)
-            self.assertTrue(os.path.isdir(expectedRepo))
+        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmp_base_dir:
+            expected_repo = os.path.join(tmp_base_dir, "some", "test", "path")
+            await ensure_ext_repo_paths(self.server, self.server, expected_repo)
+            self.assertTrue(os.path.isdir(expected_repo))
 
     @asyncio_test_parallel_data(
         ("user@server.com:/foo/bar"),

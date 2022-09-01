@@ -52,21 +52,21 @@ class PythonEnvError(Exception):
 def get_env(python_installation: str) -> Dict[str, str]:
     env: Dict[str, str] = {}
     system = platform.system().lower()
-    libDir = os.path.join(python_installation, "lib")
-    binDir = os.path.join(python_installation, "bin")
+    lib_dir = os.path.join(python_installation, "lib")
+    bin_dir = os.path.join(python_installation, "bin")
     if "windows" in system:
-        binDir = os.path.join(python_installation, "PCbuild", "amd64")
-        assert os.path.isdir(binDir), f"The python binary directory did not exist: {binDir}"
-        env["LIB_PATH"] = binDir
-        env["PATH"] = binDir + ";" + os.environ.get("PATH", "")
+        bin_dir = os.path.join(python_installation, "PCbuild", "amd64")
+        assert os.path.isdir(bin_dir), f"The python binary directory did not exist: {bin_dir}"
+        env["LIB_PATH"] = bin_dir
+        env["PATH"] = bin_dir + ";" + os.environ.get("PATH", "")
         env["SYSTEMROOT"] = os.environ["SYSTEMROOT"]
         env["HOMEPATH"] = os.environ["HOMEPATH"]
     elif "darwin" in system:
-        env["DYLD_LIBRARY_PATH"] = libDir
-        env["PATH"] = binDir + ":" + os.environ.get("PATH", "")
+        env["DYLD_LIBRARY_PATH"] = lib_dir
+        env["PATH"] = bin_dir + ":" + os.environ.get("PATH", "")
     else:
-        env["LD_LIBRARY_PATH"] = libDir
-        env["PATH"] = binDir + ":" + os.environ.get("PATH", "")
+        env["LD_LIBRARY_PATH"] = lib_dir
+        env["PATH"] = bin_dir + ":" + os.environ.get("PATH", "")
     return env
 
 
@@ -78,17 +78,17 @@ def locate_venv(pipenv: str, env: Dict[str, str]) -> str:
 async def install_pip(get_pip_file: str, python_installation: str) -> str:
     log.info("Installing pip...")
     if is_valid_url_path(get_pip_file):
-        pipTmpDir = os.path.join(os.getcwd(), "pip_install_tmp")
-        rmtree(pipTmpDir, ignore_errors=True)
-        os.makedirs(pipTmpDir)
-        get_pip_file = download_archive(get_pip_file, pipTmpDir)
+        pip_tmp_dir = os.path.join(os.getcwd(), "pip_install_tmp")
+        rmtree(pip_tmp_dir, ignore_errors=True)
+        os.makedirs(pip_tmp_dir)
+        get_pip_file = download_archive(get_pip_file, pip_tmp_dir)
     elif not (get_pip_file and os.path.isfile(get_pip_file)):
         raise PythonEnvError(f"Could not install pip from: {get_pip_file}")
 
-    pythonExe = os.path.join(python_installation, "PCBuild", "amd64", "python.exe")
-    assert os.path.isfile(pythonExe), f"The 'python' executable did not exist: {pythonExe}"
-    installPipCmd = [pythonExe, get_pip_file]
-    await async_exec_cmd(installPipCmd)
+    python_exe = os.path.join(python_installation, "PCBuild", "amd64", "python.exe")
+    assert os.path.isfile(python_exe), f"The 'python' executable did not exist: {python_exe}"
+    install_pip_cmd = [python_exe, get_pip_file]
+    await async_exec_cmd(install_pip_cmd)
     return os.path.join(python_installation, "Scripts", "pip3.exe")
 
 

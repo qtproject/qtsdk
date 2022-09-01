@@ -406,8 +406,8 @@ def build_qt(options, qt_build_dir, qt_configure_options, qt_modules):
     print('Installing Qt')
     cmd_args = options.make_install_cmd
     for module in qt_modules:
-        moduleDir = os.path.join(options.qt_source_dir, module)
-        do_execute_sub_process(cmd_args.split(' '), moduleDir)
+        module_dir = os.path.join(options.qt_source_dir, module)
+        do_execute_sub_process(cmd_args.split(' '), module_dir)
 
 
 ###############################
@@ -556,10 +556,10 @@ def create_installer_package(options):
     print(f"Installer package is at: {target_dir}")
     artifacts = os.listdir(options.installer_framework_target_dir)
     for artifact in artifacts:
-        destFileName = os.path.join(options.build_artifacts_dir, artifact)
+        dest_file_name = os.path.join(options.build_artifacts_dir, artifact)
         if is_linux():
-            destFileName += '.run'
-        shutil.move(os.path.join(options.installer_framework_target_dir, artifact), destFileName)
+            dest_file_name += '.run'
+        shutil.move(os.path.join(options.installer_framework_target_dir, artifact), dest_file_name)
     os.chdir(current_dir)
 
 
@@ -711,17 +711,17 @@ def archive_binarycreator(options):
 def sign_windows_installerbase(file_name):
     print('--------------------------------------------------------------------')
     print('Sign Windows Installerbase')
-    signToolsTempDir = r'C:\Utils\sign_tools_temp'
+    sign_tools_temp_dir = r'C:\Utils\sign_tools_temp'
     for item in ["signtool32.exe", "keys.pfx", "capicom.dll"]:
-        dst = os.path.join(signToolsTempDir, item)
+        dst = os.path.join(sign_tools_temp_dir, item)
         curl_cmd_args = ['curl', "--fail", "-L", "--retry", "5", "--retry-delay", "30", "-o", dst,
                          '--create-dirs', get_pkg_value("SIGN_TOOLS_ADDR") + item]
         subprocess.check_call(curl_cmd_args)
 
     signing_server = get_pkg_value("SIGNING_SERVER")
     signing_pass = get_pkg_value("SIGNING_PASSWORD")
-    cmd_args = [os.path.join(signToolsTempDir, 'signtool32.exe'), 'sign', '/v', '/du', signing_server, '/p', signing_pass]
-    cmd_args += ['/tr', "http://timestamp.digicert.com", '/f', os.path.join(signToolsTempDir, 'keys.pfx')]
+    cmd_args = [os.path.join(sign_tools_temp_dir, 'signtool32.exe'), 'sign', '/v', '/du', signing_server, '/p', signing_pass]
+    cmd_args += ['/tr', "http://timestamp.digicert.com", '/f', os.path.join(sign_tools_temp_dir, 'keys.pfx')]
     cmd_args += ['/td', "sha256", '/fd', "sha256", file_name]
 
     log_entry = cmd_args[:]
@@ -729,7 +729,7 @@ def sign_windows_installerbase(file_name):
     log_entry[6] = "****"
     print("Calling: %s", " ".join(log_entry))
     subprocess.check_call(cmd_args, stderr=subprocess.STDOUT)  # check_call() will consume output
-    shutil.rmtree(signToolsTempDir)
+    shutil.rmtree(sign_tools_temp_dir)
     print(f"Successfully signed: {file_name}")
 
 
@@ -805,41 +805,41 @@ def setup_argument_parser():
 def main() -> None:
     """Main"""
     # init things
-    PARSER = setup_argument_parser()
+    parser = setup_argument_parser()
     # parse args
-    CARGS = PARSER.parse_args()
-    qt_src = IfwOptions.default_qt_src_pkg if not CARGS.qt_archive_uri else CARGS.qt_archive_uri
-    qt_configure_options = get_static_qt_configure_options(CARGS.openssl_dir) if not CARGS.qt_configure_options else CARGS.qt_configure_options
-    ifw_branch = IfwOptions.default_qt_installer_framework_branch_qt if not CARGS.ifw_branch else CARGS.ifw_branch
-    signserver = '' if not CARGS.sign_server else CARGS.sign_server
-    signpwd = '' if not CARGS.sign_server_pwd else CARGS.sign_server_pwd
+    cargs = parser.parse_args()
+    qt_src = IfwOptions.default_qt_src_pkg if not cargs.qt_archive_uri else cargs.qt_archive_uri
+    qt_configure_options = get_static_qt_configure_options(cargs.openssl_dir) if not cargs.qt_configure_options else cargs.qt_configure_options
+    ifw_branch = IfwOptions.default_qt_installer_framework_branch_qt if not cargs.ifw_branch else cargs.ifw_branch
+    signserver = '' if not cargs.sign_server else cargs.sign_server
+    signpwd = '' if not cargs.sign_server_pwd else cargs.sign_server_pwd
 
-    qt_conf_args = CARGS.qt_configure_options
-    ifw_qmake_args = CARGS.ifw_qmake_args
-    if CARGS.debug:
+    qt_conf_args = cargs.qt_configure_options
+    ifw_qmake_args = cargs.ifw_qmake_args
+    if cargs.debug:
         qt_conf_args = qt_conf_args.replace('-release', '-debug')
         ifw_qmake_args = ifw_qmake_args.replace('-config release', '-config debug')
     # create options object
-    OPTIONS = IfwOptions(
+    options = IfwOptions(
         qt_src,
         qt_configure_options,
-        CARGS.ifw_uri,
+        cargs.ifw_uri,
         ifw_branch,
         ifw_qmake_args,
-        CARGS.openssl_dir,
-        CARGS.product_key_checker_pri,
-        CARGS.qt_binaries_static,
-        CARGS.qt_binaries_dynamic,
+        cargs.openssl_dir,
+        cargs.product_key_checker_pri,
+        cargs.qt_binaries_static,
+        cargs.qt_binaries_dynamic,
         signserver,
         signpwd,
-        CARGS.incremental,
-        CARGS.archive_qt
+        cargs.incremental,
+        cargs.archive_qt
     )
     # build ifw tools
-    if CARGS.archive_qt:
-        build_and_archive_qt(OPTIONS)
+    if cargs.archive_qt:
+        build_and_archive_qt(options)
     else:
-        build_ifw(OPTIONS, CARGS.create_installer, CARGS.build_ifw_examples)
+        build_ifw(options, cargs.create_installer, cargs.build_ifw_examples)
 
 
 if __name__ == "__main__":

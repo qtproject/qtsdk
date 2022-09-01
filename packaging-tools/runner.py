@@ -65,8 +65,8 @@ async def async_exec_cmd(cmd: List[str], timeout: int = 60 * 60, env: Dict[str, 
     except (asyncio.TimeoutError, TimeoutExpired):
         log.error("Timeout (%ss) for: %s", str(timeout), cmd)
         raise
-    except CalledProcessError as commandErr:
-        log.error("Failed to run command: %s", str(commandErr))
+    except CalledProcessError as command_err:
+        log.error("Failed to run command: %s", str(command_err))
         raise
     except Exception as e:
         log.error("Something failed: %s", str(e))

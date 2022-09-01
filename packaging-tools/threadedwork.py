@@ -48,29 +48,29 @@ output_format_string = ''
 class StdOutHook:
     def write(self, text):
         # general print method sends line break just ignore that
-        strippedText = text.strip()
-        if strippedText == "":
+        stripped_text = text.strip()
+        if stripped_text == "":
             return
         global output_states
         global output_format_string
-        localProgressIndicator = None
-        if len(strippedText) > 6:
-            localProgressIndicator = next_progress_indicator()
+        local_progress_indicator = None
+        if len(stripped_text) > 6:
+            local_progress_indicator = next_progress_indicator()
         else:
-            localProgressIndicator = strippedText
+            local_progress_indicator = stripped_text
 
-        newValue = f"{thread_data.taskNumber}: {localProgressIndicator}"
+        new_value = f"{thread_data.taskNumber}: {local_progress_indicator}"
         with output_lock:
-            if newValue != output_states[thread_data.workerThreadId]:
-                oldOutput = "\r" + output_format_string.format(*output_states).strip()
-                output_states[thread_data.workerThreadId] = newValue
-                newOutput = "\r" + output_format_string.format(*output_states).strip()
+            if new_value != output_states[thread_data.workerThreadId]:
+                old_output = "\r" + output_format_string.format(*output_states).strip()
+                output_states[thread_data.workerThreadId] = new_value
+                new_output = "\r" + output_format_string.format(*output_states).strip()
                 # cleanup old output if the new line is shorter
-                cleanerString = ""
-                if len(oldOutput) > len(newOutput):
-                    cleanerString = " " * (len(oldOutput) - len(newOutput))
+                cleaner_string = ""
+                if len(old_output) > len(new_output):
+                    cleaner_string = " " * (len(old_output) - len(new_output))
 
-                sys.__stdout__.write(newOutput + cleanerString)
+                sys.__stdout__.write(new_output + cleaner_string)
 
     def flush(self):
         sys.__stdout__.flush()
@@ -138,27 +138,27 @@ class Task():
         self.description = description
         self.listOfFunctions = []
         if function:
-            firstFunction = TaskFunction(function, *arguments)
-            self.listOfFunctions.append(firstFunction)
+            first_function = TaskFunction(function, *arguments)
+            self.listOfFunctions.append(first_function)
         # exit the complete program with code -1, sys.exit would just close the thread
         self.exitFunction = os._exit
         self.exitFunctionArguments = [-1]
 
     def add_function(self, function, *arguments):
-        aFunction = TaskFunction(function, *arguments)
-        self.listOfFunctions.append(aFunction)
+        a_function = TaskFunction(function, *arguments)
+        self.listOfFunctions.append(a_function)
 
     def do(self):
         try:
-            for taskFunction in self.listOfFunctions:
-                taskFunction.function(*(taskFunction.arguments))
+            for task_function in self.listOfFunctions:
+                task_function.function(*(task_function.arguments))
         except Exception:
             print("FAIL")
             with output_lock:
                 # there is no clean exit so we adding linesep here
                 sys.__stdout__.write(os.linesep)
                 sys.__stdout__.flush()
-                sys.__stderr__.write(format(taskFunction))
+                sys.__stderr__.write(format(task_function))
                 sys.__stderr__.write(os.linesep)
                 sys.__stderr__.write(format_exc())
                 sys.__stderr__.flush()
@@ -199,17 +199,17 @@ class ThreadedWork():
 
         if max_threads > 1:
             enable_threaded_print(True, max_threads)
-        listOfConsumers = []
+        list_of_consumers = []
         for i in range(max_threads):
             # every Consumer needs a stop/none item
             self.queue.put(None)
-            newConsumer = Consumer(self.queue, i)
-            listOfConsumers.append(newConsumer)
-            newConsumer.daemon = True
-            newConsumer.start()
+            new_consumer = Consumer(self.queue, i)
+            list_of_consumers.append(new_consumer)
+            new_consumer.daemon = True
+            new_consumer.start()
 
         # block until everything is done
-        for consumer in listOfConsumers:
+        for consumer in list_of_consumers:
             while consumer.is_alive():
                 try:
                     # wait 1 second, then go back and ask if thread is still alive

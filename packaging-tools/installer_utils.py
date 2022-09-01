@@ -67,13 +67,13 @@ def is_valid_url_path(url: str) -> bool:
 
 def download_archive(url: str, dest_dir: str) -> str:
     parts = urlparse(url)
-    fileName = os.path.basename(parts.path)
-    destFile = os.path.join(dest_dir, fileName)
-    if os.path.isfile(destFile):
-        log.info("Using existing downloaded file: %s", destFile)
+    file_name = os.path.basename(parts.path)
+    dest_file = os.path.join(dest_dir, file_name)
+    if os.path.isfile(dest_file):
+        log.info("Using existing downloaded file: %s", dest_file)
     else:
-        wget.download(url, destFile)
-    return destFile
+        wget.download(url, dest_file)
+    return dest_file
 
 
 def get_extract_cmd(artifact: str) -> List[str]:
@@ -86,11 +86,11 @@ def get_extract_cmd(artifact: str) -> List[str]:
 
 async def extract_archive(artifact: str, destination_dir: str) -> None:
     log.info("Extracting file: %s into: %s", artifact, destination_dir)
-    extractCmd = get_extract_cmd(artifact)
+    extract_cmd = get_extract_cmd(artifact)
     try:
         os.makedirs(destination_dir, exist_ok=True)
         with cd(destination_dir):
-            await async_exec_cmd(extractCmd)
+            await async_exec_cmd(extract_cmd)
     except Exception:
         log.exception("Could not extact a file %s to %s", artifact, destination_dir)
         raise

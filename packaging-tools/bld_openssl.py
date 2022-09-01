@@ -60,10 +60,10 @@ def archive(install_dir, archive_prefix):
 
 
 def check_environment():
-    with open(os.devnull, 'w', encoding="utf-8") as FNULL:
+    with open(os.devnull, 'w', encoding="utf-8") as fnull:
 
         def check_cmd(cmd):
-            if subprocess.call(cmd, stdout=FNULL, stderr=FNULL) != 0:
+            if subprocess.call(cmd, stdout=fnull, stderr=fnull) != 0:
                 print(f"*** Cannot execute {cmd[0]}")
                 exit(1)
         check_cmd(['nasm', '-h'])

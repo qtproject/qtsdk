@@ -85,15 +85,15 @@ class RemoteUploader:
             check_call(cmd, timeout=60)  # give it 60s
 
     def _copy_to_remote(self, file_name, dest_dir_name):
-        """Copy the given file to destDirName which is relative to remoteBasePath."""
+        """Copy the given file to dest_dirName which is relative to remoteBasePath."""
         assert self.init_finished, "RemoteUploader not initialized!"
-        remoteDestination = self.remoteLogin + ':' + self.remoteTargetDir
+        remote_destination = self.remoteLogin + ':' + self.remoteTargetDir
         if dest_dir_name:
-            remoteDestination = remoteDestination + '/' + dest_dir_name + '/'
+            remote_destination = remote_destination + '/' + dest_dir_name + '/'
             if "windows" in platform.system().lower():
                 self.ensure_remote_dir(self.remoteTargetDir + '/' + dest_dir_name + '/')
-        print(f"Copying [{file_name}] to [{remoteDestination}]")
-        cmd = self.copy_cmd + [file_name, remoteDestination]
+        print(f"Copying [{file_name}] to [{remote_destination}]")
+        cmd = self.copy_cmd + [file_name, remote_destination]
         print("Executing: ", ' '.join(cmd))
         if not self.dryRun:
             check_call(cmd, timeout=60 * 10)  # give it 10 mins

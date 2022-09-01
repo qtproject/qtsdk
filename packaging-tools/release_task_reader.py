@@ -60,8 +60,8 @@ class ReleaseTask:
         self.repo_components_to_update = settings.get("repo_components_to_update", "")
         self.installer_name = settings.get("installer_name", "")
         self.rta_key_list = settings.get("rta_key_list", "")
-        tmpList: List[str] = [x.strip() for x in self.substitutions.split(',')]
-        self.installer_string_replacement_list = list(filter(None, tmpList))
+        tmp_list: List[str] = [x.strip() for x in self.substitutions.split(',')]
+        self.installer_string_replacement_list = list(filter(None, tmp_list))
         self.source_online_repository_path = ""
         self.source_pkg_path = ""
 
@@ -105,8 +105,8 @@ class ReleaseTask:
         return self.repo_path
 
     def get_rta_key_list(self) -> List[str]:
-        tmpList = self.rta_key_list.strip().replace(' ', '').split(",")
-        return list(filter(None, tmpList))
+        tmp_list = self.rta_key_list.strip().replace(' ', '').split(",")
+        return list(filter(None, tmp_list))
 
     def get_source_online_repository_path(self) -> str:
         # this points to local repository build path
@@ -140,18 +140,18 @@ def parse_data(settings, task_filters: List[str]) -> List[ReleaseTask]:
         parts = section.split(".")
         if not parts[0].startswith("task"):
             continue
-        appendTask = True
+        append_task = True
         if section_filters_list:
-            appendTask = False
+            append_task = False
             for section_filters in section_filters_list:
                 if set(section_filters).issubset(set(parts)):
-                    appendTask = True
+                    append_task = True
                     break
-        if appendTask:
+        if append_task:
             log.info("Parsing Task: %s", section)
-            releaseTask = ReleaseTask(section, settings[section])
-            releaseTask.add_to_substitutions_list(common_substitution_list)
-            tasks.append(releaseTask)
+            release_task = ReleaseTask(section, settings[section])
+            release_task.add_to_substitutions_list(common_substitution_list)
+            tasks.append(release_task)
         else:
             log.info("Skipping task: [%s] - not included by task filter(s): %s", section, section_filters_list)
     return tasks

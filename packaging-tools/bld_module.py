@@ -179,176 +179,176 @@ def main() -> None:
         parser.add_argument('--environment_batch', help="batch file that sets up environment")
         parser.add_argument('--environment_batch_argument', help="if the batch file needs an argument just add it with this argument")
 
-    callerArguments = parser.parse_args()
+    caller_arguments = parser.parse_args()
 
-    # cleanup some values inside the callerArguments object
-    strip_vars(callerArguments, "\"")
-    if callerArguments.qt5path != os.path.abspath(callerArguments.qt5path):
-        print(f"changing the value of --qt5path from {callerArguments.qt5path} to {os.path.abspath(callerArguments.qt5path)}")
-        callerArguments.qt5path = os.path.abspath(callerArguments.qt5path)
+    # cleanup some values inside the caller_arguments object
+    strip_vars(caller_arguments, "\"")
+    if caller_arguments.qt5path != os.path.abspath(caller_arguments.qt5path):
+        print(f"changing the value of --qt5path from {caller_arguments.qt5path} to {os.path.abspath(caller_arguments.qt5path)}")
+        caller_arguments.qt5path = os.path.abspath(caller_arguments.qt5path)
 
-    if not callerArguments.module_name:
-        callerArguments.module_name = os.environ['MODULE_NAME']
+    if not caller_arguments.module_name:
+        caller_arguments.module_name = os.environ['MODULE_NAME']
 
-    tempPath = os.path.abspath(os.path.join(os.path.dirname(__file__), 'temp'))
+    temp_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'temp'))
 
     # clone module repo
-    if callerArguments.module_url != '':
+    if caller_arguments.module_url != '':
         Path(MODULE_SRC_DIR).mkdir(parents=True, exist_ok=True)
-        clone_repository(callerArguments.module_url, callerArguments.module_branch, os.path.join(os.path.dirname(__file__), MODULE_SRC_DIR_NAME))
-        qtModuleSourceDirectory = MODULE_SRC_DIR
-    elif callerArguments.module7z != '':
+        clone_repository(caller_arguments.module_url, caller_arguments.module_branch, os.path.join(os.path.dirname(__file__), MODULE_SRC_DIR_NAME))
+        qt_module_source_directory = MODULE_SRC_DIR
+    elif caller_arguments.module7z != '':
         Path(MODULE_SRC_DIR).mkdir(parents=True, exist_ok=True)
-        myGetQtModule = ThreadedWork("get and extract module src")
-        myGetQtModule.add_task_object(create_download_and_extract_tasks(callerArguments.module7z, MODULE_SRC_DIR, tempPath))
-        myGetQtModule.run()
-        qtModuleSourceDirectory = MODULE_SRC_DIR
+        my_get_qt_module = ThreadedWork("get and extract module src")
+        my_get_qt_module.add_task_object(create_download_and_extract_tasks(caller_arguments.module7z, MODULE_SRC_DIR, temp_path))
+        my_get_qt_module.run()
+        qt_module_source_directory = MODULE_SRC_DIR
     else:
-        print(f"Using local copy of {callerArguments.module_name}")
-        qtModuleSourceDirectory = callerArguments.module_dir
+        print(f"Using local copy of {caller_arguments.module_name}")
+        qt_module_source_directory = caller_arguments.module_dir
 
     # install directory
-    qtModuleInstallDirectory = qtModuleSourceDirectory + '_install'
+    qt_module_install_directory = qt_module_source_directory + '_install'
     if is_windows():
         # rip out drive letter from path on Windows
-        qtModuleInstallDirectory = qtModuleInstallDirectory[2:]
+        qt_module_install_directory = qt_module_install_directory[2:]
         # check whether this is a QNX build
-        if any('qnx' in qt5_url.lower() for qt5_url in callerArguments.qt5_module_urls):
+        if any('qnx' in qt5_url.lower() for qt5_url in caller_arguments.qt5_module_urls):
             # apply the workaround from QTBUG-38555
-            qtModuleInstallDirectory = qtModuleInstallDirectory.replace('\\', '/').replace('/', '\\', 1)
+            qt_module_install_directory = qt_module_install_directory.replace('\\', '/').replace('/', '\\', 1)
 
     # clean step
-    if callerArguments.clean:
+    if caller_arguments.clean:
         print("##### clean old builds #####")
-        remove_tree(callerArguments.qt5path)
-        remove_tree(qtModuleInstallDirectory)
-        remove_tree(tempPath)
+        remove_tree(caller_arguments.qt5path)
+        remove_tree(qt_module_install_directory)
+        remove_tree(temp_path)
 
-    if not os.path.lexists(callerArguments.qt5path) and not callerArguments.qt5_module_urls:
+    if not os.path.lexists(caller_arguments.qt5path) and not caller_arguments.qt5_module_urls:
         parser.print_help()
-        print(f"error: Please add the missing qt5_module_url arguments if the {callerArguments.qt5path} does not exist {os.linesep}{os.linesep}")
+        print(f"error: Please add the missing qt5_module_url arguments if the {caller_arguments.qt5path} does not exist {os.linesep}{os.linesep}")
         raise RuntimeError()
 
-    qmakeBinary = os.path.abspath(os.path.join(callerArguments.qt5path, 'bin', 'qmake'))
+    qmake_binary = os.path.abspath(os.path.join(caller_arguments.qt5path, 'bin', 'qmake'))
 
-    if not os.path.lexists(callerArguments.qt5path):
+    if not os.path.lexists(caller_arguments.qt5path):
         # get Qt
-        myGetQtBinaryWork = ThreadedWork("get and extract Qt 5 binary")
-        myGetQtBinaryWork.add_task_object(
+        my_get_qt_binary_work = ThreadedWork("get and extract Qt 5 binary")
+        my_get_qt_binary_work.add_task_object(
             create_qt_download_task(
-                callerArguments.qt5_module_urls,
-                callerArguments.qt5path, tempPath, callerArguments
+                caller_arguments.qt5_module_urls,
+                caller_arguments.qt5path, temp_path, caller_arguments
             )
         )
-        myGetQtBinaryWork.run()
+        my_get_qt_binary_work.run()
 
         # Save QT_INSTALL_PREFIX
-        qt_install_prefix = get_qt_install_prefix(callerArguments.qt5path)
+        qt_install_prefix = get_qt_install_prefix(caller_arguments.qt5path)
 
         # "install" Qt
-        patch_qt(callerArguments.qt5path)
+        patch_qt(caller_arguments.qt5path)
 
     # lets start building
 
     # prepare the environment for example setting LD_LIBRARY_PATH
     # or adding qmake path into the Path environment variable (Qt deployment step)
-    pathKeyList = []
-    qtBinPath = os.path.abspath(os.path.join(callerArguments.qt5path, 'bin'))
-    pathKeyList.append(qtBinPath)
-    pythonExecutablePath = os.path.dirname(sys.executable)
-    pathKeyList.append(pythonExecutablePath)
+    path_key_list = []
+    qt_bin_path = os.path.abspath(os.path.join(caller_arguments.qt5path, 'bin'))
+    path_key_list.append(qt_bin_path)
+    python_executable_path = os.path.dirname(sys.executable)
+    path_key_list.append(python_executable_path)
 
-    environment = {'PATH': os.pathsep.join(pathKeyList)}
+    environment = {'PATH': os.pathsep.join(path_key_list)}
 
     if is_linux():
         environment["LD_LIBRARY_PATH"] = os.pathsep.join(
-            [os.path.join(callerArguments.qt5path, 'lib')]
+            [os.path.join(caller_arguments.qt5path, 'lib')]
             + os.environ.get("LD_LIBRARY_PATH", "").split(os.pathsep)
         )
         environment["QMAKESPEC"] = "linux-g++"
 
     if is_macos():
-        environment["DYLD_FRAMEWORK_PATH"] = os.path.join(callerArguments.qt5path, 'lib')
+        environment["DYLD_FRAMEWORK_PATH"] = os.path.join(caller_arguments.qt5path, 'lib')
 
     if not is_windows():
         environment["MAKEFLAGS"] = "-j" + str(cpu_count() + 1)
 
-    if callerArguments.debug:
-        buildType = 'debug'
+    if caller_arguments.debug:
+        build_type = 'debug'
     else:
-        buildType = 'release'
+        build_type = 'release'
 
-    qtModuleBuildDirectory = qtModuleSourceDirectory + '_build'
+    qt_module_build_directory = qt_module_source_directory + '_build'
 
-    if callerArguments.use_cmake:
-        generateCommand = ['cmake',
-                           '-DCMAKE_VERBOSE_MAKEFILE=YES',
-                           # TODO: should get QT_INSTALL_LIBS instead
-                           '-DCMAKE_INSTALL_RPATH=' + ';'.join([qt_install_prefix, os.path.join(qt_install_prefix, 'lib')]),
-                           '-DCMAKE_INSTALL_PREFIX=' + qtModuleInstallDirectory,
-                           '-DCMAKE_BUILD_TYPE=' + buildType.capitalize()]
-        cmake_prefix_path = [callerArguments.qt5path]
-        for extra_arg in callerArguments.additional_config_args:
+    if caller_arguments.use_cmake:
+        generate_command = ['cmake',
+                            '-DCMAKE_VERBOSE_MAKEFILE=YES',
+                            # TODO: should get QT_INSTALL_LIBS instead
+                            '-DCMAKE_INSTALL_RPATH=' + ';'.join([qt_install_prefix, os.path.join(qt_install_prefix, 'lib')]),
+                            '-DCMAKE_INSTALL_PREFIX=' + qt_module_install_directory,
+                            '-DCMAKE_BUILD_TYPE=' + build_type.capitalize()]
+        cmake_prefix_path = [caller_arguments.qt5path]
+        for extra_arg in caller_arguments.additional_config_args:
             if extra_arg.startswith('-DCMAKE_PREFIX_PATH'):
                 cmake_prefix_path.extend(extra_arg.split('=', 1)[1].split(';'))
             else:
-                generateCommand.append(extra_arg)
-        generateCommand.append('-DCMAKE_PREFIX_PATH=' + ';'.join(cmake_prefix_path))
-        # for now assume that qtModuleSourceDirectory contains CMakeLists.txt directly
-        generateCommand.append(qtModuleSourceDirectory)
+                generate_command.append(extra_arg)
+        generate_command.append('-DCMAKE_PREFIX_PATH=' + ';'.join(cmake_prefix_path))
+        # for now assume that qt_module_source_directory contains CMakeLists.txt directly
+        generate_command.append(qt_module_source_directory)
     else:  # --> qmake
-        qtModuleProFile = locate_path(qtModuleSourceDirectory, ["*.pro"], filters=[os.path.isfile])
+        qt_module_pro_file = locate_path(qt_module_source_directory, ["*.pro"], filters=[os.path.isfile])
         if is_windows():
             # do not shadow-build with qmake on Windows
-            qtModuleBuildDirectory = os.path.dirname(qtModuleProFile)
-        generateCommand = [qmakeBinary]
-        generateCommand.extend(callerArguments.additional_config_args)
+            qt_module_build_directory = os.path.dirname(qt_module_pro_file)
+        generate_command = [qmake_binary]
+        generate_command.extend(caller_arguments.additional_config_args)
         if os.environ.get('EXTRA_QMAKE_ARGS'):
-            generateCommand.append(os.environ["EXTRA_QMAKE_ARGS"])
-        generateCommand.append(qtModuleProFile)
+            generate_command.append(os.environ["EXTRA_QMAKE_ARGS"])
+        generate_command.append(qt_module_pro_file)
 
-    run_command(generateCommand, cwd=qtModuleBuildDirectory, extra_environment=environment)
+    run_command(generate_command, cwd=qt_module_build_directory, extra_environment=environment)
 
-    ret = run_build_command(cwd=qtModuleBuildDirectory, caller_arguments=callerArguments)
+    ret = run_build_command(cwd=qt_module_build_directory, caller_arguments=caller_arguments)
     if ret:
         raise RuntimeError(f"Failure running the last command: {ret}")
 
     ret = run_install_command(
-        ['install', 'INSTALL_ROOT=' + qtModuleInstallDirectory],
-        cwd=qtModuleBuildDirectory,
-        caller_arguments=callerArguments, extra_environment=environment
+        ['install', 'INSTALL_ROOT=' + qt_module_install_directory],
+        cwd=qt_module_build_directory,
+        caller_arguments=caller_arguments, extra_environment=environment
     )
     if ret:
         raise RuntimeError(f"Failure running the last command: {ret}")
 
     # doc collection
-    if callerArguments.collectDocs:
-        doc_list = locate_paths(qtModuleSourceDirectory, ['*.qch'], filters=[os.path.isfile])
-        doc_install_dir = os.path.join(qtModuleInstallDirectory, 'doc')
+    if caller_arguments.collectDocs:
+        doc_list = locate_paths(qt_module_source_directory, ['*.qch'], filters=[os.path.isfile])
+        doc_install_dir = os.path.join(qt_module_install_directory, 'doc')
         Path(doc_install_dir).mkdir(parents=True, exist_ok=True)
         for item in doc_list:
             shutil.copy(item, doc_install_dir)
 
     # enginio etc. docs creation
-    if callerArguments.makeDocs:
+    if caller_arguments.makeDocs:
         # build docs first
         ret = run_install_command(
-            'docs', cwd=qtModuleBuildDirectory,
-            caller_arguments=callerArguments, extra_environment=environment
+            'docs', cwd=qt_module_build_directory,
+            caller_arguments=caller_arguments, extra_environment=environment
         )
         if ret:
             raise RuntimeError(f"Failure running the last command: {ret}")
         # then make install those
         ret = run_install_command(
-            ['install_docs', 'INSTALL_ROOT=' + qtModuleInstallDirectory],
-            cwd=qtModuleBuildDirectory,
-            caller_arguments=callerArguments, extra_environment=environment
+            ['install_docs', 'INSTALL_ROOT=' + qt_module_install_directory],
+            cwd=qt_module_build_directory,
+            caller_arguments=caller_arguments, extra_environment=environment
         )
         if ret:
             raise RuntimeError(f"Failure running the last command: {ret}")
         # make separate "doc.7z" for later use if needed
-        doc_dir = locate_path(qtModuleInstallDirectory, ["doc"], filters=[os.path.isdir])
-        archive_name = callerArguments.module_name + '-' + os.environ['LICENSE'] + '-doc-' + os.environ['MODULE_VERSION'] + '.7z'
+        doc_dir = locate_path(qt_module_install_directory, ["doc"], filters=[os.path.isdir])
+        archive_name = caller_arguments.module_name + '-' + os.environ['LICENSE'] + '-doc-' + os.environ['MODULE_VERSION'] + '.7z'
         ret = run_command(
             ['7z', 'a', os.path.join('doc_archives', archive_name), doc_dir],
             cwd=os.path.dirname(os.path.realpath(__file__))
@@ -357,25 +357,25 @@ def main() -> None:
             raise RuntimeError(f"Failure running the last command: {ret}")
 
     # try to figure out where the actual exported content is
-    qt5_install_basename = os.path.basename(callerArguments.qt5path)
+    qt5_install_basename = os.path.basename(caller_arguments.qt5path)
 
-    if callerArguments.use_cmake:
-        dir_to_archive = qtModuleInstallDirectory
+    if caller_arguments.use_cmake:
+        dir_to_archive = qt_module_install_directory
     else:
-        dir_to_archive = locate_path(qtModuleInstallDirectory, [qt5_install_basename], filters=[os.path.isdir])
+        dir_to_archive = locate_path(qt_module_install_directory, [qt5_install_basename], filters=[os.path.isdir])
 
     # if .tag file exists in the source package (sha1) then copy it into the binary archive
     try:
-        tag_file = locate_path(qtModuleSourceDirectory, [".tag"], filters=[os.path.isfile])
+        tag_file = locate_path(qt_module_source_directory, [".tag"], filters=[os.path.isfile])
         shutil.copy2(tag_file, dir_to_archive)
     except PackagingError:
         pass
 
     # Pre-patch the package for IFW to patch it correctly during installation
-    patch_archive(dir_to_archive, [callerArguments.qt5path, dir_to_archive], qt_install_prefix)
+    patch_archive(dir_to_archive, [caller_arguments.qt5path, dir_to_archive], qt_install_prefix)
 
-    archive_cmd = ['7z', 'a', os.path.join('module_archives', 'qt5_' + callerArguments.module_name + '.7z')]
-    if callerArguments.use_cmake:
+    archive_cmd = ['7z', 'a', os.path.join('module_archives', 'qt5_' + caller_arguments.module_name + '.7z')]
+    if caller_arguments.use_cmake:
         archive_cmd.append(os.path.join(dir_to_archive, '*'))
     else:
         archive_cmd.append(dir_to_archive)

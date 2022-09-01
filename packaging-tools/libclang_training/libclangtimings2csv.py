@@ -57,11 +57,11 @@ def construct_time_needed_matcher():
     #   :   2.5625 (100.0%)   0.1563 (100.0%)   2.7188 (100.0%)   2.7813 (100.0%)
     # Note: There is always at least the wall clock time at the utmost right,
     #       the others in front (up to 3) are optional.
-    startIndicator = r'\s*:'
-    notRelevantParts = r'(\s*\d+\.\d+ \(\d+\.\d+\%\)){0,3}'
-    wallClockTime = r'\s*(\d+\.\d+) \(\d+\.\d+\%\)'
+    start_indicator = r'\s*:'
+    not_relevant_parts = r'(\s*\d+\.\d+ \(\d+\.\d+\%\)){0,3}'
+    wall_clock_time = r'\s*(\d+\.\d+) \(\d+\.\d+\%\)'
 
-    regex = startIndicator + notRelevantParts + wallClockTime
+    regex = start_indicator + not_relevant_parts + wall_clock_time
 
     return re.compile(regex)
 
@@ -71,27 +71,27 @@ def csv_line(values):
 
 
 def extract_records(file_content):
-    recordMatcher = construct_record_matcher()
-    timeNeededMatcher = construct_time_needed_matcher()
+    record_matcher = construct_record_matcher()
+    time_needed_matcher = construct_time_needed_matcher()
 
     records = []
-    previousTimeMatchEnd = -1
+    previous_time_match_end = -1
 
-    for recordStartMatch in recordMatcher.finditer(file_content):
-        timeNeededInMs = False
-        if previousTimeMatchEnd >= recordStartMatch.start():
+    for record_start_match in record_matcher.finditer(file_content):
+        time_needed_in_ms = False
+        if previous_time_match_end >= record_start_match.start():
             # Ops, we've detected a missing time record.
-            previousRecord = records[-1]
-            records[-1] = [previousRecord[0], '-1']
-            timeNeededInMs = previousRecord[1]
+            previous_record = records[-1]
+            records[-1] = [previous_record[0], '-1']
+            time_needed_in_ms = previous_record[1]
 
-        if not timeNeededInMs:
-            timeMatch = next(timeNeededMatcher.finditer(file_content, recordStartMatch.end()))
-            previousTimeMatchEnd = timeMatch.end()
-            timeNeededInMs = timeMatch.group(2)
+        if not time_needed_in_ms:
+            time_match = next(time_needed_matcher.finditer(file_content, record_start_match.end()))
+            previous_time_match_end = time_match.end()
+            time_needed_in_ms = time_match.group(2)
 
-        recordId = recordStartMatch.group().strip()
-        record = [recordId, timeNeededInMs]
+        record_id = record_start_match.group().strip()
+        record = [record_id, time_needed_in_ms]
         records.append(record)
 
     # for record in records: print record
@@ -109,8 +109,8 @@ def records_to_string(records):
 def convert(input_file, column_label=None):
     if not column_label:
         column_label = os.path.basename(input_file)
-    with open(input_file, 'r', encoding="utf-8") as fileContent:
-        records = [[column_label, column_label]] + extract_records(fileContent.read())
+    with open(input_file, 'r', encoding="utf-8") as file_content:
+        records = [[column_label, column_label]] + extract_records(file_content.read())
 
     return records_to_string(records)
 

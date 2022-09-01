@@ -69,10 +69,10 @@ def expand_rules(rules: List[str]) -> List[str]:
 def remove_empty_directories(root_path: str):
     for root, dirs, _ in os.walk(root_path, topdown=True):
         for name in dirs:
-            dirPath = os.path.join(root, name)
-            if not os.listdir(dirPath):  # to check whether the dir is empty
-                log.info("Removing empty directory: %s", dirPath)
-                os.removedirs(dirPath)
+            dir_path = os.path.join(root, name)
+            if not os.listdir(dir_path):  # to check whether the dir is empty
+                log.info("Removing empty directory: %s", dir_path)
+                os.removedirs(dir_path)
 
 
 def preserve_content(input_dir: str, preserve_rules: List[str]) -> None:

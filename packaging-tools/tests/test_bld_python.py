@@ -41,20 +41,20 @@ class TestBldPython(unittest.TestCase):
 
     @asyncio_test
     async def test_locate_source_root(self) -> None:
-        with TemporaryDirectory(dir=os.getcwd()) as tmpBaseDir:
-            tempDir = os.path.join(tmpBaseDir, "foo", "bar", "test", "dir")
-            os.makedirs(tempDir)
-            tempFilePath = os.path.join(tempDir, "configure")
-            with open(tempFilePath, 'w+', encoding="utf-8") as f:
+        with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
+            temp_dir = os.path.join(tmp_base_dir, "foo", "bar", "test", "dir")
+            os.makedirs(temp_dir)
+            temp_file_path = os.path.join(temp_dir, "configure")
+            with open(temp_file_path, 'w+', encoding="utf-8") as f:
                 f.write("\n")
 
-            foundDir = locate_source_root(tmpBaseDir)
-            self.assertEqual(foundDir, tempDir)
+            found_dir = locate_source_root(tmp_base_dir)
+            self.assertEqual(found_dir, temp_dir)
 
-            invalidDir = os.path.join(tmpBaseDir, "foo2", "bar", "test", "dir")
-            os.makedirs(invalidDir)
+            invalid_dir = os.path.join(tmp_base_dir, "foo2", "bar", "test", "dir")
+            os.makedirs(invalid_dir)
             with self.assertRaises(BldPythonError):
-                locate_source_root(os.path.join(tmpBaseDir, "foo2"))
+                locate_source_root(os.path.join(tmp_base_dir, "foo2"))
 
 
 if __name__ == '__main__':

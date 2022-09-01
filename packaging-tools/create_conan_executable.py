@@ -71,10 +71,10 @@ async def pip_install_url(pipenv: str, pip_packages: List[str], env: Dict[str, s
     chekout_folders: List[str] = []
     for pkg in pip_packages or []:
         if is_valid_url_path(pkg):
-            destinationDir = os.path.join(os.getcwd(), "_git_tmp", pkg.split("/")[-1])
-            rmtree(destinationDir, ignore_errors=True)
-            await clone_repo(pkg, destinationDir, env)
-            chekout_folders.append(destinationDir)
+            destination_dir = os.path.join(os.getcwd(), "_git_tmp", pkg.split("/")[-1])
+            rmtree(destination_dir, ignore_errors=True)
+            await clone_repo(pkg, destination_dir, env)
+            chekout_folders.append(destination_dir)
         else:
             chekout_folders.append(pkg)
 
@@ -92,7 +92,7 @@ async def generate_executable(
     pipenv: str, env: Dict[str, str], venv_folder: str, source_file: str, hidden_imports: List[str]
 ) -> str:
     # if the path does not point to actual file then we assume it exists under the virtualenv
-    _fileName = (
+    _file_name = (
         source_file
         if os.path.isfile(source_file)
         else locate_file_from_venv(venv_folder, source_file)
@@ -105,17 +105,17 @@ async def generate_executable(
         venv_folder,
         "--onefile",
         "--console",
-        _fileName,
+        _file_name,
         " ".join([f"--hidden-import={s}" for s in hidden_imports]),
     ]
     # give it 15 mins
     await async_exec_cmd(cmd=cmd, timeout=60 * 15, env=env)
 
-    destPath = os.path.join(os.getcwd(), "dist")
-    generatedFiles = [os.path.join(destPath, x) for x in os.listdir(destPath)]
-    assert generatedFiles, f"No generated executables found from: {destPath}"
-    log.info("Created executable: %s", generatedFiles)
-    return destPath
+    dest_path = os.path.join(os.getcwd(), "dist")
+    generated_files = [os.path.join(dest_path, x) for x in os.listdir(dest_path)]
+    assert generated_files, f"No generated executables found from: {dest_path}"
+    log.info("Created executable: %s", generated_files)
+    return dest_path
 
 
 async def run(

@@ -244,8 +244,8 @@ def parse_component_data(task, configuration_file, configurations_base_path):
             task.sdk_component_ignore_list.append(item)
     # parse sdk components
     for section in configuration.sections():
-        sectionNameSpace = section.split(".")[0]
-        if sectionNameSpace in task.package_namespace:
+        section_namespace = section.split(".")[0]
+        if section_namespace in task.package_namespace:
             if section not in task.sdk_component_ignore_list:
                 sdk_component = SdkComponent(section, configuration, task.packages_dir_name_list,
                                              task.archive_location_resolver, task.substitution_list, task.offline_installer)
@@ -346,14 +346,14 @@ def get_component_data(task, sdk_component, archive, install_dir, data_dir_dest,
        and sdk_component.target_install_base == '/' \
        and not archive.target_install_dir:
         log.info("No repackaging actions required for the package, just download it directly to data directory")
-        downloadedArchive = os.path.normpath(data_dir_dest + os.sep + archive.archive_name)
+        downloaded_archive = os.path.normpath(data_dir_dest + os.sep + archive.archive_name)
         # start download
-        download(archive.archive_uri, downloadedArchive)
+        download(archive.archive_uri, downloaded_archive)
         return
 
-    downloadedArchive = os.path.normpath(install_dir + os.sep + package_raw_name)
+    downloaded_archive = os.path.normpath(install_dir + os.sep + package_raw_name)
     # start download
-    download(archive.archive_uri, downloadedArchive)
+    download(archive.archive_uri, downloaded_archive)
 
     # repackage content so that correct dir structure will get into the package
 
@@ -362,15 +362,15 @@ def get_component_data(task, sdk_component, archive, install_dir, data_dir_dest,
 
     # extract contents
     if archive.extract_archive == 'yes':
-        extracted = extract_file(downloadedArchive, install_dir)
+        extracted = extract_file(downloaded_archive, install_dir)
         # remove old package
         if extracted:
-            os.remove(downloadedArchive)
+            os.remove(downloaded_archive)
         else:
             # ok we could not extract the file, so propably not even archived file,
             # check the case if we downloaded a text file, must ensure proper file endings
-            if is_text_file(downloadedArchive):
-                ensure_text_file_endings(downloadedArchive)
+            if is_text_file(downloaded_archive):
+                ensure_text_file_endings(downloaded_archive)
 
         # perform custom action script for the extracted archive
         if archive.archive_action:
@@ -450,20 +450,20 @@ def get_component_data(task, sdk_component, archive, install_dir, data_dir_dest,
 
 def handle_set_executable(base_dir, package_finalize_items):
     for item in parse_package_finalize_items(package_finalize_items, 'set_executable'):
-        expectedPath = os.path.join(base_dir, item)
-        if not os.path.exists(expectedPath):
-            raise CreateInstallerError(f'Can not set executable bit as path not found: "{expectedPath}"')
-        os.chmod(expectedPath, 0o755)
-        log.info("Executable bit set for: %s", expectedPath)
+        expected_path = os.path.join(base_dir, item)
+        if not os.path.exists(expected_path):
+            raise CreateInstallerError(f'Can not set executable bit as path not found: "{expected_path}"')
+        os.chmod(expected_path, 0o755)
+        log.info("Executable bit set for: %s", expected_path)
 
 
 def handle_set_licheck(task, base_dir, package_finalize_items):
-    for licheckFileName in parse_package_finalize_items(package_finalize_items, 'set_licheck'):
-        licheckFilePath = os.path.join(base_dir, licheckFileName)
-        if not os.path.exists(licheckFilePath):
-            raise CreateInstallerError(f'Can not set licheck as path not found: "{licheckFilePath}"')
-        patch_qt_edition(base_dir, licheckFileName, task.build_timestamp)
-        log.info("Licheck set for: %s", licheckFilePath)
+    for licheck_file_name in parse_package_finalize_items(package_finalize_items, 'set_licheck'):
+        licheck_file_path = os.path.join(base_dir, licheck_file_name)
+        if not os.path.exists(licheck_file_path):
+            raise CreateInstallerError(f'Can not set licheck as path not found: "{licheck_file_path}"')
+        patch_qt_edition(base_dir, licheck_file_name, task.build_timestamp)
+        log.info("Licheck set for: %s", licheck_file_path)
         break
 
 
@@ -553,11 +553,11 @@ def remove_all_debug_libraries(install_dir):
                     Path(item).unlink()
     # remove macOS debug libraries
     elif is_macos():
-        for macOS_debug_library_dir in locate_paths(install_dir, ['bin', 'lib', 'qml', 'plugins'], filters=[os.path.isdir]):
-            log.info("Removing macOS debug libraries from: %s", macOS_debug_library_dir)
+        for debug_library_dir in locate_paths(install_dir, ['bin', 'lib', 'qml', 'plugins'], filters=[os.path.isdir]):
+            log.info("Removing macOS debug libraries from: %s", debug_library_dir)
             debug_library_file_ending = '_debug.*'
-            if os.path.exists(macOS_debug_library_dir):
-                for item in locate_paths(macOS_debug_library_dir, ['*' + debug_library_file_ending]):
+            if os.path.exists(debug_library_dir):
+                for item in locate_paths(debug_library_dir, ['*' + debug_library_file_ending]):
                     Path(item).unlink()
     else:
         log.info("Host was not Windows or macOS. For Linux and others we don\'t do anything at the moment")
@@ -576,7 +576,7 @@ def create_target_components(task):
         if not os.path.isfile(os.path.join(task.script_root_dir, "lrelease")):
             download(os.environ.get("LRELEASE_TOOL"), task.script_root_dir)
             extract_file(os.path.basename(os.environ.get("LRELEASE_TOOL")), task.script_root_dir)
-    getComponentDataWork = ThreadedWork("get components data")
+    get_component_data_work = ThreadedWork("get components data")
     for sdk_component in task.sdk_component_list:
         sdk_component.print_component_data()
         # substitute pkg_template dir names and package_name
@@ -615,13 +615,13 @@ def create_target_components(task):
                     if is_windows():
                         install_dir = win32api.GetShortPathName(install_dir)
                         data_dir_dest = win32api.GetShortPathName(data_dir_dest)
-                    getComponentDataWork.add_task(f"adding {archive.archive_name} to {sdk_component.package_name}",
-                                                  get_component_data, task, sdk_component, archive, install_dir, data_dir_dest, compress_content_dir)
+                    get_component_data_work.add_task(f"adding {archive.archive_name} to {sdk_component.package_name}",
+                                                     get_component_data, task, sdk_component, archive, install_dir, data_dir_dest, compress_content_dir)
         # handle component sha1 uri
         if sdk_component.component_sha1_uri:
             sha1_file_dest = os.path.normpath(dest_base + 'SHA1')
-            getComponentDataWork.add_task(f"getting component sha1 file for {sdk_component.package_name}",
-                                          get_component_sha1_file, sdk_component, sha1_file_dest)
+            get_component_data_work.add_task(f"getting component sha1 file for {sdk_component.package_name}",
+                                             get_component_sha1_file, sdk_component, sha1_file_dest)
 
         # maybe there is some static data
         data_content_source_root = os.path.normpath(sdk_component.pkg_template_dir + os.sep + 'data')
@@ -631,7 +631,7 @@ def create_target_components(task):
 
     if not task.dry_run:
         # start the work threaded, more than 8 parallel downloads are not so useful
-        getComponentDataWork.run(min([task.max_cpu_count, cpu_count()]))
+        get_component_data_work.run(min([task.max_cpu_count, cpu_count()]))
 
     for sdk_component in task.sdk_component_list:
         # substitute tags

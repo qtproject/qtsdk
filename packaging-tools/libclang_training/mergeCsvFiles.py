@@ -42,7 +42,7 @@ class Global:
 
 class FileWithValues:
     def __init__(self, file_path, tag, values):
-        self.filePath = file_path
+        self.file_path = file_path
         self.tag = tag
         self.values = values
 
@@ -65,8 +65,8 @@ def read_csv(file_path, delimiter):
 def read_csv_files(file_paths):
     files = []
 
-    for filePath in file_paths:
-        with open(filePath, 'rt', encoding="utf-8") as f:
+    for file_path in file_paths:
+        with open(file_path, 'rt', encoding="utf-8") as f:
             reader = csv.reader(f, delimiter=Global.Delimiter, quoting=csv.QUOTE_NONE)
 
         values = []
@@ -76,31 +76,31 @@ def read_csv_files(file_paths):
         tag = values[0][0]  # remember column label
         values = values[1:]  # skip header
 
-        myFile = FileWithValues(filePath, tag, values)
-        files.append(myFile)
+        my_file = FileWithValues(file_path, tag, values)
+        files.append(my_file)
 
     return files
 
 
 def check_consistency(files):
-    referenceEntry = files[0]
-    referenceEntrySize = len(referenceEntry.values)
-    referenceEntryIdentifiers = [v[0] for v in referenceEntry.values]
+    reference_entry = files[0]
+    reference_entry_size = len(reference_entry.values)
+    reference_entry_identifiers = [v[0] for v in reference_entry.values]
 
     # Ensure same size of records
     for f in files:
-        if not len(f.values) == referenceEntrySize:
-            print(f"error: number of entries mismatch between '{referenceEntry.filePath}' and '{f.filePath}'.", file=sys.stderr)
+        if not len(f.values) == reference_entry_size:
+            print(f"error: number of entries mismatch between '{reference_entry.file_path}' and '{f.file_path}'.", file=sys.stderr)
             sys.exit(1)
 
     # Ensure same identifier on the left
     for f in files:
         identifiers = [v[0] for v in f.values]
-        if not identifiers == referenceEntryIdentifiers:
-            print(f"error: mismatch between identifers in first column between '{referenceEntry.filePath}' and '{f.filePath}'.", file=sys.stderr)
+        if not identifiers == reference_entry_identifiers:
+            print(f"error: mismatch between identifers in first column between '{reference_entry.file_path}' and '{f.file_path}'.", file=sys.stderr)
             sys.exit(1)
 
-    return referenceEntryIdentifiers
+    return reference_entry_identifiers
 
 
 def merge_files_helper(output_file_path, reference_identifiers, files):
@@ -120,8 +120,8 @@ def merge_files_helper(output_file_path, reference_identifiers, files):
 
 def merge_files(output_file_path, files_to_merge):
     files = read_csv_files(files_to_merge)
-    referenceIdentifiers = check_consistency(files)
-    merge_files_helper(output_file_path, referenceIdentifiers, files)
+    reference_identifiers = check_consistency(files)
+    merge_files_helper(output_file_path, reference_identifiers, files)
 
 
 def print_help_and_exit():
@@ -143,9 +143,9 @@ def main():
     if len(args) <= 2:
         print_help_and_exit()
 
-    outputFile = args[0]
-    filesToMerge = args[1:]
-    merge_files(outputFile, filesToMerge)
+    output_file = args[0]
+    files_to_merge = args[1:]
+    merge_files(output_file, files_to_merge)
 
 
 if __name__ == "__main__":

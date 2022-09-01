@@ -88,78 +88,78 @@ def parse_qt_version(download_url_path: str) -> str:
 
 
 def download_qt_pkg(args: argparse.Namespace, current_dir: str) -> Tuple[str, str]:
-    urlRes = urlparse(args.qtpkg)
-    assert urlRes.scheme and urlRes.netloc and urlRes.path, f"Invalid URL: {args.qtpkg}"
-    qtVersion = parse_qt_version(urlRes.path)
+    url_res = urlparse(args.qtpkg)
+    assert url_res.scheme and url_res.netloc and url_res.path, f"Invalid URL: {args.qtpkg}"
+    qt_version = parse_qt_version(url_res.path)
 
-    saveAs = os.path.join(current_dir, os.path.basename(urlRes.path))
-    if os.path.exists(saveAs):
-        log.info("Using existing: %s", saveAs)
+    save_as = os.path.join(current_dir, os.path.basename(url_res.path))
+    if os.path.exists(save_as):
+        log.info("Using existing: %s", save_as)
     else:
-        log.info("Downloading: %s into: %s", args.qtpkg, saveAs)
-        urlretrieve(args.qtpkg, saveAs)
+        log.info("Downloading: %s into: %s", args.qtpkg, save_as)
+        urlretrieve(args.qtpkg, save_as)
 
-    return saveAs, qtVersion
+    return save_as, qt_version
 
 
 def extract_archive(save_as: str, current_dir: str) -> str:
-    qtDestDir = os.path.join(current_dir, "qt_pkg")
-    if not os.path.exists(qtDestDir):
-        os.makedirs(qtDestDir)
-        log.info("Extracting to: %s", qtDestDir)
+    qt_dest_dir = os.path.join(current_dir, "qt_pkg")
+    if not os.path.exists(qt_dest_dir):
+        os.makedirs(qt_dest_dir)
+        log.info("Extracting to: %s", qt_dest_dir)
         if save_as.endswith("tar.gz"):
             with tarfile.open(save_as, "r:gz") as tar:
-                tar.extractall(qtDestDir)
+                tar.extractall(qt_dest_dir)
         elif save_as.endswith(".7z"):
             try:
-                os.chdir(qtDestDir)
+                os.chdir(qt_dest_dir)
                 check_call(['7z', 'x', save_as])
             except Exception as e:
                 log.error("Extracting 7z file failed: %s", str(e))
                 raise
             finally:
                 os.chdir(current_dir)
-    return qtDestDir
+    return qt_dest_dir
 
 
 def build(args: argparse.Namespace, qt_dest_dir: str, current_dir: str) -> str:
     if is_windows():
-        qmakeToolName = "qmake.exe"
-        makeToolName = "nmake"
+        qmake_tool_name = "qmake.exe"
+        make_tool_name = "nmake"
     else:
-        qmakeToolName = "qmake"
-        makeToolName = "make"
+        qmake_tool_name = "qmake"
+        make_tool_name = "make"
 
-    qmakeTool = find_file(qt_dest_dir, qmakeToolName)
-    assert qmakeTool, f"Could not find: {qmakeToolName} from: {qt_dest_dir}"
+    qmake_tool = find_file(qt_dest_dir, qmake_tool_name)
+    assert qmake_tool, f"Could not find: {qmake_tool_name} from: {qt_dest_dir}"
 
     # patch
-    with open(os.path.join(os.path.dirname(qmakeTool), "qt.conf"), "w+", encoding="utf-8") as f:
+    with open(os.path.join(os.path.dirname(qmake_tool), "qt.conf"), "w+", encoding="utf-8") as f:
         f.write("[Paths]\n")
         f.write("Prefix=..\n")
 
     pro_files_list = glob(os.path.join(args.src_path, "*.pro"))
     assert pro_files_list, f"Could not find .pro file(s) from: {args.src_path}"
-    proFile = pro_files_list[0]
-    log.info("Using .pro file: %s", proFile)
+    pro_file = pro_files_list[0]
+    log.info("Using .pro file: %s", pro_file)
 
-    installRootDir = os.path.join(current_dir, "lib_install_root")
-    shutil.rmtree(installRootDir, ignore_errors=True)
-    os.makedirs(installRootDir)
+    install_root_dir = os.path.join(current_dir, "lib_install_root")
+    shutil.rmtree(install_root_dir, ignore_errors=True)
+    os.makedirs(install_root_dir)
 
-    bldDir = os.path.join(current_dir, "lib_bld")
-    shutil.rmtree(bldDir, ignore_errors=True)  # ignore if path did not exist
-    os.makedirs(bldDir)
+    bld_dir = os.path.join(current_dir, "lib_bld")
+    shutil.rmtree(bld_dir, ignore_errors=True)  # ignore if path did not exist
+    os.makedirs(bld_dir)
 
     try:
-        os.chdir(bldDir)
-        check_call([qmakeTool, proFile])
-        check_call([makeToolName])
+        os.chdir(bld_dir)
+        check_call([qmake_tool, pro_file])
+        check_call([make_tool_name])
         # on windows chhop out the drive letter (e.g. 'C:'"
-        installRoot = installRootDir[2:] if is_windows() else installRootDir
-        check_call([makeToolName, 'install', 'INSTALL_ROOT=' + installRoot])
-    except CalledProcessError as buildError:
-        log.error("Failed to build the project: %s", str(buildError))
+        install_root = install_root_dir[2:] if is_windows() else install_root_dir
+        check_call([make_tool_name, 'install', 'INSTALL_ROOT=' + install_root])
+    except CalledProcessError as build_error:
+        log.error("Failed to build the project: %s", str(build_error))
         raise
     except Exception as e:
         log.error("Something bad happened: %s", str(e))
@@ -167,47 +167,47 @@ def build(args: argparse.Namespace, qt_dest_dir: str, current_dir: str) -> str:
     finally:
         os.chdir(current_dir)
 
-    return installRootDir
+    return install_root_dir
 
 
 def archive(args: argparse.Namespace, install_root_dir: str, current_dir: str) -> str:
     # strip out drive letter on Windows e.g. 'C:'
-    srcPath = args.src_path[2:] if is_windows() else args.src_path
-    archivePath = os.path.join(install_root_dir, srcPath.lstrip(os.path.sep))
-    log.info("Archiving from: %s", archivePath)
+    src_path = args.src_path[2:] if is_windows() else args.src_path
+    archive_path = os.path.join(install_root_dir, src_path.lstrip(os.path.sep))
+    log.info("Archiving from: %s", archive_path)
 
     libs = collect_libs(install_root_dir)
     for lib in libs:
-        shutil.copy2(lib, archivePath)
+        shutil.copy2(lib, archive_path)
 
     arch = "x86_64" if sys.maxsize > 2**32 else "x86"
-    artifactsFileName = "artifacts-" + plat.system().lower() + "-" + arch + ".7z"
-    artifactsFilePath = os.path.join(current_dir, artifactsFileName)
+    artifacts_file_name = "artifacts-" + plat.system().lower() + "-" + arch + ".7z"
+    artifacts_file_path = os.path.join(current_dir, artifacts_file_name)
     try:
-        os.chdir(archivePath)
-        check_call(['7z', 'a', '-m0=lzma2', '-mmt=16', artifactsFilePath, '*'])
+        os.chdir(archive_path)
+        check_call(['7z', 'a', '-m0=lzma2', '-mmt=16', artifacts_file_path, '*'])
     except Exception as e:
         print(str(e))
         raise
     finally:
         os.chdir(current_dir)
 
-    log.info("Created artifact: %s", artifactsFilePath)
-    return artifactsFilePath
+    log.info("Created artifact: %s", artifacts_file_path)
+    return artifacts_file_path
 
 
 def handle_build(args: argparse.Namespace) -> None:
-    currentDir = os.getcwd()
+    current_dir = os.getcwd()
 
-    saveAs, qtVersion = download_qt_pkg(args, currentDir)
-    qtDestDir = extract_archive(saveAs, currentDir)
-    installRootDir = build(args, qtDestDir, currentDir)
-    artifactsFilePath = archive(args, installRootDir, currentDir)
+    save_as, qt_version = download_qt_pkg(args, current_dir)
+    qt_dest_dir = extract_archive(save_as, current_dir)
+    install_root_dir = build(args, qt_dest_dir, current_dir)
+    artifacts_file_path = archive(args, install_root_dir, current_dir)
 
-    remoteUploader = RemoteUploader(False, args.remote_server, args.username, args.remote_base_path)
-    remoteUploader.init_snapshot_upload_path(args.project_name, qtVersion, args.build_id)
-    remoteUploader.copy_to_remote(artifactsFilePath)
-    remoteUploader.update_latest_symlink()
+    remote_uploader = RemoteUploader(False, args.remote_server, args.username, args.remote_base_path)
+    remote_uploader.init_snapshot_upload_path(args.project_name, qt_version, args.build_id)
+    remote_uploader.copy_to_remote(artifacts_file_path)
+    remote_uploader.update_latest_symlink()
 
 
 def main() -> None:

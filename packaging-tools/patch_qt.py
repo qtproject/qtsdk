@@ -37,8 +37,8 @@ from fileinput import FileInput
 def _file_iterator(artifacts_dir):
     print(f"Patching build time paths from: {artifacts_dir}")
     for root, _, files in os.walk(artifacts_dir):
-        for fileName in files:
-            yield os.path.join(os.path.join(root, fileName))
+        for file_name in files:
+            yield os.path.join(os.path.join(root, file_name))
 
 
 def _get_patchers(product):
@@ -51,16 +51,16 @@ def _get_patchers(product):
 def patch_files(artifacts_dir, product):
     print(f"Patching files from: {artifacts_dir}")
     patchers = _get_patchers(product)
-    for filePath in _file_iterator(artifacts_dir):
+    for file_path in _file_iterator(artifacts_dir):
         for patcher in patchers:
-            patcher(filePath)
+            patcher(file_path)
 
 
 def patch_qt_edition(artifacts_dir, licheck_file_name, release_date):
     for root, _, files in os.walk(artifacts_dir):
-        for fileName in files:
-            if fileName == 'qconfig.pri':
-                _patch_qt_edition(os.path.join(root, fileName), licheck_file_name, release_date)
+        for file_name in files:
+            if file_name == 'qconfig.pri':
+                _patch_qt_edition(os.path.join(root, file_name), licheck_file_name, release_date)
                 return
 
 
@@ -79,8 +79,8 @@ def _patch_qt_edition(file_path, licheck_file_name, release_date):
 
 def patch_qconfig_pri(file_path):
     for line in FileInput(file_path, inplace=True):
-        patchedLine = patch_qconfig_pri_from_line(line)
-        print(patchedLine.rstrip('\n'))
+        patched_line = patch_qconfig_pri_from_line(line)
+        print(patched_line.rstrip('\n'))
 
 
 def patch_qconfig_pri_from_line(line):
@@ -94,8 +94,8 @@ def patch_qconfig_pri_from_line(line):
 def erase_qmake_prl_build_dir(file_path):
     # Erase lines starting with 'QMAKE_PRL_BUILD_DIR' from .prl files
     for line in FileInput(file_path, inplace=True):
-        patchedLine = patch_qmake_prl_build_dir_from_line(line)
-        print(patchedLine.rstrip('\n'))
+        patched_line = patch_qmake_prl_build_dir_from_line(line)
+        print(patched_line.rstrip('\n'))
 
 
 def patch_qmake_prl_build_dir_from_line(line):
@@ -104,8 +104,8 @@ def patch_qmake_prl_build_dir_from_line(line):
 
 def patch_absolute_lib_paths_from_file(file_path):
     for line in FileInput(file_path, inplace=True):
-        patchedLine = patch_absolute_lib_paths_from_line(line, file_path.split(".")[-1])
-        print(patchedLine.rstrip('\n'))
+        patched_line = patch_absolute_lib_paths_from_line(line, file_path.split(".")[-1])
+        print(patched_line.rstrip('\n'))
 
 
 def patch_absolute_lib_paths_from_line(line, file_extension):
@@ -121,21 +121,21 @@ def patch_absolute_lib_paths_from_line(line, file_extension):
 
     def _remove_whitespace(line):
         """Remove white space from paths if found inside quoted blocks."""
-        eraseEnabled = False
+        erase_enabled = False
         result = ""
         for char in line:
             if char == "\"":
                 # toggle on/off
-                eraseEnabled = not eraseEnabled
-            if eraseEnabled and char == " ":
+                erase_enabled = not erase_enabled
+            if erase_enabled and char == " ":
                 continue
             result += char
         return result
 
     if file_extension == "cmake":
         # from cmake files patch only lines containing "find_extra_libs"
-        cmakeFindExtraLibsSearchRegexp = re.compile(r'_*._find_extra_libs\(')
-        if not re.search(cmakeFindExtraLibsSearchRegexp, line):
+        cmake_find_extra_libs_search_regexp = re.compile(r'_*._find_extra_libs\(')
+        if not re.search(cmake_find_extra_libs_search_regexp, line):
             return line
 
     expressions = [
