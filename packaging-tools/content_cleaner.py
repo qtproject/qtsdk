@@ -32,10 +32,10 @@
 import argparse
 import os
 import sys
-from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Generator, List
+from typing import List
 
+from installer_utils import ch_dir
 from logging_util import init_logger
 
 log = init_logger(__name__, debug_mode=False)
@@ -43,16 +43,6 @@ log = init_logger(__name__, debug_mode=False)
 
 class CleanerError(Exception):
     pass
-
-
-@contextmanager
-def ch_dir(path: str) -> Generator[Any, Any, Any]:
-    oldwd = os.getcwd()
-    os.chdir(path)
-    try:
-        yield
-    finally:
-        os.chdir(oldwd)
 
 
 def expand_rules(rules: List[str]) -> List[str]:

@@ -53,7 +53,7 @@ from bldinstallercommon import (
     remove_tree,
     retrieve_url,
 )
-from installer_utils import PackagingError
+from installer_utils import PackagingError, ch_dir
 from pkg_constants import IFW_BUILD_ARTIFACTS_DIR
 from read_remote_config import get_pkg_value
 from runner import do_execute_sub_process
@@ -528,41 +528,38 @@ def create_installer_package(options: IfwOptions) -> None:
     # Final directory for the installer containing the Qt Installer Framework itself
     os.makedirs(options.installer_framework_target_dir)
     target_dir = os.path.join(options.installer_framework_target_dir, 'QtInstallerFramework' + '-' + options.plat_suffix + '-' + options.architecture)
-
-    current_dir = os.getcwd()
-    os.chdir(package_dir)
-    shutil.copytree(os.path.join(options.installer_framework_build_dir, 'bin'), os.path.join(package_dir, 'bin'), ignore=shutil.ignore_patterns("*.exe.manifest", "*.exp", "*.lib"))
-    if is_linux():
-        do_execute_sub_process(args=['strip', os.path.join(package_dir, 'bin/archivegen')], execution_path=package_dir)
-        do_execute_sub_process(args=['strip', os.path.join(package_dir, 'bin/binarycreator')], execution_path=package_dir)
-        do_execute_sub_process(args=['strip', os.path.join(package_dir, 'bin/devtool')], execution_path=package_dir)
-        do_execute_sub_process(args=['strip', os.path.join(package_dir, 'bin/installerbase')], execution_path=package_dir)
-        do_execute_sub_process(args=['strip', os.path.join(package_dir, 'bin/repogen')], execution_path=package_dir)
-    shutil.copytree(os.path.join(options.installer_framework_build_dir, 'doc'), os.path.join(package_dir, 'doc'))
-    shutil.copytree(os.path.join(options.installer_framework_source_dir, 'examples'), os.path.join(package_dir, 'examples'))
-    shutil.copy(os.path.join(options.installer_framework_source_dir, 'README'), package_dir)
-    # pack payload into separate .7z archive for later usage
-    cmd_args = [ARCHIVE_PROGRAM, 'a', options.installer_framework_payload_arch, package_dir]
-    do_execute_sub_process(cmd_args, ROOT_DIR)
-    shutil.move(os.path.join(ROOT_DIR, options.installer_framework_payload_arch), options.build_artifacts_dir)
-    # create 7z
-    archive_file = os.path.join(options.installer_framework_source_dir, 'dist', 'packages', 'org.qtproject.ifw.binaries', 'data', 'data.7z')
-    if not os.path.exists(os.path.dirname(archive_file)):
-        os.makedirs(os.path.dirname(archive_file))
-    do_execute_sub_process(args=[os.path.join(package_dir, 'bin', 'archivegen'), archive_file, '*'], execution_path=package_dir)
-    # run installer
-    binary_creator = os.path.join(options.installer_framework_build_dir, 'bin', 'binarycreator')
-    config_file = os.path.join(options.installer_framework_source_dir, 'dist', 'config', 'config.xml')
-    package_dir = os.path.join(options.installer_framework_source_dir, 'dist', 'packages')
-    do_execute_sub_process(args=[binary_creator, '--offline-only', '-c', config_file, '-p', package_dir, target_dir], execution_path=package_dir)
-    print(f"Installer package is at: {target_dir}")
-    artifacts = os.listdir(options.installer_framework_target_dir)
-    for artifact in artifacts:
-        dest_file_name = os.path.join(options.build_artifacts_dir, artifact)
+    with ch_dir(package_dir):
+        shutil.copytree(os.path.join(options.installer_framework_build_dir, 'bin'), os.path.join(package_dir, 'bin'), ignore=shutil.ignore_patterns("*.exe.manifest", "*.exp", "*.lib"))
         if is_linux():
-            dest_file_name += '.run'
-        shutil.move(os.path.join(options.installer_framework_target_dir, artifact), dest_file_name)
-    os.chdir(current_dir)
+            do_execute_sub_process(args=['strip', os.path.join(package_dir, 'bin/archivegen')], execution_path=package_dir)
+            do_execute_sub_process(args=['strip', os.path.join(package_dir, 'bin/binarycreator')], execution_path=package_dir)
+            do_execute_sub_process(args=['strip', os.path.join(package_dir, 'bin/devtool')], execution_path=package_dir)
+            do_execute_sub_process(args=['strip', os.path.join(package_dir, 'bin/installerbase')], execution_path=package_dir)
+            do_execute_sub_process(args=['strip', os.path.join(package_dir, 'bin/repogen')], execution_path=package_dir)
+        shutil.copytree(os.path.join(options.installer_framework_build_dir, 'doc'), os.path.join(package_dir, 'doc'))
+        shutil.copytree(os.path.join(options.installer_framework_source_dir, 'examples'), os.path.join(package_dir, 'examples'))
+        shutil.copy(os.path.join(options.installer_framework_source_dir, 'README'), package_dir)
+        # pack payload into separate .7z archive for later usage
+        cmd_args = [ARCHIVE_PROGRAM, 'a', options.installer_framework_payload_arch, package_dir]
+        do_execute_sub_process(cmd_args, ROOT_DIR)
+        shutil.move(os.path.join(ROOT_DIR, options.installer_framework_payload_arch), options.build_artifacts_dir)
+        # create 7z
+        archive_file = os.path.join(options.installer_framework_source_dir, 'dist', 'packages', 'org.qtproject.ifw.binaries', 'data', 'data.7z')
+        if not os.path.exists(os.path.dirname(archive_file)):
+            os.makedirs(os.path.dirname(archive_file))
+        do_execute_sub_process(args=[os.path.join(package_dir, 'bin', 'archivegen'), archive_file, '*'], execution_path=package_dir)
+        # run installer
+        binary_creator = os.path.join(options.installer_framework_build_dir, 'bin', 'binarycreator')
+        config_file = os.path.join(options.installer_framework_source_dir, 'dist', 'config', 'config.xml')
+        package_dir = os.path.join(options.installer_framework_source_dir, 'dist', 'packages')
+        do_execute_sub_process(args=[binary_creator, '--offline-only', '-c', config_file, '-p', package_dir, target_dir], execution_path=package_dir)
+        print(f"Installer package is at: {target_dir}")
+        artifacts = os.listdir(options.installer_framework_target_dir)
+        for artifact in artifacts:
+            dest_file_name = os.path.join(options.build_artifacts_dir, artifact)
+            if is_linux():
+                dest_file_name += '.run'
+            shutil.move(os.path.join(options.installer_framework_target_dir, artifact), dest_file_name)
 
 
 ################################################################

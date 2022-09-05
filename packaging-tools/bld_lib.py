@@ -49,6 +49,7 @@ from urllib.request import urlretrieve
 from rainbow_logging_handler import RainbowLoggingHandler  # type: ignore
 
 from bld_utils import is_windows
+from installer_utils import ch_dir
 from read_remote_config import get_pkg_value
 from remote_uploader import RemoteUploader
 
@@ -112,13 +113,11 @@ def extract_archive(save_as: str, current_dir: str) -> str:
                 tar.extractall(qt_dest_dir)
         elif save_as.endswith(".7z"):
             try:
-                os.chdir(qt_dest_dir)
-                check_call(['7z', 'x', save_as])
+                with ch_dir(qt_dest_dir):
+                    check_call(["7z", "x", save_as])
             except Exception as error:
                 log.error("Extracting 7z file failed: %s", str(error))
                 raise
-            finally:
-                os.chdir(current_dir)
     return qt_dest_dir
 
 
@@ -152,20 +151,18 @@ def build(args: argparse.Namespace, qt_dest_dir: str, current_dir: str) -> str:
     os.makedirs(bld_dir)
 
     try:
-        os.chdir(bld_dir)
-        check_call([qmake_tool, pro_file])
-        check_call([make_tool_name])
-        # on windows chhop out the drive letter (e.g. 'C:'"
-        install_root = install_root_dir[2:] if is_windows() else install_root_dir
-        check_call([make_tool_name, 'install', 'INSTALL_ROOT=' + install_root])
+        with ch_dir(bld_dir):
+            check_call([qmake_tool, pro_file])
+            check_call([make_tool_name])
+            # on Windows chop out the drive letter (e.g. 'C:')
+            install_root = install_root_dir[2:] if is_windows() else install_root_dir
+            check_call([make_tool_name, 'install', 'INSTALL_ROOT=' + install_root])
     except CalledProcessError as build_error:
         log.error("Failed to build the project: %s", str(build_error))
         raise
     except Exception as error:
         log.error("Something bad happened: %s", str(error))
         raise
-    finally:
-        os.chdir(current_dir)
 
     return install_root_dir
 
@@ -184,13 +181,11 @@ def archive(args: argparse.Namespace, install_root_dir: str, current_dir: str) -
     artifacts_file_name = "artifacts-" + plat.system().lower() + "-" + arch + ".7z"
     artifacts_file_path = os.path.join(current_dir, artifacts_file_name)
     try:
-        os.chdir(archive_path)
-        check_call(['7z', 'a', '-m0=lzma2', '-mmt=16', artifacts_file_path, '*'])
+        with ch_dir(archive_path):
+            check_call(['7z', 'a', '-m0=lzma2', '-mmt=16', artifacts_file_path, '*'])
     except Exception as error:
         print(str(error))
         raise
-    finally:
-        os.chdir(current_dir)
 
     log.info("Created artifact: %s", artifacts_file_path)
     return artifacts_file_path
