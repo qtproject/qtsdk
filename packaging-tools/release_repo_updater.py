@@ -52,7 +52,7 @@ from urllib.request import urlopen, urlretrieve
 from temppathlib import TemporaryDirectory
 
 from bld_utils import is_linux
-from bldinstallercommon import locate_path
+from bldinstallercommon import is_long_path_supported, locate_path
 from create_installer import DryRunMode, QtInstallerTask, create_installer
 from installer_utils import PackagingError, download_archive, extract_archive, is_valid_url_path
 from logging_util import init_logger
@@ -963,8 +963,19 @@ def main() -> None:
     parser.add_argument("--event-injector", dest="event_injector", type=str, default=os.getenv('PKG_EVENT_INJECTOR'),
                         help="Register events to monitoring system with the given injector. "
                              "The --config file must point to export summary file.")
+    parser.add_argument(
+        "--disable-path-limit-check",
+        dest="require_long_path_support",
+        action="store_false",
+        default=True
+    )
     parser.set_defaults(**defaults)  # these are from provided --config file
     args = parser.parse_args(sys.argv[1:])
+    if args.require_long_path_support is True and is_long_path_supported() is False:
+        log.error("Path names longer than 260 are not supported by the current environment")
+        log.error("To continue, the maximum path limitation must be disabled in Windows registry")
+        log.error("Set --disable-path-limit-check to bypass this check")
+        raise SystemExit("Long path support is required to build the installer/repository")
     if args.dry_run:
         assert not args.sync_s3, "'--sync-s3' specified with '--dry-run'"
         assert not args.sync_ext, "'--sync-ext' specified with '--dry-run'"

@@ -51,6 +51,7 @@ from bldinstallercommon import (
     copy_tree,
     extract_file,
     handle_component_rpath,
+    is_long_path_supported,
     locate_executable,
     locate_path,
     locate_paths,
@@ -68,9 +69,6 @@ from pkg_constants import INSTALLER_OUTPUT_DIR_NAME, PKG_TEMPLATE_BASE_DIR_NAME
 from runner import run_cmd
 from sdkcomponent import IfwPayloadItem, IfwSdkComponent, parse_ifw_sdk_comp
 from threadedwork import ThreadedWork
-
-if is_windows():
-    import win32api  # type: ignore # pylint: disable=E0401
 
 log = init_logger(__name__, debug_mode=False)
 
@@ -842,9 +840,6 @@ def create_target_components(task: QtInstallerTaskType) -> None:
                     # Create needed data dirs before the threads start to work
                     install_dir.mkdir(parents=True, exist_ok=True)
                     data_dir_dest.mkdir(parents=True, exist_ok=True)
-                    if is_windows():
-                        install_dir = Path(win32api.GetShortPathName(str(install_dir)))
-                        data_dir_dest = Path(win32api.GetShortPathName(str(data_dir_dest)))
                     get_component_data_work.add_task(
                         f"adding {archive.archive_name} to {sdk_comp.ifw_sdk_comp_name}",
                         get_component_data,
@@ -1187,6 +1182,8 @@ class QtInstallerTask(Generic[QtInstallerTaskType]):
             self.config.get("PackageTemplates", "template_dirs"), self.configurations_dir
         )
         self._parse_substitutions()
+        if not is_long_path_supported():
+            log.warning("Path names longer than 260 are not supported by the current environment")
 
     def __str__(self) -> str:
         return f"""Installer task:
@@ -1212,7 +1209,8 @@ class QtInstallerTask(Generic[QtInstallerTaskType]):
   Build timestamp: {self.build_timestamp}
   Force version number increase: {self.force_version_number_increase}
   Version number auto increase value: {self.version_number_auto_increase_value}
-  Mac cpu count: {self.max_cpu_count}"""
+  Mac cpu count: {self.max_cpu_count}
+  Long paths supported: {is_long_path_supported()}"""
 
     def _parse_substitutions(self) -> None:
         for item in self.substitution_list:  # pylint: disable=not-an-iterable
@@ -1354,8 +1352,19 @@ def main() -> None:
 
     parser.add_argument("--max-cpu-count", dest="max_cpu_count", type=int, default=8,
                         help="Set maximum number of CPU's used on packaging")
+    parser.add_argument(
+        "--disable-path-limit-check",
+        dest="require_long_path_support",
+        action="store_false",
+    )
 
     args = parser.parse_args(sys.argv[1:])
+
+    if args.require_long_path_support is True and is_long_path_supported() is False:
+        log.error("Path names longer than 260 are not supported by the current environment")
+        log.error("To continue, the maximum path limitation must be disabled in Windows registry")
+        log.error("Set --disable-path-limit-check to bypass this check")
+        raise SystemExit("Long path support is required to build the installer/repository")
 
     task: QtInstallerTask[Any] = QtInstallerTask(
         configurations_dir=args.configurations_dir,

@@ -29,6 +29,7 @@
 #
 #############################################################################
 
+import ctypes
 import errno
 import os
 import re
@@ -56,13 +57,31 @@ from logging_util import init_logger
 from runner import run_cmd
 from threadedwork import Task, ThreadedWork
 
-# need to include this for win platforms as long path names cause problems
-if is_windows():
-    import win32api  # type: ignore # pylint: disable=E0401
-
 log = init_logger(__name__, debug_mode=False)
 
 MAX_DEBUG_PRINT_LENGTH = 10000
+
+
+def is_long_path_supported() -> bool:
+    """
+    Check whether long paths (~260+) are supported by the current environment
+
+    On Windows, the limitations can be removed via Group Policy or Registry Key
+    For more information on Windows API maximum path length limitations, see:
+    https://learn.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation
+
+    Returns:
+        bool: whether the current process environment has path limitation disabled (Windows)
+        True: non-Windows platforms
+    """
+    if not is_windows():
+        return True
+    ntdll = ctypes.WinDLL('ntdll')  # type: ignore  # false positive mypy
+    if not hasattr(ntdll, 'RtlAreLongPathsEnabled'):
+        return False
+    ntdll.RtlAreLongPathsEnabled.restype = ctypes.c_ubyte
+    ntdll.RtlAreLongPathsEnabled.argtypes = ()
+    return bool(ntdll.RtlAreLongPathsEnabled())
 
 
 def file_uri_to_path(uri: str) -> Path:
@@ -173,10 +192,6 @@ def search_for_files(
 # function
 ###############################
 def move_tree(srcdir: str, dstdir: str, pattern: Optional[str] = None) -> None:
-    # windows has length limit for path names so try to truncate them as much as possible
-    if is_windows():
-        srcdir = win32api.GetShortPathName(srcdir)
-        dstdir = win32api.GetShortPathName(dstdir)
     # dstdir must exist first
     srcnames = os.listdir(srcdir)
     for name in srcnames:
@@ -202,10 +217,6 @@ def move_tree(srcdir: str, dstdir: str, pattern: Optional[str] = None) -> None:
 # function
 ###############################
 def copy_tree(source_dir: str, dest_dir: str) -> None:
-    # windows has length limit for path names so try to truncate them as much as possible
-    if is_windows():
-        source_dir = win32api.GetShortPathName(source_dir)
-        dest_dir = win32api.GetShortPathName(dest_dir)
     src_files = os.listdir(source_dir)
     for file_name in src_files:
         full_file_name = os.path.join(source_dir, file_name)
@@ -253,7 +264,7 @@ def handle_remove_readonly(
 def remove_tree(path: str) -> bool:
     if os.path.isdir(path) and os.path.exists(path):
         if is_windows():
-            path = win32api.GetShortPathName(path.replace('/', '\\'))
+            path = path.replace('/', '\\')
             # a funny thing is that rmdir does not set an exitcode it is just using the last set one
             try:
                 cmd = ['rmdir', path, '/S', '/Q']

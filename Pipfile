@@ -13,7 +13,6 @@ pexpect = "==4.8.0"
 wget = "==3.2"
 beautifulsoup4 = "==4.11.1"
 pysftp = "==0.2.9"
-pywin32 = {version = "==303", os_name = "== 'nt'"}
 configparser = "==5.2.0"
 dataclasses = {version = "==0.8", markers="(python_version >= '3.6' and python_version < '3.7')"}
 asyncio-backport = {version = "==0.1.1", markers="(python_version >= '3.6' and python_version < '3.7')"}
