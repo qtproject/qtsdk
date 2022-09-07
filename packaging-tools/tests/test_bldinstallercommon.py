@@ -172,7 +172,7 @@ class TestCommon(unittest.TestCase):
                 Path(tmp_base_dir + file).touch()
             result = locate_paths(tmp_base_dir, pattern, filters)
             result = [str(Path(p).relative_to(tmp_base_dir)) for p in result]
-            self.assertEqual(expected_results, result)
+            self.assertCountEqual(expected_results, result)
 
     def test_locate_path(self):
         with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
