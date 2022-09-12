@@ -73,14 +73,12 @@ def verbose_start(args: List[str]) -> None:
 
 def check_existence_or_die(file_path: str) -> None:
     if not os.path.exists(file_path):
-        print(f"error: file path does not exist: {file_path}", file=sys.stderr)
-        sys.exit(1)
+        raise SystemExit(f"file path does not exist: {file_path}")
 
 
 def check_exit_code_or_die(exit_code: int, args: List[str]) -> None:
     if exit_code != 0:
-        print(f"error: exit code is, {exit_code} for", ' '.join(args), file=sys.stderr)
-        sys.exit(1)
+        raise SystemExit(f"exit code {exit_code} for {' '.join(args)}")
 
 
 class Config:

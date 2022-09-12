@@ -216,7 +216,7 @@ class ThreadedWork:
                     sleep(1)
                 except KeyboardInterrupt:  # if ctrl-C is pressed within that second,
                     # catch the KeyboardInterrupt exception
-                    sys.exit(0)
+                    raise SystemExit(0) from KeyboardInterrupt
         # self.queue.join() <- this ignoring the KeyboardInterrupt
         if max_threads > 1:
             enable_threaded_print(False)

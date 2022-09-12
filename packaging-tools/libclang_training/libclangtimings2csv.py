@@ -118,7 +118,7 @@ def convert(input_file: str, column_label: str = "") -> str:
 
 def print_usage_and_exit() -> None:
     print(__doc__)
-    sys.exit(0)
+    raise SystemExit(0)
 
 
 def main() -> None:
@@ -126,9 +126,7 @@ def main() -> None:
     try:
         opts, args = getopt.getopt(sys.argv[1:], "h", ["help"])
     except getopt.error as msg:
-        print(msg)
-        print("for help use --help")
-        sys.exit(2)
+        raise SystemExit("for help use --help") from msg
 
     # process options
     for opt, _ in opts:

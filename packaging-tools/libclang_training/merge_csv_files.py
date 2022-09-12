@@ -91,15 +91,13 @@ def check_consistency(files: List[FileWithValues]) -> List[str]:
     # Ensure same size of records
     for file in files:
         if not len(file.values) == reference_entry_size:
-            print(f"error: number of entries mismatch between '{reference_entry.file_path}' and '{file.file_path}'.", file=sys.stderr)
-            sys.exit(1)
+            raise SystemExit(f"Entry count mismatch: {reference_entry.file_path}, {file.file_path}")
 
     # Ensure same identifier on the left
     for file in files:
         identifiers = [v[0] for v in file.values]
         if not identifiers == reference_entry_identifiers:
-            print(f"error: mismatch between identifers in first column between '{reference_entry.file_path}' and '{file.file_path}'.", file=sys.stderr)
-            sys.exit(1)
+            raise SystemExit(f"Column 1 id mismatch: {reference_entry.file_path}, {file.file_path}")
 
     return reference_entry_identifiers
 
@@ -130,16 +128,14 @@ def merge_files(output_file_path: str, files_to_merge: List[str]) -> None:
 
 def print_help_and_exit() -> None:
     print(__doc__)
-    sys.exit(0)
+    raise SystemExit(0)
 
 
 def main() -> None:
     try:
         opts, args = getopt.getopt(sys.argv[1:], "h", ["help"])
     except getopt.error as msg:
-        print(msg)
-        print("for help use --help")
-        sys.exit(2)
+        raise SystemExit("for help use --help") from msg
 
     for opt, _ in opts:
         if opt in ("-h", "--help"):

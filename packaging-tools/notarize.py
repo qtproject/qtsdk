@@ -172,8 +172,7 @@ def main() -> None:
     args = parser.parse_args(sys.argv[1:])
 
     if not which("xcrun"):
-        log.error("Could not find 'xcrun' from the system. This tool is needed for notarization. Aborting..")
-        sys.exit(1)
+        raise SystemExit("Could not find 'xcrun' from the system for notarization. Aborting..")
 
     loop = asyncio.get_event_loop()
     loop.run_until_complete(notarize(args))

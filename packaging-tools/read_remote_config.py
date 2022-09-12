@@ -77,7 +77,7 @@ def main() -> None:
     args = parser.parse_args(sys.argv[1:])
     if not args.url or not args.section:
         parser.print_help(sys.stderr)
-        sys.exit(1)
+        raise SystemExit("--url or --section missing")
 
     print(f"{args.key}: '{get_pkg_value(args.key, args.section, args.url)}'")
 

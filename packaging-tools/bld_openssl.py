@@ -65,8 +65,7 @@ def check_environment() -> None:
 
         def check_cmd(cmd: List[str]) -> None:
             if subprocess.call(cmd, stdout=fnull, stderr=fnull) != 0:
-                print(f"*** Cannot execute {cmd[0]}")
-                sys.exit(1)
+                raise SystemExit(f"Check environment fail: {cmd[0]}")
         check_cmd(['nasm', '-h'])
         check_cmd(['nmake', '/?'])
         check_cmd(['7z'])
@@ -89,8 +88,7 @@ def setup_argument_parser() -> argparse.ArgumentParser:
 def main() -> None:
     """Main"""
     if not platform.system().lower().startswith('win'):
-        print('*** Only Windows builds are supported.')
-        sys.exit(1)
+        raise SystemExit("Only Windows builds are supported.")
 
     check_environment()
 
@@ -98,8 +96,7 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.toolset not in ('VC-WIN32', 'VC-WIN64A'):
-        print('*** --toolset must be either VC-WIN32 or VC-WIN64A')
-        sys.exit(1)
+        raise SystemExit("--toolset must be either VC-WIN32 or VC-WIN64A")
 
     build(args.sourcedir, args.installdir, args.toolset)
     archive(args.installdir, args.archive_prefix)

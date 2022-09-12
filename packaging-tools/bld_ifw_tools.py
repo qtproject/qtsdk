@@ -254,14 +254,12 @@ class IfwOptions:
         # check qt src package url
         res = is_content_url_valid(self.qt_source_package_uri)
         if not res:
-            print(f"*** Qt src package uri is invalid: {self.qt_source_package_uri}")
-            sys.exit(-1)
+            raise SystemExit(f"Qt src package uri is invalid: {self.qt_source_package_uri}")
         if self.product_key_checker_pri:
             if os.path.isfile(self.product_key_checker_pri):
                 print(f'Using product key checker: {self.product_key_checker_pri}')
             else:
-                print(f'*** Error! Given product key checker is not a valid file: {self.product_key_checker_pri}')
-                sys.exit(-1)
+                raise SystemExit(f"Invalid product key checker: {self.product_key_checker_pri}")
 
     def print_data(self) -> None:
         print("-----------------------------------------")
@@ -356,8 +354,7 @@ def prepare_compressed_package(src_pkg_uri: str, src_pkg_saveas: str, destinatio
     print(f"Fetching package from: {src_pkg_uri}")
     if not os.path.isfile(src_pkg_saveas):
         if not is_content_url_valid(src_pkg_uri):
-            print('*** Src package uri is invalid! Abort!')
-            sys.exit(-1)
+            raise SystemExit("Src package uri is invalid! Abort!")
         retrieve_url(src_pkg_uri, src_pkg_saveas)
     else:
         print(f"Found old local package, using that: {src_pkg_saveas}")
@@ -373,8 +370,7 @@ def prepare_compressed_package(src_pkg_uri: str, src_pkg_saveas: str, destinatio
         move_tree(full_dir_name, destination_dir)
         remove_tree(full_dir_name)
     else:
-        print('*** Invalid dir structure encountered?!')
-        sys.exit(-1)
+        raise SystemExit("Invalid dir structure encountered?!")
 
 
 ###############################
@@ -454,9 +450,7 @@ def build_installer_framework(options: IfwOptions) -> None:
     print('Building Installer Framework')
     qmake_bin = os.path.join(options.qt_build_dir, 'qtbase', 'bin', options.qt_qmake_bin)
     if not os.path.isfile(qmake_bin):
-        print('*** Unable to find qmake, aborting!')
-        print(f"qmake: {qmake_bin}")
-        sys.exit(-1)
+        raise SystemExit(f"Unable to find qmake from {qmake_bin}, aborting!")
     Path(options.installer_framework_build_dir).mkdir(parents=True, exist_ok=True)
     cmd_args = [qmake_bin]
     cmd_args += options.qt_installer_framework_qmake_args
@@ -471,8 +465,7 @@ def build_installer_framework_examples(options: IfwOptions) -> None:
     if is_windows():
         file_binarycreator += '.exe'
     if not os.path.exists(file_binarycreator):
-        print(f"*** Unable to find binarycreator: {file_binarycreator}, aborting!")
-        sys.exit(-1)
+        raise SystemExit(f"Unable to find binarycreator from {file_binarycreator}, aborting!")
 
     ifw_examples = os.path.join(options.installer_framework_source_dir, 'examples')
     ifw_example_binaries = []
@@ -503,8 +496,7 @@ def build_ifw_docs(options: IfwOptions) -> None:
     print('Building Qt Installer Framework Documentation')
     qmake_bin = os.path.join(options.qt_build_dir_dynamic, 'qtbase', 'bin', options.qt_qmake_bin)
     if not os.path.isfile(qmake_bin):
-        print(f'*** Aborting doc build, unable to find qmake from: {options.qt_build_dir_dynamic}')
-        sys.exit(-1)
+        raise SystemExit(f"Aborting doc build, qmake not found in: {options.qt_build_dir_dynamic}")
     cmd_args = qmake_bin + ' -r ' + options.installer_framework_source_dir
     do_execute_sub_process(cmd_args.split(' '), options.installer_framework_build_dir)
     cmd_args = options.make_doc_cmd + ' docs'
@@ -677,8 +669,7 @@ def archive_installerbase(options: IfwOptions) -> None:
     do_execute_sub_process(cmd_args_archive, ROOT_DIR)
     do_execute_sub_process(cmd_args_clean, ROOT_DIR)
     if not os.path.isfile(options.installer_base_archive_name):
-        print(f"*** Failed to generate archive: {options.installer_base_archive_name}")
-        sys.exit(-1)
+        raise SystemExit(f"Failed to generate archive: {options.installer_base_archive_name}")
     shutil.move(options.installer_base_archive_name, options.build_artifacts_dir)
 
 

@@ -123,7 +123,7 @@ def main() -> None:
     elif args.remove_rules:
         remove_content(args.input_dir, args.remove_rules)
     else:
-        sys.exit(1)
+        raise SystemExit("--preserve or --remove rules need to be specified")
 
 
 if __name__ == "__main__":

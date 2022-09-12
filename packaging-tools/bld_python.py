@@ -178,8 +178,7 @@ def main() -> None:
 
     for tool in ["7z", "tar"]:
         if not which(tool):
-            log.error("Could not find '%s' from the system. This tool is needed. Aborting..", tool)
-            sys.exit(1)
+            raise SystemExit(f"Could not find required tool '{tool}' from the system. Aborting..")
 
     loop = get_event_loop()
     loop.run_until_complete(build_python(args.src, args.prefix))

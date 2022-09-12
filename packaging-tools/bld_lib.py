@@ -224,8 +224,7 @@ def main() -> None:
     assert args.remote_base_path, "You must define '--remote-base-path'!"
     assert args.project_name, "You must define '--project-name'!"
     if not which("7z"):
-        log.error("Could not find '7z' from the system. This tool is needed for notarization. Aborting..")
-        sys.exit(1)
+        raise SystemExit("Could not find '7z' from the system for notarization. Aborting..")
 
     handle_build(args)
 
