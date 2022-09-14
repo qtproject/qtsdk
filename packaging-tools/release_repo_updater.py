@@ -30,7 +30,6 @@
 #############################################################################
 
 import argparse
-from dataclasses import dataclass
 import json
 import os
 import platform
@@ -40,7 +39,9 @@ import subprocess
 import sys
 from asyncio import get_event_loop
 from configparser import ConfigParser, ExtendedInterpolation
+from dataclasses import dataclass
 from datetime import datetime
+from enum import Enum
 from pathlib import Path
 from subprocess import PIPE
 from tempfile import TemporaryDirectory
@@ -48,7 +49,6 @@ from time import gmtime, sleep, strftime, time
 from typing import Dict, List, Optional, Tuple
 from urllib.error import HTTPError, URLError
 from urllib.request import urlopen, urlretrieve
-from enum import Enum
 
 from bld_utils import is_linux
 from bldinstallercommon import locate_path
@@ -173,7 +173,7 @@ class RepoUpdateStrategy:
     remote_repo_update_destinations: List[str]
 
     @staticmethod
-    def get_strategy(staging_server_root: str, license: str, repo_domain: str,
+    def get_strategy(staging_server_root: str, license_: str, repo_domain: str,
                      build_repositories: bool, remote_repo_update_source: RepoSource,
                      update_staging: bool, update_production: bool) -> 'RepoUpdateStrategy':
         if build_repositories and remote_repo_update_source != RepoSource.PENDING:
@@ -183,7 +183,7 @@ class RepoUpdateStrategy:
             raise PackagingError("Can not update staging if you are not building the repo "
                                  "locally. The pending area would be empty. Check cmd args.")
         # get repository layout
-        repo_layout = QtRepositoryLayout(staging_server_root, license, repo_domain)
+        repo_layout = QtRepositoryLayout(staging_server_root, license_, repo_domain)
         repo_update_destinations = []
         if update_staging:
             repo_update_destinations.append(repo_layout.get_staging_path())
@@ -528,19 +528,18 @@ async def build_online_repositories(tasks: List[ReleaseTask], license_: str, ins
     return done_repositories
 
 
-async def update_repositories(tasks: List[ReleaseTask], staging_server: str, staging_server_root: str,
-                              update_strategy: RepoUpdateStrategy, rta: str, ifw_tools: str) -> None:
-    # upload ifw tools to remote
-    remote_repogen = await upload_ifw_to_remote(ifw_tools, staging_server, staging_server_root)
+async def update_repositories(
+    tasks: List[ReleaseTask],
+    staging_server: str,
+    update_strategy: RepoUpdateStrategy,
+    rta: str,
+) -> None:
     try:
         for task in tasks:
             await update_repository(staging_server, update_strategy, task, rta)
     except PackagingError as error:
         log.error("Aborting online repository update: %s", str(error))
         raise
-    finally:
-        # Now we can delete the ifw tools at remote
-        delete_remote_paths(staging_server, [os.path.dirname(os.path.dirname(remote_repogen))])
 
 
 async def sync_production(tasks: List[ReleaseTask], repo_layout: QtRepositoryLayout, sync_s3: str, sync_ext: str,
@@ -577,14 +576,13 @@ async def handle_update(staging_server: str, staging_server_root: str, license_:
     log.info("Starting repository update for %i tasks..", len(tasks))
     if build_repositories:
         # this may take a while depending on how big the repositories are
-        async with EventRegister(f"{license}: repo build", event_injector, export_data):
+        async with EventRegister(f"{license_}: repo build", event_injector, export_data):
             await build_online_repositories(tasks, license_, installer_config_base_dir,
                                             artifact_share_base_url, ifw_tools,
                                             build_repositories)
     if update_strategy.requires_remote_update():
-        async with EventRegister(f"{license}: repo update", event_injector, export_data):
-            await update_repositories(tasks, staging_server, staging_server_root, update_strategy,
-                                      rta, ifw_tools)
+        async with EventRegister(f"{license_}: repo update", event_injector, export_data):
+            await update_repositories(tasks, staging_server, update_strategy, rta)
     if sync_repositories:
         await sync_production(tasks, update_strategy.remote_repo_layout, sync_s3, sync_ext, staging_server,
                               staging_server_root, license_, event_injector, export_data)
