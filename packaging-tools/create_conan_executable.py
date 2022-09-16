@@ -72,18 +72,18 @@ async def pip_install_from_checkout(pipenv: str, checkout_dir: str, env: Dict[st
 
 
 async def pip_install_url(pipenv: str, pip_packages: List[str], env: Dict[str, str]) -> None:
-    chekout_folders: List[str] = []
+    chekout_folders: List[Path] = []
     for pkg in pip_packages or []:
         if is_valid_url_path(pkg):
-            destination_dir = os.path.join(os.getcwd(), "_git_tmp", pkg.split("/")[-1])
+            destination_dir = Path.cwd() / "_git_tmp" / pkg.split("/")[-1]
             rmtree(destination_dir, ignore_errors=True)
-            await clone_repo(pkg, destination_dir, env)
+            await clone_repo(pkg, str(destination_dir), env)
             chekout_folders.append(destination_dir)
         else:
-            chekout_folders.append(pkg)
+            chekout_folders.append(Path(pkg))
 
     for package in chekout_folders:
-        await pip_install_from_checkout(pipenv, package, env)
+        await pip_install_from_checkout(pipenv, str(package), env)
 
 
 async def pip_install_pkg(pipenv: str, pip_packages: List[str], env: Dict[str, str]) -> None:
@@ -115,11 +115,11 @@ async def generate_executable(
     # give it 15 mins
     await run_cmd_async(cmd=cmd, env=env, timeout=60 * 15)
 
-    dest_path = os.path.join(os.getcwd(), "dist")
-    generated_files = [os.path.join(dest_path, x) for x in os.listdir(dest_path)]
+    dest_path = Path.cwd() / "dist"
+    generated_files = [dest_path / x for x in os.listdir(dest_path)]
     assert generated_files, f"No generated executables found from: {dest_path}"
     log.info("Created executable: %s", generated_files)
-    return dest_path
+    return str(dest_path)
 
 
 async def run(

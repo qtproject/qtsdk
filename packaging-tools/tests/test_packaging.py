@@ -34,6 +34,7 @@ import platform
 import sys
 import unittest
 from fileinput import FileInput
+from pathlib import Path
 from shutil import rmtree
 from tempfile import mkdtemp
 
@@ -119,7 +120,7 @@ class TestPackaging(unittest.TestCase):
             self.assertEqual(match_count, len(data[2]))
 
     def test_patch_qt_edition(self) -> None:
-        temp_dir = mkdtemp(dir=os.getcwd())
+        temp_dir = mkdtemp(dir=str(Path.cwd()))
         temp_file = os.path.join(temp_dir, "qconfig.pri")
 
         try:
@@ -166,7 +167,7 @@ class TestPackaging(unittest.TestCase):
             cmd_args = cmd_args + ['--preferred-installer-name=' + offline_job]
             cmd_args = cmd_args + ['--dry-run']
             try:
-                run_cmd(cmd=cmd_args, cwd=os.getcwd())
+                run_cmd(cmd=cmd_args)
             except Exception as error:
                 self.fail(f"Failed to execute: [{' '.join(cmd_args)}] -> {str(error)}")
             self.assertTrue(os.path.exists(os.path.join(tests_dir, 'installer_output', offline_job + extension)), "No installers generated")

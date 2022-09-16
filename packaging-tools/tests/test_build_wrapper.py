@@ -33,6 +33,7 @@ import os
 import unittest
 from getpass import getuser
 from glob import glob
+from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Dict
 
@@ -56,7 +57,7 @@ class TestBuildWrapper(unittest.TestCase):
     ) -> None:
         with TemporaryDirectory() as temp_dir:
             option_dict: Dict[str, str] = {
-                'WORK_DIR': os.getcwd(), 'SSH_COMMAND': 'ssh', 'SCP_COMMAND': 'scp',
+                'WORK_DIR': str(Path.cwd()), 'SSH_COMMAND': 'ssh', 'SCP_COMMAND': 'scp',
                 'PACKAGE_STORAGE_SERVER_ADDR': getuser() + '@127.0.0.1',
                 'PACKAGE_STORAGE_SERVER_BASE_DIR': temp_dir
             }

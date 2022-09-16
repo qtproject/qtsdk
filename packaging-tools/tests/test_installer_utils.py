@@ -33,6 +33,7 @@ import io
 import os
 import tarfile
 import unittest
+from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from installer_utils import (
@@ -55,11 +56,11 @@ class TestInstallerUtils(unittest.TestCase):
 
     @asyncio_test
     async def test_ch_dir(self) -> None:
-        cwd = os.getcwd()
-        with TemporaryDirectory(dir=cwd) as tmp_base_dir:
+        cwd = Path.cwd()
+        with TemporaryDirectory(dir=str(cwd)) as tmp_base_dir:
             with ch_dir(tmp_base_dir):
-                self.assertEqual(tmp_base_dir, os.getcwd())
-        self.assertEqual(cwd, os.getcwd())
+                self.assertEqual(Path(tmp_base_dir), Path.cwd())
+        self.assertEqual(cwd, Path.cwd())
 
     @asyncio_test_parallel_data(  # type: ignore
         ("https://www.qt.io", False),
@@ -88,7 +89,7 @@ class TestInstallerUtils(unittest.TestCase):
 
     @asyncio_test
     async def test_extract_archive(self) -> None:
-        with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
+        with TemporaryDirectory(dir=str(Path.cwd())) as tmp_base_dir:
             # create some test paths
             temp_path = os.path.join("foo", "bar")
             absolute_temp_path = os.path.join(tmp_base_dir, temp_path)
@@ -115,7 +116,7 @@ class TestInstallerUtils(unittest.TestCase):
                          "Skipping because file server is not accessible")
     @asyncio_test
     async def test_download_archive(self) -> None:
-        with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
+        with TemporaryDirectory(dir=str(Path.cwd())) as tmp_base_dir:
             pkg_srv = get_pkg_value("PACKAGE_STORAGE_SERVER_PATH_HTTP")
             test_file_url = pkg_srv + "/archive/packaging/qtsdk_testing.txt"
             downloaded_file = download_archive(test_file_url, tmp_base_dir)

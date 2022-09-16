@@ -97,7 +97,7 @@ def run_cmd(
         args = shlex.split(cmd)
     else:
         args = cmd
-    cwd = cwd or os.getcwd()
+    cwd = cwd or Path.cwd()
     env = env or os.environ.copy()
     log.info("Calling: %s", " ".join(args))
     try:
@@ -130,7 +130,7 @@ async def run_cmd_async(
         args = shlex.split(cmd)
     else:
         args = cmd
-    cwd = cwd or os.getcwd()
+    cwd = cwd or Path.cwd()
     env = env or os.environ.copy()
     log.info("Calling asynchronously: %s", " ".join(args))
     try:

@@ -34,6 +34,7 @@ import ctypes
 import os
 import sys
 import unittest
+from pathlib import Path
 from time import sleep
 from typing import Any
 
@@ -78,11 +79,11 @@ def use_run_command(test_arguments: Any, *arguments) -> Any:  # type: ignore
 
 class TestRunCommand(unittest.TestCase):
     def test_exit_value_0(self) -> None:
-        self.assertEqual(use_run_command("--print_lines 10", os.getcwd()), 0)
+        self.assertEqual(use_run_command("--print_lines 10", str(Path.cwd())), 0)
 
     def test_crash(self) -> None:
         with self.assertRaises(Exception) as context_manager:
-            use_run_command("--print_lines 10 --crash", os.getcwd())
+            use_run_command("--print_lines 10 --crash", str(Path.cwd()))
 
         self.assertIsNotNone(context_manager)
         self.assertIsNotNone(context_manager.exception)
@@ -93,7 +94,7 @@ class TestRunCommand(unittest.TestCase):
     def test_crash_only_error_case_output(self) -> None:
         with self.assertRaises(Exception) as context_manager:
             use_run_command(
-                "--print_lines 10 --crash", os.getcwd(),
+                "--print_lines 10 --crash", str(Path.cwd()),
                 # extra_environment=
                 None,
                 # only_error_case_output=
@@ -113,7 +114,7 @@ class TestRunCommand(unittest.TestCase):
     def test_different_exit_code_only_error_case_output(self) -> None:
         self.assertEqual(
             use_run_command(
-                "--print_lines 10 --exit_code 5", os.getcwd(),
+                "--print_lines 10 --exit_code 5", str(Path.cwd()),
                 # extra_environment=
                 None,
                 # only_error_case_output=
@@ -133,7 +134,7 @@ class TestRunCommand(unittest.TestCase):
         task_string_list.append("--sleep 2 --print_lines 50")
         task_string_list.append("--sleep 1 --print_lines 100")
         for task_string in task_string_list:
-            test_work.add_task(task_string, use_run_command, task_string, os.getcwd())
+            test_work.add_task(task_string, use_run_command, task_string, str(Path.cwd()))
         test_work.run()
 
     def test_with_threadedwork_unexpected_exit_code(self) -> None:
@@ -150,7 +151,7 @@ class TestRunCommand(unittest.TestCase):
         task_string_list.append("--sleep 2 --print_lines 3 --exit_code 5")
         task_string_list.append("--sleep 1 --print_lines 100")
         for task_string in task_string_list:
-            test_work.add_task(task_string, use_run_command, task_string, os.getcwd())
+            test_work.add_task(task_string, use_run_command, task_string, str(Path.cwd()))
         test_work.run()
 
     def test_with_threadedwork_crash(self) -> None:
@@ -167,7 +168,7 @@ class TestRunCommand(unittest.TestCase):
         task_string_list.append("--sleep 2 --print_lines 3 --crash")
         task_string_list.append("--sleep 1 --print_lines 100")
         for task_string in task_string_list:
-            test_work.add_task(task_string, use_run_command, task_string, os.getcwd())
+            test_work.add_task(task_string, use_run_command, task_string, str(Path.cwd()))
         test_work.run()
 
 

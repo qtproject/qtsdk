@@ -33,6 +33,7 @@ import argparse
 import os
 import platform
 import sys
+from pathlib import Path
 from shutil import rmtree
 from typing import Dict, Tuple
 
@@ -82,10 +83,10 @@ def locate_venv(pipenv: str, env: Dict[str, str]) -> str:
 async def install_pip(get_pip_file: str, python_installation: str) -> str:
     log.info("Installing pip...")
     if is_valid_url_path(get_pip_file):
-        pip_tmp_dir = os.path.join(os.getcwd(), "pip_install_tmp")
+        pip_tmp_dir = Path.cwd() / "pip_install_tmp"
         rmtree(pip_tmp_dir, ignore_errors=True)
-        os.makedirs(pip_tmp_dir)
-        get_pip_file = download_archive(get_pip_file, pip_tmp_dir)
+        pip_tmp_dir.mkdir(parents=True)
+        get_pip_file = download_archive(get_pip_file, str(pip_tmp_dir))
     elif not (get_pip_file and os.path.isfile(get_pip_file)):
         raise PythonEnvError(f"Could not install pip from: {get_pip_file}")
 

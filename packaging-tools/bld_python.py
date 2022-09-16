@@ -35,6 +35,7 @@ import platform
 import re
 import sys
 from multiprocessing import cpu_count
+from pathlib import Path
 from shutil import copytree, rmtree, which
 from subprocess import check_output
 
@@ -110,9 +111,9 @@ async def _build_python_win(src_dir: str) -> str:
 
 
 async def build_python_win(src: str) -> str:
-    base_dir = os.path.join(os.getcwd(), "python_bld_tmp")
-    os.makedirs(base_dir, exist_ok=True)
-    src_dir = await prepare_sources(src, base_dir)
+    base_dir = Path.cwd() / "python_bld_tmp"
+    base_dir.mkdir(parents=True, exist_ok=True)
+    src_dir = await prepare_sources(src, str(base_dir))
     source_root_dir = locate_source_root(src_dir)
     return await _build_python_win(source_root_dir)
 
@@ -165,12 +166,12 @@ async def build_python(src: str, prefix: str) -> str:
     if os.path.isdir(prefix):
         log.info("Deleting existing Python build from: %s", prefix)
         rmtree(prefix, ignore_errors=True)
-    base_dir = os.path.join(os.getcwd(), "python_bld_tmp")
-    os.makedirs(base_dir, exist_ok=True)
-    src_dir = await prepare_sources(src, base_dir)
-    bld_dir = os.path.join(base_dir, "build_dir")
+    base_dir = Path.cwd() / "python_bld_tmp"
+    base_dir.mkdir(parents=True, exist_ok=True)
+    src_dir = await prepare_sources(src, str(base_dir))
+    bld_dir = base_dir / "build_dir"
     source_root_dir = locate_source_root(src_dir)
-    return await _build_python(source_root_dir, bld_dir, prefix)
+    return await _build_python(source_root_dir, str(bld_dir), prefix)
 
 
 def main() -> None:

@@ -179,12 +179,12 @@ def archive(args: argparse.Namespace, install_root_dir: str, current_dir: str) -
 
 
 def handle_build(args: argparse.Namespace) -> None:
-    current_dir = os.getcwd()
+    current_dir = Path.cwd()
 
-    save_as, qt_version = download_qt_pkg(args, current_dir)
-    qt_dest_dir = extract_archive(save_as, current_dir)
-    install_root_dir = build(args, qt_dest_dir, current_dir)
-    artifacts_file_path = archive(args, install_root_dir, current_dir)
+    save_as, qt_version = download_qt_pkg(args, str(current_dir))
+    qt_dest_dir = extract_archive(save_as, str(current_dir))
+    install_root_dir = build(args, qt_dest_dir, str(current_dir))
+    artifacts_file_path = archive(args, install_root_dir, str(current_dir))
 
     remote_uploader = RemoteUploader(False, args.remote_server, args.username, args.remote_base_path)
     remote_uploader.init_snapshot_upload_path(args.project_name, qt_version, args.build_id)

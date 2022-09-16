@@ -257,12 +257,13 @@ def remove_tree(path: str) -> bool:
             path = win32api.GetShortPathName(path.replace('/', '\\'))
             # a funny thing is that rmdir does not set an exitcode it is just using the last set one
             try:
-                run_command(['rmdir', path, '/S', '/Q'], os.getcwd(), only_error_case_output=True)
+                cmd = ['rmdir', path, '/S', '/Q']
+                run_command(command=cmd, cwd=str(Path.cwd()), only_error_case_output=True)
             except Exception:
                 print_exc()
         else:
             # shutil.rmtree(path)
-            run_command(['rm', '-rf', path], os.getcwd(), only_error_case_output=True)
+            run_command(["rm", "-rf", path], cwd=str(Path.cwd()), only_error_case_output=True)
     return not os.path.exists(path)
 
 
@@ -603,8 +604,7 @@ def remote_path_exists(remote_addr: str, path_to_check: str, ssh_command: str = 
     text_to_print = 'REMOTE_PATH_EXISTS'
     cmd_args = [ssh_command, remote_addr, "bash", "-c"]
     cmd_args += ['"if [ -e ' + path_to_check + " ] ; then echo " + text_to_print + ' ; fi"']
-    output = run_cmd(cmd=cmd_args, cwd=os.getcwd())
-    check = output.rstrip()
+    check = run_cmd(cmd=cmd_args).rstrip()
     return bool(check == text_to_print)
 
 

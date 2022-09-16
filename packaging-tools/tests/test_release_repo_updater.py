@@ -32,6 +32,7 @@
 import os
 import unittest
 from configparser import ConfigParser
+from pathlib import Path
 from shutil import rmtree
 from tempfile import TemporaryDirectory
 from typing import List
@@ -110,7 +111,7 @@ async def _get_repogen() -> str:
     )
     server = "127.0.0.1"
     server_home = os.path.expanduser("~")
-    with TemporaryDirectory(dir=os.getcwd()) as temp_dir:
+    with TemporaryDirectory(dir=str(Path.cwd())) as temp_dir:
         with ch_dir(temp_dir):
             return await upload_ifw_to_remote(ifw_tools, server, server_home)
 
@@ -140,7 +141,7 @@ class TestReleaseRepoUpdater(unittest.TestCase):
 
     @asyncio_test
     async def test_upload_pending_repository_content(self) -> None:
-        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmp_base_dir:
+        with TemporaryDirectory(dir=str(Path.cwd()), prefix="_repo_tmp_") as tmp_base_dir:
             source_repo = os.path.join(tmp_base_dir, "repository")
             destination_repo = os.path.join(tmp_base_dir, "destination_online_repository")
 
@@ -153,7 +154,7 @@ class TestReleaseRepoUpdater(unittest.TestCase):
 
     @asyncio_test
     async def test_reset_new_remote_repository(self) -> None:
-        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmp_base_dir:
+        with TemporaryDirectory(dir=str(Path.cwd()), prefix="_repo_tmp_") as tmp_base_dir:
             remote_source_repo_path = os.path.join(tmp_base_dir, "repository")
             remote_target_repo_path = os.path.join(tmp_base_dir, "destination_online_repository")
 
@@ -172,7 +173,7 @@ class TestReleaseRepoUpdater(unittest.TestCase):
 
     @asyncio_test
     async def test_create_remote_repository_backup(self) -> None:
-        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmp_base_dir:
+        with TemporaryDirectory(dir=str(Path.cwd()), prefix="_repo_tmp_") as tmp_base_dir:
             remote_source_repo_path = os.path.join(tmp_base_dir, "repository")
 
             _write_dummy_file(os.path.join(remote_source_repo_path, "qt.foo.bar1", "meta", "package.xml"))
@@ -216,7 +217,7 @@ class TestReleaseRepoUpdater(unittest.TestCase):
 
     @asyncio_test
     async def test_ensure_ext_repo_paths(self) -> None:
-        with TemporaryDirectory(dir=os.getcwd(), prefix="_repo_tmp_") as tmp_base_dir:
+        with TemporaryDirectory(dir=str(Path.cwd()), prefix="_repo_tmp_") as tmp_base_dir:
             expected_repo = os.path.join(tmp_base_dir, "some", "test", "path")
             await ensure_ext_repo_paths(self.server, self.server, expected_repo)
             self.assertTrue(os.path.isdir(expected_repo))

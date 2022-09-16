@@ -62,7 +62,7 @@ async def fetch_repogen(ifw_tools_url: str) -> str:
     assert is_valid_url_path(ifw_tools_url)
     log.info("Preparing ifw tools: %s", ifw_tools_url)
     # fetch the tool first
-    current_dir = os.getcwd()
+    current_dir = Path.cwd()
     ifw_tools_dir = os.path.join(current_dir, "ifw_tools")
     if not os.path.isdir(ifw_tools_dir):
         os.makedirs(ifw_tools_dir)

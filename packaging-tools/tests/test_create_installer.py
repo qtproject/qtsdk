@@ -59,7 +59,7 @@ class TestCommon(unittest.TestCase):
     @unittest.skipIf(not(is_windows() or is_macos()), "This test is only for Windows and macOS")
     def test_remove_all_debug_libraries_win(self, test_data: Tuple[str, str, str]) -> None:
         dirs, files, remaining_files = test_data
-        with TemporaryDirectory(dir=os.getcwd()) as tmpdir:
+        with TemporaryDirectory(dir=str(Path.cwd())) as tmpdir:
             for directory in dirs:
                 Path(tmpdir + directory).mkdir()
                 for file in files:

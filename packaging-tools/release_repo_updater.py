@@ -242,8 +242,10 @@ def execute_remote_cmd(
     execute_remote_script(remote_server, remote_script, timeout)
 
 
-def create_remote_script(server: str, cmd: List[str], remote_script_path: str, script_file_name: str) -> str:
-    with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
+def create_remote_script(
+    server: str, cmd: List[str], remote_script_path: str, script_file_name: str
+) -> str:
+    with TemporaryDirectory(dir=str(Path.cwd())) as tmp_base_dir:
         temp_file_path = os.path.join(tmp_base_dir, script_file_name)
         with open(temp_file_path, 'w+', encoding="utf-8") as handle:
             handle.write("#!/usr/bin/env bash\n")
@@ -276,12 +278,11 @@ async def upload_ifw_to_remote(ifw_tools: str, remote_server: str, remote_server
     assert is_valid_url_path(ifw_tools)
     log.info("Preparing ifw tools: %s", ifw_tools)
     # fetch the tool first
-    current_dir = os.getcwd()
-    ifw_tools_dir = os.path.join(current_dir, "ifw_tools")
-    if not os.path.isdir(ifw_tools_dir):
-        os.makedirs(ifw_tools_dir)
-        dest_file = download_archive(ifw_tools, ifw_tools_dir)
-        await extract_archive(dest_file, ifw_tools_dir)
+    ifw_tools_dir = Path.cwd() / "ifw_tools"
+    if not ifw_tools_dir.is_dir():
+        ifw_tools_dir.mkdir(parents=True)
+        dest_file = download_archive(ifw_tools, str(ifw_tools_dir))
+        await extract_archive(dest_file, str(ifw_tools_dir))
     repogen = locate_path(ifw_tools_dir, ["repogen"], filters=[os.path.isfile])
     repogen_dir = os.path.dirname(repogen)
     # upload to server
@@ -503,10 +504,10 @@ async def build_online_repositories(
 ) -> List[str]:
     log.info("Building online repositories: %i", len(tasks))
     # create base tmp dir
-    tmp_base_dir = os.path.join(os.getcwd(), "_repo_update_jobs")
+    tmp_base_dir = Path.cwd() / "_repo_update_jobs"
     if build_repositories:
         shutil.rmtree(tmp_base_dir, ignore_errors=True)
-    os.makedirs(tmp_base_dir, exist_ok=True)
+    tmp_base_dir.mkdir(parents=True, exist_ok=True)
 
     assert license_, "The 'license_' must be defined!"
     assert artifact_share_base_url, "The 'artifact_share_base_url' must be defined!"

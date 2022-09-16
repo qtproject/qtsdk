@@ -30,7 +30,6 @@
 #############################################################################
 
 import asyncio
-import os
 import unittest
 from pathlib import Path
 from subprocess import TimeoutExpired
@@ -72,18 +71,18 @@ class TestRunner(unittest.TestCase):
         # Test with invalid args
         test_args, expected_exception = test_data
         with self.assertRaises(expected_exception):
-            run_cmd(cmd=test_args, cwd=os.getcwd())
+            run_cmd(cmd=test_args)
 
     def test_exec_cmd_execution_path(self) -> None:
         check_work_dir_args = ["cd"] if is_windows() else ["pwd"]
         # Test execution_path
-        with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
+        with TemporaryDirectory(dir=str(Path.cwd())) as tmp_base_dir:
             output = run_cmd(cmd=check_work_dir_args, cwd=tmp_base_dir)
             self.assertEqual(output, tmp_base_dir + "\n")
 
     def test_exec_cmd_log_to_file(self) -> None:
         # Test log_to_file
-        with TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:
+        with TemporaryDirectory(dir=str(Path.cwd())) as tmp_base_dir:
             log_file = Path(tmp_base_dir) / "log"
             log_file.touch()
             run_cmd(cmd=["echo", "TEST"], cwd=tmp_base_dir, redirect=str(log_file))
@@ -99,7 +98,7 @@ class TestRunner(unittest.TestCase):
         # Test extra_env
         extra_env, expected_value = test_data
         try:
-            output = run_cmd(cmd=args, cwd=os.getcwd(), env=extra_env)
+            output = run_cmd(cmd=args, env=extra_env)
         except Exception:
             output = ""
         self.assertEqual(output, expected_value)
