@@ -244,7 +244,7 @@ def handle_remove_readonly(
 ) -> None:
     excvalue = exc[1]
     if func in (os.rmdir, os.remove) and excvalue == errno.EACCES:
-        os.chmod(path, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)  # 0777
+        Path(path).chmod(stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)  # 0777
         func(path)
     else:
         raise PackagingError(excvalue)

@@ -659,11 +659,11 @@ def get_component_data(
 
 def handle_set_executable(base_dir: str, package_finalize_items: str) -> None:
     for item in parse_package_finalize_items(package_finalize_items, 'set_executable'):
-        expected_path = os.path.join(base_dir, item)
-        if not os.path.exists(expected_path):
-            raise CreateInstallerError(f'Can not set executable bit as path not found: "{expected_path}"')
-        os.chmod(expected_path, 0o755)
-        log.info("Executable bit set for: %s", expected_path)
+        exp_path = Path(base_dir, item)
+        if not os.path.exists(exp_path):
+            raise CreateInstallerError(f'Cannot set executable bit, path not found: "{exp_path}"')
+        exp_path.chmod(0o755)
+        log.info("Executable bit set for: %s", exp_path)
 
 
 def handle_set_licheck(
