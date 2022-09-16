@@ -110,10 +110,9 @@ async def _get_repogen() -> str:
         "GCC-Linux-RHEL_7_6-X86_64.7z"
     )
     server = "127.0.0.1"
-    server_home = os.path.expanduser("~")
     with TemporaryDirectory() as temp_dir:
         with ch_dir(str(temp_dir.path)):
-            return await upload_ifw_to_remote(ifw_tools, server, server_home)
+            return await upload_ifw_to_remote(ifw_tools, server)
 
 
 @ddt

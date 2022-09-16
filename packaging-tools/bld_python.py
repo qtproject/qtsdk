@@ -3,7 +3,7 @@
 
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -178,7 +178,7 @@ def main() -> None:
     """Main"""
     parser = argparse.ArgumentParser(prog="Script to build Python from sources")
     parser.add_argument("--src", dest="src", type=str, default=os.getenv("PYTHON_SRC"), help="Path to local checkout or .zip/.7z/.tar.gz")
-    parser.add_argument("--prefix", dest="prefix", type=str, default=os.path.join(os.path.expanduser("~"), "_python_bld"))
+    parser.add_argument("--prefix", dest="prefix", type=str, default=str(Path.home() / "_python_bld"))
     args = parser.parse_args(sys.argv[1:])
 
     for tool in ["7z", "tar"]:

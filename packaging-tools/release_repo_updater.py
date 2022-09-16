@@ -275,7 +275,7 @@ def execute_remote_script(server: str, remote_script_path: str, timeout: int = 6
             log.critical("Execution of the remote script probably failed: %s", cmd)
 
 
-async def upload_ifw_to_remote(ifw_tools: str, remote_server: str, remote_server_home: str) -> str:
+async def upload_ifw_to_remote(ifw_tools: str, remote_server: str) -> str:
     assert is_valid_url_path(ifw_tools)
     log.info("Preparing ifw tools: %s", ifw_tools)
     # fetch the tool first
@@ -287,7 +287,7 @@ async def upload_ifw_to_remote(ifw_tools: str, remote_server: str, remote_server
     repogen = locate_path(ifw_tools_dir, ["repogen"], filters=[os.path.isfile])
     repogen_dir = os.path.dirname(repogen)
     # upload to server
-    remote_tmp_dir = os.path.join(remote_server_home, "ifw_tools", timestamp)
+    remote_tmp_dir = os.path.join("ifw_tools", timestamp)
     # create tmp dir at remote
     create_remote_paths(remote_server, [remote_tmp_dir])
     # upload content
@@ -346,7 +346,7 @@ def is_safe_directory(paths: List[str]) -> None:
         illegal_directories = ("/bin", "/boot", "/sys", "/sbin", "/root", "/lib", "/dev")
         if path.startswith(illegal_directories):
             raise PackagingError(f"You should not make modifications ('{path}') under these directories: {illegal_directories}")
-        if path in ["~", os.path.expanduser("~"), "/home"]:
+        if path in ["~", str(Path.home()), "/home"]:
             raise PackagingError(f"You should not make modifications directly to home directory: {path}")
 
 

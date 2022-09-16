@@ -3,7 +3,7 @@
 
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -100,24 +100,24 @@ async def install_pip(get_pip_file: str, python_installation: str) -> str:
 async def create_venv(python_src: str, get_pip_file: str) -> Tuple[str, str, Dict[str, str]]:
     log.info("Creating Python virtual env..")
     system = platform.system().lower()
-    prefix = os.path.join(os.path.expanduser("~"), "_python_bld")
-    await build_python(python_src, prefix)
-    env = get_env(prefix)
+    install_path = Path.home() / "_python_bld"
+    await build_python(python_src, str(install_path))
+    env = get_env(str(install_path))
     if "windows" in system:
-        pip3 = await install_pip(get_pip_file, prefix)
+        pip3 = await install_pip(get_pip_file, str(install_path))
     else:
-        pip3 = os.path.join(prefix, "bin", "pip3")
+        pip3 = os.path.join(install_path, "bin", "pip3")
     assert os.path.isfile(pip3), f"The 'pip3' executable did not exist: {pip3}"
     log.info("Installing pipenv using: %s", pip3)
     cmd = [pip3, "install", "pipenv"]
     await run_cmd_async(cmd=cmd, env=env, timeout=60 * 15)  # give it 15 mins
     if "windows" in system:
-        pipenv = os.path.join(prefix, "Scripts", "pipenv.exe")
+        pipenv = os.path.join(install_path, "Scripts", "pipenv.exe")
     else:
-        pipenv = os.path.join(prefix, "bin", "pipenv")
+        pipenv = os.path.join(install_path, "bin", "pipenv")
     assert os.path.isfile(pipenv), f"The 'pipenv' executable did not exist: {pipenv}"
     cmd = [pipenv, "install"]
-    log.info("Installing pipenv requirements into: %s", prefix)
+    log.info("Installing pipenv requirements into: %s", install_path)
     await run_cmd_async(cmd=cmd, env=env, timeout=60 * 30)  # give it 30 mins
     venv_folder = locate_venv(pipenv, env)
     log.info("The pipenv virtualenv is created located in: %s", venv_folder)
