@@ -15,7 +15,7 @@ repos:
         # Disable E203 for compatibility with blackformatter, and W503 as it goes against PEP8
         # Disable checks that are not relevant to this patch, they will be introduced later
         # - pathlib checks PLXXX
-        entry: pipenv run python3 -m flake8 --max-line-length=99 --ignore=E203,E501,W503,PL100,PL102,PL103,PL104,PL106,PL107,PL110,PL112,PL113,PL114,PL115,PL116,PL117,PL118,PL120,PL122,PL123
+        entry: pipenv run python3 -m flake8 --max-line-length=99 --ignore=E203,E501,W503,PL100,PL102,PL103,PL104,PL106,PL107,PL110,PL112,PL113,PL114,PL115,PL116,PL117,PL118,PL120,PL123
         language: system
         types: [python]
         fail_fast: true

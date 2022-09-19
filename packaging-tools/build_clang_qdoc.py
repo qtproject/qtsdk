@@ -3,7 +3,7 @@
 
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -31,6 +31,7 @@
 
 import os
 from contextlib import suppress
+from pathlib import Path
 from subprocess import CalledProcessError
 from typing import Dict, List, Optional
 
@@ -251,16 +252,16 @@ def check_clang(toolchain: str, build_path: str, environment: Optional[Dict[str,
 
 
 def package_clang(install_path: str, result_file_path: str) -> None:
-    (basepath, dirname) = os.path.split(install_path)
-    zip_command = ['cmake', '-E', 'tar', 'cvf', result_file_path, '--format=7zip', dirname]
-    run_command(zip_command, basepath)
+    install_dir = Path(install_path)
+    zip_cmd = ['cmake', '-E', 'tar', 'cvf', result_file_path, '--format=7zip', install_dir.name]
+    run_command(zip_cmd, cwd=str(install_dir.parent))
 
 
 def upload_clang(file_path: str, remote_path: str) -> None:
-    (path, filename) = os.path.split(file_path)
+    local_path = Path(file_path)
     scp_bin = '%SCP%' if is_windows() else 'scp'
-    scp_command = [scp_bin, filename, remote_path]
-    run_command(scp_command, path)
+    scp_command = [scp_bin, local_path.name, remote_path]
+    run_command(scp_command, cwd=str(local_path.parent))
 
 
 def main() -> None:

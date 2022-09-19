@@ -3,7 +3,7 @@
 
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -33,6 +33,7 @@ import argparse
 import os
 import subprocess
 import sys
+from pathlib import Path
 from shutil import rmtree
 from typing import List
 
@@ -44,10 +45,10 @@ log = init_logger(__name__, debug_mode=False)
 def is_file_with_debug_information_windows(path: str) -> bool:
     if not path.endswith('.pdb'):
         return False
-    base_path, _ = os.path.splitext(path)
-    pdb = base_path + '.pdb'
-    exe = base_path + '.exe'
-    dll = base_path + '.dll'
+    base_path = Path(path)
+    pdb = base_path.with_suffix('.pdb')
+    exe = base_path.with_suffix('.exe')
+    dll = base_path.with_suffix('.dll')
     if os.path.isfile(pdb) and (os.path.isfile(exe) or os.path.isfile(dll)):
         return True
     return False
@@ -98,7 +99,7 @@ def dump_syms(
             for filename in filenames:
                 absolute_path = os.path.join(root, filename).replace("\\", "/")
                 if is_file_with_debug_information(absolute_path):
-                    base_path, _ = os.path.splitext(absolute_path)
+                    base_path = str(Path(absolute_path).with_suffix(""))
                     start_slash = 1
                     sym_path_base = base_path[start_slash + len(search_path):].replace("/", "_")
                     sym_filename = f"{sym_path_base}.sym"

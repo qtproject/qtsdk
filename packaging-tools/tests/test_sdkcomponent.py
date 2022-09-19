@@ -28,7 +28,6 @@
 #
 #############################################################################
 
-import os
 import sys
 import unittest
 from configparser import ConfigParser, ExtendedInterpolation
@@ -100,13 +99,11 @@ def ifw_pkg_templ_dirs(ifw_pkg_names: List[str]) -> List[str]:
 def create_paths(root_folder: str, paths: List[str]) -> List[str]:
     ret: List[str] = []
     for item in paths:
-        full_path = os.path.join(root_folder, item)
-        ret.append(full_path)
-        head, tail = os.path.split(full_path)
-        os.makedirs(head, exist_ok=True)
-        if tail:
-            with open(full_path, "a", encoding="utf-8"):
-                pass
+        full_path = Path(root_folder, item)
+        ret.append(str(full_path))
+        full_path.parent.mkdir(parents=True, exist_ok=True)
+        if full_path.name:
+            full_path.touch(exist_ok=True)
     return ret
 
 

@@ -386,7 +386,9 @@ def sanity_check_rpath_max_length(file_path: str, new_rpath: str) -> bool:
 ###############################
 def pathsplit(path: str, rest: Optional[List[str]] = None) -> List[str]:
     rest = rest or []
-    (head, tail) = os.path.split(path)
+    split_path = Path(path)
+    head = str(split_path.parent)
+    tail = split_path.name
     if len(head) < 1:
         return [tail] + rest
     if len(tail) < 1:
@@ -412,7 +414,7 @@ def calculate_relpath(path1: str, path2: str) -> str:
         tmp = '..' + os.sep
         path = [tmp * len(list1)]
     path = path + list2
-    return os.path.join(*path)
+    return str(Path(*path))
 
 
 ##############################################################

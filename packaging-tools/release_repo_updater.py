@@ -688,7 +688,7 @@ def update_remote_latest_available_dir(new_installer: str, remote_upload_path: s
     log.info("Update latest available installer directory: %s", remote_upload_path)
     regex = re.compile('.*' + task.get_version())
     new_installer_base_path = "".join(regex.findall(new_installer))
-    _, name = os.path.split(new_installer_base_path)
+    name = Path(new_installer_base_path).name
 
     # update latest_available
     latest_available_path = re.sub(r"\/" + str(installer_build_id) + r"\/", "/latest_available/", remote_upload_path)
@@ -707,9 +707,11 @@ def update_remote_latest_available_dir(new_installer: str, remote_upload_path: s
 def upload_offline_to_remote(installer_path: str, remote_upload_path: str, staging_server: str, task: ReleaseTask,
                              installer_build_id: str, enable_oss_snapshots: bool, license_: str) -> None:
     for file in os.listdir(installer_path):
-        if file.endswith(".app"):
+        file_path = Path(file)
+        file_ext = file_path.suffix
+        if file_ext == ".app":
             continue
-        name, file_ext = os.path.splitext(file)
+        name = str(file_path.with_suffix(""))
         file_name_final = name + "_" + installer_build_id + file_ext
         installer = os.path.join(installer_path, file_name_final)
         os.rename(os.path.join(installer_path, file), installer)
@@ -832,11 +834,9 @@ def upload_snapshots_to_remote(staging_server: str, remote_upload_path: str, tas
         version_minor = version_minor_match[0]
     else:
         raise PackagingError(f"Could not determine minor version from {version_full}")
-    base, last_dir = os.path.split(get_pkg_value("SNAPSHOT_PATH").rstrip("/"))
-    if last_dir == project_name:
-        snapshot_path = get_pkg_value("SNAPSHOT_PATH")
-    else:
-        snapshot_path = os.path.join(base, project_name)
+    snapshot_path = Path(get_pkg_value("SNAPSHOT_PATH"))
+    if snapshot_path.name != project_name:
+        snapshot_path = snapshot_path.with_name(project_name)
     snapshot_upload_path = os.path.join(snapshot_path, version_minor, version_full + task.get_prerelease_version(), installer_build_id)
     remote_installer_path = os.path.join(remote_upload_path, installer_filename)
     if platform.system() == "Windows":

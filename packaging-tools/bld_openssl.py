@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: http://www.qt-project.org/legal
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -57,8 +57,8 @@ def build(src_dir: str, install_dir: str, toolset: str) -> None:
 
 
 def archive(install_dir: str, archive_prefix: str) -> None:
-    (directory, name) = os.path.split(install_dir)
-    run_cmd(cmd=["7z", "a", archive_prefix + ".7z", name], cwd=directory)
+    install_path = Path(install_dir)
+    run_cmd(cmd=["7z", "a", archive_prefix + ".7z", install_path.name], cwd=install_path.parent)
     run_cmd(cmd=["7z", "a", archive_prefix + "-runtime.7z", "*.dll"], cwd=Path(install_dir, "bin"))
 
 

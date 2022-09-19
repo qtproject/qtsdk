@@ -208,34 +208,27 @@ class TestCommon(unittest.TestCase):
 
     @data(  # type: ignore
         ("/home/qt/bin/foo/bar", "/home/qt/lib", "../../../lib"),
-        ("/home/qt/bin/foo/", "/home/qt/lib", "/home/qt/lib"),
+        ("/home/qt/bin/foo/", "/home/qt/lib", "../../lib"),
         ("/home/qt/bin", "/home/qt/lib", "../lib"),
         ("/home/qt/bin", "lib", "../../../../lib"),
         ("/home/qt/bin", "/lib", "../../../lib"),
-        ("/home/qt", "./lib", "../../.././lib"),
+        ("/home/qt", "./lib", "../../../lib"),
         ("bin", "/home/qt/lib", "/home/qt/lib"),
-        ("/home/qt/", "/home/qt", "/home/qt"),
-        ("/home/qt", "/home/qt/", "/home/qt"),
-        ("/home/qt", "/home/qt/", "/home/qt"),
+        ("/home/qt/", "/home/qt", "."),
+        ("/home/qt", "/home/qt/", "."),
+        ("/home/qt", "/home/qt/", "."),
+        ("/home/qt", "/home/qt", "."),
         ("/", "/home/qt", "home/qt"),
-        ("/home/qt", "", "../../../"),
+        ("/home/qt", "", "../../.."),
         ("", "/home/qt", "/home/qt"),
+        ("lib", "lib", "."),
+        ("/", "/", "."),
+        ("", "", "."),
     )
     def test_calculate_relpath(self, test_data: Tuple[str, str, str]) -> None:
         path1, path2, expected = test_data
         result = calculate_relpath(path1, path2)
         self.assertEqual(result, expected)
-
-    @data(  # type: ignore
-        ("/home/qt", "/home/qt"),
-        ("/", "/"),
-        ("lib", "lib"),
-        ("", ""),
-    )
-    def test_calculate_relpath_invalid(self, test_data: Tuple[str, str]) -> None:
-        path1, path2 = test_data
-        with self.assertRaises(TypeError):
-            calculate_relpath(path1, path2)
 
 
 if __name__ == "__main__":

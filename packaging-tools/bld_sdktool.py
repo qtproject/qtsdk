@@ -3,7 +3,7 @@
 
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -73,14 +73,12 @@ def get_qt_build_path(qt_build_base: str) -> str:
 
 
 def package_extension(url: str) -> str:
-    if url.endswith('.tar.gz'):
+    url_path = Path(url)
+    if url_path.suffixes[-2:] == [".tar", ".gz"]:
         return '.tar.gz'
-    if url.endswith('.zip'):
-        return '.zip'
-    if url.endswith('.tar.xz'):
+    if url_path.suffixes[-2:] == [".tar", ".xz"]:
         return '.tar.xz'
-    (_, ext) = os.path.splitext(url)
-    return ext
+    return Path(url).suffix
 
 
 def get_and_extract_qt_src(url: str, temp: str, path: str) -> None:

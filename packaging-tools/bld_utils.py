@@ -84,32 +84,33 @@ def deep_copy_arguments(to_call: Any) -> Any:
 class DirRenamer():
 
     def __init__(self, path: str, new_name: str) -> None:
-        self.old_name = path
-        self.new_name = os.path.join(os.path.split(path)[0], new_name)
+        self.old_name = Path(path)
+        self.new_name = Path(path).with_name(new_name)
         log.info("self.old_name: %s", self.old_name)
         log.info("self.new_name: %s", self.new_name)
 
     def __enter__(self) -> None:
         if self.old_name != self.new_name:
-            os.rename(self.old_name, self.new_name)
+            self.old_name.rename(self.new_name)
 
     def __exit__(self, etype: Any, value: Any, etraceback: Any) -> None:
         if self.old_name != self.new_name:
-            os.rename(self.new_name, self.old_name)
+            self.new_name.rename(self.old_name)
 
 
 def compress(path: str, directory_name: str, sevenzip_target: str) -> None:
     sevenzip_extension = os.extsep + '7z'
+    sevenzip_target_path = Path(sevenzip_target)
     parent_directory_path = os.path.abspath(os.path.join(path, '..'))
-    if os.path.splitext(sevenzip_target)[1] != sevenzip_extension:
-        sevenzip_target = sevenzip_target + sevenzip_extension
-    sevenzip_filename = os.path.split(sevenzip_target)[1]
+    if sevenzip_target_path.suffix != sevenzip_extension:
+        sevenzip_target_path.with_suffix(sevenzip_extension)
+    sevenzip_filename = sevenzip_target_path.name
     with DirRenamer(path, directory_name):
         run_command(' '.join(('7z a -mx9', sevenzip_filename, directory_name)), parent_directory_path)
 
-    current_sevenzip_path = os.path.join(parent_directory_path, sevenzip_filename)
-    if current_sevenzip_path != sevenzip_target:
-        shutil.move(current_sevenzip_path, sevenzip_target)
+    current_sevenzip_path = Path(parent_directory_path, sevenzip_filename)
+    if current_sevenzip_path != sevenzip_target_path:
+        shutil.move(current_sevenzip_path, sevenzip_target_path)
 
 
 def strip_vars(sobject: Namespace, chars: str) -> None:

@@ -234,7 +234,7 @@ def create_download_documentation_task(
 def create_download_openssl_task(url: str, download_path: str) -> Tuple[Task, Task, str]:
     # create openssl 7zips which just contain the DLLs / SOs, so they can just be extracted
     # into the Qt lib directory and later on deployed with Qt
-    (_, filename) = os.path.split(url)
+    filename = Path(url).name
     download_filepath = os.path.join(download_path, filename)
     extract_path = os.path.join(download_path, 'openssl_download')
     target_filepath = os.path.join(download_path, 'openssl.7z')
