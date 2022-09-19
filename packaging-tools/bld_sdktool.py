@@ -29,7 +29,9 @@
 #
 #############################################################################
 
+import argparse
 import os
+
 from collections import namedtuple
 from pathlib import Path
 
@@ -147,3 +149,28 @@ def zip_sdktool(sdktool_target_path, out_7zip, redirect_output=None):
     do_execute_sub_process(
         ['7z', 'a', out_7zip, glob], sdktool_target_path, redirect_output=redirect_output
     )
+
+
+def get_arguments():
+    parser = argparse.ArgumentParser(description='Build sdktool')
+    parser.add_argument('--qt-url', help='URL to Qt sources', required=True)
+    parser.add_argument('--qt-build', help='Path that is used for building Qt',
+                        required=True)
+    parser.add_argument('--src', help='Path to sdktool sources', required=True)
+    parser.add_argument('--build', help='Path that is used for building sdktool',
+                        required=True)
+    parser.add_argument('--install', help='Path that is used for installing sdktool',
+                        required=True)
+    parser.add_argument('--make-command', help='Make command to use for Qt',
+                        required=True)
+    return parser.parse_args()
+
+
+def main():
+    args = get_arguments()
+    build_sdktool(args.qt_url, args.qt_build, args.src, args.build,
+                  args.install, args.make_command)
+
+
+if __name__ == '__main__':
+    main()
