@@ -31,7 +31,6 @@
 
 import argparse
 import os
-
 from collections import namedtuple
 from io import TextIOWrapper
 from pathlib import Path
@@ -153,7 +152,7 @@ def zip_sdktool(sdktool_target_path: str, out_7zip: str, redirect_output: Option
     )
 
 
-def get_arguments():
+def get_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Build sdktool')
     parser.add_argument('--qt-url', help='URL to Qt sources', required=True)
     parser.add_argument('--qt-build', help='Path that is used for building Qt',
@@ -168,7 +167,7 @@ def get_arguments():
     return parser.parse_args()
 
 
-def main():
+def main() -> None:
     args = get_arguments()
     build_sdktool(args.qt_url, args.qt_build, args.src, args.build,
                   args.install, args.make_command)

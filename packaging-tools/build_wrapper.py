@@ -655,8 +655,7 @@ def handle_qt_creator_build(option_dict: Dict[str, str], qtcreator_plugins: List
     usp_auth_key = option_dict.get('USP_AUTH_KEY')
     qtc_additional_cfg: str = option_dict.get('QTC_ADDITIONAL_CONFIG', '')  # optional
     disable_docs = option_dict.get('DISABLE_DOCS')  # optional
-    if qtc_additional_cfg:
-        qtc_additional_config: List[str] = qtc_additional_cfg.split()
+    qtc_additional_config: List[str] = qtc_additional_cfg.split()
     qt_temp = os.path.join(work_dir, 'qt_temp')
 
     def module_filename(module: str) -> str:
