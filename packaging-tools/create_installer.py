@@ -1047,9 +1047,10 @@ class QtInstallerTask:
     ##############################################################
     def set_ifw_tools(self) -> None:
         executable_suffix = ".exe" if is_windows() else ""
+        installerbase_filename = "installerbase_unsigned" if is_windows() else "installerbase"
         self.archivegen_tool = locate_executable(self.ifw_tools_dir, ['archivegen' + executable_suffix])
         self.binarycreator_tool = locate_executable(self.ifw_tools_dir, ['binarycreator' + executable_suffix])
-        self.installerbase_tool = locate_executable(self.ifw_tools_dir, ['installerbase' + executable_suffix])
+        self.installerbase_tool = locate_executable(self.ifw_tools_dir, [installerbase_filename + executable_suffix])
         self.repogen_tool = locate_executable(self.ifw_tools_dir, ['repogen' + executable_suffix])
         # check
         assert os.path.isfile(self.archivegen_tool), f"Archivegen tool not found: {self.archivegen_tool}"
