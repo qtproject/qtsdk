@@ -44,11 +44,12 @@ repos:
         language: system
         types: [python]
         fail_fast: true
-      - id: unittest
-        name: Run unit tests (unittest)
+      - id: pytest
+        name: Run unit tests (pytest)
         # Imports in unit tests failing as packaging-tools is not a valid Python package name
         # Change dir to packaging-tools and append to PYTHONPATH environment variable as a workaround
-        entry: bash -c 'cd packaging-tools && export PYTHONPATH=$(pwd) && pipenv run python3 -m unittest'
+        # Run unit tests concurrently utilizing pytest-xdist module to pytest
+        entry: bash -c 'cd packaging-tools && export PYTHONPATH=$(pwd) && pipenv run python3 -m pytest -n auto'
         language: system
         pass_filenames: false
         always_run: true

@@ -89,7 +89,7 @@ To manually run hooks, you may use the following:
 
 ```
 pre-commit run  # All hooks
-pre-commit run unittest  # Only run the specified hook, 'unittest'. See the configuration file for list of hooks
+pre-commit run pytest  # Only run the specified hook, 'pytest'. See the configuration file for list of hooks
 ```
 
 Hint: to specify custom files to pass to the hooks, add filters ```--all-files```, ```--files <pattern>``` or ```--exclude <pattern>```
