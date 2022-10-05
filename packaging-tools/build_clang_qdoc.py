@@ -248,7 +248,7 @@ def check_clang(toolchain: str, build_path: str, environment: Optional[Dict[str,
             environment[path_key] += ';' + tools_path
 
     build_cmd = build_command()
-    do_execute_sub_process(build_cmd + ['check-clang'], build_path, extra_env=environment)
+    do_execute_sub_process(build_cmd + ['check-clang'], build_path, abort_on_fail=False, extra_env=environment)
 
 
 def package_clang(install_path: str, result_file_path: str) -> None:
