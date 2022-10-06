@@ -27,3 +27,4 @@ _repo_update_jobs/
 .stestr/*
 .idea
 ifw_pkg_tmp
+/packaging-tools/tests/assets/aptly/.aptly

@@ -21,6 +21,8 @@ requests = "==2.27.1"
 htmllistparse = "==0.6.0"
 urlpath = "==1.2.0"
 temppathlib = "==1.2.0"
+aptly-api-client = "==0.2.4"
+validators = "==0.20.0"
 
 [dev-packages]
 ddt = "==1.6.0"
