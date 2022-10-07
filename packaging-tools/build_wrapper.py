@@ -515,10 +515,13 @@ def collect_qt_creator_plugin_sha1s(option_dict: Dict[str, str], plugins: List[Q
 def upload_files(remote_path: str, file_upload_list: List[Tuple[str, str]], option_dict: Dict[str, str]) -> None:
     # prepare remote paths
     pkg_storage_server = option_dict['PACKAGE_STORAGE_SERVER_ADDR']
-    target_env_dir = option_dict['QTC_PLATFORM']
     latest_path = remote_path + '/latest'
     dir_path = remote_path + '/' + option_dict['BUILD_NUMBER']
-    create_remote_dirs(option_dict, pkg_storage_server, dir_path + '/' + target_env_dir)
+    # create destination paths
+    directories = [os.path.dirname(dest) for (_, dest) in file_upload_list]
+    for destdir in set(directories):
+        create_remote_dirs(option_dict, pkg_storage_server, dir_path + '/' + destdir)
+    # "latest" link
     update_latest_link(option_dict, dir_path, latest_path)
     # upload files
     for source, destination in file_upload_list:
@@ -636,6 +639,7 @@ def handle_qt_creator_build(option_dict: Dict[str, str], qtcreator_plugins: List
     installer_patch = option_dict.get('INSTALLER_PATCH')  # optional
     skip_cdb = option_dict.get('SKIP_CDB')  # optional
     skip_dmg = option_dict.get('SKIP_DMG')  # optional
+    with_cpack = option_dict.get('WITH_CPACK')  # optional
     build_id = option_dict['BUILD_NUMBER']
     icu_libs = option_dict.get('ICU_LIBS')  # optional
     openssl_libs = option_dict.get('OPENSSL_LIBS')  # optional
@@ -777,6 +781,8 @@ def handle_qt_creator_build(option_dict: Dict[str, str], qtcreator_plugins: List
                  '--src', src_path,
                  '--build', build_path,
                  '--qt-path', qt_path]
+    if with_cpack:
+        cmd_args += ['--with-cpack']
     if llvm_install_dir:
         cmd_args += ['--llvm-path', llvm_install_dir]
     if ide_branding_path:
@@ -933,6 +939,21 @@ def handle_qt_creator_build(option_dict: Dict[str, str], qtcreator_plugins: List
         snapshot_upload_list.append((target_env_dir + '/qtcreator-signed.7z', target_env_dir + '/qtcreator-signed.7z'))
         file_upload_list.append(('qtcreator-commercial-signed.7z', target_env_dir + '/qtcreator-commercial-signed.7z'))
 
+    # cpack created packages
+    if with_cpack:
+        if os.path.exists(os.path.join(build_path, 'build', 'qtcreator.exe')):  # NSIS
+            nsis_filename = 'cpack_experimental/qtcreator-opensource-windows-x86_64-' + qtcreator_version + '.exe'
+            file_upload_list.append(('qt-creator_build/build/qtcreator.exe', nsis_filename))
+            snapshot_upload_list.append((nsis_filename, nsis_filename))
+        if os.path.exists(os.path.join(build_path, 'build', 'qtcreator.msi')):  # WIX
+            msi_filename = 'cpack_experimental/qtcreator-opensource-windows-x86_64-' + qtcreator_version + '.msi'
+            file_upload_list.append(('qt-creator_build/build/qtcreator.msi', msi_filename))
+            snapshot_upload_list.append((msi_filename, msi_filename))
+        if os.path.exists(os.path.join(build_path, 'build', 'qtcreator.deb')):  # DEB
+            deb_filename = 'cpack_experimental/qtcreator-opensource-linux-x86_64-' + qtcreator_version + '.deb'
+            file_upload_list.append(('qt-creator_build/build/qtcreator.deb', deb_filename))
+            snapshot_upload_list.append((deb_filename, deb_filename))
+
     # source packages
     source_package_list = glob(os.path.join(work_dir, 'qt-creator-*-src-' + qtcreator_version + '.*'))
     file_upload_list.extend([(os.path.basename(fn), '') for fn in source_package_list])
@@ -981,11 +1002,14 @@ def handle_qt_creator_build(option_dict: Dict[str, str], qtcreator_plugins: List
         qtcreator_shortversion = matches.group() if matches else ""
         snapshot_base = snapshot_path + '/' + qtcreator_shortversion + '/' + qtcreator_version + '/installer_source/'
         snapshot_target = snapshot_base + build_id + '/'
-        do_execute_sub_process(
-            [option_dict['SSH_COMMAND'], pkg_storage_server,
-             "ssh", snapshot_server,
-             'mkdir', '-p', snapshot_target + target_env_dir],
-            work_dir, True)
+        # create destination paths
+        directories = [os.path.dirname(dest) for (_, dest) in snapshot_upload_list]
+        for destdir in set(directories):
+            do_execute_sub_process(
+                [option_dict['SSH_COMMAND'], pkg_storage_server,
+                 "ssh", snapshot_server,
+                 'mkdir', '-p', snapshot_target + destdir],
+                work_dir, True)
         do_execute_sub_process(
             [option_dict['SSH_COMMAND'], pkg_storage_server,
              "ssh", snapshot_server,
