@@ -549,7 +549,7 @@ def patch_component_data(
         task.remove_debug_libraries,
     )
     if archive.rpath_target and is_linux():
-        handle_component_rpath(str(install_dir), archive.rpath_target)
+        handle_component_rpath(install_dir, archive.rpath_target)
 
 
 def recompress_component(

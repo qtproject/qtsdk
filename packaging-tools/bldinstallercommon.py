@@ -375,146 +375,148 @@ def locate_paths(search_dir: Union[str, Path], patterns: List[str],
     return [str(p) for p in paths if all(f(p) for f in filters)]
 
 
-###############################
-# Function
-###############################
-def requires_rpath(file_path: str) -> bool:
-    if is_linux():
-        if not os.access(file_path, os.X_OK):
-            return False
-        with suppress(CalledProcessError):
-            output = run_cmd(cmd=["chrpath", "-l", file_path])
-            if output:
-                return re.search(r":*.R.*PATH=", output) is not None
-    return False
+def calculate_relpath(target_path: Path, origin_path: Path) -> Path:
+    """
+    Figure out a path relative to origin, using pathlib
+
+    Args:
+        target_path: The target path to resolve
+        origin_path: The origin path to resolve against
+
+    Returns:
+        A relative path based on the given two paths
+    """
+    try:
+        return target_path.resolve().relative_to(origin_path.resolve())
+    except ValueError:
+        return Path("..") / calculate_relpath(target_path, origin_path.parent)
 
 
-###############################
-# Function
-###############################
-def sanity_check_rpath_max_length(file_path: str, new_rpath: str) -> bool:
-    if is_linux():
-        if not os.access(file_path, os.X_OK):
-            return False
-        result = None
-        with suppress(CalledProcessError):
-            output = run_cmd(cmd=["chrpath", "-l", file_path])
-            result = re.search(r":*.R.*PATH=.*", output)
-        if result is None:
-            log.info("No RPath found from given file: %s", file_path)
-        else:
-            rpath = result.group()
-            index = rpath.index('=')
-            rpath = rpath[index + 1:]
-            space_for_new_rpath = len(rpath)
-            if len(new_rpath) > space_for_new_rpath:
-                log.warning("Warning - Not able to process RPath for file: %s", file_path)
-                log.warning("New RPath [%s] length: %s", new_rpath, str(len(new_rpath)))
-                log.warning("Space available inside the binary: %s", str(space_for_new_rpath))
-                raise IOError()
-    return True
+def calculate_runpath(file_full_path: Path, destination_lib_path: Path) -> str:
+    """
+    Calculate and return the relative RUNPATH for for the given file
 
+    Args:
+        file_full_path: A path to binary
+        destination_lib_path: A path to destination lib
 
-###############################
-# Function
-###############################
-def pathsplit(path: str, rest: Optional[List[str]] = None) -> List[str]:
-    rest = rest or []
-    split_path = Path(path)
-    head = str(split_path.parent)
-    tail = split_path.name
-    if len(head) < 1:
-        return [tail] + rest
-    if len(tail) < 1:
-        return [head] + rest
-    return pathsplit(head, [tail] + rest)
+    Returns:
+        RPath for destination lib path relative to $ORIGIN (binary file directory)
 
-
-def commonpath(list1: List[str], list2: List[str], common: Optional[List[str]] = None) -> Tuple[List[str], List[str], List[str]]:
-    common = common or []
-    if len(list1) < 1:
-        return (common, list1, list2)
-    if len(list2) < 1:
-        return (common, list1, list2)
-    if list1[0] != list2[0]:
-        return (common, list1, list2)
-    return commonpath(list1[1:], list2[1:], common + [list1[0]])
-
-
-def calculate_relpath(path1: str, path2: str) -> str:
-    (_, list1, list2) = commonpath(pathsplit(path1), pathsplit(path2))
-    path = []
-    if len(list1) > 0:
-        tmp = '..' + os.sep
-        path = [tmp * len(list1)]
-    path = path + list2
-    return str(Path(*path))
-
-
-##############################################################
-# Calculate the relative RPath for the given file
-##############################################################
-def calculate_rpath(file_full_path: str, destination_lib_path: str) -> str:
-    if not os.path.isfile(file_full_path):
-        raise IOError(f"*** Not a valid file: {file_full_path}")
-
-    bin_path = os.path.dirname(file_full_path)
-    path_to_lib = os.path.abspath(destination_lib_path)
-    full_rpath = ''
-    if path_to_lib == bin_path:
-        full_rpath = '$ORIGIN'
+    Raises:
+        FileNotFoundError: When the binary or destination path doesn't exist
+    """
+    bin_path = Path(file_full_path).resolve(strict=True)
+    origin_path = bin_path.parent
+    path_to_lib = destination_lib_path.resolve(strict=True)
+    if path_to_lib == origin_path:
+        full_rpath = Path("$ORIGIN")
     else:
-        rpath = calculate_relpath(bin_path, path_to_lib)
-        full_rpath = '$ORIGIN' + os.sep + rpath
-
-    log.debug("----------------------------------------")
+        rpath: Path = calculate_relpath(path_to_lib, origin_path)
+        full_rpath = Path("$ORIGIN") / rpath
     log.debug(" RPath target folder: %s", path_to_lib)
     log.debug(" Bin file:            %s", file_full_path)
     log.debug(" Calculated RPath:    %s", full_rpath)
+    return str(full_rpath)
 
-    return full_rpath
+
+def read_file_rpath(file_path: Path) -> Optional[str]:
+    """
+    Read a RPath value from the given binary with the 'chrpath' tool.
+
+    Args:
+        file_path: A path to a binary file to read from
+
+    Returns:
+        The RPath from the binary if found, otherwise None
+    """
+    output = ""
+    with suppress(CalledProcessError):
+        output = run_cmd(cmd=["chrpath", "-l", str(file_path)])
+    result = re.search(r":*.R.*PATH=.*", output)
+    if result is None:
+        return None
+    rpath = result.group()
+    index = rpath.index('=')
+    rpath = rpath[index + 1:]
+    return rpath
 
 
-##############################################################
-# Handle the RPath in the given component files
-##############################################################
-def handle_component_rpath(component_root_path: str, destination_lib_paths: str) -> None:
-    log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-    log.info("Handle RPath")
-    log.info("")
-    log.info("Component root path:  %s", component_root_path)
-    log.info("Destination lib path: %s", destination_lib_paths)
+def update_file_rpath(file: Path, component_root: Path, destination_paths: str) -> None:
+    """
+    Change the RPATH/RUNPATH inside a binary file with the 'chrpath' tool.
+    Removes any existing paths not relative to $ORIGIN (binary path)
+    New RPATH/RUNPATH length must fit the space allocated inside the binary.
 
-    # loop on all files
-    for root, _, files in os.walk(component_root_path):
-        for name in files:
-            file_full_path = os.path.join(root, name)
-            if not os.path.isdir(file_full_path) and not os.path.islink(file_full_path):
-                if not requires_rpath(file_full_path):
-                    continue
-                rpaths = []
-                for destination_lib_path in destination_lib_paths.split(':'):
-                    dst = os.path.normpath(component_root_path + os.sep + destination_lib_path)
-                    rpath = calculate_rpath(file_full_path, dst)
-                    rpaths.append(rpath)
+    Args:
+        file: A path to a binary file that possibly contains a RPATH/RUNPATH
+        component_root: A root path for the component
+        destination_paths: A string containing the destination paths relative to root path
 
-                # look for existing $ORIGIN path in the binary
-                origin_rpath = None
-                with suppress(CalledProcessError):
-                    output = run_cmd(cmd=["chrpath", "-l", file_full_path])
-                    origin_rpath = re.search(r"\$ORIGIN[^:\n]*", output)
+    Raises:
+        PackagingError: When the RPATH/RUNPATH cannot be replaced (e.g. not enough space in binary)
+    """
+    # Read the existing rpath from the file. If not found, skip this file.
+    existing_rpath = read_file_rpath(file)
+    if existing_rpath is None:
+        log.debug("No RPATH/RUNPATH found in %s", file)
+        return
+    # Create a list of new rpaths from 'destination_paths'
+    rpaths = []
+    for dest_path in destination_paths.split(':'):
+        target_path = component_root / dest_path.lstrip("/")  # make relative to component root
+        rpaths.append(calculate_runpath(file, target_path))
+    # Look for $ORIGIN paths in existing rpath and add those to the new rpath
+    origin_rpath = re.search(r"\$ORIGIN[^:\n]*", existing_rpath)
+    if origin_rpath is not None:
+        if origin_rpath.group() not in rpaths:
+            rpaths.append(origin_rpath.group())
+    # Join the final rpath tag value and update it inside the binary
+    new_rpath = ':'.join(rpaths)
+    try:
+        log.debug("Change RPATH/RUNPATH [%s] -> [%s] for [%s]", existing_rpath, new_rpath, file)
+        run_cmd(cmd=['chrpath', '-r', new_rpath, str(file)])
+    except CalledProcessError as err:
+        raise PackagingError(f"Unable to replace RPATH/RUNPATH in {file}") from err
 
-                if origin_rpath is not None:
-                    if origin_rpath.group() not in rpaths:
-                        rpaths.append(origin_rpath.group())
 
-                rpath = ':'.join(rpaths)
-                if sanity_check_rpath_max_length(file_full_path, rpath):
-                    log.debug("RPath value: [%s] for file: [%s]", rpath, file_full_path)
-                    cmd_args = ['chrpath', '-r', rpath, file_full_path]
-                    # force silent operation
-                    work_dir = os.path.dirname(os.path.realpath(__file__))
-                    run_cmd(cmd=cmd_args, cwd=work_dir)
+def is_elf_binary(path: Path) -> bool:
+    """
+    Determines whether a path contains an ELF binary.
+
+    Args:
+        path: A file system path pointing to a possible executable
+
+    Returns:
+        True if the path is a regular ELF file with the executable bit set, otherwise False.
+    """
+    if path.is_file() and not path.is_symlink() and bool(path.stat().st_mode & stat.S_IEXEC):
+        with path.open(mode="rb") as bin_file:
+            if bin_file.read(4) == b"\x7fELF":
+                return True
+    return False
+
+
+def handle_component_rpath(component_root_path: Path, destination_lib_paths: str) -> None:
+    """
+    Handle updating the RPath with 'destination_lib_paths' for all executable files in the given
+    'component_root_path'.
+
+    Args:
+        component_root_path: Path to search executables from
+        destination_lib_paths: String containing the paths to add to RPath
+
+    Raises:
+        PackagingError: When the 'chrpath' tool is not found in PATH
+    """
+    log.info("Handle RPATH/RUNPATH for all files")
+    log.info("Component's root path: %s", component_root_path)
+    log.info("Destination lib paths: %s", destination_lib_paths)
+    if shutil.which("chrpath") is None:
+        raise PackagingError("The 'chrpath' tool was not found in PATH")
+    # loop on all binary files in component_root_path
+    for file in locate_paths(component_root_path, ["*"], [is_elf_binary]):
+        update_file_rpath(Path(file), component_root_path, destination_lib_paths)
 
 
 ###############################
@@ -751,6 +753,6 @@ def patch_qt(qt5_path: str) -> None:
         qt_conf_file.write("Prefix=.." + os.linesep)
     # fix rpaths
     if is_linux():
-        handle_component_rpath(qt5_path, 'lib')
+        handle_component_rpath(Path(qt5_path), 'lib')
     log.info("##### patch Qt ##### ... done")
     run_command(qmake_binary + " -query", qt5_path)

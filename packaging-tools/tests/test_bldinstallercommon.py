@@ -30,28 +30,32 @@
 #############################################################################
 
 import os
+import shutil
 import unittest
 from pathlib import Path
 from typing import Callable, List, Optional, Tuple
 
-from ddt import data, ddt  # type: ignore
+from ddt import data, ddt, unpack  # type: ignore
 from temppathlib import TemporaryDirectory
 
-from bld_utils import is_windows
+from bld_utils import is_linux, is_windows
 from bldinstallercommon import (
     calculate_relpath,
+    calculate_runpath,
     locate_executable,
     locate_path,
     locate_paths,
+    read_file_rpath,
     replace_in_files,
     search_for_files,
     strip_dirs,
+    update_file_rpath,
 )
 from installer_utils import PackagingError
 
 
 @ddt
-class TestCommon(unittest.TestCase):
+class TestCommon(unittest.TestCase):  # pylint: disable=R0904
     @data(  # type: ignore
         (
             "%TAG_VERSION%%TAG_EDITION%",
@@ -208,28 +212,100 @@ class TestCommon(unittest.TestCase):
                 str(tmp_base_dir.path / "test_file2"))
 
     @data(  # type: ignore
-        ("/home/qt/bin/foo/bar", "/home/qt/lib", "../../../lib"),
-        ("/home/qt/bin/foo/", "/home/qt/lib", "../../lib"),
-        ("/home/qt/bin", "/home/qt/lib", "../lib"),
-        ("/home/qt/bin", "lib", "../../../../lib"),
-        ("/home/qt/bin", "/lib", "../../../lib"),
-        ("/home/qt", "./lib", "../../../lib"),
-        ("bin", "/home/qt/lib", "/home/qt/lib"),
-        ("/home/qt/", "/home/qt", "."),
-        ("/home/qt", "/home/qt/", "."),
-        ("/home/qt", "/home/qt/", "."),
-        ("/home/qt", "/home/qt", "."),
-        ("/", "/home/qt", "home/qt"),
-        ("/home/qt", "", "../../.."),
-        ("", "/home/qt", "/home/qt"),
-        ("lib", "lib", "."),
-        ("/", "/", "."),
-        ("", "", "."),
+        ("foo/bin", "", Path("../..")),
+        ("foo/bin", ".", Path("../..")),
+        ("foo/bin", "..", Path("../../..")),
+        ("foo/bin", "foo/lib", Path("../lib")),
+        ("foo/bin", "foo/bin", Path(".")),
+        ("foo/bin", "foo/bin/lib", Path("lib")),
+        ("foo/bin", "foo/bin/lib/foobar", Path("lib/foobar")),
+        ("..", "lib", Path("test/lib")),
     )
-    def test_calculate_relpath(self, test_data: Tuple[str, str, str]) -> None:
-        path1, path2, expected = test_data
-        result = calculate_relpath(path1, path2)
-        self.assertEqual(result, expected)
+    @unpack  # type: ignore
+    def test_calculate_relpath(self, test_bin: str, lib_dir: str, expected: str) -> None:
+        with TemporaryDirectory() as temp_dir:
+            test_path = temp_dir.path / "test"
+            lib_path = test_path / lib_dir
+            lib_path.mkdir(parents=True, exist_ok=True)
+            bin_path = test_path / test_bin
+            bin_path.parent.mkdir(parents=True, exist_ok=True)
+            bin_path.touch(exist_ok=True)
+            result = calculate_relpath(lib_path, bin_path)
+            self.assertEqual(result, expected)
+
+    @data(  # type: ignore
+        ("foo/bin/bar.elf", "", "$ORIGIN/../.."),
+        ("foo/bin/bar.elf", ".", "$ORIGIN/../.."),
+        ("foo/bin/bar.elf", "..", "$ORIGIN/../../.."),
+        ("foo/bin/bar.elf", "foo/lib", "$ORIGIN/../lib"),
+        ("foo/bin/bar.elf", "foo/bin", "$ORIGIN"),
+        ("foo/bin/bar.elf", "foo/bin/lib", "$ORIGIN/lib"),
+        ("foo/bin/bar.elf", "foo/bin/lib/foobar", "$ORIGIN/lib/foobar"),
+    )
+    @unpack  # type: ignore
+    @unittest.skipUnless(is_linux(), reason="Skip RPATH/RUNPATH tests on non-Linux")
+    def test_calculate_runpath(self, test_bin: str, lib_dir: str, expected: str) -> None:
+        with TemporaryDirectory() as temp_dir:
+            lib_path = temp_dir.path / lib_dir
+            lib_path.mkdir(parents=True, exist_ok=True)
+            bin_path = temp_dir.path / test_bin
+            bin_path.parent.mkdir(parents=True, exist_ok=True)
+            bin_path.touch(exist_ok=True)
+            result = calculate_runpath(bin_path, lib_path)
+            self.assertEqual(result, expected)
+
+    @data(  # type: ignore
+        ("testbin_empty_rpath", ""),
+        ("testbin_no_rpath", None),
+        ("testbin_exist_origin_rpath", "$ORIGIN/bin"),
+        ("testbin_exist_rpath", "/home/qt/lib"),
+        ("testbin_multiple_rpath", "$ORIGIN/bin:/home/qt"),
+        ("testbin_origin_rpath", "$ORIGIN"),
+    )
+    @unpack  # type: ignore
+    @unittest.skipUnless(is_linux(), reason="Skip RPATH/RUNPATH tests on non-Linux")
+    @unittest.skipIf(shutil.which("chrpath") is None, reason="Skip tests requiring 'chrpath' tool")
+    def test_read_file_rpath(self, test_file: str, expected: Optional[str]) -> None:
+        test_asset_path = Path(__file__).parent / "assets" / "runpath"
+        found_rpath = read_file_rpath(test_asset_path / test_file)
+        self.assertEqual(found_rpath, expected)
+
+    @data(  # type: ignore
+        ("testbin_empty_rpath", "lib", "$ORIGIN/lib"),
+        ("testbin_exist_origin_rpath", "", "$ORIGIN:$ORIGIN/bin"),
+        ("testbin_exist_rpath", "lib", "$ORIGIN/lib"),
+        ("testbin_multiple_rpath", "lib", "$ORIGIN/lib:$ORIGIN/bin"),
+        ("testbin_origin_rpath", "lib", "$ORIGIN/lib:$ORIGIN"),
+    )
+    @unpack  # type: ignore
+    @unittest.skipUnless(is_linux(), reason="Skip RPATH/RUNPATH tests on non-Linux")
+    @unittest.skipIf(shutil.which("chrpath") is None, reason="Skip tests requiring 'chrpath' tool")
+    def test_update_file_rpath(self, test_file: str, target_paths: str, expected: str) -> None:
+        test_asset_path = Path(__file__).parent / "assets" / "runpath"
+        with TemporaryDirectory() as temp_dir:
+            temp_path = temp_dir.path
+            for path in target_paths.split(':'):
+                (temp_path / path).mkdir(parents=True, exist_ok=True)
+            shutil.copy(test_asset_path / test_file, temp_path)
+            update_file_rpath(temp_path / test_file, temp_path, target_paths)
+            result_rpath = read_file_rpath(temp_path / test_file)
+            self.assertEqual(result_rpath, expected)
+
+    @unittest.skipUnless(is_linux(), reason="Skip RPATH/RUNPATH tests on non-Linux")
+    @unittest.skipIf(shutil.which("chrpath") is None, reason="Skip tests requiring 'chrpath' tool")
+    def test_update_file_rpath_too_large(self) -> None:
+        test_asset_path = Path(__file__).parent / "assets" / "runpath"
+        with TemporaryDirectory() as temp_dir:
+            temp_path = temp_dir.path
+            target_path = "too-long-path/foo-bar"
+            (temp_path / target_path).mkdir(parents=True, exist_ok=True)
+            test_bin = "testbin_multiple_rpath"
+            shutil.copy(test_asset_path / test_bin, temp_path)
+            with self.assertLogs() as logs:
+                with self.assertRaises(PackagingError):
+                    update_file_rpath(temp_path / test_bin, temp_path, target_path)
+                # Last line in info logging output should contain the error message from process
+                self.assertTrue("too large; maximum length" in logs.output.pop())
 
     def test_strip_dirs(self) -> None:
         with TemporaryDirectory() as temp_dir:

@@ -574,8 +574,6 @@ def parse_ifw_sdk_archives(
         # 2) parent components 'target_install_base'. (1) takes priority
         target_install_dir = config_subst.get("target_install_dir", "")
         rpath_target = config_subst.get("rpath_target")
-        if rpath_target and not rpath_target.startswith(os.sep):
-            rpath_target = os.sep + rpath_target
         component_sha1_file = config_subst.get("component_sha1_file")
         archive_name = config_subst.get("archive_name")
         payload = IfwPayloadItem(
