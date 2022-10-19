@@ -7,6 +7,7 @@ name = "pypi"
 pip = {version = ">=18.0"}
 sh = {version = "==1.14.2", os_name = "!= 'nt'"}
 typed-ast = "==1.5.3"
+rainbow_logging_handler = "==2.2.2"
 gitpython = "==3.1.18"
 colorlog = "==6.6.0"
 pexpect = "==4.8.0"

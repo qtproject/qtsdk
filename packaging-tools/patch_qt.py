@@ -34,13 +34,9 @@ import re
 from fileinput import FileInput
 from typing import Any, Callable, Generator, List, Match
 
-from logging_util import init_logger
-
-log = init_logger(__name__, debug_mode=False)
-
 
 def _file_iterator(artifacts_dir: str) -> Generator[Any, Any, Any]:
-    log.info("Patching build time paths from: %s", artifacts_dir)
+    print(f"Patching build time paths from: {artifacts_dir}")
     for root, _, files in os.walk(artifacts_dir):
         for file_name in files:
             yield os.path.join(os.path.join(root, file_name))
@@ -54,7 +50,7 @@ def _get_patchers(product: str) -> List[Callable[[Any], Any]]:
 
 
 def patch_files(artifacts_dir: str, product: str) -> None:
-    log.info("Patching files from: %s", artifacts_dir)
+    print(f"Patching files from: {artifacts_dir}")
     patchers = _get_patchers(product)
     for file_path in _file_iterator(artifacts_dir):
         for patcher in patchers:
@@ -75,17 +71,17 @@ def _patch_qt_edition(file_path: str, licheck_file_name: str, release_date: str)
             edition_line = 'QT_EDITION = Enterprise'
             licheck_line = 'QT_LICHECK = ' + licheck_file_name
             release_line = 'QT_RELEASE_DATE = ' + release_date
-            log.info(edition_line.rstrip("\n"))
-            log.info(licheck_line.rstrip("\n"))
-            log.info(release_line.rstrip("\n"))
+            print(edition_line.rstrip('\n'))
+            print(licheck_line.rstrip('\n'))
+            print(release_line.rstrip('\n'))
         else:
-            log.info(line.rstrip("\n"))
+            print(line.rstrip('\n'))
 
 
 def patch_qconfig_pri(file_path: str) -> None:
     for line in FileInput(file_path, inplace=True):
         patched_line = patch_qconfig_pri_from_line(line)
-        log.info(patched_line.rstrip("\n"))
+        print(patched_line.rstrip('\n'))
 
 
 def patch_qconfig_pri_from_line(line: str) -> str:
@@ -100,7 +96,7 @@ def erase_qmake_prl_build_dir(file_path: str) -> None:
     # Erase lines starting with 'QMAKE_PRL_BUILD_DIR' from .prl files
     for line in FileInput(file_path, inplace=True):
         patched_line = patch_qmake_prl_build_dir_from_line(line)
-        log.info(patched_line.rstrip("\n"))
+        print(patched_line.rstrip('\n'))
 
 
 def patch_qmake_prl_build_dir_from_line(line: str) -> str:
@@ -110,7 +106,7 @@ def patch_qmake_prl_build_dir_from_line(line: str) -> str:
 def patch_absolute_lib_paths_from_file(file_path: str) -> None:
     for line in FileInput(file_path, inplace=True):
         patched_line = patch_absolute_lib_paths_from_line(line, file_path.split(".")[-1])
-        log.info(patched_line.rstrip("\n"))
+        print(patched_line.rstrip('\n'))
 
 
 def patch_absolute_lib_paths_from_line(line: str, file_extension: str) -> str:

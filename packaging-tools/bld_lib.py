@@ -30,6 +30,7 @@
 #############################################################################
 
 import argparse
+import logging
 import os
 import platform as plat  # import as plat to not shadow the "import platform"
 import re
@@ -45,13 +46,22 @@ from typing import List, Tuple
 from urllib.parse import urlparse
 from urllib.request import urlretrieve
 
+from rainbow_logging_handler import RainbowLoggingHandler  # type: ignore
+
 from bld_utils import is_windows
 from installer_utils import ch_dir
-from logging_util import init_logger
 from read_remote_config import get_pkg_value
 from remote_uploader import RemoteUploader
 
-log = init_logger(__name__, debug_mode=False)
+LOG_FMT_CI = "%(asctime)s %(levelname)s:%(filename)s:%(lineno)d(%(process)d): %(message)s"
+log = logging.getLogger("Bld")
+log.setLevel(logging.INFO)
+# Unify format of all messages
+handler = RainbowLoggingHandler(sys.stderr, color_asctime=(None, None, False))
+
+formatter = logging.Formatter(LOG_FMT_CI)
+handler.setFormatter(formatter)
+log.addHandler(handler)
 
 
 def find_file(search_path: str, file_name: str) -> str:
@@ -174,7 +184,7 @@ def archive(args: argparse.Namespace, install_root_dir: str, current_dir: str) -
         with ch_dir(archive_path):
             check_call(['7z', 'a', '-m0=lzma2', '-mmt=16', artifacts_file_path, '*'])
     except Exception as error:
-        log.error(str(error))
+        print(str(error))
         raise
 
     log.info("Created artifact: %s", artifacts_file_path)

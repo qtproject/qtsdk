@@ -59,11 +59,8 @@ from bldinstallercommon import (
     search_for_files,
 )
 from installer_utils import PackagingError
-from logging_util import init_logger
 from runner import do_execute_sub_process
 from threadedwork import ThreadedWork
-
-log = init_logger(__name__, debug_mode=False)
 
 SCRIPT_ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 MODULE_SRC_DIR_NAME = 'module_src'
@@ -91,7 +88,7 @@ def get_qt_install_prefix(qt_path: str) -> str:
 # function
 ###############################
 def erase_qmake_prl_build_dir(search_path: str) -> None:
-    log.info("--- Fix .prl files ---")
+    print('--- Fix .prl files ---')
     # fetch all .prl files
     file_list = locate_paths(search_path, ['*.prl'], filters=[os.path.isfile])
     # erase lines starting with 'QMAKE_PRL_BUILD_DIR' from .prl files
@@ -100,11 +97,11 @@ def erase_qmake_prl_build_dir(search_path: str) -> None:
         for line in FileInput(item, inplace=True):
             if line.startswith('QMAKE_PRL_BUILD_DIR'):
                 found = True
-                log.info("".rstrip("\n"))
+                print(''.rstrip('\n'))
             else:
-                log.info(line.rstrip("\n"))
+                print(line.rstrip('\n'))
         if found:
-            log.info("Erased 'QMAKE_PRL_BUILD_DIR' from: %s", item)
+            print(f"Erased 'QMAKE_PRL_BUILD_DIR' from: {item}")
 
 
 ###############################
@@ -116,12 +113,12 @@ def patch_build_time_paths(search_path: str, search_strings: List[str], qt_insta
     file_list = search_for_files(search_path, extension_list, search_regexp)
 
     for item in file_list:
-        log.info("Replacing %s paths from file: %s", search_strings, item)
+        print(f"Replacing {search_strings} paths from file: {item}")
         for line in FileInput(item, inplace=True):
             patched_line = reduce(lambda accum, value: accum.replace(value, qt_install_prefix),
                                   search_strings,
                                   line)
-            log.info(patched_line.rstrip("\n"))
+            print(patched_line.rstrip('\n'))
 
 
 def main() -> None:
@@ -188,10 +185,7 @@ def main() -> None:
     # cleanup some values inside the caller_arguments object
     strip_vars(caller_arguments, "\"")
     if caller_arguments.qt5path != os.path.abspath(caller_arguments.qt5path):
-        log.info(
-            "Changing the value of --qt5path: %s -> %s",
-            caller_arguments.qt5path, os.path.abspath(caller_arguments.qt5path)
-        )
+        print(f"changing the value of --qt5path from {caller_arguments.qt5path} to {os.path.abspath(caller_arguments.qt5path)}")
         caller_arguments.qt5path = os.path.abspath(caller_arguments.qt5path)
 
     if not caller_arguments.module_name:
@@ -211,7 +205,7 @@ def main() -> None:
         my_get_qt_module.run()
         qt_module_source_directory = MODULE_SRC_DIR
     else:
-        log.info("Using local copy of %s", caller_arguments.module_name)
+        print(f"Using local copy of {caller_arguments.module_name}")
         qt_module_source_directory = caller_arguments.module_dir
 
     # install directory
@@ -226,17 +220,14 @@ def main() -> None:
 
     # clean step
     if caller_arguments.clean:
-        log.info("##### clean old builds #####")
+        print("##### clean old builds #####")
         remove_tree(caller_arguments.qt5path)
         remove_tree(qt_module_install_directory)
         remove_tree(temp_path)
 
     if not os.path.lexists(caller_arguments.qt5path) and not caller_arguments.qt5_module_urls:
         parser.print_help()
-        log.error(
-            "The --qt5path %s does not exist, please add the missing --qt5_module_url arguments",
-            caller_arguments.qt5path
-        )
+        print(f"error: Please add the missing qt5_module_url arguments if the {caller_arguments.qt5path} does not exist {os.linesep}{os.linesep}")
         raise RuntimeError()
 
     qmake_binary = os.path.abspath(os.path.join(caller_arguments.qt5path, 'bin', 'qmake'))

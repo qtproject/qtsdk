@@ -36,10 +36,6 @@ import sys
 from shutil import which
 from subprocess import CalledProcessError, check_call
 
-from logging_util import init_logger
-
-log = init_logger(__name__, debug_mode=False)
-
 
 class RemoteUploaderError(Exception):
     pass
@@ -84,9 +80,9 @@ class RemoteUploader:
 
     def ensure_remote_dir(self, remote_dir: str) -> None:
         assert self.init_finished, "RemoteUploader not initialized!"
-        log.info("Creating remote directory: %s", remote_dir)
+        print(f"Creating remote directory: {remote_dir}")
         cmd = self.ssh_cmd + ['mkdir', '-p', remote_dir]
-        log.info("Executing: %s", " ".join(cmd))
+        print("Executing: ", ' '.join(cmd))
         if not self.dry_run:
             check_call(cmd, timeout=60)  # give it 60s
 
@@ -98,9 +94,9 @@ class RemoteUploader:
             remote_destination = remote_destination + '/' + dest_dir_name + '/'
             if "windows" in platform.system().lower():
                 self.ensure_remote_dir(self.remote_target_dir + '/' + dest_dir_name + '/')
-        log.info("Copying [%s] to [%s]", file_name, remote_destination)
+        print(f"Copying [{file_name}] to [{remote_destination}]")
         cmd = self.copy_cmd + [file_name, remote_destination]
-        log.info("Executing: %s", " ".join(cmd))
+        print("Executing: ", ' '.join(cmd))
         if not self.dry_run:
             check_call(cmd, timeout=60 * 10)  # give it 10 mins
 
@@ -111,15 +107,15 @@ class RemoteUploader:
 
     def update_latest_symlink(self, force_update: bool = True) -> None:
         assert self.init_finished, "RemoteUploader not initialized!"
-        log.info("Create remote symlink: %s -> %s", self.remote_latest_link, self.remote_target_dir)
+        print(f"Creating remote symlink: [{self.remote_latest_link}] -> [{self.remote_target_dir}]")
         options = ["-sfn"] if force_update else ["-sn"]
         try:
             cmd = self.ssh_cmd + ['ln'] + options + [self.remote_target_dir, self.remote_latest_link]
-            log.info("Executing: %s", " ".join(cmd))
+            print("Executing: ", ' '.join(cmd))
             if not self.dry_run:
                 check_call(cmd, timeout=60)  # give it 60s
-        except CalledProcessError as error:
-            log.exception("Failed to execute: %s", " ".join(cmd), exc_info=error)
+        except CalledProcessError:
+            print("Failed to execute: ", ' '.join(cmd))
             raise
 
 

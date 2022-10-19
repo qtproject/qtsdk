@@ -54,12 +54,10 @@ from bldinstallercommon import (
     retrieve_url,
 )
 from installer_utils import PackagingError, ch_dir
-from logging_util import init_logger
 from pkg_constants import IFW_BUILD_ARTIFACTS_DIR
 from read_remote_config import get_pkg_value
 from runner import do_execute_sub_process
 
-log = init_logger(__name__, debug_mode=False)
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 ARCH_EXT = '.zip' if is_windows() else '.tar.xz'
 QT_VERSION = '5.12'
@@ -69,11 +67,11 @@ QT_VERSION_MINOR = '5.12.7'
 ARCHIVE_PROGRAM = '7z'
 if is_macos():
     try:
-        log.info("Trying to use 7z from")
-        subprocess.call(["where", "7z"])
+        print("Trying to use 7z from")
+        subprocess.call(['where', '7z'])
     except OSError:
-        log.warning("7z not found from path. Try to use 7z from /usr/local/bin")
-        ARCHIVE_PROGRAM = "/usr/local/bin/7z"
+        print("7z not found from path. Try to use 7z from /usr/local/bin")
+        ARCHIVE_PROGRAM = '/usr/local/bin/7z'
 
 
 ##################################################################
@@ -259,38 +257,38 @@ class IfwOptions:
             raise SystemExit(f"Qt src package uri is invalid: {self.qt_source_package_uri}")
         if self.product_key_checker_pri:
             if os.path.isfile(self.product_key_checker_pri):
-                log.info("Using product key checker: %s", self.product_key_checker_pri)
+                print(f'Using product key checker: {self.product_key_checker_pri}')
             else:
                 raise SystemExit(f"Invalid product key checker: {self.product_key_checker_pri}")
 
     def print_data(self) -> None:
-        log.info("-----------------------------------------")
-        log.info("make cmd: %s", self.make_cmd)
-        log.info("make doc_cmd: %s", self.make_doc_cmd)
-        log.info("qt_source_package_uri: %s", self.qt_source_package_uri)
-        log.info("qt_source_package_uri_saveas: %s", self.qt_source_package_uri_saveas)
-        log.info("qt_source_dir: %s", self.qt_source_dir)
-        log.info("qt_build_dir: %s", self.qt_build_dir)
-        log.info("qt_build_dir_dynamic: %s", self.qt_build_dir_dynamic)
-        log.info("qt_configure_options: %s", self.qt_configure_options)
-        log.info("qt_qmake_bin: %s", self.qt_qmake_bin)
-        log.info("qt_configure_bin: %s", self.qt_configure_bin)
-        log.info("qt_installer_framework_uri: %s", self.qt_installer_framework_uri)
-        log.info("qt_installer_framework_branch: %s", self.qt_installer_framework_branch)
-        log.info("qt_installer_framework_qmake_args: %s", self.qt_installer_framework_qmake_args)
-        log.info("openssl_dir: %s", self.openssl_dir)
-        log.info("installer_framework_source_dir: %s", self.installer_framework_source_dir)
-        log.info("installer_framework_build_dir: %s", self.installer_framework_build_dir)
-        log.info("installer_framework_archive_name: %s", self.installer_framework_archive_name)
-        log.info("installer_base_archive_name: %s", self.installer_base_archive_name)
-        log.info("binarycreator_archive_name: %s", self.binarycreator_archive_name)
-        log.info("installer_framework_pkg_dir: %s", self.installer_framework_pkg_dir)
-        log.info("installer_framework_target_dir: %s", self.installer_framework_target_dir)
-        log.info("installer_framework_payload_arch: %s", self.installer_framework_payload_arch)
-        log.info("product_key_checker_pri: %s", self.product_key_checker_pri)
-        log.info("qt_binaries_static: %s", self.qt_binaries_static)
-        log.info("qt_binaries_dynamic: %s", self.qt_binaries_dynamic)
-        log.info("-----------------------------------------")
+        print("-----------------------------------------")
+        print(f"make cmd:                                {self.make_cmd}")
+        print(f"make doc_cmd:                            {self.make_doc_cmd}")
+        print(f"qt_src_pkg_uri:                          {self.qt_source_package_uri}")
+        print(f"qt_src_pkg_uri_saveas:                   {self.qt_source_package_uri_saveas}")
+        print(f"qt_src_dir:                              {self.qt_source_dir}")
+        print(f"qt_bld_dir:                              {self.qt_build_dir}")
+        print(f"qt_bld_dir_dynamic:                      {self.qt_build_dir_dynamic}")
+        print(f"qt_configure_options:                    {self.qt_configure_options}")
+        print(f"qt_qmake_bin:                            {self.qt_qmake_bin}")
+        print(f"qt_configure_bin:                        {self.qt_configure_bin}")
+        print(f"qt_ifw_uri:                              {self.qt_installer_framework_uri}")
+        print(f"qt_ifw_branch:                           {self.qt_installer_framework_branch}")
+        print(f"qt_ifw_qmake_args:                       {self.qt_installer_framework_qmake_args}")
+        print(f"openssl_dir:                             {self.openssl_dir}")
+        print(f"ifw_src_dir:                             {self.installer_framework_source_dir}")
+        print(f"ifw_bld_dir:                             {self.installer_framework_build_dir}")
+        print(f"ifw_archive_name:                        {self.installer_framework_archive_name}")
+        print(f"installer_base_archive_name:             {self.installer_base_archive_name}")
+        print(f"binarycreator_archive_name:              {self.binarycreator_archive_name}")
+        print(f"ifw_pkg_dir:                             {self.installer_framework_pkg_dir}")
+        print(f"ifw_tgt_dir:                             {self.installer_framework_target_dir}")
+        print(f"ifw_payload_arch:                        {self.installer_framework_payload_arch}")
+        print(f"product_key_checker:                     {self.product_key_checker_pri}")
+        print(f"qt_binaries_static:                      {self.qt_binaries_static}")
+        print(f"qt_binaries_dynamic:                     {self.qt_binaries_dynamic}")
+        print("-----------------------------------------")
 
 
 ###############################
@@ -341,8 +339,8 @@ def build_ifw(options: IfwOptions, create_installer: bool = False, build_ifw_exa
 def prepare_qt_sources(options: IfwOptions) -> None:
     if options.incremental_mode and os.path.exists(options.qt_source_dir):
         return
-    log.info("--------------------------------------------------------------------")
-    log.info("Prepare Qt src package: %s", options.qt_source_package_uri)
+    print('--------------------------------------------------------------------')
+    print(f"Prepare Qt src package: {options.qt_source_package_uri}")
     prepare_compressed_package(options.qt_source_package_uri, options.qt_source_package_uri_saveas, options.qt_source_dir)
 
     if is_windows():
@@ -353,15 +351,15 @@ def prepare_qt_sources(options: IfwOptions) -> None:
 # function
 ###############################
 def prepare_compressed_package(src_pkg_uri: str, src_pkg_saveas: str, destination_dir: str) -> None:
-    log.info("Fetching package from: %s", src_pkg_uri)
+    print(f"Fetching package from: {src_pkg_uri}")
     if not os.path.isfile(src_pkg_saveas):
         if not is_content_url_valid(src_pkg_uri):
             raise SystemExit("Src package uri is invalid! Abort!")
         retrieve_url(src_pkg_uri, src_pkg_saveas)
     else:
-        log.info("Found old local package, using that: %s", src_pkg_saveas)
-    log.info("Done")
-    log.info("--------------------------------------------------------------------")
+        print(f"Found old local package, using that: {src_pkg_saveas}")
+    print('Done')
+    print('--------------------------------------------------------------------')
     Path(destination_dir).mkdir(parents=True, exist_ok=True)
     extract_file(src_pkg_saveas, destination_dir)
     dir_contents = os.listdir(destination_dir)
@@ -389,21 +387,21 @@ def build_qt(options: IfwOptions, qt_build_dir: str, qt_configure_options: str, 
             pass
     Path(qt_build_dir).mkdir(parents=True, exist_ok=True)
     # configure first
-    log.info("--------------------------------------------------------------------")
-    log.info("Configuring Qt")
+    print('--------------------------------------------------------------------')
+    print('Configuring Qt')
     configure_options = re.sub(' +', ' ', qt_configure_options)
     cmd_args = options.qt_configure_bin + ' ' + configure_options
     # shlex does not like backslashes
     cmd_args = cmd_args.replace('\\', '/')
     do_execute_sub_process(shlex.split(cmd_args), options.qt_source_dir, True, False, get_build_env(options.openssl_dir))
-    log.info("--------------------------------------------------------------------")
-    log.info("Building Qt")
+    print('--------------------------------------------------------------------')
+    print('Building Qt')
     cmd_args = options.make_cmd
     for module in qt_modules:
         cmd_args += " module-" + module
     do_execute_sub_process(cmd_args.split(' '), options.qt_source_dir, True, False, get_build_env(options.openssl_dir))
-    log.info("--------------------------------------------------------------------")
-    log.info("Installing Qt")
+    print('--------------------------------------------------------------------')
+    print('Installing Qt')
     cmd_args = options.make_install_cmd
     for module in qt_modules:
         module_dir = os.path.join(options.qt_source_dir, module)
@@ -416,8 +414,8 @@ def build_qt(options: IfwOptions, qt_build_dir: str, qt_configure_options: str, 
 def prepare_installer_framework(options: IfwOptions) -> None:
     if options.incremental_mode and os.path.exists(options.installer_framework_source_dir):
         return
-    log.info("--------------------------------------------------------------------")
-    log.info("Prepare Installer Framework source")
+    print('--------------------------------------------------------------------')
+    print('Prepare Installer Framework source')
     # create dirs
     Path(options.installer_framework_build_dir).mkdir(parents=True, exist_ok=True)
     if options.qt_installer_framework_uri.endswith('.git'):
@@ -430,10 +428,10 @@ def prepare_installer_framework(options: IfwOptions) -> None:
 
 
 def start_ifw_build(options: IfwOptions, cmd_args: List[str], installer_framework_build_dir: str) -> None:
-    log.info("cmd_args: %s", list_as_string(cmd_args))
+    print(f"cmd_args: {list_as_string(cmd_args)}")
     do_execute_sub_process(cmd_args, installer_framework_build_dir)
     cmd_args = options.make_cmd.split(' ')
-    log.info("cmd_args: %s", list_as_string(cmd_args))
+    print(f"cmd_args: {list_as_string(cmd_args)}")
     do_execute_sub_process(cmd_args, installer_framework_build_dir)
 
 
@@ -448,8 +446,8 @@ def build_installer_framework(options: IfwOptions) -> None:
         if os.path.exists(file_to_check):
             return
 
-    log.info("--------------------------------------------------------------------")
-    log.info("Building Installer Framework")
+    print('--------------------------------------------------------------------')
+    print('Building Installer Framework')
     qmake_bin = os.path.join(options.qt_build_dir, 'qtbase', 'bin', options.qt_qmake_bin)
     if not os.path.isfile(qmake_bin):
         raise SystemExit(f"Unable to find qmake from {qmake_bin}, aborting!")
@@ -461,8 +459,8 @@ def build_installer_framework(options: IfwOptions) -> None:
 
 
 def build_installer_framework_examples(options: IfwOptions) -> None:
-    log.info("--------------------------------------------------------------------")
-    log.info("Building Installer Framework Examples")
+    print('--------------------------------------------------------------------')
+    print('Building Installer Framework Examples')
     file_binarycreator = os.path.join(options.installer_framework_build_dir, 'bin', 'binarycreator')
     if is_windows():
         file_binarycreator += '.exe'
@@ -478,7 +476,7 @@ def build_installer_framework_examples(options: IfwOptions) -> None:
         if 'translations' in dirs:
             dirs.remove('translations')  # for now don't visit translation example as qm files needs to be generated first
         for directory in dirs:
-            log.info("Building example %s", directory)
+            print(f"********** building example {directory}")
             config_file = os.path.join(root, directory, 'config', 'config.xml')
             package_dir = os.path.join(root, directory, 'packages')
             target_filename = os.path.join(root, directory, 'installer')
@@ -494,8 +492,8 @@ def build_installer_framework_examples(options: IfwOptions) -> None:
 # function
 ###############################
 def build_ifw_docs(options: IfwOptions) -> None:
-    log.info("--------------------------------------------------------------------")
-    log.info("Building Qt Installer Framework Documentation")
+    print('--------------------------------------------------------------------')
+    print('Building Qt Installer Framework Documentation')
     qmake_bin = os.path.join(options.qt_build_dir_dynamic, 'qtbase', 'bin', options.qt_qmake_bin)
     if not os.path.isfile(qmake_bin):
         raise SystemExit(f"Aborting doc build, qmake not found in: {options.qt_build_dir_dynamic}")
@@ -514,8 +512,8 @@ def build_ifw_docs(options: IfwOptions) -> None:
 # Create installer containing the Qt Installer Framework itself
 ################################################################
 def create_installer_package(options: IfwOptions) -> None:
-    log.info("--------------------------------------------------------------------")
-    log.info("Creating installer for Qt Installer Framework")
+    print('--------------------------------------------------------------------')
+    print('Creating installer for Qt Installer Framework')
     # Temporary dir for creating installer containing the Qt Installer Framework itself
     package_dir = options.installer_framework_pkg_dir
     os.makedirs(package_dir)
@@ -547,7 +545,7 @@ def create_installer_package(options: IfwOptions) -> None:
         config_file = os.path.join(options.installer_framework_source_dir, 'dist', 'config', 'config.xml')
         package_dir = os.path.join(options.installer_framework_source_dir, 'dist', 'packages')
         do_execute_sub_process(args=[binary_creator, '--offline-only', '-c', config_file, '-p', package_dir, target_dir], execution_path=package_dir)
-        log.info("Installer package is at: %s", target_dir)
+        print(f"Installer package is at: {target_dir}")
         artifacts = os.listdir(options.installer_framework_target_dir)
         for artifact in artifacts:
             dest_file_name = os.path.join(options.build_artifacts_dir, artifact)
@@ -560,18 +558,18 @@ def create_installer_package(options: IfwOptions) -> None:
 # Build and archive Qt for IFW builds
 ################################################################
 def build_and_archive_qt(options: IfwOptions) -> None:
-    log.info("--------------------------------------------------------------------")
-    log.info("Build static Qt")
+    print('--------------------------------------------------------------------')
+    print('Build static Qt')
     prepare_qt_sources(options)
     build_qt(options, options.qt_build_dir, options.qt_configure_options, options.qt_build_modules)
 
-    log.info("--------------------------------------------------------------------")
-    log.info("Archive static Qt binaries")
+    print('--------------------------------------------------------------------')
+    print('Archive static Qt binaries')
     cmd_args_archive = [ARCHIVE_PROGRAM, 'a', options.qt_static_binary_name, options.qt_build_dir]
     do_execute_sub_process(cmd_args_archive, ROOT_DIR)
 
-    log.info("--------------------------------------------------------------------")
-    log.info("Build shared Qt")
+    print('--------------------------------------------------------------------')
+    print('Build shared Qt')
     configure_options = get_dynamic_qt_configure_options() + '-prefix ' + options.qt_build_dir_dynamic + os.sep + 'qtbase'
     # Although we have a shadow build qt sources are still contaminated. Unpack sources again.
     if os.path.exists(options.qt_source_dir):
@@ -579,8 +577,8 @@ def build_and_archive_qt(options: IfwOptions) -> None:
     prepare_qt_sources(options)
     build_qt(options, options.qt_build_dir_dynamic, configure_options, options.qt_build_modules_docs)
 
-    log.info("--------------------------------------------------------------------")
-    log.info("Archive shared Qt binaries")
+    print('--------------------------------------------------------------------')
+    print('Archive shared Qt binaries')
     cmd_args_archive = [ARCHIVE_PROGRAM, 'a', options.qt_shared_binary_name, options.qt_build_dir_dynamic]
     do_execute_sub_process(cmd_args_archive, ROOT_DIR)
 
@@ -623,8 +621,8 @@ def clean_build_environment(options: IfwOptions) -> None:
 # function
 ###############################
 def archive_installer_framework(installer_framework_build_dir: str, installer_framework_archive_name: str, options: IfwOptions, create_tagged_package: bool) -> None:
-    log.info("--------------------------------------------------------------------")
-    log.info("Archive Installer Framework")
+    print('--------------------------------------------------------------------')
+    print('Archive Installer Framework')
     # first strip out all unnecessary files
     for root, dummy, files in os.walk(installer_framework_build_dir):
         for filename in files:
@@ -639,9 +637,9 @@ def archive_installer_framework(installer_framework_build_dir: str, installer_fr
     if options.qt_installer_framework_uri.endswith('.git') and create_tagged_package:
         tag = get_tag_from_branch(options.installer_framework_source_dir)
         if tag:
-            log.info("Create archive from tag %s", tag)
+            print(f"Create archive from tag {tag}")
             installer_framework_tagged_archive = 'installer-framework-build-' + tag + "-" + options.plat_suffix + '-' + options.architecture + '.7z'
-            log.info("Create archive %s", installer_framework_tagged_archive)
+            print(f"Create archive {installer_framework_tagged_archive}")
             shutil.copy(os.path.join(options.build_artifacts_dir, installer_framework_archive_name), os.path.join(options.build_artifacts_dir, installer_framework_tagged_archive))
 
 
@@ -649,8 +647,8 @@ def archive_installer_framework(installer_framework_build_dir: str, installer_fr
 # function
 ###############################
 def archive_installerbase(options: IfwOptions) -> None:
-    log.info("--------------------------------------------------------------------")
-    log.info("Archive Installerbase")
+    print('--------------------------------------------------------------------')
+    print('Archive Installerbase')
     cmd_args_archive = []
     cmd_args_clean = []
     bin_temp = ''
@@ -679,8 +677,8 @@ def archive_installerbase(options: IfwOptions) -> None:
 # function
 ###############################
 def archive_binarycreator(options: IfwOptions) -> None:
-    log.info("--------------------------------------------------------------------")
-    log.info("Archive Installerbase and Binarycreator")
+    print('--------------------------------------------------------------------')
+    print('Archive Installerbase and Binarycreator')
     cmd_args_archive = []
     if is_linux() or is_macos():
         bin_path = locate_executable(options.installer_framework_build_dir, ['installerbase'])
@@ -701,8 +699,8 @@ def archive_binarycreator(options: IfwOptions) -> None:
 # sign windows installerbase
 ###############################
 def sign_windows_installerbase(file_name: str) -> None:
-    log.info("--------------------------------------------------------------------")
-    log.info("Sign Windows Installerbase")
+    print('--------------------------------------------------------------------')
+    print('Sign Windows Installerbase')
     sign_tools_temp_dir = r'C:\Utils\sign_tools_temp'
     for item in ["signtool32.exe", "keys.pfx", "capicom.dll"]:
         dst = os.path.join(sign_tools_temp_dir, item)
@@ -719,10 +717,10 @@ def sign_windows_installerbase(file_name: str) -> None:
     log_entry = cmd_args[:]
     log_entry[4] = "****"
     log_entry[6] = "****"
-    log.info("Calling: %s", " ".join(log_entry))
+    print("Calling: %s", " ".join(log_entry))
     subprocess.check_call(cmd_args, stderr=subprocess.STDOUT)  # check_call() will consume output
     shutil.rmtree(sign_tools_temp_dir)
-    log.info("Successfully signed: %s", file_name)
+    print(f"Successfully signed: {file_name}")
 
 
 ###############################
@@ -730,7 +728,7 @@ def sign_windows_installerbase(file_name: str) -> None:
 ###############################
 def patch(file: str, replacements: Dict[str, str]) -> None:
     filedata = None
-    log.info("Patching %s ...", file)
+    print(f"Patching {file} ...")
     with open(file, 'r', encoding="utf-8") as handle:
         filedata = handle.read()
 
@@ -745,8 +743,8 @@ def patch(file: str, replacements: Dict[str, str]) -> None:
 # Patch win32 mkspecs
 ###############################
 def patch_win32_mkspecs(mkspecsdir: str) -> None:
-    log.info("--------------------------------------------------------------------")
-    log.info("Patching win32 mkspecs in %s ...", mkspecsdir)
+    print('--------------------------------------------------------------------')
+    print(f'Patching win32 mkspecs in {mkspecsdir} ...')
     for root, dummy, files in os.walk(mkspecsdir):
         for file in files:
             if "win32" in root and file == "qmake.conf":

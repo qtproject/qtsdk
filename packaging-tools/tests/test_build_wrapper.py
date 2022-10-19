@@ -68,6 +68,7 @@ class TestBuildWrapper(unittest.TestCase):
         remote_path_base = os.path.join(temp_dir, project_name, version_branch)
         remote_path_snapshot_dir = os.path.join(remote_path_base, build_number)
         remote_path_latest_link = os.path.join(remote_path_base, 'latest')
+        print(remote_path_latest_link)
         self.assertTrue(os.path.isdir(remote_path_base))
         self.assertTrue(os.path.isdir(remote_path_snapshot_dir))
         self.assertTrue(os.path.islink(remote_path_latest_link))

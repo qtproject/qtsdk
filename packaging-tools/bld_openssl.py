@@ -39,10 +39,7 @@ import subprocess
 import sys
 from typing import List
 
-from logging_util import init_logger
 from runner import do_execute_sub_process
-
-log = init_logger(__name__, debug_mode=False)
 
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 

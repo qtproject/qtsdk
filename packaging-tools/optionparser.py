@@ -34,10 +34,6 @@ import sys
 from configparser import ConfigParser
 from typing import Dict
 
-from logging_util import init_logger
-
-log = init_logger(__name__, debug_mode=False)
-
 
 class PackagingOptions:
     """Utility class to read options from configuration file that follows .ini file format."""
@@ -55,9 +51,9 @@ class PackagingOptions:
             try:
                 dict1[option] = self.config.get(section, option)
                 if dict1[option] == "-1":
-                    log.info("skip: %s", option)
+                    print(f"skip: {option}")
             except Exception:
-                log.warning("exception on %s!", option)
+                print(f"exception on {option}!")
                 dict1[option] = ""
         return dict1
 
@@ -75,10 +71,11 @@ class PackagingOptions:
 
     def verbose(self) -> None:
         for section in self.config.sections():
-            log.info("[%s]", section)
+            print(f"[{section}]")
             options = self.config.options(section)
             for option in options:
-                log.info("%s = %s", option, self.config.get(section, option))
+                print(f"{option} = {self.config.get(section, option)}")
+            print()
 
 
 def get_pkg_options(conf_file_path: str) -> PackagingOptions:
@@ -94,7 +91,7 @@ def main() -> None:
     # Print out all options
     options = get_pkg_options(args.conf_file)
     config_map = options.config_map()
-    log.info(config_map)
+    print(config_map)
 
 
 if __name__ == '__main__':

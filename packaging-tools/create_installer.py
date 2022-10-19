@@ -36,6 +36,7 @@ import shutil
 import sys
 from argparse import ArgumentParser, ArgumentTypeError, Namespace
 from configparser import ConfigParser, ExtendedInterpolation
+from logging import getLogger
 from multiprocessing import cpu_count
 from pathlib import Path
 from subprocess import check_call
@@ -60,7 +61,6 @@ from bldinstallercommon import (
     safe_config_key_fetch,
 )
 from installer_utils import PackagingError
-from logging_util import init_logger
 from patch_qt import patch_files, patch_qt_edition
 from pkg_constants import INSTALLER_OUTPUT_DIR_NAME
 from runner import do_execute_sub_process
@@ -70,7 +70,8 @@ from threadedwork import ThreadedWork
 if is_windows():
     import win32api  # type: ignore # pylint: disable=E0401
 
-log = init_logger(__name__, debug_mode=False)
+log = getLogger("create_installer")
+log.setLevel("INFO")
 
 # ----------------------------------------------------------------------
 TARGET_INSTALL_DIR_NAME_TAG = '%TARGET_INSTALL_DIR%'
@@ -834,9 +835,9 @@ def create_maintenance_tool_resource_file(task: Any) -> None:
 def inject_update_rcc_to_archive(archive_file_path: str, file_to_be_injected: str) -> None:
     log.info("Injecting file [%s] into [%s]", file_to_be_injected, archive_file_path)
     if not os.path.isfile(file_to_be_injected):
-        log.error("Unable to locate file: %s", file_to_be_injected)
+        log.error("*** Unable to locate file: %s", file_to_be_injected)
     if not os.path.isfile(archive_file_path):
-        log.error("Unable to locate file: %s", archive_file_path)
+        log.error("*** Unable to locate file: %s", archive_file_path)
     archive_file_name = os.path.basename(archive_file_path)
     # copy to tmp location
     tmp_dir = os.path.join(os.path.dirname(archive_file_path), '_tmp')

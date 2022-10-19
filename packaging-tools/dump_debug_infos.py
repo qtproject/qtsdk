@@ -36,10 +36,6 @@ import sys
 from shutil import rmtree
 from typing import List
 
-from logging_util import init_logger
-
-log = init_logger(__name__, debug_mode=False)
-
 
 def is_file_with_debug_information_windows(path: str) -> bool:
     if not path.endswith('.pdb'):
@@ -74,7 +70,7 @@ def read_output(args: List[str]) -> bytes:
 def dump_sym(dump_syms_path: str, architecture: str, absolute_path: str, sym_path: str, verbose: bool) -> bool:
     dump_syms_command = f'{dump_syms_path} {architecture} "{absolute_path}" > "{sym_path}"'
     if verbose:
-        log.info("call: %s", dump_syms_command)
+        print(f"call: {dump_syms_command}")
     dump_syms_return = subprocess.call(dump_syms_command, shell=True)
     if os.path.exists(sym_path) and os.stat(sym_path).st_size > 0 and dump_syms_return == 0:
         return True
@@ -185,11 +181,11 @@ def _main() -> None:
     source_bundle_command = [args.sentry_cli_path, "difutil", "bundle-sources"]
     source_bundle_command.extend(sym_filenames)
     if args.verbose:
-        log.info(source_bundle_command)
+        print(source_bundle_command)
     testoutput = subprocess.check_output(
         source_bundle_command, cwd=args.output_path
     ).decode('utf-8')
-    log.info(testoutput)
+    print(testoutput)
 
 
 if __name__ == '__main__':

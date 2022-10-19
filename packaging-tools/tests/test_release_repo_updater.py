@@ -272,6 +272,7 @@ class TestReleaseRepoUpdater(unittest.TestCase):
         ([""], [""])
     )
     async def test_format_task_filters(self, task_filters: List[str], exp_result: bool) -> None:
+        print("test")
         self.assertEqual(format_task_filters(task_filters), exp_result)
 
     @asyncio_test_parallel_data(  # type: ignore

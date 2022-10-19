@@ -48,9 +48,6 @@ from urllib.request import pathname2url, urlopen
 
 # 3rd party module to read process output in a convenient way
 from asynchronousfilereader import AsynchronousFileReader
-from logging_util import init_logger
-
-log = init_logger(__name__, debug_mode=False)
 
 # make a timeout for download jobs
 setdefaulttimeout(30)
@@ -85,8 +82,8 @@ class DirRenamer():
     def __init__(self, path: str, new_name: str) -> None:
         self.old_name = path
         self.new_name = os.path.join(os.path.split(path)[0], new_name)
-        log.info("self.old_name: %s", self.old_name)
-        log.info("self.new_name: %s", self.new_name)
+        print(f"self.old_name: {self.old_name}")
+        print(f"self.new_name: {self.new_name}")
 
     def __enter__(self) -> None:
         if self.old_name != self.new_name:
@@ -149,13 +146,13 @@ def download(url: str, target: str, read_block_size: int = 1048576) -> None:
 
         def local_download(local_file_path: str, target_file_path: str) -> None:
             if os.path.isfile(local_file_path):
-                log.info("copying file from '%s' to '%s'", local_file_path, target_file_path)
+                print(f"copying file from '{local_file_path}' to '{target_file_path}'")
                 try:
                     os.makedirs(os.path.dirname(target_file_path))
                 except Exception:
                     pass
                 shutil.copy2(local_file_path, target)
-                log.info("Done")
+                print("Done" + os.linesep)
 
         if os.path.lexists(url[len("file:///"):]):
             # because scheme of a absolute windows path is the drive letter in python 2,
@@ -180,7 +177,7 @@ def download(url: str, target: str, read_block_size: int = 1048576) -> None:
             # use urlopen which raise an error if that file is not existing
             with urlopen(url) as response:
                 total_size = response.info().get('Content-Length').strip()
-                log.info("Download file from '%s' sized %s bytes to %s", url, total_size, target)
+                print(f"Downloading file from '{url}' with size {total_size} bytes to {target}")
                 # run the download
                 received_size = urllib2_response_read(response, savefile_tmp, read_block_size, total_size)
             if received_size != int(total_size):
@@ -268,12 +265,12 @@ def run_command(command: Union[List[str], str], cwd: str, extra_environment: Opt
     if cwd and not os.path.lexists(cwd):
         os.makedirs(cwd)
 
-    log.info("========================== do ... ==========================")
+    print('\n========================== do ... ==========================')
     if cwd:
-        log.info("Working Directory: %s", cwd)
+        print(f"Working Directory: {cwd}")
     else:
-        log.warning("No cwd set!")
-    log.info("Last command: %s", " ".join(command_as_list))
+        print("No cwd set!")
+    print("Last command:      ", ' '.join(command_as_list))
     sys.stdout.flush()
 
     if cwd and not os.path.lexists(cwd):

@@ -30,15 +30,16 @@
 #############################################################################
 
 import argparse
+import logging
 import os
 import sys
 from shutil import rmtree
 from subprocess import DEVNULL, check_call
 
-from logging_util import init_logger
 from read_remote_config import get_pkg_value
 
-log = init_logger(__name__, debug_mode=False)
+log = logging.getLogger("Sign-utility")
+logging.basicConfig(level=logging.INFO, format='%(message)s')
 
 
 def sign_mac_app(app_path: str, signing_identity: str) -> None:

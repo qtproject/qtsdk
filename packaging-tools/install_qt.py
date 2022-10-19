@@ -33,10 +33,7 @@ import argparse
 import os
 
 from bldinstallercommon import create_qt_download_task, patch_qt
-from logging_util import init_logger
 from threadedwork import ThreadedWork
-
-log = init_logger(__name__, debug_mode=False)
 
 
 def get_arguments() -> argparse.Namespace:

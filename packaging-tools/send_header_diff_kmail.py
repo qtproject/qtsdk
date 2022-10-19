@@ -56,25 +56,21 @@ import os
 import sys
 from subprocess import check_call
 
-from logging_util import init_logger
-
-log = init_logger(__name__, debug_mode=False)
-
 
 def send_headers(version: str, message_id: str, simulate: bool) -> None:
     receiver = 'development@qt-project.org'
     subject = 'Qt ' + version + ' header diff: '
-    log.info("Header diff: %s", subject)
+    print(f"Header diff: {subject}")
 
     for diff in os.listdir('.'):
         if diff.endswith('.diff'):
-            log.info("Sending: %s", diff)
+            print(f'Sending: {diff}')
             subj = subject + diff
             head1 = 'In-Reply-To:<' + message_id + '>'
             head2 = 'References:<' + message_id + '>'
             args = ['kmail', '--subject', subj, '--attach', diff, '--header', head1, '--header', head2, receiver]
             if simulate:
-                log.info("Simulate: %s", " ".join(args))
+                print("Simulate:", " ".join(args))
             else:
                 check_call(args)
 

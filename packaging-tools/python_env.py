@@ -115,7 +115,7 @@ async def create_venv(python_src: str, get_pip_file: str) -> Tuple[str, str, Dic
     log.info("Installing pipenv requirements into: %s", prefix)
     await async_exec_cmd(cmd=cmd, timeout=60 * 30, env=env)  # give it 30 mins
     venv_folder = locate_venv(pipenv, env)
-    log.info("The pipenv virtualenv is created located in: %s", venv_folder)
+    print(f"The pipenv virtualenv is created located in: {venv_folder}")
     return (venv_folder, pipenv, env)
 
 
