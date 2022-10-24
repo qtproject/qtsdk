@@ -37,6 +37,10 @@ from io import StringIO
 from typing import Any, Optional
 from urllib.request import urlopen
 
+from logging_util import init_logger
+
+log = init_logger(__name__, debug_mode=False)
+
 
 class RemotePkgConfigError(Exception):
     pass
@@ -79,7 +83,7 @@ def main() -> None:
         parser.print_help(sys.stderr)
         raise SystemExit("--url or --section missing")
 
-    print(f"{args.key}: '{get_pkg_value(args.key, args.section, args.url)}'")
+    log.info("%s: '%s'", args.key, get_pkg_value(args.key, args.section, args.url))
 
 
 if __name__ == "__main__":

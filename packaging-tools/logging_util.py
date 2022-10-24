@@ -30,26 +30,20 @@
 #############################################################################
 
 import logging
+import os
 
 import colorlog
 
 
 def init_logger(dunder_name: str, debug_mode: bool) -> logging.Logger:
-    log_format = (
-        '%(asctime)s '
-        '%(levelname)s: '
-        '%(message)s'
-    )
-    bold_seq = '\033[1m'
-    colorlog_format = (
-        f'{bold_seq} '
-        '%(log_color)s '
-        f'{log_format}'
-    )
+    log_format = "%(asctime)s %(levelname)s: %(message)s"
+    log_format_file = "%(asctime)s %(levelname)s:%(filename)s:%(lineno)d(%(process)d): %(message)s"
+    bold_seq = "\033[1m"
+    colorlog_format = f"{bold_seq} " "%(log_color)s " f"{log_format}"
     colorlog.basicConfig(format=colorlog_format)
     logger = logging.getLogger(dunder_name)
 
-    if debug_mode:
+    if debug_mode or os.environ.get("QT_PACKAGING_DEBUG"):
         logger.setLevel(logging.DEBUG)
     else:
         logger.setLevel(logging.INFO)
@@ -57,21 +51,21 @@ def init_logger(dunder_name: str, debug_mode: bool) -> logging.Logger:
     # Output full log
     file_handler = logging.FileHandler('packaging.log')
     file_handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter(log_format)
+    formatter = logging.Formatter(log_format_file)
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
 
     # Output warning log
     file_handler = logging.FileHandler('packaging.warning.log')
     file_handler.setLevel(logging.WARNING)
-    formatter = logging.Formatter(log_format)
+    formatter = logging.Formatter(log_format_file)
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
 
     # Output error log
     file_handler = logging.FileHandler('packaging.error.log')
     file_handler.setLevel(logging.ERROR)
-    formatter = logging.Formatter(log_format)
+    formatter = logging.Formatter(log_format_file)
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
 

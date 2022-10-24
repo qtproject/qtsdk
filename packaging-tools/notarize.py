@@ -31,28 +31,16 @@
 
 import argparse
 import asyncio
-import logging
 import sys
 from shutil import which
 from subprocess import STDOUT, CalledProcessError, TimeoutExpired
 from time import gmtime, sleep, strftime
 from typing import List
 
+from logging_util import init_logger
 from read_remote_config import get_pkg_value
 
-LOG_FMT_CI = "%(asctime)s %(levelname)s:%(filename)s:%(lineno)d(%(process)d): %(message)s"
-log = logging.getLogger("Notarizer")
-log.setLevel(logging.INFO)
-# Unify format of all messages
-try:
-    from rainbow_logging_handler import RainbowLoggingHandler  # type: ignore
-    handler = RainbowLoggingHandler(sys.stderr, color_asctime=(None, None, False))
-except ImportError:
-    handler = logging.StreamHandler()
-
-formatter = logging.Formatter(LOG_FMT_CI)
-handler.setFormatter(formatter)
-log.addHandler(handler)
+log = init_logger(__name__, debug_mode=False)
 
 
 class NotarizationError(Exception):

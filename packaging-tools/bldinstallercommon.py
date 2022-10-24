@@ -49,6 +49,7 @@ from urllib.request import urlcleanup, urlopen, urlretrieve
 
 from bld_utils import download, is_linux, is_macos, is_windows, run_command
 from installer_utils import PackagingError
+from logging_util import init_logger
 from runner import do_execute_sub_process
 from threadedwork import Task, ThreadedWork
 
@@ -56,7 +57,8 @@ from threadedwork import Task, ThreadedWork
 if is_windows():
     import win32api  # type: ignore # pylint: disable=E0401
 
-DEBUG_RPATH = False
+log = init_logger(__name__, debug_mode=False)
+
 MAX_DEBUG_PRINT_LENGTH = 10000
 
 
@@ -90,7 +92,7 @@ def dl_progress(count: int, block_size: int, total_size: int) -> None:
         sys.stdout.flush()
     if count * block_size >= total_size:
         current_download_percent = 0
-        print('\n')
+        sys.stdout.write("\n")
 
 
 ###############################
@@ -105,7 +107,7 @@ def retrieve_url(url: str, savefile: str) -> None:
         shutil.move(savefile_tmp, savefile)
     except Exception as err:
         exc = sys.exc_info()[0]
-        print(exc)
+        log.error(exc)
         try:
             os.remove(savefile_tmp)
         except Exception:  # swallow, do not shadow actual error
@@ -237,7 +239,7 @@ def replace_in_files(filelist: List[str], regexp: str, replacement_string: str) 
             old_contents = handle.read()
             new_contents = re.sub(regexp_obj, replacement_string, old_contents)
             if old_contents != new_contents:
-                print(f"Replacement '{replacement_string}' applied into: {xfile}")
+                log.info("Replacement '%s' applied into: %s", replacement_string, xfile)
             handle.seek(0)
             handle.write(new_contents)
             handle.truncate()
@@ -264,9 +266,9 @@ def config_section_map(conf: ConfigParser, section: str) -> Dict[str, Any]:
         try:
             dict1[option] = conf.get(section, option)
             if dict1[option] == -1:
-                print(f"skip: {option}")
-        except Exception:
-            print(f"exception on {option}!")
+                log.info("skip: %s", option)
+        except Exception as error:
+            log.exception("exception on %s!", option, exc_info=error)
             dict1[option] = ''
     return dict1
 
@@ -326,16 +328,16 @@ def sanity_check_rpath_max_length(file_path: str, new_rpath: str) -> bool:
             if proc.stdout is not None:
                 result = re.search(r":*.R.*PATH=.*", proc.stdout.read().decode())
             if result is None:
-                print(f'*** No RPath found from given file: {file_path}')
+                log.info("No RPath found from given file: %s", file_path)
             else:
                 rpath = result.group()
                 index = rpath.index('=')
                 rpath = rpath[index + 1:]
                 space_for_new_rpath = len(rpath)
                 if len(new_rpath) > space_for_new_rpath:
-                    print(f'*** Warning - Not able to process RPath for file: {file_path}')
-                    print(f'*** Required length for new RPath [{new_rpath}] is: {str(len(new_rpath))}')
-                    print(f'*** Space available for new RPath inside the binary is: {str(space_for_new_rpath)}')
+                    log.warning("Warning - Not able to process RPath for file: %s", file_path)
+                    log.warning("New RPath [%s] length: %s", new_rpath, str(len(new_rpath)))
+                    log.warning("Space available inside the binary: %s", str(space_for_new_rpath))
                     raise IOError()
     return True
 
@@ -390,11 +392,10 @@ def calculate_rpath(file_full_path: str, destination_lib_path: str) -> str:
         rpath = calculate_relpath(bin_path, path_to_lib)
         full_rpath = '$ORIGIN' + os.sep + rpath
 
-    if DEBUG_RPATH:
-        print('        ----------------------------------------')
-        print(f'         RPath target folder: {path_to_lib}')
-        print(f'         Bin file:            {file_full_path}')
-        print(f'         Calculated RPath:    {full_rpath}')
+    log.debug("----------------------------------------")
+    log.debug(" RPath target folder: %s", path_to_lib)
+    log.debug(" Bin file:            %s", file_full_path)
+    log.debug(" Calculated RPath:    %s", full_rpath)
 
     return full_rpath
 
@@ -403,11 +404,11 @@ def calculate_rpath(file_full_path: str, destination_lib_path: str) -> str:
 # Handle the RPath in the given component files
 ##############################################################
 def handle_component_rpath(component_root_path: str, destination_lib_paths: str) -> None:
-    print('        @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-    print('        Handle RPath')
-    print('')
-    print(f'        Component root path:  {component_root_path}')
-    print(f'        Destination lib path: {destination_lib_paths}')
+    log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+    log.info("Handle RPath")
+    log.info("")
+    log.info("Component root path:  %s", component_root_path)
+    log.info("Destination lib path: %s", destination_lib_paths)
 
     # loop on all files
     for root, _, files in os.walk(component_root_path):
@@ -434,7 +435,7 @@ def handle_component_rpath(component_root_path: str, destination_lib_paths: str)
 
                     rpath = ':'.join(rpaths)
                     if sanity_check_rpath_max_length(file_full_path, rpath):
-                        # print '        RPath value: [' + rpath + '] for file: [' + file_full_path + ']'
+                        log.debug("RPath value: [%s] for file: [%s]", rpath, file_full_path)
                         cmd_args = ['chrpath', '-r', rpath, file_full_path]
                         # force silent operation
                         work_dir = os.path.dirname(os.path.realpath(__file__))
@@ -451,11 +452,11 @@ def clone_repository(
     full_clone: bool = False,
     init_subrepos: bool = False,
 ) -> None:
-    print('--------------------------------------------------------------------')
-    print(f'Cloning repository: {repo_url}')
-    print(f'        branch/tag: {repo_branch_or_tag}')
-    print(f'Dest:               {destination_folder}')
-    print('--------------------------------------------------------------------')
+    log.info("--------------------------------------------------------------------")
+    log.info("Cloning repository: %s", repo_url)
+    log.info("Repo branch/tag: %s", repo_branch_or_tag)
+    log.info("Destination: %s", destination_folder)
+    log.info("--------------------------------------------------------------------")
 
     work_dir = os.path.dirname(os.path.realpath(__file__))
     if full_clone:
@@ -486,7 +487,7 @@ def get_tag_from_branch(directory: str) -> str:
     cmd_args = ['git', 'symbolic-ref', 'HEAD']
     return_code, tag = do_execute_sub_process(cmd_args, directory, False, True)
     if return_code != -1:
-        print("Already checked out a tag. THIS IS TOTALLY OK, PLEASE IGNORE THE ABOVE ERROR.")
+        log.info("Already checked out a tag. THIS IS OKAY, PLEASE IGNORE THE ABOVE ERROR.")
         tag = ""
     else:
         # Check what sha1 we have checked out
@@ -499,7 +500,7 @@ def get_tag_from_branch(directory: str) -> str:
             return_code, tag = do_execute_sub_process(cmd_args, directory, False, True)
             tag = tag.strip('\n')
             if return_code != -1:
-                print('No tag found for branch. THIS IS TOTALLY OK, PLEASE IGNORE THE ABOVE ERROR.')
+                log.info("No tag found for branch. THIS IS OKAY, PLEASE IGNORE THE ABOVE ERROR.")
                 tag = ""
     return tag
 
@@ -525,7 +526,7 @@ def git_archive_repo(repo_and_ref: str) -> str:
     # git archive repo with given name
     with open(archive_name, "w", encoding="utf-8") as archive_file:
         check_call(f"git --no-pager archive {ref}", stdout=archive_file, stderr=STDOUT, shell=True, cwd=checkout_dir)
-    print(f"Created archive: {archive_name}")
+    log.info("Created archive: %s", archive_name)
     shutil.rmtree(checkout_dir, ignore_errors=True)
     return archive_name
 
@@ -546,7 +547,7 @@ def extract_file(path: str, to_directory: str = ".") -> bool:
     elif path.endswith('.7z') or path.endswith('.zip'):
         cmd_args = ['7z', 'x', path]
     else:
-        print(f'Did not extract the file! Not archived or no appropriate extractor was found: {path}')
+        log.warning("Extract fail: %s. Not an archive or appropriate extractor was not found", path)
         return False
 
     ret = run_command(cmd_args, cwd=to_directory, only_error_case_output=True)
@@ -640,7 +641,7 @@ def create_qt_download_task(module_urls: List[str], target_qt5_path: str, temp_p
             download_work.add_task_object(download_task)
             unzip_task.add_function(extract_task.do_task)
         else:
-            print(f"warning: could not find '{module_url}' for download")
+            log.warning("could not find '%s' for download", module_url)
     # add icu, d3dcompiler, opengl32, openssl
     target_path = os.path.join(target_qt5_path, 'bin' if is_windows() else 'lib')
     if caller_arguments:
@@ -675,7 +676,7 @@ def create_qt_download_task(module_urls: List[str], target_qt5_path: str, temp_p
 
 
 def patch_qt(qt5_path: str) -> None:
-    print("##### patch Qt #####")
+    log.info("##### patch Qt #####")
     qmake_binary = os.path.join(qt5_path, 'bin', 'qmake')
     # write qt.conf
     with open(os.path.join(qt5_path, 'bin', 'qt.conf'), "w", encoding="utf-8") as qt_conf_file:
@@ -684,5 +685,5 @@ def patch_qt(qt5_path: str) -> None:
     # fix rpaths
     if is_linux():
         handle_component_rpath(qt5_path, 'lib')
-    print("##### patch Qt ##### ... done")
+    log.info("##### patch Qt ##### ... done")
     run_command(qmake_binary + " -query", qt5_path)

@@ -36,6 +36,9 @@ from typing import Any, List
 
 from archiveresolver import ArchiveLocationResolver
 from bldinstallercommon import config_section_map, is_content_url_valid, safe_config_key_fetch
+from logging_util import init_logger
+
+log = init_logger(__name__, debug_mode=False)
 
 ONLINE_ARCHIVE_LIST_TAG = '<!--ONLINE_ARCHIVE_LIST-->'
 
@@ -173,9 +176,9 @@ class SdkComponent:
                 else:
                     # sanity check, duplicate template should not exist to avoid
                     # problems!
-                    print(f'*** Found duplicate template for: {self.package_name}')
-                    print(f'*** Ignoring: {template_full_path}')
-                    print(f'*** Using:    {self.pkg_template_dir}')
+                    log.warning("Found duplicate template for: %s", self.package_name)
+                    log.warning("Ignoring: %s", template_full_path)
+                    log.warning("Using:    %s", self.pkg_template_dir)
         self.parse_archives(self.target_config, self.archive_location_resolver)
         self.check_component_data()
 
@@ -228,7 +231,7 @@ class SdkComponent:
             archives_list = self.archives.split(',')
             for archive in archives_list:
                 if not archive:
-                    print(f"Warning: There appears to be ',' issues in the config file archive list for component: {self.package_name}")
+                    log.warning("[%s]: Archive list in config has ',' issues", self.package_name)
                     continue
                 # check that archive template exists
                 if not target_config.has_section(archive):
@@ -252,24 +255,24 @@ class SdkComponent:
         return temp_list
 
     def print_component_data(self) -> None:
-        print('=============================================================')
-        print(f' [{self.package_name}]')
+        log.info("=============================================================")
+        log.info("[%s]", self.package_name)
         if self.static_component:
-            print(f' Static component:    {self.static_component}')
+            log.info("Static component: %s", self.static_component)
             return
         if self.root_component:
-            print(f' Root component:      {self.root_component}')
-        print(f' Include filter:      {self.include_filter}')
-        print(f' Target install base: {self.target_install_base}')
-        print(f' Version:             {self.version}')
-        print(f' Version tag:         {self.version_tag}')
-        print(f' Package default:     {self.package_default}')
+            log.info("Root component: %s", self.root_component)
+        log.info("Include filter: %s", self.include_filter)
+        log.info("Target install base: %s", self.target_install_base)
+        log.info("Version: %s", self.version)
+        log.info("Version tag: %s", self.version_tag)
+        log.info("Package default: %s", self.package_default)
         if self.downloadable_archive_list:
-            print(' Archives:')
+            log.info(" Archives:")
             for archive in self.downloadable_archive_list:
-                print('   ---------------------------------------------------------------')
-                print(f'   Downloadable archive name:  {archive.archive_name}')
-                print(f'   Archive strip dirs:         {archive.package_strip_dirs}')
-                print(f'   Archive target install dir: {archive.get_archive_installation_directory()}')
-                print(f'   Archive RPath target:       {archive.rpath_target}')
-                print(f'   Archive URI:                {archive.archive_uri}')
+                log.info("---------------------------------------------------------------")
+                log.info("Downloadable archive name: %s", archive.archive_name)
+                log.info("Strip dirs: %s", archive.package_strip_dirs)
+                log.info("Target install dir: %s", archive.get_archive_installation_directory())
+                log.info("RPath target: %s", archive.rpath_target)
+                log.info("URI: %s", archive.archive_uri)
