@@ -29,6 +29,7 @@
 #############################################################################
 
 import os
+import sys
 import tempfile
 import unittest
 from configparser import ConfigParser, ExtendedInterpolation
@@ -46,6 +47,11 @@ from sdkcomponent import (
     locate_pkg_templ_dir,
     parse_ifw_sdk_comp,
 )
+
+if sys.version_info < (3, 7):
+    import asyncio_backport as asyncio
+else:
+    import asyncio
 
 
 def ifw_sdk_config_valid(section_name: str) -> ConfigParser:
@@ -334,7 +340,7 @@ class TestRunner(unittest.TestCase):
     @unittest.mock.patch("htmllistparse.fetch_listing", side_effect=create_listing)  # type: ignore
     def test_pattern_archive_resolver(self, pattern: str, expected: List[str], _: Any) -> None:
         resolver = ArchiveResolver("", "")
-        self.assertCountEqual(resolver.resolve_uri_pattern(pattern, None), expected)
+        self.assertCountEqual(asyncio.run(resolver.resolve_uri_pattern(pattern, None)), expected)
 
     def test_locate_pkg_templ_dir_invalid(self) -> None:
         with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmp_base_dir:

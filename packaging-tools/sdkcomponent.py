@@ -29,19 +29,27 @@
 #
 #############################################################################
 
+import asyncio
 import os
 import re
+import sys
 from configparser import ConfigParser
 from dataclasses import dataclass, field
 from fnmatch import fnmatch
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import htmllistparse  # type: ignore
 from urlpath import URL  # type: ignore
 
 from bldinstallercommon import uri_exists
 from logging_util import init_logger
+
+if sys.version_info < (3, 7):
+    from asyncio_backport import run as asyncio_run
+else:
+    from asyncio import run as asyncio_run
+
 
 log = init_logger(__name__, debug_mode=False)
 
@@ -228,7 +236,16 @@ class ArchiveResolver:
             return self.file_share_base_url.rstrip("/") + "/" + url.lstrip("/")
         return url
 
-    def resolve_uri_pattern(self, pattern: str, base_url: Optional[URL] = None) -> List[URL]:
+    async def fetch_in_executor(self, url: str) -> Tuple[Any, List[Any]]:
+        """Wrap fetch_listing in a Future and return it"""
+        if sys.version_info < (3, 7):
+            loop = asyncio.get_event_loop()  # keep for Python 3.6 compatibility
+        else:
+            loop = asyncio.get_running_loop()
+        log.info("Crawl: %s", url)
+        return await loop.run_in_executor(None, htmllistparse.fetch_listing, url, 30)
+
+    async def resolve_uri_pattern(self, pattern: str, base_url: Optional[URL] = None) -> List[URL]:
         """
         Return payload URIs from remote tree, fnmatch pattern match for given arguments.
         Patterns will match arbitrary number of '/' allowing recursive search.
@@ -245,19 +262,23 @@ class ArchiveResolver:
         # base_url from base_pattern if not specified
         base_url = base_url or URL(base_pattern.rsplit("/", 1)[0])
         # get links from base_url
-        log.info("Crawl: %s", base_url)
-        links = htmllistparse.fetch_listing(base_url, timeout=30)[1]
+        _, links = await self.fetch_in_executor(base_url)
         # get fnmatch pattern matches from links recursively
         uri_list = []
+        child_list = []
         for link in links:
             if link.name.endswith("/"):
                 # match the directory with base_pattern
                 if fnmatch(base_url / link.name, base_pattern + "*"):
-                    # recursively look for pattern matches inside the matching directory
-                    uri_list.extend(self.resolve_uri_pattern(pattern, base_url / link.name))
+                    child_list.append(base_url / link.name)
             else:
                 if fnmatch(base_url / link.name, pattern):
                     uri_list.append(base_url / link.name)
+        # recursively look for pattern matches inside the matching child directories
+        coros = [self.resolve_uri_pattern(pattern, url) for url in child_list]
+        results = await asyncio.gather(*coros)
+        for item in results:
+            uri_list.extend(item)
         return uri_list
 
     def resolve_payload_uri(self, unresolved_archive_uri: str) -> List[str]:
@@ -278,7 +299,7 @@ class ArchiveResolver:
         # is it a URL containing a fnmatch pattern
         if any(char in unresolved_archive_uri for char in ("*", "[", "]", "?")):
             pattern = self.absolute_url(unresolved_archive_uri)
-            return [str(url) for url in self.resolve_uri_pattern(pattern)]
+            return [str(url) for url in asyncio_run(self.resolve_uri_pattern(pattern))]
         # is it a file system path or an absolute URL which can be downloaded
         if os.path.exists(unresolved_archive_uri) or URL(unresolved_archive_uri).netloc:
             return [unresolved_archive_uri]
