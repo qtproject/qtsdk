@@ -44,6 +44,7 @@ from contextlib import suppress
 from getpass import getuser
 from glob import glob
 from io import TextIOWrapper
+from pathlib import Path
 from time import gmtime, strftime
 from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
@@ -76,11 +77,6 @@ from optionparser import get_pkg_options
 from read_remote_config import get_pkg_value
 from runner import run_cmd
 from threadedwork import Task, ThreadedWork
-
-if sys.version_info < (3, 7):
-    from asyncio_backport import run as asyncio_run
-else:
-    from asyncio import run as asyncio_run
 
 log = init_logger(__name__, debug_mode=False)
 
@@ -920,7 +916,8 @@ def handle_qt_creator_build(option_dict: Dict[str, str], qtcreator_plugins: List
 
     # notarize
     if is_macos() and do_notarize:
-        notarize_dmg(os.path.join(work_dir, 'qt-creator_build', 'qt-creator.dmg'), 'Qt Creator')
+        with ch_dir(SCRIPT_ROOT_DIR):
+            notarize(path=Path(work_dir, 'qt-creator_build', 'qt-creator.dmg'))
 
     # Upload
     file_upload_list: List[Tuple[str, str]] = []  # pairs (source, dest), source relative to WORK_DIR, dest relative to server + dir_path
@@ -1072,14 +1069,6 @@ def handle_sdktool_build(option_dict: Dict[str, str]) -> None:
     # upload
     upload_files(base_path, file_upload_list, option_dict)
     update_job_link(unversioned_base_path, base_path, option_dict)
-
-
-def notarize_dmg(dmg_path: str, installer_name_base: str) -> None:
-    # this is just a unique id without any special meaning, used to track the notarization progress
-    bundle_id = installer_name_base + "-" + strftime('%Y-%m-%d', gmtime())
-    bundle_id = bundle_id.replace('_', '-').replace(' ', '')  # replace illegal chars for bundle_id
-    with ch_dir(SCRIPT_ROOT_DIR):
-        asyncio_run(notarize(dmg=dmg_path, bundle_id=bundle_id))
 
 
 ###############################

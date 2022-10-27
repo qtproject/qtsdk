@@ -701,16 +701,9 @@ async def sign_offline_installer(installer_path: str, installer_name: str) -> No
         log.info("Create macOS dmg file")
         create_mac_dmg(os.path.join(installer_path, installer_name) + '.app')
         log.info("Notarize macOS installer")
-        await notarize_dmg(os.path.join(installer_path, installer_name + '.dmg'), installer_name)
+        notarize(path=Path(installer_path, installer_name + '.dmg'))
     else:
         log.info("No signing available for this host platform: %s", platform.system())
-
-
-async def notarize_dmg(dmg_path: str, installer_basename: str) -> None:
-    # this is just a unique id without any special meaning, used to track the notarization progress
-    bundle_id = installer_basename + "-" + strftime('%Y-%m-%d-%H-%M', gmtime())
-    bundle_id = bundle_id.replace('_', '-').replace(' ', '')  # replace illegal chars for bundle_id
-    await notarize(dmg=dmg_path, bundle_id=bundle_id)
 
 
 async def build_offline_tasks(staging_server: str, staging_server_root: str, tasks: List[ReleaseTask], license_: str,
