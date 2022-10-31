@@ -58,7 +58,7 @@ from installer_utils import PackagingError, download_archive, extract_archive, i
 from logging_util import init_logger
 from notarize import notarize
 from read_remote_config import get_pkg_value
-from release_task_reader import IFWReleaseTask, TaskType, parse_config
+from release_task_reader import IFWReleaseTask, TaskType, append_to_task_filters, parse_config
 from runner import run_cmd, run_cmd_async
 from sign_installer import create_mac_dmg, sign_mac_app
 from sign_windows_installer import sign_executable
@@ -673,10 +673,6 @@ def parse_ext(ext: str) -> Tuple[str, str]:
     if not parts[1].startswith("/"):
         raise PackagingError(f"Ext server path should start with '/'. Format was invalid: {parts[1]}")
     return parts[0], parts[1]
-
-
-def append_to_task_filters(task_filters: List[str], task_filter: str) -> List[str]:
-    return [task_filter + "," + x if x else task_filter for x in task_filters] if task_filters else [task_filter]
 
 
 def format_task_filters(task_filters: List[str]) -> List[str]:

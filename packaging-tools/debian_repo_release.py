@@ -479,6 +479,18 @@ def create_gpg_arg_parser() -> ArgumentParser:
     return gpg_parser
 
 
+def create_aptly_endpoint_arg_parser() -> ArgumentParser:
+    endpoint_args = ArgumentParser(add_help=False)
+    endpoint_args.add_argument(
+        "--endpoint-type",
+        dest="endpoint_type",
+        required=True,
+        choices=AptlyApiClient.endpoint_types(),
+    )
+    endpoint_args.add_argument("--endpoint-name", dest="endpoint_name", required=True)
+    return endpoint_args
+
+
 def parse_args() -> Namespace:
     parser = ArgumentParser(prog="Create and publish Debian repositories using Aptly.")
     subparsers = parser.add_subparsers(dest="command")
@@ -507,17 +519,12 @@ def parse_args() -> Namespace:
     p_common_args = ArgumentParser(add_help=False)
     p_common_args.add_argument("--prefix", dest="prefix", default="", required=False)
     p_common_args.add_argument("--dist", dest="dist", required=True)
-    p_common_args.add_argument(
-        "--endpoint-type",
-        dest="endpoint_type",
-        required=True,
-        choices=AptlyApiClient.endpoint_types(),
-    )
-    p_common_args.add_argument("--endpoint-name", dest="endpoint_name", required=True)
 
     # publish commands
     gpg_p = create_gpg_arg_parser()
-    ps_p = subparsers.add_parser("publish_snapshot", parents=[aptly_api, p_common_args, gpg_p])
+    endpoint_args = create_aptly_endpoint_arg_parser()
+    ps_p = subparsers.add_parser("publish_snapshot", parents=[aptly_api, p_common_args, gpg_p,
+                                                              endpoint_args])
     ps_p.add_argument("--snapshot-name", dest="snapshot_name")
     ps_p.add_argument("--architectures", dest="archs", required=True, type=parse_architectures)
 

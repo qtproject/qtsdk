@@ -35,6 +35,7 @@ import shutil
 import socket
 import subprocess
 import unittest
+from configparser import ConfigParser
 from pathlib import Path
 from time import sleep
 from typing import Any, ClassVar
@@ -43,6 +44,8 @@ from ddt import ddt  # type: ignore
 
 from debian_repo_release import AptlyApiClient
 from installer_utils import PackagingError
+from release_repo_updater_deb import create_and_publish_repos
+from release_task_reader import TaskType, parse_data
 
 
 @ddt
@@ -220,6 +223,34 @@ class TestDebianRepoRelease(unittest.TestCase):
         client.add_to_repo_from_path(repo_name="pkg_tmp", content_path=asset)
         with self.assertRaises(PackagingError):
             client.add_to_repo_from_path(repo_name="pkg_tmp", content_path=Path() / "__tmp")
+
+    def test_repocontroller(self) -> None:
+        assets_path_1 = self.assets_root / "deb1"
+        assets_path_2 = self.assets_root / "deb2"
+        sample_config = f"""
+            [task.deb.repository.linux.amd64]
+            repo_path: foobar_deb_repo_name
+            distribution:  bullseye
+            component: main
+            architectures: amd64
+            content_sources: {str(assets_path_1)}, {str(assets_path_2)}
+            substitutions:
+            endpoint_type: filesystem
+            endpoint_name: {self.aptly_publish_filesystem_endpoint_name}
+            rta_key_list: key1, key2
+        """
+        config = ConfigParser()
+        config.read_string(sample_config)
+        tasks = parse_data(config, task_type=TaskType.DEB_TASK_TYPE, task_filters=[])
+
+        client = AptlyApiClient(api_endpoint=f"http://{self.aptly_api}/", http_auth=None)
+        create_and_publish_repos(
+            client,
+            tasks,  # type: ignore
+            gpg_key="",
+            gpg_passphrase="",
+            rta=None,
+        )
 
 
 if __name__ == "__main__":

@@ -262,6 +262,14 @@ def get_filter_parts(section_filters: str) -> List[str]:
     return list(filter(None, re.split("[, ;:]+", section_filters)))
 
 
+def append_to_task_filters(task_filters: List[str], task_filter: str) -> List[str]:
+    return (
+        [task_filter + "," + x if x else task_filter for x in task_filters]
+        if task_filters
+        else [task_filter]
+    )
+
+
 def parse_data(
     settings: ConfigParser,
     task_type: TaskType,

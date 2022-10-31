@@ -42,7 +42,6 @@ from temppathlib import TemporaryDirectory
 from installer_utils import PackagingError, ch_dir
 from read_remote_config import get_pkg_value
 from release_repo_updater import (
-    append_to_task_filters,
     build_online_repositories,
     check_repogen_output,
     create_remote_repository_backup,
@@ -56,7 +55,7 @@ from release_repo_updater import (
     upload_ifw_to_remote,
     upload_pending_repository_content,
 )
-from release_task_reader import IFWReleaseTask, TaskType, parse_data
+from release_task_reader import IFWReleaseTask, TaskType, append_to_task_filters, parse_data
 from tests.testhelpers import (
     asyncio_test,
     asyncio_test_parallel_data,
