@@ -58,7 +58,7 @@ from installer_utils import PackagingError, download_archive, extract_archive, i
 from logging_util import init_logger
 from notarize import notarize
 from read_remote_config import get_pkg_value
-from release_task_reader import ReleaseTask, parse_config
+from release_task_reader import IFWReleaseTask, TaskType, parse_config
 from runner import run_cmd, run_cmd_async
 from sign_installer import create_mac_dmg, sign_mac_app
 from sign_windows_installer import sign_executable
@@ -200,13 +200,13 @@ class RepoUpdateStrategy:
         return RepoUpdateStrategy(build_repositories, repo_layout, remote_repo_update_source,
                                   repo_update_destinations)
 
-    def get_remote_source_repo_path(self, task: ReleaseTask) -> str:
+    def get_remote_source_repo_path(self, task: IFWReleaseTask) -> str:
         if self.remote_repo_update_source == RepoSource.PENDING:
             return os.path.join(str(self.remote_repo_layout.get_pending_path()),
-                                task.get_repo_path(), "repository")
+                                task.repo_path, "repository")
         if self.remote_repo_update_source == RepoSource.STAGING:
             return os.path.join(str(self.remote_repo_layout.get_staging_path()),
-                                task.get_repo_path())
+                                task.repo_path)
         raise PackagingError("Invalid remote source repo defined: "
                              f"{self.remote_repo_update_source}")
 
@@ -306,8 +306,8 @@ def get_remote_login_cmd(server: str) -> List[str]:
     return ['ssh', '-t', '-t', server]
 
 
-def trigger_rta(rta_server_url: str, task: ReleaseTask) -> None:
-    for key in task.get_rta_key_list():
+def trigger_rta(rta_server_url: str, task: IFWReleaseTask) -> None:
+    for key in task.rta_key_list:
         url = rta_server_url + key + '/build?token=RTA_JENKINS'
         log.info("Triggering RTA case: %s", url)
         try:
@@ -463,9 +463,9 @@ def spawn_remote_background_task(server: str, server_home: str, remote_cmd: List
 
 
 async def update_repository(staging_server: str, update_strategy: RepoUpdateStrategy,
-                            task: ReleaseTask, rta: str) -> None:
+                            task: IFWReleaseTask, rta: str) -> None:
     # ensure the repository paths exists at server
-    log.info("Starting repository update: %s", task.get_repo_path())
+    log.info("Starting repository update: %s", task.repo_path)
     create_remote_paths(staging_server, update_strategy.remote_repo_layout.get_repo_layout())
 
     # this is the repo path on remote which will act as the 'source' for remote updates
@@ -475,7 +475,7 @@ async def update_repository(staging_server: str, update_strategy: RepoUpdateStra
     if update_strategy.requires_local_source_repo_upload():
         # this is the repo path from local repo build which will act as the 'source' which to
         # upload to the remote
-        local_repo_source_path = task.get_source_online_repository_path()
+        local_repo_source_path = task.source_online_repository_path
         # We always replace existing repository if previous version should exist.
         # Previous version is moved as backup
         upload_pending_repository_content(staging_server, local_repo_source_path,
@@ -483,10 +483,10 @@ async def update_repository(staging_server: str, update_strategy: RepoUpdateStra
 
     # Now we can run the updates on the remote
     for update_destination in update_strategy.remote_repo_update_destinations:
-        remote_repo_destination_path = os.path.join(update_destination, task.get_repo_path())
+        remote_repo_destination_path = os.path.join(update_destination, task.repo_path)
         reset_new_remote_repository(staging_server, remote_repo_source_path,
                                     remote_repo_destination_path)
-    log.info("Update done: %s", task.get_repo_path())
+    log.info("Update done: %s", task.repo_path)
 
     # Delete pending content
     if update_strategy.purge_remote_source_repo():
@@ -497,7 +497,7 @@ async def update_repository(staging_server: str, update_strategy: RepoUpdateStra
 
 
 async def build_online_repositories(
-    tasks: List[ReleaseTask],
+    tasks: List[IFWReleaseTask],
     license_: str,
     installer_config_base_dir: str,
     artifact_share_base_url: str,
@@ -525,14 +525,14 @@ async def build_online_repositories(
     # use same timestamp for all built repos
     job_timestamp = strftime("%Y-%m-%d", gmtime())
     for task in tasks:
-        tmp_dir = os.path.join(tmp_base_dir, task.get_repo_path())
+        tmp_dir = os.path.join(tmp_base_dir, task.repo_path)
         task.source_online_repository_path = os.path.join(tmp_dir, "online_repository")
         if not build_repositories:
             # this is usually for testing purposes in env where repositories are already built, we just update task objects
             continue
 
-        log.info("Building repository: %s", task.get_repo_path())
-        installer_config_file = os.path.join(installer_config_base_dir, task.get_config_file())
+        log.info("Building repository: %s", task.repo_path)
+        installer_config_file = os.path.join(installer_config_base_dir, task.config_file)
         if not os.path.isfile(installer_config_file):
             raise PackagingError(f"Invalid 'config_file' path: {installer_config_file}")
 
@@ -544,7 +544,7 @@ async def build_online_repositories(
             archive_base_url=artifact_share_base_url,
             ifw_tools_uri=ifw_tools,
             force_version_number_increase=True,
-            substitution_list=task.get_installer_string_replacement_list(),
+            substitution_list=task.substitutions,
             build_timestamp=job_timestamp,
             dry_run=dry_run,
         )
@@ -568,7 +568,7 @@ async def build_online_repositories(
 
 
 async def update_repositories(
-    tasks: List[ReleaseTask],
+    tasks: List[IFWReleaseTask],
     staging_server: str,
     update_strategy: RepoUpdateStrategy,
     rta: str,
@@ -581,17 +581,17 @@ async def update_repositories(
         raise
 
 
-async def sync_production(tasks: List[ReleaseTask], repo_layout: QtRepositoryLayout, sync_s3: str, sync_ext: str,
+async def sync_production(tasks: List[IFWReleaseTask], repo_layout: QtRepositoryLayout, sync_s3: str, sync_ext: str,
                           staging_server: str, staging_server_root: str, license_: str, event_injector: str,
                           export_data: Dict[str, str]) -> None:
     log.info("triggering production sync..")
     # collect production sync jobs
     updated_production_repositories = {}  # type: Dict[str, str]
     for task in tasks:
-        key = os.path.join(repo_layout.get_repo_domain(), task.get_repo_path())
+        key = os.path.join(repo_layout.get_repo_domain(), task.repo_path)
         if key in updated_production_repositories:
             raise PackagingError(f"Duplicate repository path found: {key}")
-        updated_production_repositories[key] = os.path.join(repo_layout.get_production_path(), task.get_repo_path())
+        updated_production_repositories[key] = os.path.join(repo_layout.get_production_path(), task.repo_path)
 
     # if _all_ repository updates to production were successful then we can sync to production
     if sync_s3:
@@ -609,7 +609,7 @@ async def handle_update(
     staging_server: str,
     staging_server_root: str,
     license_: str,
-    tasks: List[ReleaseTask],
+    tasks: List[IFWReleaseTask],
     installer_config_base_dir: str,
     artifact_share_base_url: str,
     update_strategy: RepoUpdateStrategy,
@@ -673,8 +673,8 @@ def format_task_filters(task_filters: List[str]) -> List[str]:
     return [char.replace('.', ',') for char in task_filters]
 
 
-def create_offline_remote_dirs(task: ReleaseTask, staging_server: str, staging_server_root: str, installer_build_id: str) -> str:
-    remote_base_dir = staging_server_root + '/' + task.get_project_name() + '/' + task.get_version() + '/' + 'installers'
+def create_offline_remote_dirs(task: IFWReleaseTask, staging_server: str, staging_server_root: str, installer_build_id: str) -> str:
+    remote_base_dir = staging_server_root + '/' + task.project_name + '/' + task.version + '/' + 'installers'
     remote_dir = remote_base_dir + '/' + installer_build_id + '/'
     remote_latest_available_dir = remote_base_dir + '/' + 'latest_available' + '/'
     if not remote_path_exists(staging_server, remote_dir):
@@ -684,9 +684,9 @@ def create_offline_remote_dirs(task: ReleaseTask, staging_server: str, staging_s
     return remote_dir
 
 
-def update_remote_latest_available_dir(new_installer: str, remote_upload_path: str, task: ReleaseTask, staging_server_root: str, installer_build_id: str) -> None:
+def update_remote_latest_available_dir(new_installer: str, remote_upload_path: str, task: IFWReleaseTask, staging_server_root: str, installer_build_id: str) -> None:
     log.info("Update latest available installer directory: %s", remote_upload_path)
-    regex = re.compile('.*' + task.get_version())
+    regex = re.compile('.*' + task.version)
     new_installer_base_path = "".join(regex.findall(new_installer))
     name = Path(new_installer_base_path).name
 
@@ -704,7 +704,7 @@ def update_remote_latest_available_dir(new_installer: str, remote_upload_path: s
     run_cmd(cmd=cmd_cp, timeout=60 * 60)  # 1h
 
 
-def upload_offline_to_remote(installer_path: str, remote_upload_path: str, staging_server: str, task: ReleaseTask,
+def upload_offline_to_remote(installer_path: str, remote_upload_path: str, staging_server: str, task: IFWReleaseTask,
                              installer_build_id: str, enable_oss_snapshots: bool, license_: str) -> None:
     for file in os.listdir(installer_path):
         file_path = Path(file)
@@ -740,11 +740,19 @@ async def sign_offline_installer(installer_path: str, installer_name: str) -> No
 
 
 async def build_offline_tasks(
-    staging_server: str, staging_server_root: str, tasks: List[ReleaseTask], license_: str,
-    installer_config_base_dir: str, artifact_share_base_url: str,
-    ifw_tools: str, installer_build_id: str, update_staging: bool,
-    enable_oss_snapshots: bool, event_injector: str, export_data: Dict[str, str],
-    dry_run: Optional[DryRunMode] = None
+    staging_server: str,
+    staging_server_root: str,
+    tasks: List[IFWReleaseTask],
+    license_: str,
+    installer_config_base_dir: str,
+    artifact_share_base_url: str,
+    ifw_tools: str,
+    installer_build_id: str,
+    update_staging: bool,
+    enable_oss_snapshots: bool,
+    event_injector: str,
+    export_data: Dict[str, str],
+    dry_run: Optional[DryRunMode] = None,
 ) -> None:
     async with EventRegister(f"{license_}: offline", event_injector, export_data):
         await _build_offline_tasks(
@@ -765,7 +773,7 @@ async def build_offline_tasks(
 async def _build_offline_tasks(
     staging_server: str,
     staging_server_root: str,
-    tasks: List[ReleaseTask],
+    tasks: List[IFWReleaseTask],
     license_: str,
     installer_config_base_dir: str,
     artifact_share_base_url: str,
@@ -792,8 +800,8 @@ async def _build_offline_tasks(
     # use same timestamp for all installer tasks
     job_timestamp = strftime("%Y-%m-%d", gmtime())
     for task in tasks:
-        log.info("Building offline installer: %s", task.get_installer_name())
-        installer_config_file = os.path.join(installer_config_base_dir, task.get_config_file())
+        log.info("Building offline installer: %s", task.installer_name)
+        installer_config_file = os.path.join(installer_config_base_dir, task.config_file)
         if not os.path.isfile(installer_config_file):
             raise PackagingError(f"Invalid 'config_file' path: {installer_config_file}")
 
@@ -804,9 +812,9 @@ async def _build_offline_tasks(
             license_type=license_,
             archive_base_url=artifact_share_base_url,
             ifw_tools_uri=ifw_tools,
-            installer_name=task.get_installer_name(),
+            installer_name=task.installer_name,
             force_version_number_increase=True,
-            substitution_list=task.get_installer_string_replacement_list(),
+            substitution_list=task.substitutions,
             build_timestamp=job_timestamp,
             dry_run=dry_run,
         )
@@ -820,15 +828,15 @@ async def _build_offline_tasks(
             log.exception("Installer build failed!")
             raise PackagingError from exc
 
-        await sign_offline_installer(installer_output_dir, task.get_installer_name())
+        await sign_offline_installer(installer_output_dir, task.installer_name)
         if update_staging:
             remote_upload_path = create_offline_remote_dirs(task, staging_server, staging_server_root, installer_build_id)
             upload_offline_to_remote(installer_output_dir, remote_upload_path, staging_server, task, installer_build_id, enable_oss_snapshots, license_)
 
 
-def upload_snapshots_to_remote(staging_server: str, remote_upload_path: str, task: ReleaseTask, installer_build_id: str, installer_filename: str) -> None:
-    project_name = task.get_project_name()
-    version_full = task.get_version()
+def upload_snapshots_to_remote(staging_server: str, remote_upload_path: str, task: IFWReleaseTask, installer_build_id: str, installer_filename: str) -> None:
+    project_name = task.project_name
+    version_full = task.version
     version_minor_match = re.match(r"\d+\.\d+", version_full)
     if version_minor_match:
         version_minor = version_minor_match[0]
@@ -837,7 +845,7 @@ def upload_snapshots_to_remote(staging_server: str, remote_upload_path: str, tas
     snapshot_path = Path(get_pkg_value("SNAPSHOT_PATH"))
     if snapshot_path.name != project_name:
         snapshot_path = snapshot_path.with_name(project_name)
-    snapshot_upload_path = os.path.join(snapshot_path, version_minor, version_full + task.get_prerelease_version(), installer_build_id)
+    snapshot_upload_path = os.path.join(snapshot_path, version_minor, version_full + task.prerelease_version, installer_build_id)
     remote_installer_path = os.path.join(remote_upload_path, installer_filename)
     if platform.system() == "Windows":
         # commands are run in Linux, adjust the upload paths
@@ -1003,13 +1011,14 @@ def main() -> None:
         # get offline tasks
         tasks = parse_config(
             config_file=args.config,
+            task_type=TaskType.IFW_TASK_TYPE,
             task_filters=append_to_task_filters(args.task_filters, "offline"),
         )
         asyncio_run(
             build_offline_tasks(
                 staging_server=args.staging_server,
                 staging_server_root=args.staging_server_root,
-                tasks=tasks,
+                tasks=tasks,  # type: ignore
                 license_=args.license_,
                 installer_config_base_dir=installer_config_base_dir,
                 artifact_share_base_url=args.artifact_share_url,
@@ -1027,7 +1036,8 @@ def main() -> None:
         # get repository tasks
         tasks = parse_config(
             config_file=args.config,
-            task_filters=append_to_task_filters(args.task_filters, "repository")
+            task_type=TaskType.IFW_TASK_TYPE,
+            task_filters=append_to_task_filters(args.task_filters, "repository"),
         )
         update_strategy = RepoUpdateStrategy.get_strategy(
             staging_server_root=args.staging_server_root,
@@ -1043,7 +1053,7 @@ def main() -> None:
                 staging_server=args.staging_server,
                 staging_server_root=args.staging_server_root,
                 license_=args.license_,
-                tasks=tasks,
+                tasks=tasks,  # type: ignore
                 installer_config_base_dir=installer_config_base_dir,
                 artifact_share_base_url=args.artifact_share_url,
                 update_strategy=update_strategy,

@@ -34,7 +34,7 @@ import unittest
 from configparser import ConfigParser
 from pathlib import Path
 from shutil import rmtree
-from typing import List
+from typing import List, cast
 
 from ddt import ddt  # type: ignore
 from temppathlib import TemporaryDirectory
@@ -56,7 +56,7 @@ from release_repo_updater import (
     upload_ifw_to_remote,
     upload_pending_repository_content,
 )
-from release_task_reader import parse_data
+from release_task_reader import IFWReleaseTask, TaskType, parse_data
 from tests.testhelpers import (
     asyncio_test,
     asyncio_test_parallel_data,
@@ -215,7 +215,7 @@ class TestReleaseRepoUpdater(unittest.TestCase):
     @asyncio_test
     async def test_build_online_repositories_dryrun(self) -> None:
         sample_config = """
-            [task.repository.linux.x86_64.repo1]
+            [task.ifw.repository.linux.x86_64.repo1]
             config_file: foobar_config_file
             repo_path: foo/bar/path_1
         """
@@ -223,10 +223,16 @@ class TestReleaseRepoUpdater(unittest.TestCase):
         config.read_string(sample_config)
 
         # parse all tasks i.e. no filters
-        tasks = parse_data(config, task_filters=[])
-        await build_online_repositories(tasks=tasks, license_="opensource", installer_config_base_dir="foo", artifact_share_base_url="foo",
-                                        ifw_tools="foo", build_repositories=False)
-        task = tasks.pop()
+        tasks = parse_data(config, task_type=TaskType.IFW_TASK_TYPE, task_filters=[])
+        await build_online_repositories(
+            tasks=cast(List[IFWReleaseTask], tasks),
+            license_="opensource",
+            installer_config_base_dir="foo",
+            artifact_share_base_url="foo",
+            ifw_tools="foo",
+            build_repositories=False,
+        )
+        task = cast(IFWReleaseTask, tasks.pop())
         self.assertTrue(task.source_online_repository_path.endswith("foo/bar/path_1/online_repository"))
 
     @asyncio_test
@@ -279,9 +285,9 @@ class TestReleaseRepoUpdater(unittest.TestCase):
         self.assertEqual(append_to_task_filters(task_filters, "repository"), exp_result)
 
     @asyncio_test_parallel_data(  # type: ignore
-        (["task.repository.linux.x64.feature1"], ["task,repository,linux,x64,feature1"]),
-        (["task.repository.linux.x64.feature1", "windows.x64,feature2"],
-         ["task,repository,linux,x64,feature1", "windows,x64,feature2"]),
+        (["task.ifw.repository.linux.x64.feature1"], ["task,ifw,repository,linux,x64,feature1"]),
+        (["task.ifw.repository.linux.x64.feature1", "windows.x64,feature2"],
+         ["task,ifw,repository,linux,x64,feature1", "windows,x64,feature2"]),
         (["offline,linux.x64,feature1"], ["offline,linux,x64,feature1"]),
         (["linux"], ["linux"]),
         ([""], [""])

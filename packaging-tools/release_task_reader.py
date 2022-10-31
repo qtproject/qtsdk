@@ -33,9 +33,12 @@ import argparse
 import os
 import re
 import sys
+from abc import ABC
 from configparser import ConfigParser, ExtendedInterpolation, SectionProxy
-from typing import List
+from enum import Enum
+from typing import Any, List, Union
 
+from installer_utils import PackagingError
 from logging_util import init_logger
 
 log = init_logger(__name__, debug_mode=False)
@@ -45,123 +48,242 @@ class ReleaseTaskError(Exception):
     pass
 
 
-class ReleaseTask:
-    def __init__(self, name: str, settings: SectionProxy):
-        if not len(name.split(".")) >= 3:
-            raise ReleaseTaskError(f"The '[{name}]' has too few dot separated elements!")
-        self.name = name
-        self.config_file = settings["config_file"]
-        self.project_name = settings.get("project_name", "")
-        self.version = settings.get("version", "")
-        self.prerelease_version = settings.get("prerelease_version", "")
-        self.substitutions = settings.get("substitutions", "")
-        self.repo_path = settings.get("repo_path", "")
-        self.repo_components_to_update = settings.get("repo_components_to_update", "")
-        self.installer_name = settings.get("installer_name", "")
-        self.rta_key_list = settings.get("rta_key_list", "")
-        tmp_list: List[str] = [x.strip() for x in self.substitutions.split(',')]
-        self.installer_string_replacement_list = list(filter(None, tmp_list))
-        self.source_online_repository_path = ""
-        self.source_pkg_path = ""
+class TaskType(Enum):
+    IFW_TASK_TYPE = "ifw"
+    DEB_TASK_TYPE = "deb"
 
-    def add_to_substitutions_list(self, substitutions: List[str]) -> None:
-        self.installer_string_replacement_list += substitutions
-
-    def is_repository_task(self) -> bool:
-        return self.name.split(".")[1] == "repository"
-
-    def is_offline_installer_task(self) -> bool:
-        return self.name.split(".")[1] == "offline"
-
-    def is_online_installer_task(self) -> bool:
-        return self.name.split(".")[1] == "online"
-
-    def get_config_file(self) -> str:
-        return self.config_file
-
-    def get_substitutions(self) -> str:
-        return self.substitutions
-
-    def get_installer_string_replacement_list(self) -> List[str]:
-        return self.installer_string_replacement_list
-
-    def get_repo_components_to_update(self) -> str:
-        return self.repo_components_to_update
-
-    def get_installer_name(self) -> str:
-        return self.installer_name
-
-    def get_project_name(self) -> str:
-        return self.project_name
-
-    def get_version(self) -> str:
-        return self.version
-
-    def get_prerelease_version(self) -> str:
-        return self.prerelease_version.strip()
-
-    def get_repo_path(self) -> str:
-        return self.repo_path
-
-    def get_rta_key_list(self) -> List[str]:
-        tmp_list = self.rta_key_list.strip().replace(' ', '').split(",")
-        return list(filter(None, tmp_list))
-
-    def get_source_online_repository_path(self) -> str:
-        # this points to local repository build path
-        return self.source_online_repository_path
-
-    def get_source_pkg_path(self) -> str:
-        # this points to local repository build path
-        return self.source_pkg_path
+    @classmethod
+    def from_value(cls, value: str) -> 'TaskType':
+        _values = {
+            TaskType.IFW_TASK_TYPE.value: TaskType.IFW_TASK_TYPE,
+            TaskType.DEB_TASK_TYPE.value: TaskType.DEB_TASK_TYPE,
+        }
+        return _values[value]
 
 
-def parse_substitutions_list(parser: ConfigParser, section: str) -> List[str]:
-    try:
-        args = parser[section]['substitutions']
-        return [x.strip() for x in args.split(',')]
-    except KeyError:
-        # it's ok, the 'substitutions' is not mandatory
-        pass
-    return []
+class ReleaseTask(ABC):
+    """Abstraction for attributes for online repo/offline installer build jobs."""
+
+    def __init__(self, name: str, settings: SectionProxy, common_substitutions: str):
+        self._name = name
+        self._settings = settings
+        self._substitutions = self._parse_substitutions(common_substitutions)
+        self._substitutions += self._parse_substitutions(self._settings.get("substitutions", ""))
+        self._subst_map = dict(i.split("=", maxsplit=1) for i in self._substitutions if "=" in i)
+        self._subst_pattern = re.compile("|".join(self._subst_map.keys()))
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def config_file(self) -> str:
+        return self._get("config_file")
+
+    @property
+    def repo_path(self) -> str:
+        return self._get("repo_path")
+
+    @property
+    def rta_key_list(self) -> List[str]:
+        return self._parse_key_list(self._get("rta_key_list"))
+
+    @property
+    def substitutions(self) -> List[str]:
+        return self._substitutions
+
+    def _parse_substitutions(self, substitutions: str) -> List[str]:
+        return list(filter(None, [x.strip() for x in substitutions.split(',')]))
+
+    def _parse_key_list(self, keys: str) -> List[str]:
+        return list(filter(None, keys.strip().replace(' ', '').split(",")))
+
+    def _multireplace(self, text: str) -> str:
+        """Replace all substitutions in the given 'text'.
+
+        Args:
+            text: The string for which to run the substitutions.
+
+        Returns:
+            The converted text if there were matches for the substitutions.
+        """
+        if not self._subst_map:
+            return text
+        return self._subst_pattern.sub(lambda m: self._subst_map[re.escape(m.group(0))], text)
+
+    def _get(self, key: str) -> str:
+        return self._multireplace(self._settings.get(key, ""))
+
+
+class DebReleaseTask(ReleaseTask):
+    """Attributes specific to Debian repository build jobs."""
+
+    @property
+    def distribution(self) -> str:
+        return self._get("distribution")
+
+    @property
+    def component(self) -> str:
+        return self._get("component")
+
+    @property
+    def architectures(self) -> List[str]:
+        return self._parse_key_list(self._get("architectures"))
+
+    @property
+    def snapshot_name(self) -> str:
+        return self._multireplace(self.repo_path) + "_snapshot"
+
+    @property
+    def content_sources(self) -> List[str]:
+        return self._parse_key_list(self._get("content_sources"))
+
+    @property
+    def endpoint_type(self) -> str:
+        return self._get("endpoint_type")
+
+    @property
+    def endpoint_name(self) -> str:
+        return self._get("endpoint_name")
+
+
+class IFWReleaseTask(ReleaseTask):
+    """Attributes specific to IFW online repository build jobs."""
+
+    def __init__(self, name: str, settings: SectionProxy, common_substitutions: str):
+        super().__init__(name, settings, common_substitutions)
+        self._source_online_repository_path: str = ""
+
+    @property
+    def installer_name(self) -> str:
+        return self._get("installer_name")
+
+    @property
+    def project_name(self) -> str:
+        return self._get("project_name")
+
+    @property
+    def version(self) -> str:
+        return self._get("version")
+
+    @property
+    def prerelease_version(self) -> str:
+        return self._get("prerelease_version")
+
+    @property
+    def source_online_repository_path(self) -> str:
+        if not self._source_online_repository_path:
+            raise PackagingError("Something is wrong, 'source_online_repository_path' isn't set!")
+        return self._source_online_repository_path
+
+    @source_online_repository_path.setter
+    def source_online_repository_path(self, value: str) -> None:
+        self._source_online_repository_path = value
+
+
+class ReleaseTaskFactory:
+    """A factory to create a specific ReleaseTask object based on the given configuration data."""
+
+    task_types = {
+        TaskType.IFW_TASK_TYPE.value: IFWReleaseTask,
+        TaskType.DEB_TASK_TYPE.value: DebReleaseTask,
+    }
+
+    @classmethod
+    def task_from_spec(
+        cls,
+        task_spec: str,
+        requested_task_type: TaskType,
+        *args: Any,
+        **kwargs: Any,
+    ) -> Union[None, IFWReleaseTask, DebReleaseTask]:
+        """Instantiate a specific ReleaseTask object based on the given configuration.
+
+        Args:
+            task_spec: The task specifier i.e. the section name in the .ini file.
+            requested_task_type: The type of the ReleaseTask requested. If the 'task_spec' does
+                                 not match with the requested
+            *args: positional arguments passed to the constructor of the instantiated ReleaseTask
+                   object.
+            **kwargs: keyword arguments passed to the constructor of the instantiated ReleaseTask
+                      object.
+        Returns:
+            IFWReleaseTask: if 'requested_task_type' was of type TaskType.IFW_TASK_TYPE and the
+                            'task_spec' contained matching configuration.
+            DebReleaseTask: if 'requested_task_type' was of type TaskType.DEB_TASK_TYPE and the
+                            'task_spec' contained matching configuration.
+            None: if 'requested_task_type' could not be parsed from the 'task_spec'.
+        Raises:
+            ReleaseTaskError: if 'task_spec' is unsuitable for ReleaseTask constructing.
+        """
+        try:
+            parsed_type = cls.check_type(task_spec)
+            if parsed_type == requested_task_type.value:
+                return cls.task_types[parsed_type](*args, **kwargs)  # type: ignore
+            return None
+        except KeyError as kerr:
+            raise ReleaseTaskError(f"Unsupported task type in: {task_spec}") from kerr
+
+    @classmethod
+    def check_type(cls, spec: str) -> str:
+        parts = spec.split(".")
+        if not len(parts) >= 4:
+            raise ReleaseTaskError(f"'[{spec}]' should have at least 4 dot separated elements!")
+        if not parts[0] == "task":
+            raise PackagingError(f"'[{spec}]' should start with 'task.'")
+        if not parts[1] in cls.task_types:
+            raise PackagingError(f"Invalid: '[{spec}]'. Supported types: {cls.task_types.keys()}")
+        return parts[1]
 
 
 def get_filter_parts(section_filters: str) -> List[str]:
     return list(filter(None, re.split("[, ;:]+", section_filters)))
 
 
-def parse_data(settings: ConfigParser, task_filters: List[str]) -> List[ReleaseTask]:
-    tasks = []  # type: List[ReleaseTask]
-    common_substitution_list = parse_substitutions_list(settings, 'common.substitutions')
-    section_filters_list = [get_filter_parts(x) for x in task_filters]
+def parse_data(
+    settings: ConfigParser,
+    task_type: TaskType,
+    task_filters: List[str],
+) -> List[Union[IFWReleaseTask, DebReleaseTask]]:
+    tasks: List[Union[IFWReleaseTask, DebReleaseTask]] = []
+    sec_filters_list = [get_filter_parts(x) for x in task_filters]
+    common_substs = settings.get("common.substitutions", "substitutions", fallback="")
 
     for section in settings.sections():
         parts = section.split(".")
         if not parts[0].startswith("task"):
             continue
         append_task = True
-        if section_filters_list:
+        if sec_filters_list:
             append_task = False
-            for section_filters in section_filters_list:
+            for section_filters in sec_filters_list:
                 if set(section_filters).issubset(set(parts)):
                     append_task = True
                     break
         if append_task:
             log.info("Parsing Task: %s", section)
-            release_task = ReleaseTask(section, settings[section])
-            release_task.add_to_substitutions_list(common_substitution_list)
-            tasks.append(release_task)
+            task = ReleaseTaskFactory.task_from_spec(task_spec=section,
+                                                     requested_task_type=task_type,
+                                                     name=section,
+                                                     settings=settings[section],
+                                                     common_substitutions=common_substs)
+            if task is not None:
+                tasks.append(task)
         else:
-            log.info("Skipping task: [%s] - not included by task filter(s): %s", section, section_filters_list)
+            log.info("Skipping task: [%s] - excluded by filter(s): %s", section, sec_filters_list)
     return tasks
 
 
-def parse_config(config_file: str, task_filters: List[str]) -> List[ReleaseTask]:
+def parse_config(
+    config_file: str,
+    task_type: TaskType,
+    task_filters: List[str],
+) -> List[Union[IFWReleaseTask, DebReleaseTask]]:
     if not os.path.isfile(config_file):
         raise ReleaseTaskError(f"Not such file: {config_file}")
     settings = ConfigParser(interpolation=ExtendedInterpolation())
     settings.read(config_file)
-    return parse_data(settings, task_filters)
+    return parse_data(settings, task_type, task_filters)
 
 
 def main() -> None:
@@ -172,10 +294,12 @@ def main() -> None:
     parser.add_argument("--task-filter", dest="task_filters", action='append',
                         help="Task include filters per section name in the --config file to match with "
                         "the section name, e.g. 'offline', 'repository', ...")
+    parser.add_argument("--task-type", dest="task_type", values=[e.value for e in TaskType],
+                        help=f"Define the task type: {[e.value for e in TaskType]}")
     args = parser.parse_args(sys.argv[1:])
 
     assert os.path.isfile(args.config), f"Not a valid file: {args.config}"
-    parse_config(args.config, args.task_filters)
+    parse_config(args.config, TaskType.from_value(args.task_type), args.task_filters)
 
 
 if __name__ == "__main__":
