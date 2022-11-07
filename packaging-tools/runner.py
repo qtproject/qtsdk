@@ -100,17 +100,21 @@ def run_cmd(
     cwd = cwd or os.getcwd()
     env = env or os.environ.copy()
     log.info("Calling: %s", " ".join(args))
-    output = subprocess.run(
-        args,
-        shell=is_windows(),
-        cwd=cwd,
-        env=env,
-        timeout=timeout,
-        universal_newlines=True,
-        check=True,
-        stdout=PIPE,
-        stderr=PIPE,
-    ).stdout
+    try:
+        output = subprocess.run(
+            args,
+            shell=is_windows(),
+            cwd=cwd,
+            env=env,
+            timeout=timeout,
+            universal_newlines=True,
+            check=True,
+            stdout=PIPE,
+            stderr=PIPE,
+        ).stdout
+    except subprocess.CalledProcessError as err:
+        handle_output(err.stdout, redirect)
+        raise
     return handle_output(output, redirect)
 
 
@@ -129,15 +133,19 @@ async def run_cmd_async(
     cwd = cwd or os.getcwd()
     env = env or os.environ.copy()
     log.info("Calling asynchronously: %s", " ".join(args))
-    proc = await create_subprocess_exec(
-        *args,
-        stdout=PIPE,
-        stderr=PIPE,
-        cwd=cwd,
-        env=env,
-    )
-    stdout, _ = await wait_for(proc.communicate(), timeout=timeout)
-    await proc.wait()
+    try:
+        proc = await create_subprocess_exec(
+            *args,
+            stdout=PIPE,
+            stderr=PIPE,
+            cwd=cwd,
+            env=env,
+        )
+        stdout, _ = await wait_for(proc.communicate(), timeout=timeout)
+        await proc.wait()
+    except subprocess.CalledProcessError as err:
+        handle_output(err.stdout.decode("utf-8"), redirect)
+        raise
     return handle_output(stdout.decode("utf-8"), redirect)
 
 
