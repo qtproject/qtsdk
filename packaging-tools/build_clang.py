@@ -364,7 +364,7 @@ def get_cmake_command(
     bitness: int,
     build_type: str,
 ) -> List[str]:
-    enabled_projects = 'clang;clang-tools-extra'
+    enabled_projects = 'clang;clang-tools-extra;openmp'
     if profile_data_path and first_run:
         enabled_projects = 'clang'
 
