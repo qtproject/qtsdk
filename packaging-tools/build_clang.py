@@ -382,6 +382,11 @@ def get_cmake_command(
                "-DLLVM_LIT_ARGS='-v'"]
     if is_msvc_toolchain(toolchain):
         command.append('-DLLVM_EXPORT_SYMBOLS_FOR_PLUGINS=1')
+
+    if is_mingw_toolchain(toolchain):
+        command.append('-DCMAKE_ASM_MASM_COMPILER=uasm64.exe')
+        command.append('-DLIBOMP_ASMFLAGS=-win64')
+
     command.extend(bitness_flags(bitness))
     command.extend(rtti_flags(toolchain))
     command.extend(profile_data_flags(toolchain, profile_data_path, first_run))
