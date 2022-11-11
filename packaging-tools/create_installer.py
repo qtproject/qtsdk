@@ -380,7 +380,10 @@ def get_component_data(
             script_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), script_file)
             if not os.path.exists(script_path):
                 raise CreateInstallerError(f"Custom archive action script missing: {script_path}")
-            run_cmd(cmd=[script_path, "--input-dir=" + install_dir, script_args.strip()])
+            cmd = [script_path, "--input-dir=" + install_dir, script_args.strip()]
+            if script_path.endswith(".py"):
+                cmd.insert(0, sys.executable)
+            run_cmd(cmd)
 
         # strip out unnecessary folder structure based on the configuration
         count = 0
