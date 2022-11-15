@@ -691,7 +691,7 @@ def upload_offline_to_remote(installer_path: str, remote_upload_path: str, stagi
             upload_snapshots_to_remote(staging_server, remote_upload_path, task, installer_build_id, file_name_final)
 
 
-def sign_offline_installer(installer_path: str, installer_name: str) -> None:
+async def sign_offline_installer(installer_path: str, installer_name: str) -> None:
     if platform.system() == "Windows":
         log.info("Sign Windows installer")
         sign_executable(os.path.join(installer_path, installer_name) + '.exe')
@@ -701,16 +701,16 @@ def sign_offline_installer(installer_path: str, installer_name: str) -> None:
         log.info("Create macOS dmg file")
         create_mac_dmg(os.path.join(installer_path, installer_name) + '.app')
         log.info("Notarize macOS installer")
-        notarize_dmg(os.path.join(installer_path, installer_name + '.dmg'), installer_name)
+        await notarize_dmg(os.path.join(installer_path, installer_name + '.dmg'), installer_name)
     else:
         log.info("No signing available for this host platform: %s", platform.system())
 
 
-def notarize_dmg(dmg_path: str, installer_basename: str) -> None:
+async def notarize_dmg(dmg_path: str, installer_basename: str) -> None:
     # this is just a unique id without any special meaning, used to track the notarization progress
     bundle_id = installer_basename + "-" + strftime('%Y-%m-%d-%H-%M', gmtime())
     bundle_id = bundle_id.replace('_', '-').replace(' ', '')  # replace illegal chars for bundle_id
-    asyncio_run(notarize(dmg=dmg_path, bundle_id=bundle_id))
+    await notarize(dmg=dmg_path, bundle_id=bundle_id)
 
 
 async def build_offline_tasks(staging_server: str, staging_server_root: str, tasks: List[ReleaseTask], license_: str,
@@ -769,7 +769,7 @@ async def _build_offline_tasks(staging_server: str, staging_server_root: str, ta
             log.exception("Installer build failed!")
             raise PackagingError from exc
 
-        sign_offline_installer(installer_output_dir, task.get_installer_name())
+        await sign_offline_installer(installer_output_dir, task.get_installer_name())
         if update_staging:
             remote_upload_path = create_offline_remote_dirs(task, staging_server, staging_server_root, installer_build_id)
             upload_offline_to_remote(installer_output_dir, remote_upload_path, staging_server, task, installer_build_id, enable_oss_snapshots, license_)
