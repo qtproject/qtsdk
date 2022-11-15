@@ -75,6 +75,7 @@ def install_qt(
     d3d_url: Optional[str] = None,
     opengl_url: Optional[str] = None,
     openssl_url: Optional[str] = None,
+    temp_path: Optional[str] = None
 ) -> None:
     """
     Install Qt to directory qt_path with the specified module and library packages.
@@ -86,6 +87,7 @@ def install_qt(
         d3d_url: Local or remote URI to Windows d3dcompiler libraries (.7z)
         opengl_url: Local or remote URI to Windows OpenGL libraries (.7z)
         openssl_url: Local or remote URI to Windows OpenSSL libraries (.7z)
+        temp_path: Temporary path used for saving downloaded archives
 
     Raises:
         SystemExit: When qt_modules list is empty
@@ -103,10 +105,15 @@ def install_qt(
             opengl32sw7z=opengl_url,
             openssl7z=openssl_url,
         )
-        with TemporaryDirectory() as temp_path:
+        if temp_path:
             dl_pkgs_work.add_task_object(
                 create_qt_download_task(qt_modules, qt_path, temp_path, opts)
             )
+        else:
+            with TemporaryDirectory() as temp_path:
+                dl_pkgs_work.add_task_object(
+                    create_qt_download_task(qt_modules, qt_path, temp_path, opts)
+                )
 
     # run task if needed
     if dl_pkgs_work.task_number != 0:

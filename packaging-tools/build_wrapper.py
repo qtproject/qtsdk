@@ -771,6 +771,7 @@ def handle_qt_creator_build(option_dict: Dict[str, str], qtcreator_plugins: List
         install_qt(
             qt_path=qt_path,
             qt_modules=qt_module_urls,
+            temp_path=qt_temp,
             icu_url=icu_libs if is_linux() else None,
             d3d_url=option_dict["D3D_URL"] if is_windows() else None,
             opengl_url=option_dict["OPENGLSW_URL"] if is_windows() else None,
