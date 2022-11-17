@@ -68,6 +68,7 @@ from patch_qt import patch_files, patch_qt_edition
 from pkg_constants import INSTALLER_OUTPUT_DIR_NAME, PKG_TEMPLATE_BASE_DIR_NAME
 from runner import run_cmd
 from sdkcomponent import IfwPayloadItem, IfwSdkComponent, parse_ifw_sdk_comp
+from sign_installer import recursive_sign_notarize
 from threadedwork import ThreadedWork
 
 log = init_logger(__name__, debug_mode=False)
@@ -289,6 +290,8 @@ def parse_component_data(
                     pkg_template_search_dirs=task.packages_dir_name_list,
                     substitutions=task.substitutions,
                     file_share_base_url=task.archive_base_url,
+                    base_work_dir=Path(task.packages_full_path_dst),
+                    notarize_payload=task.notarize_payload,
                 )
                 # validate the component
                 # - payload URIs are always checked when not in dry_run or when mode is 'payload'
@@ -581,9 +584,7 @@ def get_component_data(
     task: QtInstallerTaskType,
     sdk_comp: IfwSdkComponent,
     archive: IfwPayloadItem,
-    install_dir: Path,
     data_dir_dest: Path,
-    compress_dir: Path,
 ) -> None:
     """
     Download and create data for a component's payload item including patching operations
@@ -592,10 +593,10 @@ def get_component_data(
         task: An instance of QtInstallerTask
         sdk_comp: An instance of IfwSdkComponent, specifies the component that the data is part of
         archive: An instance of IfwPayloadItem, specifies the payload item to process
-        install_dir: A directory resembling the final installation directory structure
         data_dir_dest: A directory location for the final component data
-        compress_dir: A directory containing the items to compress to the final archive
     """
+    install_dir = sdk_comp.work_dir_temp / archive.archive_name / archive.get_archive_install_dir()
+    install_dir.mkdir(parents=True, exist_ok=True)
     # Handle pattern match payload URIs for IfwPayloadItem
     if archive.payload_base_uri:
         for payload_uri in archive.payload_uris:
@@ -621,7 +622,7 @@ def get_component_data(
             log.info("[%s] Download: %s", archive.package_name, str(install_dir / dl_name))
             download(payload_uri, str(install_dir / dl_name))
         # For payload already in IFW compatible format, use the raw artifact and continue
-        elif not archive.requires_extraction and Path(dl_name).suffix in archive.ifw_arch_formats:
+        elif archive.is_raw_artifact is True:
             # Save to data dir as archive_name
             log.info(
                 "[%s] Rename raw artifact to final archive name: %s -> %s",
@@ -651,9 +652,6 @@ def get_component_data(
     # Add SHA1 from payload to component if specified
     if archive.component_sha1:
         read_component_sha(sdk_comp, install_dir / archive.component_sha1)
-    # Finally compress the content of the component to the final package
-    log.info("[%s] Compress: %s", archive.package_name, archive.archive_name)
-    recompress_component(task, archive, data_dir_dest, compress_dir)
 
 
 def handle_set_executable(base_dir: str, package_finalize_items: str) -> None:
@@ -792,54 +790,38 @@ def create_target_components(task: QtInstallerTaskType) -> None:
     for sdk_comp in task.sdk_component_list:
         log.info(sdk_comp)
         if sdk_comp.archive_skip:
-            break
+            continue
         # substitute pkg_template dir names and package_name
         package_name = substitute_package_name(task, sdk_comp.ifw_sdk_comp_name)
         sdk_comp.ifw_sdk_comp_name = package_name
         dest_base = Path(task.packages_full_path_dst) / package_name
-        meta_dir_dest = dest_base / "meta"
-        data_dir_dest = dest_base / "data"
-        temp_data_dir = dest_base / "tmp"
-        # save path for later substitute_component_tags call
-        sdk_comp.meta_dir_dest = meta_dir_dest
-        # create meta destination folder
-        meta_dir_dest.mkdir(parents=True, exist_ok=True)
+        # Create work dirs
+        sdk_comp.init_work_dirs()
         # Copy Meta data
         metadata_content_source_root = os.path.join(sdk_comp.pkg_template_folder, "meta")
-        copy_tree(metadata_content_source_root, str(meta_dir_dest))
+        copy_tree(metadata_content_source_root, str(sdk_comp.meta_dir_dest))
         if os.path.isfile(os.path.join(task.script_root_dir, "lrelease")):
             # create translation binaries if translation source files exist for component
             update_script = os.path.join(task.script_root_dir, "update_component_translations.sh")
             lrelease_tool = os.path.join(task.script_root_dir, "lrelease")
             run_cmd(cmd=[update_script, "-r", lrelease_tool, str(dest_base)])
         # add files into tag substitution
-        task.directories_for_substitutions.append(str(meta_dir_dest))
+        task.directories_for_substitutions.append(str(sdk_comp.meta_dir_dest))
         # handle archives
-        if sdk_comp.downloadable_archives:
-            # save path for later substitute_component_tags call
-            sdk_comp.temp_data_dir = Path(temp_data_dir)
-            # Copy archives into temporary build directory if exists
-            for archive in sdk_comp.downloadable_archives:
-                # fetch packages only if offline installer or repo creation,
-                # for online installer just handle the metadata
-                if task.offline_installer or task.create_repository:
-                    # Create needed data dirs
-                    compress_dir = temp_data_dir / archive.archive_name
-                    install_dir = compress_dir / archive.get_archive_install_dir()
-                    # adding get_component_data task to our work queue
-                    # Create needed data dirs before the threads start to work
-                    install_dir.mkdir(parents=True, exist_ok=True)
-                    data_dir_dest.mkdir(parents=True, exist_ok=True)
-                    get_component_data_work.add_task(
-                        f"adding {archive.archive_name} to {sdk_comp.ifw_sdk_comp_name}",
-                        get_component_data,
-                        task,
-                        sdk_comp,
-                        archive,
-                        install_dir,
-                        data_dir_dest,
-                        compress_dir,
-                    )
+        for archive in sdk_comp.downloadable_archives:
+            # fetch packages only if offline installer or repo creation,
+            # for online installer just handle the metadata
+            if task.offline_installer or task.create_repository:
+                # adding get_component_data task to our work queue
+                get_component_data_work.add_task(
+                    f"adding {archive.archive_name} to {sdk_comp.ifw_sdk_comp_name}",
+                    get_component_data,
+                    task,
+                    sdk_comp,
+                    archive,
+                    sdk_comp.data_dir_dest,
+                )
+
         # handle component sha1 uri
         if sdk_comp.comp_sha1_uri:
             sha1_file_dest = (dest_base / "SHA1")
@@ -850,28 +832,48 @@ def create_target_components(task: QtInstallerTaskType) -> None:
                 sha1_file_dest,
             )
 
-        # maybe there is some static data
+        # maybe there is some bundled payload in config templates
         data_content_source_root = os.path.normpath(sdk_comp.pkg_template_folder + os.sep + "data")
         if os.path.exists(data_content_source_root):
-            data_dir_dest.mkdir(parents=True, exist_ok=True)
-            log.info("Adding static data from %s", data_content_source_root)
-            copy_tree(data_content_source_root, str(data_dir_dest))
+            sdk_comp.data_dir_dest.mkdir(parents=True, exist_ok=True)
+            log.info("Adding payload data from %s", data_content_source_root)
+            copy_tree(data_content_source_root, str(sdk_comp.data_dir_dest))
 
     if not task.dry_run:
         # start the work threaded, more than 8 parallel downloads are not so useful
         get_component_data_work.run(min([task.max_cpu_count, cpu_count()]))
+        # Sign, notarize, staple macOS content
+        if is_macos() and task.notarize_payload is True:
+            recursive_sign_notarize(Path(task.packages_full_path_dst))
+        compress_component_data_work = ThreadedWork("compress final components data")
+        # Compress to final components
+        for sdk_comp in task.sdk_component_list:
+            if sdk_comp.archive_skip:
+                continue
+            for archive in sdk_comp.downloadable_archives:
+                if archive.is_raw_artifact is False:
+                    compress_dir = sdk_comp.work_dir_temp / archive.archive_name
+                    compress_component_data_work.add_task(
+                        f"[{archive.package_name}] Compress: {archive.archive_name}",
+                        recompress_component,
+                        task,
+                        archive,
+                        sdk_comp.data_dir_dest,
+                        compress_dir
+                    )
+        # threaded compress
+        compress_component_data_work.run(min([task.max_cpu_count, cpu_count()]))
 
     for sdk_comp in task.sdk_component_list:
         # substitute tags
         substitute_component_tags(create_metadata_map(sdk_comp), str(sdk_comp.meta_dir_dest))
-        if sdk_comp.temp_data_dir is None or not sdk_comp.temp_data_dir.exists():
-            continue
         # lastly remove temp dir after all data is prepared
-        if not remove_tree(str(sdk_comp.temp_data_dir)):
-            raise CreateInstallerError(f"Unable to remove dir: {sdk_comp.temp_data_dir}")
-        # substitute downloadable archive names in installscript.qs
-        archive_list = sdk_comp.generate_downloadable_archive_list()
-        substitute_component_tags(archive_list, str(sdk_comp.meta_dir_dest))
+        if not remove_tree(str(sdk_comp.work_dir_temp)):
+            raise CreateInstallerError(f"Unable to remove dir: {sdk_comp.work_dir_temp}")
+        if sdk_comp.downloadable_archives:
+            # substitute downloadable archive names in installscript.qs
+            archive_list = sdk_comp.generate_downloadable_archive_list()
+            substitute_component_tags(archive_list, str(sdk_comp.meta_dir_dest))
 
 
 ##############################################################
@@ -1193,6 +1195,7 @@ class QtInstallerTask(Generic[QtInstallerTaskType]):
     offline_installer: bool = False
     online_installer: bool = False
     create_repository: bool = False
+    notarize_payload: bool = False
     partial_installer: bool = False  # Invalid IfwSdkComponents will be excluded from the installer
     dry_run: Optional[DryRunMode] = None
     errors: List[str] = field(default_factory=list)
@@ -1244,6 +1247,7 @@ class QtInstallerTask(Generic[QtInstallerTaskType]):
   Version number auto increase value: {self.version_number_auto_increase_value}
   Mac cpu count: {self.max_cpu_count}
   Long paths supported: {is_long_path_supported()}
+  Notarize payload (macOS): {self.notarize_payload}
 
   To reproduce build task with the above configuration, run the following command:
   {get_reproduce_args(self)}"""
@@ -1403,6 +1407,13 @@ def main() -> None:
             dest="require_long_path_support",
             action="store_false",
         )
+    if is_macos():
+        parser.add_argument(
+            "--notarize-payload",
+            dest="notarize_payload",
+            action="store_true",
+            default=False
+        )
 
     args = parser.parse_args(sys.argv[1:])
 
@@ -1420,6 +1431,7 @@ def main() -> None:
         online_installer=args.online_installer,
         create_repository=args.create_repository,
         partial_installer=args.partial_installer,
+        notarize_payload=args.notarize_payload if is_macos() else False,
         dry_run=DryRunMode[args.dry_run] if args.dry_run else None,
         archive_base_url=args.archive_base_url,
         ifw_tools_uri=args.ifw_tools_uri,

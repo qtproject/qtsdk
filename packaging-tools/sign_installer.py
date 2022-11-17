@@ -3,7 +3,7 @@
 
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -32,13 +32,176 @@
 import argparse
 import os
 import sys
-from shutil import rmtree
+from contextlib import suppress
+from pathlib import Path
+from shutil import copy2, rmtree
+from subprocess import CalledProcessError
+from typing import List, Tuple
 
+from macholib import MachO  # type: ignore
+from temppathlib import TemporaryDirectory
+
+from bldinstallercommon import locate_paths
 from logging_util import init_logger
+from notarize import embed_notarization, notarize
 from read_remote_config import get_pkg_value
 from runner import run_cmd, run_cmd_silent
 
 log = init_logger(__name__, debug_mode=False)
+
+
+def _is_app_bundle(path: Path) -> bool:
+    """
+    Determine whether a folder contains .app bundle structure based on contents
+
+    Args:
+        path: A file system path to .app directory
+
+    Returns:
+        True if 'Info.plist' file found, otherwise False
+    """
+    if path.suffix != ".app":
+        return False
+    return path.joinpath("Contents", "Info.plist").exists()
+
+
+def _is_mach_o_executable(path: Path) -> bool:
+    """
+    Determine whether a file is a Mach-O executable
+
+    Args:
+        path: A file system path to a file
+
+    Returns:
+        True if Mach-O header found successfully, otherwise False
+    """
+    try:
+        headers = MachO.MachO(path.resolve(strict=True)).headers
+        return bool(headers)
+    except Exception:
+        return False
+
+
+def _is_framework_version(path: Path) -> bool:
+    """
+    Determine whether a folder is part of a macOS multi-versioned framework
+
+    Args:
+        path: A file system path to a folder
+
+    Returns:
+        True if directory is a framework version bundle, otherwise False
+    """
+    path = path.resolve(strict=True)
+    with suppress(IndexError):
+        if path.parent.name == "Versions" and path.parents[1].suffix == ".framework":
+            return True
+    return False
+
+
+def _find_signable_content(pkg_dir: Path) -> Tuple[List[Path], List[Path]]:
+    """
+    Find all content to be signed, and that supports stapling:
+    .app bundles, frameworks, packages, disk images, binaries (e.g. executables, dylib)
+
+    Args:
+        pkg_dir: A file system path to a directory to search recursively from
+
+    Returns:
+        Lists of paths sorted for codesign and staple operations
+    """
+    sign_list: List[Path] = []
+    staple_list: List[Path] = []
+    for path in sorted(
+        set(Path(p).resolve(strict=True) for p in locate_paths(pkg_dir, patterns=["*"])),
+        key=lambda path: len(path.parts),  # Sort by path part length
+        reverse=True,  # Nested items first to ensure signing order (important)
+    ):
+        if path.is_symlink():
+            continue  # ignore symlinks
+        # App bundles and frameworks
+        if path.is_dir():
+            if _is_app_bundle(path):
+                sign_list.append(path)
+                staple_list.append(path)
+            elif _is_framework_version(path):
+                sign_list.append(path)
+        # Containers, Mach-O shared libraries and dynamically loaded modules, Mach-O executables
+        elif path.is_file():
+            # Known suffixes for containers
+            if path.suffix in (".pkg", ".dmg"):
+                sign_list.append(path)
+                staple_list.append(path)
+            # Known suffixes for libs, modules, ...
+            elif path.suffix in (".dylib", ".so", ".bundle"):
+                sign_list.append(path)
+            # Mach-O files by header, exec bit
+            elif os.access(path, os.X_OK) and _is_mach_o_executable(path):
+                sign_list.append(path)
+    return sign_list, staple_list
+
+
+def recursive_sign_notarize(pkg_dir: Path) -> None:
+    """
+    Sign, notarize, and staple content from a directory recursively
+
+    Args:
+        pkg_dir: A file system path to the directory with content
+    """
+    sign_items, staple_items = _find_signable_content(pkg_dir=pkg_dir)
+    # Run codesign for items
+    sign_mac_content(sign_items)
+    # Copy only the notarizable (codesigned) content to a temporary dir
+    # (ditto does not support multiple source items for archive generation)
+    # Exclude other content from the notarization request to reduce file size
+    with TemporaryDirectory() as notarize_dir:
+        for path in reversed(sign_items):
+            # Skip if parent directory already in list
+            if not any(p for p in path.parents if p in sign_items):
+                create_dir = notarize_dir.path / path.relative_to(pkg_dir).parent
+                create_dir.mkdir(parents=True, exist_ok=True)
+                if path.is_dir():
+                    # use ditto here to copy, preserves the directory hierarchy properly
+                    run_cmd(["ditto", str(path), str(create_dir / path.name)])
+                else:
+                    copy2(path, create_dir, follow_symlinks=False)
+        # Notarize
+        notarize(notarize_dir.path)
+    # Staple original files
+    count = len(staple_items)
+    log.info("Stapling ticket to %s payload items", count)
+    for idx, path in enumerate(staple_items):
+        log.info("[%s/%s] Staple: %s", idx, count, str(path))
+        embed_notarization(path)
+
+
+def sign_mac_content(paths: List[Path]) -> None:
+    """
+    Run codesign for the given paths
+
+    Args:
+        paths: List of signable content
+
+    Raises:
+        CalledProcessError: On code signing failure
+    """
+    run_cmd(cmd=["/Users/qt/unlock-keychain.sh"])  # unlock the keychain first
+    count = len(paths)
+    log.info("Codesigning %s payload items", count)
+    for idx, path in enumerate(paths):
+        log.info("[%s/%s] Codesign: %s", idx, count, str(path))
+        cmd_args = [
+            'codesign', '--verbose=3', str(path),
+            '-r', get_pkg_value("SIGNING_FLAGS"),  # signing requirements
+            '-s', get_pkg_value("SIGNING_IDENTITY"),  # developer id identity
+            '-o', 'runtime',  # enable hardened runtime, required for notarization
+            "--timestamp",  # contact apple servers for time validation
+            "--force"  # resign all the code with different signature
+        ]
+        try:
+            run_cmd_silent(cmd=cmd_args)
+        except CalledProcessError as err:
+            raise Exception(f"Failed to codesign: {str(path)}") from err
 
 
 def sign_mac_app(app_path: str, signing_identity: str) -> None:

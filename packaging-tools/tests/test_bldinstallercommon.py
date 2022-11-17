@@ -54,8 +54,8 @@ from bldinstallercommon import (
 from installer_utils import PackagingError
 
 
-@ddt
-class TestCommon(unittest.TestCase):  # pylint: disable=R0904
+@ddt  # pylint: disable=R0904
+class TestCommon(unittest.TestCase):
     @data(  # type: ignore
         (
             "%TAG_VERSION%%TAG_EDITION%",

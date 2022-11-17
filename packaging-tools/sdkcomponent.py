@@ -42,6 +42,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import htmllistparse  # type: ignore
 from urlpath import URL  # type: ignore
 
+from bld_utils import is_macos
 from bldinstallercommon import uri_exists
 from logging_util import init_logger
 
@@ -76,12 +77,14 @@ class IfwPayloadItem:
     archive_name: str
     payload_base_uri: str = field(default_factory=str)
     errors: List[str] = field(default_factory=list)
+    notarize_payload: bool = False
     # List of archive formats supported by Installer Framework:
     ifw_arch_formats: Tuple[str, ...] = (".7z", ".tar", ".gz", ".zip", ".xz", ".bz2")
     # List of payload archive formats supported by scripts for extraction:
     supported_arch_formats: Tuple[str, ...] = (".7z", ".tar", ".gz", ".zip", ".xz", ".bz2")
     _requires_extraction: Optional[bool] = None
     _requires_patching: Optional[bool] = None
+    _raw_artifact: bool = False
 
     def __post_init__(self) -> None:
         """Post init: run sanity checks"""
@@ -183,6 +186,22 @@ class IfwPayloadItem:
         return self._requires_patching
 
     @property
+    def is_raw_artifact(self) -> bool:
+        """
+        Determine if raw artifact is already supported by IFW and doesn't require any operations
+
+        Returns:
+            A boolean for whether archive can be used as is
+        """
+        if self._raw_artifact is None:
+            self._raw_artifact = (
+                len(self.payload_uris) == 1
+                and not self.requires_extraction
+                and Path(self.payload_uris[0]).suffix in self.ifw_arch_formats
+            )
+        return self._raw_artifact
+
+    @property
     def requires_extraction(self) -> bool:
         """
         A property to determine whether the archive needs to be extracted.
@@ -199,6 +218,9 @@ class IfwPayloadItem:
                 # Extract IFW supported archives if patching required or archive has a sha1 file
                 # Otherwise, use the raw CI artifact
                 self._requires_extraction = bool(self.component_sha1) or self.requires_patching
+                # For macOS, we can't use raw artifacts since they need to be signed and notarized
+                if is_macos() and self.notarize_payload is True:
+                    self._requires_extraction = True
                 # If archive extraction is disabled, compress as-is (disable_extract_archive=False)
                 if self.disable_extract_archive:
                     self._requires_extraction = False
@@ -340,18 +362,32 @@ class IfwSdkComponent:
     package_default: str
     comp_sha1_uri: str
     include_filter: str
+    base_work_dir: Path
     component_sha1: Optional[str] = None
-    temp_data_dir: Optional[Path] = None
-    meta_dir_dest: Optional[Path] = None
     archive_skip: bool = False
     errors: List[str] = field(default_factory=list)
 
     def __post_init__(self) -> None:
-        """Post init: resolve component sha1 uri if it exists"""
+        """Post init: resolve component sha1 uri if it exists, set work dirs"""
         if self.comp_sha1_uri:
             _, match_uris = self.archive_resolver.resolve_payload_uri(self.comp_sha1_uri)
             assert len(match_uris) == 1, f"More than one match for component sha: {match_uris}"
             self.comp_sha1_uri = match_uris.pop()
+
+    @property
+    def work_dir_temp(self) -> Path:
+        """Return temporary work dir for IfwSdkComponent"""
+        return self.base_work_dir / self.ifw_sdk_comp_name / "temp"
+
+    @property
+    def data_dir_dest(self) -> Path:
+        """Return destination data dir for IfwSdkComponent"""
+        return self.base_work_dir / self.ifw_sdk_comp_name / "data"
+
+    @property
+    def meta_dir_dest(self) -> Path:
+        """Return destination meta dir for IfwSdkComponent"""
+        return self.base_work_dir / self.ifw_sdk_comp_name / "meta"
 
     def validate(self, uri_check: bool = True, ignore_errors: bool = False) -> bool:
         """
@@ -391,6 +427,19 @@ class IfwSdkComponent:
                 raise
             log.exception("[%s] Ignored error in component: %s", self.ifw_sdk_comp_name, err)
         return False
+
+    def init_work_dirs(self) -> None:
+        """Create the required work directories for the payload data"""
+        try:
+            self.work_dir_temp.mkdir(parents=True)
+            self.data_dir_dest.mkdir(parents=True)
+            self.meta_dir_dest.mkdir(parents=True)
+        except FileExistsError as err:
+            log.warning(
+                "Work directories already initialized for the component (duplicate name?): %s",
+                self.ifw_sdk_comp_name,
+                exc_info=err,
+            )
 
     def generate_downloadable_archive_list(self) -> List[List[str]]:
         """
@@ -482,6 +531,8 @@ def parse_ifw_sdk_comp(
     pkg_template_search_dirs: List[str],
     substitutions: Dict[str, str],
     file_share_base_url: str,
+    base_work_dir: Path,
+    notarize_payload: bool = False,
 ) -> IfwSdkComponent:
     """
     Parse IfwSdkComponent from the given config
@@ -515,6 +566,7 @@ def parse_ifw_sdk_comp(
         archive_resolver=archive_resolver,
         parent_target_install_base=target_install_base,
         substitutions=substitutions,
+        notarize_payload=notarize_payload,
     )
     return IfwSdkComponent(
         ifw_sdk_comp_name=section,
@@ -528,6 +580,7 @@ def parse_ifw_sdk_comp(
         package_default=package_default,
         comp_sha1_uri=comp_sha1_uri,
         include_filter=include_filter,
+        base_work_dir=base_work_dir,
     )
 
 
@@ -537,6 +590,7 @@ def parse_ifw_sdk_archives(
     archive_resolver: ArchiveResolver,
     parent_target_install_base: str,
     substitutions: Dict[str, str],
+    notarize_payload: bool = False,
 ) -> List[IfwPayloadItem]:
     """
     Parsed IfwPayloadItems for the given payload sections in config
@@ -590,6 +644,7 @@ def parse_ifw_sdk_archives(
             component_sha1=component_sha1_file,
             archive_name=archive_name,
             payload_base_uri=base_uri,
+            notarize_payload=notarize_payload,
         )
         payload.validate()
         parsed_archives.append(payload)

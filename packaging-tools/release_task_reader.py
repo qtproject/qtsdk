@@ -211,6 +211,10 @@ class IFWReleaseTask(IFWBaseReleaseTask):
     def prerelease_version(self) -> str:
         return self._get("prerelease_version")
 
+    @property
+    def notarize_payload(self) -> bool:
+        return self._get("notarize_payload").lower() in ("yes", "true", "1")
+
     def validate(self) -> None:
         validate_list = ["config_file", "repo_path"]
         if "ifw.offline" in self.name:

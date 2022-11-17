@@ -722,6 +722,7 @@ async def build_online_repositories(
             force_version_number_increase=True,
             substitution_list=task.substitutions,
             build_timestamp=job_timestamp,
+            notarize_payload=task.notarize_payload,
             dry_run=dry_run,
         )
         try:
@@ -1091,6 +1092,7 @@ async def _build_offline_tasks(
             force_version_number_increase=True,
             substitution_list=task.substitutions,
             build_timestamp=job_timestamp,
+            notarize_payload=task.notarize_payload,
             dry_run=dry_run,
         )
         try:

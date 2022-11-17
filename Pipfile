@@ -25,6 +25,7 @@ validators = "==0.20.0"
 aiofiles = "==0.8.0"
 aiohttp = "==3.8.4"
 typing_extensions = "==4.1.1"
+macholib = "==1.16.2"
 
 [dev-packages]
 ddt = "==1.6.0"

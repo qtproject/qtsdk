@@ -80,7 +80,7 @@ class TestCommon(unittest.TestCase):
     )
     def test_read_component_sha(self, test_data: Tuple[str, Optional[str]]) -> None:
         sha, exp = test_data
-        sdk_comp = IfwSdkComponent("", "", "", "", "", "", "", "", "", "", "")  # type: ignore
+        sdk_comp = IfwSdkComponent("", "", "", "", "", "", "", "", "", "", "", "")  # type: ignore
         with TemporaryDirectory() as tmpdir:
             test_sha = tmpdir.path / "test"
             test_sha.write_text(sha, encoding="utf-8")
@@ -94,7 +94,7 @@ class TestCommon(unittest.TestCase):
         (""),
     )
     def test_read_component_sha_invalid_content(self, test_sha1: str) -> None:
-        sdk_comp = IfwSdkComponent("", "", "", "", "", "", "", "", "", "", "")  # type: ignore
+        sdk_comp = IfwSdkComponent("", "", "", "", "", "", "", "", "", "", "", "")  # type: ignore
         with TemporaryDirectory() as tmpdir:
             test_sha = tmpdir.path / "test"
             test_sha.write_text(test_sha1, encoding="utf-8")
@@ -102,7 +102,7 @@ class TestCommon(unittest.TestCase):
                 read_component_sha(sdk_comp, test_sha)
 
     def test_read_component_sha_invalid_path(self) -> None:
-        sdk_comp = IfwSdkComponent("", "", "", "", "", "", "", "", "", "", "")  # type: ignore
+        sdk_comp = IfwSdkComponent("", "", "", "", "", "", "", "", "", "", "", "")  # type: ignore
         with TemporaryDirectory() as tmpdir:
             with self.assertRaises(CreateInstallerError):
                 read_component_sha(sdk_comp, tmpdir.path / "invalid")

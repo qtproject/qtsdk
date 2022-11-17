@@ -154,6 +154,8 @@ class TestRunner(unittest.TestCase):
                 pkg_template_search_dirs,
                 key_value_subst_dict(),
                 file_share_base_url,
+                base_work_dir=Path("."),
+                notarize_payload=False,
             )
 
             self.assertEqual(len(comp.downloadable_archives), 3)
@@ -307,6 +309,7 @@ class TestRunner(unittest.TestCase):
             package_default="package_default",
             comp_sha1_uri="comp_sha1_uri",
             include_filter="include_filter",
+            base_work_dir=Path(".")
         )
         with self.assertRaises(IfwSdkError):
             component.validate(uri_check=False, ignore_errors=False)
