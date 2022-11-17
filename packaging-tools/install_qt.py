@@ -35,7 +35,7 @@ import sys
 from tempfile import TemporaryDirectory
 from typing import List, Optional
 
-from bldinstallercommon import create_qt_download_task, patch_qt
+from bldinstallercommon import create_qt_download_task, patch_qt, remove_tree
 from logging_util import init_logger
 from threadedwork import ThreadedWork
 
@@ -119,6 +119,11 @@ def install_qt(
     if dl_pkgs_work.task_number != 0:
         dl_pkgs_work.run()
         patch_qt(qt_path)
+        # work around QTBUG-108597 (object files in installation)
+        for root, paths, _ in os.walk(qt_path):
+            for path in paths:
+                if path.startswith('objects-'):
+                    remove_tree(os.path.join(root, path))
 
 
 def main() -> None:
