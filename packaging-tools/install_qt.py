@@ -110,9 +110,10 @@ def install_qt(
                 create_qt_download_task(qt_modules, qt_path, temp_path, opts)
             )
         else:
-            with TemporaryDirectory() as temp_path:
+            with TemporaryDirectory() as temporary_dir:
                 dl_pkgs_work.add_task_object(
-                    create_qt_download_task(qt_modules, qt_path, temp_path, opts)
+                    create_qt_download_task(qt_modules, qt_path, temporary_dir,
+                                            opts)
                 )
 
     # run task if needed
