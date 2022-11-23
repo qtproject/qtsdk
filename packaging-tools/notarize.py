@@ -40,6 +40,7 @@ from subprocess import CalledProcessError
 from typing import Optional
 
 from bld_utils import is_macos
+from installer_utils import PackagingError
 from logging_util import init_logger
 from read_remote_config import get_pkg_value
 from runner import run_cmd, run_cmd_silent
@@ -225,14 +226,11 @@ def key_from_remote_env(key: str) -> str:
     Returns:
         Returned value from get_pkg_value if no exception was handled or an empty string (str)
 
-    Raises:
-        Exception: Raised by get_pkg_value, handled by the function
-
     """
     try:
         return get_pkg_value(key)
-    except Exception:
-        return ""
+    except PackagingError:
+        return ""  # Do not raise here if remote environment is not in use
 
 
 def check_notarize_reqs() -> None:

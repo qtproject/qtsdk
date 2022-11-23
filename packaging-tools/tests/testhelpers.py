@@ -36,6 +36,7 @@ from subprocess import PIPE
 from typing import Any, Callable
 
 from bld_utils import is_windows
+from installer_utils import PackagingError
 from read_remote_config import get_pkg_value
 
 if sys.version_info < (3, 7):
@@ -73,6 +74,5 @@ def is_internal_file_server_reachable() -> bool:
         ping = sh.which("ping")
         ret = subprocess.run(args=[ping, "-c", "1", package_server], timeout=5, stdout=PIPE, stderr=PIPE, check=False)
         return ret.returncode == 0
-    except Exception:
-        pass
-    return False
+    except (sh.ErrorReturnCode, PackagingError):
+        return False

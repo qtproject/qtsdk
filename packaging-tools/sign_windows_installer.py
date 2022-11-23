@@ -33,7 +33,6 @@ import argparse
 import os
 import subprocess
 import sys
-from configparser import ConfigParser
 from datetime import datetime
 from pathlib import Path
 from subprocess import DEVNULL
@@ -41,46 +40,33 @@ from time import time
 from typing import List
 
 import pysftp  # type: ignore
-from cryptography.fernet import Fernet
 
 from installer_utils import PackagingError
 from logging_util import init_logger
+from read_remote_config import download_remote_file_sftp, get_pkg_value
 
 log = init_logger(__name__, debug_mode=False)
 timestamp = datetime.fromtimestamp(time()).strftime('%Y-%m-%d--%H:%M:%S')
 
 
-def _get_home_dir() -> str:
-    home_dir = os.getenv("HOME") or os.getenv("USERPROFILE")
-    if not home_dir:
-        raise PackagingError("Failed to determine home directory.")
-    return home_dir
+def _handle_signing(file_path: str, verify_signtool: str) -> None:
+    """
+    Sign executable from file_path using AzureSignTool with the configured options
+    Verify the signing with the verify_signtool specified
 
+    Args:
+        file_path: A string path to the file to be signed
+        verify_signtool: Name of the signtool executable used for verification
 
-def _get_private_key() -> bytes:
-    log.info("Return the private key in the build agent")
-    k_path = Path(_get_home_dir(), "sshkeys", os.environ["ID_RSA_FILE"]).resolve(strict=True)
-    with open(k_path, "rb") as private_key:
-        return private_key.read()
-
-
-def _get_decrypt_key() -> bytes:
-    log.info("Return the pre-generated Fernet key")
-    k_path = Path(os.environ["PKG_NODE_ROOT"], os.environ["FILES_SHARE_PATH"]).resolve(strict=True)
-    with open(k_path, "rb") as decrypt_key:
-        return decrypt_key.read()
-
-
-def _handle_signing(file_path: str) -> None:
-    config = ConfigParser()
-    config.read(os.path.basename(os.environ["WINDOWS_SIGNKEYS_PATH"]))
-    section = config.sections()[0]
-    if section in config:
-        kvu = config[section]['kvu']
-        kvi = config[section]['kvi']
-        kvs = config[section]['kvs']
-        kvc = config[section]['kvc']
-        tr_sect = config[section]['tr']
+    Raises:
+        PackagingError: When signing or verification is unsuccessful
+    """
+    remote_config = Path(os.environ["WINDOWS_SIGNKEYS_PATH"])
+    kvu = get_pkg_value("kvu", "", remote_config)
+    kvi = get_pkg_value("kvi", "", remote_config)
+    kvs = get_pkg_value("kvs", "", remote_config)
+    kvc = get_pkg_value("kvc", "", remote_config)
+    tr_sect = get_pkg_value("tr", "", remote_config)
     cmd_args_sign = ["AzureSignTool.exe", "sign", "-kvu", kvu, "-kvi", kvi, "-kvs", kvs, "-kvc", kvc, "-tr", tr_sect, "-v", file_path]
     log_entry = cmd_args_sign[:]
     log_entry[3] = "****"
@@ -91,57 +77,41 @@ def _handle_signing(file_path: str) -> None:
     log.info("Calling: %s", ' '.join(log_entry))
     sign_result = subprocess.run(cmd_args_sign, stdout=DEVNULL, stderr=DEVNULL, check=False)
     if sign_result.returncode != 0:
-        raise PackagingError(f"Package {file_path} signing  with error {sign_result.returncode}")
+        raise PackagingError(f"Package {file_path} signing with error {sign_result.returncode}")
     log.info("Successfully signed: %s", file_path)
-    signtool = Path(os.environ["WINDOWS_SIGNTOOL_X64_PATH"]).name
-    cmd_args_verify: List[str] = [signtool, "verify", "-pa", file_path]
+    cmd_args_verify: List[str] = [verify_signtool, "verify", "-pa", file_path]
     verify_result = subprocess.run(cmd_args_verify, stdout=DEVNULL, stderr=DEVNULL, check=False)
     if verify_result.returncode != 0:
         raise PackagingError(f"Failed to verify {file_path} with error {verify_result.returncode}")
     log.info("Successfully verified: %s", file_path)
 
 
-def decrypt_private_key() -> str:
-    log.info("decrypt private key using pre-generated Fernet key")
-    key = _get_decrypt_key()
-    fernet = Fernet(key)
-    decrypted_key = fernet.decrypt(_get_private_key())
-    temp_key_path = os.environ["PKG_NODE_ROOT"]
-    temp_file = os.path.join(temp_key_path, "temp_keyfile")
-    with open(temp_file, 'wb') as outfile:
-        outfile.write(decrypted_key)
-    return temp_file
-
-
-def download_signing_tools(path_to_key: str) -> None:
+def download_signing_tools(signtool: Path) -> None:
     try:
         cnopts = pysftp.CnOpts()
         cnopts.hostkeys = None
-        with pysftp.Connection(os.getenv("SFTP_ADDRESS"), username=os.getenv("SFTP_USER"), private_key=path_to_key, cnopts=cnopts) as sftp:
-            sftp.get(os.getenv("WINDOWS_SIGNKEYS_PATH"))
-            sftp.get(os.getenv("WINDOWS_SIGNTOOL_X64_PATH"))
-    except pysftp.SSHException:
-        raise PackagingError("FTP authentication failed!") from None
+        download_remote_file_sftp(remote_path=signtool)
+    except PackagingError:
+        raise PackagingError("Failed to download signing tools!") from None
 
 
 def sign_executable(file_path: str) -> None:
     log.info("Signing: %s", file_path)
     try:
-        key_path: str = decrypt_private_key()
-        download_signing_tools(key_path)
+        signtool = os.environ["WINDOWS_SIGNTOOL_X64_PATH"]
+    except KeyError as err:
+        raise PackagingError("Signtool path not found from env") from err
+    try:
+        download_signing_tools(Path(signtool))
         path = Path(file_path)
         if path.is_dir():
             for subpath in path.rglob('*'):
                 if subpath.is_file() and subpath.suffix in ['.exe', '.dll', '.pyd']:
-                    _handle_signing(str(subpath))
+                    _handle_signing(str(subpath), Path(signtool).name)
         else:
-            _handle_signing(file_path)
+            _handle_signing(file_path, Path(signtool).name)
     finally:
-        # cleanup temporary files
-        if "key_path" in locals():
-            os.remove(key_path)
-        os.remove(os.path.basename(os.environ["WINDOWS_SIGNKEYS_PATH"]))
-        os.remove(os.path.basename(os.environ["WINDOWS_SIGNTOOL_X64_PATH"]))
+        Path(Path.cwd() / Path(signtool).name).unlink()
 
 
 def main() -> None:
