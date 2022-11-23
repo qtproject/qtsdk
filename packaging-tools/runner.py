@@ -35,7 +35,7 @@ import shlex
 import subprocess
 import sys
 from asyncio import create_subprocess_exec, wait_for
-from asyncio.subprocess import PIPE
+from asyncio.subprocess import PIPE, STDOUT
 from io import TextIOWrapper
 from pathlib import Path
 from typing import Dict, List, Optional, Union
@@ -110,7 +110,7 @@ def run_cmd(
             universal_newlines=True,
             check=True,
             stdout=PIPE,
-            stderr=PIPE,
+            stderr=STDOUT,  # combine stdout,stderr streams
         ).stdout
     except subprocess.CalledProcessError as err:
         handle_output(err.stdout, redirect)
@@ -137,7 +137,7 @@ async def run_cmd_async(
         proc = await create_subprocess_exec(
             *args,
             stdout=PIPE,
-            stderr=PIPE,
+            stderr=STDOUT,  # combine stdout,stderr streams
             cwd=cwd,
             env=env,
         )
