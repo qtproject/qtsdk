@@ -510,7 +510,7 @@ async def build_online_repositories(tasks: List[ReleaseTask], license_: str, ins
     if sys.version_info < (3, 7):
         loop = asyncio.get_event_loop()
     else:
-        loop = asyncio.get_running_loop()
+        loop = asyncio.get_running_loop()  # pylint: disable=no-member
     # use same timestamp for all built repos
     job_timestamp = strftime("%Y-%m-%d", gmtime())
     for task in tasks:
@@ -731,7 +731,7 @@ async def _build_offline_tasks(staging_server: str, staging_server_root: str, ta
     if sys.version_info < (3, 7):
         loop = asyncio.get_event_loop()
     else:
-        loop = asyncio.get_running_loop()
+        loop = asyncio.get_running_loop()  # pylint: disable=no-member
     # use same timestamp for all installer tasks
     job_timestamp = strftime("%Y-%m-%d", gmtime())
     for task in tasks:

@@ -1010,12 +1010,12 @@ class QtInstallerTask:
   Create MaintenanceTool resource file: {self.create_maintenance_tool_resource_file}"""
 
     def _parse_substitutions(self) -> None:
-        for item in self.substitution_list:
+        for item in self.substitution_list:  # pylint: disable=not-an-iterable
             key, value = item.split("=", maxsplit=1)
             if not value:
                 log.warning("Empty value for substitution string given, substituting anyway: %s", item)
-            self.substitutions.append([key, value])
-        self.substitutions.append(['%LICENSE%', self.license_type])
+            self.substitutions.append([key, value])  # pylint: disable=no-member
+        self.substitutions.append(['%LICENSE%', self.license_type])  # pylint: disable=no-member
 
     def parse_ifw_pkg_template_dirs(self, template_list: str, configurations_dir: str) -> List[str]:
         ret = []
