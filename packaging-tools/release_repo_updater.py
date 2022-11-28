@@ -525,7 +525,7 @@ async def build_online_repositories(tasks: List[ReleaseTask], license_: str, ins
         if not os.path.isfile(installer_config_file):
             raise PackagingError(f"Invalid 'config_file' path: {installer_config_file}")
 
-        installer_task: QtInstallerTask[Any] = QtInstallerTask(
+        installer_task = QtInstallerTask(
             configurations_dir=installer_config_base_dir,
             configuration_file=installer_config_file,
             create_repository=True,
@@ -740,7 +740,7 @@ async def _build_offline_tasks(staging_server: str, staging_server_root: str, ta
         if not os.path.isfile(installer_config_file):
             raise PackagingError(f"Invalid 'config_file' path: {installer_config_file}")
 
-        installer_task: QtInstallerTask[Any] = QtInstallerTask(
+        installer_task = QtInstallerTask(
             configurations_dir=installer_config_base_dir,
             configuration_file=installer_config_file,
             offline_installer=True,
