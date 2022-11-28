@@ -249,12 +249,12 @@ def replace_in_files(filelist: List[str], regexp: str, replacement_string: str) 
 ###############################
 # function
 ###############################
-def safe_config_key_fetch(conf: ConfigParser, section: str, key: str) -> Any:
+def safe_config_key_fetch(conf: ConfigParser, section: str, key: str) -> str:
     if not conf.has_section(section):
         return ''
     if not conf.has_option(section, key):
         return ''
-    return config_section_map(conf, section)[key]
+    return str(config_section_map(conf, section)[key])
 
 
 ###############################
