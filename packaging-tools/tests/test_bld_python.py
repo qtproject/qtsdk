@@ -3,7 +3,7 @@
 
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -29,9 +29,9 @@
 #
 #############################################################################
 
-import os
 import unittest
-from tempfile import TemporaryDirectory
+
+from temppathlib import TemporaryDirectory
 
 from bld_python import BldPythonError, locate_source_root
 from tests.testhelpers import asyncio_test
@@ -42,19 +42,20 @@ class TestBldPython(unittest.TestCase):
     @asyncio_test
     async def test_locate_source_root(self) -> None:
         with TemporaryDirectory() as tmp_base_dir:
-            temp_dir = os.path.join(tmp_base_dir, "foo", "bar", "test", "dir")
-            os.makedirs(temp_dir)
-            temp_file_path = os.path.join(temp_dir, "configure")
-            with open(temp_file_path, 'w+', encoding="utf-8") as handle:
+            base_dir_path = tmp_base_dir.path
+            temp_dir = base_dir_path / "foo" / "bar" / "test" / "dir"
+            temp_dir.mkdir(parents=True)
+            temp_file_path = temp_dir / "configure"
+            with temp_file_path.open('w+', encoding="utf-8") as handle:
                 handle.write("\n")
 
-            found_dir = locate_source_root(tmp_base_dir)
-            self.assertEqual(found_dir, temp_dir)
+            found_dir = locate_source_root(str(base_dir_path))
+            self.assertEqual(found_dir, str(temp_dir))
 
-            invalid_dir = os.path.join(tmp_base_dir, "foo2", "bar", "test", "dir")
-            os.makedirs(invalid_dir)
+            invalid_dir = base_dir_path / "foo2" / "bar" / "test" / "dir"
+            invalid_dir.mkdir(parents=True)
             with self.assertRaises(BldPythonError):
-                locate_source_root(os.path.join(tmp_base_dir, "foo2"))
+                locate_source_root(str(base_dir_path / "foo2"))
 
 
 if __name__ == '__main__':

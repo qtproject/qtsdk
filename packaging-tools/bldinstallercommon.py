@@ -3,7 +3,7 @@
 
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -41,7 +41,6 @@ from contextlib import suppress
 from fnmatch import fnmatch
 from pathlib import Path
 from subprocess import CalledProcessError
-from tempfile import mkdtemp
 from traceback import print_exc
 from types import TracebackType
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
@@ -49,6 +48,7 @@ from urllib.parse import urlparse
 from urllib.request import url2pathname, urlcleanup, urlretrieve
 
 import requests
+from temppathlib import TemporaryDirectory
 
 from bld_utils import download, is_linux, is_macos, is_windows, run_command
 from installer_utils import PackagingError
@@ -228,11 +228,10 @@ def remove_one_tree_level(directory: str) -> None:
         dir_name = dircontents[0]
         full_dir_name = os.path.join(directory, dir_name)
         # avoid directory name collision by first moving to temporary dir
-        tempdir_base = mkdtemp()
-        tempdir = os.path.join(tempdir_base, 'a')  # dummy name
-        shutil.move(full_dir_name, tempdir)
-        move_tree(tempdir, directory)
-        remove_tree(tempdir_base)
+        with TemporaryDirectory() as tempdir_base:
+            tempdir = tempdir_base.path / 'a'  # dummy name
+            shutil.move(full_dir_name, str(tempdir))
+            move_tree(str(tempdir), directory)
     else:
         raise IOError(f'Cannot remove one level of directory structure of "{dir}", it has {items} subdirectories')
 
@@ -554,13 +553,13 @@ def git_archive_repo(repo_and_ref: str) -> str:
     if os.path.isfile(archive_name):
         os.remove(archive_name)
     # create temp directory
-    checkout_dir = mkdtemp()
-    # clone given repo to temp
-    clone_repository(repository, ref, checkout_dir, full_clone=True, init_subrepos=True)
-    # git archive repo with given name
-    run_cmd(cmd=["git", "--no-pager", "archive", ref, "-o", archive_name], cwd=checkout_dir)
-    log.info("Created archive: %s", archive_name)
-    shutil.rmtree(checkout_dir, ignore_errors=True)
+    with TemporaryDirectory() as checkout_dir:
+        checkout_path = checkout_dir.path
+        # clone given repo to temp
+        clone_repository(repository, ref, str(checkout_path), full_clone=True, init_subrepos=True)
+        # git archive repo with given name
+        run_cmd(cmd=["git", "--no-pager", "archive", ref, "-o", archive_name], cwd=checkout_path)
+        log.info("Created archive: %s", archive_name)
     return archive_name
 
 

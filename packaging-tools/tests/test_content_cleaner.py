@@ -3,7 +3,7 @@
 
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -32,10 +32,10 @@
 
 import os
 import unittest
-from tempfile import TemporaryDirectory
 from typing import List
 
 from ddt import data, ddt, unpack  # type: ignore
+from temppathlib import TemporaryDirectory
 
 from content_cleaner import preserve_content, remove_content, remove_empty_directories
 
@@ -105,11 +105,11 @@ class TestContentCleaner(unittest.TestCase):
         preserve_rules: List[str],
     ) -> None:
         with TemporaryDirectory() as tmp_base_dir:
-            test_base_dir = os.path.join(tmp_base_dir, "test-base-dir")
-            self.generate_test_content(test_base_dir, test_content)
-            preserve_content(test_base_dir, preserve_rules)
+            test_base_dir = tmp_base_dir.path / "test-base-dir"
+            self.generate_test_content(str(test_base_dir), test_content)
+            preserve_content(str(test_base_dir), preserve_rules)
             for item in expected_result:
-                self.assertTrue(os.path.isfile(os.path.join(test_base_dir, item)))
+                self.assertTrue((test_base_dir / item).is_file())
 
     @data(  # type: ignore
         (
@@ -148,13 +148,13 @@ class TestContentCleaner(unittest.TestCase):
     ) -> None:
         try:
             with TemporaryDirectory() as tmp_base_dir:
-                test_base_dir = os.path.join(tmp_base_dir, "test-base-dir")
-                self.generate_test_content(test_base_dir, test_content)
-                remove_content(test_base_dir, remove_rules)
+                test_base_dir = tmp_base_dir.path / "test-base-dir"
+                self.generate_test_content(str(test_base_dir), test_content)
+                remove_content(str(test_base_dir), remove_rules)
                 for file_path in verify_removed_files:
                     for path in test_content:
-                        if file_path in os.path.join(test_base_dir, path):
-                            self.assertFalse(os.path.isfile(os.path.join(test_base_dir, path)))
+                        if file_path in str(test_base_dir / path):
+                            self.assertFalse((test_base_dir / path).is_file())
         # Python 3.7 and below will throw FileNotFoundError on cleanup when exiting context
         # if the TemporaryDirectory was removed.
         except FileNotFoundError:
@@ -168,15 +168,13 @@ class TestContentCleaner(unittest.TestCase):
     def test_remove_empty_directories(self, test_content: List[str], remove_dir: bool) -> None:
         try:
             with TemporaryDirectory() as tmp_base_dir:
-                test_base_dir = os.path.join(tmp_base_dir, "test-base-dir")
-                self.generate_test_content(test_base_dir, test_content)
-                remove_empty_directories(test_base_dir)
+                test_base_dir = tmp_base_dir.path / "test-base-dir"
+                self.generate_test_content(str(test_base_dir), test_content)
+                remove_empty_directories(str(test_base_dir))
                 for path in test_content:
-                    verify_path = os.path.join(test_base_dir, path)
-                    if remove_dir:
-                        self.assertFalse(os.path.exists(verify_path))
-                    else:
-                        self.assertTrue(os.path.exists(verify_path))
+                    verify_path = test_base_dir / path
+                    exists = verify_path.exists()
+                    self.assertTrue(not exists if remove_dir else exists)
         # Python 3.7 and below will throw FileNotFoundError on cleanup when exiting context
         # if the temporary directory was removed.
         except FileNotFoundError:

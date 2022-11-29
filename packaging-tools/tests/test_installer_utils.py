@@ -3,7 +3,7 @@
 
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -34,7 +34,8 @@ import os
 import tarfile
 import unittest
 from pathlib import Path
-from tempfile import TemporaryDirectory
+
+from temppathlib import TemporaryDirectory
 
 from installer_utils import (
     PackagingError,
@@ -56,11 +57,9 @@ class TestInstallerUtils(unittest.TestCase):
 
     @asyncio_test
     async def test_ch_dir(self) -> None:
-        cwd = Path.cwd()
         with TemporaryDirectory() as tmp_base_dir:
-            with ch_dir(tmp_base_dir):
-                self.assertEqual(Path(tmp_base_dir), Path.cwd())
-        self.assertEqual(cwd, Path.cwd())
+            with ch_dir(str(tmp_base_dir.path)):
+                self.assertEqual(tmp_base_dir.path, Path.cwd())
 
     @asyncio_test_parallel_data(  # type: ignore
         ("https://www.qt.io", False),
@@ -91,26 +90,28 @@ class TestInstallerUtils(unittest.TestCase):
     async def test_extract_archive(self) -> None:
         with TemporaryDirectory() as tmp_base_dir:
             # create some test paths
-            temp_path = os.path.join("foo", "bar")
-            absolute_temp_path = os.path.join(tmp_base_dir, temp_path)
-            os.makedirs(absolute_temp_path)
+            temp_path = Path("foo", "bar")
+            absolute_temp_path = tmp_base_dir.path / temp_path
+            absolute_temp_path.mkdir(parents=True)
             # create tmp file
             temp_file_name = "foobar.txt"
-            temp_file_path = os.path.join(absolute_temp_path, temp_file_name)
-            with open(temp_file_path, 'w+', encoding="utf-8") as handle:
+            temp_file_path = absolute_temp_path / temp_file_name
+            with temp_file_path.open('w+', encoding="utf-8") as handle:
                 handle.write("\n")
-            self.assertTrue(os.path.isfile(temp_file_path))
+            self.assertTrue(temp_file_path.is_file())
 
             # create fake tar archive
-            tar_archive_path = os.path.join(tmp_base_dir, "foobar.tar")
+            tar_archive_path = tmp_base_dir.path / "foobar.tar"
             with tarfile.open(tar_archive_path, "w") as tar_file:
-                with open(temp_file_path, mode='rb') as _temp_file:
+                with temp_file_path.open(mode='rb') as _temp_file:
                     file_data = _temp_file.read()
-                    tar_file.addfile(tarfile.TarInfo(os.path.join(temp_path, temp_file_name)), io.BytesIO(file_data))
+                    tar_file.addfile(
+                        tarfile.TarInfo(str(temp_path / temp_file_name)), io.BytesIO(file_data)
+                    )
 
-            dest_dir = os.path.join(tmp_base_dir, "dest_dir")
-            await extract_archive(tar_archive_path, dest_dir)
-            self.assertTrue(os.path.isfile(os.path.join(dest_dir, temp_path, "foobar.txt")))
+            dest_dir = tmp_base_dir.path / "dest_dir"
+            await extract_archive(str(tar_archive_path), str(dest_dir))
+            self.assertTrue((dest_dir / temp_path / "foobar.txt").is_file())
 
     @unittest.skipUnless(is_internal_file_server_reachable(),
                          "Skipping because file server is not accessible")
@@ -119,7 +120,7 @@ class TestInstallerUtils(unittest.TestCase):
         with TemporaryDirectory() as tmp_base_dir:
             pkg_srv = get_pkg_value("PACKAGE_STORAGE_SERVER_PATH_HTTP")
             test_file_url = pkg_srv + "/archive/packaging/qtsdk_testing.txt"
-            downloaded_file = download_archive(test_file_url, tmp_base_dir)
+            downloaded_file = download_archive(test_file_url, str(tmp_base_dir.path))
             self.assertTrue(os.path.isfile(downloaded_file))
 
 

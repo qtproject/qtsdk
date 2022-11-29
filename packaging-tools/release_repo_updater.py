@@ -3,7 +3,7 @@
 
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -44,11 +44,12 @@ from datetime import datetime
 from enum import Enum
 from pathlib import Path
 from subprocess import PIPE
-from tempfile import TemporaryDirectory
 from time import gmtime, sleep, strftime, time
 from typing import Any, Dict, List, Optional, Tuple
 from urllib.error import HTTPError, URLError
 from urllib.request import urlopen, urlretrieve
+
+from temppathlib import TemporaryDirectory
 
 from bld_utils import is_linux
 from bldinstallercommon import locate_path
@@ -246,13 +247,13 @@ def create_remote_script(
     server: str, cmd: List[str], remote_script_path: str, script_file_name: str
 ) -> str:
     with TemporaryDirectory() as tmp_base_dir:
-        temp_file_path = os.path.join(tmp_base_dir, script_file_name)
-        with open(temp_file_path, 'w+', encoding="utf-8") as handle:
+        temp_file_path = tmp_base_dir.path / script_file_name
+        with temp_file_path.open('w+', encoding="utf-8") as handle:
             handle.write("#!/usr/bin/env bash\n")
             handle.write(' '.join(cmd))
-        os.chmod(temp_file_path, 0o755)
+        temp_file_path.chmod(0o755)
         create_remote_paths(server, [remote_script_path])
-        cmd = ['rsync', '-avzh', temp_file_path, server + ":" + remote_script_path]
+        cmd = ['rsync', '-avzh', str(temp_file_path), server + ":" + remote_script_path]
         run_cmd(cmd=cmd, timeout=60 * 60)
         return os.path.join(remote_script_path, script_file_name)
 

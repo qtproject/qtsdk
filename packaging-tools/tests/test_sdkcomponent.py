@@ -30,7 +30,6 @@
 
 import os
 import sys
-import tempfile
 import unittest
 from configparser import ConfigParser, ExtendedInterpolation
 from pathlib import Path
@@ -38,6 +37,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from ddt import data, ddt, unpack  # type: ignore
 from htmllistparse import FileEntry  # type: ignore
+from temppathlib import TemporaryDirectory
 from urlpath import URL  # type: ignore
 
 from sdkcomponent import (
@@ -143,10 +143,11 @@ class TestRunner(unittest.TestCase):
         pkg_template_paths = ifw_pkg_templ_dirs([section])
         ifw_sdk_config = ifw_sdk_config_valid(section)
 
-        with tempfile.TemporaryDirectory() as tmp_base_dir:
+        with TemporaryDirectory() as tmp_dir:
+            temp_path = tmp_dir.path
             pkg_template_search_dirs: List[str] = []
-            create_paths(tmp_base_dir, pkg_template_paths)
-            pkg_template_search_dirs.append(os.path.join(tmp_base_dir, "pkg_templates"))
+            create_paths(str(temp_path), pkg_template_paths)
+            pkg_template_search_dirs.append(str(temp_path / "pkg_templates"))
 
             file_share_base_url = "http://fileshare.intra/base/path/"
             comp = parse_ifw_sdk_comp(
@@ -268,16 +269,16 @@ class TestRunner(unittest.TestCase):
         self.assertEqual(item.requires_patching, expected_requires_patching)
 
     def test_archive_resolver(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp_base_dir:
-            template_folder = os.path.join(tmp_base_dir, "qt.tools.foo")
-            data_folder = os.path.join(template_folder, "data")
-            payload_file = os.path.join(data_folder, "readme.txt")
-            os.makedirs(data_folder, exist_ok=True)
-            with open(payload_file, "a", encoding="utf-8"):
+        with TemporaryDirectory() as tmp_base_dir:
+            template_folder = tmp_base_dir.path / "qt.tools.foo"
+            data_folder = template_folder / "data"
+            payload_file = data_folder / "readme.txt"
+            data_folder.mkdir(parents=True, exist_ok=True)
+            with payload_file.open("a", encoding="utf-8"):
                 pass
 
-            resolver = ArchiveResolver("http://intranet.local.it/artifacts", template_folder)
-            self.assertEqual(resolver.resolve_payload_uri("readme.txt").pop(), payload_file)
+            resolver = ArchiveResolver("http://intranet.local.it/artifacts", str(template_folder))
+            self.assertEqual(resolver.resolve_payload_uri("readme.txt").pop(), str(payload_file))
             self.assertEqual(
                 resolver.resolve_payload_uri("qt/qtsvg/qtsvg-RHEL_7_4.7z").pop(),
                 "http://intranet.local.it/artifacts/qt/qtsvg/qtsvg-RHEL_7_4.7z",
@@ -347,9 +348,9 @@ class TestRunner(unittest.TestCase):
         self.assertCountEqual(asyncio.run(resolver.resolve_uri_pattern(pattern, None)), expected)
 
     def test_locate_pkg_templ_dir_invalid(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp_base_dir:
+        with TemporaryDirectory() as tmp_base_dir:
             with self.assertRaises(IfwSdkError):
-                locate_pkg_templ_dir([tmp_base_dir], "qt.foo")
+                locate_pkg_templ_dir([str(tmp_base_dir.path)], "qt.foo")
 
 
 if __name__ == "__main__":

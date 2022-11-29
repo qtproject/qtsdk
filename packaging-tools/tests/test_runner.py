@@ -3,7 +3,7 @@
 
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -31,12 +31,11 @@
 
 import asyncio
 import unittest
-from pathlib import Path
 from subprocess import TimeoutExpired
-from tempfile import TemporaryDirectory
 from typing import Any, Dict, Tuple
 
 from ddt import data, ddt  # type: ignore
+from temppathlib import TemporaryDirectory
 
 from bld_utils import is_windows
 from runner import run_cmd, run_cmd_async
@@ -77,16 +76,16 @@ class TestRunner(unittest.TestCase):
         check_work_dir_args = ["cd"] if is_windows() else ["pwd"]
         # Test execution_path
         with TemporaryDirectory() as tmp_base_dir:
-            output = run_cmd(cmd=check_work_dir_args, cwd=tmp_base_dir)
-            self.assertEqual(output, tmp_base_dir + "\n")
+            output = run_cmd(cmd=check_work_dir_args, cwd=tmp_base_dir.path)
+            self.assertEqual(output, str(tmp_base_dir.path) + "\n")
 
     def test_exec_cmd_log_to_file(self) -> None:
         # Test log_to_file
         with TemporaryDirectory() as tmp_base_dir:
-            log_file = Path(tmp_base_dir) / "log"
+            log_file = tmp_base_dir.path / "log"
             log_file.touch()
-            run_cmd(cmd=["echo", "TEST"], cwd=tmp_base_dir, redirect=str(log_file))
-            with open(str(log_file), "r", encoding="utf-8") as handle:
+            run_cmd(cmd=["echo", "TEST"], cwd=tmp_base_dir.path, redirect=log_file)
+            with log_file.open("r", encoding="utf-8") as handle:
                 self.assertEqual(handle.read().strip(), "TEST")
 
     @data(  # type: ignore

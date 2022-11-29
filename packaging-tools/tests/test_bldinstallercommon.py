@@ -3,7 +3,7 @@
 
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -32,10 +32,10 @@
 import os
 import unittest
 from pathlib import Path
-from tempfile import TemporaryDirectory
 from typing import Callable, List, Optional, Tuple
 
 from ddt import data, ddt  # type: ignore
+from temppathlib import TemporaryDirectory
 
 from bld_utils import is_windows
 from bldinstallercommon import (
@@ -79,12 +79,12 @@ class TestCommon(unittest.TestCase):
         file_contents, replacements, expected_file_content = test_data
         with TemporaryDirectory() as tmp_base_dir:
             # run tag substitution with data
-            tmp_file = Path(tmp_base_dir) / "test"
-            with open(tmp_file, "a", encoding="utf-8") as handle:
+            tmp_file = tmp_base_dir.path / "test"
+            with tmp_file.open("a", encoding="utf-8") as handle:
                 handle.write(file_contents)
             for key, value in replacements:
                 replace_in_files([str(tmp_file)], key, value)
-            with open(tmp_file, "r", encoding="utf-8") as handle:
+            with tmp_file.open("r", encoding="utf-8") as handle:
                 file_contents = handle.read()
                 # check that file contents match
                 self.assertEqual(file_contents, expected_file_content)
@@ -92,7 +92,7 @@ class TestCommon(unittest.TestCase):
     def test_replace_in_files_invalid_path(self) -> None:
         with TemporaryDirectory() as tmp_base_dir:
             # invalid file path should raise FileNotFoundError
-            invalid_path = Path(tmp_base_dir) / "invalid"
+            invalid_path = tmp_base_dir.path / "invalid"
             with self.assertRaises(FileNotFoundError):
                 replace_in_files([str(invalid_path)], "foo", "bar")
 
@@ -141,12 +141,12 @@ class TestCommon(unittest.TestCase):
         file, params, expected_files = test_data
         with TemporaryDirectory() as tmp_base_dir:
             path, content = file
-            tmp_file = Path(tmp_base_dir) / path
+            tmp_file = tmp_base_dir.path / path
             tmp_file.parents[0].mkdir(parents=True, exist_ok=True)
-            with open(tmp_file, "a", encoding="utf-8") as handle:
+            with tmp_file.open("a", encoding="utf-8") as handle:
                 handle.write(content)
             extensions, rgx = params
-            result = search_for_files(tmp_base_dir, extensions, rgx)
+            result = search_for_files(tmp_base_dir.path, extensions, rgx)
             self.assertEqual(len(result), len(expected_files))
             for result_path, expected_path in zip(result, expected_files):
                 self.assertEqual(Path(result_path).name, expected_path)
@@ -166,45 +166,45 @@ class TestCommon(unittest.TestCase):
         pattern, filters, expected_results = test_data
         with TemporaryDirectory() as tmp_base_dir:
             # Create files and folders
-            test_folders = ["/tempty", "/d/n", "/.d"]
-            test_files = ["/tst.t", "/tst.y", "/d/tst.t", "/.t", "/.d/.t"]
+            test_folders = ["tempty", "d/n", ".d"]
+            test_files = ["tst.t", "tst.y", "d/tst.t", ".t", ".d/.t"]
             for folder in test_folders:
-                Path(tmp_base_dir + folder).mkdir(parents=True)
+                (tmp_base_dir.path / folder).mkdir(parents=True)
             for file in test_files:
-                Path(tmp_base_dir + file).touch()
-            result = locate_paths(tmp_base_dir, pattern, filters)
-            result = [str(Path(p).relative_to(tmp_base_dir)) for p in result]
+                (tmp_base_dir.path / file).touch()
+            result = locate_paths(tmp_base_dir.path, pattern, filters)
+            result = [str(Path(p).relative_to(tmp_base_dir.path)) for p in result]
             self.assertCountEqual(expected_results, result)
 
     def test_locate_path(self) -> None:
         with TemporaryDirectory() as tmp_base_dir:
-            test_file = tmp_base_dir + "/test"
-            Path(test_file).touch()
-            self.assertEqual(test_file, locate_path(tmp_base_dir, ["test"], [os.path.isfile]))
+            test_file = tmp_base_dir.path / "test"
+            test_file.touch()
+            self.assertEqual(str(test_file), locate_path(tmp_base_dir.path, ["test"], [os.path.isfile]))
 
     def test_locate_path_no_matches(self) -> None:
         with TemporaryDirectory() as tmp_base_dir:
             with self.assertRaises(PackagingError):
-                locate_path(tmp_base_dir, ["test"], [os.path.isfile])
+                locate_path(tmp_base_dir.path, ["test"], [os.path.isfile])
 
     def test_locate_path_multiple_matches(self) -> None:
         with TemporaryDirectory() as tmp_base_dir:
-            Path(tmp_base_dir + "/file").touch()
-            Path(tmp_base_dir + "/file2").touch()
+            (tmp_base_dir.path / "file").touch()
+            (tmp_base_dir.path / "file2").touch()
             with self.assertRaises(PackagingError):
-                locate_path(tmp_base_dir, ["file", "file2"])
+                locate_path(tmp_base_dir.path, ["file", "file2"])
 
     @unittest.skipIf(is_windows(), "Windows not supported for this test")
     def test_locate_executable(self) -> None:
         with TemporaryDirectory() as tmp_base_dir:
-            Path(tmp_base_dir + "/test_file").touch()
-            Path(tmp_base_dir + "/test_file2").touch(0o755)
+            (tmp_base_dir.path / "test_file").touch()
+            (tmp_base_dir.path / "test_file2").touch(0o755)
             # File with executable bit not set should throw an error
             with self.assertRaises(PackagingError):
-                locate_executable(tmp_base_dir, ["test_file"])
+                locate_executable(tmp_base_dir.path, ["test_file"])
             self.assertEqual(
-                locate_executable(tmp_base_dir, ["test_file2"]),
-                tmp_base_dir + "/test_file2")
+                locate_executable(tmp_base_dir.path, ["test_file2"]),
+                str(tmp_base_dir.path / "test_file2"))
 
     @data(  # type: ignore
         ("/home/qt/bin/foo/bar", "/home/qt/lib", "../../../lib"),

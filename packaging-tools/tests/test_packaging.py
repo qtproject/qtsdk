@@ -3,7 +3,7 @@
 
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -34,8 +34,8 @@ import platform
 import sys
 import unittest
 from fileinput import FileInput
-from shutil import rmtree
-from tempfile import mkdtemp
+
+from temppathlib import TemporaryDirectory
 
 from create_installer import parse_package_finalize_items
 from patch_qt import (
@@ -119,18 +119,18 @@ class TestPackaging(unittest.TestCase):
             self.assertEqual(match_count, len(data[2]))
 
     def test_patch_qt_edition(self) -> None:
-        temp_dir = mkdtemp()
-        temp_file = os.path.join(temp_dir, "qconfig.pri")
+        with TemporaryDirectory() as temp_dir:
+            temp_path = temp_dir.path
+            temp_file = temp_path / "qconfig.pri"
 
-        try:
-            with open(temp_file, "a", encoding="utf-8") as handle:
+            with temp_file.open("a", encoding="utf-8") as handle:
                 handle.write("something foo\n")
                 handle.write("QT_EDITION = foobar\n")
                 handle.write("nonsense\n")
 
             licheck_name = "licheck_foo"
             release_timestamp = "11223344"
-            patch_qt_edition(temp_dir, licheck_name, release_timestamp)
+            patch_qt_edition(str(temp_path), licheck_name, release_timestamp)
 
             expected_data = []
             expected_data.append("something foo")
@@ -144,8 +144,6 @@ class TestPackaging(unittest.TestCase):
                 msg = f"Received data: [{line}] differs from expected data: [{expected_data[idx]}]"
                 self.assertEqual(line.strip(), expected_data[idx], msg)
                 idx += 1
-        finally:
-            rmtree(temp_dir)
 
     @unittest.skipUnless(os.environ.get("PKG_TEST_QT_CONFIG_BASE_PATH"), "Skipping because 'PKG_TEST_QT_CONFIG_BASE_PATH' is not set")
     @unittest.skipUnless(os.environ.get("PKG_TEST_QT_ARTIFACTS_URL"), "Skipping because 'PKG_TEST_QT_CONFIG_BASE_PATH' is not set")

@@ -3,7 +3,7 @@
 
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -31,10 +31,10 @@
 
 import os
 import unittest
-from tempfile import TemporaryDirectory
 from typing import List
 
 from ddt import ddt  # type: ignore
+from temppathlib import TemporaryDirectory
 
 from release_repo_meta_update import (
     BACKUP_SUFFIX,
@@ -105,49 +105,53 @@ class TestReleaseRepoMetaUpdate(unittest.TestCase):
 
     @asyncio_test
     async def test_scan_repositories(self) -> None:
-        with TemporaryDirectory(prefix="_repo_tmp_") as tmp_base_dir:
-            self._write_test_repo(tmp_base_dir, self.paths)
+        with TemporaryDirectory(prefix="_repo_tmp_") as tmp_dir:
+            tmp_base_dir = tmp_dir.path
+            self._write_test_repo(str(tmp_base_dir), self.paths)
 
-            done_repos, pending_repos, unconverted_repos, broken_repos = scan_repositories(tmp_base_dir)
-            self.assertListEqual(sorted([repo.split(tmp_base_dir)[-1] for repo in broken_repos]),
+            done_repos, pending_repos, unconverted_repos, broken_repos = scan_repositories(str(tmp_base_dir))
+            self.assertListEqual(sorted([repo.split(str(tmp_base_dir))[-1] for repo in broken_repos]),
                                  sorted(["/repo9" + CONVERT_SUFFIX]))
-            self.assertListEqual(sorted([repo.split(tmp_base_dir)[-1] for repo in unconverted_repos]),
+            self.assertListEqual(sorted([repo.split(str(tmp_base_dir))[-1] for repo in unconverted_repos]),
                                  sorted(["/repo1", "/repo2", "/repo3", "/repo4", "/repo6", "/repo8", "/repo9"]))
-            self.assertListEqual(sorted([repo.split(tmp_base_dir)[-1] for repo in pending_repos]),
+            self.assertListEqual(sorted([repo.split(str(tmp_base_dir))[-1] for repo in pending_repos]),
                                  sorted(["/repo2" + CONVERT_SUFFIX, "/repo3" + CONVERT_SUFFIX,
                                          "/repo7" + CONVERT_SUFFIX]))
-            self.assertListEqual(sorted([repo.split(tmp_base_dir)[-1] for repo in done_repos]),
+            self.assertListEqual(sorted([repo.split(str(tmp_base_dir))[-1] for repo in done_repos]),
                                  sorted(["/repo5", "/repo7"]))
 
     @asyncio_test
     async def test_check_repos_which_can_be_updated(self) -> None:
-        with TemporaryDirectory(prefix="_repo_tmp_") as tmp_base_dir:
-            self._write_test_repo(tmp_base_dir, self.paths)
-            done_repos, pending_repos, unconverted_repos, _ = scan_repositories(tmp_base_dir)
+        with TemporaryDirectory(prefix="_repo_tmp_") as tmp_dir:
+            tmp_base_dir = tmp_dir.path
+            self._write_test_repo(str(tmp_base_dir), self.paths)
+            done_repos, pending_repos, unconverted_repos, _ = scan_repositories(str(tmp_base_dir))
 
             updatable_repos, existing_pending_repos = check_repos_which_can_be_updated(done_repos + pending_repos + unconverted_repos)
-            self.assertListEqual(sorted([repo.split(tmp_base_dir)[-1] for repo in updatable_repos]),
+            self.assertListEqual(sorted([repo.split(str(tmp_base_dir))[-1] for repo in updatable_repos]),
                                  sorted(["/repo1", "/repo4", "/repo5", "/repo6", "/repo8"]))
-            self.assertListEqual(sorted([repo.split(tmp_base_dir)[-1] for repo in existing_pending_repos]),
+            self.assertListEqual(sorted([repo.split(str(tmp_base_dir))[-1] for repo in existing_pending_repos]),
                                  sorted(["/repo2", "/repo3", "/repo7", "/repo9"]))
 
     @asyncio_test
     async def test_swap_repositories_invalid(self) -> None:
-        with TemporaryDirectory(prefix="_repo_tmp_") as tmp_base_dir:
-            self._write_test_repo(tmp_base_dir, self.paths)
-            unconverted_repos = scan_repositories(tmp_base_dir)[2]
+        with TemporaryDirectory(prefix="_repo_tmp_") as tmp_dir:
+            tmp_base_dir = tmp_dir.path
+            self._write_test_repo(str(tmp_base_dir), self.paths)
+            unconverted_repos = scan_repositories(str(tmp_base_dir))[2]
             with self.assertRaises(IfwRepoUpdateError):
                 await create_converted_repositories(repogen="foobar-repogen", repositories_to_migrate=unconverted_repos,
                                                     dry_run=True)
 
     @asyncio_test
     async def test_swap_repositories_valid(self) -> None:
-        with TemporaryDirectory(prefix="_repo_tmp_") as tmp_base_dir:
-            self._write_test_repo(tmp_base_dir, self.non_migrated_paths)
-            unconverted_repos = scan_repositories(tmp_base_dir)[2]
-            successful_conversions, failed_conversions = await create_converted_repositories(repogen="foobar-repogen",
-                                                                                             repositories_to_migrate=unconverted_repos,
-                                                                                             dry_run=True)
+        with TemporaryDirectory(prefix="_repo_tmp_") as tmp_dir:
+            tmp_base_dir = tmp_dir.path
+            self._write_test_repo(str(tmp_base_dir), self.non_migrated_paths)
+            unconverted_repos = scan_repositories(str(tmp_base_dir))[2]
+            successful_conversions, failed_conversions = await create_converted_repositories(
+                repogen="foobar-repogen", repositories_to_migrate=unconverted_repos, dry_run=True
+            )
             self.assertTrue(not failed_conversions)
             # as it was dry-run we need to create the dummy migrated repo directories here
             for _, migrated_repo in successful_conversions.items():

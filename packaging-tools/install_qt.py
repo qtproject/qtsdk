@@ -3,7 +3,7 @@
 
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -32,8 +32,9 @@
 import argparse
 import os
 import sys
-from tempfile import TemporaryDirectory
 from typing import List, Optional
+
+from temppathlib import TemporaryDirectory
 
 from bldinstallercommon import create_qt_download_task, patch_qt
 from logging_util import init_logger
@@ -112,8 +113,7 @@ def install_qt(
         else:
             with TemporaryDirectory() as temporary_dir:
                 dl_pkgs_work.add_task_object(
-                    create_qt_download_task(qt_modules, qt_path, temporary_dir,
-                                            opts)
+                    create_qt_download_task(qt_modules, qt_path, str(temporary_dir.path), opts)
                 )
 
     # run task if needed

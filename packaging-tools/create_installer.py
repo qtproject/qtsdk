@@ -40,9 +40,10 @@ from dataclasses import dataclass, field
 from enum import Enum
 from multiprocessing import cpu_count
 from pathlib import Path
-from tempfile import TemporaryDirectory
 from time import gmtime, strftime
 from typing import Any, Dict, Generator, Generic, List, Optional, Tuple, TypeVar
+
+from temppathlib import TemporaryDirectory
 
 from bld_utils import download, is_linux, is_macos, is_windows
 from bldinstallercommon import (
@@ -617,7 +618,7 @@ def get_component_data(
         return
     # Download payload to a temporary directory to avoid naming clashes
     with TemporaryDirectory() as temp_dir:
-        download_path = Path(temp_dir, download_name)
+        download_path = temp_dir.path / download_name
         log.info("[%s] Download: %s", archive.package_name, download_name)
         download(archive.archive_uri, str(download_path))
         # For non-archive payload and non-extractable archives, move to install_dir for packing

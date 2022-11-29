@@ -3,7 +3,7 @@
 
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -32,10 +32,10 @@
 import os
 import unittest
 from pathlib import Path
-from tempfile import TemporaryDirectory
 from typing import Optional, Tuple
 
 from ddt import data, ddt  # type: ignore
+from temppathlib import TemporaryDirectory
 
 from bld_utils import is_macos, is_windows
 from bldinstallercommon import locate_paths
@@ -46,7 +46,7 @@ from sdkcomponent import IfwSdkComponent
 @ddt
 class TestCommon(unittest.TestCase):
     @data((  # type: ignore
-        ("/bin/", "/lib/", "/qml/", "/plugins/", "/unrelated/"),
+        ("bin", "lib", "qml", "plugins", "unrelated"),
         (
             "Foo.lib", "Food.lib", "dd.qml", "Bar.exe", "Bard.exe", "Qt3d.dll", "Qt3dd.dll"
         ) if is_windows() else (
@@ -59,16 +59,17 @@ class TestCommon(unittest.TestCase):
     @unittest.skipIf(not(is_windows() or is_macos()), "This test is only for Windows and macOS")
     def test_remove_all_debug_libraries_win(self, test_data: Tuple[str, str, str]) -> None:
         dirs, files, remaining_files = test_data
-        with TemporaryDirectory() as tmpdir:
+        with TemporaryDirectory() as tmp_dir:
+            tmp_path = tmp_dir.path
             for directory in dirs:
-                Path(tmpdir + directory).mkdir()
+                (tmp_path / directory).mkdir()
                 for file in files:
-                    Path(tmpdir + directory + file).touch()
-            remove_all_debug_libraries(tmpdir)
+                    (tmp_path / directory / file).touch()
+            remove_all_debug_libraries(str(tmp_path))
             for directory in dirs:
-                result_paths = locate_paths(tmpdir + directory, ["*"], [os.path.isfile])
-                result_rel = [str(Path(p).relative_to(tmpdir + directory)) for p in result_paths]
-                if directory == "/unrelated/":
+                result_paths = locate_paths(tmp_path / directory, ["*"], [os.path.isfile])
+                result_rel = [str(Path(p).relative_to(tmp_path / directory)) for p in result_paths]
+                if directory == "unrelated":
                     self.assertCountEqual(result_rel, files)
                 else:
                     self.assertCountEqual(result_rel, remaining_files)
@@ -81,7 +82,7 @@ class TestCommon(unittest.TestCase):
         sha, exp = test_data
         sdk_comp = IfwSdkComponent("", "", "", "", "", "", "", "", "", "", "")  # type: ignore
         with TemporaryDirectory() as tmpdir:
-            test_sha = Path(tmpdir) / "test"
+            test_sha = tmpdir.path / "test"
             test_sha.write_text(sha, encoding="utf-8")
             read_component_sha(sdk_comp, test_sha)
             self.assertEqual(sdk_comp.component_sha1, exp)
@@ -95,7 +96,7 @@ class TestCommon(unittest.TestCase):
     def test_read_component_sha_invalid_content(self, test_sha1: str) -> None:
         sdk_comp = IfwSdkComponent("", "", "", "", "", "", "", "", "", "", "")  # type: ignore
         with TemporaryDirectory() as tmpdir:
-            test_sha = Path(tmpdir) / "test"
+            test_sha = tmpdir.path / "test"
             test_sha.write_text(test_sha1, encoding="utf-8")
             with self.assertRaises(CreateInstallerError):
                 read_component_sha(sdk_comp, test_sha)
@@ -104,7 +105,7 @@ class TestCommon(unittest.TestCase):
         sdk_comp = IfwSdkComponent("", "", "", "", "", "", "", "", "", "", "")  # type: ignore
         with TemporaryDirectory() as tmpdir:
             with self.assertRaises(CreateInstallerError):
-                read_component_sha(sdk_comp, Path(tmpdir) / "invalid")
+                read_component_sha(sdk_comp, tmpdir.path / "invalid")
 
 
 if __name__ == "__main__":
