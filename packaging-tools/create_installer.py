@@ -791,11 +791,6 @@ def create_online_repository(task: Any) -> None:
     """Create online repository using repogen tool."""
     log.info("Create online repository")
 
-    # handle special case if MaintenanceTool repository build and
-    # update.rcc update requeste
-    if task.create_maintenance_tool_resource_file:
-        create_maintenance_tool_resource_file(task)
-
     # repogen arguments
     if task.create_repository:
         log.info("Creating online repository:")
@@ -809,28 +804,6 @@ def create_online_repository(task: Any) -> None:
         run_cmd(cmd=repogen_args, cwd=task.script_root_dir)
         if not os.path.exists(task.repo_output_dir):
             raise CreateInstallerError(f"Unable to create repository directory: {task.repo_output_dir}")
-
-
-##############################################################
-# Create MaintenanceTool resource file
-##############################################################
-def create_maintenance_tool_resource_file(task: Any) -> None:
-    """Create MaintenanceTool resource file."""
-    log.info("Create MaintenanceTool resource file")
-    set_config_directory(task)
-    config_xml = set_config_xml(task)
-    pkg_dir = task.packages_full_path_dst
-    cmd_args = [task.binarycreator_tool, '--online-only', '-p', pkg_dir, '-c', config_xml, '-rcc']
-    run_cmd(cmd=cmd_args, cwd=task.script_root_dir)
-    # archive
-    resource_file = os.path.join(task.script_root_dir, 'update.rcc')
-    try:
-        installer_base_archive = locate_path(task.packages_full_path_dst, ["*installer-framework*"], filters=[os.path.isfile])
-        # inject the resource file to the same archive where installerbase is
-        inject_update_rcc_to_archive(installer_base_archive, resource_file)
-    except PackagingError:
-        log.error("Unable to locate installerbase archive from: %s", task.packages_full_path_dst)
-        log.error("The update.rcc will not be included in the MaintenanceTool repository!")
 
 
 ###############################
@@ -961,9 +934,6 @@ class QtInstallerTask:
     force_version_number_increase: bool = False
     version_number_auto_increase_value: str = "-" + strftime("%Y%m%d%H%M", gmtime())
     max_cpu_count: int = 8
-    create_maintenance_tool_resource_file: bool = bool(
-        os.environ.get("CREATE_MAINTENANCE_TOOL_RESOURCE_FILE")
-    )
     substitution_list: List[str] = field(default_factory=list)
 
     def __post_init__(self) -> None:
@@ -1006,8 +976,7 @@ class QtInstallerTask:
   Build timestamp: {self.build_timestamp}
   Force version number increase: {self.force_version_number_increase}
   Version number auto increase value: {self.version_number_auto_increase_value}
-  Mac cpu count: {self.max_cpu_count}
-  Create MaintenanceTool resource file: {self.create_maintenance_tool_resource_file}"""
+  Mac cpu count: {self.max_cpu_count}"""
 
     def _parse_substitutions(self) -> None:
         for item in self.substitution_list:  # pylint: disable=not-an-iterable
@@ -1146,10 +1115,6 @@ def main() -> None:
     parser.add_argument("--max-cpu-count", dest="max_cpu_count", type=int, default=8,
                         help="Set maximum number of CPU's used on packaging")
 
-    parser.add_argument("--create-maintenance-tool-resource-file", type=str2bool, nargs='?',
-                        const=True, dest="create_maintenance_tool_resource_file",
-                        default=os.environ.get('CREATE_MAINTENANCE_TOOL_RESOURCE_FILE'),
-                        help="Create resource file for Maintenance Tool")
     args = parser.parse_args(sys.argv[1:])
 
     task: QtInstallerTask = QtInstallerTask(
@@ -1171,8 +1136,7 @@ def main() -> None:
         remove_debug_information_files=args.remove_debug_information_files,
         remove_debug_libraries=args.remove_debug_libraries,
         remove_pdb_files=args.remove_pdb_files,
-        max_cpu_count=args.max_cpu_count,
-        create_maintenance_tool_resource_file=args.create_maintenance_tool_resource_file,
+        max_cpu_count=args.max_cpu_count
     )
     log.info(str(task))
     create_installer(task)
