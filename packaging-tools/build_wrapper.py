@@ -397,6 +397,7 @@ def qtcreator_build_plugin_script(qtcreator_dev_path: str) -> str:
 
 def build_qtcreator_plugins(
     option_dict: Dict[str, str],
+    build_environment: Dict[str, str],
     plugins: List[QtcPlugin],
     qtcreator_path: str,
     qtcreator_dev_path: str,
@@ -446,7 +447,8 @@ def build_qtcreator_plugins(
                 openssl_url=openssl_url,
             )
 
-        check_call_log(cmd_arguments, work_dir, log_filepath=log_filepath)
+        check_call_log(cmd_arguments, work_dir, extra_env=build_environment,
+                       log_filepath=log_filepath)
         create_qtcreator_source_package(option_dict, os.path.join(work_dir, plugin.path), plugin.name, plugin.version,
                                         'enterprise', work_dir, log_filepath)
 
@@ -857,7 +859,9 @@ def handle_qt_creator_build(option_dict: Dict[str, str], qtcreator_plugins: List
                    work_dir, log_filepath=log_filepath)
     check_call_log(['7z', 'x', '-y', os.path.join(work_dir, 'qt-creator_build', 'qtcreator_dev.7z'), '-o' + qtcreator_path],
                    work_dir, log_filepath=log_filepath)
-    build_qtcreator_plugins(option_dict, additional_plugins, qtcreator_path, qtcreator_path, icu_url=icu_local_url,
+    build_qtcreator_plugins(option_dict,
+                            build_environment,
+                            additional_plugins, qtcreator_path, qtcreator_path, icu_url=icu_local_url,
                             openssl_url=openssl_local_url, additional_config=qtc_additional_config,
                             log_filepath=log_filepath)
 
@@ -975,10 +979,13 @@ def handle_qt_creator_build(option_dict: Dict[str, str], qtcreator_plugins: List
     snapshot_upload_list.append((target_env_dir + '/qtcreator-debug.7z', target_env_dir + '/qtcreator-debug.7z'))
     for plugin in additional_plugins:
         plugin_name = plugin.name + '.7z'
+        plugin_signed_name = plugin.name + '-signed.7z'
         plugin_dev_name = plugin.name + '_dev.7z'
         plugin_debug_name = plugin.name + '-debug.7z'
         if os.path.isfile(os.path.join(work_dir, plugin_name)):
             file_upload_list.append((plugin_name, target_env_dir + '/' + plugin_name))
+        if os.path.isfile(os.path.join(work_dir, plugin_signed_name)):
+            file_upload_list.append((plugin_signed_name, target_env_dir + '/' + plugin_signed_name))
         if os.path.isfile(os.path.join(work_dir, plugin_dev_name)):
             file_upload_list.append((plugin_dev_name, target_env_dir + '/' + plugin_dev_name))
         if os.path.isfile(os.path.join(work_dir, plugin_debug_name)):
