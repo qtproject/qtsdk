@@ -3,7 +3,7 @@
 
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Copyright (C) 2014 BlackBerry Limited. All rights reserved.
 # Contact: https://www.qt.io/licensing/
 #
@@ -41,12 +41,13 @@ import sys
 from collections import namedtuple
 from configparser import ConfigParser
 from contextlib import suppress
+from functools import partial
 from getpass import getuser
 from glob import glob
 from io import TextIOWrapper
 from pathlib import Path
 from time import gmtime, strftime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 from urllib.request import urlopen
 
@@ -541,17 +542,59 @@ def update_job_link(
     update_latest_link(option_dict, remote_target_path, remote_link)
 
 
-def repackage_and_sign_qtcreator(
-    qtcreator_path: str,
-    work_dir: str,
-    result_package: str,
-    qtcreator_package: str,
+def extract_qtc_sdktool(
     sdktool_package: str,
-    additional_plugins: Optional[List[QtcPlugin]] = None,
-    extra_env: Optional[Dict[str, str]] = None,
+    extract_path: str,
+    app: str,
+    log_filepath: Optional[str]
+) -> None:
+    check_call_log(['7z', 'x', '-y',
+                    sdktool_package,
+                    '-o' + os.path.join(extract_path, app,
+                                        'Contents', 'Resources', 'libexec')],
+                   extract_path, log_filepath=log_filepath)
+
+
+def extract_qtc_plugins(
+    work_dir: str,
+    additional_plugins: List[QtcPlugin],
+    extract_path: str,
+    app: str, # pylint: disable=W0613
+    log_filepath: Optional[str]
+) -> None:
+    for plugin in additional_plugins:
+        if not plugin.package_commercial:
+            continue
+        plugin_package = plugin.name + '.7z'
+        if os.path.isfile(os.path.join(work_dir, plugin_package)):
+            check_call_log(['7z', 'x', '-y',
+                            os.path.join(work_dir, plugin_package),
+                            '-o' + extract_path],
+                           work_dir, log_filepath=log_filepath)
+
+
+def sign_qtc(
+    qtcreator_path: str,
+    extra_env: Dict[str, str],
+    extract_path: str,
+    app: str,
+    log_filepath: Optional[str]
+) -> None:
+    unlock_keychain()
+    import_path = os.path.join(qtcreator_path, 'scripts')
+    check_call_log([sys.executable, '-u', '-c', "import common; common.codesign('"
+                    + os.path.join(extract_path, app)
+                    + "')"],
+                   import_path, extra_env=extra_env, log_filepath=log_filepath)
+
+
+def repackage_qtcreator(
+    work_dir: str,
+    qtcreator_package: str,
+    result_package: str,
+    operations: List[Callable[[str, str, Optional[str]], None]],
     log_filepath: Optional[str] = None,
 ) -> None:
-    additional_plugins = additional_plugins or []
     extract_path = os.path.join(work_dir, 'temp_repackaged_qtc')
     if not os.path.exists(extract_path):
         os.makedirs(extract_path)
@@ -562,32 +605,10 @@ def repackage_and_sign_qtcreator(
                    work_dir, log_filepath=log_filepath)
     # find app name
     apps = [d for d in os.listdir(extract_path) if d.endswith('.app')]
-    app = apps[0]
-    # extract sdktool
-    if os.path.isfile(os.path.join(work_dir, sdktool_package)):
-        check_call_log(['7z', 'x', '-y',
-                        os.path.join(work_dir, sdktool_package),
-                        '-o' + os.path.join(extract_path, app,
-                                            'Contents', 'Resources', 'libexec')],
-                       work_dir, log_filepath=log_filepath)
-    # extract plugins (if applicable)
-    if additional_plugins:
-        for plugin in additional_plugins:
-            if not plugin.package_commercial:
-                continue
-            plugin_package = plugin.name + '.7z'
-            if os.path.isfile(os.path.join(work_dir, plugin_package)):
-                check_call_log(['7z', 'x', '-y',
-                                os.path.join(work_dir, plugin_package),
-                                '-o' + extract_path],
-                               work_dir, log_filepath=log_filepath)
-    # sign
-    unlock_keychain()
-    import_path = os.path.join(qtcreator_path, 'scripts')
-    check_call_log([sys.executable, '-u', '-c', "import common; common.codesign('"
-                    + os.path.join(extract_path, app)
-                    + "')"],
-                   import_path, extra_env=extra_env, log_filepath=log_filepath)
+    app = apps[0] if is_macos() else '*'
+    # ^ '*' is for Lin/Win for the 7z re-packaging at the end, see zipPatternForApp in qtc/build.py
+    for operation in operations:
+        operation(extract_path, app, log_filepath)
     # repackage
     result_filepath = os.path.join(work_dir, result_package)
     if os.path.exists(result_filepath):
@@ -906,17 +927,23 @@ def handle_qt_creator_build(option_dict: Dict[str, str], qtcreator_plugins: List
     # repackage and sign opensource and enterprise packages on macOS
     # these are then for direct packaging in the offline installers
     if is_macos() and get_pkg_value('SIGNING_IDENTITY') and not os.getenv('DISABLE_MAC_SIGNING'):
+        sdktool_task = partial(extract_qtc_sdktool, os.path.join(work_dir, 'sdktool.7z'))
+        commercial_plugins_task = partial(extract_qtc_plugins, work_dir, additional_plugins)
         # use build_environment for SIGNING_IDENTITY
-        repackage_and_sign_qtcreator(src_path, work_dir,
-                                     'qtcreator-signed.7z',
-                                     os.path.join(build_path, 'qtcreator.7z'), 'sdktool.7z',
-                                     extra_env=build_environment)
+        sign_task = partial(sign_qtc, src_path, build_environment)
+        qtcreator_package = os.path.join(build_path, 'qtcreator.7z')
+        # opensource offline: Qt Creator + sdktool + signed
+        repackage_qtcreator(work_dir,
+                            qtcreator_package,
+                            'qtcreator-signed.7z',
+                            [sdktool_task, sign_task],
+                            log_filepath)
         # packages plugins with package_commercial=True
-        repackage_and_sign_qtcreator(src_path, work_dir,
-                                     'qtcreator-commercial-signed.7z',
-                                     os.path.join(build_path, 'qtcreator.7z'), 'sdktool.7z',
-                                     extra_env=build_environment,
-                                     additional_plugins=additional_plugins)
+        repackage_qtcreator(work_dir,
+                            qtcreator_package,
+                            'qtcreator-commercial-signed.7z',
+                            [sdktool_task, commercial_plugins_task, sign_task],
+                            log_filepath)
 
     # notarize
     if is_macos() and do_notarize:
