@@ -59,7 +59,7 @@ class TestCommon(unittest.TestCase):
     @unittest.skipIf(not(is_windows() or is_macos()), "This test is only for Windows and macOS")
     def test_remove_all_debug_libraries_win(self, test_data: Tuple[str, str, str]) -> None:
         dirs, files, remaining_files = test_data
-        with TemporaryDirectory(dir=str(Path.cwd())) as tmpdir:
+        with TemporaryDirectory() as tmpdir:
             for directory in dirs:
                 Path(tmpdir + directory).mkdir()
                 for file in files:
@@ -80,7 +80,7 @@ class TestCommon(unittest.TestCase):
     def test_read_component_sha(self, test_data: Tuple[str, Optional[str]]) -> None:
         sha, exp = test_data
         sdk_comp = IfwSdkComponent("", "", "", "", "", "", "", "", "", "", "")  # type: ignore
-        with TemporaryDirectory(dir=Path.cwd()) as tmpdir:
+        with TemporaryDirectory() as tmpdir:
             test_sha = Path(tmpdir) / "test"
             test_sha.write_text(sha, encoding="utf-8")
             read_component_sha(sdk_comp, test_sha)
@@ -94,7 +94,7 @@ class TestCommon(unittest.TestCase):
     )
     def test_read_component_sha_invalid_content(self, test_sha1: str) -> None:
         sdk_comp = IfwSdkComponent("", "", "", "", "", "", "", "", "", "", "")  # type: ignore
-        with TemporaryDirectory(dir=Path.cwd()) as tmpdir:
+        with TemporaryDirectory() as tmpdir:
             test_sha = Path(tmpdir) / "test"
             test_sha.write_text(test_sha1, encoding="utf-8")
             with self.assertRaises(CreateInstallerError):
@@ -102,7 +102,7 @@ class TestCommon(unittest.TestCase):
 
     def test_read_component_sha_invalid_path(self) -> None:
         sdk_comp = IfwSdkComponent("", "", "", "", "", "", "", "", "", "", "")  # type: ignore
-        with TemporaryDirectory(dir=Path.cwd()) as tmpdir:
+        with TemporaryDirectory() as tmpdir:
             with self.assertRaises(CreateInstallerError):
                 read_component_sha(sdk_comp, Path(tmpdir) / "invalid")
 

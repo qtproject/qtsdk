@@ -245,7 +245,7 @@ def execute_remote_cmd(
 def create_remote_script(
     server: str, cmd: List[str], remote_script_path: str, script_file_name: str
 ) -> str:
-    with TemporaryDirectory(dir=str(Path.cwd())) as tmp_base_dir:
+    with TemporaryDirectory() as tmp_base_dir:
         temp_file_path = os.path.join(tmp_base_dir, script_file_name)
         with open(temp_file_path, 'w+', encoding="utf-8") as handle:
             handle.write("#!/usr/bin/env bash\n")

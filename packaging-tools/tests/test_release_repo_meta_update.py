@@ -31,7 +31,6 @@
 
 import os
 import unittest
-from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import List
 
@@ -106,7 +105,7 @@ class TestReleaseRepoMetaUpdate(unittest.TestCase):
 
     @asyncio_test
     async def test_scan_repositories(self) -> None:
-        with TemporaryDirectory(dir=str(Path.cwd()), prefix="_repo_tmp_") as tmp_base_dir:
+        with TemporaryDirectory(prefix="_repo_tmp_") as tmp_base_dir:
             self._write_test_repo(tmp_base_dir, self.paths)
 
             done_repos, pending_repos, unconverted_repos, broken_repos = scan_repositories(tmp_base_dir)
@@ -122,7 +121,7 @@ class TestReleaseRepoMetaUpdate(unittest.TestCase):
 
     @asyncio_test
     async def test_check_repos_which_can_be_updated(self) -> None:
-        with TemporaryDirectory(dir=str(Path.cwd()), prefix="_repo_tmp_") as tmp_base_dir:
+        with TemporaryDirectory(prefix="_repo_tmp_") as tmp_base_dir:
             self._write_test_repo(tmp_base_dir, self.paths)
             done_repos, pending_repos, unconverted_repos, _ = scan_repositories(tmp_base_dir)
 
@@ -134,7 +133,7 @@ class TestReleaseRepoMetaUpdate(unittest.TestCase):
 
     @asyncio_test
     async def test_swap_repositories_invalid(self) -> None:
-        with TemporaryDirectory(dir=str(Path.cwd()), prefix="_repo_tmp_") as tmp_base_dir:
+        with TemporaryDirectory(prefix="_repo_tmp_") as tmp_base_dir:
             self._write_test_repo(tmp_base_dir, self.paths)
             unconverted_repos = scan_repositories(tmp_base_dir)[2]
             with self.assertRaises(IfwRepoUpdateError):
@@ -143,7 +142,7 @@ class TestReleaseRepoMetaUpdate(unittest.TestCase):
 
     @asyncio_test
     async def test_swap_repositories_valid(self) -> None:
-        with TemporaryDirectory(dir=str(Path.cwd()), prefix="_repo_tmp_") as tmp_base_dir:
+        with TemporaryDirectory(prefix="_repo_tmp_") as tmp_base_dir:
             self._write_test_repo(tmp_base_dir, self.non_migrated_paths)
             unconverted_repos = scan_repositories(tmp_base_dir)[2]
             successful_conversions, failed_conversions = await create_converted_repositories(repogen="foobar-repogen",

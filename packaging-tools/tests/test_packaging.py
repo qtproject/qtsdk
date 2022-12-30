@@ -34,7 +34,6 @@ import platform
 import sys
 import unittest
 from fileinput import FileInput
-from pathlib import Path
 from shutil import rmtree
 from tempfile import mkdtemp
 
@@ -120,7 +119,7 @@ class TestPackaging(unittest.TestCase):
             self.assertEqual(match_count, len(data[2]))
 
     def test_patch_qt_edition(self) -> None:
-        temp_dir = mkdtemp(dir=str(Path.cwd()))
+        temp_dir = mkdtemp()
         temp_file = os.path.join(temp_dir, "qconfig.pri")
 
         try:

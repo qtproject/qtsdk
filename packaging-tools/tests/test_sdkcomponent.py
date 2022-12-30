@@ -143,7 +143,7 @@ class TestRunner(unittest.TestCase):
         pkg_template_paths = ifw_pkg_templ_dirs([section])
         ifw_sdk_config = ifw_sdk_config_valid(section)
 
-        with tempfile.TemporaryDirectory(dir=str(Path.cwd())) as tmp_base_dir:
+        with tempfile.TemporaryDirectory() as tmp_base_dir:
             pkg_template_search_dirs: List[str] = []
             create_paths(tmp_base_dir, pkg_template_paths)
             pkg_template_search_dirs.append(os.path.join(tmp_base_dir, "pkg_templates"))
@@ -268,7 +268,7 @@ class TestRunner(unittest.TestCase):
         self.assertEqual(item.requires_patching, expected_requires_patching)
 
     def test_archive_resolver(self) -> None:
-        with tempfile.TemporaryDirectory(dir=str(Path.cwd())) as tmp_base_dir:
+        with tempfile.TemporaryDirectory() as tmp_base_dir:
             template_folder = os.path.join(tmp_base_dir, "qt.tools.foo")
             data_folder = os.path.join(template_folder, "data")
             payload_file = os.path.join(data_folder, "readme.txt")
@@ -347,7 +347,7 @@ class TestRunner(unittest.TestCase):
         self.assertCountEqual(asyncio.run(resolver.resolve_uri_pattern(pattern, None)), expected)
 
     def test_locate_pkg_templ_dir_invalid(self) -> None:
-        with tempfile.TemporaryDirectory(dir=str(Path.cwd())) as tmp_base_dir:
+        with tempfile.TemporaryDirectory() as tmp_base_dir:
             with self.assertRaises(IfwSdkError):
                 locate_pkg_templ_dir([tmp_base_dir], "qt.foo")
 

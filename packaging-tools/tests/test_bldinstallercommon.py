@@ -77,7 +77,7 @@ class TestCommon(unittest.TestCase):
     def test_replace_in_files(self, test_data: Tuple[str, List[Tuple[str, str]], str]) -> None:
         # unpack data
         file_contents, replacements, expected_file_content = test_data
-        with TemporaryDirectory(dir=str(Path.cwd())) as tmp_base_dir:
+        with TemporaryDirectory() as tmp_base_dir:
             # run tag substitution with data
             tmp_file = Path(tmp_base_dir) / "test"
             with open(tmp_file, "a", encoding="utf-8") as handle:
@@ -90,7 +90,7 @@ class TestCommon(unittest.TestCase):
                 self.assertEqual(file_contents, expected_file_content)
 
     def test_replace_in_files_invalid_path(self) -> None:
-        with TemporaryDirectory(dir=str(Path.cwd())) as tmp_base_dir:
+        with TemporaryDirectory() as tmp_base_dir:
             # invalid file path should raise FileNotFoundError
             invalid_path = Path(tmp_base_dir) / "invalid"
             with self.assertRaises(FileNotFoundError):
@@ -139,7 +139,7 @@ class TestCommon(unittest.TestCase):
     )
     def test_search_for_files(self, test_data: Tuple[Tuple[str, str], Tuple[List[str], str], List[str]]) -> None:
         file, params, expected_files = test_data
-        with TemporaryDirectory(dir=str(Path.cwd())) as tmp_base_dir:
+        with TemporaryDirectory() as tmp_base_dir:
             path, content = file
             tmp_file = Path(tmp_base_dir) / path
             tmp_file.parents[0].mkdir(parents=True, exist_ok=True)
@@ -164,7 +164,7 @@ class TestCommon(unittest.TestCase):
     )
     def test_locate_paths(self, test_data: Tuple[List[str], Optional[List[Callable[[Path], bool]]], List[str]]) -> None:
         pattern, filters, expected_results = test_data
-        with TemporaryDirectory(dir=str(Path.cwd())) as tmp_base_dir:
+        with TemporaryDirectory() as tmp_base_dir:
             # Create files and folders
             test_folders = ["/tempty", "/d/n", "/.d"]
             test_files = ["/tst.t", "/tst.y", "/d/tst.t", "/.t", "/.d/.t"]
@@ -177,18 +177,18 @@ class TestCommon(unittest.TestCase):
             self.assertCountEqual(expected_results, result)
 
     def test_locate_path(self) -> None:
-        with TemporaryDirectory(dir=str(Path.cwd())) as tmp_base_dir:
+        with TemporaryDirectory() as tmp_base_dir:
             test_file = tmp_base_dir + "/test"
             Path(test_file).touch()
             self.assertEqual(test_file, locate_path(tmp_base_dir, ["test"], [os.path.isfile]))
 
     def test_locate_path_no_matches(self) -> None:
-        with TemporaryDirectory(dir=str(Path.cwd())) as tmp_base_dir:
+        with TemporaryDirectory() as tmp_base_dir:
             with self.assertRaises(PackagingError):
                 locate_path(tmp_base_dir, ["test"], [os.path.isfile])
 
     def test_locate_path_multiple_matches(self) -> None:
-        with TemporaryDirectory(dir=str(Path.cwd())) as tmp_base_dir:
+        with TemporaryDirectory() as tmp_base_dir:
             Path(tmp_base_dir + "/file").touch()
             Path(tmp_base_dir + "/file2").touch()
             with self.assertRaises(PackagingError):
@@ -196,7 +196,7 @@ class TestCommon(unittest.TestCase):
 
     @unittest.skipIf(is_windows(), "Windows not supported for this test")
     def test_locate_executable(self) -> None:
-        with TemporaryDirectory(dir=str(Path.cwd())) as tmp_base_dir:
+        with TemporaryDirectory() as tmp_base_dir:
             Path(tmp_base_dir + "/test_file").touch()
             Path(tmp_base_dir + "/test_file2").touch(0o755)
             # File with executable bit not set should throw an error

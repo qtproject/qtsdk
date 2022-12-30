@@ -76,13 +76,13 @@ class TestRunner(unittest.TestCase):
     def test_exec_cmd_execution_path(self) -> None:
         check_work_dir_args = ["cd"] if is_windows() else ["pwd"]
         # Test execution_path
-        with TemporaryDirectory(dir=str(Path.cwd())) as tmp_base_dir:
+        with TemporaryDirectory() as tmp_base_dir:
             output = run_cmd(cmd=check_work_dir_args, cwd=tmp_base_dir)
             self.assertEqual(output, tmp_base_dir + "\n")
 
     def test_exec_cmd_log_to_file(self) -> None:
         # Test log_to_file
-        with TemporaryDirectory(dir=str(Path.cwd())) as tmp_base_dir:
+        with TemporaryDirectory() as tmp_base_dir:
             log_file = Path(tmp_base_dir) / "log"
             log_file.touch()
             run_cmd(cmd=["echo", "TEST"], cwd=tmp_base_dir, redirect=str(log_file))

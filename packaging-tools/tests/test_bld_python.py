@@ -31,7 +31,6 @@
 
 import os
 import unittest
-from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from bld_python import BldPythonError, locate_source_root
@@ -42,7 +41,7 @@ class TestBldPython(unittest.TestCase):
 
     @asyncio_test
     async def test_locate_source_root(self) -> None:
-        with TemporaryDirectory(dir=str(Path.cwd())) as tmp_base_dir:
+        with TemporaryDirectory() as tmp_base_dir:
             temp_dir = os.path.join(tmp_base_dir, "foo", "bar", "test", "dir")
             os.makedirs(temp_dir)
             temp_file_path = os.path.join(temp_dir, "configure")
