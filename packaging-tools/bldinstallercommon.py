@@ -46,7 +46,7 @@ from traceback import print_exc
 from types import TracebackType
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 from urllib.parse import urlparse
-from urllib.request import urlcleanup, urlretrieve
+from urllib.request import url2pathname, urlcleanup, urlretrieve
 
 import requests
 
@@ -65,6 +65,29 @@ log = init_logger(__name__, debug_mode=False)
 MAX_DEBUG_PRINT_LENGTH = 10000
 
 
+def file_uri_to_path(uri: str) -> Path:
+    """
+    Convert file:// uris and string paths to pathlib path
+
+    Examples:
+        # unix
+        file:///home/qt/foo%20bar -> Path("/home/qt/foo bar")
+        # windows
+        file:///c:/users/qt/foo%20bar -> Path("c:/users/qt/foo bar")
+        # string path
+        c:\\users\\qt\\foo\\bar -> Path("c:\\users\\qt\\foo\\bar")
+
+    Args:
+        uri: A string containing a file:// uri or path
+
+    Returns:
+        A pathlib.Path object
+    """
+    if uri.startswith("file://"):
+        uri = url2pathname(uri.replace("file://", ""))
+    return Path(uri)
+
+
 def uri_exists(uri: str) -> bool:
     """
     Check URI and return whether the location exists, log the errors if any
@@ -77,9 +100,10 @@ def uri_exists(uri: str) -> bool:
     Returns:
         True if the file exists at the given URI location, otherwise False
     """
-    # check first if the url points to file on local file system
-    if Path(uri.replace("file://", "")).resolve().is_file():
-        return True
+    # check first if the url points to file on local file system (i.e. not http)
+    if not uri.startswith(("http://", "https://")):
+        # convert file URI to pathname
+        return file_uri_to_path(uri).resolve().is_file()
     try:
         with requests.head(uri, timeout=30, stream=True) as res:
             res.raise_for_status()
