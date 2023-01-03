@@ -3,7 +3,7 @@
 
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -98,8 +98,6 @@ class IfwPayloadItem:
             self.errors += [f"[{self.package_name}] is missing 'archive_uri'"]
         if self.package_strip_dirs is None:
             self.errors += [f"[{self.package_name}] is missing 'package_strip_dirs'"]
-        if not self.get_archive_install_dir():
-            self.errors += [f"[{self.package_name}] is missing payload installation directory"]
         if not self.archive_uri.endswith(self.supported_arch_formats) and self.requires_patching:
             if self.package_strip_dirs != 0:
                 self.errors += [f"[{self.package_name}] package_strip_dirs!=0 for a non-archive"]
@@ -141,18 +139,18 @@ class IfwPayloadItem:
             archive_name += ".7z"
         return archive_name
 
-    def get_archive_install_dir(self) -> str:
+    def get_archive_install_dir(self) -> Path:
         """
-        Resolve archive install directory based on config
+        Resolve archive install directory relative to root install directory based on config
+        If does not exist in config, uses root install directory
 
         Returns:
             Resolved install directory for the archive
         """
-        ret = os.path.join(
-            self.arch_target_install_base or self.parent_target_install_base,
-            self.arch_target_install_dir.lstrip(os.path.sep),
-        )
-        return ret.rstrip(os.path.sep) or ret
+        # Prioritizes archive's install base dir over parent's install base dir
+        install_base = self.arch_target_install_base or self.parent_target_install_base
+        # Join archive's install dir to install base dir
+        return Path(install_base.strip(r"\/"), self.arch_target_install_dir.strip(r"\/"))
 
     @property
     def requires_patching(self) -> bool:
@@ -169,8 +167,7 @@ class IfwPayloadItem:
                 and not self.package_finalize_items
                 and not self.archive_action
                 and not self.rpath_target
-                and self.parent_target_install_base == "/"
-                and not self.arch_target_install_dir
+                and self.get_archive_install_dir() == Path(".")
             )
         return self._requires_patching
 
@@ -210,7 +207,7 @@ class IfwPayloadItem:
     Finalize items: {self.package_finalize_items}
     Action script: {self.archive_action}
     RPath target: {self.rpath_target}
-    Target install dir: {self.get_archive_install_dir()}"""
+    Target install dir: {str(self.get_archive_install_dir())}"""
             if self.requires_patching else ""
         )
 
@@ -475,7 +472,7 @@ def parse_ifw_sdk_comp(
     archives = config[section].get("archives", "")
     archive_sections = [s.strip() for s in archives.split(",") if s.strip() != ""]
     archives_extract_dir = config_subst.get("archives_extract_dir")
-    target_install_base = config_subst.get("target_install_base")
+    target_install_base = config_subst.get("target_install_base", "")
     version = config_subst.get("version")
     version_tag = config_subst.get("version_tag")
     package_default = config_subst.get("package_default", "false")
@@ -544,7 +541,7 @@ def parse_ifw_sdk_archives(
         # this is relative to:
         # 1) current archive's 'target_install_base'
         # 2) parent components 'target_install_base'. (1) takes priority
-        target_install_dir = config_subst.get("target_install_dir")
+        target_install_dir = config_subst.get("target_install_dir", "")
         rpath_target = config_subst.get("rpath_target")
         if rpath_target and not rpath_target.startswith(os.sep):
             rpath_target = os.sep + rpath_target

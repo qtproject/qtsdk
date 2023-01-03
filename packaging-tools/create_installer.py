@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -825,7 +825,7 @@ def create_target_components(task: QtInstallerTaskType) -> None:
                 if task.offline_installer or task.create_repository:
                     # Create needed data dirs
                     compress_dir = temp_data_dir / archive.archive_name
-                    install_dir = compress_dir / archive.get_archive_install_dir().strip("/")
+                    install_dir = compress_dir / archive.get_archive_install_dir()
                     # adding get_component_data task to our work queue
                     # Create needed data dirs before the threads start to work
                     install_dir.mkdir(parents=True, exist_ok=True)

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -181,7 +181,9 @@ class TestRunner(unittest.TestCase):
             )
             for downloadable_archive in comp.downloadable_archives:
                 self.assertFalse(downloadable_archive.errors)
-                self.assertEqual(downloadable_archive.get_archive_install_dir(), "/5.10.0/gcc_64")
+                self.assertEqual(
+                    downloadable_archive.get_archive_install_dir(), Path("5.10.0", "gcc_64")
+                )
 
     def test_ifw_payload_item_invalid(self) -> None:
         with self.assertRaises(AssertionError):
@@ -218,18 +220,19 @@ class TestRunner(unittest.TestCase):
         self.assertFalse(item.errors)
 
     @data(  # type: ignore
-        ("foo.7z", None, False, 0, "", "/", "", "", "", False, False),
-        ("foo.7z", None, True, 0, "", "/", "", "", "", False, False),
-        ("foo.7z", (Path("foo.sh"), ""), False, 0, "", "/", "", "", "", True, True),
-        ("foo.7z", None, False, 1, "", "/", "", "", "", True, True),
-        ("foo.7z", None, False, 0, "foo", "/", "", "", "", True, True),
-        ("foo.7z", None, False, 0, "", "/foo", "", "", "", True, True),
-        ("foo.7z", None, False, 0, "", "/", "foo", "", "", True, True),
-        ("foo.7z", None, False, 0, "", "/", "", "foo", "", True, True),
-        ("foo.7z", None, False, 0, "", "/", "", "", "foo", True, False),
-        ("foo.txt", None, False, 0, "", "/", "", "", "foo", False, False),
-        ("foo.txt", None, False, 0, "", "/", "", "", "", False, False),
-        ("foo.txt", None, False, 0, "", "/", "foo/bar", "", "", False, True),
+        ("foo.7z", None, False, 0, "", "/", "", "", "", "", False, False),
+        ("foo.7z", None, True, 0, "", "/", "", "", "", "", False, False),
+        ("foo.7z", (Path("foo.sh"), ""), False, 0, "", "/", "", "", "", "", True, True),
+        ("foo.7z", None, False, 1, "", "/", "", "", "", "", True, True),
+        ("foo.7z", None, False, 0, "foo", "/", "", "", "", "", True, True),
+        ("foo.7z", None, False, 0, "", "/foo", "", "", "", "", True, True),
+        ("foo.7z", None, False, 0, "", "/", "/foo", "", "", "", True, True),
+        ("foo.7z", None, False, 0, "", "/", "", "foo/bar", "", "", True, True),
+        ("foo.7z", None, False, 0, "", "/", "", "", "foo", "", True, True),
+        ("foo.7z", None, False, 0, "", "/", "", "", "", "foo", True, False),
+        ("foo.txt", None, False, 0, "", "/", "", "", "", "foo", False, False),
+        ("foo.txt", None, False, 0, "", "/", "", "", "", "", False, False),
+        ("foo.txt", None, False, 0, "", "/", "/foo/bar", "", "", "", False, True),
     )
     @unpack  # type: ignore
     def test_ifw_payload_item_requires_packaging_operations(
@@ -240,6 +243,7 @@ class TestRunner(unittest.TestCase):
         package_strip_dirs: int,
         package_finalize_items: str,
         parent_target_install_base: str,
+        arch_target_install_base: str,
         arch_target_install_dir: str,
         rpath_target: str,
         component_sha1: str,
@@ -254,7 +258,7 @@ class TestRunner(unittest.TestCase):
             package_strip_dirs=package_strip_dirs,
             package_finalize_items=package_finalize_items,
             parent_target_install_base=parent_target_install_base,
-            arch_target_install_base="/foo/bar",
+            arch_target_install_base=arch_target_install_base,
             arch_target_install_dir=arch_target_install_dir,
             rpath_target=rpath_target,
             component_sha1=component_sha1,
