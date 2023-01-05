@@ -168,17 +168,17 @@ class TestRunner(unittest.TestCase):
                     ]
                 ],
             )
-            self.assertEqual(
-                {a.archive_uri for a in comp.downloadable_archives},
-                {
+            self.assertCountEqual(
+                [a.payload_uris[0] for a in comp.downloadable_archives],
+                [
                     file_share_base_url + "qt/dev/release_content/qtbase/qtbase-RHEL_7_4.7z",
                     file_share_base_url + "qt/dev/release_content/qtsvg/qtsvg-RHEL_7_4.7z",
                     file_share_base_url + "opensource/5.10.0/foo/qtdeclarative-RHEL_7_4.7z",
-                },
+                ],
             )
-            self.assertEqual(
-                {a.archive_name for a in comp.downloadable_archives},
-                {"qtbase-RHEL_7_4.7z", "qtsvg-RHEL_7_4.7z", "qtdeclarative-RHEL_7_4.7z"},
+            self.assertCountEqual(
+                [a.archive_name for a in comp.downloadable_archives],
+                ["qtbase-RHEL_7_4.7z", "qtsvg-RHEL_7_4.7z", "qtdeclarative-RHEL_7_4.7z"],
             )
             for downloadable_archive in comp.downloadable_archives:
                 self.assertFalse(downloadable_archive.errors)
@@ -190,7 +190,7 @@ class TestRunner(unittest.TestCase):
         with self.assertRaises(AssertionError):
             IfwPayloadItem(
                 package_name="",
-                archive_uri="http://foo.com/readme.7z",
+                payload_uris=["http://foo.com/readme.7z"],
                 archive_action=None,
                 disable_extract_archive=False,
                 package_strip_dirs=0,
@@ -206,7 +206,7 @@ class TestRunner(unittest.TestCase):
     def test_ifw_payload_item_valid(self) -> None:
         item = IfwPayloadItem(
             package_name="foobar",
-            archive_uri="http://foo.com/readme.7z",
+            payload_uris=["http://foo.com/readme.7z"],
             archive_action=None,
             disable_extract_archive=False,
             package_strip_dirs=0,
@@ -253,7 +253,7 @@ class TestRunner(unittest.TestCase):
     ) -> None:
         item = IfwPayloadItem(
             package_name="foobar",
-            archive_uri=archive_uri,
+            payload_uris=[archive_uri],
             archive_action=archive_action,
             disable_extract_archive=disable_extract_archive,
             package_strip_dirs=package_strip_dirs,
@@ -278,12 +278,14 @@ class TestRunner(unittest.TestCase):
                 pass
 
             resolver = ArchiveResolver("http://intranet.local.it/artifacts", str(template_folder))
-            self.assertEqual(resolver.resolve_payload_uri("readme.txt").pop(), str(payload_file))
+            _, resolved = resolver.resolve_payload_uri("readme.txt")
+            self.assertEqual(resolved.pop(), str(payload_file))
+            _, resolved = resolver.resolve_payload_uri("qt/qtsvg/qtsvg-RHEL_7_4.7z")
             self.assertEqual(
-                resolver.resolve_payload_uri("qt/qtsvg/qtsvg-RHEL_7_4.7z").pop(),
-                "http://intranet.local.it/artifacts/qt/qtsvg/qtsvg-RHEL_7_4.7z",
+                resolved.pop(), "http://intranet.local.it/artifacts/qt/qtsvg/qtsvg-RHEL_7_4.7z"
             )
-            self.assertEqual(resolver.resolve_payload_uri(__file__).pop(), __file__)
+            _, resolved = resolver.resolve_payload_uri(__file__)
+            self.assertEqual(resolved.pop(), __file__)
 
     @data(  # type: ignore
         (
@@ -343,8 +345,11 @@ class TestRunner(unittest.TestCase):
     )
     @unpack  # type: ignore
     @unittest.mock.patch("htmllistparse.fetch_listing", side_effect=create_listing)  # type: ignore
-    def test_pattern_archive_resolver(self, pattern: str, expected: List[str], _: Any) -> None:
+    def test_pattern_archive_resolver(
+        self, pattern: str, expected_uris: List[str], _: Any
+    ) -> None:
         resolver = ArchiveResolver("", "")
+        expected = (URL("http://fileshare.intra/base/path"), expected_uris)
         self.assertCountEqual(asyncio.run(resolver.resolve_uri_pattern(pattern, None)), expected)
 
     def test_locate_pkg_templ_dir_invalid(self) -> None:

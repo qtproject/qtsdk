@@ -63,7 +63,7 @@ class IfwPayloadItem:
     """Payload item class for IfwSdkComponent's archives"""
 
     package_name: str
-    archive_uri: str
+    payload_uris: List[str]
     archive_action: Optional[Tuple[Path, str]]
     disable_extract_archive: bool
     package_strip_dirs: int
@@ -74,6 +74,7 @@ class IfwPayloadItem:
     rpath_target: str
     component_sha1: str
     archive_name: str
+    payload_base_uri: str = field(default_factory=str)
     errors: List[str] = field(default_factory=list)
     # List of archive formats supported by Installer Framework:
     ifw_arch_formats: Tuple[str, ...] = (".7z", ".tar", ".gz", ".zip", ".xz", ".bz2")
@@ -94,15 +95,15 @@ class IfwPayloadItem:
             script_path, _ = self.archive_action
             if not script_path.exists() and script_path.is_file():
                 self.errors += [f"Unable to locate custom archive action script: {script_path}"]
-        if not self.archive_uri:
-            self.errors += [f"[{self.package_name}] is missing 'archive_uri'"]
-        if self.package_strip_dirs is None:
-            self.errors += [f"[{self.package_name}] is missing 'package_strip_dirs'"]
-        if not self.archive_uri.endswith(self.supported_arch_formats) and self.requires_patching:
+        if not self.payload_uris:
+            self.errors += [f"[{self.package_name}] payload contains no payload URIs"]
+        if not self.payload_base_uri and not self.payload_uris[0].endswith(
+            self.supported_arch_formats
+        ):
             if self.package_strip_dirs != 0:
-                self.errors += [f"[{self.package_name}] package_strip_dirs!=0 for a non-archive"]
+                self.errors += [f"[{self.package_name}] strip dirs set for a non-archive"]
             if self.package_finalize_items:
-                self.errors += [f"[{self.package_name}] package_finalize_items for a non-archive"]
+                self.errors += [f"[{self.package_name}] finalize items set for a non-archive"]
 
     def validate(self) -> None:
         """
@@ -122,18 +123,28 @@ class IfwPayloadItem:
 
     def validate_uri(self) -> None:
         """Validate that the uri location exists either on the file system or online"""
-        log.info("[%s] Checking payload uri: %s", self.package_name, self.archive_uri)
-        if not uri_exists(self.archive_uri):
-            raise IfwSdkError(f"[{self.package_name}] Missing payload {self.archive_uri}")
+        if self.payload_base_uri:
+            log.info("[%s] Skip checking already resolved uris", self.package_name)
+            return
+        log.info("[%s] Checking payload uri: %s", self.package_name, self.payload_uris[0])
+        if not uri_exists(self.payload_uris[0]):
+            raise IfwSdkError(f"[{self.package_name}] Missing payload {self.payload_uris[0]}")
 
     def _ensure_ifw_archive_name(self) -> str:
         """
         Get the archive name by splitting from its uri if a name doesn't already exist
+        When using pattern match uri, 'archive_name' must be specified in config
 
         Returns:
             Name for the payload item
+        Raises:
+            IfwSdkError: When 'archive_name' is missing and can't be resolved from URI
         """
-        archive_name: str = self.archive_name or Path(self.archive_uri).name
+        archive_name = self.archive_name
+        if not self.payload_base_uri and not self.archive_name:
+            archive_name = Path(self.payload_uris[0]).name
+        if not archive_name:
+            raise IfwSdkError(f"[{self.package_name}] is missing 'archive_name'")
         # make sure final archive format is supported by IFW (default: .7z)
         if not archive_name.endswith(self.ifw_arch_formats):
             archive_name += ".7z"
@@ -181,14 +192,17 @@ class IfwPayloadItem:
             A boolean for whether extracting the payload is needed.
         """
         if self._requires_extraction is None:
-            if self.archive_uri.endswith(self.ifw_arch_formats):
+            if self.payload_base_uri:
+                # Content from pattern match tree does not support extract
+                self._requires_extraction = False
+            elif self.payload_uris[0].endswith(self.ifw_arch_formats):
                 # Extract IFW supported archives if patching required or archive has a sha1 file
                 # Otherwise, use the raw CI artifact
                 self._requires_extraction = bool(self.component_sha1) or self.requires_patching
                 # If archive extraction is disabled, compress as-is (disable_extract_archive=False)
                 if self.disable_extract_archive:
                     self._requires_extraction = False
-            elif self.archive_uri.endswith(self.supported_arch_formats):
+            elif self.payload_uris[0].endswith(self.supported_arch_formats):
                 # Repack supported archives to IFW friendly archive format
                 self._requires_extraction = True
             else:
@@ -199,7 +213,8 @@ class IfwPayloadItem:
     def __str__(self) -> str:
         return f"""
 - Final payload archive name: {self.archive_name}
-  Source payload URI: {self.archive_uri}
+  Source payload URIs: {f'(Base: {self.payload_base_uri})' if self.payload_base_uri else ''}
+    {f'{os.linesep}    '.join(self.payload_uris)}
   Extract archive: {self.requires_extraction}
   Patch payload: {self.requires_patching}""" + (
             f""", config:
@@ -242,7 +257,7 @@ class ArchiveResolver:
         log.info("Crawl: %s", url)
         return await loop.run_in_executor(None, htmllistparse.fetch_listing, url, 30)
 
-    async def resolve_uri_pattern(self, pattern: str, base_url: Optional[URL] = None) -> List[URL]:
+    async def resolve_uri_pattern(self, pattern: str, base_url: Optional[URL] = None) -> Tuple[URL, List[URL]]:
         """
         Return payload URIs from remote tree, fnmatch pattern match for given arguments.
         Patterns will match arbitrary number of '/' allowing recursive search.
@@ -274,11 +289,11 @@ class ArchiveResolver:
         # recursively look for pattern matches inside the matching child directories
         coros = [self.resolve_uri_pattern(pattern, url) for url in child_list]
         results = await asyncio.gather(*coros)
-        for item in results:
+        for _, item in results:
             uri_list.extend(item)
-        return uri_list
+        return base_url, uri_list
 
-    def resolve_payload_uri(self, unresolved_archive_uri: str) -> List[str]:
+    def resolve_payload_uri(self, unresolved_archive_uri: str) -> Tuple[str, List[str]]:
         """
         Resolves the given archive URI and resolves it based on the type of URI given
         Available URI types, in the order of priority:
@@ -291,21 +306,23 @@ class ArchiveResolver:
             unresolved_archive_uri: Original URI to resolve
 
         Returns:
-            A resolved URI location for the payload
+            A base URI for the pattern match payload
+            A list containing resolved URI location(s) for the payload
         """
         # is it a URL containing a fnmatch pattern
         if any(char in unresolved_archive_uri for char in ("*", "[", "]", "?")):
             pattern = self.absolute_url(unresolved_archive_uri)
-            return [str(url) for url in asyncio_run(self.resolve_uri_pattern(pattern))]
+            payload_base_uri, url_list = asyncio_run(self.resolve_uri_pattern(pattern))
+            return str(payload_base_uri), [str(url) for url in url_list]
         # is it a file system path or an absolute URL which can be downloaded
         if os.path.exists(unresolved_archive_uri) or URL(unresolved_archive_uri).netloc:
-            return [unresolved_archive_uri]
+            return "", [unresolved_archive_uri]
         # is it relative to pkg template root dir, under the 'data' directory
         pkg_data_dir = os.path.join(self.pkg_template_folder, "data", unresolved_archive_uri)
         if os.path.exists(pkg_data_dir):
-            return [pkg_data_dir]
+            return "", [pkg_data_dir]
         # ok, we assume this is a URL which can be downloaded
-        return [self.absolute_url(unresolved_archive_uri)]
+        return "", [self.absolute_url(unresolved_archive_uri)]
 
 
 @dataclass
@@ -331,7 +348,7 @@ class IfwSdkComponent:
     def __post_init__(self) -> None:
         """Post init: resolve component sha1 uri if it exists"""
         if self.comp_sha1_uri:
-            match_uris = self.archive_resolver.resolve_payload_uri(self.comp_sha1_uri)
+            _, match_uris = self.archive_resolver.resolve_payload_uri(self.comp_sha1_uri)
             assert len(match_uris) == 1, f"More than one match for component sha: {match_uris}"
             self.comp_sha1_uri = match_uris.pop()
 
@@ -524,7 +541,7 @@ def parse_ifw_sdk_archives(
     for arch_section_name in archive_sections:
         config_subst = ConfigSubst(config, arch_section_name, substitutions)
         unresolved_archive_uri = config_subst.get("archive_uri")
-        resolved_uris = archive_resolver.resolve_payload_uri(unresolved_archive_uri)
+        base_uri, resolved_uris = archive_resolver.resolve_payload_uri(unresolved_archive_uri)
         archive_action_string = config_subst.get("archive_action", "")
         archive_action: Optional[Tuple[Path, str]] = None
         if archive_action_string:
@@ -547,21 +564,21 @@ def parse_ifw_sdk_archives(
             rpath_target = os.sep + rpath_target
         component_sha1_file = config_subst.get("component_sha1_file")
         archive_name = config_subst.get("archive_name")
-        for resolved_archive_uri in resolved_uris:
-            payload = IfwPayloadItem(
-                package_name=arch_section_name,
-                archive_uri=resolved_archive_uri,
-                archive_action=archive_action,
-                disable_extract_archive=disable_extract_archive,
-                package_strip_dirs=package_strip_dirs,
-                package_finalize_items=package_finalize_items,
-                parent_target_install_base=parent_target_install_base,
-                arch_target_install_base=target_install_base,
-                arch_target_install_dir=target_install_dir,
-                rpath_target=rpath_target,
-                component_sha1=component_sha1_file,
-                archive_name=archive_name,
-            )
-            payload.validate()
-            parsed_archives.append(payload)
+        payload = IfwPayloadItem(
+            package_name=arch_section_name,
+            payload_uris=resolved_uris,
+            archive_action=archive_action,
+            disable_extract_archive=disable_extract_archive,
+            package_strip_dirs=package_strip_dirs,
+            package_finalize_items=package_finalize_items,
+            parent_target_install_base=parent_target_install_base,
+            arch_target_install_base=target_install_base,
+            arch_target_install_dir=target_install_dir,
+            rpath_target=rpath_target,
+            component_sha1=component_sha1_file,
+            archive_name=archive_name,
+            payload_base_uri=base_uri,
+        )
+        payload.validate()
+        parsed_archives.append(payload)
     return parsed_archives
