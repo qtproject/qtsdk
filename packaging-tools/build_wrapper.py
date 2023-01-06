@@ -555,24 +555,6 @@ def extract_qtc_sdktool(
                    extract_path, log_filepath=log_filepath)
 
 
-def extract_qtc_plugins(
-    work_dir: str,
-    additional_plugins: List[QtcPlugin],
-    extract_path: str,
-    app: str,  # pylint: disable=W0613
-    log_filepath: Optional[str]
-) -> None:
-    for plugin in additional_plugins:
-        if not plugin.package_commercial:
-            continue
-        plugin_package = plugin.name + '.7z'
-        if os.path.isfile(os.path.join(work_dir, plugin_package)):
-            check_call_log(['7z', 'x', '-y',
-                            os.path.join(work_dir, plugin_package),
-                            '-o' + extract_path],
-                           work_dir, log_filepath=log_filepath)
-
-
 def write_qtc_settings(
     settings: List[str],
     extract_path: str,
@@ -703,6 +685,7 @@ def handle_qt_creator_build(option_dict: Dict[str, str], qtcreator_plugins: List
     usp_auth_key = option_dict.get('USP_AUTH_KEY')
     qtc_additional_cfg: str = option_dict.get('QTC_ADDITIONAL_CONFIG', '')  # optional
     disable_docs = option_dict.get('DISABLE_DOCS')  # optional
+    do_repackaging = not option_dict.get('DISABLE_MAC_SIGNING')
     qtc_additional_config: List[str] = qtc_additional_cfg.split()
     qt_temp = os.path.join(work_dir, 'qt_temp')
 
@@ -943,41 +926,56 @@ def handle_qt_creator_build(option_dict: Dict[str, str], qtcreator_plugins: List
                         redirect_output=handle)
 
     # create up to 3 packages from the original
-    # macOS: we need to include everything to be able to sign
+    # macOS: we may not change app bundle after signing,
+    #        so we include sdktool for offline,
+    #        write additional plugin path for optional plugins for commercial & online/Qt offline,
+    #        write settings that redirect to sdktool for online/Qt offline.
     # - opensource offline: QtC + sdktool (signed)
-    # - commercial offline: QtC + sdktool + plugins (signed)
-    # all: install settings must be read from sdktool location
-    # - online: QtC + settings that redirect to sdktool
-    if not os.getenv('DISABLE_MAC_SIGNING'):
-        sdktool_task = partial(extract_qtc_sdktool, os.path.join(work_dir, 'sdktool.7z'))
-        commercial_plugins_task = partial(extract_qtc_plugins, work_dir, additional_plugins)
+    # - commercial offline: QtC + sdktool + pluginpath (signed)
+    # - online/Qt offline: QtC + pluginpath + settings that redirect to sdktool (signed)
+    # other: install settings must be read from sdktool location
+    # - online/Qt offline: QtC + settings that redirect to sdktool
+    if do_repackaging:
         settingspath = '../../../Tools/sdktool'
         if not is_macos():
             settingspath += '/share/qtcreator'
-        online_settings_task = partial(write_qtc_settings,
-                                       ['[Settings]', 'InstallSettings=' + settingspath])
-        # use build_environment for SIGNING_IDENTITY
-        sign_task = partial(sign_qtc, src_path, build_environment)
         qtcreator_package = os.path.join(build_path, 'qtcreator.7z')
         if is_macos():
+            # use build_environment for SIGNING_IDENTITY
+            sign_task = partial(sign_qtc, src_path, build_environment)
+            sdktool_task = partial(extract_qtc_sdktool, os.path.join(work_dir, 'sdktool.7z'))
+            plugin_path_settings = ['[Settings]',
+                                    'InstallPluginPaths=../../../Tools/QtCreator ' + qtcreator_version + '/PlugIns']
+            online_settings = plugin_path_settings + ['InstallSettings=' + settingspath]
+            commercial_settings_task = partial(write_qtc_settings, plugin_path_settings)
+            online_settings_task = partial(write_qtc_settings, online_settings)
             # opensource offline: QtC + sdktool (signed)
             repackage_qtcreator(work_dir,
                                 qtcreator_package,
                                 'qtcreator-signed.7z',
                                 [sdktool_task, sign_task],
                                 log_filepath)
-            # commercial offline: QtC + sdktool + plugins (with package_commercial=True) (signed)
+            # commercial offline: QtC + sdktool + pluginpath (signed)
             repackage_qtcreator(work_dir,
                                 qtcreator_package,
                                 'qtcreator-commercial-signed.7z',
-                                [sdktool_task, commercial_plugins_task, sign_task],
+                                [sdktool_task, commercial_settings_task, sign_task],
                                 log_filepath)
-        # online/Qt offline: QtC + settings that redirect to sdktool
-        repackage_qtcreator(work_dir,
-                            qtcreator_package,
-                            'qtcreator-qtinstaller.7z',
-                            [online_settings_task],
-                            log_filepath)
+            # online/Qt offline: QtC + pluginpath + settings that redirect to sdktool (signed)
+            repackage_qtcreator(work_dir,
+                                qtcreator_package,
+                                'qtcreator-qtinstaller.7z',
+                                [online_settings_task, sign_task],
+                                log_filepath)
+        else:
+            # online/Qt offline: QtC + settings that redirect to sdktool
+            online_settings_task = partial(write_qtc_settings,
+                                           ['[Settings]', 'InstallSettings=' + settingspath])
+            repackage_qtcreator(work_dir,
+                                qtcreator_package,
+                                'qtcreator-qtinstaller.7z',
+                                [online_settings_task],
+                                log_filepath)
 
     # notarize
     if is_macos() and do_notarize:
@@ -998,7 +996,7 @@ def handle_qt_creator_build(option_dict: Dict[str, str], qtcreator_plugins: List
         snapshot_upload_list.append((dmg_filename, dmg_filename))
 
     # macOS signed zip
-    if not os.getenv('DISABLE_MAC_SIGNING'):
+    if do_repackaging:
         if is_macos():
             file_upload_list.append(('qtcreator-signed.7z', target_env_dir + '/qtcreator-signed.7z'))
             snapshot_upload_list.append((target_env_dir + '/qtcreator-signed.7z', target_env_dir + '/qtcreator-signed.7z'))
