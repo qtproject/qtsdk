@@ -1205,6 +1205,9 @@ class QtInstallerTask(Generic[QtInstallerTaskType]):
     def _parse_substitutions(self) -> None:
         for item in self.substitution_list:  # pylint: disable=not-an-iterable
             key, value = item.split("=", maxsplit=1)
+            if self.substitutions.get(key) is not None:  # Do not override already present substs
+                log.warning("Duplicate substitution string given, ignoring: %s", item)
+                continue
             if not value:
                 log.warning("Empty value for substitution string given, substituting anyway: %s", item)
             self.substitutions[key] = value  # pylint: disable=unsupported-assignment-operation
