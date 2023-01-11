@@ -412,16 +412,18 @@ def sync_production_repositories_to_s3(server: str, s3_path: str, updated_produc
         tip_prefix = repo.replace("/", "-") + "-"
 
         remote_log_file = remote_log_file_base + "-7z.txt"
-        sync_production_7z_to_s3(server, remote_root_path, remote_production_repo_full_path, s3_repo_path, remote_log_file, tip_prefix)
+        sync_production_payload_to_s3(server, remote_root_path, remote_production_repo_full_path, s3_repo_path, remote_log_file, tip_prefix)
         remote_log_file = remote_log_file_base + "-xml.txt"
         sync_production_xml_to_s3(server, remote_root_path, remote_production_repo_full_path, s3_repo_path, remote_log_file, tip_prefix)
 
 
-def sync_production_7z_to_s3(server: str, server_home: str, production_repo_path: str, s3_repo_path: str, remote_log_file: str, tip: str) -> None:
-    log.info("Syncing .7z to s3: [%s:%s] -> [%s]", server, production_repo_path, s3_repo_path)
+def sync_production_payload_to_s3(server: str, server_home: str, production_repo_path: str, s3_repo_path: str, remote_log_file: str, tip: str) -> None:
+    log.info("Syncing payload to s3: [%s:%s] -> [%s]", server, production_repo_path, s3_repo_path)
 
     cmd = ["aws", "s3", "sync", production_repo_path, s3_repo_path]
-    cmd = cmd + ["--exclude", '"*"', "--include", '"*.7z"', "--include", '"*.sha1"']
+    cmd.extend(["--exclude", '"*"', "--include", '"*.7z"', "--include", '"*.tar.xz"'])
+    cmd.extend(["--include", '"*.tar.bz2"', "--include", '"*.tar"', "--include", '"*.tar.gz"'])
+    cmd.extend(["--include", '"*.zip"', "--include", '"*.sha1"'])
     spawn_remote_background_task(server, server_home, cmd, remote_log_file, tip=tip + "7z")
 
 
