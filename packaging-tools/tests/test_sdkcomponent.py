@@ -42,6 +42,7 @@ from urlpath import URL  # type: ignore
 from sdkcomponent import (
     ArchiveResolver,
     IfwPayloadItem,
+    IfwSdkComponent,
     IfwSdkError,
     locate_pkg_templ_dir,
     parse_ifw_sdk_comp,
@@ -264,6 +265,51 @@ class TestRunner(unittest.TestCase):
         )
         self.assertEqual(item.requires_extraction, expected_requires_extraction)
         self.assertEqual(item.requires_patching, expected_requires_patching)
+
+    def test_ifw_component_duplicate_archive_name(self) -> None:
+        item = IfwPayloadItem(
+            package_name="foobar",
+            payload_uris=["foo.7z"],
+            archive_action=None,
+            disable_extract_archive=False,
+            package_strip_dirs=0,
+            package_finalize_items="",
+            parent_target_install_base="",
+            arch_target_install_base="",
+            arch_target_install_dir="",
+            rpath_target="",
+            component_sha1="",
+            archive_name="duplicate.7z",
+        )
+        item_duplicate = IfwPayloadItem(
+            package_name="foobar_duplicate",
+            payload_uris=["duplicate.7z"],
+            archive_action=None,
+            disable_extract_archive=False,
+            package_strip_dirs=0,
+            package_finalize_items="",
+            parent_target_install_base="",
+            arch_target_install_base="",
+            arch_target_install_dir="",
+            rpath_target="",
+            component_sha1="",
+            archive_name="",
+        )
+        component = IfwSdkComponent(
+            ifw_sdk_comp_name="section",
+            pkg_template_folder="pkg_template_folder",
+            archive_resolver=ArchiveResolver("file_share_base_url", "pkg_template_folder"),
+            downloadable_archives=[item, item_duplicate],
+            archives_extract_dir="archives_extract_dir",
+            target_install_base="target_install_base",
+            version="version",
+            version_tag="version_tag",
+            package_default="package_default",
+            comp_sha1_uri="comp_sha1_uri",
+            include_filter="include_filter",
+        )
+        with self.assertRaises(IfwSdkError):
+            component.validate(uri_check=False, ignore_errors=False)
 
     def test_archive_resolver(self) -> None:
         with TemporaryDirectory() as tmp_base_dir:

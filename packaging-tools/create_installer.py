@@ -621,39 +621,43 @@ def get_component_data(
             dl_path = Path(install_dir, dl_name)
             log.info("[%s] Download: %s", archive.package_name, dl_name)
             download(payload_uri, str(dl_path))
+    # If pattern match not used in URI, contains only a single source payload URI
     else:
+        payload_uri = archive.payload_uris[0]
         # Continue if payload item has no data (final uri part missing)
-        download_name = Path(archive.payload_uris[0]).name
-        if not download_name:
+        dl_name = Path(payload_uri).name
+        if not dl_name:
             log.info("[%s] Payload item has no data", archive.package_name)
             return
-        # Download payload to a temporary directory to avoid naming clashes
-        with TemporaryDirectory() as temp_dir:
-            dl_path = temp_dir.path / download_name
-            log.info("[%s] Download: %s", archive.package_name, download_name)
-            download(archive.payload_uris[0], str(dl_path))
-            # For non-archive payload and non-extractable archives, move to install_dir for packing
-            if (
-                dl_path.suffix not in archive.supported_arch_formats
-                or archive.disable_extract_archive is True
-            ):
-                shutil.move(str(dl_path), install_dir)
-            # For payload already in IFW compatible format, use the raw artifact and continue
-            elif not archive.requires_extraction and dl_path.suffix in archive.ifw_arch_formats:
-                # Save to data dir as archive_name
-                log.info(
-                    "[%s] Rename raw artifact to final archive name: %s -> %s",
-                    archive.package_name, dl_path.name, archive.archive_name
+        # For non-archive payload and non-extractable archives, fetch to install_dir for packing
+        if (
+            Path(dl_name).suffix not in archive.supported_arch_formats
+            or archive.disable_extract_archive is True
+        ):
+            log.info("[%s] Download: %s", archive.package_name, str(install_dir / dl_name))
+            download(payload_uri, str(install_dir / dl_name))
+        # For payload already in IFW compatible format, use the raw artifact and continue
+        elif not archive.requires_extraction and Path(dl_name).suffix in archive.ifw_arch_formats:
+            # Save to data dir as archive_name
+            log.info(
+                "[%s] Rename raw artifact to final archive name: %s -> %s",
+                archive.package_name, dl_name, archive.archive_name
+            )
+            if Path(dl_name).suffix != Path(archive.archive_name).suffix:
+                log.warning(
+                    "Raw artifact saved with a different suffix: %s -> %s",
+                    Path(dl_name).suffix, Path(archive.archive_name).suffix
                 )
-                if dl_path.suffix != Path(archive.archive_name).suffix:
-                    log.warning(
-                        "Raw artifact saved with a different suffix: %s -> %s",
-                        dl_path.suffix, Path(archive.archive_name).suffix
-                    )
-                shutil.move(str(dl_path), str(data_dir_dest / archive.archive_name))
-                return
-            # Extract payload when required to be patched or recompressed to compatible format
-            else:
+            log.info("[%s] Download: %s", archive.package_name, dl_name)
+            download(payload_uri, str(data_dir_dest / archive.archive_name))
+            return
+        # Extract payload archive when required to be patched or recompressed to compatible format
+        else:
+            # Use temporary directory to avoid naming clashes
+            with TemporaryDirectory() as temp_dir:
+                dl_path = temp_dir.path / dl_name
+                log.info("[%s] Download: %s", archive.package_name, str(dl_path))
+                download(payload_uri, str(dl_path))
                 log.info("[%s] Extract: %s", archive.package_name, archive.archive_name)
                 extract_component_data(dl_path, install_dir)
     # If patching items are specified, execute them here

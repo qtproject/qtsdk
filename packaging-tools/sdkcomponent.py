@@ -363,14 +363,26 @@ class IfwSdkComponent:
 
         Raises:
             AssertionError: When the component's package name doesn't exist
+            IfwSdkError: When component has conflicting payload archive names
             IfwSdkError: When component with payload doesn't have target install base configured
         """
         try:
             assert self.ifw_sdk_comp_name, "Undefined package name?"
             if self.downloadable_archives and not self.target_install_base:
                 raise IfwSdkError(f"[{self.ifw_sdk_comp_name}] is missing 'target_install_base'")
-            if uri_check:
-                for archive in self.downloadable_archives:
+            seen: Dict[str, str] = {}
+            for archive in self.downloadable_archives:
+                # payload duplicate archive name check
+                if archive.archive_name in seen:
+                    raise IfwSdkError(
+                        f"[{self.ifw_sdk_comp_name}] "
+                        f"Found a duplicate final archive name: '{archive.archive_name}' in "
+                        f"packages '{seen[archive.archive_name]}' and '{archive.package_name}' "
+                        "Did you forget to specify a different 'archive_name' in configuration?"
+                    )
+                seen[archive.archive_name] = archive.package_name
+                # payload uri check
+                if uri_check:
                     archive.validate_uri()
             return True
         except IfwSdkError as err:
