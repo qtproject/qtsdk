@@ -31,6 +31,7 @@
 
 import ctypes
 import errno
+import itertools
 import os
 import re
 import shutil
@@ -232,19 +233,41 @@ def copy_tree(source_dir: str, dest_dir: str) -> None:
             shutil.copy(full_file_name, dest_dir)
 
 
-def remove_one_tree_level(directory: str) -> None:
-    dircontents = os.listdir(directory)
-    items = len(dircontents)
-    if items == 1:
-        dir_name = dircontents[0]
-        full_dir_name = os.path.join(directory, dir_name)
-        # avoid directory name collision by first moving to temporary dir
-        with TemporaryDirectory() as tempdir_base:
-            tempdir = tempdir_base.path / 'a'  # dummy name
-            shutil.move(full_dir_name, str(tempdir))
-            move_tree(str(tempdir), directory)
-    else:
-        raise IOError(f'Cannot remove one level of directory structure of "{dir}", it has {items} subdirectories')
+def strip_dirs(directory: Path, iterations: int = 1) -> None:
+    """
+    Remove unnecessary tree structure from a given directory path
+
+    Args:
+        directory: A file system path to the folder to strip from
+        iterations: A number of middle directories to remove (0=do nothing)
+
+    Raises:
+        IOError: When the directory contains more than one subdirectory
+        IOError: When the directory contains a non-directory
+        IOError: When the directory contains no items
+    """
+    if not iterations:
+        # if no directories to strip, do nothing
+        return
+    log.info("Remove %s level(s) of tree structure: %s", iterations, directory)
+    dir_name = directory
+    while iterations:
+        sub_items = list(itertools.islice(dir_name.iterdir(), 2))
+        if len(sub_items) != 1:
+            raise IOError(f"Expected one item in directory: {dir_name}")
+        dir_name = sub_items[0]
+        if not dir_name.is_dir():
+            raise IOError(f"Subitem is not a directory: {dir_name}, expected one subdirectory")
+        iterations -= 1
+    with TemporaryDirectory() as temp_dir:
+        # first move to temp dir to avoid name collision
+        shutil.move(str(dir_name.resolve()), temp_dir.path)
+        # remove empty dirs
+        for item in directory.iterdir():
+            shutil.rmtree(item)
+        # move subitems to target dir
+        for item in temp_dir.path.joinpath(dir_name.name).iterdir():
+            shutil.move(str(item), str(directory))
 
 
 ###############################

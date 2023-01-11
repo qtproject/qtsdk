@@ -55,11 +55,11 @@ from bldinstallercommon import (
     locate_executable,
     locate_path,
     locate_paths,
-    remove_one_tree_level,
     remove_tree,
     replace_in_files,
     retrieve_url,
     safe_config_key_fetch,
+    strip_dirs,
     uri_exists,
 )
 from installer_utils import PackagingError
@@ -395,22 +395,6 @@ def get_component_sha1(sdk_comp: IfwSdkComponent, sha1_file_dest: Path) -> None:
     read_component_sha(sdk_comp=sdk_comp, sha1_file_path=sha1_file_dest)
 
 
-def strip_dirs(iterations: int, install_dir: Path) -> None:
-    """
-    Strip out unnecessary folder structure based on the configuration
-
-    Args:
-        iterations: Specifies how many tree levels to remove (0=do nothing)
-        install_dir: A file system path to the folder to strip from
-
-    Raises:
-        IOError: When there are too many tree levels to be removed based on the structure
-    """
-    while iterations:
-        remove_one_tree_level(str(install_dir))  # TODO: use shutil.move here
-        iterations -= 1
-
-
 def delete_docs(directory: Path) -> None:
     """
     Delete doc directory from directory if exists
@@ -555,7 +539,7 @@ def patch_component_data(
     """
     if archive.archive_action:
         exec_action_script(archive.archive_action, install_dir)
-    strip_dirs(archive.package_strip_dirs, install_dir)
+    strip_dirs(install_dir, archive.package_strip_dirs)
     finalize_items(task, archive.package_finalize_items, install_dir)
     process_debug_files_and_libs(
         archive.archive_name,

@@ -37,7 +37,7 @@ from pathlib import Path
 from typing import List, Optional
 
 from bld_utils import is_linux, is_windows
-from bldinstallercommon import extract_file, remove_one_tree_level, retrieve_url
+from bldinstallercommon import extract_file, retrieve_url, strip_dirs
 from runner import run_cmd
 
 BuildParams = namedtuple('BuildParams',
@@ -88,7 +88,7 @@ def get_and_extract_qt_src(url: str, temp: str, path: str) -> None:
     retrieve_url(url, file_path)
     Path(path).mkdir(parents=True, exist_ok=True)
     extract_file(file_path, path)
-    remove_one_tree_level(path)
+    strip_dirs(Path(path))
 
 
 def configure_qt(params: BuildParams, src: str, build: str) -> None:

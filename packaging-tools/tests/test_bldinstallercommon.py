@@ -45,6 +45,7 @@ from bldinstallercommon import (
     locate_paths,
     replace_in_files,
     search_for_files,
+    strip_dirs,
 )
 from installer_utils import PackagingError
 
@@ -229,6 +230,48 @@ class TestCommon(unittest.TestCase):
         path1, path2, expected = test_data
         result = calculate_relpath(path1, path2)
         self.assertEqual(result, expected)
+
+    def test_strip_dirs(self) -> None:
+        with TemporaryDirectory() as temp_dir:
+            temp_dir.path.joinpath("remove_dir", "sub_dir").mkdir(parents=True, exist_ok=True)
+            strip_dirs(temp_dir.path)
+            self.assertTrue(temp_dir.path.joinpath("sub_dir").exists())
+            self.assertFalse(temp_dir.path.joinpath("remove_dir").exists())
+
+    def test_strip_dirs_multiple_iterations(self) -> None:
+        with TemporaryDirectory() as temp_dir:
+            temp_dir.path.joinpath("remove_dir", "remove_dir2", "sub_dir").mkdir(
+                parents=True, exist_ok=True
+            )
+            strip_dirs(temp_dir.path, iterations=2)
+            self.assertTrue(temp_dir.path.joinpath("sub_dir").exists())
+            self.assertFalse(temp_dir.path.joinpath("remove_dir").exists())
+
+    def test_strip_dirs_no_iterations(self) -> None:
+        with TemporaryDirectory() as temp_dir:
+            temp_dir.path.joinpath("no_remove_dir", "sub_dir").mkdir(parents=True, exist_ok=True)
+            strip_dirs(temp_dir.path, iterations=0)
+            self.assertTrue(temp_dir.path.joinpath("no_remove_dir", "sub_dir").exists())
+
+    def test_strip_dirs_identical_name(self) -> None:
+        with TemporaryDirectory() as temp_dir:
+            temp_dir.path.joinpath("dir_name", "dir_name").mkdir(parents=True, exist_ok=True)
+            strip_dirs(temp_dir.path)
+            self.assertTrue(temp_dir.path.joinpath("dir_name").exists())
+            self.assertFalse(temp_dir.path.joinpath("dir_name", "dir_name").exists())
+
+    def test_strip_dirs_invalid_subdir_count(self) -> None:
+        with TemporaryDirectory() as temp_dir:
+            with self.assertRaises(IOError):
+                temp_dir.path.joinpath("remove_dir").mkdir(parents=True, exist_ok=True)
+                temp_dir.path.joinpath("another_dir").mkdir(parents=True, exist_ok=True)
+                strip_dirs(temp_dir.path)
+
+    def test_strip_dirs_not_a_dir(self) -> None:
+        with TemporaryDirectory() as temp_dir:
+            with self.assertRaises(IOError):
+                temp_dir.path.joinpath("remove_dir").touch(exist_ok=True)
+                strip_dirs(temp_dir.path)
 
 
 if __name__ == "__main__":
