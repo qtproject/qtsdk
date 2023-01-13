@@ -135,8 +135,9 @@ class TestReleaseRepoUpdater(unittest.TestCase):
         try:
             repogen = await _get_repogen()
         finally:
-            self.assertTrue(os.path.isfile(repogen))
-            rmtree(os.path.dirname(repogen))
+            repogen_path = Path.home() / repogen
+            self.assertTrue(repogen_path.is_file())
+            rmtree(repogen_path.parent)
 
     @asyncio_test
     async def test_upload_pending_repository_content(self) -> None:
