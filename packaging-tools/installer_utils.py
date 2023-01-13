@@ -3,7 +3,7 @@
 
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -68,7 +68,7 @@ def is_valid_url_path(url: str) -> bool:
 
 def download_archive(url: str, dest_dir: str) -> str:
     parts = urlparse(url)
-    file_name = os.path.basename(parts.path)
+    file_name = Path(parts.path).name
     dest_file = os.path.join(dest_dir, file_name)
     if os.path.isfile(dest_file):
         log.info("Using existing downloaded file: %s", dest_file)

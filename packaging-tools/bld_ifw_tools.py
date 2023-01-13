@@ -3,7 +3,7 @@
 
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -330,7 +330,7 @@ def build_ifw(options: IfwOptions, create_installer: bool = False, build_ifw_exa
     archive_installerbase(options)
     archive_installer_framework(options.installer_framework_build_dir, options.installer_framework_archive_name, options, True)
     archive_binarycreator(options)
-    return os.path.basename(options.installer_framework_build_dir)
+    return Path(options.installer_framework_build_dir).name
 
 
 ###############################
@@ -627,7 +627,7 @@ def archive_installer_framework(installer_framework_build_dir: str, installer_fr
         for filename in files:
             if filename.endswith(('.moc', 'Makefile', '.cpp', '.h', '.o')) or filename == 'Makefile':
                 os.remove(os.path.join(root, filename))
-    cmd_args = [ARCHIVE_PROGRAM, 'a', installer_framework_archive_name, os.path.basename(installer_framework_build_dir)]
+    cmd_args = [ARCHIVE_PROGRAM, 'a', installer_framework_archive_name, Path(installer_framework_build_dir).name]
     run_cmd(cmd=cmd_args, cwd=ROOT_DIR)
     shutil.move(installer_framework_archive_name, options.build_artifacts_dir)
     # Check if installer framework is created from branch. If so, check if the branch is tagged and

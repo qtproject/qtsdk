@@ -3,7 +3,7 @@
 
 ############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of Qt Creator.
@@ -35,9 +35,9 @@ Use this converter together with /usr/bin/paste to create whole csv tables.
 Usage: ./$0 <log-file of libclang output>"""
 
 import getopt
-import os
 import re
 import sys
+from pathlib import Path
 from typing import List, Pattern
 
 
@@ -109,7 +109,7 @@ def records_to_string(records: List[List[str]]) -> str:
 
 def convert(input_file: str, column_label: str = "") -> str:
     if not column_label:
-        column_label = os.path.basename(input_file)
+        column_label = Path(input_file).name
     with open(input_file, 'r', encoding="utf-8") as file_content:
         records = [[column_label, column_label]] + extract_records(file_content.read())
 

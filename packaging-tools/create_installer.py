@@ -612,7 +612,7 @@ def get_component_data(
         compress_dir: A directory containing the items to compress to the final archive
     """
     # Continue if payload item has no data (final uri part missing)
-    download_name = os.path.basename(archive.archive_uri)
+    download_name = Path(archive.archive_uri).name
     if not download_name:
         log.info("[%s] Payload item has no data", archive.package_name)
         return
@@ -1043,7 +1043,7 @@ def inject_update_rcc_to_archive(archive_file_path: str, file_to_be_injected: st
         log.error("Unable to locate file: %s", file_to_be_injected)
     if not os.path.isfile(archive_file_path):
         log.error("Unable to locate file: %s", archive_file_path)
-    archive_file_name = os.path.basename(archive_file_path)
+    archive_file_name = Path(archive_file_path).name
     # copy to tmp location
     tmp_dir = os.path.join(os.path.dirname(archive_file_path), '_tmp')
     Path(tmp_dir).mkdir(parents=True, exist_ok=True)

@@ -3,7 +3,7 @@
 
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -93,7 +93,7 @@ def _handle_signing(file_path: str) -> None:
     if sign_result.returncode != 0:
         raise PackagingError(f"Package {file_path} signing  with error {sign_result.returncode}")
     log.info("Successfully signed: %s", file_path)
-    signtool = os.path.basename(os.environ["WINDOWS_SIGNTOOL_X64_PATH"])
+    signtool = Path(os.environ["WINDOWS_SIGNTOOL_X64_PATH"]).name
     cmd_args_verify: List[str] = [signtool, "verify", "-pa", file_path]
     verify_result = subprocess.run(cmd_args_verify, stdout=DEVNULL, stderr=DEVNULL, check=False)
     if verify_result.returncode != 0:

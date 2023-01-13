@@ -3,7 +3,7 @@
 
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -132,7 +132,7 @@ def main() -> None:
         formatter_class=argparse.RawTextHelpFormatter
     )
     if is_windows():
-        parser.epilog = f"example on windows: {os.linesep}\tpython {os.path.basename(sys.argv[0])} --clean " \
+        parser.epilog = f"example on windows: {os.linesep}\tpython {Path(sys.argv[0]).name} --clean " \
             "--buildcommand C:\\bin\\ibjom.cmd" \
             "--qt5_module_url <uri to qt5_essentials.7z> " \
             "--qt5_module_url <uri to qt5_addons.7z> " \
@@ -141,7 +141,7 @@ def main() -> None:
             "--module_branch <module branch>" \
             "--module_dir <Local copy of module>"
     elif is_macos():
-        parser.epilog = f"example: {os.linesep}\tpython {os.path.basename(sys.argv[0])} --clean " \
+        parser.epilog = f"example: {os.linesep}\tpython {Path(sys.argv[0]).name} --clean " \
             "--qt5_module_url <uri to qt5_essentials.7z> " \
             "--qt5_module_url <uri to qt5_addons.7z> " \
             "--qt5_module_url <uri to qt5_webengine.7z> " \
@@ -149,7 +149,7 @@ def main() -> None:
             "--module_branch <module branch>" \
             "--module_dir <Local copy of module>"
     else:
-        parser.epilog = f"example: {os.linesep}\tpython {os.path.basename(sys.argv[0])} --clean " \
+        parser.epilog = f"example: {os.linesep}\tpython {Path(sys.argv[0]).name} --clean " \
             "--qt5_module_url <uri to qt5_essentials.7z> " \
             "--qt5_module_url <uri to qt5_addons.7z> " \
             "--qt5_module_url <uri to qt5_webengine.7z> " \
@@ -366,7 +366,7 @@ def main() -> None:
             raise RuntimeError(f"Failure running the last command: {ret}")
 
     # try to figure out where the actual exported content is
-    qt5_install_basename = os.path.basename(caller_arguments.qt5path)
+    qt5_install_basename = Path(caller_arguments.qt5path).name
 
     if caller_arguments.use_cmake:
         dir_to_archive = qt_module_install_directory

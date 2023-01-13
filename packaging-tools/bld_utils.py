@@ -3,7 +3,7 @@
 
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -36,6 +36,7 @@ from argparse import Namespace
 from builtins import OSError
 from collections import deque
 from copy import deepcopy
+from pathlib import Path
 from socket import setdefaulttimeout
 from subprocess import PIPE, STDOUT, Popen
 from sys import platform
@@ -142,7 +143,7 @@ def urllib2_response_read(response: Any, file_path: str, block_size: int, total_
 def download(url: str, target: str, read_block_size: int = 1048576) -> None:
     try:
         if os.path.isdir(os.path.abspath(target)):
-            filename = os.path.basename(urlparse(url).path)
+            filename = Path(urlparse(url).path).name
             target = os.path.join(os.path.abspath(target), filename)
         if os.path.lexists(target):
             raise Exception(f"Can not download '{url}' to '{target}' as target. The file already exists.")

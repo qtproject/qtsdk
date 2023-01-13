@@ -3,7 +3,7 @@
 
 ############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of Qt Creator.
@@ -57,6 +57,7 @@ Notes:
 
 import os
 import sys
+from pathlib import Path
 from shutil import copyfile
 from subprocess import STDOUT, Popen
 from time import sleep, time
@@ -274,7 +275,7 @@ def process_batch_file(libclang_id: str, batch_file_path: str) -> RunRecord:
 
 
 def get_libclang_id(libclang_dll: str) -> str:
-    file_name = os.path.basename(libclang_dll)
+    file_name = Path(libclang_dll).name
     parts = file_name.split('.')
     identifier = '.'.join(parts[0:-1])
     return identifier
@@ -299,7 +300,7 @@ def run_qtcreator_with_libclang(libclang_dll: str) -> List[RunRecord]:
 
 
 def log_id_part_from_libclang_dll(libclang_dll: str) -> str:
-    file_name = os.path.basename(libclang_dll)
+    file_name = Path(libclang_dll).name
     parts = file_name.split('.')
     file_name = '.'.join(parts[1:-1])
     return file_name

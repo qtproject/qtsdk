@@ -634,7 +634,7 @@ def create_extract_function(file_path: str, target_path: str) -> Callable[[], An
 # function
 ###############################
 def create_download_and_extract_tasks(url: str, target_path: str, temp_path: str) -> Tuple[Task, Task]:
-    filename = os.path.basename(urlparse(url).path)
+    filename = Path(urlparse(url).path).name
     sevenzip_file = os.path.join(temp_path, filename)
     download_task = Task(f"download '{url}' to '{sevenzip_file}'", function=None)
     download_task.add_function(download, url, sevenzip_file)
@@ -647,7 +647,7 @@ def create_download_and_extract_tasks(url: str, target_path: str, temp_path: str
 # function
 ###############################
 def create_download_extract_task(url: str, target_path: str, temp_path: str) -> Task:
-    filename = os.path.basename(urlparse(url).path)
+    filename = Path(urlparse(url).path).name
     sevenzip_file = os.path.join(temp_path, filename)
     download_extract_task = Task(f"download {url} to {sevenzip_file} and extract it to {target_path}", function=None)
     download_extract_task.add_function(download, url, sevenzip_file)

@@ -1021,8 +1021,11 @@ def handle_qt_creator_build(option_dict: Dict[str, str], qtcreator_plugins: List
     # source packages
     source_package_list = glob(os.path.join(work_dir, 'qt-creator-*-src-' + qtcreator_version + '.*'))
     file_upload_list.extend([(os.path.basename(fn), '') for fn in source_package_list])
-    qtc_source_packages = [os.path.basename(fn) for fn in
-                           glob(os.path.join(work_dir, 'qt-creator-opensource-src-' + qtcreator_version + '.*'))]
+    qtc_source_packages = [
+        Path(fn).name for fn in glob(
+            os.path.join(work_dir, 'qt-creator-opensource-src-' + qtcreator_version + '.*')
+        )
+    ]
     snapshot_upload_list.extend([(fn, fn) for fn in qtc_source_packages])
 
     if is_linux():
