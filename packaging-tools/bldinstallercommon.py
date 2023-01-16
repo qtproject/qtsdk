@@ -187,7 +187,7 @@ def move_tree(srcdir: str, dstdir: str, pattern: Optional[str] = None) -> None:
         if not dstfname:
             raise IOError('*** Fatal error! Unable to create destination file path, too long path name!')
         if os.path.isdir(srcfname) and not os.path.islink(srcfname):
-            os.mkdir(dstfname)
+            Path(dstfname).mkdir(parents=True, exist_ok=True)
             move_tree(srcfname, dstfname)
         elif pattern is None or fnmatch(name, pattern):
             if os.path.islink(srcfname):  # shutil.move fails moving directory symlinks over file system bounds...
