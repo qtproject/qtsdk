@@ -229,7 +229,7 @@ def build_clang(
     build_type: str = "Release",
 ) -> None:
     if build_path and not os.path.lexists(build_path):
-        os.makedirs(build_path)
+        Path(build_path).mkdir(parents=True)
 
     cmake_cmd = cmake_command(toolchain, src_path, install_path, bitness, build_type)
 

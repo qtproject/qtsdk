@@ -513,9 +513,9 @@ def create_installer_package(options: IfwOptions) -> None:
     log.info("Creating installer for Qt Installer Framework")
     # Temporary dir for creating installer containing the Qt Installer Framework itself
     package_dir = options.installer_framework_pkg_dir
-    os.makedirs(package_dir)
+    Path(package_dir).mkdir(parents=True, exist_ok=True)
     # Final directory for the installer containing the Qt Installer Framework itself
-    os.makedirs(options.installer_framework_target_dir)
+    Path(options.installer_framework_target_dir).mkdir(parents=True, exist_ok=True)
     target_dir = os.path.join(options.installer_framework_target_dir, 'QtInstallerFramework' + '-' + options.plat_suffix + '-' + options.architecture)
     with ch_dir(package_dir):
         shutil.copytree(os.path.join(options.installer_framework_build_dir, 'bin'), os.path.join(package_dir, 'bin'), ignore=shutil.ignore_patterns("*.exe.manifest", "*.exp", "*.lib"))
@@ -533,11 +533,10 @@ def create_installer_package(options: IfwOptions) -> None:
         run_cmd(cmd=cmd_args, cwd=ROOT_DIR)
         shutil.move(os.path.join(ROOT_DIR, options.installer_framework_payload_arch), options.build_artifacts_dir)
         # create 7z
-        archive_file = os.path.join(options.installer_framework_source_dir, 'dist', 'packages', 'org.qtproject.ifw.binaries', 'data', 'data.7z')
-        if not os.path.exists(os.path.dirname(archive_file)):
-            os.makedirs(os.path.dirname(archive_file))
+        archive_file = Path(options.installer_framework_source_dir, 'dist', 'packages', 'org.qtproject.ifw.binaries', 'data', 'data.7z')
+        archive_file.parent.mkdir(parents=True, exist_ok=True)
         archivegen = os.path.join(package_dir, 'bin', 'archivegen')
-        run_cmd(cmd=[archivegen, archive_file, '*'], cwd=package_dir)
+        run_cmd(cmd=[archivegen, str(archive_file), '*'], cwd=package_dir)
         # run installer
         binary_creator = os.path.join(options.installer_framework_build_dir, 'bin', 'binarycreator')
         config_file = os.path.join(options.installer_framework_source_dir, 'dist', 'config', 'config.xml')

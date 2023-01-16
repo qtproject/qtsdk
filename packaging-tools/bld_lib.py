@@ -96,7 +96,7 @@ def download_qt_pkg(args: argparse.Namespace, current_dir: str) -> Tuple[str, st
 def extract_archive(save_as: str, current_dir: str) -> str:
     qt_dest_dir = os.path.join(current_dir, "qt_pkg")
     if not os.path.exists(qt_dest_dir):
-        os.makedirs(qt_dest_dir)
+        Path(qt_dest_dir).mkdir(parents=True)
         log.info("Extracting to: %s", qt_dest_dir)
         if save_as.endswith("tar.gz"):
             with tarfile.open(save_as, "r:gz") as tar:
@@ -133,11 +133,11 @@ def build(args: argparse.Namespace, qt_dest_dir: str, current_dir: str) -> str:
 
     install_root_dir = os.path.join(current_dir, "lib_install_root")
     shutil.rmtree(install_root_dir, ignore_errors=True)
-    os.makedirs(install_root_dir)
+    Path(install_root_dir).mkdir(parents=True)
 
     bld_dir = os.path.join(current_dir, "lib_bld")
     shutil.rmtree(bld_dir, ignore_errors=True)  # ignore if path did not exist
-    os.makedirs(bld_dir)
+    Path(bld_dir).mkdir(parents=True)
 
     try:
         run_cmd(cmd=[qmake_tool, pro_file], cwd=bld_dir)

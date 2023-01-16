@@ -178,8 +178,8 @@ def mingw_training(
     qt_mingw_dir = os.path.join(base_path, 'qt_mingw')
 
     # Create some paths
-    os.makedirs(creator_settings_dir)
-    os.makedirs(creator_logs_dir)
+    Path(creator_settings_dir).mkdir(parents=True)
+    Path(creator_logs_dir).mkdir(parents=True)
 
     pkg_server = get_pkg_value("PACKAGE_STORAGE_SERVER")
 
@@ -408,7 +408,7 @@ def build_clang(
     build_type: str = "Release",
 ) -> None:
     if build_path and not os.path.lexists(build_path):
-        os.makedirs(build_path)
+        Path(build_path).mkdir(parents=True)
 
     cmake_cmd = get_cmake_command(
         toolchain, src_path, install_path, profile_data_path, first_run, bitness, build_type
@@ -438,7 +438,7 @@ def build_clazy(
     environment: Optional[Dict[str, str]] = None,
 ) -> None:
     if build_path and not os.path.lexists(build_path):
-        os.makedirs(build_path)
+        Path(build_path).mkdir(parents=True)
 
     cmake_cmd = ['cmake',
                  '-G', cmake_generator(),
@@ -559,7 +559,7 @@ def main() -> None:
 
         if os.path.exists(profile_data_path):
             rmtree(profile_data_path)
-        os.makedirs(profile_data_path)
+        Path(profile_data_path).mkdir(parents=True)
 
         # Update the regular build, so that we can see the differences
         result_file_path = os.path.join(base_path, 'libclang-' + branch + '-' + os.environ['CLANG_PLATFORM'] + '-regular.7z')

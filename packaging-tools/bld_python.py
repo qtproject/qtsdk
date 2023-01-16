@@ -65,10 +65,10 @@ async def prepare_sources(src: str, tmp_base_dir: str) -> str:
         else:
             return src
     elif os.path.isfile(src):
-        os.makedirs(src_tmp_dir)
+        Path(src_tmp_dir).mkdir(parents=True)
         await extract_archive(src, src_tmp_dir)
     elif is_valid_url_path(src):
-        os.makedirs(src_tmp_dir)
+        Path(src_tmp_dir).mkdir(parents=True)
         dest_file = download_archive(src, tmp_base_dir)
         await extract_archive(dest_file, src_tmp_dir)
     else:
@@ -150,7 +150,7 @@ async def _build_python(src_dir: str, bld_dir: str, prefix: str) -> str:
         make_install_cmd = ['make', 'install']
 
     rmtree(bld_dir, ignore_errors=True)
-    os.makedirs(bld_dir)
+    Path(bld_dir).mkdir(parents=True)
 
     with ch_dir(bld_dir):
         await run_cmd_async(cmd=configure_cmd)

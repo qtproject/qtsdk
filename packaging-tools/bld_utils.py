@@ -152,10 +152,7 @@ def download(url: str, target: str, read_block_size: int = 1048576) -> None:
         def local_download(local_file_path: str, target_file_path: str) -> None:
             if os.path.isfile(local_file_path):
                 log.info("copying file from '%s' to '%s'", local_file_path, target_file_path)
-                try:
-                    os.makedirs(os.path.dirname(target_file_path))
-                except Exception:
-                    pass
+                Path(target_file_path).parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(local_file_path, target)
                 log.info("Done")
 
@@ -173,10 +170,7 @@ def download(url: str, target: str, read_block_size: int = 1048576) -> None:
             return
 
         savefile_tmp = os.extsep.join((target, 'tmp'))
-        try:
-            os.makedirs(os.path.dirname(savefile_tmp))
-        except Exception:
-            pass
+        Path(savefile_tmp).parent.mkdir(parents=True, exist_ok=True)
 
         try:
             # use urlopen which raise an error if that file is not existing
@@ -268,7 +262,7 @@ def run_command(command: Union[List[str], str], cwd: str, extra_environment: Opt
         command_as_list[0] = found_executable
 
     if cwd and not os.path.lexists(cwd):
-        os.makedirs(cwd)
+        Path(cwd).mkdir(parents=True)
 
     log.info("========================== do ... ==========================")
     if cwd:

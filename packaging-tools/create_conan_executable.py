@@ -59,7 +59,7 @@ def locate_file_from_venv(venv_folder: str, file_name: str) -> str:
 
 async def clone_repo(url: str, destination_dir: str, env: Dict[str, str]) -> None:
     assert not os.path.isdir(destination_dir), f"Destination dir already exists: {destination_dir}"
-    os.makedirs(os.path.dirname(destination_dir), exist_ok=True)
+    Path(destination_dir).parent.mkdir(parents=True, exist_ok=True)
     log.info("Cloning repo: %s -> %s", url, destination_dir)
     cmd = ["git", "clone", url, destination_dir]
     await run_cmd_async(cmd=cmd, env=env, timeout=60 * 15)  # give it 15 mins

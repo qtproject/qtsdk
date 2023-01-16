@@ -371,8 +371,7 @@ def create_qtcreator_source_package(option_dict: Dict[str, str], source_path: st
     create_tar = is_linux()
     create_zip = is_windows() and '32' not in option_dict['TARGET_ENV']
     if create_tar or create_zip:
-        if not os.path.exists(target_base):
-            os.makedirs(target_base)
+        Path(target_base).mkdir(parents=True, exist_ok=True)
         copy_tree(source_path, target_base)
         if create_tar:
             check_call_log(['tar', 'czf', file_base + '.tar.gz', '--exclude', '.git', file_base],
@@ -596,8 +595,7 @@ def repackage_qtcreator(
     log_filepath: Optional[str] = None,
 ) -> None:
     extract_path = os.path.join(work_dir, 'temp_repackaged_qtc')
-    if not os.path.exists(extract_path):
-        os.makedirs(extract_path)
+    Path(extract_path).mkdir(parents=True, exist_ok=True)
     # extract Qt Creator
     check_call_log(['7z', 'x', '-y',
                     os.path.join(work_dir, qtcreator_package),
@@ -633,7 +631,7 @@ def handle_qt_creator_build(option_dict: Dict[str, str], qtcreator_plugins: List
         qtcreator_source_directory = os.path.join(work_dir, 'qt-creator')
         if os.path.exists(qtcreator_source_directory):
             shutil.rmtree(qtcreator_source_directory)
-        os.makedirs(qtcreator_source_directory)
+        Path(qtcreator_source_directory).mkdir(parents=True)
         clone_repository(option_dict['QT_CREATOR_GIT_URL'], option_dict['QT_CREATOR_GIT_BRANCH'],
                          qtcreator_source_directory, full_clone=True, init_subrepos=True)
     # Get Qt Creator plugin sources if not present yet
@@ -642,7 +640,7 @@ def handle_qt_creator_build(option_dict: Dict[str, str], qtcreator_plugins: List
         if plugin_conf.git_url:
             if os.path.exists(checkout_dir):
                 shutil.rmtree(checkout_dir)
-            os.makedirs(checkout_dir)
+            Path(checkout_dir).mkdir(parents=True)
             clone_repository(plugin_conf.git_url, plugin_conf.branch_or_tag, checkout_dir, full_clone=True)
 
     # Build time variables

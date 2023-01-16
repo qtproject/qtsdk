@@ -32,6 +32,7 @@
 
 import os
 import unittest
+from pathlib import Path
 from typing import List
 
 from ddt import data, ddt, unpack  # type: ignore
@@ -45,7 +46,7 @@ class TestContentCleaner(unittest.TestCase):
     def generate_test_content(self, test_base_dir: str, test_content_paths: List[str]) -> None:
         for test_content_path in test_content_paths:
             test_path = os.path.join(test_base_dir, test_content_path)
-            os.makedirs(os.path.dirname(test_path), exist_ok=True)
+            Path(test_path).parent.mkdir(parents=True, exist_ok=True)
             if not test_path.endswith("/"):
                 with open(test_path, "w+", encoding="utf-8") as handle:
                     handle.write("")

@@ -65,7 +65,7 @@ async def fetch_repogen(ifw_tools_url: str) -> str:
     current_dir = Path.cwd()
     ifw_tools_dir = os.path.join(current_dir, "ifw_tools")
     if not os.path.isdir(ifw_tools_dir):
-        os.makedirs(ifw_tools_dir)
+        Path(ifw_tools_dir).mkdir(parents=True)
         dest_file = download_archive(ifw_tools_url, ifw_tools_dir)
         await extract_archive(dest_file, ifw_tools_dir)
     tool_name = "repogen"

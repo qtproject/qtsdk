@@ -31,6 +31,7 @@
 
 import os
 import unittest
+from pathlib import Path
 from typing import List
 
 from ddt import ddt  # type: ignore
@@ -98,7 +99,7 @@ class TestReleaseRepoMetaUpdate(unittest.TestCase):
     def _write_test_repo(self, tmp_base_dir: str, paths: List[str]) -> None:
         for path in paths:
             tmp = os.path.join(tmp_base_dir, path)
-            os.makedirs(os.path.dirname(tmp), exist_ok=True)
+            Path(tmp).parent.mkdir(parents=True, exist_ok=True)
             if tmp.endswith((".xml", ".7z")):
                 with open(tmp, 'w+', encoding="utf-8") as handle:
                     handle.write("\n")
@@ -155,7 +156,7 @@ class TestReleaseRepoMetaUpdate(unittest.TestCase):
             self.assertTrue(not failed_conversions)
             # as it was dry-run we need to create the dummy migrated repo directories here
             for _, migrated_repo in successful_conversions.items():
-                os.makedirs(migrated_repo)
+                Path(migrated_repo).mkdir(parents=True)
             operations_ok, operations_nok = swap_repositories(successful_conversions)
             self.assertTrue(not operations_nok)
             self.assertListEqual(sorted(successful_conversions.keys()), sorted(operations_ok.keys()))

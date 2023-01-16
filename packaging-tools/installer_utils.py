@@ -89,7 +89,7 @@ async def extract_archive(artifact: str, destination_dir: str) -> None:
     log.info("Extracting file: %s into: %s", artifact, destination_dir)
     extract_cmd = get_extract_cmd(artifact)
     try:
-        os.makedirs(destination_dir, exist_ok=True)
+        Path(destination_dir).mkdir(parents=True, exist_ok=True)
         with ch_dir(destination_dir):
             run_cmd(cmd=extract_cmd)
     except Exception:

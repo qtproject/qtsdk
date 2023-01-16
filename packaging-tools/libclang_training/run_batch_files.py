@@ -231,7 +231,7 @@ def create_dir(dir_path: str) -> None:
     if not os.path.exists(dir_path):
         if Config.Verbose:
             print(f"info: creating not existent {dir_path}")
-        os.makedirs(dir_path)
+        Path(dir_path).mkdir(parents=True)
 
 
 def create_backup_file(file_path: str) -> None:

@@ -162,7 +162,7 @@ def _main() -> None:
     if os.path.exists(args.output_path):
         if args.clean_output_path:
             rmtree(args.output_path, ignore_errors=True)
-    os.makedirs(args.output_path)
+    Path(args.output_path).mkdir(parents=True)
 
     for search_path in args.search_pathes.split(","):
         if not os.path.isdir(search_path):
