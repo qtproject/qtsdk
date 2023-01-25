@@ -97,7 +97,7 @@ def install_qt(
     if not qt_modules:
         raise SystemExit("No modules specified in qt_modules")
     qt_path = os.path.abspath(qt_path)
-    dl_pkgs_work = ThreadedWork("get and extract Qt 5 binaries")
+    dl_pkgs_work = ThreadedWork("get and extract Qt binaries")
     need_to_install_qt = not os.path.lexists(qt_path)
     if need_to_install_qt:
         opts = argparse.Namespace(
