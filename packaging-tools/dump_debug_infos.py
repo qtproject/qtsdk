@@ -101,7 +101,7 @@ def dump_syms(
                 if is_file_with_debug_information(absolute_path):
                     base_path = str(Path(absolute_path).with_suffix(""))
                     start_slash = 1
-                    sym_path_base = base_path[start_slash + len(search_path):].replace("/", "_")
+                    sym_path_base = base_path[start_slash + len(search_path):].replace(os.sep, "_")
                     sym_filename = f"{sym_path_base}.sym"
                     sym_path = os.path.join(output_path, sym_filename)
                     if dump_sym(dump_syms_path, architectures[0], absolute_path, sym_path, verbose):
