@@ -76,10 +76,19 @@ def dump_sym(dump_syms_path: str, architecture: str, absolute_path: str, sym_pat
     dump_syms_command = f'{dump_syms_path} {architecture} "{absolute_path}" > "{sym_path}"'
     if verbose:
         log.info("call: %s", dump_syms_command)
-    dump_syms_return = subprocess.call(dump_syms_command, shell=True)
-    if os.path.exists(sym_path) and os.stat(sym_path).st_size > 0 and dump_syms_return == 0:
+    dump_syms_result = subprocess.run(dump_syms_command,
+                                      shell=True,
+                                      stdout=subprocess.PIPE,
+                                      stderr=subprocess.STDOUT,
+                                      text=True)
+    if os.path.exists(sym_path) and os.stat(sym_path).st_size > 0 and dump_syms_result.returncode == 0:
         return True
-    raise Exception(f"dump_syms can not be called: \n{dump_syms_command}\n{dump_syms_return}")
+    raise Exception(
+        f"dump_syms can not be called:"
+        f"\n{dump_syms_command}"
+        f"\nreturncode: {dump_syms_result.returncode}"
+        f"\noutput: {dump_syms_result.stdout}"
+    )
 
 
 def dump_syms(
