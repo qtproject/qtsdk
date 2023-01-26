@@ -344,6 +344,7 @@ class IfwSdkComponent:
     temp_data_dir: Optional[Path] = None
     meta_dir_dest: Optional[Path] = None
     archive_skip: bool = False
+    errors: List[str] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         """Post init: resolve component sha1 uri if it exists"""
@@ -373,6 +374,7 @@ class IfwSdkComponent:
                     archive.validate_uri()
             return True
         except IfwSdkError as err:
+            self.errors.append(f"[{self.ifw_sdk_comp_name}]: {str(err)}")
             if not ignore_errors:
                 raise
             log.exception("[%s] Ignored error in component: %s", self.ifw_sdk_comp_name, err)

@@ -524,6 +524,7 @@ async def build_online_repositories(
         loop = asyncio.get_running_loop()  # pylint: disable=no-member
     # use same timestamp for all built repos
     job_timestamp = strftime("%Y-%m-%d", gmtime())
+    errors: List[str] = []
     for task in tasks:
         tmp_dir = os.path.join(tmp_base_dir, task.repo_path)
         task.source_online_repository_path = os.path.join(tmp_dir, "online_repository")
@@ -557,6 +558,12 @@ async def build_online_repositories(
         except Exception as exc:
             log.exception("Repository build failed!")
             raise PackagingError from exc
+        if dry_run and installer_task.errors:
+            errors.append(
+                f"Collected {len(installer_task.errors)} errors during the repository task: "
+                f"{task.get_repo_path()}"
+            )
+            errors.extend(installer_task.errors)
         if not dry_run:
             script_dir = os.path.dirname(__file__)
             online_repo_path = os.path.abspath(os.path.join(script_dir, "online_repository"))
@@ -564,6 +571,9 @@ async def build_online_repositories(
             shutil.move(online_repo_path, task.source_online_repository_path)
             log.info("Repository created at: %s", task.source_online_repository_path)
             done_repositories.append(task.source_online_repository_path)
+    if dry_run:
+        for err_msg in errors:
+            log.error(err_msg)
     return done_repositories
 
 
@@ -799,6 +809,7 @@ async def _build_offline_tasks(
         loop = asyncio.get_running_loop()  # pylint: disable=no-member
     # use same timestamp for all installer tasks
     job_timestamp = strftime("%Y-%m-%d", gmtime())
+    errors: List[str] = []
     for task in tasks:
         log.info("Building offline installer: %s", task.installer_name)
         installer_config_file = os.path.join(installer_config_base_dir, task.config_file)
@@ -827,11 +838,20 @@ async def _build_offline_tasks(
         except Exception as exc:
             log.exception("Installer build failed!")
             raise PackagingError from exc
+        if dry_run and installer_task.errors:
+            errors.append(
+                f"Collected {len(installer_task.errors)} errors during the installer task: "
+                f"{task.get_installer_name()}"
+            )
+            errors.extend(installer_task.errors)
 
         await sign_offline_installer(installer_output_dir, task.installer_name)
         if update_staging:
             remote_upload_path = create_offline_remote_dirs(task, staging_server, staging_server_root, installer_build_id)
             upload_offline_to_remote(installer_output_dir, remote_upload_path, staging_server, task, installer_build_id, enable_oss_snapshots, license_)
+    if dry_run:
+        for err_msg in errors:
+            log.error(err_msg)
 
 
 def upload_snapshots_to_remote(staging_server: str, remote_upload_path: str, task: IFWReleaseTask, installer_build_id: str, installer_filename: str) -> None:

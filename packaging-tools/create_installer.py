@@ -301,6 +301,8 @@ def parse_component_data(
                 # all component data is skipped when a dry_run mode is specified
                 if (task.partial_installer and not component_is_valid) or task.dry_run:
                     log.warning("Skipping component: [%s]", sdk_comp.ifw_sdk_comp_name)
+                    # collect validation errors
+                    task.errors.extend(sdk_comp.errors)
                     sdk_comp.archive_skip = True
                 # if include filter defined for component it is included only if LICENSE_TYPE
                 # matches to include_filter
@@ -1164,6 +1166,7 @@ class QtInstallerTask(Generic[QtInstallerTaskType]):
     create_repository: bool = False
     partial_installer: bool = False  # Invalid IfwSdkComponents will be excluded from the installer
     dry_run: Optional[DryRunMode] = None
+    errors: List[str] = field(default_factory=list)
     license_type: str = "opensource"
     build_timestamp: str = strftime("%Y-%m-%d", gmtime())
     force_version_number_increase: bool = False
@@ -1389,6 +1392,10 @@ def main() -> None:
     )
     log.info(str(task))
     create_installer(task)
+    if task.errors:
+        log.warning("Collected %s errors during the execution of the task:", len(task.errors))
+        for err_msg in task.errors:
+            log.warning(err_msg)
 
 
 if __name__ == "__main__":
