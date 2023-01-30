@@ -612,7 +612,7 @@ def extract_file(path: str, to_directory: str = ".") -> bool:
         cmd_args = ['tar', '-xf', path]
     elif path.endswith('.tar.bz2') or path.endswith('.tbz'):
         cmd_args = ['tar', '-xjf', path]
-    elif path.endswith(('.7z', '.zip', '.gz', '.xz', '.bz2')):
+    elif path.endswith(('.7z', '.zip', '.gz', '.xz', '.bz2', '.qbsp')):
         cmd_args = ['7z', 'x', path]
     else:
         log.warning("Extract fail: %s. Not an archive or appropriate extractor was not found", path)

@@ -38,6 +38,7 @@ import re
 import shutil
 import subprocess
 import sys
+from abc import ABC, abstractmethod
 from configparser import ConfigParser, ExtendedInterpolation
 from dataclasses import dataclass
 from datetime import datetime
@@ -45,20 +46,27 @@ from enum import Enum
 from pathlib import Path
 from subprocess import PIPE
 from time import gmtime, sleep, strftime, time
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union, cast
 from urllib.error import HTTPError, URLError
 from urllib.request import urlopen, urlretrieve
 
 from temppathlib import TemporaryDirectory
 
 from bld_utils import is_linux
-from bldinstallercommon import is_long_path_supported, locate_path
+from bldinstallercommon import extract_file, is_long_path_supported, locate_path
 from create_installer import DryRunMode, QtInstallerTask, create_installer
 from installer_utils import PackagingError, download_archive, extract_archive, is_valid_url_path
 from logging_util import init_logger
 from notarize import notarize
 from read_remote_config import get_pkg_value
-from release_task_reader import IFWReleaseTask, TaskType, append_to_task_filters, parse_config
+from release_task_reader import (
+    IFWReleaseTask,
+    QBSPReleaseTask,
+    ReleaseTask,
+    TaskType,
+    append_to_task_filters,
+    parse_config,
+)
 from runner import run_cmd, run_cmd_async
 from sign_installer import create_mac_dmg, sign_mac_app
 from sign_windows_installer import sign_executable
@@ -172,6 +180,169 @@ class QtRepositoryLayout:
 
 
 @dataclass
+class RepoBuildArgs:
+    """Container for online repository build arguments"""
+
+    staging_server: str
+    staging_server_root: str
+    artifact_share_url: str
+    license_: str
+    build_repositories: bool
+    sync_s3: str
+    sync_ext: str
+    rta: str
+    event_injector: str
+    dry_run: Optional[DryRunMode]
+    installer_config_base_dir: str = ""
+    ifw_tools: str = ""
+
+
+class RepoBuildStrategy(ABC):
+    """Interface class to define a repo build strategy.
+    The IFW online repository can be built in different ways. Inheriting classes need to
+    implement the details of the specific build strategy."""
+
+    def __init__(
+        self,
+        update_strategy: 'RepoUpdateStrategy',
+        export_data: Dict[str, str],
+    ) -> None:
+        """Construct the build strategy.
+
+        Args:
+            update_strategy: The strategy how to perform the update phase after the repo build.
+            export_data: Data passed to EventRegister about the repo build.
+        """
+        self.update_strategy = update_strategy
+        self.export_data = export_data
+
+    @staticmethod
+    def get_strategy(task_type: TaskType, **kwargs: Any) -> 'RepoBuildStrategy':
+        """A factory method to initialize a strategy based on the given TaskType.
+
+        Args:
+            task_type: Based on the TaskType a suitable build strategy is returned.
+            **kwargs: The possible kwargs are passed to the constructor of the strategy class.
+
+        Returns:
+            A concrete RepoBuildStrategy matching the given TaskType.
+
+        Raises:
+            KeyError: If there was no concrete implementation available for the given TaskType.
+        """
+
+        build_strategies = {
+            TaskType.IFW_TASK_TYPE: IFWRepoBuildStrategy,
+            TaskType.QBSP_TASK_TYPE: QBSPRepoBuildStrategy,
+        }
+        return build_strategies[task_type](**kwargs)
+
+    @abstractmethod
+    def execute_build(
+        self,
+        tasks: List[ReleaseTask],
+        bld_args: RepoBuildArgs,
+    ) -> None:
+        """Inheriting class must implement this to execute the repository build."""
+
+    @abstractmethod
+    def parse_bld_args(self, args: argparse.Namespace) -> RepoBuildArgs:
+        """A conveniency function to construct RepoBuildArgs from the given Namespace object."""
+
+
+class IFWRepoBuildStrategy(RepoBuildStrategy):
+    """RepoBuildStrategy implementation for repositories that must be created using the
+    create_installer.py script i.e. a full repository build."""
+
+    def execute_build(
+        self,
+        tasks: List[ReleaseTask],
+        bld_args: RepoBuildArgs,
+    ) -> None:
+        assert all(isinstance(task, IFWReleaseTask) for task in tasks)
+        asyncio_run(
+            handle_update(
+                staging_server=bld_args.staging_server,
+                staging_server_root=bld_args.staging_server_root,
+                license_=bld_args.license_,
+                tasks=cast(List[IFWReleaseTask], tasks),
+                installer_config_base_dir=bld_args.installer_config_base_dir,
+                artifact_share_base_url=bld_args.artifact_share_url,
+                update_strategy=self.update_strategy,
+                sync_s3=bld_args.sync_s3,
+                sync_ext=bld_args.sync_ext,
+                rta=bld_args.rta or "",
+                ifw_tools=bld_args.ifw_tools,
+                build_repositories=bld_args.build_repositories,
+                sync_repositories=bool(bld_args.sync_s3 or bld_args.sync_ext),
+                event_injector=bld_args.event_injector,
+                export_data=self.export_data,
+                dry_run=bld_args.dry_run,
+            )
+        )
+
+    def parse_bld_args(self, args: argparse.Namespace) -> RepoBuildArgs:
+        return RepoBuildArgs(
+            staging_server=args.staging_server,
+            staging_server_root=args.staging_server_root,
+            artifact_share_url=args.artifact_share_url,
+            license_=args.license_,
+            build_repositories=args.build_repositories,
+            sync_s3=args.sync_s3,
+            sync_ext=args.sync_ext,
+            rta=args.rta,
+            event_injector=args.event_injector,
+            dry_run=args.dry_run,
+            installer_config_base_dir=args.installer_config_base_dir,
+            ifw_tools=args.ifw_tools,
+        )
+
+
+class QBSPRepoBuildStrategy(RepoBuildStrategy):
+    """RepoBuildStrategy implementation for repositories that must be created using a
+    QBSP file as an input i.e. a compressed pre-built repository."""
+
+    def execute_build(
+        self,
+        tasks: List[ReleaseTask],
+        bld_args: RepoBuildArgs,
+    ) -> None:
+        assert all(isinstance(task, QBSPReleaseTask) for task in tasks)
+        asyncio_run(
+            handle_update_qbsp(
+                staging_server=bld_args.staging_server,
+                staging_server_root=bld_args.staging_server_root,
+                license_=bld_args.license_,
+                artifact_share_base_url=bld_args.artifact_share_url,
+                tasks=cast(List[QBSPReleaseTask], tasks),
+                update_strategy=self.update_strategy,
+                sync_s3=bld_args.sync_s3,
+                sync_ext=bld_args.sync_ext,
+                rta=bld_args.rta,
+                build_repositories=bld_args.build_repositories,
+                sync_repositories=bool(bld_args.sync_s3 or bld_args.sync_ext),
+                event_injector=bld_args.event_injector,
+                export_data=self.export_data,
+                dry_run=bld_args.dry_run,
+            )
+        )
+
+    def parse_bld_args(self, args: argparse.Namespace) -> RepoBuildArgs:
+        return RepoBuildArgs(
+            staging_server=args.staging_server,
+            staging_server_root=args.staging_server_root,
+            artifact_share_url=args.artifact_share_url,
+            license_=args.license_,
+            build_repositories=args.build_repositories,
+            sync_s3=args.sync_s3,
+            sync_ext=args.sync_ext,
+            rta=args.rta,
+            event_injector=args.event_injector,
+            dry_run=args.dry_run,
+        )
+
+
+@dataclass
 class RepoUpdateStrategy:
     """Encapsulates instructions how the repository update should be performed on the remote."""
 
@@ -200,7 +371,7 @@ class RepoUpdateStrategy:
         return RepoUpdateStrategy(build_repositories, repo_layout, remote_repo_update_source,
                                   repo_update_destinations)
 
-    def get_remote_source_repo_path(self, task: IFWReleaseTask) -> str:
+    def get_remote_source_repo_path(self, task: ReleaseTask) -> str:
         if self.remote_repo_update_source == RepoSource.PENDING:
             return os.path.join(str(self.remote_repo_layout.get_pending_path()),
                                 task.repo_path, "repository")
@@ -306,8 +477,8 @@ def get_remote_login_cmd(server: str) -> List[str]:
     return ['ssh', '-t', '-t', server]
 
 
-def trigger_rta(rta_server_url: str, task: IFWReleaseTask) -> None:
-    for key in task.rta_key_list:
+def trigger_rta(rta_server_url: str, rta_key_list: List[str]) -> None:
+    for key in rta_key_list:
         url = rta_server_url + key + '/build?token=RTA_JENKINS'
         log.info("Triggering RTA case: %s", url)
         try:
@@ -462,8 +633,12 @@ def spawn_remote_background_task(server: str, server_home: str, remote_cmd: List
     execute_remote_cmd(server, server_home, cmd, remote_script_file_name, timeout=60 * 60 * 2)  # 2h timeout for uploading data to CDN
 
 
-async def update_repository(staging_server: str, update_strategy: RepoUpdateStrategy,
-                            task: IFWReleaseTask, rta: str) -> None:
+async def update_repository(
+    staging_server: str,
+    update_strategy: RepoUpdateStrategy,
+    task: Union[IFWReleaseTask, QBSPReleaseTask],
+    rta: str,
+) -> None:
     # ensure the repository paths exists at server
     log.info("Starting repository update: %s", task.repo_path)
     create_remote_paths(staging_server, update_strategy.remote_repo_layout.get_repo_layout())
@@ -493,7 +668,7 @@ async def update_repository(staging_server: str, update_strategy: RepoUpdateStra
         delete_remote_paths(staging_server, [remote_repo_source_path])
     # trigger RTA cases for the task if specified
     if rta:
-        trigger_rta(rta, task)
+        trigger_rta(rta, task.rta_key_list)
 
 
 async def build_online_repositories(
@@ -578,7 +753,7 @@ async def build_online_repositories(
 
 
 async def update_repositories(
-    tasks: List[IFWReleaseTask],
+    tasks: Sequence[Union[IFWReleaseTask, QBSPReleaseTask]],
     staging_server: str,
     update_strategy: RepoUpdateStrategy,
     rta: str,
@@ -591,17 +766,40 @@ async def update_repositories(
         raise
 
 
-async def sync_production(tasks: List[IFWReleaseTask], repo_layout: QtRepositoryLayout, sync_s3: str, sync_ext: str,
-                          staging_server: str, staging_server_root: str, license_: str, event_injector: str,
-                          export_data: Dict[str, str]) -> None:
+def download_and_extract_qbsp(qbsp_url: str, dest_folder: Path) -> None:
+    download_dest = dest_folder / qbsp_url.split("/")[-1]
+    log.info("Downloading '%s' into: %s", qbsp_url, download_dest)
+    try:
+        download_archive(qbsp_url, str(dest_folder))
+    except HTTPError as http_err:
+        msg = f"Unable to download '{qbsp_url}'. {str(http_err)}"
+        log.error(msg)
+        raise PackagingError(msg) from None
+    log.info("Extracting '%s' into: %s", download_dest, dest_folder)
+    if not extract_file(str(download_dest), str(dest_folder)):
+        raise PackagingError(f"Failed to extract '{str(download_dest)}' into: {str(dest_folder)}")
+    download_dest.unlink()
+
+
+async def sync_production(
+    repo_paths: List[str],
+    repo_layout: QtRepositoryLayout,
+    sync_s3: str,
+    sync_ext: str,
+    staging_server: str,
+    staging_server_root: str,
+    license_: str,
+    event_injector: str,
+    export_data: Dict[str, str],
+) -> None:
     log.info("triggering production sync..")
     # collect production sync jobs
     updated_production_repositories = {}  # type: Dict[str, str]
-    for task in tasks:
-        key = os.path.join(repo_layout.get_repo_domain(), task.repo_path)
+    for repo_path in repo_paths:
+        key = os.path.join(repo_layout.get_repo_domain(), repo_path)
         if key in updated_production_repositories:
             raise PackagingError(f"Duplicate repository path found: {key}")
-        updated_production_repositories[key] = os.path.join(repo_layout.get_production_path(), task.repo_path)
+        updated_production_repositories[key] = os.path.join(repo_layout.get_production_path(), repo_path)
 
     # if _all_ repository updates to production were successful then we can sync to production
     if sync_s3:
@@ -613,6 +811,68 @@ async def sync_production(tasks: List[IFWReleaseTask], repo_layout: QtRepository
             await sync_production_repositories_to_ext(staging_server, sync_ext, updated_production_repositories,
                                                       staging_server_root, license_)
     log.info("Production sync trigger done!")
+
+
+async def handle_update_qbsp(
+    staging_server: str,
+    staging_server_root: str,
+    license_: str,
+    tasks: List[QBSPReleaseTask],
+    artifact_share_base_url: str,
+    update_strategy: RepoUpdateStrategy,
+    sync_s3: str,
+    sync_ext: str,
+    rta: str,
+    build_repositories: bool,
+    sync_repositories: bool,
+    event_injector: str,
+    export_data: Dict[str, str],
+    dry_run: Optional[DryRunMode] = None,
+) -> List[str]:
+    """Build a repositories from QBSP files, update that to staging area and sync to production."""
+    log.info("Starting QBSP repository update for %i tasks..", len(tasks))
+
+    tmp_base_dir = Path.cwd() / "_qbsp_repo_update_jobs"
+    if build_repositories:
+        shutil.rmtree(tmp_base_dir, ignore_errors=True)
+    tmp_base_dir.mkdir(parents=True, exist_ok=True)
+
+    done_repositories: List[str] = []
+    if build_repositories:
+        # this may take a while depending on how big the repositories are
+        async with EventRegister(f"{license_}: QBSP repo build", event_injector, export_data):
+            for task in tasks:
+                dst_repo_dir = tmp_base_dir / task.repo_path / "online_repository"
+                dst_repo_dir.mkdir(parents=True)
+                task.source_online_repository_path = str(dst_repo_dir)
+                if not build_repositories:
+                    # this is usually for testing purposes in env where repositories are already
+                    # built, we just update task objects
+                    continue
+                log.info("Building repository: %s", task.repo_path)
+                if dry_run is not None:
+                    continue
+                qbsp_file_url = artifact_share_base_url.rstrip("/") + task.qbsp_file.rstrip("/")
+                download_and_extract_qbsp(qbsp_file_url, Path(task.source_online_repository_path))
+                log.info("QBSP repository created at: %s", task.source_online_repository_path)
+                done_repositories.append(task.source_online_repository_path)
+    if update_strategy.requires_remote_update() and dry_run is None:
+        async with EventRegister(f"{license_}: repo update", event_injector, export_data):
+            await update_repositories(tasks, staging_server, update_strategy, rta)
+    if sync_repositories and dry_run is None:
+        await sync_production(
+            [task.repo_path for task in tasks],
+            update_strategy.remote_repo_layout,
+            sync_s3,
+            sync_ext,
+            staging_server,
+            staging_server_root,
+            license_,
+            event_injector,
+            export_data,
+        )
+    log.info("Repository updates done!")
+    return done_repositories
 
 
 async def handle_update(
@@ -651,8 +911,17 @@ async def handle_update(
         async with EventRegister(f"{license_}: repo update", event_injector, export_data):
             await update_repositories(tasks, staging_server, update_strategy, rta)
     if sync_repositories:
-        await sync_production(tasks, update_strategy.remote_repo_layout, sync_s3, sync_ext, staging_server,
-                              staging_server_root, license_, event_injector, export_data)
+        await sync_production(
+            [task.repo_path for task in tasks],
+            update_strategy.remote_repo_layout,
+            sync_s3,
+            sync_ext,
+            staging_server,
+            staging_server_root,
+            license_,
+            event_injector,
+            export_data,
+        )
     log.info("Repository updates done!")
 
 
@@ -897,6 +1166,71 @@ def load_export_summary_data(config_file: Path) -> Dict[str, str]:
     return ret
 
 
+def handle_offline_jobs(
+    args: argparse.Namespace,
+    export_data: Dict[str, str],
+) -> None:
+    # get offline tasks
+    tasks = parse_config(
+        config_file=args.config,
+        task_type=TaskType.IFW_TASK_TYPE,
+        task_filters=append_to_task_filters(args.task_filters, "offline"),
+    )
+    asyncio_run(
+        build_offline_tasks(
+            staging_server=args.staging_server,
+            staging_server_root=args.staging_server_root,
+            tasks=tasks,  # type: ignore
+            license_=args.license_,
+            installer_config_base_dir=args.installer_config_base_dir,
+            artifact_share_base_url=args.artifact_share_url,
+            ifw_tools=args.ifw_tools,
+            installer_build_id=args.offline_installer_id,
+            update_staging=args.update_staging,
+            enable_oss_snapshots=args.enable_oss_snapshots,
+            event_injector=args.event_injector,
+            export_data=export_data,
+            dry_run=DryRunMode[args.dry_run] if args.dry_run else None,
+        )
+    )
+
+
+def handle_online_repo_jobs(
+    args: argparse.Namespace,
+    export_data: Dict[str, str],
+) -> None:
+    # get online repository tasks per type
+    for task_type in [TaskType.IFW_TASK_TYPE, TaskType.QBSP_TASK_TYPE]:
+        tasks = parse_config(
+            config_file=args.config,
+            task_type=task_type,
+            task_filters=append_to_task_filters(args.task_filters, "repository"),
+        )
+
+        if not tasks:
+            log.info("No tasks found for type: %s", task_type.value)
+            continue
+
+        update_strategy = RepoUpdateStrategy.get_strategy(
+            staging_server_root=args.staging_server_root,
+            license_=args.license_,
+            repo_domain=args.repo_domain,
+            build_repositories=args.build_repositories,
+            remote_repo_update_source=RepoSource(args.update_source_type),
+            update_staging=args.update_staging,
+            update_production=args.update_production,
+        )
+
+        build_strategy = RepoBuildStrategy.get_strategy(
+            task_type,
+            update_strategy=update_strategy,
+            export_data=export_data,
+        )
+
+        bld_args = build_strategy.parse_bld_args(args)
+        build_strategy.execute_build(tasks, bld_args)  # type: ignore
+
+
 def main() -> None:
     """Main"""
     args_from_file_parser = argparse.ArgumentParser(
@@ -1018,72 +1352,19 @@ def main() -> None:
     # format task string in case full task section string is used
     args.task_filters = format_task_filters(args.task_filters)
     # installer configuration files are relative to the given top level release description file
-    installer_config_base_dir = os.path.abspath(os.path.join(os.path.dirname(args.config), os.pardir))
-    assert os.path.isdir(installer_config_base_dir), f"Not able to figure out 'configurations/' directory correctly: {installer_config_base_dir}"
+    args.installer_config_base_dir = os.path.abspath(
+        os.path.join(os.path.dirname(args.config), os.pardir)
+    )
+    assert os.path.isdir(
+        args.installer_config_base_dir
+    ), f"Not able to figure out 'configurations/' directory correctly: {args.installer_config_base_dir}"
 
     export_data = load_export_summary_data(Path(args.config)) if args.event_injector else {}
 
     if args.build_offline:
-        # get offline tasks
-        tasks = parse_config(
-            config_file=args.config,
-            task_type=TaskType.IFW_TASK_TYPE,
-            task_filters=append_to_task_filters(args.task_filters, "offline"),
-        )
-        asyncio_run(
-            build_offline_tasks(
-                staging_server=args.staging_server,
-                staging_server_root=args.staging_server_root,
-                tasks=tasks,  # type: ignore
-                license_=args.license_,
-                installer_config_base_dir=installer_config_base_dir,
-                artifact_share_base_url=args.artifact_share_url,
-                ifw_tools=args.ifw_tools,
-                installer_build_id=args.offline_installer_id,
-                update_staging=args.update_staging,
-                enable_oss_snapshots=args.enable_oss_snapshots,
-                event_injector=args.event_injector,
-                export_data=export_data,
-                dry_run=DryRunMode[args.dry_run] if args.dry_run else None,
-            )
-        )
-
+        handle_offline_jobs(args, export_data)
     else:  # this is either repository build or repository sync build
-        # get repository tasks
-        tasks = parse_config(
-            config_file=args.config,
-            task_type=TaskType.IFW_TASK_TYPE,
-            task_filters=append_to_task_filters(args.task_filters, "repository"),
-        )
-        update_strategy = RepoUpdateStrategy.get_strategy(
-            staging_server_root=args.staging_server_root,
-            license_=args.license_,
-            repo_domain=args.repo_domain,
-            build_repositories=args.build_repositories,
-            remote_repo_update_source=RepoSource(args.update_source_type),
-            update_staging=args.update_staging,
-            update_production=args.update_production,
-        )
-        asyncio_run(
-            handle_update(
-                staging_server=args.staging_server,
-                staging_server_root=args.staging_server_root,
-                license_=args.license_,
-                tasks=tasks,  # type: ignore
-                installer_config_base_dir=installer_config_base_dir,
-                artifact_share_base_url=args.artifact_share_url,
-                update_strategy=update_strategy,
-                sync_s3=args.sync_s3,
-                sync_ext=args.sync_ext,
-                rta=args.rta or "",
-                ifw_tools=args.ifw_tools,
-                build_repositories=args.build_repositories,
-                sync_repositories=args.sync_s3 or args.sync_ext,
-                event_injector=args.event_injector,
-                export_data=export_data,
-                dry_run=DryRunMode[args.dry_run] if args.dry_run else None,
-            )
-        )
+        handle_online_repo_jobs(args, export_data)
 
 
 if __name__ == "__main__":

@@ -35,7 +35,13 @@ from typing import List
 
 from ddt import data, ddt, unpack  # type: ignore
 
-from release_task_reader import ReleaseTaskError, TaskType, get_filter_parts, parse_data
+from release_task_reader import (
+    QBSPReleaseTask,
+    ReleaseTaskError,
+    TaskType,
+    get_filter_parts,
+    parse_data,
+)
 from tests.testhelpers import asyncio_test, asyncio_test_parallel_data
 
 
@@ -216,6 +222,35 @@ class TestReleaseTaskReader(unittest.TestCase):
         self.assertEqual(tasks[0].content_sources, ["http://bar.com/content1",  # type: ignore
                                                     "http://bar.com/content2"])
         self.assertEqual(sorted(tasks[0].rta_key_list), sorted(["key1", "key2"]))
+
+    @asyncio_test
+    async def test_release_task_reader_qbsp(self) -> None:
+        sample_config = """
+            [task.qbsp.repository.linux.foo]
+            qbsp_file: https://foo.com/path1/foo.qbsp
+            repo_path: test_repo/temp1
+            rta_key_list: key1, key2
+
+            [task.qbsp.repository.linux.bar]
+            qbsp_file: https://foo.com/path2/bar.qbsp
+            repo_path: test_repo/temp2
+            rta_key_list: key3, key4
+        """
+        config = ConfigParser()
+        config.read_string(sample_config)
+
+        # parse all tasks i.e. no filters
+        tasks = parse_data(config, task_type=TaskType.QBSP_TASK_TYPE, task_filters=[])
+        self.assertTrue(len(tasks) == 2, "Did not parse all tasks from sample config")
+
+        # parse only "foo" tasks
+        tasks = parse_data(config, task_type=TaskType.QBSP_TASK_TYPE, task_filters=["foo"])
+        self.assertTrue(len(tasks) == 1)
+        task = tasks.pop()
+        assert isinstance(task, QBSPReleaseTask)
+        self.assertEqual(task.qbsp_file, "https://foo.com/path1/foo.qbsp")
+        self.assertEqual(task.repo_path, "test_repo/temp1")
+        self.assertEqual(sorted(task.rta_key_list), sorted(["key1", "key2"]))
 
     @asyncio_test
     async def test_release_task_reader_invalid_config(self) -> None:

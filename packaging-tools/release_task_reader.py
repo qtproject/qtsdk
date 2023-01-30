@@ -36,7 +36,7 @@ import sys
 from abc import ABC, abstractmethod
 from configparser import ConfigParser, ExtendedInterpolation, SectionProxy
 from enum import Enum
-from typing import Any, List, Union
+from typing import Any, Dict, List, Type, Union
 
 from installer_utils import PackagingError
 from logging_util import init_logger
@@ -50,12 +50,14 @@ class ReleaseTaskError(Exception):
 
 class TaskType(Enum):
     IFW_TASK_TYPE = "ifw"
+    QBSP_TASK_TYPE = "qbsp"
     DEB_TASK_TYPE = "deb"
 
     @classmethod
     def from_value(cls, value: str) -> 'TaskType':
         _values = {
             TaskType.IFW_TASK_TYPE.value: TaskType.IFW_TASK_TYPE,
+            TaskType.QBSP_TASK_TYPE.value: TaskType.QBSP_TASK_TYPE,
             TaskType.DEB_TASK_TYPE.value: TaskType.DEB_TASK_TYPE,
         }
         return _values[value]
@@ -159,12 +161,39 @@ class DebReleaseTask(ReleaseTask):
                 raise ReleaseTaskError(f"Value invalid or missing: {item}")
 
 
-class IFWReleaseTask(ReleaseTask):
-    """Attributes specific to IFW online repository build jobs."""
+class IFWBaseReleaseTask(ReleaseTask):
 
     def __init__(self, name: str, settings: SectionProxy, common_substitutions: str):
         super().__init__(name, settings, common_substitutions)
         self._source_online_repository_path: str = ""
+
+    @property
+    def source_online_repository_path(self) -> str:
+        if not self._source_online_repository_path:
+            raise PackagingError("Something is wrong, 'source_online_repository_path' isn't set!")
+        return self._source_online_repository_path
+
+    @source_online_repository_path.setter
+    def source_online_repository_path(self, value: str) -> None:
+        self._source_online_repository_path = value
+
+
+class QBSPReleaseTask(IFWBaseReleaseTask):
+    """Attributes specific to create IFW online repository from QBSP file."""
+
+    @property
+    def qbsp_file(self) -> str:
+        return self._get("qbsp_file")
+
+    def validate(self) -> None:
+        validate_list = ["qbsp_file"]
+        for item in validate_list:
+            if not self._key_exists(item):
+                raise ReleaseTaskError(f"Value invalid or missing: {item}")
+
+
+class IFWReleaseTask(IFWBaseReleaseTask):
+    """Attributes specific to IFW online repository build jobs."""
 
     @property
     def installer_name(self) -> str:
@@ -182,16 +211,6 @@ class IFWReleaseTask(ReleaseTask):
     def prerelease_version(self) -> str:
         return self._get("prerelease_version")
 
-    @property
-    def source_online_repository_path(self) -> str:
-        if not self._source_online_repository_path:
-            raise PackagingError("Something is wrong, 'source_online_repository_path' isn't set!")
-        return self._source_online_repository_path
-
-    @source_online_repository_path.setter
-    def source_online_repository_path(self, value: str) -> None:
-        self._source_online_repository_path = value
-
     def validate(self) -> None:
         validate_list = ["config_file", "repo_path"]
         if "ifw.offline" in self.name:
@@ -204,8 +223,9 @@ class IFWReleaseTask(ReleaseTask):
 class ReleaseTaskFactory:
     """A factory to create a specific ReleaseTask object based on the given configuration data."""
 
-    task_types = {
+    task_types: Dict[str, Type[ReleaseTask]] = {
         TaskType.IFW_TASK_TYPE.value: IFWReleaseTask,
+        TaskType.QBSP_TASK_TYPE.value: QBSPReleaseTask,
         TaskType.DEB_TASK_TYPE.value: DebReleaseTask,
     }
 
@@ -216,7 +236,7 @@ class ReleaseTaskFactory:
         requested_task_type: TaskType,
         *args: Any,
         **kwargs: Any,
-    ) -> Union[None, IFWReleaseTask, DebReleaseTask]:
+    ) -> Union[None, IFWReleaseTask, QBSPReleaseTask, DebReleaseTask]:
         """Instantiate a specific ReleaseTask object based on the given configuration.
 
         Args:
@@ -229,6 +249,8 @@ class ReleaseTaskFactory:
                       object.
         Returns:
             IFWReleaseTask: if 'requested_task_type' was of type TaskType.IFW_TASK_TYPE and the
+                            'task_spec' contained matching configuration.
+            QBSPReleaseTask: if 'requested_task_type' was of type TaskType.QBSP_TASK_TYPE and the
                             'task_spec' contained matching configuration.
             DebReleaseTask: if 'requested_task_type' was of type TaskType.DEB_TASK_TYPE and the
                             'task_spec' contained matching configuration.
@@ -274,8 +296,8 @@ def parse_data(
     settings: ConfigParser,
     task_type: TaskType,
     task_filters: List[str],
-) -> List[Union[IFWReleaseTask, DebReleaseTask]]:
-    tasks: List[Union[IFWReleaseTask, DebReleaseTask]] = []
+) -> List[Union[IFWReleaseTask, QBSPReleaseTask, DebReleaseTask]]:
+    tasks: List[Union[IFWReleaseTask, QBSPReleaseTask, DebReleaseTask]] = []
     sec_filters_list = [get_filter_parts(x) for x in task_filters]
     common_substs = settings.get("common.substitutions", "substitutions", fallback="")
 
@@ -308,7 +330,7 @@ def parse_config(
     config_file: str,
     task_type: TaskType,
     task_filters: List[str],
-) -> List[Union[IFWReleaseTask, DebReleaseTask]]:
+) -> List[Union[IFWReleaseTask, QBSPReleaseTask, DebReleaseTask]]:
     if not os.path.isfile(config_file):
         raise ReleaseTaskError(f"Not such file: {config_file}")
     settings = ConfigParser(interpolation=ExtendedInterpolation())
