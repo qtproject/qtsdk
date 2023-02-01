@@ -33,7 +33,7 @@ import argparse
 import os
 import re
 import sys
-from abc import ABC
+from abc import ABC, abstractmethod
 from configparser import ConfigParser, ExtendedInterpolation, SectionProxy
 from enum import Enum
 from typing import Any, List, Union
@@ -114,6 +114,13 @@ class ReleaseTask(ABC):
     def _get(self, key: str) -> str:
         return self._multireplace(self._settings.get(key, ""))
 
+    def _key_exists(self, key: str) -> bool:
+        return self._settings.get(key) is not None
+
+    @abstractmethod
+    def validate(self) -> None:
+        pass
+
 
 class DebReleaseTask(ReleaseTask):
     """Attributes specific to Debian repository build jobs."""
@@ -145,6 +152,11 @@ class DebReleaseTask(ReleaseTask):
     @property
     def endpoint_name(self) -> str:
         return self._get("endpoint_name")
+
+    def validate(self) -> None:
+        for item in ["repo_path"]:
+            if not self._key_exists(item):
+                raise ReleaseTaskError(f"Value invalid or missing: {item}")
 
 
 class IFWReleaseTask(ReleaseTask):
@@ -179,6 +191,11 @@ class IFWReleaseTask(ReleaseTask):
     @source_online_repository_path.setter
     def source_online_repository_path(self, value: str) -> None:
         self._source_online_repository_path = value
+
+    def validate(self) -> None:
+        for item in ["repo_path", "config_file"]:
+            if not self._key_exists(item):
+                raise ReleaseTaskError(f"Value invalid or missing: {item}")
 
 
 class ReleaseTaskFactory:
@@ -219,7 +236,9 @@ class ReleaseTaskFactory:
         try:
             parsed_type = cls.check_type(task_spec)
             if parsed_type == requested_task_type.value:
-                return cls.task_types[parsed_type](*args, **kwargs)  # type: ignore
+                task = cls.task_types[parsed_type](*args, **kwargs)
+                task.validate()
+                return task  # type: ignore
             return None
         except KeyError as kerr:
             raise ReleaseTaskError(f"Unsupported task type in: {task_spec}") from kerr

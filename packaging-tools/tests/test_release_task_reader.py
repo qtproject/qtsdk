@@ -3,7 +3,7 @@
 
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -33,7 +33,7 @@ import unittest
 from configparser import ConfigParser
 from typing import List
 
-from ddt import ddt  # type: ignore
+from ddt import data, ddt, unpack  # type: ignore
 
 from release_task_reader import ReleaseTaskError, TaskType, get_filter_parts, parse_data
 from tests.testhelpers import asyncio_test, asyncio_test_parallel_data
@@ -50,9 +50,57 @@ class TestReleaseTaskReader(unittest.TestCase):
     async def test_get_filter_parts(self, task_filters: str, expected_result: List[str]) -> None:
         self.assertEqual(get_filter_parts(task_filters), expected_result)
 
-    @asyncio_test
-    async def test_release_task_reader_ifw(self) -> None:
-        sample_config = """
+    @data(  # type: ignore
+        ("""
+            [task.ifw.repository.linux.x86_64]
+            config_file:  foobar-file-repository
+            substitutions: arg1, arg2, arg3
+            repo_path: foo/bar/path
+            rta_key_list: key1
+        """, ["ifw,repository,linux"], TaskType.IFW_TASK_TYPE, True),
+        ("""
+            [task.ifw.repository.linux2.x64.common]
+            config_file:  foobar-file-repository
+            repo_path: foo/bar/path
+
+            [task.ifw.repository.linux.exclude.common]
+            config_file:  foobar-file-repository
+            repo_path: foo/bar/path
+        """, ["common, x64"], TaskType.IFW_TASK_TYPE, True),
+        ("""
+            [task.ifw.repository.linux.x64.no_repo_path]
+            substitutions: arg1, arg2, arg3
+        """, ["no_repo_path"], TaskType.IFW_TASK_TYPE, False),
+        ("""
+            [task.ifw.repository.linux.x64.no_config_file]
+            repo_path: foo/bar/path
+        """, ["no_config_file"], TaskType.IFW_TASK_TYPE, False),
+        ("""
+            [task.deb.repository.linux.x64]
+            repo_path: foo/bar/path
+        """, ["deb,linux"], TaskType.DEB_TASK_TYPE, True),
+        ("""
+            [task.deb.repository.linux.x64]
+        """, ["deb"], TaskType.DEB_TASK_TYPE, False)
+    )
+    @unpack  # type: ignore
+    def test_release_task_validity(
+        self,
+        sample_config: str,
+        filters: List[str],
+        task_type: TaskType,
+        is_valid: bool,
+    ) -> None:
+        config = ConfigParser()
+        config.read_string(sample_config)
+        if is_valid:
+            self.assertIsNotNone(parse_data(config, task_type=task_type, task_filters=filters))
+        else:
+            with self.assertRaises(ReleaseTaskError):
+                parse_data(config, task_type=task_type, task_filters=filters)
+
+    @data(  # type: ignore
+        ("""
             [task.ifw.repository.linux.x86_64]
             config_file:  foobar-file-repository
             substitutions: arg1, arg2, arg3
@@ -68,25 +116,29 @@ class TestReleaseTaskReader(unittest.TestCase):
             [task.ifw.offline.linux.x86_64]
             config_file:  foobar-file-offline
             substitutions: arg11, arg21, arg31
+            repo_path: foo/bar/path
             rta_key_list: keyA, keyB
 
             [task.ifw.online.linux.x86_64]
             config_file:  foobar-file-online
             substitutions: arg12, arg22, arg32
+            repo_path: foo/bar/path
             rta_key_list: key12, key22
 
             [foo.ifw.online.linux.x86_64]
             config_file:  foobar-file-online
             substitutions: arg13, arg23, arg33
+            repo_path: foo/bar/path
             rta_key_list: key13, key23
-        """
+        """,)
+    )
+    @unpack  # type: ignore
+    def test_release_task_reader_ifw(self, sample_config: str) -> None:
         config = ConfigParser()
         config.read_string(sample_config)
-
         # parse all tasks i.e. no filters
         tasks = parse_data(config, task_type=TaskType.IFW_TASK_TYPE, task_filters=[])
         self.assertTrue(len(tasks) == 4, "Did not parse all tasks from sample config")
-
         # parse only "repository" tasks
         tasks = parse_data(config, task_type=TaskType.IFW_TASK_TYPE, task_filters=["repository"])
         self.assertTrue(len(tasks) == 1)
