@@ -46,4 +46,4 @@ types-aiofiles = "==0.8.0"
 types-paramiko = "==2.12.0.1"
 
 [requires]
-python_version = "3"  # Pipfile doesn't support specifying minimum version (>=3.6.2)
+python_version = "3.11.3"
