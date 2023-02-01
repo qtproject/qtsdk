@@ -3,7 +3,7 @@
 
 #############################################################################
 #
-# Copyright (C) 2022 The Qt Company Ltd.
+# Copyright (C) 2023 The Qt Company Ltd.
 # Contact: https://www.qt.io/licensing/
 #
 # This file is part of the release tools of the Qt Toolkit.
@@ -294,7 +294,7 @@ def main() -> None:
     parser.add_argument("--task-filter", dest="task_filters", action='append',
                         help="Task include filters per section name in the --config file to match with "
                         "the section name, e.g. 'offline', 'repository', ...")
-    parser.add_argument("--task-type", dest="task_type", values=[e.value for e in TaskType],
+    parser.add_argument("--task-type", dest="task_type", choices=[e.value for e in TaskType],
                         help=f"Define the task type: {[e.value for e in TaskType]}")
     args = parser.parse_args(sys.argv[1:])
 
