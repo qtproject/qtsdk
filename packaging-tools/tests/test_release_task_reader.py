@@ -81,7 +81,14 @@ class TestReleaseTaskReader(unittest.TestCase):
         """, ["deb,linux"], TaskType.DEB_TASK_TYPE, True),
         ("""
             [task.deb.repository.linux.x64]
-        """, ["deb"], TaskType.DEB_TASK_TYPE, False)
+        """, ["deb"], TaskType.DEB_TASK_TYPE, False),
+        ("""
+            [task.ifw.offline.linux.x64.no_config_file]
+        """, ["ifw,offline"], TaskType.IFW_TASK_TYPE, False),
+        ("""
+            [task.ifw.offline.linux.x64]
+            config_file:  foobar-file-repository
+        """, ["ifw,offline"], TaskType.IFW_TASK_TYPE, True)
     )
     @unpack  # type: ignore
     def test_release_task_validity(

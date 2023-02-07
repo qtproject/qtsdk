@@ -193,7 +193,10 @@ class IFWReleaseTask(ReleaseTask):
         self._source_online_repository_path = value
 
     def validate(self) -> None:
-        for item in ["repo_path", "config_file"]:
+        validate_list = ["config_file", "repo_path"]
+        if "ifw.offline" in self.name:
+            validate_list.remove("repo_path")
+        for item in validate_list:
             if not self._key_exists(item):
                 raise ReleaseTaskError(f"Value invalid or missing: {item}")
 
