@@ -1,4 +1,0 @@
-openProject "qt-creator/qtcreator.pro"
-
-# Wait in order to inspect the result
-processEvents 3000

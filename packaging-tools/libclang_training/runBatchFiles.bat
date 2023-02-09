@@ -10,11 +10,10 @@ set PATH=%BasePath%\qt\lib;%BasePath%\qt\bin;%BasePath%\qtcreator_install\bin;%B
 set PATH=%PATH%;%BasePath%\logs\
 
 rem set up run_batch_files.py
-set QTC_CLANG_BATCH_CONFIG_LOG_DIR=%BasePath%\logs
-set QTC_CLANG_BATCH_CONFIG_SETTINGS_DIR=%BasePath%\qtc-settings
-set QTC_CLANG_BATCH_CONFIG_TARGET_LIBCLANG=%BasePath%\logs\libclang.dll
-set QTC_CLANG_BATCH_CONFIG_LIBCLANGS=%BasePath%\libclang-training\bin\libclang.dll
-set QTC_CLANG_BATCH_CONFIG_FILES=%ScriptPath%\%3
+set QTC_CLANGD_CONFIG_LOG_DIR=%BasePath%\logs
+set QTC_CLANGD_CONFIG_SETTINGS_DIR=%BasePath%\qtc-settings
+set QTC_CLANGD_COMPLETION_RESULTS=0
+set QTC_CLANGD=%BasePath%\libclang-training\bin\clangd.exe
 
 rem run run_batch_files.py
 set

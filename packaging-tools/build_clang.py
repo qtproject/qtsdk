@@ -187,11 +187,11 @@ def mingw_training(
     qt_modules = ['qtbase', 'qtdeclarative', 'qtimageformats', 'qt5compat', 'qtshadertools', 'qtsvg', 'qttools']
 
     qt_base_url = 'http://' + pkg_server + '/packages/jenkins/archive/qt/' \
-        + training_qt_version() + '/' + training_qt_long_version() + '-final-released/Qt' + training_qt_long_version()
+        + training_qt_version() + '/' + training_qt_long_version() + '-released/Qt'
     msvc_year_ver = msvc_year_version()
     if bitness == 64:
-        qt_mingw_postfix = '-Windows-Windows_10-Mingw-Windows-Windows_10-X86_64.7z'
-        qt_postfix = '-Windows-Windows_10-' + msvc_year_ver + '-Windows-Windows_10-X86_64.7z'
+        qt_mingw_postfix = '-Windows-Windows_10_21H2-Mingw-Windows-Windows_10_21H2-X86_64.7z'
+        qt_postfix = '-Windows-Windows_10_21H2-' + msvc_year_ver + '-Windows-Windows_10_21H2-X86_64.7z'
 
     qt_module_urls = [qt_base_url + '/' + module + '/' + module + qt_postfix for module in qt_modules]
     qt_mingw_module_urls = [qt_base_url + '/' + module + '/' + module + qt_mingw_postfix for module in qt_modules]
@@ -243,8 +243,7 @@ def mingw_training(
                  '-DBUILD_PLUGIN_RESOURCEEDITOR=ON',
 
                  '-DBUILD_EXECUTABLE_QTCREATOR=ON',
-                 '-DBUILD_EXECUTABLE_ECHO=ON',
-                 '-DBUILD_EXECUTABLE_CLANGBACKEND=ON',
+                 '-DBUILD_EXECUTABLE_PROCESSTESTAPP=ON',
                  '-DBUILD_EXECUTABLE_QTCREATOR_PROCESSLAUNCHER=ON',
 
                  '-DCMAKE_PREFIX_PATH=' + qt_mingw_dir + ';' + os.path.join(base_path, 'libclang'),
@@ -256,16 +255,10 @@ def mingw_training(
     run_command([cmake_command, '--install', creator_build_dir, '--prefix', creator_install_dir], creator_build_dir, environment)
     run_command([cmake_command, '--install', creator_build_dir, '--prefix', creator_install_dir, '--component', 'Dependencies'], creator_build_dir, environment)
 
-    # Remove the regular libclang.dll which got deployed via 'Dependencies' qtcreator install target
-    os.remove(os.path.join(creator_install_dir, 'bin', 'libclang.dll'))
-
-    # Train mingw libclang library with build QtCreator
-    # First time open the project, then close it. This will generate initial settings and .user files. Second time do the actual training.
-    for batch_file in ['qtc.openProject.batch', 'qtc.fileTextEditorCpp.batch']:
-        run_command(
-            [os.path.join(training_dir, 'runBatchFiles.bat'), msvc_version(), 'x64' if bitness == 64 else 'x86', batch_file],
-            base_path, extra_environment=None, only_error_case_output=False, expected_exit_codes=[0, 1]
-        )
+    # Train mingw clangd executable with build QtCreator
+    run_command(
+        [os.path.join(training_dir, 'runBatchFiles.bat'), msvc_version(), 'x64' if bitness == 64 else 'x86'],
+         base_path, extra_environment=None, only_error_case_output=False, expected_exit_codes=[0, 1])
 
 
 def is_msvc_toolchain(toolchain: str) -> bool:
@@ -367,7 +360,7 @@ def get_cmake_command(
 ) -> List[str]:
     enabled_projects = 'clang;clang-tools-extra;openmp'
     if profile_data_path and first_run:
-        enabled_projects = 'clang'
+        enabled_projects = 'clang;clang-tools-extra'
 
     command = ['cmake',
                '-DCMAKE_INSTALL_PREFIX=' + install_path,
@@ -378,6 +371,7 @@ def get_cmake_command(
                '-DLLVM_ENABLE_LIBXML2=OFF',
                '-DLLVM_ENABLE_ZLIB=OFF',
                '-DLLVM_ENABLE_TERMINFO=OFF',
+               '-DHAVE_CLANG_REPL_SUPPORT=OFF',
                '-DLLVM_TARGETS_TO_BUILD=X86;AArch64',
                '-DLLVM_ENABLE_PROJECTS=' + enabled_projects,
                "-DLLVM_LIT_ARGS='-v'"]
@@ -416,15 +410,15 @@ def build_clang(
 
     run_cmd(cmd=cmake_cmd, cwd=build_path, env=environment)
 
-    build_targets = ['libclang', 'clang', 'llvm-config']
+    build_targets = ['clang', 'clangd', 'llvm-config']
     install_targets = ['install/strip']
 
     if is_msvc_toolchain(toolchain):
         install_targets = ['install']  # There is no 'install/strip' for nmake.
 
     if profile_data_path and first_run:
-        build_targets = ['libclang']
-        install_targets = ['tools/clang/tools/libclang/install/strip']  # we only want to build / install libclang
+        build_targets = ['clangd']
+        install_targets = ['tools/clang/tools/extra/clangd/install/strip']  # we only want to build / install clangd
 
     build_and_install(build_path, environment, build_targets, install_targets)
 
