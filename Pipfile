@@ -23,7 +23,7 @@ temppathlib = "==1.2.0"
 aptly-api-client = "==0.2.4"
 validators = "==0.20.0"
 aiofiles = "==0.8.0"
-aiohttp = "==3.6.3"
+aiohttp = "==3.7.4"
 typing_extensions = "==4.1.1"
 
 [dev-packages]
