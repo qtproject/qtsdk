@@ -561,7 +561,7 @@ async def build_online_repositories(
         if dry_run and installer_task.errors:
             errors.append(
                 f"Collected {len(installer_task.errors)} errors during the repository task: "
-                f"{task.get_repo_path()}"
+                f"{task.repo_path}"
             )
             errors.extend(installer_task.errors)
         if not dry_run:
@@ -837,7 +837,7 @@ async def _build_offline_tasks(
         if dry_run and installer_task.errors:
             errors.append(
                 f"Collected {len(installer_task.errors)} errors during the installer task: "
-                f"{task.get_installer_name()}"
+                f"{task.installer_name}"
             )
             errors.extend(installer_task.errors)
 

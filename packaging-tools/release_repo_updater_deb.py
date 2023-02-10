@@ -265,7 +265,7 @@ class PopulateRepoCmd:
             self._execute(work_dir=tmp_dir.path)
 
     def _execute(self, work_dir: Path) -> None:
-        for content_path in self.content_paths:
+        for content_path in self.content_paths:  # pylint: disable=not-an-iterable
             # support local filesystem paths
             source_path = Path(content_path).resolve()
             # if not local filesystem path then we assume an URL
@@ -407,7 +407,7 @@ class BatchOperation:
     def execute(self) -> None:
         completed: List[Transaction] = []
         try:
-            for command in self.commands:
+            for command in self.commands:  # pylint: disable=not-an-iterable
                 command.execute()
                 completed.append(command)
         except Exception as ex:
@@ -418,7 +418,7 @@ class BatchOperation:
             raise
 
     def undo(self) -> None:
-        for command in reversed(self.commands):
+        for command in reversed(self.commands):  # pylint: disable=bad-reversed-sequence
             command.undo()
 
 
@@ -433,16 +433,16 @@ class RepoController:
     which can be rewound if any of the Transactions should have failed.
     """
 
-    undo_stack: list[Transaction] = field(default_factory=list)
+    undo_stack: List[Transaction] = field(default_factory=list)
 
     def execute(self, transaction: Transaction) -> None:
         transaction.execute()
-        self.undo_stack.append(transaction)
+        self.undo_stack.append(transaction)  # pylint: disable=no-member
 
     def undo(self) -> None:
         if not self.undo_stack:
             return
-        transaction = self.undo_stack.pop()
+        transaction = self.undo_stack.pop()  # pylint: disable=no-member
         transaction.undo()
 
 

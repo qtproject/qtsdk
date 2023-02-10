@@ -253,7 +253,7 @@ class ArchiveResolver:
         if sys.version_info < (3, 7):
             loop = asyncio.get_event_loop()  # keep for Python 3.6 compatibility
         else:
-            loop = asyncio.get_running_loop()
+            loop = asyncio.get_running_loop()  # pylint: disable=no-member
         log.info("Crawl: %s", url)
         return await loop.run_in_executor(None, htmllistparse.fetch_listing, url, 30)
 
@@ -374,7 +374,7 @@ class IfwSdkComponent:
                     archive.validate_uri()
             return True
         except IfwSdkError as err:
-            self.errors.append(f"[{self.ifw_sdk_comp_name}]: {str(err)}")
+            self.errors.append(f"[{self.ifw_sdk_comp_name}]: {str(err)}")  # pylint: disable=no-member
             if not ignore_errors:
                 raise
             log.exception("[%s] Ignored error in component: %s", self.ifw_sdk_comp_name, err)

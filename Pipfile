@@ -24,7 +24,7 @@ aptly-api-client = "==0.2.4"
 validators = "==0.20.0"
 aiofiles = "==0.8.0"
 aiohttp = "==3.6.3"
-typing_extensions = "==4.4.0"
+typing_extensions = "==4.1.1"
 
 [dev-packages]
 ddt = "==1.6.0"
@@ -46,4 +46,4 @@ types-aiofiles = "==0.8.0"
 
 
 [requires]
-python_version = "3.6"
+python_version = "3"  # Pipfile doesn't support specifying minimum version (>=3.6.2)

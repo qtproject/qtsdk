@@ -140,7 +140,7 @@ class TestPackaging(unittest.TestCase):
             expected_data.append("nonsense")
 
             idx = 0
-            for line in FileInput(temp_file, inplace=False):
+            for line in FileInput(str(temp_file), inplace=False):
                 msg = f"Received data: [{line}] differs from expected data: [{expected_data[idx]}]"
                 self.assertEqual(line.strip(), expected_data[idx], msg)
                 idx += 1

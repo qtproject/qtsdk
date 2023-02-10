@@ -110,7 +110,7 @@ def compress(path: str, directory_name: str, sevenzip_target: str) -> None:
 
     current_sevenzip_path = Path(parent_directory_path, sevenzip_filename)
     if current_sevenzip_path != sevenzip_target_path:
-        shutil.move(current_sevenzip_path, sevenzip_target_path)
+        shutil.move(str(current_sevenzip_path), str(sevenzip_target_path))
 
 
 def strip_vars(sobject: Namespace, chars: str) -> None:
