@@ -724,7 +724,6 @@ async def build_online_repositories(
             build_timestamp=job_timestamp,
             dry_run=dry_run,
         )
-        log.info(str(installer_task))
         try:
             await asyncio.wait_for(
                 loop.run_in_executor(None, create_installer, installer_task),
@@ -1094,7 +1093,6 @@ async def _build_offline_tasks(
             build_timestamp=job_timestamp,
             dry_run=dry_run,
         )
-        log.info(str(installer_task))
         try:
             await asyncio.wait_for(
                 loop.run_in_executor(None, create_installer, installer_task),

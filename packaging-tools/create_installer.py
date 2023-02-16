@@ -1075,11 +1075,52 @@ def create_mac_disk_image(task: QtInstallerTaskType) -> None:
     run_cmd(cmd=cmd_args, cwd=task.script_root_dir)
 
 
+def get_reproduce_args(task: QtInstallerTaskType) -> str:
+    """
+    Generate reproducable command line arguments
+
+    Args:
+        task: QtInstallerTask object to get build task configuration
+
+    Returns:
+        The full CLI command for the create_installer.py script with task arguments
+    """
+    reproduce_cmd = "pipenv run python create_installer.py "
+    reproduce_cmd += f"-c '{task.configurations_dir}' -f '{task.configuration_file}' "
+    if task.offline_installer is True:
+        reproduce_cmd += "-o "
+    if task.online_installer is True:
+        reproduce_cmd += "-O "
+    if task.create_repository is True:
+        reproduce_cmd += "-r "
+    if task.partial_installer is True:
+        reproduce_cmd += "--allow-broken-components "
+    reproduce_cmd += f"-u '{task.archive_base_url}' --ifw-tools '{task.ifw_tools_uri}' "
+    reproduce_cmd += f"-l '{task.license_type}' "
+    reproduce_cmd += f"--preferred-installer-name '{task.installer_name}' "
+    for sub in task.substitution_list:
+        reproduce_cmd += f"--add-substitution '{sub}' "
+    reproduce_cmd += f"--build-timestamp '{task.build_timestamp}' "
+    if task.force_version_number_increase is True:
+        reproduce_cmd += "--force-version-number-increase "
+    reproduce_cmd += "--version-number-auto-increase-value "
+    reproduce_cmd += f"'{task.version_number_auto_increase_value}' "
+    if task.remove_debug_information_files is True:
+        reproduce_cmd += "--remove-debug-information-files "
+    if task.remove_debug_libraries is True:
+        reproduce_cmd += "--remove-debug-libraries "
+    if task.remove_pdb_files is True:
+        reproduce_cmd += "--remove-pdb-files "
+    reproduce_cmd += f"--max-cpu-count '{task.max_cpu_count}'"
+    return reproduce_cmd
+
+
 ##############################################################
 # All main build steps
 ##############################################################
 def create_installer(task: QtInstallerTaskType) -> None:
     """Installer creation main steps."""
+    log.info(str(task))
     log.info("Creating Qt Installer Framework based installer/online repository")
     # check required tools
     check_required_tools()
@@ -1201,7 +1242,10 @@ class QtInstallerTask(Generic[QtInstallerTaskType]):
   Force version number increase: {self.force_version_number_increase}
   Version number auto increase value: {self.version_number_auto_increase_value}
   Mac cpu count: {self.max_cpu_count}
-  Long paths supported: {is_long_path_supported()}"""
+  Long paths supported: {is_long_path_supported()}
+
+  To reproduce build task with the above configuration, run the following command:
+  {get_reproduce_args(self)}"""
 
     def _parse_substitutions(self) -> None:
         for item in self.substitution_list:  # pylint: disable=not-an-iterable
@@ -1379,7 +1423,6 @@ def main() -> None:
         remove_pdb_files=args.remove_pdb_files,
         max_cpu_count=args.max_cpu_count
     )
-    log.info(str(task))
     create_installer(task)
     if task.errors:
         log.warning("Collected %s errors during the execution of the task:", len(task.errors))
