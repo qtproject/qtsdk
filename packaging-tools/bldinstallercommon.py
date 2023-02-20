@@ -490,30 +490,31 @@ def handle_component_rpath(component_root_path: str, destination_lib_paths: str)
         for name in files:
             file_full_path = os.path.join(root, name)
             if not os.path.isdir(file_full_path) and not os.path.islink(file_full_path):
-                if requires_rpath(file_full_path):
-                    rpaths = []
-                    for destination_lib_path in destination_lib_paths.split(':'):
-                        dst = os.path.normpath(component_root_path + os.sep + destination_lib_path)
-                        rpath = calculate_rpath(file_full_path, dst)
-                        rpaths.append(rpath)
+                if not requires_rpath(file_full_path):
+                    continue
+                rpaths = []
+                for destination_lib_path in destination_lib_paths.split(':'):
+                    dst = os.path.normpath(component_root_path + os.sep + destination_lib_path)
+                    rpath = calculate_rpath(file_full_path, dst)
+                    rpaths.append(rpath)
 
-                    # look for existing $ORIGIN path in the binary
-                    origin_rpath = None
-                    with suppress(CalledProcessError):
-                        output = run_cmd(cmd=["chrpath", "-l", file_full_path])
-                        origin_rpath = re.search(r"\$ORIGIN[^:\n]*", output)
+                # look for existing $ORIGIN path in the binary
+                origin_rpath = None
+                with suppress(CalledProcessError):
+                    output = run_cmd(cmd=["chrpath", "-l", file_full_path])
+                    origin_rpath = re.search(r"\$ORIGIN[^:\n]*", output)
 
-                    if origin_rpath is not None:
-                        if origin_rpath.group() not in rpaths:
-                            rpaths.append(origin_rpath.group())
+                if origin_rpath is not None:
+                    if origin_rpath.group() not in rpaths:
+                        rpaths.append(origin_rpath.group())
 
-                    rpath = ':'.join(rpaths)
-                    if sanity_check_rpath_max_length(file_full_path, rpath):
-                        log.debug("RPath value: [%s] for file: [%s]", rpath, file_full_path)
-                        cmd_args = ['chrpath', '-r', rpath, file_full_path]
-                        # force silent operation
-                        work_dir = os.path.dirname(os.path.realpath(__file__))
-                        run_cmd(cmd=cmd_args, cwd=work_dir)
+                rpath = ':'.join(rpaths)
+                if sanity_check_rpath_max_length(file_full_path, rpath):
+                    log.debug("RPath value: [%s] for file: [%s]", rpath, file_full_path)
+                    cmd_args = ['chrpath', '-r', rpath, file_full_path]
+                    # force silent operation
+                    work_dir = os.path.dirname(os.path.realpath(__file__))
+                    run_cmd(cmd=cmd_args, cwd=work_dir)
 
 
 ###############################

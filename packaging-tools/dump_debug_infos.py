@@ -110,20 +110,21 @@ def dump_syms(
         for root, _, filenames in os.walk(search_path):
             for filename in filenames:
                 absolute_path = os.path.join(root, filename).replace("\\", "/")
-                if is_file_with_debug_information(absolute_path):
-                    base_path = str(Path(absolute_path).with_suffix(""))
-                    start_slash = 1
-                    sym_path_base = base_path[start_slash + len(search_path):].replace(os.sep, "_")
-                    sym_filename = f"{sym_path_base}.sym"
+                if not is_file_with_debug_information(absolute_path):
+                    continue
+                base_path = str(Path(absolute_path).with_suffix(""))
+                start_slash = 1
+                sym_path_base = base_path[start_slash + len(search_path):].replace(os.sep, "_")
+                sym_filename = f"{sym_path_base}.sym"
+                sym_path = os.path.join(output_path, sym_filename)
+                if dump_sym(dump_syms_path, architectures[0], absolute_path, sym_path, verbose):
+                    sym_filenames.append(sym_filename)
+                if len(architectures) == 2:
+                    arch_argument_len = len("--arch ")
+                    sym_filename = f"{sym_path_base}_{architectures[1][arch_argument_len:]}.sym"
                     sym_path = os.path.join(output_path, sym_filename)
-                    if dump_sym(dump_syms_path, architectures[0], absolute_path, sym_path, verbose):
+                    if dump_sym(dump_syms_path, architectures[1], absolute_path, sym_path, verbose):
                         sym_filenames.append(sym_filename)
-                    if len(architectures) == 2:
-                        arch_argument_len = len("--arch ")
-                        sym_filename = f"{sym_path_base}_{architectures[1][arch_argument_len:]}.sym"
-                        sym_path = os.path.join(output_path, sym_filename)
-                        if dump_sym(dump_syms_path, architectures[1], absolute_path, sym_path, verbose):
-                            sym_filenames.append(sym_filename)
     return sym_filenames
 
 
