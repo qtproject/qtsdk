@@ -200,6 +200,7 @@ def cmake_command(
                '-G',
                cmake_generator(),
                '-DCMAKE_BUILD_TYPE=' + build_type,
+               '-DCMAKE_POSITION_INDEPENDENT_CODE=ON',
                '-DLLVM_ENABLE_PROJECTS=clang',
                '-DLLVM_TARGETS_TO_BUILD=X86',
                '-DLLVM_ENABLE_LIBXML2=OFF',
