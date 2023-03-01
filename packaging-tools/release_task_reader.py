@@ -34,6 +34,7 @@ import os
 import re
 import sys
 from abc import ABC, abstractmethod
+from collections import defaultdict
 from configparser import ConfigParser, ExtendedInterpolation, SectionProxy
 from enum import Enum
 from typing import Any, Dict, List, Type, Union
@@ -298,10 +299,12 @@ def append_to_task_filters(task_filters: List[str], task_filter: str) -> List[st
 
 def parse_data(
     settings: ConfigParser,
-    task_type: TaskType,
+    task_types: List[TaskType],
     task_filters: List[str],
-) -> List[Union[IFWReleaseTask, QBSPReleaseTask, DebReleaseTask]]:
-    tasks: List[Union[IFWReleaseTask, QBSPReleaseTask, DebReleaseTask]] = []
+) -> Dict[TaskType, List[Union[IFWReleaseTask, QBSPReleaseTask, DebReleaseTask]]]:
+    tasks: Dict[
+        TaskType, List[Union[IFWReleaseTask, QBSPReleaseTask, DebReleaseTask]]
+    ] = defaultdict(list)
     sec_filters_list = [get_filter_parts(x) for x in task_filters]
     common_substs = settings.get("common.substitutions", "substitutions", fallback="")
 
@@ -318,13 +321,16 @@ def parse_data(
                     break
         if append_task:
             log.info("Parsing Task: %s", section)
-            task = ReleaseTaskFactory.task_from_spec(task_spec=section,
-                                                     requested_task_type=task_type,
-                                                     name=section,
-                                                     settings=settings[section],
-                                                     common_substitutions=common_substs)
-            if task is not None:
-                tasks.append(task)
+            for task_type in task_types:
+                task = ReleaseTaskFactory.task_from_spec(
+                    task_spec=section,
+                    requested_task_type=task_type,
+                    name=section,
+                    settings=settings[section],
+                    common_substitutions=common_substs
+                )
+                if task is not None:
+                    tasks[task_type].append(task)
         else:
             log.info("Skipping task: [%s] - excluded by filter(s): %s", section, sec_filters_list)
     return tasks
@@ -332,14 +338,14 @@ def parse_data(
 
 def parse_config(
     config_file: str,
-    task_type: TaskType,
+    task_types: List[TaskType],
     task_filters: List[str],
-) -> List[Union[IFWReleaseTask, QBSPReleaseTask, DebReleaseTask]]:
+) -> Dict[TaskType, List[Union[IFWReleaseTask, QBSPReleaseTask, DebReleaseTask]]]:
     if not os.path.isfile(config_file):
         raise ReleaseTaskError(f"Not such file: {config_file}")
     settings = ConfigParser(interpolation=ExtendedInterpolation())
     settings.read(config_file)
-    return parse_data(settings, task_type, task_filters)
+    return parse_data(settings, task_types, task_filters)
 
 
 def main() -> None:
@@ -355,7 +361,7 @@ def main() -> None:
     args = parser.parse_args(sys.argv[1:])
 
     assert os.path.isfile(args.config), f"Not a valid file: {args.config}"
-    parse_config(args.config, TaskType.from_value(args.task_type), args.task_filters)
+    parse_config(args.config, [TaskType.from_value(args.task_type)], args.task_filters)
 
 
 if __name__ == "__main__":

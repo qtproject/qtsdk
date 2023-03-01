@@ -1173,7 +1173,7 @@ def handle_offline_jobs(
     # get offline tasks
     tasks = parse_config(
         config_file=args.config,
-        task_type=TaskType.IFW_TASK_TYPE,
+        task_types=[TaskType.IFW_TASK_TYPE],
         task_filters=append_to_task_filters(args.task_filters, "offline"),
     )
     asyncio_run(
@@ -1200,17 +1200,16 @@ def handle_online_repo_jobs(
     export_data: Dict[str, str],
 ) -> None:
     # get online repository tasks per type
-    for task_type in [TaskType.IFW_TASK_TYPE, TaskType.QBSP_TASK_TYPE]:
-        tasks = parse_config(
-            config_file=args.config,
-            task_type=task_type,
-            task_filters=append_to_task_filters(args.task_filters, "repository"),
-        )
-
-        if not tasks:
-            log.info("No tasks found for type: %s", task_type.value)
+    task_types = [TaskType.IFW_TASK_TYPE, TaskType.QBSP_TASK_TYPE]
+    tasks = parse_config(
+        config_file=args.config,
+        task_types=task_types,
+        task_filters=append_to_task_filters(args.task_filters, "repository"),
+    )
+    for task_type, task_list in tasks.items():
+        if not task_list:
+            log.info("No tasks found for type: %s", task_type)
             continue
-
         update_strategy = RepoUpdateStrategy.get_strategy(
             staging_server_root=args.staging_server_root,
             license_=args.license_,
@@ -1228,7 +1227,7 @@ def handle_online_repo_jobs(
         )
 
         bld_args = build_strategy.parse_bld_args(args)
-        build_strategy.execute_build(tasks, bld_args)  # type: ignore
+        build_strategy.execute_build(task_list, bld_args)  # type: ignore
 
 
 def main() -> None:

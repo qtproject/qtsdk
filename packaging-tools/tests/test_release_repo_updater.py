@@ -222,16 +222,16 @@ class TestReleaseRepoUpdater(unittest.TestCase):
         config.read_string(sample_config)
 
         # parse all tasks i.e. no filters
-        tasks = parse_data(config, task_type=TaskType.IFW_TASK_TYPE, task_filters=[])
+        tasks = parse_data(config, task_types=[TaskType.IFW_TASK_TYPE], task_filters=[])
         await build_online_repositories(
-            tasks=cast(List[IFWReleaseTask], tasks),
+            tasks=cast(List[IFWReleaseTask], tasks[TaskType.IFW_TASK_TYPE]),
             license_="opensource",
             installer_config_base_dir="foo",
             artifact_share_base_url="foo",
             ifw_tools="foo",
             build_repositories=False,
         )
-        task = cast(IFWReleaseTask, tasks.pop())
+        task = cast(IFWReleaseTask, tasks[TaskType.IFW_TASK_TYPE].pop())
         self.assertTrue(task.source_online_repository_path.endswith("foo/bar/path_1/online_repository"))
 
     @asyncio_test

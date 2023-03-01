@@ -241,12 +241,12 @@ class TestDebianRepoRelease(unittest.TestCase):
         """
         config = ConfigParser()
         config.read_string(sample_config)
-        tasks = parse_data(config, task_type=TaskType.DEB_TASK_TYPE, task_filters=[])
+        tasks = parse_data(config, task_types=[TaskType.DEB_TASK_TYPE], task_filters=[])
 
         client = AptlyApiClient(api_endpoint=f"http://{self.aptly_api}/", http_auth=None)
         create_and_publish_repos(
             client,
-            tasks,  # type: ignore
+            tasks[TaskType.DEB_TASK_TYPE],  # type: ignore
             gpg_key="",
             gpg_passphrase="",
             rta=None,

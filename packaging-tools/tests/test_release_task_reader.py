@@ -107,10 +107,10 @@ class TestReleaseTaskReader(unittest.TestCase):
         config = ConfigParser()
         config.read_string(sample_config)
         if is_valid:
-            self.assertIsNotNone(parse_data(config, task_type=task_type, task_filters=filters))
+            self.assertIsNotNone(parse_data(config, task_types=[task_type], task_filters=filters))
         else:
             with self.assertRaises(ReleaseTaskError):
-                parse_data(config, task_type=task_type, task_filters=filters)
+                parse_data(config, task_types=[task_type], task_filters=filters)
 
     @data(  # type: ignore
         ("""
@@ -150,38 +150,48 @@ class TestReleaseTaskReader(unittest.TestCase):
         config = ConfigParser()
         config.read_string(sample_config)
         # parse all tasks i.e. no filters
-        tasks = parse_data(config, task_type=TaskType.IFW_TASK_TYPE, task_filters=[])
-        self.assertTrue(len(tasks) == 4, "Did not parse all tasks from sample config")
+        tasks = parse_data(config, task_types=[TaskType.IFW_TASK_TYPE], task_filters=[])
+        self.assertTrue(
+            len(tasks[TaskType.IFW_TASK_TYPE]) == 4, "Did not parse all tasks from sample config"
+        )
         # parse only "repository" tasks
-        tasks = parse_data(config, task_type=TaskType.IFW_TASK_TYPE, task_filters=["repository"])
-        self.assertTrue(len(tasks) == 1)
-        self.assertEqual(tasks[0].config_file, "foobar-file-repository")
-        self.assertEqual(tasks[0].substitutions, ["arg1", "arg2", "arg3"])
-        self.assertEqual(tasks[0].rta_key_list, ["key1", "key2", "key3", "key4"])
-        self.assertEqual(tasks[0].repo_path, "foo/bar/path")
-        self.assertEqual(sorted(tasks[0].rta_key_list), sorted(["key1", "key2", "key3", "key4"]))
+        tasks = parse_data(
+            config, task_types=[TaskType.IFW_TASK_TYPE], task_filters=["repository"]
+        )
+        self.assertTrue(len(tasks[TaskType.IFW_TASK_TYPE]) == 1)
+        self.assertEqual(
+            tasks[TaskType.IFW_TASK_TYPE][0].config_file, "foobar-file-repository"
+        )
+        self.assertEqual(
+            tasks[TaskType.IFW_TASK_TYPE][0].substitutions, ["arg1", "arg2", "arg3"]
+        )
+        self.assertEqual(
+            tasks[TaskType.IFW_TASK_TYPE][0].rta_key_list, ["key1", "key2", "key3", "key4"]
+        )
+        self.assertEqual(tasks[TaskType.IFW_TASK_TYPE][0].repo_path, "foo/bar/path")
+        self.assertEqual(sorted(tasks[TaskType.IFW_TASK_TYPE][0].rta_key_list), sorted(["key1", "key2", "key3", "key4"]))
 
         # parse only "offline" tasks with multiple filters
         tasks = parse_data(
             config,
-            task_type=TaskType.IFW_TASK_TYPE,
+            task_types=[TaskType.IFW_TASK_TYPE],
             task_filters=["offline,linux,x86_64"],
         )
-        self.assertTrue(len(tasks) == 2)
+        self.assertTrue(len(tasks[TaskType.IFW_TASK_TYPE]) == 2)
         tasks = parse_data(
             config,
-            task_type=TaskType.IFW_TASK_TYPE,
+            task_types=[TaskType.IFW_TASK_TYPE],
             task_filters=["offline,linux,x86_64,foobar"],
         )
-        self.assertTrue(len(tasks) == 1)
+        self.assertTrue(len(tasks[TaskType.IFW_TASK_TYPE]) == 1)
 
         # parse "offline" tasks with multiple filters and "online" tasks
         tasks = parse_data(
             config,
-            task_type=TaskType.IFW_TASK_TYPE,
+            task_types=[TaskType.IFW_TASK_TYPE],
             task_filters=["offline,linux,x86_64", "online,linux,x86_64"],
         )
-        self.assertTrue(len(tasks) == 3)
+        self.assertTrue(len(tasks[TaskType.IFW_TASK_TYPE]) == 3)
 
     @asyncio_test
     async def test_release_task_reader_deb(self) -> None:
@@ -208,20 +218,27 @@ class TestReleaseTaskReader(unittest.TestCase):
         config.read_string(sample_config)
 
         # parse all tasks i.e. no filters
-        tasks = parse_data(config, task_type=TaskType.DEB_TASK_TYPE, task_filters=[])
-        self.assertTrue(len(tasks) == 2, "Did not parse all tasks from sample config")
+        tasks = parse_data(config, task_types=[TaskType.DEB_TASK_TYPE], task_filters=[])
+        self.assertTrue(len(tasks[TaskType.DEB_TASK_TYPE]) == 2, "Did not parse all tasks from sample config")
 
         # parse only "repository" tasks
-        tasks = parse_data(config, task_type=TaskType.DEB_TASK_TYPE, task_filters=["amd64"])
-        self.assertTrue(len(tasks) == 1)
-        self.assertEqual(tasks[0].substitutions, ["foo=bar", "aaa=bbb"])
-        self.assertEqual(tasks[0].repo_path, "test_repo/amd64")
-        self.assertEqual(tasks[0].distribution, "barbar-file-repository-amd64")  # type: ignore
-        self.assertEqual(tasks[0].component, "main")  # type: ignore
-        self.assertEqual(tasks[0].architectures, ["amd64"])  # type: ignore
-        self.assertEqual(tasks[0].content_sources, ["http://bar.com/content1",  # type: ignore
-                                                    "http://bar.com/content2"])
-        self.assertEqual(sorted(tasks[0].rta_key_list), sorted(["key1", "key2"]))
+        tasks = parse_data(config, task_types=[TaskType.DEB_TASK_TYPE], task_filters=["amd64"])
+        self.assertTrue(len(tasks[TaskType.DEB_TASK_TYPE]) == 1)
+        self.assertEqual(tasks[TaskType.DEB_TASK_TYPE][0].substitutions, ["foo=bar", "aaa=bbb"])
+        self.assertEqual(tasks[TaskType.DEB_TASK_TYPE][0].repo_path, "test_repo/amd64")
+        self.assertEqual(
+            tasks[TaskType.DEB_TASK_TYPE][0].distribution,  # type: ignore
+            "barbar-file-repository-amd64"
+        )
+        self.assertEqual(tasks[TaskType.DEB_TASK_TYPE][0].component, "main")  # type: ignore
+        self.assertEqual(tasks[TaskType.DEB_TASK_TYPE][0].architectures, ["amd64"])  # type: ignore
+        self.assertEqual(
+            tasks[TaskType.DEB_TASK_TYPE][0].content_sources,  # type: ignore
+            ["http://bar.com/content1", "http://bar.com/content2"]
+        )
+        self.assertEqual(
+            sorted(tasks[TaskType.DEB_TASK_TYPE][0].rta_key_list), sorted(["key1", "key2"])
+        )
 
     @asyncio_test
     async def test_release_task_reader_qbsp(self) -> None:
@@ -240,13 +257,13 @@ class TestReleaseTaskReader(unittest.TestCase):
         config.read_string(sample_config)
 
         # parse all tasks i.e. no filters
-        tasks = parse_data(config, task_type=TaskType.QBSP_TASK_TYPE, task_filters=[])
-        self.assertTrue(len(tasks) == 2, "Did not parse all tasks from sample config")
+        tasks = parse_data(config, task_types=[TaskType.QBSP_TASK_TYPE], task_filters=[])
+        self.assertTrue(len(tasks[TaskType.QBSP_TASK_TYPE]) == 2, "Did not parse all tasks from sample config")
 
         # parse only "foo" tasks
-        tasks = parse_data(config, task_type=TaskType.QBSP_TASK_TYPE, task_filters=["foo"])
-        self.assertTrue(len(tasks) == 1)
-        task = tasks.pop()
+        tasks = parse_data(config, task_types=[TaskType.QBSP_TASK_TYPE], task_filters=["foo"])
+        self.assertTrue(len(tasks[TaskType.QBSP_TASK_TYPE]) == 1)
+        task = tasks[TaskType.QBSP_TASK_TYPE].pop()
         assert isinstance(task, QBSPReleaseTask)
         self.assertEqual(task.qbsp_file, "https://foo.com/path1/foo.qbsp")
         self.assertEqual(task.repo_path, "test_repo/temp1")
@@ -264,7 +281,7 @@ class TestReleaseTaskReader(unittest.TestCase):
         config = ConfigParser()
         config.read_string(sample_config)
         with self.assertRaises(ReleaseTaskError):
-            parse_data(config, task_type=TaskType.IFW_TASK_TYPE, task_filters=[])
+            parse_data(config, task_types=[TaskType.IFW_TASK_TYPE], task_filters=[])
 
 
 if __name__ == '__main__':

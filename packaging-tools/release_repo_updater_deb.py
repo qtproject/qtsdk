@@ -610,7 +610,7 @@ def parse_args() -> argparse.Namespace:
 def run(args: argparse.Namespace) -> None:
     tasks = parse_config(
         args.config,
-        task_type=TaskType.DEB_TASK_TYPE,
+        task_types=[TaskType.DEB_TASK_TYPE],
         task_filters=append_to_task_filters(args.task_filters, "deb"),
     )
     auth = HTTPBasicAuth(username=args.aptly_api_user, password=args.api_pass)
