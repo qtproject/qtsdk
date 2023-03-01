@@ -257,8 +257,16 @@ def mingw_training(
 
     # Train mingw clangd executable with build QtCreator
     run_command(
-        [os.path.join(training_dir, 'runBatchFiles.bat'), msvc_version(), 'x64' if bitness == 64 else 'x86'],
-         base_path, extra_environment=None, only_error_case_output=False, expected_exit_codes=[0, 1])
+        command=[
+            os.path.join(training_dir, 'runBatchFiles.bat'),
+            msvc_version(),
+            'x64' if bitness == 64 else 'x86'
+        ],
+        cwd=base_path,
+        extra_environment=None,
+        only_error_case_output=False,
+        expected_exit_codes=[0, 1]
+    )
 
 
 def is_msvc_toolchain(toolchain: str) -> bool:

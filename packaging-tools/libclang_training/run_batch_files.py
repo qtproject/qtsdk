@@ -39,10 +39,10 @@ The PATH must contain:
 import os
 import sys
 from pathlib import Path
-from shutil import copyfile
 from subprocess import STDOUT, Popen
-from time import sleep, time
+from time import sleep
 from typing import Dict, List, Optional
+
 
 def verbose_start(args: List[str]) -> None:
     if Config.Verbose:
@@ -108,6 +108,7 @@ def create_environment() -> Dict[str, str]:
 
     return env
 
+
 def run_sync_and_log_output_windows(args: List[str], log_file_path: str) -> None:
     debug_view = DebugView(log_file_path)
     debug_view.start_async()
@@ -149,6 +150,7 @@ def create_dir(dir_path: str) -> None:
             print(f"info: creating not existent {dir_path}")
         Path(dir_path).mkdir(parents=True)
 
+
 def main() -> None:
     Config.initialize_from_environment()
     Config.dump()
@@ -158,8 +160,9 @@ def main() -> None:
 
     run_qtcreator_with_log_file(log_file_path)
 
-    with open(log_file_path) as log:
+    with open(log_file_path, encoding="utf-8") as log:
         print(log.read())
+
 
 if __name__ == "__main__":
     main()
