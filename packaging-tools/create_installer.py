@@ -54,7 +54,6 @@ from bldinstallercommon import (
     is_long_path_supported,
     locate_executable,
     locate_path,
-    locate_paths,
     remove_tree,
     replace_in_files,
     retrieve_url,
@@ -478,34 +477,6 @@ def exec_action_script(archive_action: Tuple[Path, str], input_dir: Path) -> Non
     run_cmd(cmd=cmd)
 
 
-def process_debug_files_and_libs(
-    archive_name: str,
-    install_dir: Path,
-    pdb_files: bool = False,
-    debug_information_files: bool = False,
-    debug_libraries: bool = False,
-) -> None:
-    """
-    Remove debug information files and libraries when explicitly defined so
-
-    Args:
-        archive_name: Name of the archive file, used for filtering debug information archives
-        install_dir: A file system path to the directory to remove from
-        pdb_files: Whether to remove Windows-only pdb files (Obsolete)
-        debug_information_files: Whether to remove platform-specific debug information files
-        debug_libraries: Whether to remove all the debug libraries
-    """
-    if not pdb_files or not debug_information_files:
-        # don't remove debug information files from debug information archives
-        if not archive_name.endswith("debug-symbols.7z"):
-            # Check if debug information file types are defined
-            if pdb_files or debug_information_files:
-                # Remove debug information files according to host platform defaults
-                remove_all_debug_information_files(str(install_dir))
-    if debug_libraries:
-        remove_all_debug_libraries(str(install_dir))
-
-
 def extract_component_data(source_archive: Path, target_directory: Path) -> None:
     """
     Extract component payload to the specified directory and remove the old archive
@@ -544,13 +515,6 @@ def patch_component_data(
         exec_action_script(archive.archive_action, install_dir)
     strip_dirs(install_dir, archive.package_strip_dirs)
     finalize_items(task, archive.package_finalize_items, install_dir)
-    process_debug_files_and_libs(
-        archive.archive_name,
-        install_dir,
-        task.remove_pdb_files,
-        task.remove_debug_information_files,
-        task.remove_debug_libraries,
-    )
     if archive.rpath_target and is_linux():
         handle_component_rpath(install_dir, archive.rpath_target)
 
@@ -691,84 +655,6 @@ def substitute_package_name(task: QtInstallerTaskType, package_name: str) -> str
         package_name = package_name.replace(key, value)
 
     return package_name
-
-
-##############################################################
-# Remove debug information files
-##############################################################
-def remove_all_debug_information_files(install_dir: str) -> None:
-    """Remove debug information files according to host machine."""
-    if is_windows():
-        debug_information_file_ending = 'pdb'
-    elif is_linux():
-        debug_information_file_ending = 'debug'
-    elif is_macos():
-        debug_information_file_ending = 'dSYM'
-    else:
-        raise CreateInstallerError('Host is not identified as Windows, Linux or macOS')
-
-    remove_debug_information_files_by_file_type(install_dir, debug_information_file_ending)
-
-
-##############################################################
-# Remove debug information files by file type
-##############################################################
-def remove_debug_information_files_by_file_type(install_dir: str, dbg_file_suffix: str) -> None:
-    """Remove debug information files by file type"""
-    dirs = locate_paths(install_dir, ['bin', 'lib', 'qml', 'plugins'], filters=[os.path.isdir])
-    for dbg_info_dir in dirs:
-        log.info("Removing debug information files from: %s", dbg_info_dir)
-        if dbg_file_suffix == 'dSYM':
-            # On macOS, debug symbols are in dSYM folder bundles instead of files.
-            dbg_file_list = locate_paths(dbg_info_dir, ["*dSYM"], [os.path.isdir])
-            for debug_information in dbg_file_list:
-                remove_tree(debug_information)
-        else:
-            for path in locate_paths(dbg_info_dir, ["*." + dbg_file_suffix], [os.path.isfile]):
-                Path(path).unlink()
-
-
-##############################################################
-# Remove debug libraries
-##############################################################
-def remove_all_debug_libraries(install_dir: str) -> None:
-    """Remove debug libraries."""
-    # at this point of packaging we don't necessarily have reliable source of library names
-    # on Windows we trust debug library filenames to follow *d.dll | *d.lib industry standard naming convention
-    # but we must consider that library filenames can end with letter 'd' in release build
-    # and exclude those from removable items
-    if is_windows():
-        for directory in ('bin', 'lib', 'qml', 'plugins'):
-            windows_debug_library_dir = locate_path(install_dir, [directory], filters=[os.path.isdir])
-            log.info("Removing Windows debug libraries from: %s", windows_debug_library_dir)
-            # go through all library types and related qmake files
-            debug_library_file_endings = ['dll', 'lib', 'prl']
-            for debug_library_file_type in debug_library_file_endings:
-                # make list of all debug library names
-                all_debug_files_list = locate_paths(windows_debug_library_dir, ['*d.' + debug_library_file_type], filters=[os.path.isfile])
-                # in case library name ends with 'd' we need to keep that and remove only library with double d at the end of file name
-                double_d_debug_files_list = locate_paths(windows_debug_library_dir, ['*dd.' + debug_library_file_type], filters=[os.path.isfile])
-                if double_d_debug_files_list:
-                    # check intersection of all debug libraries and library names ending with letter 'd'
-                    debug_files_list_intersection = set(all_debug_files_list).intersection(double_d_debug_files_list)
-                    for debug_library_name in set(debug_files_list_intersection):
-                        # remove one 'd' from library names ending letter 'd' also in release builds
-                        # and exclude from removed libraries
-                        altered_library_name = debug_library_name[:-5] + debug_library_name[-5 + 1:]
-                        all_debug_files_list.remove(altered_library_name)
-                # remove all debug libraries with filenames ending *d.dll | *d.lib
-                for item in all_debug_files_list:
-                    Path(item).unlink()
-    # remove macOS debug libraries
-    elif is_macos():
-        for debug_library_dir in locate_paths(install_dir, ['bin', 'lib', 'qml', 'plugins'], filters=[os.path.isdir]):
-            log.info("Removing macOS debug libraries from: %s", debug_library_dir)
-            debug_library_file_ending = '_debug.*'
-            if os.path.exists(debug_library_dir):
-                for item in locate_paths(debug_library_dir, ['*' + debug_library_file_ending]):
-                    Path(item).unlink()
-    else:
-        log.info("Host was not Windows or macOS. For Linux and others we don\'t do anything at the moment")
 
 
 ##############################################################
@@ -1107,12 +993,6 @@ def get_reproduce_args(task: QtInstallerTaskType) -> str:
         reproduce_cmd += "--force-version-number-increase "
     reproduce_cmd += "--version-number-auto-increase-value "
     reproduce_cmd += f"'{task.version_number_auto_increase_value}' "
-    if task.remove_debug_information_files is True:
-        reproduce_cmd += "--remove-debug-information-files "
-    if task.remove_debug_libraries is True:
-        reproduce_cmd += "--remove-debug-libraries "
-    if task.remove_pdb_files is True:
-        reproduce_cmd += "--remove-pdb-files "
     reproduce_cmd += f"--max-cpu-count '{task.max_cpu_count}'"
     return reproduce_cmd
 
@@ -1189,9 +1069,6 @@ class QtInstallerTask(Generic[QtInstallerTaskType]):
     sdk_component_list_skipped: List[IfwSdkComponent] = field(default_factory=list)
     sdk_component_ignore_list: List[str] = field(default_factory=list)
     archive_base_url: str = ""
-    remove_debug_information_files: bool = False
-    remove_debug_libraries: bool = False
-    remove_pdb_files: bool = False
     offline_installer: bool = False
     online_installer: bool = False
     create_repository: bool = False
@@ -1235,9 +1112,6 @@ class QtInstallerTask(Generic[QtInstallerTaskType]):
   Installer name: {self.installer_name}
   IFW pkg templates: {self.packages_dir_name_list}
   Substitutions: {self.substitutions}
-  Remove debug information files: {self.remove_debug_information_files}
-  Remove debug libraries: {self.remove_debug_libraries}
-  Remove pdb files: {self.remove_pdb_files}
   Online installer: {self.online_installer}
   Offline installer: {self.offline_installer}
   Create repository: {self.create_repository}
@@ -1386,15 +1260,6 @@ def main() -> None:
     parser.add_argument("--version-number-auto-increase-value", dest="version_number_auto_increase_value", type=str,
                         default='-' + strftime('%Y%m%d%H%M', gmtime()),
                         help="Value for the %VERSION_NUMBER_AUTO_INCREASE%")
-
-    parser.add_argument("--remove-debug-information-files", dest="remove_debug_information_files", action='store_true',
-                        default=False,
-                        help="Removes debug information files. Besides 'True' and 'False' values accepts also debug file type as parameter")
-    parser.add_argument("--remove-debug-libraries", dest="remove_debug_libraries", action='store_true',
-                        default=False, help="Removes libraries debug versions")
-    parser.add_argument("--remove-pdb-files", dest="remove_pdb_files", action='store_true',
-                        default=False, help="(Obsolete) Windows only: Removes Windows pdb files")
-
     parser.add_argument("--max-cpu-count", dest="max_cpu_count", type=int, default=8,
                         help="Set maximum number of CPU's used on packaging")
     parser.add_argument(
@@ -1441,9 +1306,6 @@ def main() -> None:
         build_timestamp=args.build_timestamp,
         force_version_number_increase=args.force_version_number_increase,
         version_number_auto_increase_value=args.version_number_auto_increase_value,
-        remove_debug_information_files=args.remove_debug_information_files,
-        remove_debug_libraries=args.remove_debug_libraries,
-        remove_pdb_files=args.remove_pdb_files,
         max_cpu_count=args.max_cpu_count,
         lrelease_tool_url=args.lrelease_tool,
     )
