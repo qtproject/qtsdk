@@ -1336,13 +1336,15 @@ class QtInstallerTask(Generic[QtInstallerTaskType]):
 def main() -> None:
     """Main"""
     parser = ArgumentParser(
-        prog="Script to create Qt Installer Framework based installers.",
+        prog="Script to create Qt Installer Framework based installers.", add_help=False,
         parents=[DryRunMode.get_parser()]  # add parser for --dry-run argument as parent
     )
     parser.add_argument("-c", "--configurations-dir", dest="configurations_dir", type=str, default="configurations",
                         help="define configurations directory where to read installer configuration files")
-    parser.add_argument("-f", "--configuration-file", dest="configuration_file", type=str,
-                        help="define configuration file for installer content")
+    parser.add_argument(
+        "-f", "--configuration-file", dest="configuration_file", type=str, required=True,
+        help="define configuration file for installer content"
+    )
     parser.add_argument("-o", "--offline", dest="offline_installer", action='store_true', default=False,
                         help="Create online installer")
     parser.add_argument("-O", "--online", dest="online_installer", action='store_true', default=False,
@@ -1354,9 +1356,11 @@ def main() -> None:
         help="Skip invalid components and missing payload, create a partial installer",
     )
 
-    parser.add_argument("-u", "--archive-base-url", dest="archive_base_url", type=str,
-                        help="Define server base url where to look for archives (.7z)")
-    parser.add_argument("--ifw-tools", dest="ifw_tools_uri", type=str,
+    parser.add_argument(
+        "-u", "--archive-base-url", dest="archive_base_url", type=str, required=True,
+        help="Define server base url where to look for archives (.7z)"
+    )
+    parser.add_argument("--ifw-tools", dest="ifw_tools_uri", type=str, default="",
                         help="Define location where to fetch prebuilt Installer-Framework tools (.7z)")
 
     parser.add_argument("-l", "--license-type", dest="license_type", type=str, default="opensource",
@@ -1388,19 +1392,21 @@ def main() -> None:
 
     parser.add_argument("--max-cpu-count", dest="max_cpu_count", type=int, default=8,
                         help="Set maximum number of CPU's used on packaging")
-    parser.add_argument(
-        "--disable-path-limit-check",
-        dest="require_long_path_support",
-        action="store_false",
-    )
+    if is_windows():
+        parser.add_argument(
+            "--disable-path-limit-check",
+            dest="require_long_path_support",
+            action="store_false",
+        )
 
     args = parser.parse_args(sys.argv[1:])
 
-    if args.require_long_path_support is True and is_long_path_supported() is False:
-        log.error("Path names longer than 260 are not supported by the current environment")
-        log.error("To continue, the maximum path limitation must be disabled in Windows registry")
-        log.error("Set --disable-path-limit-check to bypass this check")
-        raise SystemExit("Long path support is required to build the installer/repository")
+    if is_windows():
+        if args.require_long_path_support is True and is_long_path_supported() is False:
+            log.error("Path names longer than 260 are not supported by the current environment")
+            log.error("To continue, disable the maximum path limitation in Windows registry")
+            log.error("Set --disable-path-limit-check to bypass this check")
+            raise SystemExit("Long path support is required to build the installer/repository")
 
     task: QtInstallerTask[Any] = QtInstallerTask(
         configurations_dir=args.configurations_dir,
