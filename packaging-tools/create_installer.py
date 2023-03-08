@@ -782,11 +782,11 @@ def create_target_components(task: QtInstallerTaskType) -> None:
 
     log.info("Creating SDK components")
     # download and extract lrelease binary for creating translation binaries
-    if task.create_repository and os.environ.get("LRELEASE_TOOL"):
+    if task.create_repository and task.lrelease_tool_url:
         if not os.path.isfile(os.path.join(task.script_root_dir, "lrelease")):
-            download(os.environ.get("LRELEASE_TOOL", ""), task.script_root_dir)
+            download(task.lrelease_tool_url, task.script_root_dir)
             extract_file(
-                os.path.basename(os.environ.get("LRELEASE_TOOL", "")), task.script_root_dir
+                os.path.basename(task.lrelease_tool_url), task.script_root_dir
             )
     get_component_data_work = ThreadedWork("get components data")
     for sdk_comp in task.sdk_component_list:
@@ -1202,6 +1202,7 @@ class QtInstallerTask(Generic[QtInstallerTaskType]):
     version_number_auto_increase_value: str = "-" + strftime("%Y%m%d%H%M", gmtime())
     max_cpu_count: int = 8
     substitution_list: List[str] = field(default_factory=list)
+    lrelease_tool_url: str = os.getenv("LRELEASE_TOOL", "")
 
     def __post_init__(self) -> None:
         log.info("Parsing: %s", self.configuration_file)
@@ -1392,6 +1393,10 @@ def main() -> None:
 
     parser.add_argument("--max-cpu-count", dest="max_cpu_count", type=int, default=8,
                         help="Set maximum number of CPU's used on packaging")
+    parser.add_argument(
+        "--lrelease-tool", dest="lrelease_tool", type=str, default=os.getenv("LRELEASE_TOOL", ""),
+        help="URL containing lrelease binary for creating translation binaries"
+    )
     if is_windows():
         parser.add_argument(
             "--disable-path-limit-check",
@@ -1427,7 +1432,8 @@ def main() -> None:
         remove_debug_information_files=args.remove_debug_information_files,
         remove_debug_libraries=args.remove_debug_libraries,
         remove_pdb_files=args.remove_pdb_files,
-        max_cpu_count=args.max_cpu_count
+        max_cpu_count=args.max_cpu_count,
+        lrelease_tool_url=args.lrelease_tool,
     )
     create_installer(task)
     if task.errors:
