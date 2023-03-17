@@ -129,7 +129,13 @@ def sign_executable(file_path: str) -> None:
     try:
         key_path: str = decrypt_private_key()
         download_signing_tools(key_path)
-        _handle_signing(file_path)
+        path = Path(file_path)
+        if path.is_dir():
+            for subpath in path.rglob('*'):
+                if subpath.is_file() and subpath.suffix in ['.exe', '.dll', '.pyd']:
+                    _handle_signing(str(subpath))
+        else:
+            _handle_signing(file_path)
     finally:
         # cleanup temporary files
         if "key_path" in locals():
@@ -140,8 +146,8 @@ def sign_executable(file_path: str) -> None:
 
 def main() -> None:
     """Main"""
-    parser = argparse.ArgumentParser(prog="Codesign Windows executables")
-    parser.add_argument("--file", dest="file_to_sign", required=True, help="File to sign")
+    parser = argparse.ArgumentParser(prog="Codesign Windows executables and DLLs")
+    parser.add_argument("--file", dest="file_to_sign", required=True, help="File or directory to sign")
     args = parser.parse_args(sys.argv[1:])
     sign_executable(args.file_to_sign)
 

@@ -827,6 +827,14 @@ def handle_qt_creator_build(option_dict: Dict[str, str], qtcreator_plugins: List
     if is_macos():
         if has_unlock_keychain_script:
             cmd_args.extend(['--keychain-unlock-script', unlock_keychain_script()])
+    if is_windows():
+        python3_path = option_dict.get('PYTHON3_PATH') or ''
+        cmd_args.extend(['--sign-command', '"' + os.path.join(python3_path, 'python.exe')
+                         + '" -m pipenv run python -u qtsdk/packaging-tools/sign_windows_installer.py --file'])
+        # we cannot change the CWD, and pipenv doesn't support specifying a pipfile on the command line
+        # (https://github.com/pypa/pipenv/issues/2237), so we need to set this globally in the environment
+        # ...which would break things if the QtC build script required a pipenv itself...
+        build_environment['PIPENV_PIPFILE'] = os.path.join(work_dir, 'qtsdk', 'Pipfile')
     if python_path:
         cmd_args.extend(['--python-path', python_path])
     if elfutils_path:
