@@ -65,9 +65,9 @@ def _is_app_bundle(path: Path) -> bool:
     return path.joinpath("Contents", "Info.plist").exists()
 
 
-def _is_mach_o_executable(path: Path) -> bool:
+def _is_mach_o_file(path: Path) -> bool:
     """
-    Determine whether a file is a Mach-O executable
+    Determine whether a file is a Mach-O image containing native code
 
     Args:
         path: A file system path to a file
@@ -132,11 +132,8 @@ def _find_signable_content(pkg_dir: Path) -> Tuple[List[Path], List[Path]]:
             if path.suffix in (".pkg", ".dmg"):
                 sign_list.append(path)
                 staple_list.append(path)
-            # Known suffixes for libs, modules, ...
-            elif path.suffix in (".dylib", ".so", ".bundle"):
-                sign_list.append(path)
-            # Mach-O files by header, exec bit
-            elif os.access(path, os.X_OK) and _is_mach_o_executable(path):
+            # Mach-O images (executables, libraries, modules)
+            if _is_mach_o_file(path):
                 sign_list.append(path)
     return sign_list, staple_list
 
