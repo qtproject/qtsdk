@@ -69,6 +69,7 @@ from runner import run_cmd
 from sdkcomponent import IfwPayloadItem, IfwSdkComponent, parse_ifw_sdk_comp
 from sign_installer import recursive_sign_notarize
 from threadedwork import ThreadedWork
+from update_component_translations import lrelease
 
 log = init_logger(__name__, debug_mode=False)
 
@@ -686,11 +687,10 @@ def create_target_components(task: QtInstallerTaskType) -> None:
         # Copy Meta data
         metadata_content_source_root = os.path.join(sdk_comp.pkg_template_folder, "meta")
         copy_tree(metadata_content_source_root, str(sdk_comp.meta_dir_dest))
-        if os.path.isfile(os.path.join(task.script_root_dir, "lrelease")):
+        lrelease_tool = Path(task.script_root_dir, "lrelease")
+        if lrelease_tool.is_file():
             # create translation binaries if translation source files exist for component
-            update_script = os.path.join(task.script_root_dir, "update_component_translations.sh")
-            lrelease_tool = os.path.join(task.script_root_dir, "lrelease")
-            run_cmd(cmd=[update_script, "-r", lrelease_tool, str(dest_base)])
+            lrelease(lrelease_tool, dest_base)
         # add files into tag substitution
         task.directories_for_substitutions.append(str(sdk_comp.meta_dir_dest))
         # handle archives
