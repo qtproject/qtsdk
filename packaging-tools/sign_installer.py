@@ -149,6 +149,9 @@ def recursive_sign_notarize(pkg_dir: Path) -> None:
         pkg_dir: A file system path to the directory with content
     """
     sign_items, staple_items = _find_signable_content(pkg_dir=pkg_dir)
+    if not sign_items:
+        log.info("No signable content found from '%s', continuing", str(pkg_dir))
+        return
     # Run codesign for items
     sign_mac_content(sign_items)
     # Copy only the notarizable (codesigned) content to a temporary dir
