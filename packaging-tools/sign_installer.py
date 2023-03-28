@@ -110,10 +110,22 @@ def _find_signable_content(pkg_dir: Path) -> Tuple[List[Path], List[Path]]:
     Returns:
         Lists of paths sorted for codesign and staple operations
     """
+
+    def not_link(path: Path) -> bool:
+        """
+        Check if path is not a symlink
+
+        Args:
+            path: Path to check
+        Returns:
+            True for resolved paths, False for symlinks
+        """
+        return not path.is_symlink()
+
     sign_list: List[Path] = []
     staple_list: List[Path] = []
     for path in sorted(
-        set(Path(p).resolve(strict=True) for p in locate_paths(pkg_dir, patterns=["*"])),
+        set(Path(p).resolve() for p in locate_paths(pkg_dir, patterns=["*"], filters=[not_link])),
         key=lambda path: len(path.parts),  # Sort by path part length
         reverse=True,  # Nested items first to ensure signing order (important)
     ):
