@@ -68,7 +68,7 @@ from release_task_reader import (
     parse_config,
 )
 from runner import run_cmd, run_cmd_async
-from sign_installer import create_mac_dmg, sign_mac_app
+from sign_installer import create_mac_dmg, sign_mac_content
 from sign_windows_installer import sign_executable
 
 if sys.version_info < (3, 7):
@@ -1004,12 +1004,15 @@ async def sign_offline_installer(installer_path: str, installer_name: str) -> No
         log.info("Sign Windows installer")
         sign_executable(os.path.join(installer_path, installer_name) + '.exe')
     elif platform.system() == "Darwin":
-        log.info("Sign macOS .app bundle")
-        sign_mac_app(os.path.join(installer_path, installer_name + '.app'), get_pkg_value("SIGNING_IDENTITY"))
-        log.info("Create macOS dmg file")
-        create_mac_dmg(os.path.join(installer_path, installer_name) + '.app')
+        log.info("Codesign macOS app bundle (.app)")
+        app_bundle_path = Path(installer_path) / (installer_name + ".app")
+        sign_mac_content([app_bundle_path])
+        log.info("Create macOS disk image file (.dmg)")
+        dmg_path = create_mac_dmg(app_bundle_path)
+        log.info("Codesign macOS disk image (.dmg)")
+        sign_mac_content([dmg_path])
         log.info("Notarize macOS installer")
-        notarize(path=Path(installer_path, installer_name + '.dmg'))
+        notarize(path=dmg_path)
     else:
         log.info("No signing available for this host platform: %s", platform.system())
 

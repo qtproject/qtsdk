@@ -36,7 +36,7 @@ from contextlib import suppress
 from pathlib import Path
 from shutil import copy2, rmtree
 from subprocess import CalledProcessError
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from macholib import MachO  # type: ignore
 from temppathlib import TemporaryDirectory
@@ -175,7 +175,7 @@ def recursive_sign_notarize(pkg_dir: Path) -> None:
         embed_notarization(path)
 
 
-def sign_mac_content(paths: List[Path]) -> None:
+def sign_mac_content(paths: List[Path], identity: Optional[str] = None) -> None:
     """
     Run codesign for the given paths
 
@@ -187,13 +187,13 @@ def sign_mac_content(paths: List[Path]) -> None:
     """
     run_cmd(cmd=["/Users/qt/unlock-keychain.sh"])  # unlock the keychain first
     count = len(paths)
-    log.info("Codesigning %s payload items", count)
+    log.info("Codesigning %s items", count)
     for idx, path in enumerate(paths):
         log.info("[%s/%s] Codesign: %s", idx, count, str(path))
         cmd_args = [
             'codesign', '--verbose=3', str(path),
             '-r', get_pkg_value("SIGNING_FLAGS"),  # signing requirements
-            '-s', get_pkg_value("SIGNING_IDENTITY"),  # developer id identity
+            '-s', identity or get_pkg_value("SIGNING_IDENTITY"),  # developer id identity
             '-o', 'runtime',  # enable hardened runtime, required for notarization
             "--timestamp",  # contact apple servers for time validation
             "--force"  # resign all the code with different signature
@@ -204,26 +204,24 @@ def sign_mac_content(paths: List[Path]) -> None:
             raise Exception(f"Failed to codesign: {str(path)}") from err
 
 
-def sign_mac_app(app_path: str, signing_identity: str) -> None:
-    assert app_path.endswith(".app"), f"Not a valid path to .app bundle: {app_path}"
-    # we need to unlock the keychain first
-    unlock_script = "/Users/qt/unlock-keychain.sh"
-    run_cmd(cmd=[unlock_script])
-    # "-o runtime" is required for notarization
-    cmd_args = ['codesign', '-o', 'runtime', '--verbose=3', '-r', get_pkg_value("SIGNING_FLAGS")]
-    cmd_args += ['-s', signing_identity, app_path]
-    run_cmd(cmd=cmd_args)
-    log.info("Successfully signed: %s", app_path)
+def create_mac_dmg(src_path: Path) -> Path:
+    """
+    Create a macOS disk image (.dmg) from the content source specified.
+    The .dmg file will be placed in the parent directory of the specified source path.
 
+    Args:
+        src_path: A folder/file to include inside the .dmg file.
 
-def create_mac_dmg(app_path: str) -> None:
-    assert app_path.endswith(".app"), f"Not a valid path to .app bundle: {app_path}"
-    installer_name_base = os.path.basename(app_path).split(".app")[0]
-    destination_dmg_path = app_path.split(".app")[0] + '.dmg'
-    cmd_args = ['hdiutil', 'create', '-srcfolder', app_path, '-volname', installer_name_base]
-    cmd_args += ['-format', 'UDBZ', destination_dmg_path, '-ov', '-scrub', '-size', '4g']
+    Returns:
+        Path to the generated .dmg file
+    """
+    installer_name_base = src_path.stem
+    destination_dmg_path = src_path.with_suffix(".dmg")  # replace last suffix with '.dmg'
+    cmd_args = ['hdiutil', 'create', '-srcfolder', str(src_path), '-volname', installer_name_base]
+    cmd_args += ['-format', 'UDBZ', str(destination_dmg_path), '-ov', '-scrub', '-size', '4g']
     run_cmd(cmd=cmd_args)
-    log.info("Successfully created: %s", destination_dmg_path)
+    log.info("Successfully created: %s", str(destination_dmg_path))
+    return destination_dmg_path
 
 
 def sign_windows_executable(file_path: str) -> None:
@@ -262,7 +260,17 @@ def main() -> None:
     app_parser = subparsers.add_parser("mac")
     exe_parser = subparsers.add_parser("win")
 
-    app_parser.add_argument("--file", dest="file_path", required=True, help="Full path to .app file")
+    app_parser.add_argument(
+        "--file",
+        dest="file_path",
+        required=True,
+        type=Path,
+        help="Path to a signable macOS bundle/directory/file containing code.",
+    )
+    app_parser.add_argument(
+        "--skip-dmg", dest="create_dmg", action="store_false",
+        help="Skip packing the file to a .dmg disk image and signing it"
+    )
     app_parser.add_argument("--signing-identity", default=get_pkg_value("SIGNING_IDENTITY"))
 
     exe_parser.add_argument("--file", dest="file_path", required=True, help="Full path to .exe file")
@@ -272,8 +280,10 @@ def main() -> None:
 
     args = parser.parse_args(sys.argv[1:])
     if args.command == 'mac':
-        sign_mac_app(args.file_path, args.signing_identity)
-        create_mac_dmg(args.file_path)
+        sign_mac_content([args.file_path], args.signing_identity)
+        if args.create_dmg is True:
+            dmg_path = create_mac_dmg(args.file_path)
+            sign_mac_content([dmg_path], args.signing_identity)
     if args.command == 'win':
         sign_windows_executable(args.file_path)
 
