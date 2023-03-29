@@ -200,7 +200,7 @@ def sign_mac_content(paths: List[Path], identity: Optional[str] = None) -> None:
     for idx, path in enumerate(paths):
         log.info("[%s/%s] Codesign: %s", idx, count, str(path))
         cmd_args = [
-            'codesign', '--verbose=3', str(path),
+            'codesign', '--verbose=2', str(path),
             '-r', get_pkg_value("SIGNING_FLAGS"),  # signing requirements
             '-s', identity or get_pkg_value("SIGNING_IDENTITY"),  # developer id identity
             '-o', 'runtime',  # enable hardened runtime, required for notarization
@@ -208,9 +208,9 @@ def sign_mac_content(paths: List[Path], identity: Optional[str] = None) -> None:
             "--force"  # resign all the code with different signature
         ]
         try:
-            run_cmd_silent(cmd=cmd_args)
+            run_cmd(cmd=cmd_args)
         except CalledProcessError as err:
-            raise Exception(f"Failed to codesign: {str(path)}") from err
+            raise Exception(f"Failed to codesign '{str(path)}': {str(err)}") from err
 
 
 def create_mac_dmg(src_path: Path) -> Path:
