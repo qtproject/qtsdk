@@ -38,7 +38,6 @@ from shutil import rmtree
 from subprocess import CalledProcessError
 from typing import List, Optional, Tuple
 
-from macholib import MachO  # type: ignore
 from temppathlib import TemporaryDirectory
 
 from bldinstallercommon import locate_paths
@@ -76,8 +75,8 @@ def _is_mach_o_file(path: Path) -> bool:
         True if Mach-O header found successfully, otherwise False
     """
     try:
-        headers = MachO.MachO(path.resolve(strict=True)).headers
-        return bool(headers)
+        # use 'file' utility to determine file type
+        return "Mach-O" in run_cmd(["file", str(path)])
     except Exception:
         return False
 
