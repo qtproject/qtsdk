@@ -34,7 +34,7 @@ import os
 import sys
 from contextlib import suppress
 from pathlib import Path
-from shutil import copy2, rmtree
+from shutil import rmtree
 from subprocess import CalledProcessError
 from typing import List, Optional, Tuple
 
@@ -172,11 +172,9 @@ def recursive_sign_notarize(pkg_dir: Path) -> None:
             if not any(p for p in path.parents if p in sign_items):
                 create_dir = notarize_dir.path / path.relative_to(pkg_dir).parent
                 create_dir.mkdir(parents=True, exist_ok=True)
-                if path.is_dir():
-                    # use ditto here to copy, preserves the directory hierarchy properly
-                    run_cmd(["ditto", str(path), str(create_dir / path.name)])
-                else:
-                    copy2(path, create_dir, follow_symlinks=False)
+                # use ditto here to copy, preserves the directory hierarchy and the extended
+                # attributes containing the signature for files
+                run_cmd(["ditto", str(path), str(create_dir / path.name)])
         # Notarize
         notarize(notarize_dir.path)
     # Staple original files
