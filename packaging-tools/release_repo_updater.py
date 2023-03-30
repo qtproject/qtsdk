@@ -1180,7 +1180,7 @@ def handle_offline_jobs(
         build_offline_tasks(
             staging_server=args.staging_server,
             staging_server_root=args.staging_server_root,
-            tasks=tasks,  # type: ignore
+            tasks=tasks[TaskType.IFW_TASK_TYPE],  # type: ignore
             license_=args.license_,
             installer_config_base_dir=args.installer_config_base_dir,
             artifact_share_base_url=args.artifact_share_url,
