@@ -86,26 +86,23 @@ def lrelease(lrelease_path: Path, pkg_root: Path) -> None:
         locale = ts_file_path.stem
         log.info("lrelease: %s", str(ts_file_path))
         if locale in ("ko", "zh", "untranslated"):
+            log.info('Skipping locale "%s": %s', locale, ts_file_path)
             continue
         run_cmd(cmd=[str(lrelease_path), str(ts_file_path)], cwd=ts_file_dir)
         package_xml = ts_file_dir / "package.xml"
-        package_xml_contents = package_xml.read_text(encoding="utf-8")
-        if locale + ".qm" in package_xml_contents:
+        xml_contents = package_xml.read_text(encoding="utf-8")
+        if locale + ".qm" in xml_contents:
             log.info("Translation file '%s.qm' already defined in package.xml", locale)
         else:
-            lines = package_xml_contents.splitlines()
-            if "Translations" in package_xml_contents:  # check if already contains <Translations>
-                for line in lines:
-                    if "</Package>" in line:
-                        lines.remove(line)  # remove lines containing </Package>
-                    if "</Translations>" in line:
-                        lines.remove(line)  # remove lines containing </Translations>
+            xml_contents = xml_contents.replace("</Package>", "")  # remove </Package> closing tag
+            if "Translations" in xml_contents:
+                # remove </Translations> closing tag if already contains <Translations>
+                xml_contents = xml_contents.replace("</Translations>", "")
+                lines = xml_contents.splitlines()
             else:
-                for line in lines:
-                    if "</Package>" in line:
-                        lines.remove(line)  # remove lines containing </Package>
+                lines = xml_contents.splitlines()
                 lines.append("  <Translations>")  # append <Translations> tag
-            lines.append("    <Translation>${locale}.qm</Translation>")
+            lines.append(f"    <Translation>{locale}.qm</Translation>")
             lines.append("  </Translations>")
             lines.append("</Package>")
             package_xml.unlink()
