@@ -6,7 +6,8 @@ The qtsdk repository provides tools used in packaging.
 
 ## Requirements
 
-- [Python](https://www.python.org/) 3.6.2 or higher
+- [Python](https://www.python.org/) version 3.11.3
+  (for installation, see [pyenv](https://github.com/pyenv/pyenv) or [pyenv-win](https://pyenv-win.github.io/pyenv-win/))
 - [Pip](https://pip.pypa.io/en/stable/) version 18.0 or higher
 - 7z command line utility added to PATH
 - Relevant toolchains for building e.g. GCC, MinGW, MSVC
