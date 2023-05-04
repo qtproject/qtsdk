@@ -73,7 +73,7 @@ from update_component_translations import lrelease
 
 log = init_logger(__name__, debug_mode=False)
 
-QtInstallerTaskType = TypeVar("QtInstallerTaskType", bound="QtInstallerTask[Any]")
+QtInstallerTaskT = TypeVar("QtInstallerTaskT", bound="QtInstallerTask[Any]")
 
 # ----------------------------------------------------------------------
 TARGET_INSTALL_DIR_NAME_TAG = '%TARGET_INSTALL_DIR%'
@@ -136,7 +136,7 @@ def check_required_tools() -> None:
 ##############################################################
 # Cleanup
 ##############################################################
-def clean_work_dirs(task: QtInstallerTaskType) -> None:
+def clean_work_dirs(task: QtInstallerTaskT) -> None:
     """Clean working directories."""
     log.info("Cleaning work environment")
     for item in [task.packages_full_path_dst, task.repo_output_dir, task.config_dir_dst]:
@@ -148,7 +148,7 @@ def clean_work_dirs(task: QtInstallerTaskType) -> None:
 ##############################################################
 # Set the config directory
 ##############################################################
-def set_config_directory(task: QtInstallerTaskType) -> None:
+def set_config_directory(task: QtInstallerTaskT) -> None:
     """Copy config directory into correct place."""
     log.info("Set config directory")
     config_dir_template = task.config.get('ConfigDir', 'template_name')
@@ -164,7 +164,7 @@ def set_config_directory(task: QtInstallerTaskType) -> None:
 ##############################################################
 # Set the config.xml
 ##############################################################
-def set_config_xml(task: QtInstallerTaskType) -> Any:
+def set_config_xml(task: QtInstallerTaskT) -> Any:
     """Copy config.xml template into correct place."""
     log.info("Set config.xml")
 
@@ -198,7 +198,7 @@ def set_config_xml(task: QtInstallerTaskType) -> Any:
 ##############################################################
 # Substitute common version numbers etc., match against tags
 ##############################################################
-def substitute_global_tags(task: QtInstallerTaskType) -> None:
+def substitute_global_tags(task: QtInstallerTaskT) -> None:
     """Substitute common version numbers etc., match against tags """
 
     log.info("Substituting global tags:")
@@ -256,7 +256,7 @@ def substitute_component_tags(tag_pair_list: List[List[str]], meta_dir_dest: str
 # Parse SDK components
 ##############################################################
 def parse_component_data(
-    task: QtInstallerTaskType, configuration_file: str, configurations_base_path: str
+    task: QtInstallerTaskT, configuration_file: str, configurations_base_path: str
 ) -> None:
     """Parse SDK component data"""
     file_full_path = configuration_file
@@ -330,7 +330,7 @@ def parse_component_data(
 ##############################################################
 # Parse SDK components
 ##############################################################
-def parse_components(task: QtInstallerTaskType) -> None:
+def parse_components(task: QtInstallerTaskT) -> None:
     """Parse SDK all components"""
     log.info("Parse target configuration files")
     conf_base_path = task.configurations_dir + os.sep + task.platform_identifier + os.sep
@@ -433,7 +433,7 @@ def process_qml_examples(directory: Path) -> None:
         log.warning("Skipping option 'qml_examples_only': The 'examples' directory does not exist")
 
 
-def finalize_items(task: QtInstallerTaskType, items: str, install_dir: Path) -> None:
+def finalize_items(task: QtInstallerTaskT, items: str, install_dir: Path) -> None:
     """
     Perform package finalization tasks for the given archive
 
@@ -500,7 +500,7 @@ def extract_component_data(source_archive: Path, target_directory: Path) -> None
 
 
 def patch_component_data(
-    task: QtInstallerTaskType,
+    task: QtInstallerTaskT,
     archive: IfwPayloadItem,
     install_dir: Path,
 ) -> None:
@@ -521,7 +521,7 @@ def patch_component_data(
 
 
 def recompress_component(
-    task: QtInstallerTaskType, archive: IfwPayloadItem, destination_dir: Path, compress_dir: Path
+    task: QtInstallerTaskT, archive: IfwPayloadItem, destination_dir: Path, compress_dir: Path
 ) -> None:
     """
     Recompress the component data to an IFW supported archive
@@ -546,7 +546,7 @@ def recompress_component(
 
 
 def get_component_data(
-    task: QtInstallerTaskType,
+    task: QtInstallerTaskT,
     sdk_comp: IfwSdkComponent,
     archive: IfwPayloadItem,
     data_dir_dest: Path,
@@ -629,7 +629,7 @@ def handle_set_executable(base_dir: str, package_finalize_items: str) -> None:
 
 
 def handle_set_licheck(
-    task: QtInstallerTaskType, base_dir: str, package_finalize_items: str
+    task: QtInstallerTaskT, base_dir: str, package_finalize_items: str
 ) -> None:
     for licheck_file_name in parse_package_finalize_items(package_finalize_items, 'set_licheck'):
         licheck_file_path = os.path.join(base_dir, licheck_file_name)
@@ -651,7 +651,7 @@ def parse_package_finalize_items(package_finalize_items: str, item_category: str
 ##############################################################
 # Substitute pkg template directory names
 ##############################################################
-def substitute_package_name(task: QtInstallerTaskType, package_name: str) -> str:
+def substitute_package_name(task: QtInstallerTaskT, package_name: str) -> str:
     for key, value in task.substitutions.items():
         package_name = package_name.replace(key, value)
 
@@ -661,7 +661,7 @@ def substitute_package_name(task: QtInstallerTaskType, package_name: str) -> str
 ##############################################################
 # Create target components
 ##############################################################
-def create_target_components(task: QtInstallerTaskType) -> None:
+def create_target_components(task: QtInstallerTaskT) -> None:
     """Create target components."""
     Path(task.packages_full_path_dst).mkdir(parents=True, exist_ok=True)
 
@@ -710,7 +710,7 @@ def create_target_components(task: QtInstallerTaskType) -> None:
 
         # handle component sha1 uri
         if sdk_comp.comp_sha1_uri:
-            sha1_file_dest = (dest_base / "SHA1")
+            sha1_file_dest = dest_base / "SHA1"
             get_component_data_work.add_task(
                 f"getting component sha1 file for {sdk_comp.ifw_sdk_comp_name}",
                 get_component_sha1,
@@ -831,7 +831,7 @@ def cleanup_docs(install_dir: str) -> None:
 ##############################################################
 # Create the final installer binary
 ##############################################################
-def create_installer_binary(task: QtInstallerTaskType) -> None:
+def create_installer_binary(task: QtInstallerTaskT) -> None:
     """Create installer binary files using binarycreator tool."""
     log.info("Create installer binary")
 
@@ -899,7 +899,7 @@ def create_installer_binary(task: QtInstallerTaskType) -> None:
 ##############################################################
 # Create the repository
 ##############################################################
-def create_online_repository(task: QtInstallerTaskType) -> None:
+def create_online_repository(task: QtInstallerTaskT) -> None:
     """Create online repository using repogen tool."""
     log.info("Create online repository")
 
@@ -952,7 +952,7 @@ def inject_update_rcc_to_archive(archive_file_path: str, file_to_be_injected: st
 ##############################################################
 # Create the final installer binary
 ##############################################################
-def create_mac_disk_image(task: QtInstallerTaskType) -> None:
+def create_mac_disk_image(task: QtInstallerTaskT) -> None:
     """Create Apple disk image."""
     log.info("Create Apple disk image")
     output_dir = INSTALLER_OUTPUT_DIR_NAME
@@ -963,7 +963,7 @@ def create_mac_disk_image(task: QtInstallerTaskType) -> None:
     run_cmd(cmd=cmd_args, cwd=task.script_root_dir)
 
 
-def get_reproduce_args(task: QtInstallerTaskType) -> str:
+def get_reproduce_args(task: QtInstallerTaskT) -> str:
     """
     Generate reproducable command line arguments
 
@@ -1000,7 +1000,7 @@ def get_reproduce_args(task: QtInstallerTaskType) -> str:
 ##############################################################
 # All main build steps
 ##############################################################
-def create_installer(task: QtInstallerTaskType) -> None:
+def create_installer(task: QtInstallerTaskT) -> None:
     """Installer creation main steps."""
     log.info(str(task))
     log.info("Creating Qt Installer Framework based installer/online repository")
@@ -1043,7 +1043,7 @@ def str2bool(value: str) -> bool:
 
 
 @dataclass
-class QtInstallerTask(Generic[QtInstallerTaskType]):
+class QtInstallerTask(Generic[QtInstallerTaskT]):
     """QtInstallerTask dataclass"""
 
     config = ConfigParser(interpolation=ExtendedInterpolation())

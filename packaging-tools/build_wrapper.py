@@ -697,10 +697,12 @@ def handle_qt_creator_build(option_dict: Dict[str, str], qtcreator_plugins: List
     # Define paths for pre-built kdsme and gammaray packages
     kdsme_url = option_dict.get("GAMMARAY_BASE_DIR", "")
     if kdsme_url:
-        kdsme_url = (pkg_base_path + '/' + kdsme_url + '/' + target_env_dir + '/qt5_kdsme.7z')
+        kdsme_url = pkg_base_path + '/' + kdsme_url + '/' + target_env_dir + '/qt5_kdsme.7z'
     gammaray_url = option_dict.get("GAMMARAY_BASE_DIR", "")
     if gammaray_url:
-        gammaray_url = (pkg_base_path + '/' + gammaray_url + '/' + target_env_dir + '/qt5_gammaray.7z')
+        gammaray_url = (
+            pkg_base_path + '/' + gammaray_url + '/' + target_env_dir + '/qt5_gammaray.7z'
+        )
 
     download_work = ThreadedWork('Download packages')
     extract_work = Task('Extract packages', function=None)
@@ -716,16 +718,23 @@ def handle_qt_creator_build(option_dict: Dict[str, str], qtcreator_plugins: List
     llvm_install_dir = None
     clang_filebase = option_dict.get('CLANG_FILEBASE')
     clang_platform = option_dict.get('CLANG_PLATFORM')
+    opt_clang_to_copy: List[str] = []
     if clang_filebase and clang_platform:
         clang_extract_path = os.path.join(download_temp, 'libclang')
         llvm_install_dir = os.path.join(clang_extract_path, 'libclang')  # package contains libclang subdir
         clang_suffix = option_dict.get('CLANG_FILESUFFIX')
         clang_suffix = clang_suffix if clang_suffix is not None else ''
-        clang_url = (pkg_base_path + '/' + option_dict['CLANG_FILEBASE'] + '-' + clang_platform + clang_suffix + '.7z')
+        clang_url = (
+            pkg_base_path + '/' + option_dict['CLANG_FILEBASE'] + '-' + clang_platform
+            + clang_suffix + '.7z'
+        )
         add_download_extract(clang_url, clang_extract_path)
         use_optimized_libclang = is_windows()
         if use_optimized_libclang:
-            opt_clang_url = (pkg_base_path + '/' + option_dict['CLANG_FILEBASE'] + '-windows-mingw_64' + clang_suffix + '.7z')
+            opt_clang_url = (
+                pkg_base_path + '/' + option_dict['CLANG_FILEBASE'] + '-windows-mingw_64'
+                + clang_suffix + '.7z'
+            )
             opt_clang_path = os.path.join(download_temp, 'opt_libclang')
             opt_clang_to_copy = [os.path.join('bin', file) for file
                                  in ['libclang.dll', 'clangd.exe', 'clang-tidy.exe']]

@@ -28,7 +28,7 @@ typing_extensions = "==4.1.1"
 
 [dev-packages]
 ddt = "==1.6.0"
-pylint = "==2.12.0"
+pylint = "==2.17.3"
 autopep8 = "==1.6.0"
 mypy = "==0.971"
 flake8 = "==4.0.1"
