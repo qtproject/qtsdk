@@ -16,7 +16,7 @@ pysftp = "==0.2.9"
 configparser = "==5.2.0"
 dataclasses = {version = "==0.8", markers="(python_version >= '3.6' and python_version < '3.7')"}
 asyncio-backport = {version = "==0.1.1", markers="(python_version >= '3.6' and python_version < '3.7')"}
-requests = "==2.27.1"
+requests = "==2.31.0"
 htmllistparse = "==0.6.0"
 urlpath = "==1.2.0"
 temppathlib = "==1.2.0"
