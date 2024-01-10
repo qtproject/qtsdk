@@ -7,7 +7,7 @@ name = "pypi"
 pip = {version = ">=18.0"}
 sh = {version = "==1.14.2", os_name = "!= 'nt'"}
 typed-ast = "==1.5.4"
-gitpython = "==3.1.18"
+gitpython = "==3.1.41"
 colorlog = "==6.7.0"
 pexpect = "==4.8.0"
 wget = "==3.2"
